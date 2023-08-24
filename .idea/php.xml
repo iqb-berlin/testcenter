@@ -81,6 +81,7 @@
       <extension name="ZendDebugger" enabled="false" />
       <extension name="ZendUtils" enabled="false" />
       <extension name="amqp" enabled="false" />
+      <extension name="apache" enabled="false" />
       <extension name="apcu" enabled="false" />
       <extension name="bcmath" enabled="false" />
       <extension name="bz2" enabled="false" />
@@ -90,6 +91,7 @@
       <extension name="dba" enabled="false" />
       <extension name="decimal" enabled="false" />
       <extension name="dio" enabled="false" />
+      <extension name="elastic_apm" enabled="false" />
       <extension name="enchant" enabled="false" />
       <extension name="fann" enabled="false" />
       <extension name="ffmpeg" enabled="false" />
@@ -103,7 +105,6 @@
       <extension name="grpc" enabled="false" />
       <extension name="http" enabled="false" />
       <extension name="ibm_db2" enabled="false" />
-      <extension name="igbinary" enabled="false" />
       <extension name="imagick" enabled="false" />
       <extension name="imap" enabled="false" />
       <extension name="inotify" enabled="false" />
@@ -130,16 +131,20 @@
       <extension name="oauth" enabled="false" />
       <extension name="oci8" enabled="false" />
       <extension name="odbc" enabled="false" />
+      <extension name="pcov" enabled="true" />
       <extension name="pdflib" enabled="false" />
       <extension name="pdo_ibm" enabled="false" />
+      <extension name="pdo_sqlite" enabled="false" />
       <extension name="pspell" enabled="false" />
       <extension name="pthreads" enabled="false" />
       <extension name="rar" enabled="false" />
       <extension name="recode" enabled="false" />
-      <extension name="redis" enabled="false" />
+      <extension name="relay" enabled="false" />
       <extension name="rrd" enabled="false" />
+      <extension name="snappy" enabled="false" />
       <extension name="snmp" enabled="false" />
       <extension name="soap" enabled="false" />
+      <extension name="sqlite3" enabled="false" />
       <extension name="sqlsrv" enabled="false" />
       <extension name="ssh2" enabled="false" />
       <extension name="suhosin" enabled="false" />

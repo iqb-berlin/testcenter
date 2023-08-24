@@ -105,7 +105,7 @@ class SessionDAO extends DAO {
             from 
               logins
               left join login_sessions on (logins.name = login_sessions.name)
-              left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+              left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
             where 
               logins.name = :name',
       [
@@ -203,7 +203,7 @@ class SessionDAO extends DAO {
                 from
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
-                    left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+                    left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
                 where
                     login_sessions.token=:token',
       [':token' => $loginToken]
@@ -337,7 +337,7 @@ class SessionDAO extends DAO {
                 logins.mode,
                 logins.password,
                 logins.group_name,
-                logins.group_label,
+                login_session_groups.group_label,
                 login_session_groups.token as group_token,
                 login_sessions.token,
                 login_sessions.name,
@@ -352,7 +352,7 @@ class SessionDAO extends DAO {
             from person_sessions
                 inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
                 inner join logins on logins.name = login_sessions.name
-                left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+                left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
             where person_sessions.token = :token',
       [':token' => $personToken]
     );
@@ -405,9 +405,10 @@ class SessionDAO extends DAO {
 
     $newGroupToken = Token::generate('group', $login->getGroupName());
     $this->_(
-      'insert into login_session_groups (group_name, group_label, token) values (?, ?, ?)',
+      'insert into login_session_groups (group_name, workspace_id, group_label, token) values (?, ?, ?, ?)',
       [
         $login->getGroupName(),
+        $login->getWorkspaceId(),
         $login->getGroupLabel(),
         $newGroupToken
       ]
@@ -424,7 +425,7 @@ class SessionDAO extends DAO {
             login_session_groups
             left join logins on login_session_groups.group_name = logins.group_name
           where
-            token = ? and workspace_id = ?',
+            token = ? and login_session_groups.workspace_id = ?',
       [
         $groupTokenString,
         $workspaceId
@@ -640,7 +641,7 @@ class SessionDAO extends DAO {
     from
       logins
       left join login_sessions on (logins.name = login_sessions.name)
-      left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+      left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
     where
       $filterSQL
     order by id";

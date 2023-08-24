@@ -347,7 +347,7 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function setTestRunning(int $testId) {
+  public function setTestRunning(int $testId): void {
     $this->_('update tests set running = :running , timestamp_server = :timestamp where id = :id',
       [
         ':running' => '1',
