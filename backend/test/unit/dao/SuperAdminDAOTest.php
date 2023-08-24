@@ -34,7 +34,8 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = array(
       array(
         "id" => 1,
-        "name" => "example_workspace"
+        "name" => "example_workspace",
+        "latest_modification_ts" => "2023-01-16 09:00:00"
       )
     );
     $this->assertEquals($expectation, $result);
@@ -255,11 +256,13 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = [
       [
         "id" => 1,
-        "name" => "example_workspace"
+        "name" => "example_workspace",
+        "latest_modification_ts" => "2023-01-16 09:00:00"
       ],
       [
         "id" => 2,
-        "name" => "new_workspace"
+        "name" => "new_workspace",
+        "latest_modification_ts" => null
       ],
 
     ];
