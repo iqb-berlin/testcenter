@@ -467,10 +467,10 @@ class AdminDAO extends DAO {
   }
 
   public function getResultStats(int $workspaceId): array {
-    // TODO add group label. Problem: when login is gone, label is gone
     $resultStats = $this->_('
       select
         group_name,
+        group_label,
         count(*) as bookletsStarted,
         min(num_units) as num_units_min,
         max(num_units) as num_units_max,
@@ -480,15 +480,24 @@ class AdminDAO extends DAO {
       from (
         select
           login_sessions.group_name,
+          group_label,
           count(distinct units.id) as num_units,
           max(tests.timestamp_server) as timestamp_server
         from
           tests
-          left join person_sessions on person_sessions.id = tests.person_id
-          inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-          left join units on units.booklet_id = tests.id
-          left join unit_reviews on units.id = unit_reviews.unit_id
-          left join test_reviews on tests.id = test_reviews.booklet_id
+          left join person_sessions 
+            on person_sessions.id = tests.person_id
+          inner join login_sessions
+            on login_sessions.id = person_sessions.login_sessions_id
+          left join units
+            on units.booklet_id = tests.id
+          left join unit_reviews
+            on units.id = unit_reviews.unit_id
+          left join test_reviews
+            on tests.id = test_reviews.booklet_id
+          left join login_session_groups on 
+            login_sessions.group_name = login_session_groups.group_name
+              and login_sessions.workspace_id = login_session_groups.workspace_id
         where
           login_sessions.workspace_id = :workspaceId
           and (
@@ -497,7 +506,7 @@ class AdminDAO extends DAO {
               or test_reviews.entry is not null
           )
           and tests.running = 1
-          group by tests.name, person_sessions.id, login_sessions.group_name
+          group by tests.name, person_sessions.id, login_sessions.group_name, group_label
       ) as byGroup
       group by group_name',
       [
@@ -509,6 +518,7 @@ class AdminDAO extends DAO {
     return array_map(function($groupStats) {
       return [
         "groupName" => $groupStats["group_name"],
+        "groupLabel" => $groupStats["group_label"],
         "bookletsStarted" => (int) $groupStats["bookletsStarted"],
         "numUnitsMin" => (int) $groupStats["num_units_min"],
         "numUnitsMax" => (int) $groupStats["num_units_max"],

@@ -19,6 +19,7 @@ layout: default
 ### Verbesserungen
 * Das Verhalten im Fehlerfall wurde komplett überarbeitet, um im Fehlerfall sinnvollere Nachrichten und Optionen
   anzubieten.
+* In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs. 
 
 ### Neue Features
 * Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
