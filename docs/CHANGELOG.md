@@ -11,6 +11,10 @@ layout: default
 * Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
   Durchführung entlastet werden.
 
+### Neue Features
+* In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
+  die Verwaltung zu erleichtern.  
+
 # Changelog & Upgrade Information
 
 ## 14.8.0
