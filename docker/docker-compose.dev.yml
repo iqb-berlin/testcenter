@@ -43,6 +43,7 @@ services:
       - ../package.json:/var/www/package.json
       - ../sampledata:/var/www/sampledata
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
+      - ../backend/vendor:/var/www/backend/vendor
       # Uncomment the following lines to enable xdebug
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     ports:

@@ -46,20 +46,33 @@ init-env:
 composer-install:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/composer.lock \
-		-v $(CURDIR)/backend/vendor:/vendor \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
 		testcenter-backend-composer \
 		composer install --no-interaction --no-ansi
 
 composer-update:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/composer.lock \
-		-v $(CURDIR)/backend/vendor:/vendor \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
 		testcenter-backend-composer \
-		composer update --no-interaction --no-ansi
+		composer update --no-interaction --no-ansi --working-dir=/var/www/backend
+
+# use this whenever you created or renamed a class in backend to refresh the autoloader.
+backend-refresh-autoload:
+	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
+		testcenter-backend-composer \
+		composer dump-autoload --working-dir=/var/www/backend
 
 init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
