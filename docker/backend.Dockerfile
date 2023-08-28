@@ -12,7 +12,7 @@ RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
-# even this is a side-container, paths have to as they will be in the final container,
+# even while this is a side-container, paths have to be the same as they will be in the final container,
 # because composer not only installs stuff but also creates a map of all classes for autoloading
 COPY backend/composer.json /var/www/backend/
 COPY backend/composer.lock /var/www/backend/

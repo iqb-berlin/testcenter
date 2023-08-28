@@ -49,29 +49,7 @@ final class WorkspaceControllerTest extends TestCase {
   function setUp(): void {
     require_once "test/unit/test-helper/RequestCreator.class.php";
     require_once "test/unit/test-helper/ResponseCreator.class.php";
-
     require_once "test/unit/mock-classes/PasswordMock.php";
-
-    require_once "src/controller/Controller.class.php";
-    require_once "src/controller/WorkspaceController.class.php";
-    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-
-    require_once "src/data-collection/ReportType.php";
-    require_once "src/data-collection/ReportFormat.php";
-    require_once "src/data-collection/Login.class.php";
-    require_once "src/data-collection/LoginArray.class.php";
-    require_once "src/helper/RequestBodyParser.class.php";
-    require_once "src/helper/JSON.class.php";
-    require_once "src/helper/XMLSchema.class.php";
-    require_once "src/helper/Version.class.php";
-    require_once "src/helper/TimeStamp.class.php";
-    require_once "src/data-collection/FileData.class.php";
-    require_once "src/files/File.class.php";
-    require_once "src/files/ResourceFile.class.php";
-    require_once "src/files/XMLFile.class.php";
-    require_once "src/files/XMLFileTesttakers.class.php";
-    require_once "src/files/XMLFileBooklet.class.php";
-    require_once "src/files/XMLFileUnit.class.php";
 
     XMLSchema::setup(false);
 

@@ -5,10 +5,6 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 final class ReportFormatTest extends TestCase {
-  static function setUpBeforeClass(): void {
-    require_once "src/data-collection/ReportFormat.php";
-  }
-
   /**
    * @throws Exception
    */

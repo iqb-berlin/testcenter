@@ -7,10 +7,6 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 class ModeTest extends TestCase {
-  function setUp(): void {
-    require_once 'src/helper/Mode.class.php';
-  }
-
   public function test_getWorkspaceName() {
     $result = Mode::withChildren('RW');
     $expectation = ['RW', 'RO'];

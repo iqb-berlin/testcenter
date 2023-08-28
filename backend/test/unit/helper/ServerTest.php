@@ -7,10 +7,6 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 class ServerTest extends TestCase {
-  public function setUp(): void {
-    require_once "src/helper/Server.class.php";
-  }
-
   function test_getUrl() {
     // a scenario like most local installations with one vhost, vhost base dir is /var/www
     $expected = 'http://localhost/a-sub-folder/another-sub-folder';
