@@ -11,8 +11,8 @@ class DB {
     self::setUpConnection();
   }
 
-  static function connectToTestDB(?DBConfig $config = null): void {
-    self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+  static function connectToTestDB($rootDir = ROOT_DIR): void {
+    self::$config = $config ?? DBConfig::fromFile($rootDir . '/backend/config/DBConnectionData.json');
     self::$config->dbname = 'TEST_' . self::$config->dbname;
     self::$config->staticTokens = true;
     self::$config->insecurePasswords = true;

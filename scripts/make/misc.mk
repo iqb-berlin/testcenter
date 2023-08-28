@@ -78,7 +78,8 @@ init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
 init-ensure-file-rights:
-	chmod -R 0444 scripts/database/my.cnf # mysql does not accept it otherwise
+	chmod 0444 scripts/database/my.cnf # mysql does not accept it with more rights
+	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
 
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
