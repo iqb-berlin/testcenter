@@ -4,15 +4,15 @@ import { MainDataService } from '../../shared/shared.module';
 @Component({
   templateUrl: './legal-notice.component.html',
   styles: [
-    `
-    /* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
-    mat-card {width: 500px;}`,
-    'ul {margin-top: 0;}'
+    'mat-card { width: 500px; }',
+    'ul { margin-top: 0; }'
   ]
 })
 export class LegalNoticeComponent implements OnInit {
   constructor(
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
+    @Inject('BACKEND_URL') public backendUrl: string,
+    @Inject('FASTLOAD_URL') public fastLoadUrl: string,
     public mds: MainDataService
   ) { }
 

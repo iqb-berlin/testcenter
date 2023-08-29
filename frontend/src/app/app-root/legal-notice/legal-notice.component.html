@@ -12,7 +12,8 @@
         <b>Angaben zu dieser Web-Anwendung:</b>
         <ul>
           <li>Version {{mds.appConfig?.version}}</li>
-          <li>Live-Modus: {{mds.appConfig?.broadcastingService}}</li>
+          <li>Live-Modus aktiviert: {{mds.appConfig?.broadcastingService ==  'on' ? 'Ja' : 'Nein' }}</li>
+          <li>Schnelles Dateiladen aktiviert: {{backendUrl !== fastLoadUrl ? 'Ja' : 'Nein'}}</li>
           <li>
             Verona Player Interface: Versionen {{mds.appConfig?.veronaPlayerApiVersionMin}}
             bis {{mds.appConfig?.veronaPlayerApiVersionMax}} unterstützt
