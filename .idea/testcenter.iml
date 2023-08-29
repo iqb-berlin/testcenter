@@ -13,7 +13,6 @@
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/dist" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/backend/vendor" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />
