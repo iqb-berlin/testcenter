@@ -119,3 +119,6 @@ services:
 networks:
   testcenter-system-test:
     name: testcenter-system-test
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: $DOCKER_DAEMON_MTU

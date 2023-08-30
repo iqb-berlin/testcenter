@@ -101,3 +101,6 @@ volumes:
 networks:
   testcenter:
     name: testcenter
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: $DOCKER_DAEMON_MTU

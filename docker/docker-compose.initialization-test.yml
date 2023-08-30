@@ -38,7 +38,7 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
-    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
+    entrypoint: [ "bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
@@ -90,3 +90,6 @@ services:
 networks:
   testcenter-initialization-test:
     name: testcenter-initialization-test
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: $DOCKER_DAEMON_MTU
