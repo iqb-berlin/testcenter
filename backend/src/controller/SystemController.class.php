@@ -80,6 +80,7 @@ class SystemController extends Controller {
         'customTexts' => (object) $meta['customTexts'],
         'appConfig' => (object) $meta['appConfig'],
         'broadcastingService' => BroadcastService::getStatus(),
+        'filesService' => FileService::getStatus(),
         'baseUrl' => Server::getUrl(),
         'veronaPlayerApiVersionMin' => $version['veronaMin'],
         'veronaPlayerApiVersionMax' => $version['veronaMax'],

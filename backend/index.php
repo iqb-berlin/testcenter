@@ -24,6 +24,7 @@ try {
     TimeStamp::setup();
     BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
     XMLSchema::setup($config->allowExternalXMLSchema);
+    FileService::setup($config->fileServiceUri);
     DB::connect();
   }
 

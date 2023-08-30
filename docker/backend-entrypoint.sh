@@ -22,6 +22,14 @@ if [ "$BROADCAST_SERVICE_ENABLED" = "yes" ] || [ "$BROADCAST_SERVICE_ENABLED" = 
     echo "Broadcast-Service disabled"
 fi
 
+if [ "$FILE_SERVICE_ENABLED" = "yes" ] || [ "$FILE_SERVICE_ENABLED" = "true" ]
+  then
+    echo "File-Service enabled"
+    FILE_SERVICE_URI=${HTTP_PROTOCOL}://testcenter-files-service
+  else
+    echo "File-Service disabled"
+fi
+
 # init data
 php /var/www/backend/initialize.php \
 --user_name=$SUPERUSER_NAME \
@@ -33,7 +41,8 @@ php /var/www/backend/initialize.php \
 --user=$MYSQL_USER \
 --password=$MYSQL_PASSWORD \
 --broadcastServiceUriPush=$BROADCAST_SERVICE_URI_PUSH \
---broadcastServiceUriSubscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
+--broadcastServiceUriSubscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE \
+--fileServiceUri=$FILE_SERVICE_URI
 
 # file-rights
 chown -R www-data:www-data /var/www/data

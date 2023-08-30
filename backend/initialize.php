@@ -1,41 +1,86 @@
 #!/usr/bin/php
 <?php
 /**
- * A CLI script to initialize the application
- *  It does a lot of stuff, it
+ * # A CLI script to initialize the application.
+ * It runs whenever the backend-container starts or you run `make re-init-backend`.
+ * You won't have to fondle with the parameters except when you want to run th testcenter locally or such.
+ *
+ * It does a lot of stuff, it
  * - creates config files if missing.
  * - creates an admin user, if missing.
  * - can create a workspace with sample data..
  * - installs / updates the DB if necessary.
  *
+ * ## Parameters
+ * ### Initial super-admin and workspace
+ *
  * If there is no admin, one will be created. You can set up credentials for him:
+ * ```
  * --user_name=(super user name)
  * --user_password=(super user password)
+ * ```
  *
  * If there is no workspace one (containing sample content) will be created
+ * ```
  * --workspace=(workspace name)
+ * ```
  *
  * Admin- and workspace-creation can be skipped by providing an empty string as for workspace respectively user_name
  *
- * You can remove the existing installation completely: (Caution! Your data will be gone!)
- * --overwrite_existing_installation=true
+ * ### Initialization Flags
  *
- *  If the DB-Connection-Data-File (/config/DBConnectionData.json) shall be written, provide:
+ * Remove the existing installation completely. All data will be gone!
+ * ```
+ * --overwrite_existing_installation
+ * ```
+ * Skip database integrity check. Mostly used for testing broken installations.
+ * ```
+ * --skip_db_integrity_check
+ * ```
+ * Every file in data-dir gets re-read when starting the container in case to make sure database
+ * and data-dir are always in sync. Skip this with:
+ * ```
+ * --skip_read_workspace_files
+ * ```
+ *
+ * ### Setup database connection
+ *
+ * If the DB-Connection-Data-File (/config/DBConnectionData.json) shall be (re-)written, provide:
+ * ```
  * --host=(mostly `localhost`)
  * --post=(usually 3306)
  * --dbname=(database name)
  * --user=(mysql-username)
  * --password=(mysql-password)
  * --salt=(an arbitrary string, optional)
+ * ```
+ * ### System Config
  *
- * If the the System-Config-File (/config/system.json) shall be written, provide
+ * If the the System-Config-File (/config/system.json) shall be (re-)written, provide some of the following parameters
+ *
+ * #### Configuring the Broadcasting-Service
+ *
+ * ```
  * --broadcastServiceUriPush=(address of broadcast service to push for the backend)
  * --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
- * Add them with empty strings if you don't want to use the broadcast service at all.
+ * ```
+ * Add them with empty strings if you don't want to use the broadcasting-service at all.
  *
+ * #### Configuring the Files-Service
  *
+ * ```
+ * --fileServiceUri=(address of file service)
+ * ```
+ * Leave out to use the backend itself as files-service.
+ *
+ * #### Other
+ * ```
+ * --allowExternalXMLSchema=[false|true]
+ * ```
+ *
+ * ## Tipps
  * Note: run this script as a user who can create files which can be read by the webserver or
- * change file rights afterwardsfor example:
+ * change file rights afterwards. For example:
  * sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
  *
  */

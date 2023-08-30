@@ -35,4 +35,7 @@ sed -i '/BROADCAST_SERVICE_URI_PUSH/d' .env
 sed -i '/BROADCAST_SERVICE_URI_SUBSCRIBE/d' .env
 echo "Updated Broadcast-Service settings in .env"
 
+# 15.0.0: include new setting
+echo "FILE_SERVICE_ENABLED=true" >> .env
+
 echo "Patch done"
