@@ -3,8 +3,8 @@ layout: default
 ---
 
 ## [next]
-### Backend
-* Der selbst implementierte Autoloader wurde entfernt, stattdessen wird vendor/autoload verwendet.
+### Performance
+* Das Backend allgemein wurde performanter und resourcen-sparendergemacht, indem der selbst implementierte Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
 
 ### Neue Features
 * In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
