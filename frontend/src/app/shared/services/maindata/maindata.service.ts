@@ -109,7 +109,11 @@ export class MainDataService {
     this._authData$.next(this.getAuthData());
   }
 
-  reloadPage(): void {
+  reloadPage(logOut: boolean = false): void {
+    if (logOut) {
+      this._authData$.next(null);
+      localStorage.removeItem(localStorageAuthDataKey);
+    }
     this.bs.clearCache();
     setTimeout(() => { window.location.href = '/'; }, 100);
   }

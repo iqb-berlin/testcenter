@@ -19,7 +19,7 @@ import { FileService } from '../../services/file.service';
 })
 export class ErrorComponent implements OnInit, OnDestroy {
   @Input() onBeforeClose: (() => void) | null = null;
-  @Input() onClose: (() => void) | null = null;
+  @Input() onClose: ((err: AppError) => void) | null = null;
   @Input() closeCaption: string = '';
   @Input() additionalReport: { [key: string]: string } = {};
   @ViewChild('report') reportElem!: ElementRef;
@@ -109,8 +109,11 @@ export class ErrorComponent implements OnInit, OnDestroy {
     if (this.onBeforeClose) {
       this.onBeforeClose();
     }
+    if (!this.error) {
+      return;
+    }
     if (this.onClose) {
-      this.onClose();
+      this.onClose(this.error);
     } else {
       this.defaultOnClose();
     }
@@ -129,6 +132,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
     if (this.error?.type === 'network_temporally') {
       this.mainDataService.reloadPage();
+    }
+    if (this.error?.type === 'session') {
+      this.mainDataService.reloadPage(true);
     }
   }
 

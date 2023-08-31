@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CustomtextService, MainDataService } from '../../../shared/shared.module';
+import { AppError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -25,8 +26,8 @@ export class TestStatusComponent implements OnInit {
     });
   }
 
-  reloadPage(): void {
-    this.mainDataService.reloadPage();
+  reloadPage(error: AppError): void {
+    this.mainDataService.reloadPage(error.type === 'session');
   }
 
   terminateTest(): void {
