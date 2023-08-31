@@ -12,13 +12,13 @@
         <b>Angaben zu dieser Web-Anwendung:</b>
         <ul>
           <li>Version {{mds.appConfig?.version}}</li>
-          <li>Live-Modus aktiviert: {{mds.appConfig?.broadcastingService ==  'on' ? 'Ja' : 'Nein' }}</li>
-          <li>Schnelles Dateiladen aktiviert: {{backendUrl !== fastLoadUrl ? 'Ja' : 'Nein'}}</li>
           <li>
             Verona Player Interface: Versionen {{mds.appConfig?.veronaPlayerApiVersionMin}}
             bis {{mds.appConfig?.veronaPlayerApiVersionMax}} unterstützt
           </li>
           <li *ngIf="!isProductionMode">Build-Modus: Entwicklung</li>
+          <li>Live-Modus aktiviert: {{translations[mds.sysStatus.broadcastingService]}}</li>
+          <li>Schnelles Dateiladen: {{translations[mds.sysStatus.fileService]}}</li>
         </ul>
       </mat-card-content>
       <mat-card-actions>

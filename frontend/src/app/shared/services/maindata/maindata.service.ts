@@ -38,7 +38,10 @@ export class MainDataService {
   }
 
   appConfig: AppConfig | null = null;
-  sysStatus: SysStatus = { broadcastingService: 'unknown', fileService: 'unknown' };
+  sysStatus: SysStatus = {
+    fileService: 'unknown',
+    broadcastingService: 'unknown'
+  };
 
   sysCheckAvailable = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
@@ -119,5 +122,12 @@ export class MainDataService {
     }
     this.bs.clearCache();
     setTimeout(() => { window.location.href = '/'; }, 100);
+  }
+
+  refreshSysStatus(): void {
+    this.bs.getSysStatus()
+      .subscribe(sysStatus => {
+        this.sysStatus = sysStatus;
+      });
   }
 }

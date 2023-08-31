@@ -59,7 +59,7 @@ $app->group('/speed-test', function(RouteCollectorProxy $group) {
 
 $app->get('/sys-checks', [SystemController::class, 'getSysChecks']);
 
-$app->get('/system/config', [SystemController::class, 'getSystemConfig']);
+$app->get('/system/config', [SystemController::class, 'getConfig']);
 
 $app->patch('/system/config/app', [SystemController::class, 'patchAppConfig'])
   ->add(new IsSuperAdmin())
@@ -69,7 +69,9 @@ $app->patch('/system/config/custom-texts', [SystemController::class, 'patchCusto
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
 
-$app->get('/system/time', [SystemController::class, 'getSystemTime']);
+$app->get('/system/time', [SystemController::class, 'getTime']);
+
+$app->get('/system/status', [SystemController::class, 'getStatus']);
 
 $app->group('/test', function(RouteCollectorProxy $group) {
   $group->put('', [TestController::class, 'put']);

@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MainDataService } from '../../shared/shared.module';
+import { ServiceStatus } from '../../shared/interfaces/app-config.interfaces';
 
 @Component({
   templateUrl: './legal-notice.component.html',
@@ -9,6 +10,13 @@ import { MainDataService } from '../../shared/shared.module';
   ]
 })
 export class LegalNoticeComponent implements OnInit {
+  readonly translations: { [status in ServiceStatus]: string } = {
+    on: 'An',
+    off: 'Aus',
+    unreachable: 'Nicht erreichbar',
+    unknown: 'Unbekannt'
+  };
+
   constructor(
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     @Inject('BACKEND_URL') public backendUrl: string,
@@ -18,5 +26,6 @@ export class LegalNoticeComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => this.mds.appSubTitle$.next('Impressum/Datenschutz'));
+    this.mds.refreshSysStatus();
   }
 }

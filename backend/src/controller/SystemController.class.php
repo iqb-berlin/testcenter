@@ -70,7 +70,7 @@ class SystemController extends Controller {
     return $response->withJson(['version' => Version::get()]);
   }
 
-  public static function getSystemConfig(Request $request, Response $response): Response {
+  public static function getConfig(Request $request, Response $response): Response {
     $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
     $version = Version::getAll(); // TODo use DB!
 
@@ -79,13 +79,18 @@ class SystemController extends Controller {
         'version' => $version['version'],
         'customTexts' => (object) $meta['customTexts'],
         'appConfig' => (object) $meta['appConfig'],
-        'broadcastingService' => BroadcastService::getStatus(),
-        'filesService' => FileService::getStatus(),
         'baseUrl' => Server::getUrl(),
         'veronaPlayerApiVersionMin' => $version['veronaMin'],
         'veronaPlayerApiVersionMax' => $version['veronaMax'],
       ]
     );
+  }
+
+  public static function getStatus(Request $request, Response $response): Response {
+    return $response->withJson([
+      'broadcastingService' => BroadcastService::getStatus(),
+      'fileService' => FileService::getStatus(),
+    ]);
   }
 
   public static function patchAppConfig(Request $request, Response $response): Response {
@@ -111,7 +116,7 @@ class SystemController extends Controller {
     return $response;
   }
 
-  public static function getSystemTime(Request $request, Response $response): Response {
+  public static function getTime(Request $request, Response $response): Response {
     return $response->withJson(
       [
         'timezone' => date_default_timezone_get(),
