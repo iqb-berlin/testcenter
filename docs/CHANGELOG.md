@@ -16,7 +16,7 @@ layout: default
 ### XML-Austausch-Formate
 * Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
   Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
-  standards wieder entfernt werden.
+  standards wieder entfernt werden. 
 
 ## 14.8.0
 ### Bugfixes
