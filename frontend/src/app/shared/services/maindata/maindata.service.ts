@@ -11,6 +11,7 @@ import {
 } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
 import { BackendService } from '../backend.service';
+import { SysStatus } from '../../interfaces/app-config.interfaces';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -37,6 +38,8 @@ export class MainDataService {
   }
 
   appConfig: AppConfig | null = null;
+  sysStatus: SysStatus = { broadcastingService: 'unknown', fileService: 'unknown' };
+
   sysCheckAvailable = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
