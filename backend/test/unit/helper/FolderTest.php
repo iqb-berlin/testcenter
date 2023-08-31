@@ -16,8 +16,6 @@ class FolderTest extends TestCase {
   }
 
   function setUp(): void {
-    require_once 'src/helper/Folder.class.php';
-
     $this->vfs = VfsForTest::setUp();
   }
 

@@ -13,30 +13,6 @@ final class AdminDAOTest extends TestCase {
   private AdminDAO $dbc;
 
   function setUp(): void {
-    require_once "src/exception/HttpError.class.php";
-    require_once "src/data-collection/DataCollection.class.php";
-    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-    require_once "src/data-collection/Admin.class.php";
-    require_once "src/data-collection/DBConfig.class.php";
-    require_once "src/data-collection/Command.class.php";
-    require_once "src/data-collection/AccessSet.class.php";
-    require_once "src/data-collection/SessionChangeMessage.class.php";
-    require_once "src/data-collection/SessionChangeMessageArray.class.php";
-    require_once "src/data-collection/PersonSession.class.php";
-    require_once "src/data-collection/Person.class.php";
-    require_once "src/data-collection/Login.class.php";
-    require_once "src/data-collection/LoginSession.class.php";
-    require_once "src/data-collection/Group.class.php";
-    require_once "src/data-collection/WorkspaceData.class.php";
-    require_once "src/data-collection/ExpirationState.class.php";
-    require_once "src/data-collection/ExpirationStateType.enum.php";
-    require_once "src/dao/DAO.class.php";
-    require_once "src/dao/AdminDAO.class.php";
-    require_once "src/helper/Mode.class.php";
-    require_once "src/helper/JSON.class.php";
-    require_once "src/helper/DB.class.php";
-    require_once "src/helper/TimeStamp.class.php";
-    require_once "src/helper/Password.class.php";
     require_once "test/unit/TestDB.class.php";
     TestDB::setUp();
 

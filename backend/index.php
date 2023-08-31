@@ -13,7 +13,6 @@ try {
   define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
 
   require_once "vendor/autoload.php";
-  require_once "autoload.php";
 
   if (isset($_SERVER['HTTP_TESTMODE'])) {
     TestEnvironment::setup($_SERVER['HTTP_TESTMODE'], $_SERVER['HTTP_TESTCLOCK']);

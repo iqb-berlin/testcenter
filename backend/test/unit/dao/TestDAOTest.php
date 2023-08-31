@@ -10,15 +10,6 @@ class TestDAOTest extends TestCase {
   private TestDAO $dbc;
 
   function setUp(): void {
-    require_once "src/exception/HttpError.class.php";
-    require_once "src/data-collection/DataCollection.class.php";
-    require_once "src/helper/DB.class.php";
-    require_once "src/helper/TimeStamp.class.php";
-    require_once "src/data-collection/DBConfig.class.php";
-    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-    require_once "src/data-collection/Command.class.php";
-    require_once "src/dao/DAO.class.php";
-    require_once "src/dao/TestDAO.class.php";
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();

@@ -7,10 +7,6 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 class CSVTest extends TestCase {
-  public function setUp(): void {
-    require_once "src/helper/CSV.class.php";
-  }
-
   private $_testData = [
     ['a' => 'A', 'b' => 'B'],
     ['a' => 'Ä', 'b' => 'B', 'c' => 'C'],

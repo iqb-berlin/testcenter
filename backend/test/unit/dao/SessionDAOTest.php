@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-require_once "src/dao/DAO.class.php";
-require_once "src/dao/SessionDAO.class.php";
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
@@ -18,27 +15,7 @@ class SessionDAOTest extends TestCase {
 
   static function setUpBeforeClass(): void {
     require_once "test/unit/mock-classes/PasswordMock.php";
-
-    require_once "src/exception/HttpError.class.php";
-    require_once "src/data-collection/DataCollection.class.php";
-    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-    require_once "src/data-collection/AuthToken.class.php";
-    require_once "src/helper/DB.class.php";
-    require_once "src/helper/JSON.class.php";
-    require_once "src/data-collection/DBConfig.class.php";
-    require_once "src/data-collection/Login.class.php";
-    require_once "src/data-collection/LoginSession.class.php";
-    require_once "src/data-collection/AccessSet.class.php";
-    require_once "src/data-collection/Person.class.php";
-    require_once "src/data-collection/PersonSession.class.php";
-    require_once "src/helper/Mode.class.php";
-    require_once "src/helper/Random.class.php";
-    require_once "src/helper/TimeStamp.class.php";
-    require_once "src/dao/DAO.class.php";
-    require_once "src/dao/SessionDAO.class.php";
     require_once "test/unit/TestDB.class.php";
-    require_once "src/data-collection/ExpirationState.class.php";
-    require_once "src/data-collection/ExpirationStateType.enum.php";
   }
 
   function setUp(): void {

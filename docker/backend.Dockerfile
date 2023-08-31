@@ -12,11 +12,14 @@ RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
-COPY backend/composer.json .
-COPY backend/composer.lock .
+# even while this is a side-container, paths have to be the same as they will be in the final container,
+# because composer not only installs stuff but also creates a map of all classes for autoloading
+COPY backend/composer.json /var/www/backend/
+COPY backend/composer.lock /var/www/backend/
+COPY backend/src /var/www/backend/src
 
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
-RUN composer install
+RUN cd /var/www/backend/ && composer install
 
 VOLUME /vendor
 
@@ -40,9 +43,8 @@ RUN a2enconf security
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
-COPY --from=backend-composer /vendor /var/www/backend/vendor/
+COPY --from=backend-composer /var/www/backend/vendor/ /var/www/backend/vendor/
 COPY backend/.htaccess /var/www/backend/
-COPY backend/autoload.php /var/www/backend/
 COPY backend/index.php /var/www/backend/
 COPY backend/initialize.php /var/www/backend/
 COPY backend/routes.php /var/www/backend/
