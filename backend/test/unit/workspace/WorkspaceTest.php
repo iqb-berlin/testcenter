@@ -55,35 +55,6 @@ class WorkspaceTest extends TestCase {
     require_once "test/unit/mock-classes/ZIPMock.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
 
-    require_once "src/helper/FileSize.class.php";
-    require_once "src/helper/Folder.class.php";
-    require_once "src/helper/FileTime.class.php";
-    require_once "src/helper/FileExt.class.php";
-    require_once "src/helper/FileID.class.php";
-    require_once "src/helper/Version.class.php";
-    require_once "src/helper/XMLSchema.class.php";
-    require_once "src/helper/JSON.class.php";
-    require_once "src/helper/TimeStamp.class.php";
-    require_once "src/exception/HttpError.class.php";
-    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-    require_once "src/data-collection/Login.class.php";
-    require_once "src/data-collection/LoginArray.class.php";
-    require_once "src/data-collection/Group.class.php";
-    require_once "src/data-collection/RequestedAttachment.class.php";
-    require_once "src/data-collection/FileData.class.php";
-    require_once "src/data-collection/FileRelation.class.php";
-    require_once "src/data-collection/FileRelationshipType.class.php";
-    require_once "src/data-collection/ExpirationState.class.php";
-    require_once "src/data-collection/ExpirationStateType.enum.php";
-    require_once "src/files/File.class.php";
-    require_once "src/files/ResourceFile.class.php";
-    require_once "src/files/XMLFile.class.php";
-    require_once "src/files/XMLFileUnit.class.php";
-    require_once "src/files/XMLFileTesttakers.class.php";
-    require_once "src/files/XMLFileBooklet.class.php";
-    require_once "src/files/XMLFileSysCheck.class.php";
-    require_once "src/workspace/WorkspaceCache.class.php";
-
     $this->vfs = VfsForTest::setUp();
 
     $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);

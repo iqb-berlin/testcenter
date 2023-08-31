@@ -7,10 +7,6 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 class FileExtTest extends TestCase {
-  public function setUp(): void {
-    require_once "src/helper/FileExt.class.php";
-  }
-
   function test_get() {
     $this->assertEquals('ddd', FileExt::get('/xxx/yyy/aaa.bbb.ccc.ddd'));
     $this->assertEquals('ccc.ddd', FileExt::get('/xxx/yyy/aaa.bbb.ccc.ddd', 1));

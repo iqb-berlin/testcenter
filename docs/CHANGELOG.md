@@ -3,15 +3,16 @@ layout: default
 ---
 
 ## [next]
-### Bugfixes
-* Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist, wurde repariert. 
-* Die Überprüfung von ablaufenden Logins (validFor) wurde repariert. 
-
 ### Performance
-* Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die 
+* Das Backend allgemein wurde performanter und resourcensparender gemacht, indem der selbst implementierte Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
+* Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
-* Es wurde ein Puffer für wegzuspeichernde Unit-States eingeführt. Damit kann ein Testcenter-Server während der 
+* Es wurde ein Puffer für wegzuspeichernde Unit-States eingeführt. Damit kann ein Testcenter-Server während der
   Durchführung entlastet werden.
+
+### Neue Features
+* In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
+  die Verwaltung zu erleichtern.  
 
 ### Sicherheit
 * Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript
@@ -26,6 +27,12 @@ layout: default
   im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
 
 # Changelog & Upgrade Information
+
+## 14.9.0
+### XML-Austausch-Formate
+* Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
+  Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
+  standards wieder entfernt werden. 
 
 ## 14.8.0
 ### Bugfixes

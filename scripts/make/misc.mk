@@ -46,26 +46,40 @@ init-env:
 composer-install:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/composer.lock \
-		-v $(CURDIR)/backend/vendor:/vendor \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
 		testcenter-backend-composer \
 		composer install --no-interaction --no-ansi
 
 composer-update:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/composer.lock \
-		-v $(CURDIR)/backend/vendor:/vendor \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
 		testcenter-backend-composer \
-		composer update --no-interaction --no-ansi
+		composer update --no-interaction --no-ansi --working-dir=/var/www/backend
+
+# use this whenever you created or renamed a class in backend to refresh the autoloader.
+backend-refresh-autoload:
+	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run \
+		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/backend/src \
+		testcenter-backend-composer \
+		composer dump-autoload --working-dir=/var/www/backend
 
 init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
 init-ensure-file-rights:
-	chmod -R 0444 scripts/database/my.cnf # mysql does not accept it otherwise
+	chmod 0444 scripts/database/my.cnf # mysql does not accept it with more rights
+	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
 
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \

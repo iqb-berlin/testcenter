@@ -3,15 +3,12 @@
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
-
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class ResourceFileTest extends TestCase {
-
-    private $fullVerona4MetaData =
+  private $fullVerona4MetaData =
     '{
       "$schema": "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json",
       "type": "player",
@@ -57,110 +54,86 @@ class ResourceFileTest extends TestCase {
       "notSupportedFeatures": ["log-policy"]
     }';
 
-    public static function setUpBeforeClass(): void {
+  public static function setUpBeforeClass(): void {
+    require_once "test/unit/VfsForTest.class.php";
+    VfsForTest::setUpBeforeClass();
+  }
 
-        require_once "test/unit/VfsForTest.class.php";
-        VfsForTest::setUpBeforeClass();
+  function setUp(): void {
+    VfsForTest::setUp();
+  }
+
+  function test_readPlayerMeta(): void {
+    $playerWithGoodData = $this->createPlayerStubV3(
+      'verona-player-very-good-1.0.html',
+      "A Very Good Player",
+      [
+        'content' => "verona-player-very-good",
+        'data-version' => "1.0.0",
+        'data-api-version' => '1.5.0',
+      ]
+    );
+
+    $this->assertEquals('verona-player-very-good', $playerWithGoodData->getVeronaModuleId());
+    $this->assertEquals('1.0.0', $playerWithGoodData->getVersion());
+    $this->assertEquals('A Very Good Player', $playerWithGoodData->getLabel());
+    $this->assertEquals('1.5.0', $playerWithGoodData->getVeronaVersion());
+    $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReport());
+    $this->assertCount(1, $playerWithGoodData->getValidationReport()['warning']);
+
+    $playerWithNoData = $this->createPlayerStubV3('nometa.html', "Player Without Meta-Information");
+
+    $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
+    $this->assertEquals('', $playerWithNoData->getVersion());
+    $this->assertEquals("Player Without Meta-Information", $playerWithNoData->getLabel());
+    $this->assertEquals('', $playerWithNoData->getVeronaVersion());
+    $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
+    $this->assertCount(2, $playerWithNoData->getValidationReport()['warning']);
+
+    $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information but version");
+
+    $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
+    $this->assertEquals('1.2.3', $playerWithNoData->getVersion());
+    $this->assertEquals("Player Without Meta-Information but version", $playerWithNoData->getLabel());
+    $this->assertEquals('', $playerWithNoData->getVeronaVersion());
+    $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
+    $this->assertCount(3, $playerWithNoData->getValidationReport()['warning']);
+
+    $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.html', $this->fullVerona4MetaData);
+
+    $this->assertEquals('verona-player-awesome', $playerWithVerona4Meta->getVeronaModuleId());
+    $this->assertEquals('4.0.0', $playerWithVerona4Meta->getVersion());
+    $this->assertEquals('Beschreibung auf Deutsch', $playerWithVerona4Meta->getDescription());
+    $this->assertEquals("Some Awesome Player", $playerWithVerona4Meta->getLabel());
+    $this->assertEquals('4.0', $playerWithVerona4Meta->getVeronaVersion());
+    $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReport());
+    $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReport());
+
+    // TODO write test for verona3.5 format
+  }
+
+  private function createPlayerStubV3(string $fileName, string $title, array $meta = []): ResourceFile {
+    $metaTag = '';
+    if (count($meta)) {
+      $metaTag = '<meta name="application-name"';
+      foreach ($meta as $key => $value) {
+        $metaTag = "$metaTag $key='$value'";
+      }
+      $metaTag = "$metaTag />";
     }
 
-    function setUp(): void {
+    $code = "<html lang='de'><head><title>$title</title>$metaTag</head><body>!</body></html>";
+    return $this->resourceFromString($fileName, $code);
+  }
 
-        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/FileData.class.php";
-        require_once "src/files/File.class.php";
-        require_once "src/files/XMLFile.class.php";
-        require_once "src/files/XMLFileBooklet.class.php";
-        require_once "src/files/ResourceFile.class.php";
-        require_once "src/helper/FileExt.class.php";
-        require_once "src/helper/FileTime.class.php";
-        require_once "src/helper/Version.class.php";
-        require_once "src/helper/JSON.class.php";
+  private function createPlayerStubV4(string $fileName, string $meta): ResourceFile {
+    $code = "<html lang='de'><head><title>!</title><script type='application/ld+json'>$meta</script></head><body>!</body></html>";
+    return $this->resourceFromString($fileName, $code);
+  }
 
-        VfsForTest::setUp();
-    }
-
-
-    function test_readPlayerMeta() {
-
-        $playerWithGoodData = $this->createPlayerStubV3(
-            'verona-player-very-good-1.0.html',
-            "A Very Good Player",
-            [
-                'content' => "verona-player-very-good",
-                'data-version' => "1.0.0",
-                'data-api-version' => '1.5.0',
-            ]
-        );
-
-        $this->assertEquals('verona-player-very-good', $playerWithGoodData->getVeronaModuleId());
-        $this->assertEquals('1.0.0', $playerWithGoodData->getVersion());
-        $this->assertEquals('A Very Good Player', $playerWithGoodData->getLabel());
-        $this->assertEquals('1.5.0', $playerWithGoodData->getVeronaVersion());
-        $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReport());
-        $this->assertCount(1, $playerWithGoodData->getValidationReport()['warning']);
-
-
-        $playerWithNoData = $this->createPlayerStubV3('nometa.html', "Player Without Meta-Information");
-
-        $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
-        $this->assertEquals('', $playerWithNoData->getVersion());
-        $this->assertEquals("Player Without Meta-Information", $playerWithNoData->getLabel());
-        $this->assertEquals('', $playerWithNoData->getVeronaVersion());
-        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
-        $this->assertCount(2, $playerWithNoData->getValidationReport()['warning']);
-
-
-        $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information but version");
-
-        $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
-        $this->assertEquals('1.2.3', $playerWithNoData->getVersion());
-        $this->assertEquals("Player Without Meta-Information but version", $playerWithNoData->getLabel());
-        $this->assertEquals('', $playerWithNoData->getVeronaVersion());
-        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
-        $this->assertCount(3, $playerWithNoData->getValidationReport()['warning']);
-
-
-        $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.html', $this->fullVerona4MetaData);
-
-        $this->assertEquals('verona-player-awesome', $playerWithVerona4Meta->getVeronaModuleId());
-        $this->assertEquals('4.0.0', $playerWithVerona4Meta->getVersion());
-        $this->assertEquals('Beschreibung auf Deutsch', $playerWithVerona4Meta->getDescription());
-        $this->assertEquals("Some Awesome Player", $playerWithVerona4Meta->getLabel());
-        $this->assertEquals('4.0', $playerWithVerona4Meta->getVeronaVersion());
-        $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReport());
-        $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReport());
-
-
-        // TODO write test for verona3.5 format
-    }
-
-
-    private function createPlayerStubV3(string $fileName, string $title, array $meta = []): ResourceFile {
-
-        $metaTag = '';
-        if (count($meta)) {
-            $metaTag = '<meta name="application-name"';
-            foreach ($meta as $key => $value) {
-                $metaTag = "$metaTag $key='$value'";
-            }
-            $metaTag = "$metaTag />";
-        }
-
-        $code = "<html lang='de'><head><title>$title</title>$metaTag</head><body>!</body></html>";
-        return $this->resourceFromString($fileName, $code);
-    }
-
-
-    private function createPlayerStubV4(string $fileName, string $meta): ResourceFile {
-        $code = "<html lang='de'><head><title>!</title><script type='application/ld+json'>$meta</script></head><body>!</body></html>";
-        return $this->resourceFromString($fileName, $code);
-    }
-
-
-    private function resourceFromString(string $fileName, string $content): ResourceFile {
-
-        $path = DATA_DIR . '/ws_1/Resource/' . $fileName;
-        file_put_contents($path, $content);
-        return new ResourceFile($path);
-    }
+  private function resourceFromString(string $fileName, string $content): ResourceFile {
+    $path = DATA_DIR . '/ws_1/Resource/' . $fileName;
+    file_put_contents($path, $content);
+    return new ResourceFile($path);
+  }
 }

@@ -94,7 +94,7 @@ if (php_sapi_name() !== 'cli') {
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 define('DATA_DIR', ROOT_DIR . '/data');
 
-require_once(ROOT_DIR . '/backend/autoload.php');
+require_once "vendor/autoload.php";
 
 try {
   $args = CLI::getOpt();

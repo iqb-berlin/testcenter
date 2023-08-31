@@ -31,7 +31,6 @@ services:
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
-      - ../backend/autoload.php:/var/www/backend/autoload.php
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
       - ../backend/routes.php:/var/www/backend/routes.php
@@ -44,7 +43,6 @@ services:
       - ../package.json:/var/www/package.json
       - ../sampledata:/var/www/sampledata
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
-      # Uncomment the following lines to enable xdebug
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
     ports:

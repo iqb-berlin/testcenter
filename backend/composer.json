@@ -28,6 +28,9 @@
     "ext-xmlreader": "*",
     "ext-zip": "*"
   },
+  "autoload": {
+    "classmap": ["src"]
+  },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^10",

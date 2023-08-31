@@ -11,13 +11,6 @@ class SuperAdminDAOTest extends TestCase {
   private WorkspaceDAO $workspaceDAO;
 
   function setUp(): void {
-    require_once "src/exception/HttpError.class.php";
-    require_once "src/data-collection/DataCollection.class.php";
-    require_once "src/data-collection/DBConfig.class.php";
-    require_once "src/helper/DB.class.php";
-    require_once "src/helper/Password.class.php";
-    require_once "src/dao/DAO.class.php";
-    require_once "src/dao/SuperAdminDAO.class.php";
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
@@ -34,7 +27,8 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = array(
       array(
         "id" => 1,
-        "name" => "example_workspace"
+        "name" => "example_workspace",
+        "latest_modification_ts" => "2023-01-16 09:00:00"
       )
     );
     $this->assertEquals($expectation, $result);
@@ -255,11 +249,13 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = [
       [
         "id" => 1,
-        "name" => "example_workspace"
+        "name" => "example_workspace",
+        "latest_modification_ts" => "2023-01-16 09:00:00"
       ],
       [
         "id" => 2,
-        "name" => "new_workspace"
+        "name" => "new_workspace",
+        "latest_modification_ts" => null
       ],
 
     ];

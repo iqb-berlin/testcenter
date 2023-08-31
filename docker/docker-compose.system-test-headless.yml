@@ -40,7 +40,6 @@ services:
     image: iqbberlin/testcenter-backend:current
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/autoload.php:/var/www/backend/autoload.php
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
       - ../backend/routes.php:/var/www/backend/routes.php
