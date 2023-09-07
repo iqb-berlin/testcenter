@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.9.1
+### Bugfixes
+* Ein kritischer Bug sorgte dafür, dass das Hochladen von Dateien sowie das Hochfahren des Systems *extrem* lange 
+  dauern konnte, wenn viele Dateien ind den Arbeitsbereichen lagen. Dieser ist behoben. 
+
 ## 14.9.0
 ### XML-Austausch-Formate
 * Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
