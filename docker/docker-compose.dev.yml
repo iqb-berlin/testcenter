@@ -28,6 +28,7 @@ services:
       target: dev
     environment:
       TESTMODE_REAL_DATA: false
+      VERSION: dev
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
@@ -90,6 +91,12 @@ services:
       - ../scripts/files-service/auth/:/usr/share/nginx/auth
     networks:
       - testcenter
+    healthcheck:
+      test: curl --fail http://localhost/health || exit 1
+      interval: 20s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
 
   testcenter-cache-service:
     ports:

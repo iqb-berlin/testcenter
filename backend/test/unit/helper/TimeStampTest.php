@@ -9,21 +9,15 @@ use PHPUnit\Framework\TestCase;
  */
 class TimeStampTest extends TestCase {
   function setUp(): void {
-    date_default_timezone_set('Europe/Berlin');
-    TimeStamp::setup();
-  }
-
-  function tearDown(): void {
-    TimeStamp::setup();
+    date_default_timezone_set(SystemConfig::$system_timezone);
   }
 
   function test_now() {
     $realNow = (new DateTime())->getTimestamp();
     $result = TimeStamp::now();
     $this->assertEquals($realNow, $result);
-
     $fakeNow = 123456789;
-    TimeStamp::setup(null, "@$fakeNow");
+    SystemConfig::$debug_useStaticTime = "@$fakeNow";
     $result = TimeStamp::now();
     $this->assertEquals($fakeNow, $result);
   }
@@ -66,7 +60,7 @@ class TimeStampTest extends TestCase {
       $this->assertEquals($exception->getCode(), 410);
     }
 
-    TimeStamp::setup(null, "@$evenBefore");
+    SystemConfig::$debug_useStaticTime = "@$evenBefore";
     try {
       TimeStamp::checkExpiration($past, $future);
       $this->fail("Exception expected - faked now is before past");
@@ -77,10 +71,12 @@ class TimeStampTest extends TestCase {
   }
 
   function test_expirationFromNow() {
-    $today = (new DateTime())->getTimestamp(); // works because test is fast and we don't count microseconds
+    $today = 1694085128; // works because test is fast and we don't count microseconds
     $past = (new DateTime('1.1.2000 12:00'))->getTimestamp();
     $future = (new DateTime('1.1.2030 12:00'))->getTimestamp();
     $aroundTwentyYears = 60 * 24 * 365 * 20;
+
+    SystemConfig::$debug_useStaticTime = "@$today";
 
     $actual = TimeStamp::expirationFromNow($future, 0);
     $this->assertEquals($future, $actual, 'expiration is 2030');
@@ -100,7 +96,7 @@ class TimeStampTest extends TestCase {
     $actual = TimeStamp::expirationFromNow($past, 0);
     $this->assertEquals($past, $actual, 'expired timestamp');
 
-    TimeStamp::setup(null, "@$past");
+    SystemConfig::$debug_useStaticTime = "@$past";
     $actual = TimeStamp::expirationFromNow($today, $aroundTwentyYears);
     $this->assertEquals(1577444400, $actual, 'was expired around 20 years after $past');
   }

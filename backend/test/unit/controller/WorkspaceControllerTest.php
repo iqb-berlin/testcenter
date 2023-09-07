@@ -51,8 +51,6 @@ final class WorkspaceControllerTest extends TestCase {
     require_once "test/unit/test-helper/ResponseCreator.class.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
 
-    XMLSchema::setup(false);
-
     $this->callable = [WorkspaceController::class, 'getReport'];
     $this->reportMock = Mockery::mock('overload:' . Report::class);
     $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
@@ -62,7 +60,7 @@ final class WorkspaceControllerTest extends TestCase {
     $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
     $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
-    define('ROOT_DIR', REAL_ROOT_DIR);
+    define('ROOT_DIR', ROOT_DIR);
   }
 
   function tearDown(): void {
@@ -354,9 +352,9 @@ final class WorkspaceControllerTest extends TestCase {
 
   function test_postFile() {
     $files = [
-      'Booklet.xml' => XMLFileBooklet::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml'),
-      'Unit2.xml' => XMLFileUnit::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml'),
-      'Testtakers.xml' => XMLFileTesttakers::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml')
+      'Booklet.xml' => XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml'),
+      'Unit2.xml' => XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml'),
+      'Testtakers.xml' => XMLFileTesttakers::fromString(file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml')
     ];
 
     $filesContents = array_reduce(

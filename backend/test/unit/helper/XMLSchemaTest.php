@@ -10,13 +10,14 @@ use PHPUnit\Framework\TestCase;
  */
 class XMLSchemaTest extends TestCase {
   public static function setUpBeforeClass(): void {
+    require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/VfsForTest.class.php";
     VfsForTest::setUpBeforeClass();
   }
 
   function setUp(): void {
     VfsForTest::setUp();
-    $this->testUrls['local_full'] = DATA_DIR . '/definitions/vo_SysCheck.xsd';
+    $this->testUrls['local_full'] = ROOT_DIR . '/definitions/vo_SysCheck.xsd';
   }
 
   function tearDown(): void {
@@ -107,6 +108,7 @@ class XMLSchemaTest extends TestCase {
   }
 
   function test_schemaCache() {
+    SystemConfig::$debug_allowExternalXmlSchema = true;
     $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid']));
     $this->assertEquals("vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", $result);
     $this->assertEquals(
@@ -114,10 +116,8 @@ class XMLSchemaTest extends TestCase {
       $this->readFirstChars($result, 66)
     );
 
-//        try {
     XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid_but_not_existing']));
-//            $this->fail("exepected exception");
-//        } catch(Exception $e) {}
+
     $this->assertTrue(file_exists("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd"));
     $this->assertTrue(filesize("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd") == 0);
 
@@ -130,14 +130,14 @@ class XMLSchemaTest extends TestCase {
     );
 
     $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['local']));
-    $this->assertEquals("vfs://root/definitions/vo_SysCheck.xsd", $result);
+    $this->assertEquals(ROOT_DIR . "/definitions/vo_SysCheck.xsd", $result);
     $this->assertEquals(
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
       $this->readFirstChars($result, 66)
     );
 
     $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['local_full']));
-    $this->assertEquals("vfs://root/definitions/vo_SysCheck.xsd", $result);
+    $this->assertEquals(ROOT_DIR . "/definitions/vo_SysCheck.xsd", $result);
     $this->assertEquals(
       "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
       $this->readFirstChars($result, 66)

@@ -9,13 +9,6 @@ echo_h1 "Long file names cause trouble. 12.3.3 should fix this finally!";
 echo_h2 "Install Version 12.3.2";
 fake_version 12.3.2
 php backend/initialize.php \
---user_name "" \
---workspace "workspace" \
---host=$MYSQL_HOST \
---port=$MYSQL_PORT \
---dbname=$MYSQL_DATABASE \
---user=$MYSQL_USER \
---password=$MYSQL_PASSWORD \
 --skip_read_workspace_files=true \
 --skip_db_integrity_check=true
 expect_init_script_ok

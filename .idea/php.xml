@@ -80,8 +80,8 @@
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" port="85" />
-      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
+      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" />
+      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" port="85" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/backend" />
         </path_mappings>
@@ -181,6 +181,15 @@
       <extension name="zend" enabled="false" />
       <extension name="zmq" enabled="false" />
     </extensions>
+  </component>
+  <component name="PhpStepFilterConfiguration">
+    <skipped_functions>
+      <skipped_function name="TimeStamp::expirationFromNow" />
+      <skipped_function name="TimeStampTest-&gt;test_expirationFromNow" />
+      <skipped_function name="PHPUnit\Framework\TestCase-&gt;runTest" />
+      <skipped_function name="PHPUnit\Framework\TestCase-&gt;runBare" />
+      <skipped_function name="PHPUnit\Framework\TestRunner-&gt;run" />
+    </skipped_functions>
   </component>
   <component name="PhpUnit">
     <phpunit_settings>

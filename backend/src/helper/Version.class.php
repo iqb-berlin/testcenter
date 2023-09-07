@@ -3,26 +3,9 @@
 declare(strict_types=1);
 
 class Version {
-  static function get(): string {
-    $composerFile = file_get_contents(ROOT_DIR . '/package.json');
-    $composerData = JSON::decode($composerFile);
-    return $composerData->version;
-  }
-
   static function asString(int $major, int $minor, int $patch, string $label): ?string {
     $version = implode('-', array_filter(["$major.$minor.$patch", $label]));
     return ($version == '0.0.0') ? null : $version;
-  }
-
-  static function getAll(): array {
-    $composerFile = file_get_contents(ROOT_DIR . '/package.json');
-    $composerData = JSON::decode($composerFile);
-    $v = "verona-player-api-versions";
-    return [
-      'version' => $composerData->version,
-      'veronaMax' => $composerData->iqb->$v->max,
-      'veronaMin' => $composerData->iqb->$v->min
-    ];
   }
 
   static function isCompatible(string $subject, ?string $object = null): bool {
@@ -31,7 +14,7 @@ class Version {
     }
 
     if (!$object) {
-      $object = Version::get();
+      $object = SystemConfig::$system_version;
     }
 
     $object = Version::split($object);
@@ -72,7 +55,7 @@ class Version {
 
   static function compare(string $subject, ?string $object = null): int {
     if (!$object) {
-      $object = Version::get();
+      $object = SystemConfig::$system_version;
     }
 
     $object = Version::split($object);

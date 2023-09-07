@@ -14,9 +14,7 @@ class TestEnvironment {
     $testClock = $testClock ?? self::staticDate;
 
     try {
-      TimeStamp::setup(null, '@' . (int) $testClock);
-      BroadcastService::setup('', '');
-      XMLSchema::setup(false);
+      SystemConfig::$debug_useStaticTime = '@' . (int) $testClock;
       self::makeRandomStatic();
       DB::connectToTestDB();
 
@@ -112,10 +110,10 @@ class TestEnvironment {
     }
   }
 
-  static function buildTestDB($rootDir = ROOT_DIR): void {
+  static function buildTestDB(): void {
     $initDAO = new InitDAO();
-    $nextPatchPath = $rootDir . '/scripts/database/patches.d/next.sql';
-    $fullSchemePath = $rootDir . '/scripts/database/full.sql';
+    $nextPatchPath = ROOT_DIR . '/scripts/database/patches.d/next.sql';
+    $fullSchemePath = ROOT_DIR . '/scripts/database/full.sql';
     $patchFileChanged = (file_exists($nextPatchPath) and (filemtime($nextPatchPath) > filemtime($fullSchemePath)));
 
     if (!file_exists($fullSchemePath) or $patchFileChanged) {
@@ -123,21 +121,21 @@ class TestEnvironment {
       return;
     }
     $initDAO->clearDB();
-    $initDAO->runFile($rootDir . '/scripts/database/full.sql');
+    $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
   }
 
-  private static function updateDataBaseScheme($rootDir = ROOT_DIR): void {
+  private static function updateDataBaseScheme(): void {
     $initDAO = new InitDAO();
     $initDAO->clearDB();
-    $initDAO->runFile($rootDir . "/scripts/database/base.sql");
-    $initDAO->installPatches($rootDir . "/scripts/database/patches.d", false);
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+    $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
 
     $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
       $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
       $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
     }
-    file_put_contents($rootDir . '/scripts/database/full.sql', $scheme);
+    file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
   }
 
   private static function rollback(): void {

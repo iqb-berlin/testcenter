@@ -100,7 +100,7 @@ class XMLFile extends File {
   }
 
   private function fallBackToCurrentSchemaVersion(string $message): void {
-    $currentVersion = Version::get();
+    $currentVersion = SystemConfig::$system_version;
     $this->report('warning', "$message Current version (`$currentVersion`) will be used instead.");
     $this->schema = XMLSchema::getLocalSchema($this->getRootTagName());
   }

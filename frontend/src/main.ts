@@ -14,10 +14,6 @@ platformBrowserDynamic(<StaticProvider[]>[
     useValue: environment.testcenterUrl
   },
   {
-    provide: 'FASTLOAD_URL',
-    useValue: environment.fastLoadUrl
-  },
-  {
     provide: 'IS_PRODUCTION_MODE',
     useValue: environment.production
   }

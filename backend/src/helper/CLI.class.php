@@ -39,7 +39,7 @@ class CLI {
       }
     }
 
-    CLI::printData(DB::getConfig());
+//    CLI::printData(SystemConfig);
     throw new Exception("Database connection failed.");
   }
 

@@ -3,7 +3,7 @@
 class Token {
   static array $staticTokens = [];
   static function generate(string $type, string $name): string {
-    if (DB::getConfig()->staticTokens) {
+    if (SystemConfig::$debug_useStaticTokens) {
 
       if (isset(self::$staticTokens[$name])) {
         self::$staticTokens[$name]++;

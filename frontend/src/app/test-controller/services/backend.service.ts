@@ -13,7 +13,6 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
 export class BackendService {
   constructor(
     @Inject('BACKEND_URL') public backendUrl: string,
-    @Inject('FASTLOAD_URL') public fastLoadUrl: string,
     private http: HttpClient,
     private mds: MainDataService
   ) {
@@ -80,10 +79,11 @@ export class BackendService {
       .subscribe();
   }
 
-  getResourceFast(workspaceId: number, path: string): Observable<LoadingFile> {
+  getResource(workspaceId: number, path: string): Observable<LoadingFile> {
+    const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.backendUrl;
     return this.http
       .get(
-        `${this.fastLoadUrl}resource/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
+        `${resourceUri}resource/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
         {
           responseType: 'text',
           reportProgress: true,

@@ -1,88 +1,13 @@
 #!/usr/bin/php
 <?php
 /**
- * # A CLI script to initialize the application.
- * It runs whenever the backend-container starts or you run `make re-init-backend`.
- * You won't have to fondle with the parameters except when you want to run th testcenter locally or such.
- *
- * It does a lot of stuff, it
- * - creates config files if missing.
- * - creates an admin user, if missing.
- * - can create a workspace with sample data..
- * - installs / updates the DB if necessary.
- *
- * ## Parameters
- * ### Initial super-admin and workspace
- *
- * If there is no admin, one will be created. You can set up credentials for him:
- * ```
- * --user_name=(super user name)
- * --user_password=(super user password)
- * ```
- *
- * If there is no workspace one (containing sample content) will be created
- * ```
- * --workspace=(workspace name)
- * ```
- *
- * Admin- and workspace-creation can be skipped by providing an empty string as for workspace respectively user_name
- *
- * ### Initialization Flags
- *
- * Remove the existing installation completely. All data will be gone!
+ * # Parameters
  * ```
  * --overwrite_existing_installation
- * ```
- * Skip database integrity check. Mostly used for testing broken installations.
- * ```
  * --skip_db_integrity_check
- * ```
- * Every file in data-dir gets re-read when starting the container in case to make sure database
- * and data-dir are always in sync. Skip this with:
- * ```
  * --skip_read_workspace_files
+ * --dont_create_sample_data
  * ```
- *
- * ### Setup database connection
- *
- * If the DB-Connection-Data-File (/config/DBConnectionData.json) shall be (re-)written, provide:
- * ```
- * --host=(mostly `localhost`)
- * --post=(usually 3306)
- * --dbname=(database name)
- * --user=(mysql-username)
- * --password=(mysql-password)
- * --salt=(an arbitrary string, optional)
- * ```
- * ### System Config
- *
- * If the the System-Config-File (/config/system.json) shall be (re-)written, provide some of the following parameters
- *
- * #### Configuring the Broadcasting-Service
- *
- * ```
- * --broadcastServiceUriPush=(address of broadcast service to push for the backend)
- * --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
- * ```
- * Add them with empty strings if you don't want to use the broadcasting-service at all.
- *
- * #### Configuring the Files-Service
- *
- * ```
- * --fileServiceUri=(address of file service)
- * ```
- * Leave out to use the backend itself as files-service.
- *
- * #### Other
- * ```
- * --allowExternalXMLSchema=[false|true]
- * ```
- *
- * ## Tipps
- * Note: run this script as a user who can create files which can be read by the webserver or
- * change file rights afterwards. For example:
- * sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
- *
  */
 
 if (php_sapi_name() !== 'cli') {
@@ -92,15 +17,21 @@ if (php_sapi_name() !== 'cli') {
 }
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
-define('DATA_DIR', ROOT_DIR . '/data');
+const DATA_DIR = ROOT_DIR . '/data';
 
 require_once "vendor/autoload.php";
 
 try {
-  $args = CLI::getOpt();
-  $installationArguments = new InstallationArguments($args);
+  $opt = CLI::getOpt();
+  $args = [
+    'overwrite_existing_installation' => isset($opt['overwrite_existing_installation']),
+    'skip_db_integrity_check' => isset($opt['skip_db_integrity_check']),
+    'skip_read_workspace_files' => isset($opt['skip_read_workspace_files']),
+    'dont_create_sample_data' => isset($opt['dont_create_sample_data'])
+  ];
 
-  $systemVersion = Version::get();
+  SystemConfig::readVersion();
+  $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
   if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
@@ -108,79 +39,49 @@ try {
   }
   file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
+  if (count($opt)) {
+    CLI::h2("Initialization Options:");
+    foreach ($args as $arg => $isset) {
+      if ($isset) {
+        CLI::p(" * $arg");
+      }
+    }
+  }
+
   CLI::h2("System-Config");
-  if (!file_exists(ROOT_DIR . '/backend/config/system.json')) {
-    CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
-
-    $sysConf = new SystemConfig($args);
-
-    BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
-
-    CLI::success("Provided arguments OK.");
-
-    if (!file_exists(ROOT_DIR . '/backend/config')) {
-      mkdir(ROOT_DIR . '/backend/config');
-      file_put_contents(ROOT_DIR . '/backend/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
-    }
-
-    if (!file_put_contents(ROOT_DIR . '/backend/config/system.json', json_encode($sysConf))) {
-      throw new Exception("Could not write file `/backend/config/system.json`. Check file permissions on `/config/`.");
-    }
-
-    CLI::p("System-Config file written.");
-
+  if (!file_exists(ROOT_DIR . '/backend/config/config.ini')) {
+    CLI::p("Config file found (`/backend/config/config.ini`). Will be created.");
+    SystemConfig::readFromEnvironment();
+    CLI::success("Config is valid.");
   } else {
-    $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
-    BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
-    CLI::p("Config file present.");
+    SystemConfig::read();
+    CLI::p("Config file present and valid.");
   }
 
-  CLI::h2("Database config");
-  if (!file_exists(ROOT_DIR . '/backend/config/DBConnectionData.json')) {
-    CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
+  CLI::h2("Check Database connection");
+  CLI::connectDBWithRetries(5);
+  SystemConfig::write();
+  CLI::p("Config file written.");
 
-    $config = new DBConfig($args); // TODO create DBConfig from environmetn instead from args
-
-    if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode($config))) {
-      throw new Exception("Could not write file. Check file permissions on `/config/`.");
-    }
-
-    try {
-      CLI::connectDBWithRetries(5);
-    } catch (Exception $e) {
-      unlink(ROOT_DIR . '/backend/config/DBConnectionData.json');
-      throw $e;
-    }
-
-    CLI::success("Provided arguments OK.");
-
-    CLI::p("Database-Config file written.");
-
-  } else {
-    CLI::connectDBWithRetries(5);
-    $config = DB::getConfig();
-    CLI::p("Config file present (and OK).");
-  }
-
-  CLI::h2("Database Settings");
+  CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();
   if (!$initDAO->checkSQLMode()) {
     throw new Exception('SQLMode is not set properly. Check the file-rights of config/my.cnf to be 444 and restart.');
   }
+  CLI::success("SQL-Mode seems to be OK.");
 
   CLI::h2("Database Structure");
-
 
   $dbStatus = $initDAO->getDbStatus();
   CLI::p("Database status: {$dbStatus['message']}");
 
-  if ($installationArguments->overwrite_existing_installation) {
+  if ($args['overwrite_existing_installation']) {
     CLI::warning("Clear database");
     $tablesDropped = $initDAO->clearDB();
     CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
   }
 
-  if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
+  if ($args['overwrite_existing_installation'] or ($dbStatus['tables'] == 'empty')) {
     CLI::p("Install basic database structure");
     $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
   }
@@ -209,7 +110,7 @@ try {
   }
 
   $newDbStatus = $initDAO->getDbStatus();
-  if (!($newDbStatus['tables'] == 'complete') and !$installationArguments->skip_db_integrity_check) {
+  if (!($newDbStatus['tables'] == 'complete') and !$args['skip_db_integrity_check']) {
     throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
   }
   $initDAO->setDBSchemaVersion($systemVersion);
@@ -224,7 +125,7 @@ try {
 
   $initializer = new WorkspaceInitializer();
 
-  if ($installationArguments->overwrite_existing_installation) {
+  if ($args['overwrite_existing_installation']) {
     foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
       $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
         return $carry + $item;
@@ -247,7 +148,7 @@ try {
       CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
     }
 
-    if (!$installationArguments->skip_read_workspace_files) {
+    if (!$args['skip_read_workspace_files']) {
       $stats = $workspace->storeAllFiles();
 
       CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
@@ -272,15 +173,15 @@ try {
     }
   }
 
-  if (!count($workspaceIds) and $installationArguments->workspace) {
-    $sampleWorkspaceId = $initDAO->createWorkspace($installationArguments->workspace);
+  if (!count($workspaceIds) and !$args['dont_create_sample_data']) {
+    $sampleWorkspaceId = $initDAO->createWorkspace('Sample Workspace');
     $sampleWorkspace = new Workspace($sampleWorkspaceId);
 
-    CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
+    CLI::success("Sample Workspace as `ws_$sampleWorkspaceId` created");
 
     $initializer->importSampleFiles($sampleWorkspaceId);
 
-    if (!$installationArguments->skip_read_workspace_files) {
+    if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
     }
 
@@ -291,15 +192,15 @@ try {
 
   CLI::h2("Sys-Admin");
 
-  if (!$initDAO->adminExists() and $installationArguments->user_name) {
+  if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
     CLI::warning("No Sys-Admin found.");
 
-    $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
-    CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
+    $adminId = $initDAO->createAdmin('super', 'user123');
+    CLI::success("Sys-Admin created: `user123`.");
 
     $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
     foreach ($workspaceIds as $workspaceId) {
-      CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
+      CLI::p("Workspace `ws_$workspaceId` added to `user123`.");
     }
 
   } else {

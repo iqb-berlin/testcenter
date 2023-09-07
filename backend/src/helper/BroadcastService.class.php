@@ -5,20 +5,8 @@ declare(strict_types=1);
 // TODO find a way to integrate this in e2e-tests
 
 class BroadcastService {
-  private static string $bsUriPush = '';
-  private static string $bsUriSubscribe = '';
-
-  static function setup(string $bsUriPush, string $bsUriSubscribe) {
-    self::$bsUriPush = $bsUriPush;
-    self::$bsUriSubscribe = $bsUriSubscribe;
-  }
-
-  static function getBsUriSubscribe() {
-    return BroadcastService::$bsUriSubscribe;
-  }
-
   static function getStatus(): string {
-    if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
+    if (!SystemConfig::$broadcastingService_internal or !SystemConfig::$broadcastingService_external) {
       return 'off';
     }
 
@@ -31,7 +19,10 @@ class BroadcastService {
     $bsToken = md5((string) rand(0, 99999999));
     $data['token'] = $bsToken;
     $response = BroadcastService::send("$channelName/register", json_encode($data));
-    $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . "/ws?token=$bsToken";
+    $url =
+      (SystemConfig::$system_tlsEnabled ? 'wss://' : 'ws://')
+      . SystemConfig::$broadcastingService_external
+      . "/ws?token=$bsToken";
     return ($response !== null) ? $url : null;
   }
 
@@ -40,14 +31,16 @@ class BroadcastService {
   }
 
   static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
-    if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
+    if (!SystemConfig::$broadcastingService_internal or !SystemConfig::$broadcastingService_external) {
       return null;
     }
 
     $curl = curl_init();
 
+    $bsUri = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://') . SystemConfig::$broadcastingService_internal;
+
     curl_setopt_array($curl, [
-      CURLOPT_URL => BroadcastService::$bsUriPush . '/' . $endpoint,
+      CURLOPT_URL => $bsUri . '/' . $endpoint,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
@@ -76,5 +69,10 @@ class BroadcastService {
     }
 
     return $curlResponse;
+  }
+
+  public static function getUri(): string {
+    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
+    return $proto . SystemConfig::$broadcastingService_external;
   }
 }

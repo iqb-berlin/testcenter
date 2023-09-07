@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 use DI\Container;
 use Slim\Factory\AppFactory;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 try {
-  date_default_timezone_set('Europe/Berlin'); // just to be safe. TimeStamp-class should be used everywhere anyway
-
   define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
 
   require_once "vendor/autoload.php";
 
+  SystemConfig::read();
+
   if (isset($_SERVER['HTTP_TESTMODE'])) {
-    TestEnvironment::setup($_SERVER['HTTP_TESTMODE'], $_SERVER['HTTP_TESTCLOCK']);
+    TestEnvironment::setup($_SERVER['HTTP_TESTMODE'], $_SERVER['HTTP_TESTCLOCK'] ?? null);
   } else { // productive
-    /* @var $config SystemConfig */
-    $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
     define('DATA_DIR', ROOT_DIR . '/data');
-    TimeStamp::setup();
-    BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
-    XMLSchema::setup($config->allowExternalXMLSchema);
-    FileService::setup($config->fileServiceUri);
+    date_default_timezone_set(SystemConfig::$system_timezone); // just to be safe. TimeStamp-class should be used everywhere anyway
     DB::connect();
   }
 

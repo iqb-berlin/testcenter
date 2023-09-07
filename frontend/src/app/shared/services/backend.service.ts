@@ -2,7 +2,7 @@ import { Observable, of, timeoutWith } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SysStatus } from '../interfaces/app-config.interfaces';
+import { SysStatus } from '../interfaces/service-status.interfaces';
 
 @Injectable({
   providedIn: 'root'

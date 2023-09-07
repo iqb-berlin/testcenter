@@ -12,20 +12,8 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 class VersionTest extends TestCase {
-  private vfsStreamDirectory $vfs;
-
-  public static function setUpBeforeClass(): void {
-    require_once "test/unit/VfsForTest.class.php";
-    VfsForTest::setUpBeforeClass();
-  }
-
   function setUp(): void {
-    $this->vfs = VfsForTest::setUp(false);
-    file_put_contents($this->vfs->url() . '/package.json', '{"version":"5.1.0"}');
-  }
-
-  function test_get() {
-    $this->assertEquals('5.1.0', Version::get());
+    SystemConfig::$system_version = '5.1.0';
   }
 
   function test_isCompatible() {

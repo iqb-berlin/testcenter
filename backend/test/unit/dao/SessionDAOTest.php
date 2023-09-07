@@ -3,12 +3,19 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+class SessionDAOExposed extends SessionDAO {
+  public function getLoginSessions(array $filters = []): array {
+    return parent::getLoginSessions($filters);
+  }
+}
+
+
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class SessionDAOTest extends TestCase {
-  private SessionDAO $dbc;
+  private SessionDAOExposed $dbc;
   private LoginSession $testLoginSession;
   private array $testDataLoginSessions;
   private PersonSession $testPersonSession;
@@ -21,12 +28,13 @@ class SessionDAOTest extends TestCase {
   function setUp(): void {
     TestDB::setUp();
     TestEnvironment::makeRandomStatic();
-    $this->dbc = new SessionDAO();
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
+    $this->dbc = new SessionDAOExposed();
+    $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
 
     $this->testLoginSession = new LoginSession(
       1,
       "login_session_token",
+      "group-token",
       new Login(
         "some_user",
         "some_pass_hash",
@@ -43,6 +51,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         1,
         "nice_token",
+        "group-token",
         new Login(
           "test",
           "",
@@ -60,6 +69,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         2,
         "expired_token",
+        "group-token",
         new Login(
           "test-expired",
           "",
@@ -77,6 +87,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         3,
         "monitor_token",
+        "group-token",
         new Login(
           "monitor",
           "",
@@ -94,6 +105,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         4,
         "test_token",
+        "group-token",
         new Login(
           "sample_user",
           "",
@@ -111,6 +123,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         5,
         "future_token",
+        "group-token",
         new Login(
           "future_user",
           "",
@@ -131,6 +144,7 @@ class SessionDAOTest extends TestCase {
       new LoginSession(
         4,
         'test_token',
+        "group-token",
         new Login(
           'sample_user',
           '',
@@ -218,6 +232,7 @@ class SessionDAOTest extends TestCase {
     $expected = new LoginSession(
       1,
       'nice_token',
+      "group-token",
       new Login(
         'test',
         '',
@@ -293,6 +308,7 @@ class SessionDAOTest extends TestCase {
     $testLoginSession = new LoginSession(
       1,
       "login_session_token",
+      "group-token",
       new Login(
         "some_user",
         "some_pass_hash",
@@ -313,6 +329,7 @@ class SessionDAOTest extends TestCase {
     $testLoginSession = new LoginSession(
       1,
       "login_session_token",
+      "group-token",
       new Login(
         "some_user",
         "some_pass_hash",
@@ -331,10 +348,11 @@ class SessionDAOTest extends TestCase {
   }
 
   function test_createOrUpdatePersonSession_withValidFor() {
-    TimeStamp::setup('Europe/Berlin', '1/1/2020 12:00');
+    SystemConfig::$debug_useStaticTime = '1/1/2020 12:00';
     $testLoginSession = new LoginSession(
       1,
       "login_session_token",
+      "group-token",
       new Login(
         "some_user",
         "some_pass_hash",
@@ -427,6 +445,7 @@ class SessionDAOTest extends TestCase {
     $expectation = new LoginSession(
       8,
       'static:login:another_one',
+      'static:group:another_group',
       $anotherLogin
     );
 

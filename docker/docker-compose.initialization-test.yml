@@ -60,6 +60,8 @@ services:
       - testcenter-initialization-test-db
     networks:
       testcenter-initialization-test:
+    ports:
+      - "85:80"
 
   testcenter-initialization-test-runner:
     container_name: testcenter-initialization-test-runner

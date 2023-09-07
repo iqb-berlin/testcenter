@@ -14,7 +14,7 @@ class TestDAOTest extends TestCase {
 
     TestDB::setUp();
     $this->dbc = new TestDAO();
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
+    $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
   function tearDown(): void {

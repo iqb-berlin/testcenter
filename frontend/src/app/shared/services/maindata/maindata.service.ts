@@ -11,7 +11,7 @@ import {
 } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
 import { BackendService } from '../backend.service';
-import { SysStatus } from '../../interfaces/app-config.interfaces';
+import { SysStatus } from '../../interfaces/service-status.interfaces';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 

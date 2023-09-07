@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MainDataService } from '../../shared/shared.module';
-import { ServiceStatus } from '../../shared/interfaces/app-config.interfaces';
+import { ServiceStatus } from '../../shared/interfaces/service-status.interfaces';
 
 @Component({
   templateUrl: './legal-notice.component.html',
@@ -20,7 +20,6 @@ export class LegalNoticeComponent implements OnInit {
   constructor(
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     @Inject('BACKEND_URL') public backendUrl: string,
-    @Inject('FASTLOAD_URL') public fastLoadUrl: string,
     public mds: MainDataService
   ) { }
 

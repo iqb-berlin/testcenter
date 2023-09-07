@@ -42,7 +42,7 @@ class WorkspaceCacheTest extends TestCase {
       $allReports["{$file->getType()}/{$file->getName()}"] = $file->getValidationReport();
     }
 
-    $version = Version::get();
+    $version = SystemConfig::$system_version;
 
     $expected = [
       'Testtakers/testtakers-duplicate-login-name.xml' => [

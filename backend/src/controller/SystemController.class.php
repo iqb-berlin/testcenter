@@ -12,7 +12,7 @@ use Slim\Routing\Route;
 
 class SystemController extends Controller {
   public static function get(Request $request, Response $response): Response {
-    return $response->withJson(['version' => Version::get()]);
+    return $response->withJson(['version' => SystemConfig::$system_version]);
   }
 
   public static function getWorkspaces(Request $request, Response $response): Response {
@@ -67,21 +67,22 @@ class SystemController extends Controller {
   }
 
   public static function getVersion(Request $request, Response $response): Response {
-    return $response->withJson(['version' => Version::get()]);
+    return $response->withJson(['version' => SystemConfig::$system_version]);
   }
 
   public static function getConfig(Request $request, Response $response): Response {
     $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
-    $version = Version::getAll(); // TODo use DB!
 
     return $response->withJson(
       [
-        'version' => $version['version'],
+        'version' => SystemConfig::$system_version,
         'customTexts' => (object) $meta['customTexts'],
         'appConfig' => (object) $meta['appConfig'],
         'baseUrl' => Server::getUrl(),
-        'veronaPlayerApiVersionMin' => $version['veronaMin'],
-        'veronaPlayerApiVersionMax' => $version['veronaMax'],
+        'veronaPlayerApiVersionMin' => SystemConfig::$system_veronaMin,
+        'veronaPlayerApiVersionMax' => SystemConfig::$system_veronaMax,
+        'fileServiceUri' => FileService::getUri(),
+        'broadcastingServiceUri' => BroadcastService::getUri()
       ]
     );
   }

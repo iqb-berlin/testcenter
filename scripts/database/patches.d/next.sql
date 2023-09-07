@@ -38,7 +38,7 @@ group by
   login_sessions.group_name, login_sessions.workspace_id, group_label;
 
 -- add new foreign key
--- so the login_session_groups table can be cleared when the data should be deleted
+-- so the login_session_groups table can be cleared when the data should be deleted.
 
 alter table login_sessions
   add constraint login_session_groups_login_sessions_group_name_fk

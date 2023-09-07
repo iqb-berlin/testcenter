@@ -399,7 +399,7 @@ class SessionDAO extends DAO {
   public function getOrCreateGroupToken(Login $login): string {
     $res = $this->_('select token from login_session_groups where group_name = ?', [$login->getGroupName()]);
 
-    if ($res['token']) {
+    if (isset($res['token'])) {
       return $res['token'];
     }
 
@@ -611,7 +611,7 @@ class SessionDAO extends DAO {
     };
   }
 
-  private function getLoginSessions(array $filters = []): array {
+  protected function getLoginSessions(array $filters = []): array {
     $logins = [];
 
     $replacements = [];

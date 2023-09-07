@@ -195,7 +195,7 @@ export class TestLoaderService {
       this.incrementTotalProgress({ progress: 100 }, `player-${sequenceId}`);
       return of(sequenceId);
     }
-    return this.bs.getResourceFast(testData.workspaceId, playerFileName)
+    return this.bs.getResource(testData.workspaceId, playerFileName)
       .pipe(
         tap((progress: LoadedFile | LoadingProgress) => {
           this.incrementTotalProgress(
@@ -254,7 +254,7 @@ export class TestLoaderService {
         .pipe(
           concatMap(queueEntry => {
             const unitContentLoading$ =
-              this.bs.getResourceFast(testData.workspaceId, queueEntry.definitionFile)
+              this.bs.getResource(testData.workspaceId, queueEntry.definitionFile)
                 .pipe(shareReplay());
 
             unitContentLoading$

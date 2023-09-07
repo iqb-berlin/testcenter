@@ -15,8 +15,8 @@ class WorkspaceDAOTest extends TestCase {
 
     TestDB::setUp();
     $this->dbc = new WorkspaceDAO(1, '/data_dir/ws_1');
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
-    define('ROOT_DIR', REAL_ROOT_DIR);
+    $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
+    define('ROOT_DIR', ROOT_DIR);
   }
 
   public function test_getGlobalIds(): void {

@@ -305,7 +305,7 @@ final class ReportTest extends TestCase {
       ]
     ]
   ];
-  const SYS_CHECK_SAMPLE_DATA_FILE = REAL_ROOT_DIR . "/sampledata/SysCheck-Report.json";
+  const SYS_CHECK_SAMPLE_DATA_FILE = ROOT_DIR . "/sampledata/SysCheck-Report.json";
 
   private int $workspaceId;
   private array $dataIds;

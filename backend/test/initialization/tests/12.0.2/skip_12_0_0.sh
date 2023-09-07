@@ -9,13 +9,6 @@ echo_h1 "Patch 12.0.2 (replacing 12.0.0) should work";
 echo_h2 "Install Version 11";
 fake_version 11.0.0
 php backend/initialize.php \
---user_name "" \
---workspace "workspace" \
---host=$MYSQL_HOST \
---port=$MYSQL_PORT \
---dbname=$MYSQL_DATABASE \
---user=$MYSQL_USER \
---password=$MYSQL_PASSWORD \
 --skip_read_workspace_files=true \
 --skip_db_integrity_check=true
 expect_init_script_ok
@@ -35,8 +28,7 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 echo_h2 "Run the update";
 fake_version 12.0.2
 php backend/initialize.php \
---user_name "" \
---workspace "" \
+--dont_create_sample_data \
 --skip_read_workspace_files=true \
 --skip_db_integrity_check=true # to maintain test's compatibility with future versions
 expect_init_script_ok

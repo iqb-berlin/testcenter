@@ -5,20 +5,17 @@ declare(strict_types=1);
 // TODO find a way to integrate this in e2e-tests
 
 class FileService {
-  private static string $uri = '';
-
-  static function setup(string $uri): void {
-    self::$uri = $uri;
-  }
-
   static function getStatus(): string {
-    if (!FileService::$uri) {
+    if (!SystemConfig::$fileService_external or !SystemConfig::$fileService_internal) {
       return 'off';
     }
 
+    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
+    $uri = $proto . SystemConfig::$fileService_internal . '/health';
+
     $curl = curl_init();
     curl_setopt_array($curl, [
-      CURLOPT_URL => FileService::$uri . '/health',
+      CURLOPT_URL => $uri,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
@@ -36,15 +33,21 @@ class FileService {
     $errorCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
     if (($errorCode === 0) or ($curlResponse === false)) {
-      error_log("FilesService responds Error on `[GET] /health`: not available");
+
+      error_log("FilesService responds Error on `[GET] $uri`: not available");
       return 'unreachable';
     }
 
     if ($errorCode >= 400) {
-      error_log("BroadcastingService responds Error on `[GET] /health`: [$errorCode] $curlResponse");
+      error_log("BroadcastingService responds Error on `[GET] $uri`: [$errorCode] $curlResponse");
       return 'unreachable';
     }
 
     return 'on';
+  }
+
+  public static function getUri(): string {
+    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
+    return $proto . SystemConfig::$fileService_external;
   }
 }

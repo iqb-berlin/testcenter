@@ -17,7 +17,7 @@ final class AdminDAOTest extends TestCase {
     TestDB::setUp();
 
     $this->dbc = new AdminDAO();
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
+    $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
   function tearDown(): void {
@@ -248,6 +248,7 @@ final class AdminDAOTest extends TestCase {
     $expectation = [
       [
         'groupName' => 'sample_group',
+        'groupLabel' => 'Sample Group',
         'bookletsStarted' => 2,
         'numUnitsMin' => 0,
         'numUnitsMax' => 2,
@@ -257,6 +258,7 @@ final class AdminDAOTest extends TestCase {
       ],
       [
         'groupName' => 'review_group',
+        'groupLabel' => 'Review Group',
         'bookletsStarted' => 1,
         'numUnitsMin' => 1,
         'numUnitsMax' => 1,
@@ -275,6 +277,7 @@ final class AdminDAOTest extends TestCase {
     $expectation = [
       [
       'groupName' => 'sample_group',
+      'groupLabel' => 'Sample Group',
       'bookletsStarted' => 3,
       'numUnitsMin' => 0,
       'numUnitsMax' => 2,
@@ -284,6 +287,7 @@ final class AdminDAOTest extends TestCase {
       ],
       [
         'groupName' => 'review_group',
+        'groupLabel' => 'Review Group',
         'bookletsStarted' => 1,
         'numUnitsMin' => 1,
         'numUnitsMax' => 1,

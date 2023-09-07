@@ -4,20 +4,11 @@ declare(strict_types=1);
 // TODO unit Test
 
 class TimeStamp {
-  private static string $now = 'now';
-  private static string $timeZone = 'Europe/Berlin';
-  private static string $format = 'd/m/Y H:i';
-
-  static public function setup(?string $timezone = null, ?string $now = null): void {
-    self::$timeZone = $timezone ?? 'Europe/Berlin';
-    self::$now = $now ?? 'now';
-  }
-
   static public function expirationFromNow(int $validToTimestamp = 0, int $validForMinutes = 0): int {
-    $timeZone = new DateTimeZone(self::$timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
 
     if ($validForMinutes > 0) {
-      $validToFromNowOn = new DateTime(self::$now, $timeZone);
+      $validToFromNowOn = new DateTime(self::nowString(), $timeZone);
       $validToFromNowOn->modify("+ $validForMinutes minutes");
     }
 
@@ -46,28 +37,28 @@ class TimeStamp {
       case ExpirationStateType::Expired:
         $validTo = self::asDateTime($validToTimestamp);
         throw new HttpError(
-          "Testing Period for this login is over since {$validTo->format(self::$format)}",
+          "Testing Period for this login is over since {$validTo->format(SystemConfig::$language_dateFormat)}",
           410
         );
       case ExpirationStateType::Scheduled:
         $validFrom = self::asDateTime($validFromTimestamp);
         throw new HttpError(
-          "Testing Period for this login has not yet started and will begin at {$validFrom->format(self::$format)}",
+          "Testing Period for this login has not yet started and will begin at {$validFrom->format(SystemConfig::$language_dateFormat)}",
           401
         );
     }
   }
 
   static private function asDateTime(int $timestamp): DateTime {
-    $timeZone = new DateTimeZone(self::$timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
     $dateTime = new DateTime("now", $timeZone);
     $dateTime->setTimestamp($timestamp);
     return $dateTime;
   }
 
   static public function isExpired(int $validFromTimestamp = 0, int $validToTimestamp = 0): ExpirationState {
-    $timeZone = new DateTimeZone(self::$timeZone);
-    $now = new DateTime(self::$now, $timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
+    $now = new DateTime(self::nowString(), $timeZone);
 
     if ($validToTimestamp > 0) {
       $validTo = self::asDateTime($validToTimestamp);
@@ -91,7 +82,7 @@ class TimeStamp {
       return 0;
     }
 
-    $timeZone = new DateTimeZone(self::$timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
 
     // TODO remove this workaround. problem: date is stored in differently ways in table admintokens and others
     if (is_numeric($sqlFormatTimestamp) and ((int) $sqlFormatTimestamp > 1000000)) {
@@ -109,7 +100,7 @@ class TimeStamp {
       return null;
     }
 
-    $timeZone = new DateTimeZone(self::$timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
     $dateTime = new DateTime('now', $timeZone);
     $dateTime->setTimestamp($timestamp);
     return $dateTime->format("Y-m-d H:i:s");
@@ -120,14 +111,20 @@ class TimeStamp {
       return 0;
     }
 
-    $timeZone = new DateTimeZone(self::$timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
     $dateTime = DateTime::createFromFormat("d/m/Y H:i", $xmlFormatTimestamp, $timeZone);
     return $dateTime ? $dateTime->getTimestamp() : 0;
   }
 
   static public function now(): int {
-    $timeZone = new DateTimeZone(self::$timeZone);
-    $dateTime = new DateTime(self::$now, $timeZone);
+    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
+    $dateTime = new DateTime(self::nowString(), $timeZone);
     return $dateTime->getTimestamp();
+  }
+
+  static private function nowString(): string {
+    return (isset(SystemConfig::$debug_useStaticTime) and (SystemConfig::$debug_useStaticTime))
+      ? SystemConfig::$debug_useStaticTime
+      : 'now';
   }
 }

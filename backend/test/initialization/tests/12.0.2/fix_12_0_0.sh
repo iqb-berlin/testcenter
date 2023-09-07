@@ -9,13 +9,6 @@ echo_h1 "Original patch 12.0.0 vom Testcenter 12.0.0 might break, revised Patch 
 echo_h2 "Install Version 11";
 fake_version 11.0.0
 php backend/initialize.php \
---user_name "" \
---workspace "workspace" \
---host=$MYSQL_HOST \
---port=$MYSQL_PORT \
---dbname=$MYSQL_DATABASE \
---user=$MYSQL_USER \
---password=$MYSQL_PASSWORD \
 --skip_read_workspace_files=true \
 --skip_db_integrity_check=true
 expect_init_script_ok
@@ -34,16 +27,15 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 
 echo_h2 "do the bogus update";
 fake_version 12.0.0
-cp backend/test/initialization/data/broken-12.0.0-patch.sql database/patches.d/12.0.0.sql
+cp backend/test/initialization/data/broken-12.0.0-patch.sql scripts/database/patches.d/12.0.0.sql
 php backend/initialize.php \
---user_name "" \
---workspace "" \
+--dont_create_sample_data \
 --skip_read_workspace_files=true \
---skip_db_integrity_check=true # to maintain test's compatibility with future versions
+--skip_db_integrity_check=true
 expect_init_script_failed
 expect_table_to_have_rows unit_data 0 # second part of the patch failed
 expect_table_to_have_rows units 2
-rm database/patches.d/12.0.0.sql
+rm scripts/database/patches.d/12.0.0.sql
 
 
 echo_h2 "In the mean time the testcenter could be used!"
@@ -58,10 +50,9 @@ echo "INSERT INTO unit_data (unit_id, part_id, content, ts, response_type) VALUE
 echo_h2 "Run the update which should fix everything";
 fake_version 12.0.2
 php backend/initialize.php \
---user_name "" \
---workspace "" \
+--dont_create_sample_data \
 --skip_read_workspace_files=true \
---skip_db_integrity_check=true # to maintain test's compatibility with future versions
+--skip_db_integrity_check=true
 expect_init_script_ok
 expect_table_to_have_rows unit_data 4
 expect_table_to_have_rows units 3

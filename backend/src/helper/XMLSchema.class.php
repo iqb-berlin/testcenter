@@ -3,12 +3,6 @@
 declare(strict_types=1);
 
 class XMLSchema {
-  private static bool $allowExternalXMLSchema = true;
-
-  static function setup(bool $allowExternalXMLSchema): void {
-    self::$allowExternalXMLSchema = $allowExternalXMLSchema;
-  }
-
   // TODO use defined class instead of plain array
   static function parseSchemaUrl(string $schemaUri): ?array {
     $regex = '#^(http)?.*?((\d+).(\d+).(\d+)(-\S*)?)?/definitions/v?o?_?(\S*).xsd$#';
@@ -31,7 +25,7 @@ class XMLSchema {
       "uri" => $schemaUri
     ];
 
-    if ($schemaData['version'] and $schemaData['type'] and ($schemaData['version'] === Version::get())) {
+    if ($schemaData['version'] and $schemaData['type'] and ($schemaData['version'] === SystemConfig::$system_version)) {
       return XMLSchema::getLocalSchema($schemaData['type']);
     }
 
@@ -43,7 +37,7 @@ class XMLSchema {
       throw new Exception("Unknown XML type: `$type`");
     }
 
-    $currentVersion = Version::get();
+    $currentVersion = SystemConfig::$system_version;
     $schemaData = Version::split($currentVersion);
     $schemaData["version"] = $currentVersion;
     $schemaData["isExternal"] = false;
@@ -58,7 +52,7 @@ class XMLSchema {
       return '';
     }
 
-    if (!self::$allowExternalXMLSchema or !$schemaData['isExternal']) {
+    if (!SystemConfig::$debug_allowExternalXmlSchema or !$schemaData['isExternal']) {
       return XMLSchema::accessDefinitionsDir($schemaData);
     } else {
       return XMLSchema::accessSchemaCache($schemaData);

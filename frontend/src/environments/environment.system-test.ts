@@ -1,5 +1,4 @@
 export const environment = {
   production: false,
-  testcenterUrl: 'http://testcenter-system-test-backend/',
-  fastLoadUrl: '/fs/'
+  testcenterUrl: 'http://testcenter-system-test-backend/'
 };

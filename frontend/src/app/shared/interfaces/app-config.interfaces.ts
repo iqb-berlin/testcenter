@@ -16,8 +16,6 @@ export interface AppSettingsObject {
 
 export type AppSettings = AppSettingsObject | Record<string, never>;
 
-export type ServiceStatus = 'on' | 'off' | 'unreachable' | 'unknown';
-
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
@@ -25,11 +23,8 @@ export interface SysConfig {
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
-}
-
-export interface SysStatus {
-  broadcastingService: ServiceStatus;
-  fileService: ServiceStatus;
+  broadcastingServiceUri: string;
+  fileServiceUri: string;
 }
 
 export const DEFAULT_LOGO = 'assets/IQB-LogoA.png';

@@ -7,15 +7,8 @@ echo_h1 "The patch 12.0.0 was unstable and might break on some data. The replaci
 echo_h2 "Install Version 11";
 fake_version 11.0.0
 php backend/initialize.php \
---user_name "" \
---workspace "workspace" \
---host=$MYSQL_HOST \
---port=$MYSQL_PORT \
---dbname=$MYSQL_DATABASE \
---user=$MYSQL_USER \
---password=$MYSQL_PASSWORD \
---skip_read_workspace_files=true \
---skip_db_integrity_check=true
+--skip_read_workspace_files \
+--skip_db_integrity_check
 expect_init_script_ok
 
 
@@ -29,18 +22,17 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 
 echo_h2 "The bogus patch should work, because there is no problematic data";
 fake_version 12.0.0
-cp backend/test/initialization/data/broken-12.0.0-patch.sql database/patches.d/12.0.0.sql
+cp backend/test/initialization/data/broken-12.0.0-patch.sql scripts/database/patches.d/12.0.0.sql
 php backend/initialize.php \
---user_name "" \
---workspace "" \
---skip_read_workspace_files=true \
---skip_db_integrity_check=true # to maintain test's compatibility with future versions
+--dont_create_sample_data \
+--skip_read_workspace_files \
+--skip_db_integrity_check
 expect_init_script_ok
 expect_table_to_have_rows unit_data 2
 expect_table_to_have_rows units 2
 expect_sql_to_return "select column_name from information_schema.columns WHERE table_name='units'" '[["id"],["name"],["booklet_id"],["laststate"]]'
 expect_sql_to_return "select content from unit_data order by unit_id" '[["old responses"],["old responses"]]'
-rm database/patches.d/12.0.0.sql
+rm scripts/database/patches.d/12.0.0.sql
 
 
 echo_h2 "Assume further usage of the testcenter"
@@ -58,10 +50,9 @@ expect_sql_to_return "select content from unit_data order by unit_id" '[["new re
 echo_h2 "Running the update containing the revised patch should not affect the data";
 fake_version 12.0.2
 php backend/initialize.php \
---user_name "" \
---workspace "" \
---skip_read_workspace_files=true \
---skip_db_integrity_check=true # to maintain test's compatibility with future versions
+--dont_create_sample_data \
+--skip_read_workspace_files \
+--skip_db_integrity_check
 expect_init_script_ok
 expect_table_to_have_rows unit_data 4
 expect_table_to_have_rows units 3

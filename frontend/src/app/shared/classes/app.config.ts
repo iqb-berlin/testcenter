@@ -5,7 +5,6 @@ import customTextsDefaultJSON from '../../../../../definitions/custom-texts.json
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
-  ServiceStatus,
   DEFAULT_BACKGROUND_BODY,
   DEFAULT_BACKGROUND_BOX,
   DEFAULT_LOGO,
@@ -39,6 +38,8 @@ export class AppConfig {
   cts: CustomtextService | null = null;
   bugReportAuth: string = '';
   bugReportTarget: string = '';
+  broadcastingServiceUri: string = '';
+  fileServiceUri: string = '';
 
   get warningMessage(): string {
     if (this.globalWarningExpiredDay) {
@@ -63,6 +64,8 @@ export class AppConfig {
       this.version = sysConfig.version;
       this.veronaPlayerApiVersionMin = sysConfig.veronaPlayerApiVersionMin;
       this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
+      this.broadcastingServiceUri = sysConfig.broadcastingServiceUri;
+      this.fileServiceUri = sysConfig.fileServiceUri;
     } else {
       this.setCustomTexts({});
       this.setAppConfig({});

@@ -25,8 +25,7 @@
 /backend/auth.json
 
 # backend config (when running locally)
-/backend/config/DBConnectionData.json
-/backend/config/system.json
+/backend/config/config.ini
 /.htaccess
 
 # frontend config

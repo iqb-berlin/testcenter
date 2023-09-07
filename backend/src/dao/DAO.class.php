@@ -6,6 +6,7 @@ class DAO {
   const tables = [ // because we use different types of DB is difficult to get table list by command
     'users',
     'workspaces',
+    'login_session_groups',
     'login_sessions',
     'person_sessions',
     'tests',
@@ -27,8 +28,8 @@ class DAO {
 
   protected ?PDO $pdoDBhandle = null;
   protected int $timeUserIsAllowedInMinutes = 600;
-  protected ?string $passwordSalt = 't';
-  protected bool $insecurePasswords = false;
+  protected ?string $passwordSalt = 't'; // TODO remove and use SystemConfig
+  protected bool $insecurePasswords = false; // TODO remove and use SystemConfig
   protected ?int $lastAffectedRows = null;
 
   public function __construct() {
@@ -36,8 +37,8 @@ class DAO {
 
     $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $this->passwordSalt = DB::getConfig()->salt;
-    $this->insecurePasswords = DB::getConfig()->insecurePasswords;
+    $this->passwordSalt = SystemConfig::$password_salt;
+    $this->insecurePasswords = SystemConfig::$debug_useInsecurePasswords;
   }
 
   public function __destruct() {
