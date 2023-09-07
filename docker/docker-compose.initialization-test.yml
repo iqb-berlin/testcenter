@@ -25,6 +25,10 @@ services:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 1s
+      retries: 60
     ports:
       - "9091:3306"
       - "22:22"
@@ -58,7 +62,8 @@ services:
       - ../sampledata:/var/www/sampledata
       - ../scripts/database:/var/www/scripts/database
     depends_on:
-      - testcenter-initialization-test-db
+      testcenter-initialization-test-db:
+        condition: service_healthy
     networks:
       testcenter-initialization-test:
 
