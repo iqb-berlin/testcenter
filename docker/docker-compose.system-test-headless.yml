@@ -28,7 +28,7 @@ services:
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 1s
-      retries: 60
+      retries: 120
     networks:
       - testcenter-system-test
 
