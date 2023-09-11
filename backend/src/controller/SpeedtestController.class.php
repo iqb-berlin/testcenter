@@ -19,12 +19,7 @@ class SpeedtestController extends Controller {
       throw new HttpError("Unsupported test size ($size)", 406);
     }
 
-    $package = '';
-
-    $allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    while ($size-- > 1) {
-      $package .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
-    }
+    $package = str_repeat('a', $size - 1);
     $package .= '=';
 
     $response->getBody()->write($package);
