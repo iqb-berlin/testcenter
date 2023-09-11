@@ -126,4 +126,4 @@ networks:
     name: testcenter-system-test
     driver: bridge
     driver_opts:
-      com.docker.network.driver.mtu: $DOCKER_DAEMON_MTU
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}
