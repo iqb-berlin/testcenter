@@ -50,7 +50,7 @@ build-backend:
         - e2e/**/*
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -71,7 +71,7 @@ build-frontend:
         - e2e/**/*
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -92,7 +92,7 @@ build-broadcasting-service:
         - e2e/**/*
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -113,7 +113,7 @@ test-backend-unit:
     - build-backend
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -134,7 +134,7 @@ test-frontend-unit:
     - build-frontend
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init-env
@@ -155,7 +155,7 @@ test-broadcasting-service-unit:
     - build-broadcasting-service
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init-env
@@ -181,7 +181,7 @@ test-e2e:
     - build-broadcasting-service
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - docker load -i frontend_image.tar
@@ -206,7 +206,7 @@ test-backend-api:
     - build-backend
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -222,7 +222,7 @@ test-backend-initialization:
     - build-backend
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -237,7 +237,7 @@ build-backend-prod:
       - .trivycache/
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -263,7 +263,7 @@ build-frontend-prod:
       - .trivycache/
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
@@ -291,7 +291,7 @@ build-broadcasting-service-prod:
       - .trivycache/
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
@@ -316,7 +316,7 @@ generate-docs:
     - if: "$CI_COMMIT_TAG"
   before_script:
     - ip a | grep mtu
-    - docker network inspect testcenter | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
