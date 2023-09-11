@@ -4,6 +4,17 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+###  XML-Austausch-Formate
+* In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für 
+  die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich 
+  mittelfristig zugunsten einer JSON-basierten aufgegeben. d
+
+### Bugfixes
+* Ein kritischer Bug sorgte dafür, dass das Hochladen von Dateien sowie das Hochfahren des Systems *extrem* lange 
+  dauern konnte, wenn viele Dateien in den Arbeitsbereichen lagen. Dieser ist behoben.
+* Für das Einlesen der Workspaces beim Hochfahren des Testcenters wurde mehr Speicher freigegeben. 
+
 ## 14.9.0
 ### XML-Austausch-Formate
 * Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
