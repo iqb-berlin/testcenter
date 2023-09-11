@@ -22,6 +22,13 @@
       <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/data-DEBUG" />
+      <excludeFolder url="file://$MODULE_DIR$/data-TEST" />
+      <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/downloads" />
+      <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/results" />
+      <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/screenshots" />
+      <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/videos" />
+      <excludeFolder url="file://$MODULE_DIR$/testcenter-scripts" />
     </content>
     <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="inheritedJdk" />
