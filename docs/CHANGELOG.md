@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.10.0
 ###  XML-Austausch-Formate
 * In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für 
   die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich 
