@@ -15,7 +15,6 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/backend/config" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/dist" />
@@ -29,6 +28,9 @@
       <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/screenshots" />
       <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/videos" />
       <excludeFolder url="file://$MODULE_DIR$/testcenter-scripts" />
+      <excludeFolder url="file://$MODULE_DIR$/data-BACKUP" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/node_modules" />
     </content>
     <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="inheritedJdk" />
