@@ -25,6 +25,10 @@ services:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 1s
+      retries: 120
     ports:
       - "9091:3306"
       - "22:22"
@@ -38,7 +42,7 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
-    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
+    entrypoint: [ "bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
@@ -57,7 +61,8 @@ services:
       - ../sampledata:/var/www/sampledata
       - ../scripts/database:/var/www/scripts/database
     depends_on:
-      - testcenter-initialization-test-db
+      testcenter-initialization-test-db:
+        condition: service_healthy
     networks:
       testcenter-initialization-test:
 
@@ -89,3 +94,6 @@ services:
 networks:
   testcenter-initialization-test:
     name: testcenter-initialization-test
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}

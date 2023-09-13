@@ -1,0 +1,1 @@
+alter table files modify validation_report longtext null;
