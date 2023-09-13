@@ -20,6 +20,7 @@ test-backend-unit-coverage:
 # Performs Api-Tests
 test-backend-api:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d testcenter-db testcenter-backend
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs
 	make run-task-runner task=backend:api-test
 
 # Performs a tests suite from the initialization tests.

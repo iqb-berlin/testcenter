@@ -36,6 +36,10 @@ services:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_INITDB_SKIP_TZINFO: 'true'
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 1s
+      retries: 120
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -53,7 +57,8 @@ services:
       HOSTNAME: ${HOSTNAME}
       TLS_ENABLED: ${TLS_ENABLED}
     depends_on:
-      - testcenter-db
+      testcenter-db:
+        condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
@@ -137,3 +142,6 @@ volumes:
 networks:
   testcenter:
     name: testcenter
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}

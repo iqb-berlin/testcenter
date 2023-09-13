@@ -25,6 +25,10 @@ services:
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     command:
       - --log_error_verbosity=1
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 1s
+      retries: 120
     networks:
       - testcenter-system-test
 
@@ -53,7 +57,8 @@ services:
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
       - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug
     depends_on:
-      - testcenter-system-test-db
+      testcenter-system-test-db:
+        condition: service_healthy
     networks:
       - testcenter-system-test
 
@@ -102,3 +107,6 @@ services:
 
 networks:
   testcenter-system-test:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}

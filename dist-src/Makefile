@@ -2,7 +2,7 @@ run:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml up --abort-on-container-exit
 
 run-detached:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --abort-on-container-exit
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 stop:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml stop

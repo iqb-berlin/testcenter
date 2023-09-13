@@ -16,6 +16,8 @@ if (php_sapi_name() !== 'cli') {
   exit(1);
 }
 
+ini_set('memory_limit', '1G');
+
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 const DATA_DIR = ROOT_DIR . '/data';
 

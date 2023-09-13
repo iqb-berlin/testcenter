@@ -10,10 +10,11 @@ gemnasium-dependency_scanning:
 image: docker:23.0
 
 variables:
- DOCKER_TLS_CERTDIR: ""
+  DOCKER_TLS_CERTDIR: ""
 
 services:
- - docker:23.0-dind
+  - name: docker:23.0-dind
+    command: [ "--mtu=1442" ]
 
 stages:
   - build
@@ -23,30 +24,33 @@ stages:
 .backend-change:
   rules:
     - changes:
-      - backend/**/*
-      - database/**/*
-      - definitions/**/*
+        - backend/**/*
+        - database/**/*
+        - definitions/**/*
 
 .frontend-change:
   rules:
     - changes:
-      - frontend/**/*
-      - common/**/*
+        - frontend/**/*
+        - common/**/*
 
 .bs-change:
   rules:
     - changes:
-      - broadcasting-service/**/*
-      - common/**/*
+        - broadcasting-service/**/*
+        - common/**/*
 
 build-backend:
   stage: build
   rules:
-    - !reference [.backend-change, rules]
+    - !reference [ .backend-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
     - changes:
-      - e2e/**/*
+        - e2e/**/*
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -60,11 +64,14 @@ build-backend:
 build-frontend:
   stage: build
   rules:
-    - !reference [.frontend-change, rules]
+    - !reference [ .frontend-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
     - changes:
-      - e2e/**/*
+        - e2e/**/*
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -78,11 +85,14 @@ build-frontend:
 build-broadcasting-service:
   stage: build
   rules:
-    - !reference [.bs-change, rules]
+    - !reference [ .bs-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
     - changes:
         - e2e/**/*
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -96,11 +106,14 @@ build-broadcasting-service:
 test-backend-unit:
   stage: test
   rules:
-    - !reference [.backend-change, rules]
+    - !reference [ .backend-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-backend
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -114,11 +127,14 @@ test-backend-unit:
 test-frontend-unit:
   stage: test
   rules:
-    - !reference [.frontend-change, rules]
+    - !reference [ .frontend-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-frontend
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init-env
@@ -133,10 +149,13 @@ test-frontend-unit:
 test-broadcasting-service-unit:
   stage: test
   rules:
-    - !reference [.bs-change, rules]
+    - !reference [ .bs-change, rules ]
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-broadcasting-service
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init-env
@@ -151,37 +170,43 @@ test-e2e:
   stage: test
   allow_failure: true
   rules:
-   - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-   - if: "$CI_COMMIT_TAG"
-   - !reference [.frontend-change, rules]
-   - changes:
-     - e2e/**/*
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - !reference [ .frontend-change, rules ]
+    - changes:
+        - e2e/**/*
   dependencies:
-   - build-frontend
-   - build-backend
-   - build-broadcasting-service
+    - build-frontend
+    - build-backend
+    - build-broadcasting-service
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
-   - apk add make
-   - docker load -i frontend_image.tar
-   - docker load -i backend_image.tar
-   - docker load -i bs_image.tar
-   - make init
-   - make test-system-headless
+    - apk add make
+    - docker load -i frontend_image.tar
+    - docker load -i backend_image.tar
+    - docker load -i bs_image.tar
+    - make init
+    - make test-system-headless
   artifacts:
-   when: always
-   paths:
-     - e2e/cypress/videos/**/*.mp4
-     - e2e/cypress/screenshots/**/*.png
-   expire_in: 30 minutes
+    when: always
+    paths:
+      - e2e/cypress/videos/**/*.mp4
+      - e2e/cypress/screenshots/**/*.png
+    expire_in: 30 minutes
 
 test-backend-api:
   stage: test
   rules:
-    - !reference [.backend-change, rules]
+    - !reference [ .backend-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-backend
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -195,6 +220,9 @@ test-backend-initialization:
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-backend
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -207,6 +235,9 @@ build-backend-prod:
   cache:
     paths:
       - .trivycache/
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
@@ -230,6 +261,9 @@ build-frontend-prod:
   cache:
     paths:
       - .trivycache/
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
@@ -255,6 +289,9 @@ build-broadcasting-service-prod:
   cache:
     paths:
       - .trivycache/
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
@@ -277,6 +314,9 @@ generate-docs:
   stage: build
   rules:
     - if: "$CI_COMMIT_TAG"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init

@@ -46,24 +46,14 @@ class WorkspaceDAO extends DAO {
       true
     );
 
-    return array_reduce(
-      $globalIds,
-      function($agg, $globalId) {
-        if (!isset($agg[$globalId['workspace_id']])) {
-          $agg[$globalId['workspace_id']] = [];
-        }
-        if (!isset($agg[$globalId['workspace_id']][$globalId['source']])) {
-          $agg[$globalId['workspace_id']][$globalId['source']] = [];
-        }
-        if (!isset($agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']])) {
-          $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']] = [];
-        }
-        $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']][] = $globalId['id'];
-        $agg[$globalId['workspace_id']]['/name/'] = $globalId['workspace_name'];
-        return $agg;
-      },
-      []
-    );
+    $arr = [];
+
+    foreach ($globalIds as $globalId) {
+      $arr[$globalId['workspace_id']][$globalId['source']][$globalId['type']][] = $globalId['id'];
+      $arr[$globalId['workspace_id']]['/name/'] = $globalId['workspace_name'];
+    }
+
+    return $arr;
   }
 
   /**
