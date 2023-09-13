@@ -42,11 +42,16 @@ try {
     $app->setBasePath($projectPath);
   }
 
-  $app->options('/{routes:.+}', function(Request $request, Response $response) {
+  $app->options('/{routes:.+}', function(Request $request, Response $response): Response {
     return $response;
   });
 
   include_once 'routes.php';
+
+  $app->any('/{path:.*}', function (Request $request, Response $response): Response {
+    return $response
+      ->withStatus(404);
+  });
 
   $app->run();
 
