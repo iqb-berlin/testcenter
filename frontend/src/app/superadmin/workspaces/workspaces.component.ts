@@ -19,7 +19,7 @@ import { IdAndName, IdRoleData } from '../superadmin.interfaces';
 })
 export class WorkspacesComponent implements OnInit {
   workspaces: MatTableDataSource<IdAndName> = new MatTableDataSource<IdAndName>();
-  displayedColumns = ['selectCheckbox', 'name'];
+  displayedColumns = ['selectCheckbox', 'name', 'modification_timestamp'];
   tableSelectionCheckbox = new SelectionModel<IdAndName>(true, []);
   tableSelectionRow = new SelectionModel<IdAndName>(false, []);
   selectedWorkspaceId = 0;

@@ -30,6 +30,10 @@ services:
     user: root
     command:
       - --log_error_verbosity=1
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 1s
+      retries: 120
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
@@ -51,7 +55,6 @@ services:
       WORKSPACE_NAME: example_workspace
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/autoload.php:/var/www/backend/autoload.php
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
       - ../backend/routes.php:/var/www/backend/routes.php
@@ -73,7 +76,8 @@ services:
     networks:
       - testcenter-system-test
     depends_on:
-      - testcenter-system-test-db
+      testcenter-system-test-db:
+        condition: service_healthy
 
   testcenter-system-test-frontend:
     container_name: testcenter-system-test-frontend
@@ -119,3 +123,6 @@ services:
 networks:
   testcenter-system-test:
     name: testcenter-system-test
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}

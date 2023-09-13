@@ -209,7 +209,7 @@ CREATE TABLE `files` (
   `verona_version` varchar(12) COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `verona_module_id` varchar(50) COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `is_valid` tinyint(1) NOT NULL,
-  `validation_report` text COLLATE utf8mb3_german2_ci,
+  `validation_report` longtext COLLATE utf8mb3_german2_ci,
   `modification_ts` timestamp NOT NULL,
   `size` int NOT NULL,
   `context_data` text COLLATE utf8mb3_german2_ci,

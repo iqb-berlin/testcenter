@@ -3,28 +3,46 @@ layout: default
 ---
 
 ## [next]
-### Bugfixes
-* Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist wurde repariert. 
-* Die Überprüfung von ablaufenden Logins (validFor) wurde repariert. 
-
 ### Performance
-* Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
-  Durchführung entlastet werden.
+* Das Backend allgemein wurde performanter und resourcen-sparendergemacht, indem der selbst implementierte Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
+
+### Neue Features
+* In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
+  die Verwaltung zu erleichtern.  
 
 # Changelog & Upgrade Information
+
+## 14.10.0
+###  XML-Austausch-Formate
+* In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für 
+  die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich 
+  mittelfristig zugunsten einer JSON-basierten aufgegeben. d
+
+### Bugfixes
+* Ein kritischer Bug sorgte dafür, dass das Hochladen von Dateien sowie das Hochfahren des Systems *extrem* lange 
+  dauern konnte, wenn viele Dateien in den Arbeitsbereichen lagen. Dieser ist behoben.
+* Für das Einlesen der Workspaces beim Hochfahren des Testcenters wurde mehr Speicher freigegeben.
+* Ein kritischer Fehler im Netzwerkgeschwindigkeitstest wurde behoben.
+
+## 14.9.0
+### XML-Austausch-Formate
+* Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
+  Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
+  standards wieder entfernt werden. 
 
 ## 14.8.0
 ### Bugfixes
 * Wiederherstellen gelöschter Logins auf anderem Workspace wird verhindert: Hatte man einen Login gelöscht, die damit
   erhobenen Daten jedoch nicht, und hatte man anschließend einen gleichlautenden login auf einem anderen workspace
   erstellt, so wurde dieser mit den Daten und Booklets des alten verbunden. Dies ist nun behoben. 
-* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt dazu, dass man z. B. eine Unit-xml und die dazugehörige 
-  voud-Datei gleichzeitig hochladen kann.
-* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
+* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt 
+  dazu, dass man z. B. eine Unit-xml und die dazugehörige voud-Datei gleichzeitig hochladen kann.
+* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. 
+  Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
 
 ### Änderungen
-* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur Testheft-Übersicht weitergeleitet. 
-  Stattdessen wird das Testheft direkt gestartet.
+* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur 
+  Testheft-Übersicht weitergeleitet. Stattdessen wird das Testheft direkt gestartet.
 
 ## 14.7.0
 ### Neue Features
@@ -47,20 +65,20 @@ layout: default
   mitgesteuert. Wenn vor dieser Änderung beispielsweise alle Teilnehmer in den zweiten Block geschoben worden sind,
   starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
   hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
-  werden aber nicht automatisch mitselektiert, damit sie anwählen und wieder entsperren kann.
+  werden aber nicht automatisch mitselektiert, damit man sie anwählen und wieder entsperren kann.
 
 ### Neue Features
 * Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
-  Der Standart ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
+  Der Standard ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
   Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
 
 ### Sicherheit
 * Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
-* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitsheitslücke behoben.  
+* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitslücke behoben.  
 
 ### Bugfixes
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
-* Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
+* Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein Test mehr gestartet werden,
   ohne dass die Seite neu geladen wurde. Dies ist behoben.
 * Nachrichten im Seiten-panel des Gruppen-Monitors verschwinden wieder nach einiger Zeit.
 

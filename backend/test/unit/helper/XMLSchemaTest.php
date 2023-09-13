@@ -15,12 +15,6 @@ class XMLSchemaTest extends TestCase {
   }
 
   function setUp(): void {
-    require_once "src/helper/Version.class.php";
-    require_once "src/helper/XMLSchema.class.php";
-    require_once "src/helper/JSON.class.php";
-    require_once "test/unit/VfsForTest.class.php";
-    require_once "test/unit/mock-classes/ExternalFileMock.php";
-
     VfsForTest::setUp();
     $this->testUrls['local_full'] = DATA_DIR . '/definitions/vo_SysCheck.xsd';
   }

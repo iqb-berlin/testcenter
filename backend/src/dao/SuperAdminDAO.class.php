@@ -5,7 +5,11 @@ declare(strict_types=1);
 class SuperAdminDAO extends DAO {
   public function getWorkspaces(): array {
     return $this->_(
-      'select workspaces.id, workspaces.name from workspaces order by workspaces.name',
+      'select workspaces.id, workspaces.name, MAX(files.modification_ts) AS latest_modification_ts
+      FROM workspaces
+      LEFT JOIN files ON workspaces.id = files.workspace_id
+      GROUP BY workspaces.id, workspaces.name
+      ORDER BY workspaces.name',
       [],
       true
     );

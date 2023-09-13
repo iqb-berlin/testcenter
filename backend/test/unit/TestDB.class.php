@@ -13,30 +13,33 @@ class TestDB {
     require_once "src/helper/Token.class.php";
     require_once "src/helper/Folder.class.php";
     require_once "src/helper/TestEnvironment.class.php";
-    if (!defined('ROOT_DIR')) {
-      define("ROOT_DIR", REAL_ROOT_DIR);
-    }
 
-    self::connectWithRetries();
-    TestEnvironment::buildTestDB();
+    self::connectWithRetries(10);
+    TestEnvironment::buildTestDB(defined('REAL_ROOT_DIR') ? REAL_ROOT_DIR : ROOT_DIR);
   }
 
 
   private static function connectWithRetries(int $retries = 1): void {
     while ($retries--) {
       try {
-        $config = self::readDBConfigFromEnvironment();
-        DB::connectToTestDB($config);
+        if ($config = self::readDBConfigFromEnvironment()) {
+          DB::connect($config); // when unit tests run in uninitialized container (like in CI)
+        } else {
+          DB::connectToTestDB(defined('REAL_ROOT_DIR') ? REAL_ROOT_DIR : ROOT_DIR);
+        }
         return;
       } catch (Throwable $t) {
-        echo "\n Database Connection failed! Retry: $retries attempts left.";
-        usleep(50 * 1000000); // give database container time to come up
+        $msg = $t->getMessage();
+        echo "\n Database Connection failed! \n Error: $msg \n Retry: $retries attempts left.";
+        if ($retries) {
+          usleep(50 * 100000); // give database container time to come up
+        }
       }
     }
-    throw new Exception('DB-connection failed: ' . print_r($config, true));
+    echo ("DB-connection failed. \n Config:" . print_r($config, true));
+    exit(1);
   }
 
-  // when unit tests run in uninitialized container (like in CI)
   private static function readDBConfigFromEnvironment(): ?DBConfig {
     if (!getenv('MYSQL_PASSWORD')) {
       return null;
@@ -47,7 +50,9 @@ class TestDB {
       "port" => getenv('MYSQL_PORT'),
       "user" => getenv('MYSQL_USER'),
       "password" => getenv('MYSQL_PASSWORD'),
-      "salt" => getenv('MYSQL_SALT')
+      "salt" => getenv('MYSQL_SALT'),
+      "staticTokens" => true,
+      "insecurePasswords" => true
     ]);
   }
 }

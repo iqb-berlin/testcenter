@@ -34,16 +34,16 @@
           [attr.data-cy]="'GM-' + accessObject.id"
           (click)="buttonGotoMonitor(accessObject)"
         >
-          <span class="starter-title">{{accessObject.label}}</span>
-          <span class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
+          <div class="starter-title">{{accessObject.label}}</div>
+          <div class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
             {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
-          </span>
-          <span class="starter-status" *ngIf="(!!accessObject.flags.expired)">
+          </div>
+          <div class="starter-status" *ngIf="(!!accessObject.flags.expired)">
             {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired | async}}
-          </span>
-          <span class="starter-status" *ngIf="(!!accessObject.flags.scheduled)">
+          </div>
+          <div class="starter-status" *ngIf="(!!accessObject.flags.scheduled)">
             {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled | async}}
-          </span>
+          </div>
         </a>
         <tc-alert
           *ngIf="accessObjects.testGroupMonitor && accessObjects.testGroupMonitor.length === 0"
@@ -59,8 +59,8 @@
           class="starter"
           (click)="buttonGotoAttachmentManager(accessObject)"
         >
-          <span class="starter-title">{{accessObject.label}}</span>
-          <span class="starter-status">Anhänge Verwalten</span>
+          <div class="starter-title">{{accessObject.label}}</div>
+          <div class="starter-status">Anhänge Verwalten</div>
         </button>
 
         <h4 *ngIf="accessObjects.testGroupMonitor && accessObjects.test">

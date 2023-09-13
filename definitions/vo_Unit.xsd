@@ -14,8 +14,9 @@
     </xs:sequence>
     <xs:attribute name="id" use="required">
       <xs:simpleType>
-        <xs:restriction base="xs:ID" >
-          <xs:maxLength value="20" />
+        <xs:restriction base="xs:string" >
+          <xs:maxLength value="50" />
+          <xs:minLength value="1" />
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
@@ -23,6 +24,7 @@
     <xs:attribute name="format" type="VariableFormatValue"/>
     <xs:attribute name="multiple" type="xs:boolean"/>
     <xs:attribute name="nullable" type="xs:boolean"/>
+    <xs:attribute name="page" type="PageId"/>
   </xs:complexType>
 
   <xs:complexType name="VariableValue">
@@ -56,6 +58,12 @@
   <xs:simpleType name="VariableFormatValueOther">
     <xs:restriction base="xs:string">
       <xs:pattern value="[a-z\d-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PageId">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-zA-Z_]*"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -125,6 +133,8 @@
               <xs:element name="Id" type="xs:ID" />
               <xs:element name="Label" type="xs:string" />
               <xs:element name="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="Transcript" type="xs:string" minOccurs="0" />
+              <xs:element name="Reference" type="xs:string" minOccurs="0" />
               <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>Deprecated. Use @lastChange</xs:documentation>
@@ -165,6 +175,16 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="VariablesRef" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="lastChange" type="xs:dateTime"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="BaseVariables" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -180,8 +200,13 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-
       </xs:all>
     </xs:complexType>
+
+    <xs:key name="basicKey">
+      <xs:selector xpath="BaseVariables/Variable|DerivedVariables/Variable"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+
   </xs:element>
 </xs:schema>

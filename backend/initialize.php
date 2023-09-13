@@ -46,10 +46,12 @@ if (php_sapi_name() !== 'cli') {
   exit(1);
 }
 
+ini_set('memory_limit', '1G');
+
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 define('DATA_DIR', ROOT_DIR . '/data');
 
-require_once(ROOT_DIR . '/backend/autoload.php');
+require_once "vendor/autoload.php";
 
 try {
   $args = CLI::getOpt();
