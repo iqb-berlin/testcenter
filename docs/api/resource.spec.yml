@@ -1,0 +1,40 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /resource/{group_token}/{+path}:
+    get:
+      summary: get file by path
+      description: Retrieves a file from the workspace.
+      tags:
+        - run test
+      parameters:
+        - in: path
+          name: group_token
+          description: the (group-)auth-token for the workspace
+          example: "static:group:sample_group"
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: path
+          description: filename and path
+          example: "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The file
+          content:
+            application/octet-stream:
+              example: "(the file's content)"
+        "404":
+          description: The file was not found
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

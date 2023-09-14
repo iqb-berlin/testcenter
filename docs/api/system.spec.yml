@@ -26,7 +26,7 @@ paths:
       description: "returns publicly available parts of system config
         - version number
         - customTexts for UI
-        - information about a broadcastingService
+        - uris of additional services
         - serverTimestamp (in milliseconds)"
       tags:
         - api info
@@ -45,9 +45,10 @@ paths:
                     type: object
                   appConfig:
                     type: object
-                  broadcastingService:
+                  broadcastingServiceUri:
                     type: string
-                    description: "'on' | 'off' | 'unreachable'"
+                  fileServiceUri:
+                    type: string
                   veronaPlayerApiVersionMin:
                     type: number
                   veronaPlayerApiVersionMax:
@@ -64,7 +65,8 @@ paths:
                 version: "%%%VERSION%%%"
                 customTexts: {}
                 appConfig: {}
-                broadcastingService: on
+                broadcastingServiceUri: http://blabla
+                fileServiceUri: http://blabla
                 veronaPlayerApiVersionMin: 2
                 veronaPlayerApiVersionMax: 4
         "500":

@@ -41,18 +41,18 @@ class InitDAO extends SessionDAO {
     $loginSession = $sessionDAO->createLoginSession($testLogin);
 
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
-    $test = $testDAO->getTestByPerson($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1');
-    $testDAO->setTestRunning((int) $test['id']);
-    $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
-    $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
-    $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
-    $testDAO->addTestLog((int) $test['id'], "sample log entry", $timestamp);
-    $testDAO->updateDataParts((int) $test['id'], 'UNIT.SAMPLE', ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"], "example-data-format", $timestamp);
-    $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
-    $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
-    $test2 = $testDAO->getTestByPerson($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2');
-    $testDAO->lockTest((int) $test2['id']);
-    $testDAO->setTestRunning((int) $test2['id']);
+    $test = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', 'Sample Booklet 1');
+    $testDAO->setTestRunning($test->id);
+    $testDAO->addTestReview($test->id, 1, "", "sample booklet review");
+    $testDAO->addUnitReview($test->id, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+    $testDAO->addUnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp);
+    $testDAO->addTestLog($test->id, "sample log entry", $timestamp);
+    $testDAO->updateDataParts($test->id, 'UNIT.SAMPLE', ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"], "example-data-format", $timestamp);
+    $testDAO->updateUnitState($test->id, "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
+    $testDAO->updateTestState($test->id, ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
+    $test2 = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', 'Sample Booklet 2');
+    $testDAO->lockTest($test2->id);
+    $testDAO->setTestRunning($test2->id);
   }
 
   public function createSampleExpiredSessions(): void {

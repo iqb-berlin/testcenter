@@ -121,7 +121,7 @@ dreddHooks.beforeEach((transaction, done) => {
           studyMonitorToken: '__invalid_token__'
         });
         changeUri(transaction, {
-          '/static%3Aperson%3Asample_group_test_xxx/': '/__invalid_token__/'
+          '/static%3Agroup%3Asample_group/': '/__invalid_token__/'
         });
         break;
       case '404':
@@ -224,8 +224,9 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
   done();
 });
 
-dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > application/octet-stream', (transaction, done) => {
-  transaction.expected.body = fs.readFileSync(`${sampledataDir}/verona-player-simple-4.0.0.html`).toString();
+dreddHooks.beforeValidation('specs > /resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', (transaction, done) => {
+  dreddHooks.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+  transaction.expected.body = fs.readFileSync(`${sampledataDir}/SAMPLE_UNITCONTENTS.HTM`).toString();
   done();
 });
 

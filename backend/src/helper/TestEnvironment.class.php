@@ -15,6 +15,9 @@ class TestEnvironment {
 
     try {
       SystemConfig::$debug_useStaticTime = '@' . (int) $testClock;
+      SystemConfig::$debug_useStaticTokens = true;
+      SystemConfig::$debug_useInsecurePasswords = true;
+      SystemConfig::$debug_allowExternalXmlSchema = false;
       self::makeRandomStatic();
       DB::connectToTestDB();
 
@@ -23,11 +26,20 @@ class TestEnvironment {
         self::setUpTestDataDir(false);
       }
 
-      if (in_array($testMode, ['prepare-integration', 'prepare'])) {
-        // this is called once before the api tests (dredd) and one time before each integration test (cypress)
+      if ($testMode == 'prepare-integration') {
+        // this is called one time before each integration test (cypress)
         self::setUpTestDataDir(true);
-        self::createTestFiles($testMode == 'prepare-integration');
+        self::createTestFiles(true);
         self::overwriteModificationDatesTestDataDir();
+        self::buildTestDB();
+        self::createTestData();
+      }
+
+      if ($testMode == 'prepare') {
+        // this is called once before the api tests (dredd)
+        self::setUpVirtualFilesystem();
+        self::createTestFiles(false);
+        self::overwriteModificationDatesVfs();
         self::buildTestDB();
         self::createTestData();
       }

@@ -98,74 +98,18 @@ paths:
               examples:
                 externalUnitContents:
                   value:
-                    state: { PRESENTATIONCOMPLETE: "yes" }
-                    dataParts: { all: "{\"name\":\"Sam Sample\",\"age\":34}" }
-                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
-                    unitStateDataType: "example-data-format"
-                    definitionRef: "SAMPLE_UNITCONTENTS.HTM"
+                    state: { PRESENTATIONCOMPLETE: "yes" } # you need JSOn notation here because YML transforms "yes" into true otherwise
+                    dataParts:
+                      all: "{\"name\":\"Sam Sample\",\"age\":34}"
+                      "1:UNIT.SAMPLE:v2": "[{\"id\":\"v2\",\"value\":[\"image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\"],\"status\":\"VALUE_CHANGED\"}]"
+                    unitResponseType: "example-data-format"
+                    "definition": ""
                 directUnitContents:
                   value:
                     state: {}
                     dataParts: {}
-                    unitStateDataType: null
-                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
+                    unitResponseType: null
                     definition: "(content of Sample Unit 2)"
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
-
-  /test/{test_id}/resource/{resource_id}: # gets manipulated in hooks.file, change summary carefully
-    get:
-      summary: get resource by name
-      description: Retrieves a resource-file by its id.
-        The file id is, in case of a Verona-Module (like a player), the player's internal id.
-        In case of another resource it's the file name (case _in_sensitive!).
-      tags:
-        - run test
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for test-user
-          example: "p:0000000000000.00000000000"
-        - in: path
-          name: test_id
-          description: id of a executed test
-          example: 1
-          required: true
-          schema:
-            type: integer
-        - in: path
-          name: resource_id
-          description: "file-id (or, deprecated: file-name)"
-          examples:
-            exact:
-              value: verona-player-simple-4.0
-            fuzzy:
-              value: verona-player-simple-4.0.0.html
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: v
-          description: Tells, if the resource_name is exact of fuzzy. Legacy units contain ids which are not following
-            and exact scheme and look like file-names for player-references for example. Set this parameter to 
-            something else then 'f', to allow interpretation of `resource_id` softer. This is the case when retrieving 
-            players. In this case a request to 'verona-player-whatever.1.2.3.html' can return verona-player-whatever, 
-            version 1.2.x correctly.
-          examples:
-            exact:
-              value: f
-            fuzzy:
-              value: t
-      responses:
-        "200":
-          description: The Resource
-          content:
-            application/octet-stream:
-              example: "(HTML code containing player)"
         "401":
           description: Not authenticated
         "403":
@@ -748,37 +692,3 @@ paths:
         "500":
           description: Server Error
 
-  /{auth_token}/resource/{resource_name}:
-    get:
-      summary: get resource for directDownloadUrl
-      description: Since Verona v4 spec, additional resources can be loaded by the unit on demand. This
-        `directDownloadUrl`-parameter can use this endpoint wich contains the auth-token in the url, not in the header.
-      tags:
-        - run test
-      parameters:
-        - in: path
-          name: auth_token
-          description: the (person-)auth-token which would usually be found in the header
-          example: "static:person:sample_group_test_xxx"
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: resource_name
-          description: name/id of the resource
-          example: SAMPLE_UNITCONTENTS.HTM
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The resource
-          content:
-            application/octet-stream:
-              example: "(the resource's content)"
-        "404":
-          description: The resource was not found
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
