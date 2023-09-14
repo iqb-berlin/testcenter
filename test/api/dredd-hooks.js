@@ -225,7 +225,6 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
 });
 
 dreddHooks.beforeValidation('specs > /resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', (transaction, done) => {
-  dreddHooks.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
   transaction.expected.body = fs.readFileSync(`${sampledataDir}/SAMPLE_UNITCONTENTS.HTM`).toString();
   done();
 });

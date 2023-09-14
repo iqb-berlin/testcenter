@@ -22,8 +22,8 @@ class SystemConfig {
   public static bool $debug_useInsecurePasswords = false;
   public static bool $debug_allowExternalXmlSchema = true;
   public static bool $debug_useStaticTokens = false;
-  public static string $debug_useStaticTime;
-  public static string $language_dateFormat;
+  public static string $debug_useStaticTime = 'now';
+  public static string $language_dateFormat = 'd/m/Y H:i';
   // TODO server URL, port
 
   public static function read(): void {
@@ -44,7 +44,11 @@ class SystemConfig {
       }
     }
 
-    if (!isset(self::$system_version) or !self::$system_version) {
+    if (
+      (!isset(self::$system_version) or !self::$system_version) or
+      (!isset(self::$system_veronaMax) or !self::$system_veronaMax) or
+      (!isset(self::$system_veronaMin) or !self::$system_veronaMin)
+    ) {
       self::readVersion();
     }
     self::verify();
@@ -70,12 +74,12 @@ class SystemConfig {
     $config['passwords']['salt'] = getEnv('MYSQL_SALT');
 
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
-      $config['broadcasting_service']['external'] = self::$system_hostname . '/bs/public static';
+      $config['broadcasting_service']['external'] = self::boolEnv('HOSTNAME') . '/bs/public static';
       $config['broadcasting_service']['internal']= 'testcenter-broadcasting-service:3000';
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['file_service']['external'] = self::$system_hostname . '/fs';
+      $config['file_service']['external'] = self::boolEnv('HOSTNAME') . '/fs';
       $config['file_service']['internal'] = 'testcenter-file-service';
       $config['cache_service']['host'] = 'testcenter-cache-service';
     }
@@ -84,11 +88,12 @@ class SystemConfig {
     $config['system']['hostname'] = self::boolEnv('HOSTNAME');
     $config['system']['version'] = getEnv('VERSION');
 
-    $config['debug'] = [
-      'allow_external_xml_schema' => true,
-      'use_insecure_passwords' => false,
-      'use_static_tokens' => false
-    ];
+//    $config['debug'] = [
+//      'allow_external_xml_schema' => true,
+//      'use_insecure_passwords' => false,
+//      'use_static_tokens' => false,
+//      'use_static_time' => false
+//    ];
 
     self::apply($config);
   }

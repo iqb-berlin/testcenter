@@ -2,7 +2,6 @@
 
 class TestDB {
   static function setUp(): void {
-    SystemConfig::read();
     SystemConfig::$debug_useInsecurePasswords = false;
     SystemConfig::$debug_useStaticTokens = true;
     self::connectWithRetries(10);
