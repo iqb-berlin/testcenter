@@ -7,6 +7,11 @@ layout: default
 ## 14.11.0
 ## Bugfixes
 * Kritischer Fehler der Update-Routine von 14.3.0 zu 14.4.0 behoben.
+* Startkommando `make run` repariert.
+* Sicherheitsrelevante Header von Backend und Broadcasting-Service werden nun korrekt ausgeliefert
+
+### Für Administratoren
+* die Konfigurationsdatei hieß mal ssl-config.yml, mal tls-config.yml. Nun muss sie immer tls-config.yml heißen. 
 
 
 ## 14.10.0
