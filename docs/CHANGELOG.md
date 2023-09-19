@@ -4,8 +4,13 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.11.0
+## Bugfixes
+* Kritischer Fehler der Update-Routine von 14.3.0 zu 14.4.0 behoben.
+
+
 ## 14.10.0
-###  XML-Austausch-Formate
+### XML-Austausch-Formate
 * In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für 
   die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich 
   mittelfristig zugunsten einer JSON-basierten aufgegeben. d
