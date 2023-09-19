@@ -16,7 +16,7 @@ fi
 if [ "$BROADCAST_SERVICE_ENABLED" = "yes" ] || [ "$BROADCAST_SERVICE_ENABLED" = "true" ]
   then
     echo "Broadcast-Service enabled"
-    BROADCAST_SERVICE_URI_PUSH=${HTTP_PROTOCOL}://testcenter-broadcasting-service:3000
+    BROADCAST_SERVICE_URI_PUSH=http://testcenter-broadcasting-service:3000
     BROADCAST_SERVICE_URI_SUBSCRIBE=${WEBSOCKET_PROTOCOL}://${HOSTNAME}/bs/public
   else
     echo "Broadcast-Service disabled"
