@@ -13,12 +13,12 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls.options=default@file"
-      - "--providers.file.filename=/ssl-config.yml"
+      - "--providers.file.filename=/tls-config.yml"
     ports:
       - "${TLS_PORT}:443"
     volumes:
       - ./config/certs/:/certs/
-      - ./config/ssl-config.yml:/ssl-config.yml
+      - ./config/tls-config.yml:/tls-config.yml
 
   testcenter-backend:
     labels:
