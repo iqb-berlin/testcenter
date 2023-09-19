@@ -9,25 +9,25 @@ paths:
   /speed-test/random-package/{size}:
     get:
       summary: download speedtest package
-      description: returns a random byte package - for speedtests in system-check
+      description: returns a byte package - for speedtests in system-check
       tags:
         - run system check
       parameters:
         - in: path
           name: size
-          description: number of bytes to bedelivered - between 16 and 67108864
+          description: number of bytes to be delivered - between 16 and 67108864
           example: 16
           required: true
           schema:
             type: string
       responses:
         "200":
-          description: a object containg information about booklet
+          description: a string of given length
           content:
             text/plain;charset=utf-8:
               schema:
                 type: string
-              example: "lrOI/JLFOAPBOHt="
+              example: "aaaaaaaaaaaaaaa="
         "406":
           description: bad package size
         "500":
