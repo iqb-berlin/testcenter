@@ -29,6 +29,9 @@ h1 {
   /*max-width: 50%;*/
   margin-right: 10px;
   align-items: center;
+  flex-wrap: wrap;
+  z-index: 2;
+  max-height: 100%;
 }
 
 .unit-nav .unit-nav-item {
