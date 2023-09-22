@@ -77,7 +77,6 @@ test-system-headless:
 			--renew-anon-volumes
 
 test-system:
-	TESTMODE_REAL_DATA=yes \
 		docker compose -f docker/docker-compose.system-test-ui.yml up \
 			--abort-on-container-exit \
 			--force-recreate \

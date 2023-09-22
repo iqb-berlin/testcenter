@@ -27,7 +27,6 @@ export const visitLoginPage = (): Chainable => cy.url()
   });
 
 export const resetBackendData = (): void => {
-  // this resets the DB because in system-test TESTMODE_REAL_DATA is true
   cy.request({
     url: `${Cypress.env('TC_API_URL')}/version`,
     headers: { TestMode: 'prepare-integration' }

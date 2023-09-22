@@ -47,7 +47,6 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
-      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/index.php:/var/www/backend/index.php
