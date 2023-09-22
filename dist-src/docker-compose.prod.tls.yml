@@ -13,19 +13,19 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls.options=default@file"
-      - "--providers.file.filename=/ssl-config.yml"
+      - "--providers.file.filename=/tls-config.yml"
     ports:
       - "${TLS_PORT}:443"
     volumes:
       - ./config/certs/:/certs/
-      - ./config/ssl-config.yml:/ssl-config.yml
+      - ./config/tls-config.yml:/tls-config.yml
 
   testcenter-backend:
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
-      - "traefik.http.middlewares.tls-security-headers.headers.stsSeconds=31536000"
-      - "traefik.http.middlewares.tls-security-headers.headers.stsIncludeSubdomains=true"
-      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers, tls-security-headers"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
 
   testcenter-frontend:
     labels:
@@ -35,4 +35,6 @@ services:
   testcenter-broadcasting-service:
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers, tls-security-headers"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
