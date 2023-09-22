@@ -65,9 +65,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers"
+      - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
     volumes:
       - testcenter_backend_vo_data:/var/www/data
     networks:
@@ -95,7 +95,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers"
+      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
     networks:
       testcenter:
 
