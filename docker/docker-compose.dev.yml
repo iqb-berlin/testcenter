@@ -78,7 +78,7 @@ services:
   testcenter-file-service:
     build:
       context: ..
-      dockerfile: docker/files-service.Dockerfile
+      dockerfile: docker/file-service.Dockerfile
       args:
         ENABLED_MODULES: lua
     volumes:
