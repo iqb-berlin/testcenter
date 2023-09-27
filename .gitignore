@@ -32,7 +32,7 @@
 /frontend/src/environments/environment.ts
 
 # test config
-/test/dredd/config
+/test/config.json
 
 # dist
 /frontend/dist

@@ -87,9 +87,16 @@ services:
       - ../scripts/files-service/site.conf:/etc/nginx/sites-enabled/default # overwrite default!
       - ../scripts/files-service/auth.lua:/auth.lua
     depends_on:
-      - traefik
-      - testcenter-backend
-      - testcenter-cache-service
+      traefik:
+        condition: service_started
+      testcenter-cache-service:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost/health || exit 1
+      interval: 20s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-files-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
@@ -101,6 +108,10 @@ services:
   testcenter-cache-service:
     container_name: testcenter-cache-service
     image: redis:7.0-bullseye
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 1s
+      retries: 120
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-cache-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/cs`)"

@@ -69,7 +69,18 @@ test-frontend-unit-coverage:
 test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
-# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
+# Persons some API tests with Dredd on the file-service
+# ! Attention: The testcenter must not run when starting this # TODO change this
+test-file-service-api:
+	docker compose \
+		-f docker/docker-compose.yml \
+		-f docker/docker-compose.dev.yml \
+		-f docker/docker-compose.api-test.yml \
+		up -d testcenter-cache-service testcenter-file-service
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs
+	make run-task-runner task=file-service:api-test
+
+# Performs some e2e tests with CyPress against real backend and services
 test-system-headless:
 		docker compose -f docker/docker-compose.system-test-headless.yml up \
 			--abort-on-container-exit \

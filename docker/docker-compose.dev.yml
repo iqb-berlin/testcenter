@@ -75,7 +75,7 @@ services:
     networks:
       - testcenter
 
-  testcenter-files-service:
+  testcenter-file-service:
     build:
       context: ..
       dockerfile: docker/files-service.Dockerfile
@@ -88,12 +88,6 @@ services:
       - ../scripts/files-service/auth/:/usr/share/nginx/auth
     networks:
       - testcenter
-    healthcheck:
-      test: curl --fail http://localhost/health || exit 1
-      interval: 20s
-      retries: 10
-      start_period: 20s
-      timeout: 10s
 
   testcenter-cache-service:
     ports:
@@ -106,8 +100,6 @@ services:
     build:
       context: ..
       dockerfile: docker/runner.Dockerfile
-    environment:
-      TC_API_URL: http://testcenter-backend
     volumes:
       - ../README.md:/app/README.md
       - ../broadcasting-service:/app/broadcasting-service
@@ -121,6 +113,7 @@ services:
       - ../package.json:/app/package.json
       - ../sampledata:/app/sampledata
       - ../scripts:/app/scripts
-      - ../test:/app/test
+      - ../test/api:/app/test/api
+      - ../test/config.docker.json:/app/test/config.json
     networks:
       - testcenter

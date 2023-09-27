@@ -2,45 +2,39 @@
 const fs = require('fs');
 const Dredd = require('dredd');
 const gulp = require('gulp');
+const redis = require('redis');
 const YAML = require('yamljs');
 const request = require('request');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
-// TODO use the same source as environment.ts instead of /config/dredd_test_config.json and don't check it in
-const testcenterConfig = require('./config/dredd_test_config.json');
+const testConfig = require('../config.json');
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
-const apiUrl = process.env.TC_API_URL || testcenterConfig.testcenterUrl;
+const getStatus = statusRequest => new Promise(resolve => {
+  request(
+    statusRequest,
+    (error, response) =>
+      resolve((!response || response.statusCode < 200 || response.statusCode >= 400) ? -1 : response.statusCode)
+  );
+});
 
-const confirmTestConfig = async done => {
-  if (!apiUrl) {
+const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
+
+const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
+  if (!serviceUrl) {
     throw new Error(cliPrint.get.error('No API Url given!'));
   }
 
-  const getStatus = () => new Promise(resolve => {
-    request(
-      {
-        url: `${apiUrl}/system/config`,
-        headers: {
-          TestMode: 'prepare'
-        }
-      },
-      (error, response) => resolve(!response ? -1 : response.statusCode)
-    );
-  });
-
-  const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
-
-  cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
+  cliPrint.headline(`Running Dredd tests against service: ${serviceUrl}`);
 
   let retries = 10;
   let status = 0;
   // eslint-disable-next-line no-plusplus
   while ((status !== 200) && retries--) {
     // eslint-disable-next-line no-await-in-loop
-    status = await getStatus();
+    status = await getStatus(statusRequest);
     if (status === 200) {
       return done();
     }
@@ -49,8 +43,8 @@ const confirmTestConfig = async done => {
     await sleep(5000);
   }
 
-  throw new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`));
-};
+  throw new Error(cliPrint.get.error(`Could not connect to ${serviceUrl}`));
+});
 
 const prepareSpecsForDredd = done => {
   const compiledFileName = `${tmpDir}/compiled.specs.yml`;
@@ -133,13 +127,12 @@ const prepareSpecsForDredd = done => {
   done();
 };
 
-const runDredd = async done => {
-  cliPrint.headline(`Run Dredd against ${apiUrl}`);
-
+const runDredd = serviceUrl => (async done => {
+  cliPrint.headline(`Run API-test against ${serviceUrl}`);
   new Dredd({
-    endpoint: apiUrl,
+    endpoint: serviceUrl,
     path: [`${tmpDir}/transformed.specs.*.yml`],
-    hookfiles: ['dredd-hooks.js'],
+    hookfiles: ['hooks.js'],
     output: [`${tmpDir}/report.html`], // TODO do something with it
     reporter: ['html'],
     names: false // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
@@ -153,12 +146,41 @@ const runDredd = async done => {
     }
     done();
   });
+});
+
+const insertGroupTokenToCacheService = async () => {
+  cliPrint.headline('Inject group-token into cache');
+  const client = redis.createClient({ url: 'redis://testcenter-cache-service' });
+  await client.connect();
+  await client.set('group-token:static:group:sample_group', 1, { EX: 60 });
+  await client.quit();
 };
 
 exports.runDreddTest = gulp.series(
-  confirmTestConfig,
+  confirmTestConfig(
+    testConfig.backend_url, {
+      url: `${testConfig.backend_url}/system/config`,
+      headers: {
+        TestMode: 'prepare'
+      }
+    }
+  ),
   clearTmpDir,
-  mergeSpecFiles,
+  mergeSpecFiles('api/*.spec.yml'),
   prepareSpecsForDredd,
-  runDredd
+  runDredd(testConfig.backend_url)
+);
+
+exports.runDreddTestFs = gulp.series(
+  confirmTestConfig(
+    testConfig.file_service_url,
+    {
+      url: `${testConfig.file_service_url}/health`
+    }
+  ),
+  clearTmpDir,
+  mergeSpecFiles('api/resource.spec.yml'),
+  prepareSpecsForDredd,
+  insertGroupTokenToCacheService,
+  runDredd(testConfig.file_service_url)
 );

@@ -1,0 +1,4 @@
+{
+  "backend_url": "http://testcenter-backend",
+  "file_service_url": "http://testcenter-file-service"
+}

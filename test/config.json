@@ -1,0 +1,5 @@
+{
+  "backend_url": "http://localhost/testcenter/backend",
+  "file_service_url": "http://localhost/testcenter/backend",
+  "cache_service_host": "http://localhost/testcenter/"
+}

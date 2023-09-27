@@ -88,13 +88,6 @@ class SystemConfig {
     $config['system']['hostname'] = self::boolEnv('HOSTNAME');
     $config['system']['version'] = getEnv('VERSION');
 
-//    $config['debug'] = [
-//      'allow_external_xml_schema' => true,
-//      'use_insecure_passwords' => false,
-//      'use_static_tokens' => false,
-//      'use_static_time' => false
-//    ];
-
     self::apply($config);
   }
 

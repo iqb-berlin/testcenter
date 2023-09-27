@@ -69,7 +69,7 @@ const changeUri = (transaction, changeMap) => {
   });
 };
 
-dreddHooks.beforeEach((transaction, done) => {
+const beforeEach = async (transaction, done) => {
   try {
     // skip everything after first failed test
     if (errorOccurred && skipAfterFirstFail) {
@@ -165,9 +165,9 @@ dreddHooks.beforeEach((transaction, done) => {
   }
 
   return done();
-});
+};
 
-async function attachUploadFile(transaction, done) {
+const attachUploadFile = async (transaction, done) => {
   try {
     const form = new Multipart();
     form.append('fileforvo', fs.createReadStream(`${sampledataDir}/Unit.xml`, 'utf-8'), { filename: 'SAMPLE_UNIT.XML' });
@@ -177,21 +177,9 @@ async function attachUploadFile(transaction, done) {
     transaction.fail = e;
   }
   done();
-}
+};
 
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', attachUploadFile);
-
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 400', async (transaction, done) => {
-  try {
-    const form = new Multipart();
-    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
-  } catch (e) {
-    transaction.fail = e;
-  }
-  done();
-});
-
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > application/json', async (transaction, done) => {
+const addInvalidUploadFile = async (transaction, done) => {
   try {
     const form = new Multipart();
     form.append('fileforvo', fs.createReadStream(`${sampledataDir}/Unit.xml`, 'utf-8'), { filename: 'SAMPLE_UNIT.XML' });
@@ -203,14 +191,9 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > applica
     transaction.fail = e;
   }
   done();
-});
+};
 
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 401', attachUploadFile);
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 403', attachUploadFile);
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 404', attachUploadFile);
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 410', attachUploadFile);
-
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (transaction, done) => {
+const addHugeFile = async (transaction, done) => {
   try {
     const form = new Multipart();
     const tooBigContent = Readable.from(['x'.repeat(1024)]);
@@ -222,29 +205,24 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
     transaction.fail = e;
   }
   done();
-});
+};
 
-dreddHooks.beforeValidation('specs > /resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', (transaction, done) => {
+const addResourceToExpectation = async (transaction, done) => {
   transaction.expected.body = fs.readFileSync(`${sampledataDir}/SAMPLE_UNITCONTENTS.HTM`).toString();
   done();
-});
+};
 
-dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', (transaction, done) => {
-  transaction.expected.body = transaction.real.body;
+const addBookletToExpectation = async (transaction, done) => {
+  transaction.expected.body = fs.readFileSync(`${sampledataDir}/Booklet.xml`).toString();
   done();
-});
+};
 
-async function attachBOM(transaction, done) {
+const attachBOM = async (transaction, done) => {
   transaction.expected.body = `\uFEFF${transaction.expected.body}`;
   done();
-}
+};
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', attachBOM);
-
-async function attachUploadImage(transaction, done) {
+const attachUploadImage = async (transaction, done) => {
   try {
     const form = new Multipart();
     form.append('attachment', Readable.from(['image data']), { filename: 'image.png' });
@@ -255,18 +233,34 @@ async function attachUploadImage(transaction, done) {
     transaction.fail = e;
   }
   done();
-}
+};
 
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 401', attachUploadImage);
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 403', attachUploadImage);
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 404', attachUploadImage);
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 410', attachUploadImage);
-
-dreddHooks.afterEach((transaction, done) => {
+const finishAfterError = (transaction, done) => {
   // die after first failure
   if (transaction.results.valid === false) {
     errorOccurred = true;
   }
   done();
-});
+};
+
+dreddHooks.beforeEach(beforeEach);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > application/json', addInvalidUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 401', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 403', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 404', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 410', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', addHugeFile);
+dreddHooks.beforeValidation('specs > /resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', addResourceToExpectation);
+dreddHooks.beforeValidation('/resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', addResourceToExpectation);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', addBookletToExpectation);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 401', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 403', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 404', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 410', attachUploadImage);
+dreddHooks.afterEach(finishAfterError);

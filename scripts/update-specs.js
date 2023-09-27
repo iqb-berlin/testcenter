@@ -1,4 +1,4 @@
-/* eslint-disable no-console,import/no-extraneous-dependencies */
+/* eslint-disable no-console */
 
 /**
  * Creates the documentation of the Backend-API. It's a Package called Redoc, which takes the API-sepcs in OpenApi3
@@ -19,15 +19,15 @@ const packageJson = require('../package.json');
 const tmpDir = fs.realpathSync(`${__dirname}'/../tmp`);
 const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
 
-exports.mergeSpecFiles = () => {
-  cliPrint.headline('compile spec files to one');
-  return gulp.src(`${docsDir}/api/*.spec.yml`)
+exports.mergeSpecFiles = (selector = 'api/*.spec.yml') => (() => {
+  cliPrint.headline(`compile spec files to one selector: ${selector}`);
+  return gulp.src(`${docsDir}/${selector}`)
     .on('data', d => { console.log(`File: ${d.path}`); })
     .on('error', e => { console.warn(e); })
     .pipe(yamlMerge('compiled.specs.yml'))
     .on('error', e => { console.warn('error', e); })
     .pipe(gulp.dest(tmpDir));
-};
+});
 
 const prepareDocsDestinationFolder = done => {
   cliPrint.headline('Prepare destination Folder');
@@ -89,6 +89,6 @@ exports.clearTmpDir = done => {
 exports.updateSpecs = gulp.series(
   exports.clearTmpDir,
   prepareDocsDestinationFolder,
-  exports.mergeSpecFiles,
+  exports.mergeSpecFiles(),
   updateDocs
 );
