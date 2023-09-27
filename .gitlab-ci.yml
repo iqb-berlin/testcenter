@@ -40,6 +40,11 @@ stages:
         - broadcasting-service/**/*
         - common/**/*
 
+.fs-change:
+  rules:
+    - changes:
+        - scripts/files-service/**/*
+
 build-backend:
   stage: build
   rules:
@@ -101,6 +106,25 @@ build-broadcasting-service:
   artifacts:
     paths:
       - bs_image.tar
+    expire_in: 30 minutes
+
+build-file-service:
+  stage: build
+  rules:
+    - !reference [ .fs-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+  script:
+    - apk add make
+    - make init
+    - make build service=testcenter-file-service
+    - docker save iqbberlin/testcenter-file-service > fs_image.tar
+  artifacts:
+    paths:
+      - fs_image.tar
     expire_in: 30 minutes
 
 test-backend-unit:
@@ -212,6 +236,23 @@ test-backend-api:
     - make init
     - docker load -i backend_image.tar
     - make test-backend-api
+
+test-files-service-api:
+  stage: test
+  rules:
+    - !reference [ .fs-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-files-service
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+  script:
+    - apk add make
+    - make init
+    - docker load -i fs_image.tar
+    - make test-file-service-api
 
 test-backend-initialization:
   stage: test
