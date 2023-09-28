@@ -4,6 +4,22 @@
 version: '3.9'
 
 services:
+  traefik:
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls.options=default@file"
+      - "--providers.file.filename=/tls-config.yml"
+    ports:
+      - "${TLS_PORT}:443"
+    volumes:
+      - ./config/certs/:/certs/
+      - ./config/tls-config.yml:/tls-config.yml
+
   testcenter-backend:
     image: iqbberlin/testcenter-backend:${VERSION}
     labels:
