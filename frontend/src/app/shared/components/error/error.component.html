@@ -43,7 +43,7 @@
 
     <div id="error-report" *ngIf="errorDetailsOpen" #report>
       <h3 style="margin-top: 0">Fehlerbericht: {{error.label}}</h3>
-      <p>{{error.description}}</p>
+      <p [innerHtml]="error.description"></p>
 
       <br>
       <p>{{error.details}}</p>
