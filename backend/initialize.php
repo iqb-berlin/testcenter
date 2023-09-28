@@ -52,7 +52,7 @@ try {
 
   CLI::h2("System-Config");
   if (!file_exists(ROOT_DIR . '/backend/config/config.ini')) {
-    CLI::p("Config file found (`/backend/config/config.ini`). Will be created.");
+    CLI::p("Config file not found (`/backend/config/config.ini`). Will be created.");
     SystemConfig::readFromEnvironment();
     CLI::success("Config is valid.");
   } else {
