@@ -1,54 +1,57 @@
 #!/bin/bash
-# Rename SSL-config file
-## rename intermediate to old version if present
-if [ -f config/ssl-config.yml ]; then
-  mv config/ssl-config.yml config/cert_config.yml 2>/dev/null
-  sed -i 's/options:/options_backup:/' config/cert_config.yml
-fi
 
-if [ ! -f config/tls-config.yml ]; then
-  read -p "SSL config file will be renamed and additional TLS settings will be added. This may overwrite customizations. \
-  Certificate paths are untouched.
-Refer to the Documentation and Changelog if you want to do this change manually.
-Continue with this step? [y/N]:" -r -n 1 -e CONTINUE
-  if [[ $CONTINUE =~ [yY] ]]
-    then
-      mv config/cert_config.yml config/tls-config.yml 2>/dev/null
-      sed -i 's/tls:/tls: \
-  options: \
-    default: \
-      minVersion: VersionTLS12 \
-      cipherSuites: \
-        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 \
-        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 \
-        - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
-        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 \
-        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 \
-        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384/' config/tls-config.yml
-  fi
-fi
-
+REPO_URL=iqb-berlin/testcenter
 
 source .env
 
-# include mySQL-config
-REPO_URL=iqb-berlin/testcenter
-wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/scripts/database/my.cnf
-chmod 444 config/my.cnf
-
-echo "Update .env-file"
-
-sed -i 's/TLS=off/TLS_ENABLED=no/' .env
-sed -i 's/TLS=on/TLS_ENABLED=yes/' .env
-
-if [ -n "$BROADCAST_SERVICE_URI_PUSH" ]; then
-  sed -i '/BROADCAST_SERVICE_URI_PUSH/d' .env
-  sed -i '/BROADCAST_SERVICE_URI_SUBSCRIBE/d' .env
-  echo "BROADCAST_SERVICE_ENABLED=on" >> .env
+if [ -z "$2" ]; then
+  echo "Unknown version. Assuming pre-14.11..."
 else
-  sed -i '/BROADCAST_SERVICE_URI_PUSH/d' .env
-  sed -i '/BROADCAST_SERVICE_URI_SUBSCRIBE/d' .env
-  echo "BROADCAST_SERVICE_ENABLED=off" >> .env
+  echo "Patching version: $2"
+fi
+
+if [ -z "$2" ] || [ dpkg --compare-versions $2 lt 14.11 ]; then
+  echo "Applying patch: 14.11"
+
+  # Rename SSL-config file
+  if [ -f config/ssl-config.yml ]; then
+    mv config/ssl-config.yml config/tls-config.yml
+  fi
+  if [ -f config/cert_config.yml ]; then
+    mv config/cert_config.yml config/tls-config.yml
+  fi
+
+  if [ -f config/tls-config.yml ]; then
+    # Save cert file names and insert them in the downloaded file
+    certs=$(grep -A 3 certificates config/tls-config.yml)
+    wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
+    printf "$(head -n 11 config/tls-config.yml)\n$(echo "$certs")\n" > config/tls-config.yml
+  else
+    # if no cert config present, just download file
+    wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
+  fi
+
+  # Delete outdated config lines
+  if [ -n "$BROADCAST_SERVICE_URI_PUSH" ]; then
+    sed -i '/BROADCAST_SERVICE_URI_PUSH/d' .env
+    sed -i '/BROADCAST_SERVICE_URI_SUBSCRIBE/d' .env
+    echo "BROADCAST_SERVICE_ENABLED=true" >> .env
+  fi
+
+  # Add MySQL config
+  if [ -f config/my.cnf ]; then
+    wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/scripts/database/my.cnf
+    chmod 444 config/my.cnf
+  fi
+
+  # Redo Docker-Compose setup
+  rm docker-compose.prod.tls.yml
+  sed -i '/TLS=/d' .env
+  sed -i '/TLS_ENABLED=/d' .env
+  mkdir -p config/certs
+
+  # re-download Makefile which has been changed wrongly by the updater
+  wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/Makefile
 fi
 
 echo "Patch done"
