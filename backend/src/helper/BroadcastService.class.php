@@ -22,7 +22,7 @@ class BroadcastService {
     $url =
       (SystemConfig::$system_tlsEnabled ? 'wss://' : 'ws://')
       . SystemConfig::$broadcastingService_external
-      . "/ws?token=$bsToken";
+      . "ws?token=$bsToken";
     return ($response !== null) ? $url : null;
   }
 

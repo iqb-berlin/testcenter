@@ -74,18 +74,18 @@ class SystemConfig {
     $config['passwords']['salt'] = getEnv('MYSQL_SALT');
 
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
-      $config['broadcasting_service']['external'] = self::boolEnv('HOSTNAME') . '/bs/public static';
-      $config['broadcasting_service']['internal']= 'testcenter-broadcasting-service:3000';
+      $config['broadcastingService']['external'] = getEnv('HOSTNAME') . '/bs/public/';
+      $config['broadcastingService']['internal']= 'testcenter-broadcasting-service:3000';
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['file_service']['external'] = self::boolEnv('HOSTNAME') . '/fs';
-      $config['file_service']['internal'] = 'testcenter-file-service';
-      $config['cache_service']['host'] = 'testcenter-cache-service';
+      $config['fileService']['external'] = getEnv('HOSTNAME') . '/fs/';
+      $config['fileService']['internal'] = 'testcenter-file-service';
+      $config['cacheService']['host'] = 'testcenter-cache-service';
     }
 
-    $config['system']['tls_enabled'] = self::boolEnv('TLS_ENABLED');
-    $config['system']['hostname'] = self::boolEnv('HOSTNAME');
+    $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
+    $config['system']['hostname'] = getEnv('HOSTNAME');
     $config['system']['version'] = getEnv('VERSION');
 
     self::apply($config);
@@ -101,6 +101,7 @@ class SystemConfig {
   }
 
   private static function boolEnv(string $name): bool {
+    $r = in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
     return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
   }
 
