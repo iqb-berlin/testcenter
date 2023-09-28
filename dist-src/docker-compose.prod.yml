@@ -6,14 +6,29 @@ version: '3.9'
 services:
   testcenter-backend:
     image: iqbberlin/testcenter-backend:${VERSION}
+    labels:
+      - "traefik.http.routers.testcenter-backend.tls=true"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
 
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:${VERSION}
     volumes:
       - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - "traefik.http.routers.testcenter-frontend.tls=true"
+      - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, tls-security-headers-frontend"
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:${VERSION}
+    labels:
+      - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
 
   testcenter-db:
     command:
