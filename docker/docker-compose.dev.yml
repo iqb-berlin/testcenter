@@ -84,7 +84,6 @@ services:
     volumes:
       - ../data:/var/www/html/
       - ../scripts/files-service/nginx.conf:/etc/nginx/nginx.conf
-      - ../scripts/files-service/site.conf:/etc/nginx/sites-enabled/default # overwrite default!
       - ../scripts/files-service/auth/:/usr/share/nginx/auth
     networks:
       - testcenter
