@@ -85,16 +85,16 @@ services:
       testcenter-cache-service:
         condition: service_healthy
     healthcheck:
-      test: curl --fail http://localhost/health || exit 1
-      interval: 20s
-      retries: 10
-      start_period: 20s
-      timeout: 10s
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 1s
+      retries: 120
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-files-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.middlewares.testcenter-files-service-stripprefix.stripprefix.prefixes=/fs"
-      - "traefik.http.routers.testcenter-files-service.middlewares=testcenter-files-service-stripprefix, security-headers"
+      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
+      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
+      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
     networks:
       testcenter:
 
@@ -105,11 +105,6 @@ services:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 1s
       retries: 120
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-cache-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/cs`)"
-      - "traefik.http.middlewares.testcenter-cache-service-stripprefix.stripprefix.prefixes=/cs"
-      - "traefik.http.routers.testcenter-cache-service.middlewares=testcenter-files-service-stripprefix, security-headers"
     networks:
       testcenter:
 
