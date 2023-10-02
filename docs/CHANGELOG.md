@@ -4,8 +4,15 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.12.0
+### Verbesserungen
+* Überarbeitete  Navigationsleiste
+* Die Vorwärts- und Zurück-Tasten bleiben jetzt immer neben der eigentlichen Unit-Knöpfen
+* Größenreduktion der Unit-Knöpfe, sodass mehr davon vorhanden sein können bevor in die nächste Zeile umgebrochen wird
+* Deaktivierte Unit-Knöpfe haben ein helleres Grau
+
 ## 14.11.0
-## Bugfixes
+### Bugfixes
 * Das Verhalten von Version 14.1.0 und vorher der Navigationsleiste wurde wieder hergestellt: 
   Sie wird nun wieder mehrzeilig angezeigt, wenn zu viele Units darin sind. 
   Dies kann bei sehr vielen Units oder auf einem schmalen Screen dazu führen, dass das die Navigationsleiste über 
