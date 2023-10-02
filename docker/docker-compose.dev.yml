@@ -83,8 +83,8 @@ services:
         ENABLED_MODULES: lua
     volumes:
       - ../data:/var/www/html/
-      - ../scripts/files-service/nginx.conf:/etc/nginx/nginx.conf
-      - ../scripts/files-service/auth/:/usr/share/nginx/auth
+      - ../scripts/file-service/nginx.conf:/etc/nginx/nginx.conf
+      - ../scripts/file-service/auth/:/usr/share/nginx/auth
     networks:
       - testcenter
 

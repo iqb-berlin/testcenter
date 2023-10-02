@@ -43,7 +43,7 @@ stages:
 .fs-change:
   rules:
     - changes:
-        - scripts/files-service/**/*
+        - scripts/file-service/**/*
 
 build-backend:
   stage: build
