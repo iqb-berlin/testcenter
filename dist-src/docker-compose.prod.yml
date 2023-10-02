@@ -15,6 +15,9 @@ services:
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:${VERSION}
 
+  testcenter-file-service:
+    image: iqbberlin/testcenter-file-service:${VERSION}
+
   testcenter-db:
     command:
       - --log_error_verbosity=1
