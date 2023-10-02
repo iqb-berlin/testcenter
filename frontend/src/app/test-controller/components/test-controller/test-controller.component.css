@@ -26,9 +26,7 @@ h1 {
 }
 
 .unit-nav {
-  /*max-width: 50%;*/
-  margin-right: 10px;
-  align-items: center;
+  margin: 0 5px;
   flex-wrap: wrap;
   z-index: 2;
   max-height: 100%;
@@ -37,8 +35,7 @@ h1 {
 .unit-nav .unit-nav-item {
   font-size: 12px;
   border-radius: 0;
-  max-width: 200px;
-  height: 36px;
+  height: 30px;
   white-space: normal;
   line-height: normal;
   display: flex;
@@ -46,6 +43,10 @@ h1 {
   justify-content: center;
   overflow-x: clip;
   overflow-y: auto;
+  margin-bottom: 2px;
+  width: 30px;
+  padding: 0;
+  min-width: unset;
 }
 
 /* Workaround for non-Firefox Browsers, which don't support "safe" in align-items.
@@ -55,20 +56,12 @@ appear as if aligned with "start". */
   margin: auto;
 }
 
-.unit-nav a.mat-button-disabled {
-  background-color: darkgray;
-}
-
 .unit-nav a:not(:last-child) {
   border-right: lightgray 1px solid;
 }
 
 .unit-nav-item-selected {
   background-color: var(--accent);
-}
-
-.unit-nav-item-selected[disabled="true"] {
-  color: black;
 }
 
 .debug-pane {
@@ -95,4 +88,12 @@ appear as if aligned with "start". */
 
 .mat-drawer-container {
   background: transparent !important;
+}
+
+.mat-fab.mat-button-disabled {
+  background-color: lightgray;
+}
+
+.unit-nav-item.mat-flat-button.mat-button-disabled {
+  background-color: lightgray;
 }
