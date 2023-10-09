@@ -1,10 +1,8 @@
 local redis_connector = {}
 
 function redis_connector.connect()
-
   -- resolve host name
-
-  local ip = ngx.shared.dns_cache:get("testcenter-cache-service");
+  local ip = ngx.shared.dns_cache:get("testcenter-cache-service")
 
   if (not ip) then
     local dns = require "resty.dns.resolver"
@@ -16,20 +14,19 @@ function redis_connector.connect()
     })
 
     local ips, err = resolver:query("testcenter-cache-service")
-    ip = ips[1]["address"];
+    ip = ips[1]["address"]
     if (#ips == 0) or (not ip) then
       ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
-      ngx.say("Failed to resolve Redis hostname");
+      ngx.say("Failed to resolve Redis hostname")
       ngx.log(ngx.ERR, "Failed to resolve Redis hostname: ", err)
       return ngx.exit(ngx.status)
     end
 
-    ngx.log(ngx.ERR, "Looked up fast-auth-service IP: " .. ip);
+    ngx.log(ngx.ERR, "Looked up cache-service IP: " .. ip)
     ngx.shared.dns_cache:set("testcenter-cache-service", ip)
   end
 
   -- connect to redis
-
   local redis = require "resty.redis"
   local red = redis:new()
   local ok, err = red:connect(ip, 6379)

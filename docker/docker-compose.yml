@@ -56,6 +56,8 @@ services:
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
       HOSTNAME: ${HOSTNAME}
       TLS_ENABLED: ${TLS_ENABLED}
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
     depends_on:
       testcenter-db:
         condition: service_healthy
@@ -79,6 +81,8 @@ services:
     image: iqbberlin/testcenter-file-service:current
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
+    environment:
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
     depends_on:
       traefik:
         condition: service_started
@@ -101,6 +105,10 @@ services:
   testcenter-cache-service:
     container_name: testcenter-cache-service
     image: redis:7.0-bullseye
+    command:
+      - "bash"
+      - "-c"
+      - "redis-server --appendonly yes --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 1s

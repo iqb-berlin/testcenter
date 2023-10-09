@@ -76,7 +76,7 @@ class TestController extends Controller {
       'mode' => $authToken->getMode(),
       'laststate' => (array) $test->state,
       'xml' => $bookletFile->getContent(),
-      'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()), // 6
+      'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()),
       'firstStart' => !$test->running,
       'workspaceId' =>  $workspace->getId()
     ]);

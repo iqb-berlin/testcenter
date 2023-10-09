@@ -91,6 +91,7 @@ class SystemController extends Controller {
     return $response->withJson([
       'broadcastingService' => BroadcastService::getStatus(),
       'fileService' => FileService::getStatus(),
+      'cacheService' => CacheService::getStatusFilesCache()
     ]);
   }
 

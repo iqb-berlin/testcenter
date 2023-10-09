@@ -508,7 +508,7 @@ class WorkspaceDAO extends DAO {
   }
 
     public function getBookletResourcePaths(string $bookletFileName): array {
-      return array_reduce(
+      return
         $this->_(
           "select distinct
             unitFiles.id,
@@ -540,12 +540,6 @@ class WorkspaceDAO extends DAO {
               ':booklet_file_name' => $bookletFileName
             ],
           true
-        ),
-        function(array $agg, array $item): array {
-          $agg[$item['id']][$item['relationship_type']][] = "{$item['type']}/{$item['name']}";
-          return $agg;
-        },
-        []
-      );
+        );
     }
 }

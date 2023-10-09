@@ -40,7 +40,8 @@ export class MainDataService {
   appConfig: AppConfig | null = null;
   sysStatus: SysStatus = {
     fileService: 'unknown',
-    broadcastingService: 'unknown'
+    broadcastingService: 'unknown',
+    cacheService: 'unknown'
   };
 
   sysCheckAvailable = false;

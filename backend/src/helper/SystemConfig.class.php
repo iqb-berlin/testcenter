@@ -12,6 +12,8 @@ class SystemConfig {
   public static string $broadcastingService_external = "";
   public static string $broadcastingService_internal = "";
   public static string $cacheService_host = "";
+  public static string $cacheService_includeFiles = "";
+  public static int $cacheService_ram = 0;
   public static string $password_salt = "t";
   public static bool $system_tlsEnabled = false;
   public static string $system_hostname;
@@ -84,6 +86,9 @@ class SystemConfig {
       $config['cacheService']['host'] = 'testcenter-cache-service';
     }
 
+    $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
+    $config['cacheService']['ram'] = (int) 'CACHE_SERVICE_RAM';
+
     $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
     $config['system']['hostname'] = getEnv('HOSTNAME');
     $config['system']['version'] = getEnv('VERSION');
@@ -101,7 +106,6 @@ class SystemConfig {
   }
 
   private static function boolEnv(string $name): bool {
-    $r = in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
     return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
   }
 

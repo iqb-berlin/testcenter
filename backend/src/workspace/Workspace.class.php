@@ -468,6 +468,13 @@ class Workspace {
   }
 
   public function getBookletResourcePaths(string $bookletId): array {
-    return $this->workspaceDAO->getBookletResourcePaths($bookletId);
+    $resourceList = $this->workspaceDAO->getBookletResourcePaths($bookletId);
+    $resourceListStructured = [];
+    foreach ($resourceList as $item) {
+      $resourceListStructured[$item['id']][$item['relationship_type']][] = "{$item['type']}/{$item['name']}";
+      $path = "/ws_$this->workspaceId/{$item['type']}/{$item['name']}";
+      CacheService::storeFile($path);
+    }
+    return $resourceListStructured;
   }
 }
