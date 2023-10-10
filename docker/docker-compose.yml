@@ -7,10 +7,6 @@ x-env-mysql: &env-mysql
   MYSQL_USER: ${MYSQL_USER}
   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
-x-env-initdata: &env-initdata
-  SUPERUSER_NAME: ${SUPERUSER_NAME}
-  SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
-
 x-env-logging-conf: &env-logging-conf
   max-size: "200m"
   max-file: "10"
@@ -49,9 +45,10 @@ services:
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     environment:
-      <<: [ *env-mysql, *env-initdata ]
+      <<: *env-mysql
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
+      MYSQL_SALT: ${MYSQL_SALT}
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
       HOSTNAME: ${HOSTNAME}

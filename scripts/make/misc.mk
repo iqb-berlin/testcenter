@@ -41,7 +41,7 @@ create-interfaces:
 	make run-task-runner task=create-interfaces
 
 init-env:
-	cp docker/.env-default docker/.env
+	cp docker/default.env docker/.env
 
 composer-install:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .

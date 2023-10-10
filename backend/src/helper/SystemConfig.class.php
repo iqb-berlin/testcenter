@@ -67,31 +67,30 @@ class SystemConfig {
   public static function readFromEnvironment(): void {
     $config = [];
 
-    $config['database']['name'] = getEnv('MYSQL_DATABASE');
-    $config['database']['host'] = getEnv('MYSQL_HOST');
-    $config['database']['port'] = getEnv('MYSQL_PORT');
-    $config['database']['user'] = getEnv('MYSQL_USER');
-    $config['database']['password'] = getEnv('MYSQL_PASSWORD');
+    $config['database']['name'] = self::stringEnv('MYSQL_DATABASE');
+    $config['database']['host'] = self::stringEnv('MYSQL_HOST');
+    $config['database']['port'] = self::stringEnv('MYSQL_PORT');
+    $config['database']['user'] = self::stringEnv('MYSQL_USER');
+    $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
 
-    $config['passwords']['salt'] = getEnv('MYSQL_SALT');
+    $config['passwords']['salt'] = self::stringEnv('MYSQL_SALT');
 
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
-      $config['broadcastingService']['external'] = getEnv('HOSTNAME') . '/bs/public/';
+      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . '/bs/public/';
       $config['broadcastingService']['internal']= 'testcenter-broadcasting-service:3000';
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['fileService']['external'] = getEnv('HOSTNAME') . '/fs/';
+      $config['fileService']['external'] = self::stringEnv('HOSTNAME') . '/fs/';
       $config['fileService']['internal'] = 'testcenter-file-service';
       $config['cacheService']['host'] = 'testcenter-cache-service';
     }
 
     $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
-    $config['cacheService']['ram'] = (int) 'CACHE_SERVICE_RAM';
+    $config['cacheService']['ram'] = (int) self::stringEnv('CACHE_SERVICE_RAM');
 
     $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
-    $config['system']['hostname'] = getEnv('HOSTNAME');
-    $config['system']['version'] = getEnv('VERSION');
+    $config['system']['hostname'] = self::stringEnv('HOSTNAME');
 
     self::apply($config);
   }
@@ -107,6 +106,13 @@ class SystemConfig {
 
   private static function boolEnv(string $name): bool {
     return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
+  }
+
+  private static function stringEnv(string $name): string {
+    if (!$value = getEnv($name)) {
+      throw new Exception("Environment-variable missing: `$name`.");
+    }
+    return $value;
   }
 
   public static function write(): void {

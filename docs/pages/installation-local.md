@@ -46,20 +46,41 @@ cd..
 * Create a second MySQL Database with the same name, but prefixed with `TEST_`.
 * use Configuration from `scripts/database/my.cnf`
 
+## Create Backend Config
+Create a file `backend/config/config.ini` with your credentials and settings.
+```
+[database]
+host=...
+name=...
+password=...
+port=...
+user=...
+
+[broadcastingService]
+external=http://localhost:3000/public/
+internal=http://localhost:3000
+
+[password]
+salt=t
+
+[system]
+hostname=localhost
+timezone=Europe/Berlin
+
+[debug]
+useInsecurePasswords=no
+allowExternalXmlSchema=yes
+useStaticTokens=no
+useStaticTime=now
+
+[language]
+dateFormat=d/m/Y H:i
+```
+Not that files-service and cache-service are currently not available in local installation.
+
 ## Initialize Backend
 ```
-sudo --user=www-data php backend/initialize.php \
- --user_name=(super user name) \
- --user_password=(super user password) \
- --workspace=(workspace name) \
- --host=(mostly `localhost`) \
- --post=(usually 3306) \
- --dbname=(database name) \
- --user=(mysql-username) \
- --password=(mysql-password) \
- --salt=(an arbitrary string, optional) \
- --broadcastServiceUriPush=(http://localhost:3000 - address of broadcast service to push for the backend, ) \
- --broadcastServiceUriSubscribe=(ws://localhost:3000/ws/ - address of broadcast service to subscribe to from frontend)
+sudo --user=www-data php backend/initialize.php
 ```
 
 Tipp: If you don't want to use the broadcasting-service omit the last two lines.
@@ -95,4 +116,4 @@ npm run start
 ```
 
 ## File-Service
-Can not be run locally. It is not needed because fastLoadUrl goes to the regular backend.
+Can not be run locally. It is not needed because files can be served by the regular backend as well.
