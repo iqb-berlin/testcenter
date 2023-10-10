@@ -105,7 +105,7 @@ services:
     command:
       - "bash"
       - "-c"
-      - "redis-server --appendonly yes --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
+      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 1s
