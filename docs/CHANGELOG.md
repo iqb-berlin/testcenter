@@ -4,11 +4,13 @@ layout: default
 
 ## [next]
 ### Performance
-* Das Backend allgemein wurde performanter und resourcensparender gemacht, indem der selbst implementierte Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
+* Zusätzlich können auszuliefernde Dateien im Arbeitsspeicher des Servers gecached werden.
 * Es wurde ein Puffer für wegzuspeichernde Unit-States eingeführt. Damit kann ein Testcenter-Server während der
   Durchführung entlastet werden.
+* Das Backend allgemein wurde performanter und ressourcen-sparender gemacht, indem der selbst implementierte 
+  Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
 
 ### Neue Features
 * In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
@@ -18,8 +20,7 @@ layout: default
 * Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript
 
 ### Verbesserungen
-* Das Verhalten im Fehlerfall wurde komplett überarbeitet, um im Fehlerfall sinnvollere Nachrichten und Optionen
-  anzubieten.
+* Das Verhalten im Fehlerfall wurde komplett überarbeitet, um sinnvollere Nachrichten und Optionen anzubieten.
 * In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs. 
 
 ### Neue Features
