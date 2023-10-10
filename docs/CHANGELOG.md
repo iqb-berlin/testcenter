@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.13.0
+### Verbesserungen
+* Platzhalter für ID-Eingabefeld vor dem Senden des Berichts ist (via CustomTexts) anpassbar. Standardwert wurde von
+  "Titel" zu "Schul-ID" geändert.
+
 ## 14.12.0
 ### Verbesserungen
 * Überarbeitete  Navigationsleiste
