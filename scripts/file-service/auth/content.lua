@@ -6,7 +6,8 @@ if (includeFiles ~= nil)
   and (includeFiles:lower() ~= 'true')
   and (includeFiles ~= '1')
 then
-  ngx.log(ngx.ERR, 'Cache service not configured for files')
+  ngx.log(ngx.INFO, 'Cache service not configured for files')
+  ngx.header["X-Source"] = "Disk"
   ngx.exec(ngx.var.file_path)
   return
 end

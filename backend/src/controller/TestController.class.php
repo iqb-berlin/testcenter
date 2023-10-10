@@ -137,6 +137,7 @@ class TestController extends Controller {
 
     return $response
       ->withBody(new Stream($res))
+      ->withHeader('X-Source', 'backend')
       ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
       ->withHeader('Content-length', filesize($resourceFile));
   }

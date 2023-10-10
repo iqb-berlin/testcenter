@@ -100,7 +100,9 @@ const prepareSpecsForDredd = done => {
     deprecated: null,
     'properties > .*? > format': null,
     'schema > format': null,
-    '^(paths > [^> ]+ > [^> ]+) > tags$': null
+    '^(paths > [^> ]+ > [^> ]+) > tags$': null,
+    'responses > .*? > headers > .*? > description': null,
+    'responses > .*? > headers > .*? > schema': null
   };
 
   const deleteAllPathsButSplit = {

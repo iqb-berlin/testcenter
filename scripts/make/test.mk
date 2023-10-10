@@ -71,6 +71,7 @@ test-frontend-integration:
 
 # Persons some API tests with Dredd on the file-service
 # ! Attention: The testcenter must not run when starting this # TODO change this
+# TODO this creates a file in /sampledata. Change this.
 test-file-service-api:
 	docker compose \
 		-f docker/docker-compose.yml \
@@ -82,13 +83,13 @@ test-file-service-api:
 
 # Performs some e2e tests with CyPress against real backend and services
 test-system-headless:
-		docker compose -f docker/docker-compose.system-test-headless.yml up \
-			--abort-on-container-exit \
-			--force-recreate \
-			--renew-anon-volumes
+	docker compose -f docker/docker-compose.system-test-headless.yml up \
+		--abort-on-container-exit \
+		--force-recreate \
+		--renew-anon-volumes
 
 test-system:
-		docker compose -f docker/docker-compose.system-test-ui.yml up \
-			--abort-on-container-exit \
-			--force-recreate \
-			--renew-anon-volumes
+	docker compose -f docker/docker-compose.system-test-ui.yml up \
+		--abort-on-container-exit \
+		--force-recreate \
+		--renew-anon-volumes

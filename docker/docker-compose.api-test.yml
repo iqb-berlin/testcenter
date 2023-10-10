@@ -3,8 +3,7 @@ version: '3.9'
 services:
   testcenter-file-service:
     volumes:
-      - testcenter_test_data:/var/www/html
+      - ../sampledata:/var/www/html
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/html/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
-
-volumes:
-  testcenter_test_data:
+    environment:
+      CACHE_SERVICE_INCLUDE_FILES: off
