@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SaveReportComponent } from './save-report.component';
+import { SharedModule } from '../../../shared/shared.module';
 
 describe('SaveReportComponent', () => {
   let component: SaveReportComponent;
@@ -18,7 +19,8 @@ describe('SaveReportComponent', () => {
         ReactiveFormsModule,
         MatInputModule,
         MatFormFieldModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        SharedModule
       ],
       providers: [
         MatDialog
