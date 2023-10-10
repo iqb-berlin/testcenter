@@ -3,7 +3,10 @@
 class CacheService {
   private static Redis|null $redis = null;
 
-  private static function connect(): void {
+  private static function connect(): bool {
+    if (!SystemConfig::$cacheService_host) {
+      return false;
+    }
     if (!isset(self::$redis)) {
       try {
         self::$redis = new Redis();
@@ -12,11 +15,11 @@ class CacheService {
         throw new Exception("Could not reach Cache-Service: " . $exception->getMessage());
       }
     }
+    return true;
   }
 
   static function storeAuthentication(PersonSession $personSession): void {
-    self::connect();
-    if (!self::$redis) {
+    if (!self::connect()) {
       return;
     }
     self::$redis->set(
@@ -29,8 +32,7 @@ class CacheService {
   }
 
   public static function removeAuthentication(PersonSession $personSession): void {
-    self::connect();
-    if (!self::$redis) {
+    if (!self::connect()) {
       return;
     }
     self::$redis->del('group-token:' . $personSession->getPerson()->getToken());
@@ -40,7 +42,9 @@ class CacheService {
     if (!SystemConfig::$cacheService_includeFiles) {
       return;
     }
-    self::connect();
+    if (!self::connect()) {
+      return;
+    }
     if (self::$redis->exists("file:$filePath")) {
       self::$redis->expire("file:$filePath", 24*60*60);
     } else {
@@ -53,13 +57,11 @@ class CacheService {
   }
 
   static function getStatusFilesCache(): string {
-    if (!SystemConfig::$cacheService_includeFiles) {
+    if (!SystemConfig::$cacheService_host or !SystemConfig::$cacheService_includeFiles) {
       return 'off';
     }
-    self::connect();
     try {
-      self::$redis = new Redis();
-      self::$redis->connect(SystemConfig::$cacheService_host);
+      self::connect();
     } catch (RedisException $exception) {
       return 'unreachable';
     }

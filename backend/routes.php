@@ -225,4 +225,4 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
   ->add(new RequireToken('admin'));
 
 
-$app->get('/resource/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'getResourceFromPath']);
+$app->get('/file/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'getFile']);

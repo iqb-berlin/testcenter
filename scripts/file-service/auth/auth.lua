@@ -8,7 +8,7 @@ local uri = ngx.var.uri
 local fileName
 local token
 
-token, wsId, fileName = string.match(uri, "^/resource/([^/]+)/ws_(%d+)/Resource/(.+)$")
+token, wsId, fileName = string.match(uri, "^/file/([^/]+)/ws_(%d+)/Resource/(.+)$")
 
 if not token then
   ngx.status = ngx.HTTP_UNAUTHORIZED

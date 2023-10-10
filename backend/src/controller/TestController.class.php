@@ -111,7 +111,8 @@ class TestController extends Controller {
     ]);
   }
 
-  public static function getResourceFromPath(Request $request, Response $response, $args): Response {
+  // TODO move to separate controller bc route starts with /file , not with /test
+  public static function getFile(Request $request, Response $response, $args): Response {
     $groupTokenString = $request->getAttribute('group_token');
     $path = $args['path'];
     $workspaceId = (int) $request->getAttribute('ws_id');

@@ -83,7 +83,7 @@ export class BackendService {
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.backendUrl;
     return this.http
       .get(
-        `${resourceUri}resource/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
+        `${resourceUri}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
         {
           responseType: 'text',
           reportProgress: true,
