@@ -94,6 +94,11 @@ const updateVersionInFiles = gulp.parallel(
     `${rootPath}/dist-src/.env`,
     /VERSION=\d+.\d+.\d+(-\S+)?/g,
     'VERSION=$VERSION'
+  ),
+  replaceInFiles(
+    `${rootPath}/dist-src/install.sh`,
+    /VERSION=.*/g,
+    'VERSION=$VERSION'
   )
 );
 

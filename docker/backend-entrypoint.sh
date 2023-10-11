@@ -2,22 +2,11 @@
 
 set -e
 
-if [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]
-  then
-    echo "TLS enabled"
-    HTTP_PROTOCOL=https
-    WEBSOCKET_PROTOCOL=wss
-  else
-    echo "TLS disabled"
-    HTTP_PROTOCOL=http
-    WEBSOCKET_PROTOCOL=ws
-fi
-
 if [ "$BROADCAST_SERVICE_ENABLED" = "yes" ] || [ "$BROADCAST_SERVICE_ENABLED" = "true" ]
   then
     echo "Broadcast-Service enabled"
     BROADCAST_SERVICE_URI_PUSH=http://testcenter-broadcasting-service:3000
-    BROADCAST_SERVICE_URI_SUBSCRIBE=${WEBSOCKET_PROTOCOL}://${HOSTNAME}/bs/public
+    BROADCAST_SERVICE_URI_SUBSCRIBE=wss://${HOSTNAME}/bs/public
   else
     echo "Broadcast-Service disabled"
 fi
