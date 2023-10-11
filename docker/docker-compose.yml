@@ -55,6 +55,8 @@ services:
       TLS_ENABLED: ${TLS_ENABLED:-off}
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
+      PORT: ${PORT:-80}
+      TLS_PORT: ${TLS_PORT:-443}
     depends_on:
       testcenter-db:
         condition: service_healthy

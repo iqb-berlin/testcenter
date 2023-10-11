@@ -75,8 +75,14 @@ class SystemConfig {
 
     $config['passwords']['salt'] = self::stringEnv('MYSQL_SALT');
 
+    $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
+    $config['system']['hostname'] = self::stringEnv('HOSTNAME');
+
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
-      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . '/bs/public/';
+      $port = $config['system']['tlsEnabled']
+        ? (self::stringEnv('TLS_PORT', '443'))
+        : (self::stringEnv('PORT', '80'));
+      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$port/bs/public/";
       $config['broadcastingService']['internal']= 'testcenter-broadcasting-service:3000';
     }
 
@@ -89,8 +95,7 @@ class SystemConfig {
     $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
     $config['cacheService']['ram'] = (int) self::stringEnv('CACHE_SERVICE_RAM');
 
-    $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
-    $config['system']['hostname'] = self::stringEnv('HOSTNAME');
+
 
     self::apply($config);
   }
@@ -108,9 +113,13 @@ class SystemConfig {
     return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
   }
 
-  private static function stringEnv(string $name): string {
-    if (!$value = getEnv($name)) {
-      throw new Exception("Environment-variable missing: `$name`.");
+  private static function stringEnv(string $name, ?string $default = null): string {
+    $value = getEnv($name);
+    if (!$value) {
+      if ($default == null) {
+        throw new Exception("Environment-variable missing: `$name`.");
+      }
+      return $default;
     }
     return $value;
   }
