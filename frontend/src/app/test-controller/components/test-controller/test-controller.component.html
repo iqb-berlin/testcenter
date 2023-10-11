@@ -18,54 +18,44 @@
   </p>
 
   <div *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-       class="unit-nav flex-row" [style.margin-left]="'auto'">
-    <a mat-fab
-       *ngIf="tcs.bookletConfig.controller_design === '2018'"
+       class="flex-row" [style.align-items]="'safe center'" [style.max-height.%]="100" [style.margin-left]="'auto'">
+    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
+       mat-fab matTooltip="Zurück" data-cy="unit-navigation-backward"
        [disabled]="tcs.currentUnitSequenceId <= 1"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück"
-       data-cy="unit-navigation-backward">
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>
     </a>
-    <a mat-flat-button
-       *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+       mat-flat-button matTooltip="Zurück" data-cy="unit-navigation-backward"
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId <= 1"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück"
-       data-cy="unit-navigation-backward">
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>
     </a>
 
-    <ng-container *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'">
+    <div *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="unit-nav flex-row">
       <ng-container *ngFor="let u of unitNavigationList">
-        <a
-           *ngIf="u.sequenceId"
-           mat-flat-button
-           class="unit-nav-item" [class.unit-nav-item-selected]="u.isCurrent"
+        <a *ngIf="u.sequenceId"
+           mat-flat-button class="unit-nav-item" [class.unit-nav-item-selected]="u.isCurrent"
            [attr.aria-label]="u.longLabel" [attr.data-cy]="u.shortLabel"
            [disabled]="u.disabled"
            (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
           {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
         </a>
       </ng-container>
-    </ng-container>
+    </div>
 
-    <a mat-fab
-       *ngIf="tcs.bookletConfig.controller_design === '2018'"
+    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
+       mat-fab matTooltip="Weiter" data-cy="unit-navigation-forward"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter"
-       data-cy="unit-navigation-forward">
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>
-    <a mat-flat-button
-       *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+       mat-flat-button matTooltip="Weiter" data-cy="unit-navigation-forward"
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter"
-       data-cy="unit-navigation-forward">
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>
   </div>
