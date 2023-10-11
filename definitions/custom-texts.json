@@ -139,6 +139,10 @@
     "label" : "Text auf der ersten Seite des System-Checks",
     "defaultvalue" : "Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist."
   },
+  "syscheck_report_id" : {
+    "label" : "Platzhalter für ID-Eingabefeld vor dem Senden des Berichts",
+    "defaultvalue" : "Schul-ID"
+  },
   "gm_headline" : {
     "label" : "Überschrift: Gruppenmonitor",
     "defaultvalue" : "Gruppenüberwachung"

@@ -15,7 +15,8 @@
       als Titel für den Bericht verwendet wird!
     </p>
     <mat-form-field>
-      <input matInput formControlName="title" placeholder="Titel">
+      <input matInput formControlName="title"
+             [placeholder]="'Schul-ID'| customtext:'syscheck_report_id' | async">
     </mat-form-field>
   </mat-dialog-content>
 
