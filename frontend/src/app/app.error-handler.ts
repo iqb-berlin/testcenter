@@ -28,6 +28,23 @@ export class AppErrorHandler implements ErrorHandler {
         console.warn(error.stack);
       }
 
+      if (
+        error.constructor.name === 'Event' &&
+        'type' in error &&
+        error.type === 'error' &&
+        'target' in error &&
+        typeof error.target === 'object' &&
+        error.target != null &&
+        'url' in error.target
+      ) {
+        this.mainDataService.appError = new AppError({
+          type: 'network',
+          label: 'Unbekannter Netzwerkfehler',
+          description: `Can not establish connection to \`${error.target.url}\``
+        });
+        return;
+      }
+
       this.mainDataService.appError = new AppError({
         type: 'script',
         label: `Programmfehler: ${error.name}`,

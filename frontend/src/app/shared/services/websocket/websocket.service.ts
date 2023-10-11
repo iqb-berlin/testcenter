@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, share } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { catchError, map, share } from 'rxjs/operators';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 interface WsMessage {
@@ -32,15 +32,17 @@ export class WebsocketService {
         url: this.wsUrl
       });
 
-      this.wsSubscription = this.wsSubject$.subscribe(
-        () => {},
-        () => {
-          this.closeConnection();
-        },
-        () => {
-          this.closeConnection();
-        }
-      );
+      this.wsSubscription = this.wsSubject$
+        .subscribe({
+          next: () => {
+          },
+          error: () => {
+            this.closeConnection();
+          },
+          complete: () => {
+            this.closeConnection();
+          }
+        });
     }
   }
 
@@ -68,7 +70,7 @@ export class WebsocketService {
       this.connect();
     }
     if (!this.wsSubject$) {
-      throw new Error('Oh shit');
+      throw new Error('Websocket connection failed and fallback as well.');
     }
 
     return this.wsSubject$?.multiplex(
@@ -76,7 +78,10 @@ export class WebsocketService {
       () => ({ event: `unsubscribe:${channelName}` }),
       message => (message.event === channelName)
     )
-      .pipe(map((event: WsMessage): T => event.data))
-      .pipe(share());
+      .pipe(
+        catchError(() => of()),
+        map((event: WsMessage): T => event.data),
+        share()
+      );
   }
 }
