@@ -124,6 +124,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend"
     networks:
       testcenter:
 
