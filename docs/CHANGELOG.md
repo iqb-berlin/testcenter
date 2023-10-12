@@ -27,6 +27,9 @@ layout: default
 * Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
   im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
 
+### Bugfixes
+* Log-Daten: Seitenwechel bei mehrseitigen Aufgaben werden wieder gelogt.
+
 # Changelog & Upgrade Information
 
 ## 14.13.0
