@@ -41,27 +41,31 @@ h1 {
   display: flex;
   align-items: safe center;
   justify-content: center;
-  overflow-x: clip;
-  overflow-y: auto;
-  margin-bottom: 2px;
+  overflow: clip;
   width: 30px;
   padding: 0;
   min-width: unset;
-}
-
-/* Workaround for non-Firefox Browsers, which don't support "safe" in align-items.
-This makes it so that long unit labels don't get cut off when overflowing and instead
-appear as if aligned with "start". */
-:host ::ng-deep .unit-nav .unit-nav-item span.mat-button-wrapper {
-  margin: auto;
 }
 
 .unit-nav a:not(:last-child) {
   border-right: lightgray 1px solid;
 }
 
+.header .mdc-fab[disabled="true"],
+.header .mdc-button[disabled="true"] {
+  background-color: darkgray;
+}
+
+.header .mat-mdc-button.mat-unthemed {
+  color: white;
+}
+
 .unit-nav-item-selected {
   background-color: var(--accent) !important;
+}
+
+.unit-nav-item-selected[disabled="true"] {
+  color: black;
 }
 
 .debug-pane {
@@ -69,7 +73,8 @@ appear as if aligned with "start". */
   position: absolute;
   background: black;
   z-index: 10000;
-  padding: 2px
+  padding: 2px;
+  box-shadow: 0px 1px 14px 2px rgba(0,0,0,0.75);
 }
 
 .debug-pane b {
@@ -88,12 +93,4 @@ appear as if aligned with "start". */
 
 .mat-drawer-container {
   background: transparent !important;
-}
-
-.mat-fab.mat-button-disabled {
-  background-color: lightgray;
-}
-
-.unit-nav-item.mat-flat-button.mat-button-disabled {
-  background-color: lightgray;
 }
