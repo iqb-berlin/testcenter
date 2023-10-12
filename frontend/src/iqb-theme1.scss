@@ -24,7 +24,7 @@ $my-theme: mat.define-light-theme((
 
 .mat-mdc-card {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   flex-direction: column;
   flex-wrap: wrap;
 }
