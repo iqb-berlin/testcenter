@@ -15,9 +15,6 @@ COPY frontend/src /app/src
 COPY common /common
 COPY definitions /definitions
 
-# ng build needs to run once here, otherwise the Angular compiler Ivy bugs out
-RUN npx ng build --configuration dev
-
 EXPOSE 4200
 
 CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--host", "0.0.0.0"]
