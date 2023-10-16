@@ -22,7 +22,7 @@ function redis_connector.connect()
       return ngx.exit(ngx.status)
     end
 
-    ngx.log(ngx.ERR, "Looked up cache-service IP: " .. ip)
+    ngx.log(ngx.INFO, "Looked up cache-service IP: " .. ip)
     ngx.shared.dns_cache:set("testcenter-cache-service", ip)
   end
 
