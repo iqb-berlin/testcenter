@@ -18,6 +18,8 @@ services:
       context: ..
       dockerfile: docker/frontend.Dockerfile
       target: prod
+    volumes:
+      - ../frontend/config/nginx.conf:/etc/nginx/templates/default.conf.template
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:current-prod
