@@ -22,6 +22,7 @@ services:
       - "${PORT}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: always
     networks:
       testcenter:
 
@@ -38,6 +39,7 @@ services:
       retries: 120
     volumes:
       - dbdata:/var/lib/mysql
+    restart: always
     networks:
       testcenter:
 
@@ -72,6 +74,7 @@ services:
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
     volumes:
       - testcenter_backend_vo_data:/var/www/data
+    restart: always
     networks:
       testcenter:
 
@@ -98,6 +101,7 @@ services:
       - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
+    restart: always
     networks:
       testcenter:
 
@@ -112,6 +116,7 @@ services:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 1s
       retries: 120
+    restart: always
     networks:
       testcenter:
 
@@ -127,6 +132,7 @@ services:
       - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend"
+    restart: always
     networks:
       testcenter:
 
@@ -143,6 +149,7 @@ services:
       - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
+    restart: always
     networks:
       testcenter:
 

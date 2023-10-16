@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent, HttpErrorResponse
@@ -9,11 +9,38 @@ import { AppError, AppErrorType } from './app.interfaces';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
+  constructor(
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
+  ) {
+  }
+
   // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError(error => {
         if (error instanceof HttpErrorResponse) {
+          if (
+            !this.isProductionMode &&
+            error.status === 404 &&
+            error.headers.get('X-Powered-By') === 'Express'
+          ) {
+            // in production, this  is done by nginx. this hack lets it react in the same way in dev
+            let missingService = 'Service';
+            if (error.url?.match('/api/')) {
+              missingService = 'Backend';
+            } else if (error.url?.match('/fs/')) {
+              missingService = 'File-Service';
+            }
+            return throwError(() => {
+              throw new AppError({
+                label: 'Der Server ist augenblicklich nicht erreichbar',
+                description: `${missingService} not Available`,
+                details: error.url ?? '',
+                code: 503,
+                type: 'network_temporally'
+              });
+            });
+          }
           return throwError(() => ErrorInterceptor.handleHttpError(error));
         }
         if (error instanceof DOMException) {
@@ -103,6 +130,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       case 500:
         statusMessage = 'Allgemeines Server-Problem.';
         break;
+      case 502:
       case 503:
         statusMessage = 'Der Server ist augenblicklich nicht erreichbar';
         errorType = 'network_temporally';

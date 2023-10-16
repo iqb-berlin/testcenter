@@ -31,7 +31,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   browser: UAParser.IResult | null = null;
   url: string = '';
   restartTimer$: Observable<number> | null = null;
-  waitUnitAutomaticRestartSeconds: number = 120;
+  waitUnitAutomaticRestartSeconds: number = 30;
   sendingResult: BugReportResult | null = null;
   timestamp: number = -1;
   private appErrorSubscription: Subscription | null = null;
