@@ -24,6 +24,19 @@ const DATA_DIR = ROOT_DIR . '/data';
 require_once "vendor/autoload.php";
 
 try {
+  SystemConfig::readVersion();
+  $systemVersion = SystemConfig::$system_version;
+  CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
+
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    throw new InvalidArgumentException("Initialize is already running.");
+  }
+  if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
+    $msg = file_get_contents(ROOT_DIR . '/backend/config/error.lock');
+    throw new Exception("Last initialize failed with error: $msg.");
+  }
+  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
+
   $opt = CLI::getOpt();
   $args = [
     'overwrite_existing_installation' => isset($opt['overwrite_existing_installation']),
@@ -31,15 +44,6 @@ try {
     'skip_read_workspace_files' => isset($opt['skip_read_workspace_files']),
     'dont_create_sample_data' => isset($opt['dont_create_sample_data'])
   ];
-
-  SystemConfig::readVersion();
-  $systemVersion = SystemConfig::$system_version;
-  CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
-
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    throw new Exception("Initialize is already running");
-  }
-  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
   if (count($opt)) {
     CLI::h2("Initialization Options:");
@@ -218,14 +222,18 @@ try {
 
   CLI::h1("Ready.");
 
-} catch (Exception $e) {
+} catch (InvalidArgumentException $e) {
+  CLI::warning($e->getMessage());
+  exit(0);
 
+} catch (Exception $e) {
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
   if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     unlink(ROOT_DIR . '/backend/config/init.lock');
   }
+  file_put_contents(ROOT_DIR . '/backend/config/error.lock', $e->getMessage());
   exit(1);
 }
 

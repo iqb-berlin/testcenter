@@ -12,6 +12,19 @@ try {
 
   require_once "vendor/autoload.php";
 
+  // TODO move this to .htaccess
+  if (($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') and file_exists(ROOT_DIR . '/backend/config/error.lock')) {
+    throw new Exception("Service could not be started correctly! Please refer to your system administrator.");
+  }
+
+  // TODO move this to .htaccess
+  if (($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') and file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    http_response_code(503);
+    header('Retry-After:30');
+    echo "Service is restarting.";
+    exit;
+  }
+
   SystemConfig::read();
 
   if (isset($_SERVER['HTTP_TESTMODE'])) {
@@ -29,13 +42,6 @@ try {
   $app->addRoutingMiddleware();
   $errorMiddleware = $app->addErrorMiddleware(true, true, true);
   $errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
-
-  if (($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') and file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    http_response_code(503);
-    header('Retry-After:30');
-    echo "Service is restarting";
-    exit;
-  }
 
   $projectPath = Server::getProjectPath();
   if ($projectPath) {
