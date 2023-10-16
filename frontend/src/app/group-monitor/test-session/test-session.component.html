@@ -48,10 +48,10 @@
     {{current.parent.label || current.parent.blockId || current.parent.id}}
     <mat-icon
       class="unit-badge"
-      *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
-      matBadge="{{testSession.timeLeft[current.parent.id] | number: '1.0-0'}}"
+      *ngIf="testSession.timeLeft && (testSession?.timeLeft[current.parent.id] !== undefined)"
+      matBadge="{{testSession?.timeLeft[current.parent.id] | number: '1.0-0'}}"
       matBadgeColor="accent"
-      [matTooltip]="'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async"
+      matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async}}"
     >schedule
     </mat-icon>
   </div>
@@ -155,7 +155,7 @@
       *ngSwitchCase="'testlet'"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
-      [class]="{ 'timeup' : testletOrUnit.restrictions?.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
+      [class]="{ 'timeup' : testletOrUnit.restrictions?.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession?.timeLeft[testletOrUnit.id] === 0 }"
     >
 
       <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testletOrUnit }"></ng-container>
@@ -236,19 +236,19 @@
     <ng-container *ngIf="(testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testlet.id)); else: timerNotStarted">
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] === 0"
-        [matTooltip]="'Zeit abgelaufen' | customtext:'gm_timeup_tooltip' | async"
+        matTooltip="{{'Zeit abgelaufen' | customtext:'gm_timeup_tooltip' | async}}"
         matTooltipPosition="above"
       >timer_off</mat-icon>
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] > 0"
-        [matTooltip]="'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]:timeMax.minutes | async"
+        matTooltip="{{'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]:timeMax.minutes | async}}"
         matTooltipPosition="above"
         color="accent"
       >timer</mat-icon>
     </ng-container>
     <ng-template #timerNotStarted>
       <mat-icon
-        [matTooltip]="'Zeitgesteuerter Block: %s Minute(n)' | customtext:'gm_timemax_tooltip':timeMax.minutes | async"
+        matTooltip="{{'Zeitgesteuerter Block: %s Minute(n)' | customtext:'gm_timemax_tooltip':timeMax.minutes | async}}"
         matTooltipPosition="above"
       >timer</mat-icon>
     </ng-template>

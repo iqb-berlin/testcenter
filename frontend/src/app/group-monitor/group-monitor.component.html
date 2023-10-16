@@ -88,11 +88,11 @@
             (change)="toggleAlwaysCheckAll($event)"
             [disabled]="!tsm.checkingOptions.enableAutoCheckAll"
             [checked]="tsm.checkingOptions.autoCheckAll"
-            [matTooltip]="(sessionsStats.differentBookletSpecies > 1) ? (
+            [matTooltipDisabled]="sessionsStats.differentBookletSpecies <= 1"
+            matTooltip="{{
             'Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.'
               | customtext:'gm_multiple_booklet_species_warning'
-              | async
-           ) : null"
+              | async}}"
         >
           {{'Alle Tests gleichzeitig steuern' | customtext:'gm_auto_checkall' | async }}
         </mat-slide-toggle>
@@ -139,7 +139,7 @@
           class="control"
           color="primary"
           (click)="testCommandGoto()"
-          [matTooltip]="selectedElement?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)"
+          matTooltip="{{selectedElement?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
         >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
@@ -153,7 +153,7 @@
           class="control"
           color="primary"
           (click)="unlockCommand()"
-          [matTooltip]="'Freigeben' | customtext:'gm_control_unlock_tooltip' | async"
+          matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
         >
           <mat-icon>lock_open</mat-icon>
           {{'Test Entsperren' | customtext:'gm_control_unlock' | async}}
@@ -189,7 +189,7 @@
             class="settings-button"
             mat-icon-button
             [matMenuTriggerFor]="rootMenu"
-            [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
+            matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
             matTooltipPosition="above"
           >
             <mat-icon>settings</mat-icon>
@@ -200,7 +200,7 @@
           <button
             mat-icon-button
             (click)="scrollDown()"
-            [matTooltip]="'Ganz nach unten' | customtext:'gm_scroll_down' | async"
+            matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
             matTooltipPosition="above"
           >
             <mat-icon>keyboard_arrow_down</mat-icon>

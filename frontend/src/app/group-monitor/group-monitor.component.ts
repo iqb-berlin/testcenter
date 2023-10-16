@@ -146,7 +146,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
-    if (Object.keys(option).includes(option)) {
+    if (Object.keys(this.displayOptions).includes(option)) {
       (this.displayOptions as { [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey] })[option] = value;
     }
   }
