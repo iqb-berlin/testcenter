@@ -11,21 +11,22 @@ layout: default
   Durchführung entlastet werden.
 * Das Backend allgemein wurde performanter und ressourcen-sparender gemacht, indem der selbst implementierte 
   Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
+* Beim ersten Start eines Tests werden keine bisher gespeicherten abgefragt, da keine existieren können und somit Calls
+  ans Backend gespart.
 
 ### Neue Features
 * In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
-  die Verwaltung zu erleichtern.  
+  die Verwaltung zu erleichtern.
+* Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
+  im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
 
 ### Sicherheit
 * Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript
 
 ### Verbesserungen
 * Das Verhalten im Fehlerfall wurde komplett überarbeitet, um sinnvollere Nachrichten und Optionen anzubieten.
-* In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs. 
-
-### Neue Features
-* Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
-  im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
+* In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs.
+* Wird ein nicht unterstützter Browser verwendet, so wird dies direkt auf der Startseite angezeigt.
 
 ### Bugfixes
 * Log-Daten: Seitenwechel bei mehrseitigen Aufgaben werden wieder gelogt.
