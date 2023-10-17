@@ -131,16 +131,17 @@ class TestController extends Controller {
     $resourceFile = $workspace->getWorkspacePath() . '/' . $path;
 
     $res = fopen($resourceFile, 'rb');
-
     if (!$res) {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
-    return $response
-      ->withBody(new Stream($res))
-      ->withHeader('X-Source', 'backend')
-      ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
-      ->withHeader('Content-length', filesize($resourceFile));
+    header('Content-Type: application/octet-stream');
+    header('Content-Length: ' . filesize($resourceFile));
+    header('X-Source: backend');
+    fpassthru($res);
+    http_response_code(200);
+    fclose($res);
+    die();
   }
 
 
