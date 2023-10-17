@@ -4,7 +4,7 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-VERSION=14.10.0
+VERSION=15.0.0-rc1
 REQUIRED_PACKAGES=("docker -v" "docker compose version")
 # openssl to generate TLS certs; dpkg to compare versions in the updater
 OPTIONAL_PACKAGES=("make -v" "openssl version" "dpkg --version")
