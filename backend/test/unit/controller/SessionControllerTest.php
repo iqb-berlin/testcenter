@@ -30,6 +30,7 @@ class SessionControllerInjector extends SessionController {
  */
 final class SessionControllerTest extends TestCase {
   function setUp(): void {
+    require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/test-helper/RequestCreator.class.php";
     require_once "test/unit/test-helper/ResponseCreator.class.php";
     require_once "test/unit/TestDB.class.php";
@@ -42,6 +43,10 @@ final class SessionControllerTest extends TestCase {
     $mockWorkspace
       ->method('getFileById')
       ->willReturn($mockBooklet);
+
+    SystemConfig::$cacheService_host = '';
+    SystemConfig::$broadcastingService_external = '';
+    SystemConfig::$broadcastingService_internal = '';
 
     SessionControllerInjector::injectWorkspace($mockWorkspace, 1);
   }

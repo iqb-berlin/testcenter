@@ -249,6 +249,7 @@ test-backend-api:
     - if: "$CI_COMMIT_TAG"
   dependencies:
     - build-backend
+    - build-db
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -256,6 +257,7 @@ test-backend-api:
     - apk add make
     - make init
     - docker load -i backend_image.tar
+    - docker load -i db_image.tar
     - make test-backend-api
 
 test-file-service-api:

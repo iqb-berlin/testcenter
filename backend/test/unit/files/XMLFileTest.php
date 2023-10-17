@@ -15,7 +15,6 @@ class XMLFileTest extends TestCase {
 
   public function setUp(): void {
     require_once "test/unit/mock-classes/ExternalFileMock.php";
-    require_once "test/unit/mock-classes/ExternalFileMock.php";
     VfsForTest::setUp(true);
   }
 

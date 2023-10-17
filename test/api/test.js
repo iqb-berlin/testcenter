@@ -181,7 +181,7 @@ exports.runDreddTestFs = gulp.series(
     }
   ),
   clearTmpDir,
-  mergeSpecFiles('api/resource.spec.yml'),
+  mergeSpecFiles('api/file.spec.yml'),
   prepareSpecsForDredd,
   insertGroupTokenToCacheService,
   runDredd(testConfig.file_service_url)
