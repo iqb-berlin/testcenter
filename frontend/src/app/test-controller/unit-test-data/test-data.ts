@@ -1,5 +1,5 @@
 import { NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
-import { TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
+import { TestDataResourcesMap, TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../shared/shared.module';
 import { WatcherLogEntry } from './watcher.util';
@@ -57,7 +57,6 @@ export const TestUnits: { [unitId: string]: UnitData } = {
   u1: {
     dataParts: { all: 'data from a previous session' },
     state: {},
-    playerId: 'a-player',
     definition: 'the unit (1) definition itself',
     unitResponseType: 'the-data-type'
   },
@@ -68,8 +67,7 @@ export const TestUnits: { [unitId: string]: UnitData } = {
       CURRENT_PAGE_ID: '1',
       CURRENT_PAGE_NR: '1'
     },
-    playerId: 'another-player',
-    definitionRef: 'test-unit-content-u2',
+    definition: '',
     unitResponseType: 'the-data-type'
   },
   u3: {
@@ -77,8 +75,7 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     state: {
       RESPONSE_PROGRESS: 'complete'
     },
-    playerId: 'a-player-but-version-2',
-    definitionRef: 'test-unit-content-u3',
+    definition: '',
     unitResponseType: 'the-data-type'
   },
   u4: {
@@ -86,38 +83,61 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     state: {
       CURRENT_PAGE_ID: '2'
     },
-    playerId: 'a-player',
     definition: 'the unit (4) definition itself',
     unitResponseType: 'the-data-type'
   },
   u5: {
     dataParts: { all: 'data from a previous session' },
     state: {},
-    playerId: 'a-player',
     definition: 'the unit (5) definition itself',
     unitResponseType: 'the-data-type'
   }
 };
 
 export const TestPlayers = {
-  'A-PLAYER.HTML': 'a player',
-  'ANOTHER-PLAYER.HTML': 'another player',
-  'A-PLAYER-BUT-VERSION-2.HTML': 'a player, but version 2'
+  'Resource/A-PLAYER.HTML': 'a player',
+  'Resource/ANOTHER-PLAYER.HTML': 'another player',
+  'Resource/A-PLAYER-2.HTML': 'a player, but version 2'
 };
 
 export const TestExternalUnitContents = {
-  'test-unit-content-u2': 'the unit (2) definition',
-  'test-unit-content-u3': 'the unit (3) definition'
+  'Resource/test-unit-content-u2.voud': 'the unit (2) definition',
+  'Resource/test-unit-content-u3.voud': 'the unit (3) definition'
 };
 
-export const TestResources = {
+export const TestResources: TestDataResourcesMap = {
+  U1: {
+    usesPlayer: ['Resource/A-PLAYER.HTML']
+  },
+  U2: {
+    usesPlayer: ['Resource/ANOTHER-PLAYER.HTML'],
+    isDefinedBy: ['Resource/test-unit-content-u2.voud']
+  },
+  U3: {
+    usesPlayer: ['Resource/A-PLAYER-2.HTML'],
+    isDefinedBy: ['Resource/test-unit-content-u3.voud']
+  },
+  U4: {
+    usesPlayer: ['Resource/A-PLAYER.HTML']
+  },
+  U5: {
+    usesPlayer: ['Resource/A-PLAYER.HTML']
+  }
+};
+
+export const AllTestResources = {
   ...TestPlayers,
   ...TestExternalUnitContents
 };
 
-export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
-  .map(unitDef => (('definitionRef' in unitDef) ? TestExternalUnitContents[unitDef.definitionRef as keyof typeof TestExternalUnitContents] : unitDef.definition)
-  )
+export const TestUnitDefinitionsPerSequenceId = Object.keys(TestUnits)
+  .map(unidId => {
+    const externalDefinition = TestResources[unidId.toUpperCase()].isDefinedBy;
+    if (externalDefinition) {
+      return TestExternalUnitContents[externalDefinition[0] as keyof typeof TestExternalUnitContents];
+    }
+    return TestUnits[unidId].definition;
+  })
   .reduce(perSequenceId, {});
 
 export const TestUnitStateDataParts = Object.values(TestUnits)
@@ -157,7 +177,7 @@ export const TestBooklet = testlet({
       alias: 'u1',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'a-player'
+      playerFileName: 'Resource/A-PLAYER.HTML'
     }),
     testlet({
       sequenceId: 0,
@@ -176,7 +196,7 @@ export const TestBooklet = testlet({
           alias: 'u2',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'another-player'
+          playerFileName: 'Resource/ANOTHER-PLAYER.HTML'
         }),
         testlet({
           sequenceId: 0,
@@ -195,7 +215,7 @@ export const TestBooklet = testlet({
               alias: 'u3',
               naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('ON', 'OFF'),
-              playerFileName: 'a-player-but-version-2'
+              playerFileName: 'Resource/A-PLAYER-2.HTML'
             })
           ]
         }),
@@ -208,7 +228,7 @@ export const TestBooklet = testlet({
           alias: 'u4',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'a-player'
+          playerFileName: 'Resource/A-PLAYER.HTML'
         })
       ]
     }),
@@ -221,7 +241,7 @@ export const TestBooklet = testlet({
       alias: 'u5',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'a-player'
+      playerFileName: 'Resource/A-PLAYER.HTML'
     })
   ]
 });
@@ -249,7 +269,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
-    { name: 'tcs.addPlayer', value: ['a-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER.HTML'] },
 
     // unit 2
     { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // unit 2
@@ -258,7 +278,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 31.666666666666664 }, // 75% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player (again)
-    { name: 'tcs.addPlayer', value: ['another-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/ANOTHER-PLAYER.HTML'] },
 
     // unit 3
     { name: 'tcs.totalLoadingProgress', value: 40 }, // unit 3
@@ -267,7 +287,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 45 }, // 75% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2 (again)
-    { name: 'tcs.addPlayer', value: ['a-player-but-version-2'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER-2.HTML'] },
 
     // unit 4
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
@@ -331,7 +351,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
-    { name: 'tcs.addPlayer', value: ['a-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER.HTML'] },
 
     // unit 2
     { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // unit 2
@@ -340,7 +360,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 31.666666666666664 }, // 75% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player (again)
-    { name: 'tcs.addPlayer', value: ['another-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/ANOTHER-PLAYER.HTML'] },
 
     // unit 3
     { name: 'tcs.totalLoadingProgress', value: 40 }, // unit 3
@@ -349,7 +369,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 45 }, // 75% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2 (again)
-    { name: 'tcs.addPlayer', value: ['a-player-but-version-2'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER-2.HTML'] },
 
     // unit 4
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
@@ -407,8 +427,8 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
-    { name: 'tcs.addPlayer', value: ['a-player'] },
-    { name: 'tls.loadTest', value: '', error: 'Unit is empty withMissingUnit/MISSING' }
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER.HTML'] },
+    { name: 'tls.loadTest', value: '', error: 'No resources for unitId: `MISSING`.' }
   ],
 
   withBrokenBooklet: [
@@ -442,21 +462,21 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
-    { name: 'tcs.addPlayer', value: ['a-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER.HTML'] },
     { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // unit 2
     { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // 0% of another player
     { name: 'tcs.totalLoadingProgress', value: 30 }, // 50% of another player
     { name: 'tcs.totalLoadingProgress', value: 31.666666666666664 }, // 75% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player (again)
-    { name: 'tcs.addPlayer', value: ['another-player'] },
+    { name: 'tcs.addPlayer', value: ['Resource/ANOTHER-PLAYER.HTML'] },
     { name: 'tcs.totalLoadingProgress', value: 40 }, // unit 3
     { name: 'tcs.totalLoadingProgress', value: 40 }, // 0% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 43.333333333333336 }, // 50% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 45 }, // 75% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2 (again)
-    { name: 'tcs.addPlayer', value: ['a-player-but-version-2'] },
+    { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER-2.HTML'] },
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
     { name: 'tcs.setUnitLoadProgress$', value: [4] },
     { name: 'tcs.unitContentLoadProgress$[4]', value: { progress: 100 } },
@@ -491,7 +511,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       alias: 'u1',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'a-player'
+      playerFileName: 'Resource/A-PLAYER.HTML'
     }),
     testlet({
       codePrompt: 'please enter something',
@@ -510,7 +530,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           alias: 'u2',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'a-player'
+          playerFileName: 'Resource/A-PLAYER.HTML'
         }),
         testlet({
           codePrompt: '',
@@ -529,7 +549,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
               alias: 'u3',
               naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-              playerFileName: 'a-player'
+              playerFileName: 'Resource/A-PLAYER.HTML'
             })
           ]
         })
@@ -552,7 +572,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           alias: 'u4',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'a-player'
+          playerFileName: 'Resource/A-PLAYER.HTML'
         })
       ]
     }),
@@ -565,7 +585,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       alias: 'u5',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'a-player'
+      playerFileName: 'Resource/A-PLAYER.HTML'
     })
   ]
 });

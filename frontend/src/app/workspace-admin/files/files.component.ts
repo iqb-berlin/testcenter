@@ -68,7 +68,6 @@ export class FilesComponent implements OnInit, OnDestroy {
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
 
   constructor(
-    @Inject('BACKEND_URL') private serverUrl: string,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,

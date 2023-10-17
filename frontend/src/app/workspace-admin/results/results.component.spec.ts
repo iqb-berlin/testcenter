@@ -16,6 +16,7 @@ class MockBackendService {
   getResultData(): Observable<ResultData[]> {
     return of([{
       groupName: 'a_group',
+      groupLabel: 'A Group',
       bookletsStarted: 5,
       numUnitsMin: 5,
       numUnitsMax: 10,

@@ -299,16 +299,16 @@ export class TestControllerService {
     }
   }
 
-  addPlayer(id: string, player: string): void {
-    this.players[TestControllerService.normaliseId(id, 'html')] = player;
+  addPlayer(fileName: string, player: string): void {
+    this.players[fileName] = player;
   }
 
-  hasPlayer(id: string): boolean {
-    return TestControllerService.normaliseId(id, 'html') in this.players;
+  hasPlayer(fileName: string): boolean {
+    return fileName in this.players;
   }
 
-  getPlayer(id: string): string {
-    return this.players[TestControllerService.normaliseId(id, 'html')];
+  getPlayer(fileName: string): string {
+    return this.players[fileName];
   }
 
   setUnitDefinition(sequenceId: number, uDef: string): void {

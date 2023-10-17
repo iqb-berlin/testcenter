@@ -22,6 +22,7 @@ import {
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
 import { MaxTimerData } from '../../classes/test-controller.classes';
+import { UnitMenuComponent } from '../unit-menu/unit-menu.component';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
@@ -35,7 +36,7 @@ const currentUnitSequenceId$ = new Subject<number>();
 
 @Component({
   template: '',
-  selector: 'unit-menu'
+  selector: 'tc-unit-menu'
 })
 class MockUnitMenuComponent {
   @Input() menu: Array<UnitNaviButtonData | string> = [];

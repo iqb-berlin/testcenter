@@ -25,15 +25,17 @@ export type UnitData = {
 
 export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer';
 
+export interface TestDataResourcesMap {
+  [unitId: string]: {
+    [relationshipType in TestFileRelationshipType]? : string[]
+  }
+}
+
 export interface TestData {
   xml: string;
   mode: string;
   laststate: { [k in TestStateKey]?: string };
-  resources: {
-    [unitId: string]: {
-      [relationshipType in TestFileRelationshipType]? : string[]
-    }
-  };
+  resources: TestDataResourcesMap;
   firstStart: boolean;
   workspaceId: number;
 }

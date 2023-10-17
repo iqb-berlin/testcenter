@@ -18,7 +18,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Pipe } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
+import { AlertComponent, CustomtextPipe, MainDataService } from '../shared/shared.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   CheckingOptions, CommandResponse,
@@ -76,6 +76,10 @@ class MockCustomtextPipe {
   }
 }
 
+class MockMainDataService {
+  appSubTitle$ = new BehaviorSubject<string>('');
+}
+
 describe('GroupMonitorComponent', () => {
   let component: GroupMonitorComponent;
   let fixture: ComponentFixture<GroupMonitorComponent>;
@@ -105,7 +109,8 @@ describe('GroupMonitorComponent', () => {
       providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },
         { provide: MatDialog, useValue: new MockMatDialog() },
-        { provide: BackendService, useValue: new MockBackendService() }
+        { provide: BackendService, useValue: new MockBackendService() },
+        { provide: MainDataService, useValue: new MockMainDataService() }
       ]
     })
       .compileComponents();

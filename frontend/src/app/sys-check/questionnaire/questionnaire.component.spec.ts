@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
+import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { QuestionnaireComponent } from './questionnaire.component';
 
@@ -10,7 +11,7 @@ describe('QuestionnaireComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [QuestionnaireComponent],
-      imports: [SharedModule, MatCardModule]
+      imports: [SharedModule, MatCardModule, ReactiveFormsModule]
     })
       .compileComponents();
   }));
