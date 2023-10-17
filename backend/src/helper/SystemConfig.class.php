@@ -73,7 +73,7 @@ class SystemConfig {
     $config['database']['user'] = self::stringEnv('MYSQL_USER');
     $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
 
-    $config['passwords']['salt'] = self::stringEnv('MYSQL_SALT');
+    $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
 
     $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
     $config['system']['hostname'] = self::stringEnv('HOSTNAME');
