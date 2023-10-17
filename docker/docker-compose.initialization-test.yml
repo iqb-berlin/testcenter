@@ -14,7 +14,7 @@ x-env-mysql: &env-mysql
 services:
 
   testcenter-initialization-test-db:
-    image: mysql:8.0
+    image: iqbberlin/testcenter-db:current
     container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
@@ -90,7 +90,6 @@ services:
       - testcenter-initialization-test-backend
     networks:
       testcenter-initialization-test:
-
 
 networks:
   testcenter-initialization-test:

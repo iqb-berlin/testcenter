@@ -11,6 +11,9 @@ services:
       - testcenter
 
   testcenter-db:
+    build:
+      context: ..
+      dockerfile: docker/database.Dockerfile
     ports:
       - "9091:3306"
     command:

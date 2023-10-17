@@ -50,6 +50,7 @@ services:
     image: iqbberlin/testcenter-file-service:${VERSION}
 
   testcenter-db:
+    image: iqbberlin/testcenter-db:${VERSION}
     command:
       - --log_error_verbosity=1
     volumes:

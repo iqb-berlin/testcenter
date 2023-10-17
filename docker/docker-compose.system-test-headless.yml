@@ -13,7 +13,7 @@ x-env-mysql: &env-mysql
 
 services:
   testcenter-system-test-db:
-    image: mysql:8.0
+    image: iqbberlin/testcenter-db:current
     container_name: testcenter-system-test-db
     environment:
       <<: *env-mysql

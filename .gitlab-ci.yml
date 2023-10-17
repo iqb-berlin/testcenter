@@ -25,7 +25,7 @@ stages:
   rules:
     - changes:
         - backend/**/*
-        - database/**/*
+        - scripts/database/**/*
         - definitions/**/*
 
 .frontend-change:
@@ -64,6 +64,25 @@ build-backend:
   artifacts:
     paths:
       - backend_image.tar
+    expire_in: 30 minutes
+
+build-db:
+  stage: build
+  rules:
+    - !reference [ .backend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+  script:
+    - apk add make
+    - make init
+    - make build service=testcenter-db
+    - docker save iqbberlin/testcenter-db > db_image.tar
+  artifacts:
+    paths:
+      - db_image.tar
     expire_in: 30 minutes
 
 build-frontend:
@@ -211,6 +230,8 @@ test-e2e:
     - docker load -i frontend_image.tar
     - docker load -i backend_image.tar
     - docker load -i bs_image.tar
+    - docker load -i fs_image.tar
+    - docker load -i db_image.tar
     - make init
     - make test-system-headless
   artifacts:

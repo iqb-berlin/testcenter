@@ -33,3 +33,9 @@ services:
     build:
       context: ..
       dockerfile: docker/file-service.Dockerfile
+
+  testcenter-db:
+    image: iqbberlin/testcenter-db:current
+    build:
+      context: ..
+      dockerfile: docker/database.Dockerfile

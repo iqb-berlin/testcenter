@@ -22,7 +22,7 @@ services:
 
   testcenter-system-test-db:
     container_name: testcenter-system-test-db
-    image: mysql:8.0
+    image: iqbberlin/testcenter-db:current
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
