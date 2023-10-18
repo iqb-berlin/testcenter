@@ -14,7 +14,6 @@ let endTime: number;
 let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
-
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
@@ -200,7 +199,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-RUNREVIEW"]')
       .should('exist')
       .contains('Fortsetzen')
@@ -239,7 +238,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
     cy.get('[data-cy="logout"]')
@@ -255,7 +254,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .should('exist')
       .click();
-    cy.contains('runrev')
+    cy.contains('RunReview')
       .should('exist');
     cy.get('[data-cy="results-checkbox1"]')
       .should('exist')

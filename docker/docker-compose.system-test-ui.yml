@@ -50,9 +50,9 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
-      SUPERUSER_NAME: super
-      SUPERUSER_PASSWORD: user123
-      WORKSPACE_NAME: example_workspace
+      PASSWORD_SALT: t
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/index.php:/var/www/backend/index.php

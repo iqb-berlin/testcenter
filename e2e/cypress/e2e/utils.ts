@@ -56,7 +56,7 @@ export const logoutAdmin = (): Chainable => cy.url()
         .should('exist')
         .click();
       cy.url()
-        .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+        .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       cy.get('[data-cy="logout"]')
         .click();
       cy.url()
@@ -67,7 +67,10 @@ export const logoutAdmin = (): Chainable => cy.url()
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
     // if booklet is started
-    if (url !== `${Cypress.config().baseUrl}/#/r/test-starter`) {
+    if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
+      // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
+      // seems to be the least bad solution
+      cy.wait(2000); // TODO find a better solution than a generic wait for 2 sec
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();
@@ -75,21 +78,24 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
         cy.contains(/^Der Test ist aktiv.$/);
         cy.get('[data-cy="resumeTest-1"]')
           .should('exist');
+        cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
           .should('exist')
           .click();
         cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.wait('@waitForGetSession');
         cy.get('[data-cy="logout"]')
           .should('exist')
           .click();
+        cy.url()
+          .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
       } else if (fileType === 'demo') {
         cy.get('[data-cy="logout"]')
           .should('exist')
           .click();
       }
     } else {
-      console.log("OK");
       cy.get('[data-cy="logout"]')
         .should('exist')
         .click();
@@ -121,7 +127,7 @@ export const loginSuperAdmin = (): void => {
     .should('exist')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
-  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   cy.contains(userData.SuperAdminName)
     .should('exist');
 };
@@ -134,13 +140,13 @@ export const loginWorkspaceAdmin = (): void => {
     .should('exist')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
-  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   cy.contains(userData.WorkspaceAdminName)
     .should('exist');
 };
 
 export const loginTestTaker =
-  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'test-starter' = 'test-starter'): void => {
+  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' = 'starter'): void => {
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/state`)).as('testState');
@@ -154,14 +160,14 @@ export const loginTestTaker =
     if (expectedView === 'test-hot') {
       cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
     }
-    if (expectedView !== 'test-starter') {
+    if (expectedView !== 'starter') {
       cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
     } else {
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       cy.contains(name)
         .should('exist');
     }
-};
+  };
 
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
@@ -247,7 +253,7 @@ export const deleteTesttakersFiles = (): void => {
 };
 
 export const useTestDB = () : void => {
-  cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
+  cy.intercept(new RegExp(`(${Cypress.env('TC_API_URL')}|${Cypress.env('TC_FILE_SERVICE_URL')})/.*`), req => {
     req.headers.TestMode = 'integration';
   }).as('testMode');
 };
@@ -296,13 +302,11 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
   throw new Error(`Unknown filetype: ${fileType}`);
 };
 
-export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {
-  return cy.get('iframe')
-    .its('0.contentDocument.body')
-    .should('be.visible')
-    .then(cy.wrap)
-    .find(selector);
-};
+export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => cy.get('iframe')
+  .its('0.contentDocument.body')
+  .should('be.visible')
+  .then(cy.wrap)
+  .find(selector);
 
 export const forwardTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-forward"]')

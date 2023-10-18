@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { defineConfig } = require('cypress');
 const deleteFolder = require('./cypress/plugins/delete-folder');
 
@@ -7,18 +8,18 @@ module.exports = defineConfig({
     mochaFile: 'cypress/results/output.xml'
   },
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       // return require('./cypress/plugins/index.js')(on, config);
       on('task', { deleteFolder });
     },
     baseUrl: 'http://localhost',
     env: {
-      TC_API_URL: 'http://localhost/api'
+      TC_API_URL: 'http://localhost/api',
+      TC_FILE_SERVICE_URL: 'http://localhost/fs'
     },
     testIsolation: true
   }
 });
-
 
 // Keeping the old configuration here for futire reference, in case something does not work as expected.
 // Also in case the coverage report is to be re-enabled.

@@ -56,7 +56,7 @@ describe('Check Login Possibilities', () => {
   it('should be possible to login as link', () => {
     cy.visit(`${Cypress.config().baseUrl}`);
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.contains('as_link')
       .should('exist');
   });
@@ -145,7 +145,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/monitor-starter`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="GM-SM_HotModes"]')
       .should('exist')
       .click();

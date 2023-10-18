@@ -1,9 +1,11 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { defineConfig } = require('cypress');
 const deleteFolder = require('./cypress/plugins/delete-folder');
 const waitForServer = require('./cypress/plugins/wait-for-server');
 
-const frontendURL = 'http://testcenter-system-test-frontend:4200';
-const backendURL = 'http://testcenter-system-test-backend';
+const frontendURL = 'http://testcenter-frontend:4200';
+const backendURL = 'http://testcenter-backend';
+const fileServiceURL = 'http://testcenter-file-service';
 
 module.exports = defineConfig({
   reporter: 'junit',
@@ -12,16 +14,18 @@ module.exports = defineConfig({
   },
   requestTimeout: 10000,
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       // return require('./cypress/plugins/index.js')(on, config);
       on('task', { deleteFolder });
       on('before:run', async () => {
         await waitForServer(`${backendURL}/system/config`);
         await waitForServer(frontendURL);
+        await waitForServer(`${fileServiceURL}/health`);
       });
     },
     env: {
-      TC_API_URL: backendURL
+      TC_API_URL: backendURL,
+      TC_FILE_SERVICE_URL: fileServiceURL
     },
     testIsolation: true
   }

@@ -3,7 +3,7 @@ import {
   useTestDB, credentialsControllerTest, visitLoginPage
 } from '../utils';
 
-const waitMaxSnackBarDisplayed = 10000;
+const waitMaxSnackBarDisplayed = 1000;
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
 const TesttakerName = 'Test_Demo_Ctrl';
 const TesttakerPassword = '123';
@@ -65,7 +65,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
     cy.contains(/.*abgespielt.*bearbeitet.*/)
       .should('exist');
-    // wait until the message is no longer displayed
+    // // wait until the message is no longer displayed
     cy.contains('abgespielt', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
@@ -158,7 +158,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist')
       .contains('Fortsetzen')
@@ -195,7 +195,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
     cy.get('[data-cy="logout"]')

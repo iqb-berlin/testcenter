@@ -38,6 +38,7 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
+      PASSWORD_SALT: t
     image: iqbberlin/testcenter-backend:current
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
