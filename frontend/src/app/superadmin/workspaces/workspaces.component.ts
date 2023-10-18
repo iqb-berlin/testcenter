@@ -191,10 +191,20 @@ export class WorkspacesComponent implements OnInit {
   }
 
   selectUser(ws: IdRoleData, role: string): void {
-    if (ws.role === role) {
-      ws.role = '';
-    } else {
-      ws.role = role;
+    if (role === 'RW') {
+      if (ws.role === 'RW') {
+        ws.role = 'RO';
+      } else {
+        ws.role = 'RW';
+      }
+    } else if (role === 'RO') {
+      if (ws.role === 'RO') {
+        ws.role = '';
+      } else if (ws.role !== 'RW') {
+        ws.role = 'RO';
+      } else {
+        ws.role = '';
+      }
     }
     this.pendingUserChanges = true;
   }

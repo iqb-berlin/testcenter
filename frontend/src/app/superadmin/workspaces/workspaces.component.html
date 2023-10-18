@@ -82,17 +82,20 @@
 
     <mat-table [dataSource]="userListDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">RO | RW</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">Read | Write</mat-header-cell>
         <mat-cell *matCellDef="let row let i = index">
           <mat-checkbox (change)="selectUser(row, 'RO')"
-                        [checked]="row.role === 'RO'" matTooltip="RO"
-                        [attr.data-cy]="'workspace-' + i + '-role-ro'">
+                        [checked]="row.role === 'RO' || row.role === 'RW'"
+                        matTooltip="Nur lesen"
+                        [attr.data-cy]="'workspace-role-ro' + i">
           </mat-checkbox>
           <mat-checkbox (change)="selectUser(row, 'RW')"
-                        [checked]="row.role === 'RW'" matTooltip="RW"
-                        [attr.data-cy]="'workspace-' + i + '-role-rw'">
+                        [checked]="row.role === 'RW'"
+                        matTooltip="Lesen und schreiben"
+                        [attr.data-cy]="'workspace-role-rw' + i">
           </mat-checkbox>
         </mat-cell>
+
       </ng-container>
 
       <ng-container matColumnDef="name">
