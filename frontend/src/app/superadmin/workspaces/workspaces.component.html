@@ -86,12 +86,12 @@
         <mat-cell *matCellDef="let row let i = index">
           <mat-checkbox (change)="selectUser(row, 'RO')"
                         [checked]="row.role === 'RO' || row.role === 'RW'"
-                        matTooltip="Nur lesen"
+                        matTooltip="Nur Lesen"
                         [attr.data-cy]="'workspace-role-ro' + i">
           </mat-checkbox>
           <mat-checkbox (change)="selectUser(row, 'RW')"
                         [checked]="row.role === 'RW'"
-                        matTooltip="Lesen und schreiben"
+                        matTooltip="Lesen und Schreiben"
                         [attr.data-cy]="'workspace-role-rw' + i">
           </mat-checkbox>
         </mat-cell>
