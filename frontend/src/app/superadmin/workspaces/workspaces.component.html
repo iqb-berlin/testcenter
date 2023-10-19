@@ -14,7 +14,7 @@
       <button
         mat-raised-button
         (click)="deleteObject()"
-        matTooltip="Markierte/n Arbeitsbereich/e löschen"
+        matTooltip="Markierten Arbeitsbereich löschen"
         matTooltipPosition="below"
         data-cy="delete-workspace"
         color="primary"
@@ -36,20 +36,6 @@
     <mat-progress-bar mode="indeterminate" *ngIf="!workspaces"></mat-progress-bar>
 
     <mat-table [dataSource]="workspaces" matSort>
-      <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="tableSelectionCheckbox.hasValue() && isAllSelected()"
-                        [indeterminate]="tableSelectionCheckbox.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null"
-                        [checked]="tableSelectionCheckbox.isSelected(row)">
-          </mat-checkbox>
-        </mat-cell>
-      </ng-container>
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Name</mat-header-cell>
         <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>

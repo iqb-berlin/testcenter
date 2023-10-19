@@ -20,8 +20,7 @@ import { IdAndName, IdRoleData } from '../superadmin.interfaces';
 })
 export class WorkspacesComponent implements OnInit {
   workspaces: MatTableDataSource<IdAndName> = new MatTableDataSource<IdAndName>();
-  displayedColumns = ['selectCheckbox', 'name', 'modification_timestamp'];
-  tableSelectionCheckbox = new SelectionModel<IdAndName>(true, []);
+  displayedColumns = ['name', 'modification_timestamp'];
   tableSelectionRow = new SelectionModel<IdAndName>(false, []);
   selectedWorkspaceId = 0;
   selectedWorkspaceName = '';
@@ -95,9 +94,6 @@ export class WorkspacesComponent implements OnInit {
   changeObject(): void {
     let selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      selectedRows = this.tableSelectionCheckbox.selected;
-    }
-    if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
@@ -135,10 +131,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   deleteObject(): void {
-    let selectedRows = this.tableSelectionCheckbox.selected;
-    if (selectedRows.length === 0) {
-      selectedRows = this.tableSelectionRow.selected;
-    }
+    let selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -215,23 +208,8 @@ export class WorkspacesComponent implements OnInit {
     this.backendService.getWorkspaces().subscribe(dataresponse => {
       this.workspaces = new MatTableDataSource(dataresponse);
       this.workspaces.sort = this.sort;
-      this.tableSelectionCheckbox.clear();
       this.tableSelectionRow.clear();
     });
-  }
-
-  isAllSelected(): boolean {
-    const numSelected = this.tableSelectionCheckbox.selected.length;
-    const numRows = this.workspaces.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle(): void {
-    if (this.isAllSelected()) {
-      this.tableSelectionCheckbox.clear();
-    } else {
-      this.workspaces.data.forEach(row => this.tableSelectionCheckbox.select(row));
-    }
   }
 
   selectRow(row: IdAndName): void {

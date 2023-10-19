@@ -45,22 +45,6 @@
     <mat-progress-bar mode="indeterminate" *ngIf="!objectsDatasource"></mat-progress-bar>
 
     <mat-table [dataSource]="objectsDatasource" matSort>
-      <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef data-cy="check-all">
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
-                        [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row" data-cy="check-user">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"
-                        [checked]="tableselectionCheckbox.isSelected(row)"
-                        [attr.data-cy]="'checkbox'">
-          </mat-checkbox>
-        </mat-cell>
-      </ng-container>
-
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Name</mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.name}} {{element.isSuperadmin ? '*' : ''}}</mat-cell>
