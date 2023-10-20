@@ -19,7 +19,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - "${PORT}:80"
+      - "${PORT:-80}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
@@ -78,8 +78,6 @@ services:
   testcenter-file-service:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
-    volumes:
-      - testcenter_backend_vo_data:/var/www/html/
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
     depends_on:
@@ -98,6 +96,8 @@ services:
       - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
+    volumes:
+      - testcenter_backend_vo_data:/var/www/html/
     networks:
       testcenter:
 
