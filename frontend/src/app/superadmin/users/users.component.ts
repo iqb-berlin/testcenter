@@ -215,21 +215,11 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  selectWorkspace(ws: IdRoleData, role: string): void {
+  selectPermissions(user: IdRoleData, role: string): void {
     if (role === 'RW') {
-      if (ws.role === 'RW') {
-        ws.role = 'RO';
-      } else {
-        ws.role = 'RW';
-      }
+      user.role = (user.role === 'RW') ? 'RO' : 'RW';
     } else if (role === 'RO') {
-      if (ws.role === 'RO') {
-        ws.role = '';
-      } else if (ws.role !== 'RW') {
-        ws.role = 'RO';
-      } else {
-        ws.role = '';
-      }
+      user.role = (user.role === 'RO' || user.role === 'RW') ? '' : 'RO';
     }
     this.pendingWorkspaceChanges = true;
   }
