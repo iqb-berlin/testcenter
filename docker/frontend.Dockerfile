@@ -28,8 +28,7 @@ RUN npx ng build --configuration production --output-path=dist --output-hashing 
 FROM nginx:1.25 as prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-# Removed nginx.conf for now. Corresponding ticket: #378
-#COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
+COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
