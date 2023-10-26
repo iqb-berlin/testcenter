@@ -32,9 +32,6 @@ export const resetBackendData = (): void => {
     headers: { TestMode: 'prepare-integration' }
   })
     .its('status').should('eq', 200);
-  // sometimes DB isn't ready even after the endpoint returned 200
-  // TODO replace this by something more meaningful
-  cy.wait(800);
 };
 
 export const insertCredentials = (username: string, password = ''): void => {
@@ -70,7 +67,7 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
       // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
       // seems to be the least bad solution
-      cy.wait(2000); // TODO find a better solution than a generic wait for 2 sec
+      cy.wait(2000);
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();

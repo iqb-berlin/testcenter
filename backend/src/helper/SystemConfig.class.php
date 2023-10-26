@@ -95,7 +95,11 @@ class SystemConfig {
     $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
     $config['cacheService']['ram'] = (int) self::stringEnv('CACHE_SERVICE_RAM');
 
-
+    $overrideConfig = getenv('OVERRIDE_CONFIG');
+    if ($overrideConfig) {
+      $overrideConfig = parse_ini_string($overrideConfig, true, INI_SCANNER_TYPED);
+      $config = array_replace_recursive($config, $overrideConfig);
+    }
 
     self::apply($config);
   }

@@ -53,7 +53,6 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
 
   it('should restore the last given replies from login: hret1', () => {
     loginTestTaker('hret1', '201', 'test-hot');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/state`).as('test-3-state');
 
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -66,7 +65,6 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
 
-    cy.wait('@test-3-state');
     logoutTestTaker('hot');
   });
 

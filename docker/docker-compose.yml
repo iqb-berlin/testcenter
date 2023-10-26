@@ -35,8 +35,8 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
-      interval: 1s
-      retries: 120
+      interval: 3s
+      retries: 40
     volumes:
       - dbdata:/var/lib/mysql
     restart: always
@@ -59,6 +59,11 @@ services:
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       PORT: ${PORT:-80}
       TLS_PORT: ${TLS_PORT:-443}
+    healthcheck:
+      test: curl --fail http://localhost/system/config || exit 1
+      interval: 30s
+      timeout: 10h
+      retries: 1200
     depends_on:
       testcenter-db:
         condition: service_healthy
@@ -92,8 +97,8 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "service", "nginx", "status"]
-      interval: 1s
-      retries: 120
+      interval: 3s
+      retries: 40
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
@@ -114,8 +119,8 @@ services:
       - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-      interval: 1s
-      retries: 120
+      interval: 3s
+      retries: 40
     restart: always
     networks:
       testcenter:
@@ -123,6 +128,10 @@ services:
   testcenter-frontend:
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
+    healthcheck:
+      test: curl --fail http://localhost:4200 || exit 1
+      interval: 3s
+      retries: 40
     logging:
       options:
         <<: *env-logging-conf
@@ -139,6 +148,10 @@ services:
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
     image: iqbberlin/testcenter-broadcasting-service:current
+    healthcheck:
+      test: ["CMD", "node", "/healthcheck.js"]
+      interval: 3s
+      retries: 40
     logging:
       options:
         <<: *env-logging-conf

@@ -11,6 +11,8 @@ RUN luarocks install lua-resty-dns
 COPY scripts/file-service/nginx.conf /etc/nginx/nginx.conf
 COPY scripts/file-service/auth/ /usr/share/nginx/auth
 
+RUN echo "" >> /etc/nginx/conf.d/cors.conf
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
