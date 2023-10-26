@@ -25,7 +25,7 @@ FROM dev as builder
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
 #===================================
-FROM nginx:1.23 as prod
+FROM nginx:1.25 as prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template

@@ -6,8 +6,8 @@ APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
 VERSION=15.0.0-rc1
 REQUIRED_PACKAGES=("docker -v" "docker compose version")
-# openssl to generate TLS certs; dpkg to compare versions in the updater
-OPTIONAL_PACKAGES=("make -v" "openssl version" "dpkg --version")
+# dpkg to compare versions in the updater
+OPTIONAL_PACKAGES=("make -v" "dpkg --version")
 
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
@@ -50,9 +50,8 @@ download_files() {
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.yml
   wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
-  wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/update.sh
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/frontend/config/nginx.conf
-  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/scripts/database/my.cnf
+  wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/update.sh
   chmod +x update.sh
 }
 
@@ -90,12 +89,4 @@ download_files
 
 customize_settings
 
-echo "TLS certificates are placed at config/certs. The file path may be configured in config/tls-config.yml."
-
-read -p "Installation complete. Do you want to start the application? [Y/n]:" -r -n 1 -e START
-if [[ ! $START =~ [nN] ]]
-  then
-    make run
-  else
-    echo "Use 'make run' from the install directory."
-fi
+echo "Installation complete. Use 'make run' from the install directory."

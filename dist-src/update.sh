@@ -4,31 +4,30 @@ REPO_URL=iqb-berlin/testcenter
 
 create_backup() {
   mkdir -p backup/$(date +"%m-%d-%Y")
-  mv !(backup/$(date +"%m-%d-%Y") backup/$(date +"%m-%d-%Y")
-  cp .env backup/$(date +"%m-%d-%Y")
+  rsync -a . backup/$(date +"%m-%d-%Y")/ --exclude backup
   echo "Backup created. Files have been moved to: backup/$(date +"%m-%d-%Y")"
 }
 
-update_files() {
-  wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
-  wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
-  wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
-  wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
-  wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
-  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/scripts/database/my.cnf
-  wget -nv -O patch.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/patch.sh || rm -f patch.sh
-
-  sed -i "s#VERSION=.*#VERSION=$chosen_version_tag#" .env
-
-  if test -f "patch.sh"; then
-    echo "Patch file found."
-    chmod +x patch.sh
-    bash patch.sh
-  fi
+apply_patches() {
+  wget -nv -O patch-list.json "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/tree?path=dist-src/patches&ref=upd-test1"
+  grep -oP '"name":".+?"' patch-list.json | cut -d':' -f 2 | tr -d '"' > patch-list.txt
+  while read p; do
+    echo "$p"
+    if dpkg --compare-versions $p gt $VERSION; then
+      wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/dist-src%2Fpatches%2F${p}/raw?ref=upd-test1"
+      bash ${p}
+      rm ${p}
+    fi
+  done < patch-list.txt
+  rm patch-list.json
+  rm patch-list.txt
 }
 
+create_backup
+
 source .env
-printf "\nInstalled version: $VERSION\n\n"
+printf "Installed version: $VERSION\n"
+
 latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
 printf "Latest available version: $latest_version_tag\n"
 
@@ -37,16 +36,8 @@ if [ $VERSION = $latest_version_tag ]; then
   exit 0
 fi
 
-chosen_version_tag=$latest_version_tag
+sed -i "s#VERSION=.*#VERSION=$latest_version_tag#" .env
 
-create_backup
-update_files
+apply_patches
 
-read -p "Update applied. Do you want to restart the application? [Y/n]:" -r -n 1 -e RESTART
-if [[ ! $RESTART =~ [nN] ]]
-  then
-    make restart
-  else
-    echo 'Done'
-    exit 0
-fi
+echo "Update applied"

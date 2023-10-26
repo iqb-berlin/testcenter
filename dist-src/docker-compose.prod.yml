@@ -48,10 +48,13 @@ services:
 
   testcenter-file-service:
     image: iqbberlin/testcenter-file-service:${VERSION}
+    labels:
+      - "traefik.http.routers.testcenter-file-service.tls=true"
+      - "traefik.http.middlewares.tls-security-headers-fs.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers-fs.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs, tls-security-headers-fs"
 
   testcenter-db:
     image: iqbberlin/testcenter-db:${VERSION}
     command:
       - --log_error_verbosity=1
-    volumes:
-      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf:ro
