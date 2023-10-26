@@ -1,4 +1,4 @@
-FROM cypress/included:12.17.1
+FROM cypress/included:13.3.3
 WORKDIR /app
 
 # dependencies will be installed only if the package files change
