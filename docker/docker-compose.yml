@@ -57,6 +57,11 @@ services:
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       PORT: ${PORT:-80}
       TLS_PORT: ${TLS_PORT:-443}
+    healthcheck:
+      test: curl --fail http://localhost/system/config || exit 1
+      interval: 30s
+      timeout: 10h
+      retries: 1200
     depends_on:
       testcenter-db:
         condition: service_healthy
@@ -118,6 +123,10 @@ services:
   testcenter-frontend:
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
+    healthcheck:
+      test: curl --fail http://localhost:4200 || exit 1
+      interval: 3s
+      retries: 40
     logging:
       options:
         <<: *env-logging-conf
