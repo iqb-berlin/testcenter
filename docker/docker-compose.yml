@@ -145,7 +145,7 @@ services:
     healthcheck:
       test: ["CMD", "node", "/healthcheck.js"]
       interval: 3s
-      retries: 40
+      retries: 2
     logging:
       options:
         <<: *env-logging-conf
