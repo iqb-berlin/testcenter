@@ -21,6 +21,7 @@ git add docs/pages/*
 git add package.json
 git add package-lock.json
 git add sampledata/*
+git add dist-src/install.sh
 git add scripts/database/patches.d/*
 
 if [ ! -e scripts/database/next.sql ]; then
