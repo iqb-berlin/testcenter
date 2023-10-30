@@ -33,6 +33,7 @@ php backend/initialize.php \
   --dont_create_sample_data \
   --skip_db_integrity_check
 expect_init_script_failed
+remove_error_lock
 
 
 echo_h1 "Test 4.3: Skip future patch versions"
@@ -47,4 +48,5 @@ php backend/initialize.php \
   --skip_db_integrity_check
 
 expect_init_script_ok
+
 expect_table_to_have_rows meta 3 # namely "version", "but me," and "and me"

@@ -21,8 +21,6 @@ services:
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     user: root
-    volumes:
-      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
     healthcheck:
@@ -47,6 +45,15 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
+      PASSWORD_SALT: 't'
+      BROADCAST_SERVICE_ENABLED: off
+      FILE_SERVICE_ENABLED: off
+      HOSTNAME: localhost
+      TLS_ENABLED: off
+      CACHE_SERVICE_INCLUDE_FILES: off
+      CACHE_SERVICE_RAM: 1
+      PORT: 80
+      TLS_PORT: 443
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/index.php:/var/www/backend/index.php
