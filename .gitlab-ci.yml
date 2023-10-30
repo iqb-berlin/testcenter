@@ -277,7 +277,7 @@ test-file-service-api:
     - docker load -i fs_image.tar
     - make test-file-service-api
 
-  test-backend-initialization:
+test-backend-initialization:
    stage: test
    rules:
      - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
