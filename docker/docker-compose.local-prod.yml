@@ -24,6 +24,8 @@ services:
       target: prod
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
+    environment:
+      - TLS_ENABLED=yes
     volumes:
       - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug bc not available in prod-image
 
