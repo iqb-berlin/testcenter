@@ -24,16 +24,5 @@ services:
       - ../e2e/cypress:/app/cypress
       - ../e2e/cypress.e2e.config.js:/app/cypress.config.js
       - ../sampledata:/sampledata
-    depends_on:
-      testcenter-frontend:
-        condition: service_healthy
-      testcenter-backend:
-        condition: service_healthy
-      testcenter-broadcasting-service:
-        condition: service_healthy
-      testcenter-file-service:
-        condition: service_healthy
-      testcenter-cache-service:
-        condition: service_healthy
     networks:
       - testcenter

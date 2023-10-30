@@ -17,7 +17,6 @@ COPY common /common
 COPY broadcasting-service/nest-cli.json /app/nest-cli.json
 COPY broadcasting-service/tsconfig.json /app/tsconfig.json
 COPY broadcasting-service/tsconfig.spec.json /app/tsconfig.spec.json
-COPY broadcasting-service/healthcheck.js /healthcheck.js
 
 EXPOSE 3000
 
@@ -33,7 +32,6 @@ FROM node:${NODE_VERSION} as prod
 
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app
-COPY --from=build /healthcheck.js /healthcheck.js
 
 EXPOSE 3000
 

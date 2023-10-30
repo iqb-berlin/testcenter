@@ -20,7 +20,7 @@ export const deleteDownloadsFolder = (): void => {
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
-      cy.intercept({ url: new RegExp(`${Cypress.env('TC_API_URL')}/(system/config|sys-checks)`) }).as('waitForConfig');
+      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-checks)`) }).as('waitForConfig');
       cy.visit(url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`);
       cy.wait('@waitForConfig');
     }
@@ -28,7 +28,7 @@ export const visitLoginPage = (): Chainable => cy.url()
 
 export const resetBackendData = (): void => {
   cy.request({
-    url: `${Cypress.env('TC_API_URL')}/version`,
+    url: `${Cypress.env('urls').backend}/version`,
     headers: { TestMode: 'prepare-integration' }
   })
     .its('status').should('eq', 200);
@@ -75,7 +75,7 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
         cy.contains(/^Der Test ist aktiv.$/);
         cy.get('[data-cy="resumeTest-1"]')
           .should('exist');
-        cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
+        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
           .should('exist')
           .click();
@@ -118,8 +118,8 @@ export const openSampleWorkspace2 = (): void => {
 
 export const loginSuperAdmin = (): void => {
   insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
+  cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
+  cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
     .should('exist')
     .click();
@@ -131,8 +131,8 @@ export const loginSuperAdmin = (): void => {
 
 export const loginWorkspaceAdmin = (): void => {
   insertCredentials(userData.WorkspaceAdminName, userData.WorkspaceAdminPassword);
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
+  cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
+  cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
     .should('exist')
     .click();
@@ -146,10 +146,10 @@ export const loginTestTaker =
   (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' = 'starter'): void => {
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
-      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/state`)).as('testState');
-      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/unit/[^/]+/state`)).as('unitState');
-      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/log`)).as('testLog');
-      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/commands`)).as('commands');
+      cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
+      cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/[^/]+/state`)).as('unitState');
+      cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/log`)).as('testLog');
+      cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
     }
     cy.get('[data-cy="login-user"]')
       .should('exist')
@@ -250,13 +250,13 @@ export const deleteTesttakersFiles = (): void => {
 };
 
 export const useTestDB = () : void => {
-  cy.intercept(new RegExp(`(${Cypress.env('TC_API_URL')}|${Cypress.env('TC_FILE_SERVICE_URL')})/.*`), req => {
+  cy.intercept(new RegExp(`(${Cypress.env('urls').backend}|${Cypress.env('urls').fileService})/.*`), req => {
     req.headers.TestMode = 'integration';
   }).as('testMode');
 };
 
 export const useTestDBSetDate = (timestamp: string) : void => {
-  cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
+  cy.intercept(new RegExp(`${Cypress.env('urls').backend}/.*`), req => {
     req.headers.TestClock = timestamp;
   }).as('testClock');
 };
