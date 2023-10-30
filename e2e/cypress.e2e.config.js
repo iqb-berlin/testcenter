@@ -17,6 +17,8 @@ module.exports = defineConfig({
     mochaFile: 'cypress/results/output.xml'
   },
   requestTimeout: 10000,
+  video: true,
+  screenshotOnRunFailure: true,
   e2e: {
     setupNodeEvents(on) {
       on('task', { deleteFolder });
@@ -34,4 +36,3 @@ module.exports = defineConfig({
     testIsolation: true
   }
 });
-
