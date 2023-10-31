@@ -19,7 +19,6 @@ bookletConfig.setFromKeyValuePairs({
   loading_mode: 'LAZY',
   logPolicy: 'rich',
   pagingMode: 'separate',
-  stateReportPolicy: 'eager',
   page_navibuttons: 'SEPARATE_BOTTOM',
   unit_navibuttons: 'FULL',
   unit_menu: 'OFF',

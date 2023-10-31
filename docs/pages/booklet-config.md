@@ -40,12 +40,6 @@ pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopSta
  * "concat-scroll" - concat-scroll
  * "concat-scroll-snap" - concat-scroll-snap
 
-### stateReportPolicy
-stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand) - **Achtung**. die Eigenschaft ist nicht implementiert, es wird immer eager verwendet.
- * "none" - pages are separated
- * **"eager" - concat-scroll**
- * "on-demand" - concat-scroll-snap
-
 ### page_navibuttons
 Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
  * "OFF" - Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)

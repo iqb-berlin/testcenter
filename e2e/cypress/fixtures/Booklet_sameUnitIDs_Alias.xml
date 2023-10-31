@@ -9,7 +9,6 @@
   <BookletConfig>
     <Config key="logPolicy">debug</Config>
     <Config key="pagingMode">concat-scroll-snap</Config>
-    <Config key="stateReportPolicy">eager</Config>
     <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
     <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>

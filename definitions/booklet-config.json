@@ -26,15 +26,6 @@
     },
     "defaultvalue": "separate"
   },
-  "stateReportPolicy": {
-    "label": "stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand) - **Achtung**. die Eigenschaft ist nicht implementiert, es wird immer eager verwendet.",
-    "options": {
-      "none": "pages are separated",
-      "eager": "concat-scroll",
-      "on-demand": "concat-scroll-snap"
-    },
-    "defaultvalue": "eager"
-  },
   "page_navibuttons": {
     "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
     "options": {
