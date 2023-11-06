@@ -125,7 +125,7 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_WithLogAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::LOG->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   private function testGetReportWithEmptyDataIds(string $reportType, string $mediaType, string $expectedMethod): void {
@@ -146,35 +146,35 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReportWithLogAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::LOG->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReportWithResponseAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   function test_GetReportWithResponseAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReportWithReviewAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   function test_GetReportWithReviewAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReportWithSystemCheckAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::SYSCHECK->value, 'text/csv', 'setSysChecksFolderInstance');
   }
 
   function test_GetReportWithSystemCheckAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::SYSCHECK->value, 'application/json', 'setSysChecksFolderInstance');
   }
 
   function test_GetReportWithLogAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   private function testGetReportWithoutReportGeneration(string $reportType, string $mediaType, string $expectedMethod): void {
@@ -195,35 +195,35 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_LogAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReport_ResponseAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   function test_GetReport_ResponseAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReport_ReviewAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW->value, 'text/csv', 'setAdminDAOInstance');
   }
 
   function test_GetReport_ReviewAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW->value, 'application/json', 'setAdminDAOInstance');
   }
 
   function test_GetReport_SystemCheckAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::SYSCHECK->value, 'text/csv', 'setSysChecksFolderInstance');
   }
 
   function test_GetReport_SystemCheckAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::SYSCHECK->value, 'application/json', 'setSysChecksFolderInstance');
   }
 
   function test_GetReport_LogAndCSV(): void {
-    $this->testGetCSVReport(ReportType::LOG, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::LOG->value, 'setAdminDAOInstance');
   }
 
   private function testGetCSVReport(string $reportType, string $expectedMethod): void {
@@ -245,7 +245,7 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_LogAndJSON(): void {
-    $this->testGetJSONReport(ReportType::LOG, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::LOG->value, 'application/json', ['application/json'], 'setAdminDAOInstance');
   }
 
   private function testGetJSONReport(string $reportType, string $mediaType, array $expectedContentTypes, string $expectedMethod): void {
@@ -266,47 +266,47 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_ResponseAndCSV(): void {
-    $this->testGetCSVReport(ReportType::RESPONSE, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::RESPONSE->value, 'setAdminDAOInstance');
   }
 
   function test_GetReport_ResponseAndJSON(): void {
-    $this->testGetJSONReport(ReportType::RESPONSE, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::RESPONSE->value, 'application/json', ['application/json'], 'setAdminDAOInstance');
   }
 
   function test_GetReport_ReviewAndCSV(): void {
-    $this->testGetCSVReport(ReportType::REVIEW, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::REVIEW->value, 'setAdminDAOInstance');
   }
 
   function test_GetReport_ReviewAndJSON(): void {
-    $this->testGetJSONReport(ReportType::REVIEW, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::REVIEW->value, 'application/json', ['application/json'], 'setAdminDAOInstance');
   }
 
   function test_GetReport_SystemCheckAndCSV(): void {
-    $this->testGetCSVReport(ReportType::SYSTEM_CHECK, 'setSysChecksFolderInstance');
+    $this->testGetCSVReport(ReportType::SYSCHECK->value, 'setSysChecksFolderInstance');
   }
 
   function test_GetReport_SystemCheckAndJSON(): void {
-    $this->testGetJSONReport(ReportType::SYSTEM_CHECK, 'application/json', ['application/json'], 'setSysChecksFolderInstance');
+    $this->testGetJSONReport(ReportType::SYSCHECK->value, 'application/json', ['application/json'], 'setSysChecksFolderInstance');
   }
 
   function test_GetReport_LogAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::LOG, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::LOG->value, 'application/xml', ['application/json'], 'setAdminDAOInstance');
   }
 
   function test_GetReport_WithResponseAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::RESPONSE, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::RESPONSE->value, 'application/xml', ['application/json'], 'setAdminDAOInstance');
   }
 
   function test_GetReport_WithReviewAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::REVIEW, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::REVIEW->value, 'application/xml', ['application/json'], 'setAdminDAOInstance');
   }
 
   function test_GetReport_WithSystemCheckAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::SYSTEM_CHECK,
+      ReportType::SYSCHECK->value,
       'application/xml',
       ['application/json'],
       'setSysChecksFolderInstance'

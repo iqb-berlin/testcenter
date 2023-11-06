@@ -186,46 +186,20 @@ class WorkspaceController extends Controller {
       : explode(',', $request->getParam('dataIds', ''));
 
     try {
-      $reportType = new ReportType($request->getAttribute('type'));
-    } catch (InvalidArgumentException $exception) {
+      $reportType = ReportType::from($request->getAttribute('type'));
+    } catch (ValueError $exception) {
       throw new HttpNotFoundException($request, "Report type '{$request->getAttribute('type')}' not found.");
     }
 
-    $reportFormat = $request->getHeaderLine('Accept') == 'text/csv'
-      ? new ReportFormat(ReportFormat::CSV)
-      : new ReportFormat(ReportFormat::JSON);
+    $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
     $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
+    $report->generate();
 
-    if ($reportType->getValue() == ReportType::SYSTEM_CHECK) {
-      $report->setSysChecksFolderInstance(new SysChecksFolder($workspaceId));
-    } else {
-      $report->setAdminDAOInstance(self::adminDAO());
-    }
-
-    if (!empty($dataIds) and $report->generate()) {
-      switch ($reportFormat->getValue()) {
-        case ReportFormat::CSV:
-
-          $response->getBody()->write($report->getCsvReportData());
-          $response = $response->withHeader('Content-Type', 'text/csv;charset=UTF-8');
-          break;
-
-        case ReportFormat::JSON:
-
-          $response = $response->withJson($report->getReportData());
-          break;
-
-        default:
-
-          $response = $response->withHeader('Content-Type', 'application/json');  // @codeCoverageIgnore
-      }
-
-    } else {
-      $response = $reportFormat->getValue() === ReportFormat::CSV
-        ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
-        : $response->withHeader('Content-Type', 'application/json');
-    }
+    $response->getBody()->write($report->asString());
+    $response = $reportFormat === ReportFormat::CSV
+      ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
+      : $response->withHeader('Content-Type', 'application/json');
 
     return $response;
   }
