@@ -324,8 +324,8 @@ final class ReportTest extends TestCase {
 
   function test__construct(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
@@ -333,14 +333,14 @@ final class ReportTest extends TestCase {
     // Assert
     parent::assertEquals($this->workspaceId, $report->getWorkspaceId());
     parent::assertEquals($this->dataIds, $report->getDataIds());
-    parent::assertEquals($this->reportType->getValue(), $report->getType());
-    parent::assertEquals($this->reportFormat->getValue(), $report->getFormat());
+    parent::assertEquals($this->reportType, $report->getType());
+    parent::assertEquals($this->reportFormat, $report->getFormat());
   }
 
   function testGenerateLogsCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
 
@@ -361,8 +361,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateLogsJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
     $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
 
     $expectedLogsJsonReportData = self::LOGS;
@@ -378,7 +378,7 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateLogsCSVReportWithFailure(): void {
-    $this->testGenerateLogsReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateLogsReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateLogsReportWithFailure(ReportFormat $reportFormat): void {
@@ -389,7 +389,7 @@ final class ReportTest extends TestCase {
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::LOG),
+      ReportType::LOG,
       $reportFormat
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -400,13 +400,13 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateLogsJsonReportWithFailure(): void {
-    $this->testGenerateLogsReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateLogsReportWithFailure(ReportFormat::JSON);
   }
 
   function testGenerateResponsesCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::RESPONSE);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::RESPONSE;
+    $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
 
@@ -427,8 +427,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateResponsesJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::RESPONSE);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
+    $this->reportType = ReportType::RESPONSE;
+    $this->reportFormat = ReportFormat::JSON;
     $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
 
     $expectedResponsesJsonReportData = self::RESPONSES;
@@ -444,7 +444,7 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateResponsesCSVReportWithFailure(): void {
-    $this->testGenerateResponsesReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateResponsesReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateResponsesReportWithFailure(ReportFormat $reportFormat): void {
@@ -455,7 +455,7 @@ final class ReportTest extends TestCase {
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::RESPONSE),
+      ReportType::RESPONSE,
       $reportFormat
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -466,13 +466,13 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateResponsesJsonReportWithFailure(): void {
-    $this->testGenerateresponsesReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateresponsesReportWithFailure(ReportFormat::JSON);
   }
 
   function testGenerateReviewsCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
 
@@ -493,8 +493,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateDynamicReviewsCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
@@ -515,8 +515,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateReviewsJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
     $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
 
     $expectedReviewsJsonReportData = array_map(
@@ -541,8 +541,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateDynamicReviewsJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
     $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
     $expectedReviewsJsonReportData = [
@@ -584,7 +584,7 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateReviewsCSVReportWithFailure(): void {
-    $this->testGenerateReviewsReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateReviewsReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateReviewsReportWithFailure(ReportFormat $reportFormat): void {
@@ -595,7 +595,7 @@ final class ReportTest extends TestCase {
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::REVIEW),
+      ReportType::REVIEW,
       $reportFormat,
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -606,13 +606,13 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateReviewsJsonReportWithFailure(): void {
-    $this->testGenerateReviewsReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateReviewsReportWithFailure(ReportFormat::CSV);
   }
 
   function testGenerateSysChecksCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::SYSTEM_CHECK);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::SYSCHECK;
+    $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
       ->method('collectSysCheckReports')
       ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
@@ -633,8 +633,8 @@ final class ReportTest extends TestCase {
 
   function testGenerateSysChecksJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::SYSTEM_CHECK);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
+    $this->reportType = ReportType::SYSCHECK;
+    $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
       ->method('collectSysCheckReports')
       ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
@@ -667,7 +667,7 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateSysChecksCSVReportWithFailure(): void {
-    $this->testGenerateSysChecksReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateSysChecksReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateSysChecksReportWithFailure(ReportFormat $reportFormat): void {
@@ -680,7 +680,7 @@ final class ReportTest extends TestCase {
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::SYSTEM_CHECK),
+      ReportType::SYSCHECK,
       $reportFormat
     );
     $report->setSysChecksFolderInstance($this->sysChecksFolderMock);
@@ -691,6 +691,6 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateSysChecksJsonReportWithFailure(): void {
-    $this->testGenerateSysChecksReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateSysChecksReportWithFailure(ReportFormat::CSV);
   }
 }

@@ -5,16 +5,16 @@ declare(strict_types=1);
 
 class Report {
 
-    private const BOM = "\xEF\xBB\xBF";         // UTF-8 BOM for MS Excel
-    private const DELIMITER = ';';              // standard delimiter for MS Excel
-    private const ENCLOSURE = '"';
-    private const LINE_ENDING = "\n";
-    private const CSV_CELL_FORMAT = self::ENCLOSURE . "%s" . self::ENCLOSURE;
+    private const string BOM = "\xEF\xBB\xBF";         // UTF-8 BOM for MS Excel
+    private const string DELIMITER = ';';              // standard delimiter for MS Excel
+    private const string ENCLOSURE = '"';
+    private const string LINE_ENDING = "\n";
+    private const string CSV_CELL_FORMAT = self::ENCLOSURE . "%s" . self::ENCLOSURE;
 
     private int $workspaceId;
     private array $dataIds;
-    private string $type;
-    private string $format;
+    private ReportType $type;
+    private ReportFormat $format;
     private AdminDAO $adminDAO;
     private SysChecksFolder $sysChecksFolder;
 
@@ -33,8 +33,8 @@ class Report {
 
         $this->workspaceId = $workspaceId;
         $this->dataIds = $dataIds;
-        $this->type = $reportType->getValue();
-        $this->format = $reportFormat->getValue();
+        $this->type = $reportType;
+        $this->format = $reportFormat;
     }
 
     /**
@@ -56,15 +56,12 @@ class Report {
     /**
      * @return string
      */
-    public function getType(): string {
+    public function getType(): ReportType {
 
         return $this->type;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormat(): string {
+    public function getFormat(): ReportFormat {
 
         return $this->format;
     }
@@ -97,118 +94,108 @@ class Report {
         return $this->csvReportData;
     }
 
-    /**
-     * @return array An array of report data
-     */
-    public function getReportData(): array {
+  public function asString(): string {
+    return match ($this->format) {
+      ReportFormat::CSV => $this->csvReportData,
+      ReportFormat::JSON => json_encode($this->reportData)
+    };
+  }
 
-        return $this->reportData;
-    }
+  public function getReportData(): array {
+    return $this->reportData;
+  }
 
-    /**
-     * @return bool True on report generation success, otherwise false
-     */
-    public function generate(): bool {
+  public function generate(): bool {
+    switch ($this->type) {
+      case ReportType::LOG:
+        $adminDAO = new AdminDAO();
+        $logs = $adminDAO->getLogReportData($this->workspaceId, $this->dataIds);
 
-        switch ($this->type) {
+        if (empty($logs)) {
+          return false;
 
-            case ReportType::LOG:
+        } else {
+          $this->reportData = $logs;
 
-                $logs = $this->adminDAO->getLogReportData($this->workspaceId, $this->dataIds);
-
-                if (empty($logs)) {
-                    return false;
-
-                } else {
-                    $this->reportData = $logs;
-
-                    if ($this->format == ReportFormat::CSV) {
-                        $this->csvReportData = $this->generateLogsCSVReport($logs);
-                    }
-                }
-
-                break;
-
-            case ReportType::RESPONSE:
-
-                $responses = $this->adminDAO->getResponseReportData($this->workspaceId, $this->dataIds);
-
-                if (empty($responses)) {
-                    return false;
-
-                } else {
-                    $this->reportData = $responses;
-
-                    if ($this->format == ReportFormat::CSV) {
-                        $this->csvReportData = $this->generateResponsesCSVReport($responses);
-                    }
-                }
-
-                break;
-
-            case ReportType::REVIEW:
-
-                $reviewData = $this->adminDAO->getReviewReportData($this->workspaceId, $this->dataIds);
-                $reviewData = $this->transformReviewData($reviewData);
-
-                if (empty($reviewData)) {
-                    return false;
-
-                } else {
-                    $this->reportData = $reviewData;
-
-                    if ($this->format == ReportFormat::CSV) {
-                        $this->csvReportData = $this->generateReviewsCSVReport($reviewData);
-                    }
-                }
-
-                break;
-
-            case ReportType::SYSTEM_CHECK:
-
-                $systemChecks = $this->sysChecksFolder->collectSysCheckReports($this->dataIds);
-
-                if (empty($systemChecks)) {
-                    return false;
-
-                } else {
-                    $this->reportData = array_map(
-                        function(SysCheckReportFile $report) {
-
-                            return $report->get();
-                        },
-                        $systemChecks
-                    );
-
-                    if ($this->format == ReportFormat::CSV) {
-                        $flatReports = array_map(
-                            function(SysCheckReportFile $report) {
-
-                                return $report->getFlat();
-                            },
-                            $systemChecks
-                        );
-                        $this->csvReportData = self::BOM .
-                            CSV::build(
-                                $flatReports,
-                                [],
-                                self::DELIMITER,
-                                self::ENCLOSURE,
-                                self::LINE_ENDING
-                            );
-                    }
-                }
-
-                break;
-
-            default:
-
-                return false;   // @codeCoverageIgnore
-
+          if ($this->format == ReportFormat::CSV) {
+            $this->csvReportData = $this->generateLogsCSVReport($logs);
+          }
         }
 
-        return true;
+        break;
+
+      case ReportType::RESPONSE:
+        $adminDAO = new AdminDAO();
+        $responses = $adminDAO->getResponseReportData($this->workspaceId, $this->dataIds);
+
+        if (empty($responses)) {
+          return false;
+
+        } else {
+          $this->reportData = $responses;
+
+          if ($this->format == ReportFormat::CSV) {
+            $this->csvReportData = $this->generateResponsesCSVReport($responses);
+          }
+        }
+
+        break;
+
+      case ReportType::REVIEW:
+        $adminDAO = new AdminDAO();
+        $reviewData = $adminDAO->getReviewReportData($this->workspaceId, $this->dataIds);
+        $reviewData = $this->transformReviewData($reviewData);
+
+        if (empty($reviewData)) {
+          return false;
+
+        } else {
+          $this->reportData = $reviewData;
+
+          if ($this->format == ReportFormat::CSV) {
+            $this->csvReportData = $this->generateReviewsCSVReport($reviewData);
+          }
+        }
+
+        break;
+
+      case ReportType::SYSCHECK:
+        $sysChecksFolder = new SysChecksFolder($this->workspaceId);
+        $systemChecks = $sysChecksFolder->collectSysCheckReports($this->dataIds);
+
+        if (empty($systemChecks)) {
+          return false;
+
+        } else {
+          $this->reportData = array_map(
+            function(SysCheckReportFile $report) {
+              return $report->get();
+            },
+            $systemChecks
+          );
+
+          if ($this->format == ReportFormat::CSV) {
+            $flatReports = array_map(
+              function(SysCheckReportFile $report) {
+                return $report->getFlat();
+              },
+              $systemChecks
+            );
+            $this->csvReportData = self::BOM .
+              CSV::build(
+                $flatReports,
+                [],
+                self::DELIMITER,
+                self::ENCLOSURE,
+                self::LINE_ENDING
+              );
+          }
+        }
+        break;
     }
+
+    return true;
+  }
 
     /**
      * @param array $logData An array of Log data
