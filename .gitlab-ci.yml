@@ -291,6 +291,8 @@ test-backend-initialization:
    script:
      - apk add make
      - make init
+     - docker load -i backend_image.tar
+     - docker load -i db_image.tar
      - make test-backend-initialization-general
 
 build-backend-prod:
