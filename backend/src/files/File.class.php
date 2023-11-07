@@ -126,7 +126,12 @@ class File extends FileData {
   }
 
   public function report(string $level, string $message): void {
-    $this->validationReport[$level][] = $message;
+    if ($this->validationReport[$level] and count($this->validationReport[$level]) == 5) {
+      $aggregated = str_ends_with($this->validationReport[$level][4], " more {$level}s.") ? (int) $this->validationReport[$level][4] : 1;
+      $this->validationReport[$level][4] = ($aggregated + 1) . " more {$level}s.";
+    } else {
+      $this->validationReport[$level][] = $message;
+    }
   }
 
   // TODO unit-test
@@ -165,7 +170,7 @@ class File extends FileData {
       ),
     ];
   }
-  
+
   public function getContent(): string {
     $this->load();
     return $this->content;
