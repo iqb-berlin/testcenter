@@ -24,7 +24,8 @@ try {
   ini_set('display_errors', '0');
   ini_set('display_startup_errors', '0');
   register_shutdown_function(function() {
-    if(!is_null($e = error_get_last())) {
+    $e = error_get_last();
+    if(!is_null($e) and in_array($e['type'], [E_ERROR, E_COMPILE_ERROR, E_CORE_ERROR])) {
       fatalErrorHandler(new ErrorException($e['message'], 1, 1, $e['file'], $e['line']));
     }
   });
