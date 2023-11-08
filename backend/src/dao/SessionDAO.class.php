@@ -145,14 +145,13 @@ class SessionDAO extends DAO {
 
   public function createLoginSession(Login $login): LoginSession {
     $loginToken = Token::generate('login', $login->getName());
-    $groupToken = $this->getOrCreateGroupToken($login);
 
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
 
     $this->_(
       'insert ignore into login_sessions (token, name, workspace_id, group_name)
-                values(:token, :name, :ws, :group_name)',
+            values(:token, :name, :ws, :group_name)',
       [
         ':token' => $loginToken,
         ':name' => $login->getName(),
@@ -162,16 +161,12 @@ class SessionDAO extends DAO {
     );
 
     if ($this->lastAffectedRows) {
-      return new LoginSession(
-        (int) $this->pdoDBhandle->lastInsertId(),
-        $loginToken,
-        $groupToken,
-        $login
-      );
+      $id = (int) $this->pdoDBhandle->lastInsertId();
+      $groupToken = $this->getOrCreateGroupToken($login);
+      return new LoginSession($id, $loginToken, $groupToken, $login);
     }
 
-    // there is no way in mySQL to combine insert & select into one query
-
+    // there is no way in mySQL to combine insert & select into one query, so have to retrieve it to get the id
     $session = $this->_(
       'select id, token from login_sessions where name = :name and workspace_id = :ws_id',
       [
@@ -180,6 +175,12 @@ class SessionDAO extends DAO {
       ]
     );
 
+    // usually the musst be a session, because it was just inserted. But in some case of some error conditions:
+    if (!$session) {
+      throw new Exception("Could not retrieve login-session: `{$login->getName()}`!");
+    }
+
+    $groupToken = $this->getOrCreateGroupToken($login);
     return new LoginSession((int) $session['id'], $session['token'], $groupToken, $login);
   }
 
@@ -294,7 +295,6 @@ class SessionDAO extends DAO {
     }
 
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
-
     try {
       $this->_(
         "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
@@ -308,11 +308,19 @@ class SessionDAO extends DAO {
         ]
       );
     } catch (Exception $ee) {
-      if ($ee->getPrevious() and ($ee->getPrevious()->getCode() == 23000)) {
-        error_log("Create person-session: retry on duplicate suffix ({$loginSession->getLogin()->getName()})");
-        // allow retry on duplicate suffix - extremely unlikely in prod, but happens in test environment
-        return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired);
+      // allow retry on duplicate suffix - unlikely in prod, but always happens in testing when rand is static
+      if ($originalException = $ee->getPrevious()) {
+        if (
+          property_exists($originalException, 'errorInfo')
+          and ($originalException->errorInfo[1] == 1062)
+          and ($originalException->getCode() == 23000)
+          and (str_ends_with($originalException->errorInfo[2], "for key 'person_sessions.unique_person_session'"))
+        ) {
+          error_log("Create person-session: retry on duplicate suffix (`{$loginSession->getLogin()->getName()}` / `$suffix`)");
+          return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired);
+        }
       }
+      throw $ee;
     }
 
 
@@ -397,7 +405,13 @@ class SessionDAO extends DAO {
   }
 
   public function getOrCreateGroupToken(Login $login): string {
-    $res = $this->_('select token from login_session_groups where group_name = ?', [$login->getGroupName()]);
+    $res = $this->_(
+      'select token from login_session_groups where group_name = ? and workspace_id = ?',
+      [
+        $login->getGroupName(),
+        $login->getWorkspaceId()
+      ]
+    );
 
     if (isset($res['token'])) {
       return $res['token'];
