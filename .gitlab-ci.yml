@@ -225,6 +225,7 @@ test-e2e:
     - build-backend
     - build-broadcasting-service
     - build-file-service
+    - build-db
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
