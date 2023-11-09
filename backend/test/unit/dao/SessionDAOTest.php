@@ -435,8 +435,8 @@ class SessionDAOTest extends TestCase {
       "another_one",
       "blablaa",
       "hot-run-restart",
-      "another_group",
-      "Another Group",
+      "sample_group",
+      "Sample Group",
       ['' => 'A.BOOKLET'],
       1,
       946803600
@@ -445,7 +445,7 @@ class SessionDAOTest extends TestCase {
     $expectation = new LoginSession(
       8,
       'static:login:another_one',
-      'static:group:another_group',
+      'group-token',
       $anotherLogin
     );
 
