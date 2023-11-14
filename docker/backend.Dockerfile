@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.2.5
+ARG PHP_VERSION=8.2.12
 
 FROM php:${PHP_VERSION} AS backend-composer
 
@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
   unzip
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
+RUN pecl install igbinary && docker-php-ext-enable igbinary
+RUN pecl install redis && docker-php-ext-enable redis
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
@@ -17,9 +19,10 @@ COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 COPY backend/composer.json /var/www/backend/
 COPY backend/composer.lock /var/www/backend/
 COPY backend/src /var/www/backend/src
+COPY backend/test /var/www/backend/test
 
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
-RUN cd /var/www/backend/ && composer install
+RUN cd /var/www/backend/ && COMPOSER_ALLOW_SUPERUSER=1 composer install --ignore-platform-req=ext-apache
 
 VOLUME /vendor
 
@@ -46,6 +49,7 @@ RUN a2enconf security
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
 COPY --from=backend-composer /var/www/backend/vendor/ /var/www/backend/vendor/
+COPY --from=backend-composer /var/www/backend/composer.lock /var/www/backend/composer.lock
 COPY backend/.htaccess /var/www/backend/
 COPY backend/index.php /var/www/backend/
 COPY backend/initialize.php /var/www/backend/
