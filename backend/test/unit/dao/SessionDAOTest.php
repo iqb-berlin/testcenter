@@ -39,7 +39,7 @@ class SessionDAOTest extends TestCase {
         "some_user",
         "some_pass_hash",
         "run-hot-restart",
-        "a group name",
+        "sample_group",
         "A Group Label",
         ["existing_code" => ["a booklet"]],
         1,
@@ -293,7 +293,7 @@ class SessionDAOTest extends TestCase {
     $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
 
     $this->assertEquals(6, $result->getPerson()->getId());
-    $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
+    $this->assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
     $this->assertEquals('existing_code', $result->getPerson()->getCode());
     $this->assertEquals(1893495600, $result->getPerson()->getValidTo());
     $this->assertEquals(6, $this->countTableRows('person_sessions'));
@@ -313,7 +313,7 @@ class SessionDAOTest extends TestCase {
         "some_user",
         "some_pass_hash",
         "run_hot_return",
-        "a group name",
+        "sample_group",
         "A Group Label",
         ["existing_code" => ["a booklet"]],
         1,
@@ -334,7 +334,7 @@ class SessionDAOTest extends TestCase {
         "some_user",
         "some_pass_hash",
         "run_hot_return",
-        "a group name",
+        "sample_group",
         "A Group Label",
         ["existing_code" => ["a booklet"]],
         1,
@@ -357,7 +357,7 @@ class SessionDAOTest extends TestCase {
         "some_user",
         "some_pass_hash",
         "run_hot_return",
-        "a group name",
+        "sample_group",
         "A Group Label",
         ["existing_code" => ["a booklet"]],
         1,
@@ -370,7 +370,7 @@ class SessionDAOTest extends TestCase {
     $result = $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
 
     $this->assertEquals(6, $result->getPerson()->getId());
-    $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
+    $this->assertEquals('static:person:sample_group_some_user_existing_code', $result->getPerson()->getToken());
     $this->assertEquals('existing_code', $result->getPerson()->getCode());
     $this->assertEquals(1577877000, $result->getPerson()->getValidTo()); // 1577877000 = 1/1/2020 12:10 GMT+1
     $this->assertEquals($testLoginSession, $result->getLoginSession());
@@ -524,11 +524,9 @@ class SessionDAOTest extends TestCase {
     $this->assertFalse($result);
   }
 
-  // STAND
-  // seq 2 | xargs -n1 -P 5 curl --silent --location --request PUT 'http://localhost/api/session/login' --data '{"name":"test-no-pw","password":""}' --show-error
   public function test_getOrCreateGroupToken(): void {
     $groupToken = $this->dbc->getOrCreateGroupToken($this->testLoginSession->getLogin());
-    $expectation = "static:group:a group name";
+    $expectation = 'group-token';
     $this->assertEquals($expectation, $groupToken);
   }
 
