@@ -40,7 +40,7 @@ const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
     }
     console.log(`Connection attempt failed; ${retries} retries left`);
     // eslint-disable-next-line no-await-in-loop
-    await sleep(5000);
+    await sleep(15000);
   }
 
   throw new Error(cliPrint.get.error(`Could not connect to ${serviceUrl}`));
