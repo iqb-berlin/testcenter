@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.0.0-rc5
+## 15.0.0-rc6
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
