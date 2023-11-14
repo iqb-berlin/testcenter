@@ -538,12 +538,7 @@ class SessionDAOTest extends TestCase {
     $t1 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 1));
     $t2 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 2));
 
-
-    $res = [$t1->await(), $t2->await()];
-
-    $expectation = 'static:group:a group name';
-    $this->assertEquals($expectation, $res[0]);
-    $this->assertEquals($expectation, $res[1]);
+    $this->assertEquals($t1->await(), $t2->await());
   }
 
 

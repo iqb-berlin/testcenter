@@ -16,18 +16,14 @@ readonly class CreateGroupTokenTask implements Task {
 
   public function run(Channel $channel, Cancellation $cancellation): string {
     DB::connectToTestDB();
-    SystemConfig::$debug_useStaticTokens = true;
+    SystemConfig::$debug_useStaticTokens = false; //!
+    TestEnvironment::makeRandomStatic();
     $slowerSessionDao = new class extends SessionDAO {
       public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
         delay(1);
         return parent::_($sql, $replacements, $multiRow);
       }
     };
-    try {
-      return $slowerSessionDao->getOrCreateGroupToken($this->login);
-    } catch (Exception $e) {
-      return $e->getMessage();
-    }
-
+    return $slowerSessionDao->getOrCreateGroupToken($this->login);
   }
 }

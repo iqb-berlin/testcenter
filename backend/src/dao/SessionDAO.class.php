@@ -405,6 +405,21 @@ class SessionDAO extends DAO {
   }
 
   public function getOrCreateGroupToken(Login $login): string {
+    $newGroupToken = Token::generate('group', $login->getGroupName());
+    $this->_(
+      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token) values (?, ?, ?, ?)',
+      [
+        $login->getGroupName(),
+        $login->getWorkspaceId(),
+        $login->getGroupLabel(),
+        $newGroupToken
+      ]
+    );
+
+    if ($this->lastAffectedRows) {
+      return $newGroupToken;
+    }
+
     $res = $this->_(
       'select token from login_session_groups where group_name = ? and workspace_id = ?',
       [
@@ -413,21 +428,11 @@ class SessionDAO extends DAO {
       ]
     );
 
-    if (isset($res['token'])) {
-      return $res['token'];
+    if (!isset($res['token'])) {
+      throw new Exception("Could not retrieve group token for `{$login->getGroupName()}`.");
     }
 
-    $newGroupToken = Token::generate('group', $login->getGroupName());
-    $this->_(
-      'insert into login_session_groups (group_name, workspace_id, group_label, token) values (?, ?, ?, ?)',
-      [
-        $login->getGroupName(),
-        $login->getWorkspaceId(),
-        $login->getGroupLabel(),
-        $newGroupToken
-      ]
-    );
-    return $newGroupToken;
+    return $res['token'];
   }
 
 
