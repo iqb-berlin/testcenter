@@ -524,6 +524,29 @@ class SessionDAOTest extends TestCase {
     $this->assertFalse($result);
   }
 
+  // STAND
+  // seq 2 | xargs -n1 -P 5 curl --silent --location --request PUT 'http://localhost/api/session/login' --data '{"name":"test-no-pw","password":""}' --show-error
+  public function test_getOrCreateGroupToken(): void {
+    $groupToken = $this->dbc->getOrCreateGroupToken($this->testLoginSession->getLogin());
+    $expectation = "static:group:a group name";
+    $this->assertEquals($expectation, $groupToken);
+  }
+
+  public function test_getOrCreateGroupToken_parallel(): void {
+    $worker = Amp\Parallel\Worker\createWorker();
+
+    $t1 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 1));
+    $t2 = $worker->submit(new CreateGroupTokenTask($this->testLoginSession->getLogin(), 2));
+
+
+    $res = [$t1->await(), $t2->await()];
+
+    $expectation = 'static:group:a group name';
+    $this->assertEquals($expectation, $res[0]);
+    $this->assertEquals($expectation, $res[1]);
+  }
+
+
   private function countTableRows(string $tableName): int {
     return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
   }
