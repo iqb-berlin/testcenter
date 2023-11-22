@@ -65,50 +65,57 @@ class WorkspaceDAO extends DAO {
     return [$deleted, $added];
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
-  public function addLoginSource(string $source, LoginArray $logins): int {
-    foreach ($logins as $login) {
-      $this->createLogin($login, $source);
-    }
-    return count($logins->asArray());
-  }
 
-  /**
-   * @codeCoverageIgnore
-   */
-  public function createLogin(Login $login, string $source): void {
-    $this->_('insert into logins 
-                 (
-                     name,
-                     mode,
-                     workspace_id,
-                     codes_to_booklets,
-                     group_name,
-                     group_label,
-                     custom_texts,
-                     password,
-                     source,
-                     valid_from,
-                     valid_to,
-                     valid_for
-                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        $login->getName(),
-        $login->getMode(),
-        $this->workspaceId,
-        json_encode($login->getBooklets()),
-        $login->getGroupName(),
-        $login->getGroupLabel(),
-        json_encode($login->getCustomTexts()),
-        Password::encrypt($login->getPassword(), 't', true),
-        $source,
-        TimeStamp::toSQLFormat($login->getValidFrom()),
-        TimeStamp::toSQLFormat($login->getValidTo()),
-        $login->getValidForMinutes()
-      ]
-    );
+  // TODO unit-test
+  public function addLoginSource(string $source, LoginArray $logins): int {
+
+    // one source could contain 10ks of logins. For the sake of performance we use one statement to insert them all
+    // and plain foreach and string-concatenation to build teh query.
+
+    $sql = 'insert into logins (
+      name,
+      mode,
+      workspace_id,
+      codes_to_booklets,
+      group_name,
+      group_label,
+      custom_texts,
+      password,
+      source,
+      valid_from,
+      valid_to,
+      valid_for
+    ) values';
+
+    foreach ($logins as $login) {
+      /* @var $login Login */
+      $loginValues = array_map(
+        function (string|int|null $v): string|int {
+          if ($v == null) return 'null';
+          if (is_string($v)) return $this->pdoDBhandle->quote($v);
+          return $v;
+        },
+        [
+          $login->getName(),
+          $login->getMode(),
+          $this->workspaceId,
+          json_encode($login->getBooklets()),
+          $login->getGroupName(),
+          $login->getGroupLabel(),
+          json_encode($login->getCustomTexts()),
+          Password::encrypt($login->getPassword(), 't', true),
+          $source,
+          TimeStamp::toSQLFormat($login->getValidFrom()),
+          TimeStamp::toSQLFormat($login->getValidTo()),
+          $login->getValidForMinutes()
+        ]
+      );
+      $sql .= '(' . implode(', ', $loginValues) . '),';
+    }
+    $sql = rtrim($sql, ",");
+
+    $this->_($sql, [], true);
+    return count($logins->asArray());
   }
 
   /**
