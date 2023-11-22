@@ -1,7 +1,7 @@
-#.git
-#.gitignore
-#.idea
+.git
+.gitignore
+.idea
 data
-e2e
-config
-#dist
+data-*
+dist
+node_modules
