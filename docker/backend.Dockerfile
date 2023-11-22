@@ -45,6 +45,7 @@ RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf
 COPY backend/config/security.conf /etc/apache2/conf-available
 RUN a2enconf servername
 RUN a2enconf security
+COPY backend/config/workers.conf /etc/apache2/mods-available/mpm_prefork.conf
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
