@@ -33,7 +33,9 @@ try {
   }
   if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
     $msg = file_get_contents(ROOT_DIR . '/backend/config/error.lock');
-    throw new Exception("Last initialize failed with error: $msg.");
+    unlink(ROOT_DIR . '/backend/config/error.lock');
+    CLI::warning("Last initialize failed with error: $msg.");
+    CLI::warning("Trying again:");
   }
   file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
@@ -156,6 +158,7 @@ try {
     }
 
     if (!$args['skip_read_workspace_files']) {
+      $t1 = microtime(true);
       $stats = $workspace->storeAllFiles();
 
       CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
@@ -172,7 +175,10 @@ try {
           )
         )
       );
+      $t2 = microtime(true);
+      $duration = $t2 - $t1;
       CLI::p("Files found: " . $statsString);
+      CLI::p("Processing time: $duration sec.");
 
       if ($stats['invalid']) {
         CLI::warning("Invalid files found: {$stats['invalid']}");
