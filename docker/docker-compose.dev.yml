@@ -7,6 +7,11 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--log.level=DEBUG"
+      - "--serversTransport.maxIdleConnsPerHost=200"
+      - "--serversTransport.forwardingTimeouts.dialTimeout=0"
+      - "--serversTransport.forwardingTimeouts.responseHeaderTimeout=0"
+      - "--serversTransport.forwardingTimeouts.idleConnTimeout=0"
     networks:
       - testcenter
 
