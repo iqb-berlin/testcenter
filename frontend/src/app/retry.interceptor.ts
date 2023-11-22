@@ -10,7 +10,7 @@ import { HttpRetryPolicy, HttpRetryPolicyNames } from './app.interfaces';
 const retryPolicies: { [name in HttpRetryPolicyNames]: HttpRetryPolicy } = {
   test: {
     excludedStatusCodes: [401, 403],
-    retryPattern: [] // 50, 500, 1000, 2000
+    retryPattern: [50, 500, 1000, 2000]
   },
   none: {
     excludedStatusCodes: [],

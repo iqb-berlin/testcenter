@@ -35,7 +35,7 @@ git status
 VERSION=$(npm pkg get version | xargs echo)
 
 read -n1 -p "Commit Version $VERSION? (Y/n) " confirm
-if ! echo $confirm | grep '^[Yy]\?$'; then
+if ! echo "$confirm" | grep '^[Yy]\?$'; then
   exit 0
 fi
 
@@ -46,7 +46,7 @@ git push origin $VERSION
 
 
 read -n1 -p "Push Images Version $VERSION manually? (y/N) " confirm
-if echo $confirm | grep '^[Yy]\?$'; then
+if echo "$confirm" | grep '^[Nn]\?$'; then
   exit 0
 fi
 

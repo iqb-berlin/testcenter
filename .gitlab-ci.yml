@@ -133,6 +133,8 @@ build-file-service:
     - !reference [ .fs-change, rules ]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
+    - changes:
+        - e2e/**/*
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -222,6 +224,8 @@ test-e2e:
     - build-frontend
     - build-backend
     - build-broadcasting-service
+    - build-file-service
+    - build-db
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -284,12 +288,15 @@ test-backend-initialization:
      - if: "$CI_COMMIT_TAG"
    dependencies:
      - build-backend
+     - build-db
    before_script:
      - ip a | grep mtu
      - docker network inspect bridge | grep mtu
    script:
      - apk add make
      - make init
+     - docker load -i backend_image.tar
+     - docker load -i db_image.tar
      - make test-backend-initialization-general
 
 build-backend-prod:
@@ -389,7 +396,7 @@ build-file-service-prod:
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
     - chmod +x /usr/local/bin/docker-compose
     - make init
-    - docker build --target prod -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
+    - docker build -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
@@ -417,7 +424,7 @@ build-db-prod:
     - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
     - chmod +x /usr/local/bin/docker-compose
     - make init
-    - docker build --target prod -t iqbberlin/testcenter-db:$CI_COMMIT_TAG -f docker/database.Dockerfile .
+    - docker build -t iqbberlin/testcenter-db:$CI_COMMIT_TAG -f docker/database.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \

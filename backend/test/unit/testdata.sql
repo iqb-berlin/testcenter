@@ -21,14 +21,6 @@ values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
 values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00', '2032-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
-
-insert into login_session_groups (group_label, group_name, token, workspace_id)
-values ('Sample Group', 'sample_group', 'group-token', 1);
-
-insert into login_session_groups (group_label, group_name, token, workspace_id)
-values ('Review Group', 'review_group', 'review-group-token', 1);
-
-
 insert into login_sessions (name, workspace_id, group_name, token)
 values ('test', 1, 'sample_group', 'nice_token');
 
@@ -49,6 +41,13 @@ values ('session_of_deleted_login', 1, 'sample_group', 'deleted_login_token');
 
 insert into login_sessions (name, workspace_id, group_name, token)
 values ('test-review', 1, 'review_group', 'nice_token');
+
+
+insert into login_session_groups (group_label, group_name, token, workspace_id)
+values ('Sample Group', 'sample_group', 'group-token', 1);
+
+insert into login_session_groups (group_label, group_name, token, workspace_id)
+values ('Review Group', 'review_group', 'review-group-token', 1);
 
 
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)

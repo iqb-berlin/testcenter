@@ -59,8 +59,6 @@ const checkPrerequisites = async done => {
     done(new Error(cliPrint.get.error(msg)));
   }
 
-  // TODO check sql patch
-
   done();
 };
 
@@ -82,7 +80,7 @@ const replaceInFiles = (glob, regex, replacement) =>
 const updateVersionInFiles = gulp.parallel(
   replaceInFiles(
     `${rootPath}/sampledata/*.xml`,
-    /(xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter)\/\d+.\d+.\d+/g,
+    /(xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter)\/\d+.\d+.\d+(-[\w.]+)?/g,
     '$1/$VERSION'
   ),
   replaceInFiles(

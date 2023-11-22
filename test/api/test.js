@@ -15,8 +15,7 @@ const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 const getStatus = statusRequest => new Promise(resolve => {
   request(
     statusRequest,
-    (error, response) =>
-      resolve((!response || response.statusCode < 200 || response.statusCode >= 400) ? -1 : response.statusCode)
+    (error, response) => (error ? resolve(error) : resolve(response))
   );
 });
 
@@ -30,17 +29,21 @@ const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
   cliPrint.headline(`Running Dredd tests against service: ${serviceUrl}`);
 
   let retries = 10;
-  let status = 0;
+  let statusCode = 0;
   // eslint-disable-next-line no-plusplus
-  while ((status !== 200) && retries--) {
+  while ((statusCode !== 200) && retries--) {
     // eslint-disable-next-line no-await-in-loop
-    status = await getStatus(statusRequest);
-    if (status === 200) {
+    const response = await getStatus(statusRequest);
+    statusCode = response.statusCode;
+    if (statusCode === 200) {
       return done();
     }
-    console.log(`Connection attempt failed; ${retries} retries left`);
+    console.log(`Connection attempt failed with ${statusCode} (${retries} retries left): `);
+    console.log(response.body);
+    console.log('request tried: ');
+    console.log(statusRequest);
     // eslint-disable-next-line no-await-in-loop
-    await sleep(5000);
+    await sleep(3000);
   }
 
   throw new Error(cliPrint.get.error(`Could not connect to ${serviceUrl}`));
@@ -161,7 +164,7 @@ const insertGroupTokenToCacheService = async () => {
 exports.runDreddTest = gulp.series(
   confirmTestConfig(
     testConfig.backend_url, {
-      url: `${testConfig.backend_url}/system/config`,
+      url: `${testConfig.backend_url}/system/config?XDEBUG_SESSION_START=IDEA`,
       headers: {
         TestMode: 'prepare'
       }
