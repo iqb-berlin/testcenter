@@ -38,15 +38,15 @@
     <mat-table [dataSource]="workspaces" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
+          <mat-checkbox [indeterminate]="tableSelectionCheckbox.hasValue() && !isAllSelected()"
                         [checked]="tableSelectionCheckbox.hasValue() && isAllSelected()"
-                        [indeterminate]="tableSelectionCheckbox.hasValue() && !isAllSelected()">
+                        (change)="$event ? masterToggle() : null">
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
           <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null"
-                        [checked]="tableSelectionCheckbox.isSelected(row)">
+                        [checked]="tableSelectionCheckbox.isSelected(row)"
+                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -82,15 +82,17 @@
 
     <mat-table [dataSource]="userListDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">RO | RW</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">Read | Write</mat-header-cell>
         <mat-cell *matCellDef="let row let i = index">
-          <mat-checkbox (change)="selectUser(row, 'RO')"
-                        [checked]="row.role === 'RO'" matTooltip="RO"
-                        [attr.data-cy]="'workspace-' + i + '-role-ro'">
+          <mat-checkbox [attr.data-cy]="'workspace-role-ro' + i"
+                        matTooltip="Nur Lesen"
+                        [checked]="row.role === 'RO' || row.role === 'RW'"
+                        (change)="selectPermissions(row, 'RO')">
           </mat-checkbox>
-          <mat-checkbox (change)="selectUser(row, 'RW')"
-                        [checked]="row.role === 'RW'" matTooltip="RW"
-                        [attr.data-cy]="'workspace-' + i + '-role-rw'">
+          <mat-checkbox [attr.data-cy]="'workspace-role-rw' + i"
+                        matTooltip="Lesen und Schreiben"
+                        [checked]="row.role === 'RW'"
+                        (change)="selectPermissions(row, 'RW')">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
