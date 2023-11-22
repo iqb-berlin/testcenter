@@ -47,16 +47,16 @@
     <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef data-cy="check-all">
-          <mat-checkbox (change)="$event ? masterToggle() : null"
+          <mat-checkbox [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()"
                         [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
-                        [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+                        (change)="$event ? masterToggle() : null">
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" data-cy="check-user">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"
+          <mat-checkbox [attr.data-cy]="'checkbox'"
+                        (click)="$event.stopPropagation()"
                         [checked]="tableselectionCheckbox.isSelected(row)"
-                        [attr.data-cy]="'checkbox'">
+                        (change)="$event ? tableselectionCheckbox.toggle(row) : null">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -95,20 +95,20 @@
 
     <mat-table [dataSource]="workspacelistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">RO | RW</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">Read | Write</mat-header-cell>
         <mat-cell *matCellDef="let row">
           <mat-checkbox
-            (change)="selectWorkspace(row, 'RO')"
-            [checked]="row.role === 'RO'"
-            matTooltip="Nur Lesen"
             [attr.data-cy]="'workspace-' + row.id + '-role-ro'"
+            matTooltip="Nur Lesen"
+            [checked]="row.role === 'RO' || row.role === 'RW'"
+            (change)="selectPermissions(row, 'RO')"
           >
           </mat-checkbox>
           <mat-checkbox
-            (change)="selectWorkspace(row, 'RW')"
-            [checked]="row.role === 'RW'"
-            matTooltip="Lesen und Schreiben"
             [attr.data-cy]="'workspace-' + row.id + '-role-rw'"
+            matTooltip="Lesen und Schreiben"
+            [checked]="row.role === 'RW'"
+            (change)="selectPermissions(row, 'RW')"
           >
           </mat-checkbox>
         </mat-cell>

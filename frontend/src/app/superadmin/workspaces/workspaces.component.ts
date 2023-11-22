@@ -190,11 +190,11 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectUser(ws: IdRoleData, role: string): void {
-    if (ws.role === role) {
-      ws.role = '';
-    } else {
-      ws.role = role;
+  selectPermissions(user: IdRoleData, role: string): void {
+    if (role === 'RW') {
+      user.role = (user.role === 'RW') ? 'RO' : 'RW';
+    } else if (role === 'RO') {
+      user.role = (user.role === 'RO' || user.role === 'RW') ? '' : 'RO';
     }
     this.pendingUserChanges = true;
   }
