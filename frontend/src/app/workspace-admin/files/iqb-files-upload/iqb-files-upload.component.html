@@ -3,9 +3,16 @@
     {{file.name}}
   </div>
   <div>
-    <mat-progress-bar class="upload-progress-bar" [value]="progressPercentage"></mat-progress-bar>
+    <mat-progress-bar
+      class="upload-progress-bar"
+      [value]="progressPercentage"
+      [mode]="progressPercentage < 100 ? 'determinate' : 'indeterminate'"
+    ></mat-progress-bar>
   </div>
-  <div>{{progressPercentage}}%</div>
+  <div>
+    {{progressPercentage}}% Hochgeladen
+    <span *ngIf="progressPercentage == 100" class="blinking"> · Dateien werden eingelesen</span>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="status > 1">

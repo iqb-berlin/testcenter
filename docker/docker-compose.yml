@@ -14,15 +14,14 @@ x-env-logging-conf: &env-logging-conf
 services:
   traefik:
     container_name: testcenter-traefik
-    image: traefik:v2.9
+    image: traefik:v2.10
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - "${PORT}:80"
+      - "${PORT:-80}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    restart: always
     networks:
       testcenter:
 
@@ -33,13 +32,8 @@ services:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_INITDB_SKIP_TZINFO: 'true'
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
-      interval: 1s
-      retries: 120
     volumes:
       - dbdata:/var/lib/mysql
-    restart: always
     networks:
       testcenter:
 
@@ -59,9 +53,6 @@ services:
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       PORT: ${PORT:-80}
       TLS_PORT: ${TLS_PORT:-443}
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
@@ -74,26 +65,14 @@ services:
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
     volumes:
       - testcenter_backend_vo_data:/var/www/data
-    restart: always
     networks:
       testcenter:
 
   testcenter-file-service:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
-    volumes:
-      - testcenter_backend_vo_data:/var/www/html/
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-    depends_on:
-      traefik:
-        condition: service_started
-      testcenter-cache-service:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "service", "nginx", "status"]
-      interval: 1s
-      retries: 120
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
@@ -101,7 +80,8 @@ services:
       - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
-    restart: always
+    volumes:
+      - testcenter_backend_vo_data:/var/www/html/
     networks:
       testcenter:
 
@@ -112,11 +92,6 @@ services:
       - "bash"
       - "-c"
       - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-      interval: 1s
-      retries: 120
-    restart: always
     networks:
       testcenter:
 
@@ -132,7 +107,6 @@ services:
       - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend"
-    restart: always
     networks:
       testcenter:
 
@@ -149,7 +123,6 @@ services:
       - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
-    restart: always
     networks:
       testcenter:
 

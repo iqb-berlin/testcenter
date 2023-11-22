@@ -2,86 +2,77 @@
 <project version="4">
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/backend/vendor/slim/slim" />
-      <path value="$PROJECT_DIR$/backend/vendor/nikic/fast-route" />
-      <path value="$PROJECT_DIR$/backend/vendor/slim/psr7" />
-      <path value="$PROJECT_DIR$/backend/vendor/slim/http" />
-      <path value="$PROJECT_DIR$/backend/vendor/php-di/phpdoc-reader" />
-      <path value="$PROJECT_DIR$/backend/vendor/php-di/php-di" />
-      <path value="$PROJECT_DIR$/backend/vendor/nikic/php-parser" />
-      <path value="$PROJECT_DIR$/backend/vendor/php-di/invoker" />
-      <path value="$PROJECT_DIR$/backend/vendor/psr/container" />
-      <path value="$PROJECT_DIR$/backend/vendor/psr/log" />
-      <path value="$PROJECT_DIR$/backend/vendor/fig/http-message-util" />
-      <path value="$PROJECT_DIR$/backend/vendor/psr/http-server-handler" />
-      <path value="$PROJECT_DIR$/backend/vendor/psr/http-message" />
       <path value="$PROJECT_DIR$/backend/vendor/psr/http-server-middleware" />
+      <path value="$PROJECT_DIR$/backend/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/backend/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/backend/vendor/fig/http-message-util" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/serialization" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/parallel" />
+      <path value="$PROJECT_DIR$/backend/vendor/slim/slim" />
+      <path value="$PROJECT_DIR$/backend/vendor/slim/http" />
+      <path value="$PROJECT_DIR$/backend/vendor/slim/psr7" />
+      <path value="$PROJECT_DIR$/backend/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/backend/vendor/psr/http-server-handler" />
       <path value="$PROJECT_DIR$/backend/vendor/psr/http-factory" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-timer" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/phpunit" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-file-iterator" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-invoker" />
-      <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-php80" />
-      <path value="$PROJECT_DIR$/backend/vendor/theseer/tokenizer" />
-      <path value="$PROJECT_DIR$/backend/vendor/myclabs/deep-copy" />
-      <path value="$PROJECT_DIR$/backend/vendor/phar-io/manifest" />
-      <path value="$PROJECT_DIR$/backend/vendor/laravel/serializable-closure" />
-      <path value="$PROJECT_DIR$/backend/vendor/mockery/mockery" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-code-coverage" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-text-template" />
-      <path value="$PROJECT_DIR$/backend/vendor/phar-io/version" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpspec/prophecy" />
-      <path value="$PROJECT_DIR$/backend/vendor/hamcrest/hamcrest-php" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/global-state" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/comparator" />
-      <path value="$PROJECT_DIR$/backend/vendor/mikey179/vfsstream" />
-      <path value="$PROJECT_DIR$/backend/vendor/ralouphie/getallheaders" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/code-unit" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/type" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/version" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/code-unit-reverse-lookup" />
-      <path value="$PROJECT_DIR$/backend/vendor/webmozart/assert" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-docblock" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/cli-parser" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/diff" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-enumerator" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/exporter" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-reflector" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/environment" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/complexity" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/recursion-context" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/lines-of-code" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/type-resolver" />
-      <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-common" />
       <path value="$PROJECT_DIR$/backend/vendor/composer" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/comparator" />
       <path value="$PROJECT_DIR$/backend/vendor/tecnickcom/tcpdf" />
-      <path value="$PROJECT_DIR$/backend/vendor/doctrine/instantiator" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/resource-operations" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/slim" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/theseer" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/php-di" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/phpunit" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/mikey179" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/mockery" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/nikic" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/fig" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/symfony" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/bin" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/composer" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/tecnickcom" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/psr" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/phar-io" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/ralouphie" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/myclabs" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/laravel" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/hamcrest" />
-      <path value="$PROJECT_DIR$/backend/vendor/vendor/sebastian" />
+      <path value="$PROJECT_DIR$/backend/vendor/daverandom/libdns" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/backend/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/backend/vendor/mikey179/vfsstream" />
+      <path value="$PROJECT_DIR$/backend/vendor/hamcrest/hamcrest-php" />
+      <path value="$PROJECT_DIR$/backend/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/backend/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/backend/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/backend/vendor/mockery/mockery" />
+      <path value="$PROJECT_DIR$/backend/vendor/laravel/serializable-closure" />
+      <path value="$PROJECT_DIR$/backend/vendor/kelunik/certificate" />
+      <path value="$PROJECT_DIR$/backend/vendor/revolt/event-loop" />
+      <path value="$PROJECT_DIR$/backend/vendor/php-di/php-di" />
+      <path value="$PROJECT_DIR$/backend/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/windows-registry" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/socket" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/sync" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/byte-stream" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/dns" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/pipeline" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/process" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/cache" />
+      <path value="$PROJECT_DIR$/backend/vendor/php-di/phpdoc-reader" />
+      <path value="$PROJECT_DIR$/backend/vendor/php-di/invoker" />
+      <path value="$PROJECT_DIR$/backend/vendor/league/uri" />
+      <path value="$PROJECT_DIR$/backend/vendor/league/uri-interfaces" />
+      <path value="$PROJECT_DIR$/backend/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/backend/vendor/nikic/fast-route" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/parser" />
+      <path value="$PROJECT_DIR$/backend/vendor/amphp/amp" />
     </include_path>
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" />
-      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" port="85" use_path_mappings="true">
+      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" port="85" />
+      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/backend" />
         </path_mappings>
@@ -150,6 +141,7 @@
       <extension name="oauth" enabled="false" />
       <extension name="oci8" enabled="false" />
       <extension name="odbc" enabled="false" />
+      <extension name="parallel" enabled="true" />
       <extension name="pcov" enabled="true" />
       <extension name="pdflib" enabled="false" />
       <extension name="pdo_ibm" enabled="false" />

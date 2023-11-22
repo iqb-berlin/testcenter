@@ -65,14 +65,11 @@ test-frontend-unit-coverage:
 		testcenter-frontend \
 		npx ng test --watch=false --code-coverage
 
-# Performs some integration tests with CyPress against mocked backend with Prism
-test-frontend-integration:
-# TODO implement integration tests with CyPress against mocked backend with Prism
-
-# Persons some API tests with Dredd on the file-service
+# Performs some API tests with Dredd on the file-service
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
 test-file-service-api:
+	make down
 	docker compose \
 		-f docker/docker-compose.yml \
 		-f docker/docker-compose.dev.yml \
@@ -81,15 +78,20 @@ test-file-service-api:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs
 	make run-task-runner task=file-service:api-test
 
+# Performs some integration tests with CyPress against mocked backend with Prism
+test-frontend-integration:
+# TODO implement integration tests with CyPress against mocked backend with Prism
+
 # Performs some e2e tests with CyPress against real backend and services
 test-system-headless:
-	docker compose -f docker/docker-compose.system-test-headless.yml up \
-		--abort-on-container-exit \
-		--force-recreate \
-		--renew-anon-volumes
+	make down
+	docker compose \
+		-f docker/docker-compose.yml \
+		-f docker/docker-compose.dev.yml \
+		-f docker/docker-compose.system-test-headless.yml up \
+		--abort-on-container-exit --exit-code-from=testcenter-e2e
 
 test-system:
-	docker compose -f docker/docker-compose.system-test-ui.yml up \
-		--abort-on-container-exit \
-		--force-recreate \
-		--renew-anon-volumes
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up &
+	bash e2e/run-e2e.sh
+

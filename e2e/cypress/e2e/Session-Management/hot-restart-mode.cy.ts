@@ -27,10 +27,10 @@ describe.skip('Check hot-restart-mode functions', { testIsolation: false }, () =
 
   it('should be possible to start a hot-restart-mode study as login: hres1', () => {
     loginTestTaker('hres1', '203');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/state`).as('testState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-101/state`).as('unitState101');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/log`).as('testLog');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/commands`).as('commands');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/state`).as('testState');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/state`).as('unitState101');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/log`).as('testLog');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/commands`).as('commands');
     cy.contains('Sessionmanagement test hot modes')
       .should('exist');
     cy.contains(/^Starten$/)
@@ -47,8 +47,8 @@ describe.skip('Check hot-restart-mode functions', { testIsolation: false }, () =
       .click()
       .should('be.checked');
     cy.wait(1000);
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/state`).as('unitState102');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/response`).as('unitResponse102');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/state`).as('unitState102');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('unitResponse102');
     cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist')
       .click();
@@ -93,10 +93,10 @@ describe.skip('Check hot-restart-mode functions', { testIsolation: false }, () =
 
   it('should be possible to start a new hot-restart-mode study with the same login: hres1', () => {
     loginTestTaker('hres1', '203');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/state`).as('testState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-101/state`).as('unitState101');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/log`).as('testLog');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/commands`).as('commands');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/state`).as('testState');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/state`).as('unitState101');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/log`).as('testLog');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/commands`).as('commands');
     cy.contains('Sessionmanagement test hot modes')
       .should('exist');
     cy.contains(/^Starten$/)
@@ -114,7 +114,7 @@ describe.skip('Check hot-restart-mode functions', { testIsolation: false }, () =
       .click()
       .should('be.checked');
     cy.wait(1000);
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
     cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist')
       .click();

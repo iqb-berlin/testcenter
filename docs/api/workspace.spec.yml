@@ -229,6 +229,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "409":
+          description: Workspace blocked by another upload or deletion action.
         "410":
           description: Session Expired
         "413":
@@ -445,6 +447,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "409":
+          description: Workspace blocked by another upload or deletion action.
         "410":
           description: Session Expired
         "500":

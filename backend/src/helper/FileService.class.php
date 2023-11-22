@@ -10,8 +10,7 @@ class FileService {
       return 'off';
     }
 
-    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
-    $uri = $proto . SystemConfig::$fileService_internal . '/health';
+    $uri = 'http://' . SystemConfig::$fileService_internal . '/health';
 
     $curl = curl_init();
     curl_setopt_array($curl, [

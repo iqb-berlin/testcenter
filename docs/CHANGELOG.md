@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.0.0-rc1
+## 15.0.0-rc7
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
@@ -27,6 +27,8 @@ layout: default
 * Das Verhalten im Fehlerfall wurde komplett überarbeitet, um sinnvollere Nachrichten und Optionen anzubieten.
 * In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs.
 * Wird ein nicht unterstützter Browser verwendet, so wird dies direkt auf der Startseite angezeigt.
+* Es können keine Dateien gelöscht oder hochgeladen werden, wenn auf demselben Arbeitsbereich bereits ein Lösch- oder 
+  Uploadvorgang läuft. Damit wird verhindert, dass konkurrierende Aktionen sich gegenseitig stören. 
 
 ### Bugfixes
 * Log-Daten: Seitenwechel bei mehrseitigen Aufgaben werden wieder gelogt.

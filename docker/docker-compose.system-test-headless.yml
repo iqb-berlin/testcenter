@@ -1,110 +1,28 @@
-# Compose-file for system-test
-# Unfortunately we cannot inherit from the base compose file, because docker compose merges arrays such as volumes and networks
-# a) it has to run in a different network
-# b) we definitely don't want to include the anonymous volumes for data and db from dev here
-# TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
-
 version: '3.9'
 
-x-env-mysql: &env-mysql
-  MYSQL_DATABASE: testcenter_db
-  MYSQL_USER: testcenter_user
-  MYSQL_PASSWORD: testcenter_pw
-
 services:
-  testcenter-system-test-db:
-    image: iqbberlin/testcenter-db:current
-    container_name: testcenter-system-test-db
+  testcenter-backend:
     environment:
-      <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: testcenter_root_pw
-      MYSQL_INITDB_SKIP_TZINFO: 'true'
-    user: root
-    volumes:
-      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
-      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
-    command:
-      - --log_error_verbosity=1
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
-      interval: 1s
-      retries: 120
-    networks:
-      - testcenter-system-test
+      OVERRIDE_CONFIG: |
+        [fileService]
+        external=testcenter-file-service/
+        [broadcastingService]
+        external=testcenter-broadcasting-service:3000/
 
-  testcenter-system-test-backend:
-    container_name: testcenter-system-test-backend
-    environment:
-      <<: *env-mysql
-      MYSQL_HOST: testcenter-system-test-db
-      MYSQL_PORT: 3306
-      PASSWORD_SALT: t
-    image: iqbberlin/testcenter-backend:current
-    volumes:
-      - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/index.php:/var/www/backend/index.php
-      - ../backend/initialize.php:/var/www/backend/initialize.php
-      - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/src
-      - ../backend/test:/var/www/backend/test
-      - ../scripts/database:/var/www/database
-      - ../definitions:/var/www/definitions
-      - ../docs/dist:/docs/dist
-      - ../package.json:/var/www/package.json
-      - ../sampledata:/var/www/sampledata
-      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
-      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug
-    depends_on:
-      testcenter-system-test-db:
-        condition: service_healthy
-    networks:
-      - testcenter-system-test
-
-  testcenter-system-test-frontend:
-    container_name: testcenter-system-test-frontend
-    image: iqbberlin/testcenter-frontend:current
-    volumes:
-      - ../frontend/src:/app/src
-      - ../frontend/angular.json:/app/angular.json
+  testcenter-frontend:
     command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
-    depends_on:
-      - testcenter-system-test-backend
-      - testcenter-system-test-db
-    networks:
-      - testcenter-system-test
 
-  e2e:
-    container_name: testcenter-cypress
+  testcenter-e2e:
+    container_name: testcenter-e2e
     build:
       context: ..
       dockerfile: docker/e2e.Dockerfile
     environment:
-      - CYPRESS_baseUrl=http://testcenter-system-test-frontend:4200
-    entrypoint: sh -c "npx wait-on http://testcenter-system-test-frontend:4200 && cypress run --browser chrome"
+      - CYPRESS_baseUrl=http://testcenter-frontend:4200
+    entrypoint: sh -c "cypress run --browser chrome"
     volumes:
       - ../e2e/cypress:/app/cypress
       - ../e2e/cypress.e2e.config.js:/app/cypress.config.js
       - ../sampledata:/sampledata
-    depends_on:
-      - testcenter-system-test-frontend
     networks:
-      - testcenter-system-test
-
-  testcenter-system-test-broadcasting-service:
-    container_name: testcenter-system-test-broadcasting-service
-    image: iqbberlin/testcenter-broadcasting-service:current
-    volumes:
-      - ../broadcasting-service/nest-cli.json:/app/nest-cli.json
-      - ../broadcasting-service/package.json:/app/package.json
-      - ../broadcasting-service/src:/app/src
-      - ../broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
-      - ../broadcasting-service/tsconfig.json:/app/tsconfig.json
-      - ../common:/common
-    networks:
-      - testcenter-system-test
-
-networks:
-  testcenter-system-test:
-    driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}
+      - testcenter

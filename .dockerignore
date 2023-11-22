@@ -2,6 +2,6 @@
 #.gitignore
 #.idea
 data
-tmp
+e2e
 config
 #dist

@@ -15,7 +15,7 @@ class SystemConfig {
   public static string $cacheService_includeFiles = "";
   public static int $cacheService_ram = 0;
   public static string $password_salt = "t";
-  public static bool $system_tlsEnabled = false;
+  public static bool $system_tlsEnabled = true;
   public static string $system_hostname;
   public static string $system_version;
   public static int $system_veronaMax;
@@ -95,7 +95,11 @@ class SystemConfig {
     $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
     $config['cacheService']['ram'] = (int) self::stringEnv('CACHE_SERVICE_RAM');
 
-
+    $overrideConfig = getenv('OVERRIDE_CONFIG');
+    if ($overrideConfig) {
+      $overrideConfig = parse_ini_string($overrideConfig, true, INI_SCANNER_TYPED);
+      $config = array_replace_recursive($config, $overrideConfig);
+    }
 
     self::apply($config);
   }

@@ -149,3 +149,7 @@ function delete_workspace() {
 function run() {
   php "backend/test/initialization/functions/$1.php"
 }
+
+function remove_error_lock() {
+  rm "backend/config/error.lock"
+}
