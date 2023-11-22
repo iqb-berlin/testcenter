@@ -14,7 +14,8 @@ sync-package-files:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/vendor backend/vendor
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/vendor backend
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/composer.lock backend/composer.lock
 
 update-docs:
 	make docs-frontend-compodoc
@@ -71,6 +72,7 @@ backend-refresh-autoload:
 		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
 		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
 		-v $(CURDIR)/backend/src:/var/www/backend/src \
+		-v $(CURDIR)/backend/test:/var/www/backend/test \
 		testcenter-backend-composer \
 		composer dump-autoload --working-dir=/var/www/backend
 

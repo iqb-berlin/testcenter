@@ -26,7 +26,7 @@ class CacheService {
       'group-token:' . $personSession->getLoginSession()->getGroupToken(),
       $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
       $personSession->getLoginSession()->getLogin()->getValidTo()
-        ? $personSession->getLoginSession()->getLogin()->getValidTo() - time()
+        ? $personSession->getLoginSession()->getLogin()->getValidTo() - TimeStamp::now()
         : 24*60*60
     );
   }

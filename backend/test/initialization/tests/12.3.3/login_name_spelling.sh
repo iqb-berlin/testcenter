@@ -19,6 +19,8 @@ echo "<Testtakers><Metadata><Description>UC</Description></Metadata><Group id=\"
 php backend/initialize.php
 expect_init_script_failed
 
+remove_error_lock
+
 echo_h2 "But 12.3.3 should handle it case-sensitive";
 take_current_version
 php backend/initialize.php

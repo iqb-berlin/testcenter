@@ -27,14 +27,14 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.contains(/^Aufgabe1$/)
       .should('exist');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-101/response`).as('response-1');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     cy.wait('@response-1');
 
     forwardTo('Aufgabe2');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/response`).as('response-2');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click();
     cy.wait('@response-2');
@@ -44,7 +44,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/state`).as('unit-102-state');
+    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/state`).as('unit-102-state');
     forwardTo('Aufgabe2');
     cy.wait('@unit-102-state');
 
@@ -74,19 +74,20 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.contains(/^Aufgabe1$/)
       .should('exist');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-101/response`).as('response-1');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     cy.wait('@response-1');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
     forwardTo('Aufgabe2');
     cy.wait('@unitState102');
 
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/response`).as('response-2');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102-2');
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click();
-    cy.wait('@response-2');
+    cy.wait(['@response-2', '@unitState102-2']);
 
     logoutTestTaker('hot');
   });
@@ -97,7 +98,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .should('exist')
       .click();
-    cy.contains('SM_HotModes')
+    cy.contains('SessionManagement Hot-Modes-Test Logins')
       .should('exist');
     cy.get('[data-cy="results-checkbox1"]')
       .should('exist')

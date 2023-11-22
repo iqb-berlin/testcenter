@@ -2,16 +2,18 @@ const http = require('http');
 
 module.exports = async function waitForServer(serverUrl) {
   const getStatus = () => new Promise(resolve => {
-    const request = http.get(
+    http.get(
       serverUrl,
+      { timeout: 1000 },
       response => {
-        response.on('data', () => resolve(response.statusCode));
+        response.on('data', () => {}); // must have, otherwise call is not done
+        response.on('end', () => resolve(response.statusCode));
       }
-    );
-    request.on('error', () => resolve(-1));
+    )
+      .on('error', () => resolve(-1));
   });
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
   let retries = 10;
   let status = 0;

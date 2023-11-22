@@ -37,6 +37,7 @@ expect_table_to_have_rows unit_data 0 # second part of the patch failed
 expect_table_to_have_rows units 2
 rm scripts/database/patches.d/12.0.0.sql
 
+remove_error_lock
 
 echo_h2 "In the mean time the testcenter could be used!"
 echo "INSERT INTO units (name, booklet_id, laststate) VALUES ('UNIT_NEW', 1, 'state');" | run sql

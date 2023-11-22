@@ -37,7 +37,7 @@ class BroadcastService {
 
     $curl = curl_init();
 
-    $bsUri = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://') . SystemConfig::$broadcastingService_internal;
+    $bsUri = 'http://' . SystemConfig::$broadcastingService_internal;
 
     curl_setopt_array($curl, [
       CURLOPT_URL => $bsUri . '/' . $endpoint,

@@ -21,6 +21,10 @@ services:
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
+    healthcheck: # solved timing problems on the CI even though the backend uses ConnectWithRetries
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      interval: 5s
+      retries: 120
     networks:
       - testcenter
 
@@ -48,6 +52,9 @@ services:
       - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
     ports:
       - 9005:9003
+    depends_on:
+      testcenter-db:
+        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -84,9 +91,13 @@ services:
       args:
         ENABLED_MODULES: lua
     volumes:
+      - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
+      - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
+      - ../sampledata/verona-player-simple-4.0.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-4.0.0.html
       - ../data:/var/www/html/
       - ../scripts/file-service/nginx.conf:/etc/nginx/nginx.conf
       - ../scripts/file-service/auth/:/usr/share/nginx/auth
+      - ../scripts/file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 

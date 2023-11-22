@@ -17,16 +17,6 @@ CREATE TABLE `workspaces` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate workspaces; -- to reset auto-increment
 
-CREATE TABLE `login_session_groups` (
-  `group_label` text COLLATE utf8mb3_german2_ci NOT NULL,
-  `group_name` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
-  `token` varchar(50) COLLATE utf8mb3_german2_ci NOT NULL,
-  `workspace_id` bigint unsigned NOT NULL,
-  PRIMARY KEY (`group_name`,`workspace_id`),
-  UNIQUE KEY `login_session_groups_unique_token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
-truncate login_session_groups; -- to reset auto-increment
-
 CREATE TABLE `login_sessions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
@@ -39,11 +29,21 @@ CREATE TABLE `login_sessions` (
   KEY `index_fk_logins` (`name`),
   KEY `index_fk_login_session_login` (`id`),
   KEY `login_sessions_token_index` (`token`),
-  KEY `login_session_groups_login_sessions_group_name_fk` (`group_name`,`workspace_id`),
-  CONSTRAINT `fk_login_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `login_session_groups_login_sessions_group_name_fk` FOREIGN KEY (`group_name`, `workspace_id`) REFERENCES `login_session_groups` (`group_name`, `workspace_id`) ON DELETE CASCADE
+  KEY `login_sessions_groups_fk` (`workspace_id`,`group_name`),
+  CONSTRAINT `fk_login_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate login_sessions; -- to reset auto-increment
+
+CREATE TABLE `login_session_groups` (
+  `workspace_id` bigint unsigned NOT NULL,
+  `group_label` text COLLATE utf8mb3_german2_ci NOT NULL,
+  `group_name` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
+  `token` varchar(50) COLLATE utf8mb3_german2_ci NOT NULL,
+  PRIMARY KEY (`workspace_id`,`group_name`),
+  UNIQUE KEY `login_session_groups_unique_token` (`token`),
+  CONSTRAINT `login_sessions_fk` FOREIGN KEY (`workspace_id`, `group_name`) REFERENCES `login_sessions` (`workspace_id`, `group_name`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
+truncate login_session_groups; -- to reset auto-increment
 
 CREATE TABLE `person_sessions` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,

@@ -6,14 +6,14 @@
 -- appear in the final data).
 
 create table login_session_groups (
+  workspace_id bigint unsigned not null,
   group_label text not null,
   group_name varchar(100) not null,
   token varchar(50) not null,
-  workspace_id bigint unsigned not null,
   constraint login_session_groups_unique_token
     unique (token),
   constraint login_session_groups_pk
-    primary key(group_name, workspace_id)
+    primary key(workspace_id, group_name)
     -- atm group_names are globally unique, so that would be enough for a primary key,
     -- but we intend to change that eventually.
 ) collate = utf8mb3_german2_ci;
@@ -29,8 +29,8 @@ select
   login_sessions.workspace_id,
   md5(rand()) as group_token
   -- already started sessions from previous versions do not have a group_token, since such thing did not exist
-  -- we have to provide one here. it's not as cryptographically secure a the real tokens created by the backend
-  -- but for the the (hopefully) rare cases of a migration from tc 14 to 15 during a running study they should do.
+  -- we have to provide one here. it's not as cryptographically secure as the real tokens created by the backend
+  -- but for the (hopefully) rare cases of a migration from tc 14 to 15 during a running study they should do.
 from
   login_sessions
   left join logins on (login_sessions.group_name = logins.group_name and login_sessions.workspace_id = logins.workspace_id)
@@ -41,6 +41,9 @@ group by
 -- so the login_session_groups table can be cleared when the data should be deleted.
 
 alter table login_sessions
-  add constraint login_session_groups_login_sessions_group_name_fk
-    foreign key (group_name, workspace_id) references login_session_groups (group_name, workspace_id)
+  add index login_sessions_groups_fk (workspace_id, group_name);
+
+alter table login_session_groups
+  add constraint login_sessions_fk
+    foreign key (workspace_id, group_name) references login_sessions (workspace_id, group_name)
       on delete cascade;

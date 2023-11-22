@@ -29,7 +29,9 @@ function redis_connector.connect()
   -- connect to redis
   local redis = require "resty.redis"
   local red = redis:new()
-  local ok, err = red:connect(ip, 6379)
+  local ok, err = red:connect(ip, 6379, {
+    pool_size = 20
+  })
   if not ok then
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
     ngx.say("Cache-Service not reachable")

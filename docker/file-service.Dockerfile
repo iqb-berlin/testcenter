@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update  \
     && apt-get install -y nginx-extras luarocks
@@ -10,6 +10,8 @@ RUN luarocks install lua-resty-dns
 
 COPY scripts/file-service/nginx.conf /etc/nginx/nginx.conf
 COPY scripts/file-service/auth/ /usr/share/nginx/auth
+
+RUN echo "" >> /etc/nginx/conf.d/cors.conf
 
 EXPOSE 80
 

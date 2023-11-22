@@ -34,7 +34,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="login-admin"]')
       .should('exist')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.contains('newTest')
       .should('exist');
   });
@@ -297,7 +297,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.contains('sample_workspace')
       .should('not.exist');
-    cy.visit('/#/r/admin-starter');
+    cy.visit('/#/r/starter');
     cy.get('[data-cy="workspace-1"]')
       .should('not.exist');
     cy.get('[data-cy="logout"]')

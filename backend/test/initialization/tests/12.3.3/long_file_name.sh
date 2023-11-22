@@ -18,6 +18,7 @@ echo "<Testtakers><Metadata><Description>30+ chars in filename</Description></Me
   > vo_data/ws_1/Testtakers/2023-04-28_V8DeuTBAPilot_LOGINS_Testtaker_FMB-A.xml
 php backend/initialize.php
 expect_init_script_failed
+remove_error_lock
 
 echo_h2 "But 12.3.3 should accept up to 120 characters";
 take_current_version

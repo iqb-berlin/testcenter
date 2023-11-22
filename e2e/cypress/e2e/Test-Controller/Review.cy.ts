@@ -4,7 +4,6 @@ import {
   convertResultsSeperatedArrays
 } from '../utils';
 
-const waitMaxSnackBarDisplayed = 10000;
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
 const TesttakerName = 'Test_Review_Ctrl';
 const TesttakerPassword = '123';
@@ -14,7 +13,6 @@ let endTime: number;
 let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
-
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
@@ -62,9 +60,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('include', '/u/2');
     cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/)
       .should('exist');
-    // wait until the message is no longer displayed
-    cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
   });
 
   it('should be visible a countdown in the window header', () => {
@@ -98,18 +93,14 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.contains(/Kommentar gespeichert/)
       .should('exist');
-    cy.contains('gespeichert', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
   });
 
+  // TODO why does this take so long?
   it('should be possible to navigate to next unit without responses/presentation complete but with a message', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains(/.*abgespielt.*bearbeitet.*/)
+    cy.contains(/.*abgespielt.*bearbeitet.*/) // TODO use data-cy
       .should('exist');
-    // wait until the message is no longer displayed
-    cy.contains('abgespielt', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.url()
@@ -129,18 +120,13 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .its('0.contentDocument.body')
       .should('be.visible')
       .then(cy.wrap)
-      .contains('Presentation complete')
+      .contains('Presentation complete') // TODO why does this take so long?
       .should('exist');
-    cy.wait(1000);
+    cy.wait(1000); // TODO wait for responses call instead
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains(/.*bearbeitet.*/)
+    cy.contains(/.*bearbeitet.*/) // TODO use data-cy
       .should('exist');
-    cy.contains(/.*abgespielt.*/)
-      .should('not.exist');
-    // wait until the message is no longer displayed
-    cy.contains('bearbeitet', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.get('[data-cy="unit-navigation-backward"]')
@@ -158,12 +144,9 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist')
       .click()
       .should('be.checked');
-    cy.wait(1000);
+    cy.wait(1000); // TODO wait for responses call instead
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
-    cy.contains(/.*bearbeitet.*/, { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
   });
@@ -186,11 +169,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./)
+    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./) // TODO use data-cy
       .should('exist');
-    // wait until the message is no longer displayed
-    cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
     // Aufgabe1 is visible, because the block is in demo-mode not blocked
     cy.contains(/^Aufgabe1$/)
       .should('exist');
@@ -200,10 +180,10 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-RUNREVIEW"]')
       .should('exist')
-      .contains('Fortsetzen')
+      .contains('Fortsetzen') // TODO use data-cy
       .click();
     cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist');
@@ -219,11 +199,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist');
     cy.contains('0:')
       .should('exist');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/)
+    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
       .should('exist');
-    // wait until the message is no longer displayed
-    cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
     cy.contains('Aufgabe1')
       .should('exist');
     cy.get('iframe')
@@ -239,7 +216,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist')
       .click();
     cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
     cy.get('[data-cy="logout"]')
@@ -255,7 +232,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .should('exist')
       .click();
-    cy.contains('runrev')
+    cy.contains('RunReview')
       .should('exist');
     cy.get('[data-cy="results-checkbox1"]')
       .should('exist')
@@ -278,9 +255,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.contains('Keine Daten verfügbar')
       .should('exist');
-    // wait until the message is no longer displayed
-    cy.contains('Keine Daten verfügbar', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
   });
 
   it('should be there a comment file with given comment', () => {
