@@ -52,12 +52,10 @@ and user logins
 * `testcenter-frontend/src/environments/environment.ts` - Here information about accessing the backend is kept for 
 the frontend component
 
-There is one important setting to be made in the generated file `.env`.
+There is one important setting to be made in the generated file `docker/.env`.
 On the first line, set the variable _HOSTNAME_ to either the IP, or the hostname of the machine
-under which it is reachable.
+under which it is reachable if `localhost` does not work.
 
-The other setting is the address of the broadcasting service.
-Replace _localhost_ in variable _BROADCAST_SERVICE_URI_SUBSCRIBE_ with the actual hostname.
 
 ## 3. Run
 ```
