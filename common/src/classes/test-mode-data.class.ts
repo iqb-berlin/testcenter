@@ -5,7 +5,7 @@ export class TestModeData {
   saveResponses: boolean = false;
   forceTimeRestrictions: boolean = false;
   forceNaviRestrictions: boolean = false;
-  monitorable: boolean = undefined;
+  monitorable: boolean = false;
   presetCode: boolean = true;
   showTimeLeft: boolean = false;
   showUnitMenu: boolean = false;
