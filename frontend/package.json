@@ -37,7 +37,6 @@
     "@types/ua-parser-js": "^0.7.36",
     "browserslist-useragent": "^4.0.0",
     "core-js": "^3.24.0",
-    "fibers": "^5.0.2",
     "html-webpack-plugin": "^5.5.0",
     "material-design-icons": "~3.0.1",
     "qr-scanner": "1.4.1",
