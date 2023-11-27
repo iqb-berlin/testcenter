@@ -105,7 +105,7 @@ class SessionController extends Controller {
       }
 
       foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
-        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code);
+        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code, true, false);
 
         foreach ($booklets as $bookletId) {
           if (!isset($bookletFiles[$bookletId])) {
