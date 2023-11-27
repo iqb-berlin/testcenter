@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.14.0
+## Bugfixes
+* Schwerer Bug im Session-Management entfernt: Wenn sich ein Gruppen-Monitor anmeldete, wurden alle Sessions von anderen
+  Mitgliedern dieser Gruppe plötzlich ungültig.
+
 ## 14.13.0
 ### Verbesserungen
 * Platzhalter für ID-Eingabefeld vor dem Senden des Berichts ist (via CustomTexts) anpassbar. Standardwert wurde von
@@ -11,7 +16,7 @@ layout: default
 
 ## 14.12.0
 ### Verbesserungen
-* Überarbeitete  Navigationsleiste
+* Überarbeitete Navigationsleiste
 * Die Vorwärts- und Zurück-Tasten bleiben jetzt immer neben der eigentlichen Unit-Knöpfen
 * Größenreduktion der Unit-Knöpfe, sodass mehr davon vorhanden sein können bevor in die nächste Zeile umgebrochen wird
 * Deaktivierte Unit-Knöpfe haben ein helleres Grau

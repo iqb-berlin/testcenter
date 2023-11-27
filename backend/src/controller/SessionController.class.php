@@ -99,7 +99,7 @@ class SessionController extends Controller {
       }
 
       foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
-        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code);
+        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code, true, false);
 
         foreach ($booklets as $bookletId) {
           if (!isset($bookletLabels[$bookletId])) {
@@ -112,9 +112,11 @@ class SessionController extends Controller {
             $bookletId,
             $bookletFiles[$bookletId]->getLabel()
           );
-          $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
-          $sessionMessage->setTestState([], $bookletId);
-          BroadcastService::sessionChange($sessionMessage);
+          if ($test['_newlyCreated']) {
+            $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
+            $sessionMessage->setTestState([], $bookletId);
+            BroadcastService::sessionChange($sessionMessage);
+          }
         }
       }
     }
