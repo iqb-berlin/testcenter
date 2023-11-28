@@ -10,6 +10,11 @@ layout: default
   Mitgliedern dieser Gruppe plötzlich ungültig.
 * CustomTexts aus SysCheck.XMLs werden wieder angezeigt.
 
+### Verbesserungen
+* Der Dialog "Bericht Senden" im Systemcheck ist weiter durch die neuen Customtexts ´syscheck_report_aboutPassword´ und
+  ´syscheck_report_aboutReportId´ konfigurierbar.
+* Das Passwort im Passwortfeld im Dialog "Bericht Senden" im Systemcheck kann nun sichtbar gemacht werden.
+
 ## 14.13.0
 ### Verbesserungen
 * Platzhalter für ID-Eingabefeld vor dem Senden des Berichts ist (via CustomTexts) anpassbar. Standardwert wurde von

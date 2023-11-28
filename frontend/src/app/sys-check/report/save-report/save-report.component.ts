@@ -12,4 +12,6 @@ export class SaveReportComponent {
     title: new FormControl('', [Validators.required, Validators.minLength(3)]),
     key: new FormControl('', [Validators.required, Validators.minLength(3)])
   });
+
+  showPassword: boolean = false;
 }
