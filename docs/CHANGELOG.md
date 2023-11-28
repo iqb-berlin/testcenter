@@ -8,6 +8,7 @@ layout: default
 ## Bugfixes
 * Schwerer Bug im Session-Management entfernt: Wenn sich ein Gruppen-Monitor anmeldete, wurden alle Sessions von anderen
   Mitgliedern dieser Gruppe plötzlich ungültig.
+* CustomTexts aus SysCheck.XMLs werden wieder angezeigt.
 
 ## 14.13.0
 ### Verbesserungen
