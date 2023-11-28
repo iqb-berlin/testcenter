@@ -38,9 +38,9 @@ export class SysCheckComponent implements OnInit {
           if (checkConfig) {
             this.checkLabel = checkConfig.label;
             this.mds.appSubTitle$.next(`System-Check ${this.checkLabel}`);
-            if (checkConfig.customTexts.length > 0) {
+            if (Object.values(checkConfig.customTexts).length > 0) {
               const myCustomTexts: { [key: string]: string } = {};
-              checkConfig.customTexts.forEach(ct => {
+              Object.values(checkConfig.customTexts).forEach(ct => {
                 myCustomTexts[ct.key] = ct.value;
               });
               this.cts.addCustomTexts(myCustomTexts);

@@ -36,9 +36,15 @@ layout: default
 # Changelog & Upgrade Information
 
 ## 14.14.0
-## Bugfixes
+### Bugfixes
 * Schwerer Bug im Session-Management entfernt: Wenn sich ein Gruppen-Monitor anmeldete, wurden alle Sessions von anderen
   Mitgliedern dieser Gruppe plötzlich ungültig.
+* CustomTexts aus SysCheck.XMLs werden wieder angezeigt.
+
+### Verbesserungen
+* Der Dialog "Bericht Senden" im Systemcheck ist weiter durch die neuen Customtexts ´syscheck_report_aboutPassword´ und
+  ´syscheck_report_aboutReportId´ konfigurierbar.
+* Das Passwort im Passwortfeld im Dialog "Bericht Senden" im Systemcheck kann nun sichtbar gemacht werden.
 
 ## 14.13.0
 ### Verbesserungen
