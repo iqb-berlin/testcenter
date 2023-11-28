@@ -1,4 +1,6 @@
-FROM node:16.19-bullseye as dev
+ARG NODE_VERSION=20.9.0-bookworm-slim
+
+FROM node:${NODE_VERSION} as dev
 
 ARG NODE_ENV=development
 

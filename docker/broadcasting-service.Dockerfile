@@ -1,4 +1,4 @@
-ARG NODE_VERSION=16.19-bullseye-slim
+ARG NODE_VERSION=20.9.0-bookworm-slim
 
 FROM node:${NODE_VERSION} as dev
 
