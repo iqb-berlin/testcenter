@@ -21,7 +21,7 @@ import { NewPasswordComponent } from './newpassword/new-password.component';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>;
+  objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();
   displayedColumns = ['name'];
   tableselectionRow = new SelectionModel<UserData>(false, []);
   selectedUser = -1;
@@ -79,7 +79,7 @@ export class UsersComponent implements OnInit {
   }
 
   changeSuperadminStatus(): void {
-    let selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -115,7 +115,7 @@ export class UsersComponent implements OnInit {
   }
 
   changePassword(): void {
-    let selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -151,7 +151,7 @@ export class UsersComponent implements OnInit {
   }
 
   deleteObject(): void {
-    let selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
 
@@ -233,6 +233,7 @@ export class UsersComponent implements OnInit {
       this.objectsDatasource.sort = this.sort;
     });
   }
+
   selectRow(row: UserData): void {
     this.tableselectionRow.select(row);
   }
