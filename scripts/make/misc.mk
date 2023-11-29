@@ -39,7 +39,11 @@ docs-user:
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
-	make run-task-runner task=create-interfaces
+	docker container rm testcenter-task-runner
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run --name=testcenter-task-runner \
+		testcenter-task-runner npx --yes update-browserslist-db@latest && npm run create-interfaces
+	docker cp testcenter-task-runner:/app/package.json ./package.json # can not  use compose here https://github.com/docker/compose/issues/8467
+	docker cp testcenter-task-runner:/app/package-lock.json ./package-lock.json
 
 init-env:
 	cp docker/default.env docker/.env

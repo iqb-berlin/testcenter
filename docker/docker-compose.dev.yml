@@ -108,7 +108,7 @@ services:
       - "6379:6379"
 
   testcenter-task-runner:
-    container_name: testcenter-runner
+    container_name: testcenter-task-runner
     profiles:
       - task-runner
     build:

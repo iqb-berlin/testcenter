@@ -14,6 +14,7 @@ export class TestModeData {
   static modes = {
     'RUN-DEMO': {
       alwaysNewSession: false,
+      monitorable: false,
       canReview: false,
       saveResponses: false,
       forceTimeRestrictions: false,
@@ -25,6 +26,7 @@ export class TestModeData {
     },
     'MONITOR-GROUP': {
       alwaysNewSession: false,
+      monitorable: false,
       canReview: false,
       saveResponses: false,
       forceTimeRestrictions: false,
@@ -36,6 +38,7 @@ export class TestModeData {
     },
     'MONITOR-STUDY': {
       alwaysNewSession: false,
+      monitorable: false,
       canReview: false,
       saveResponses: false,
       forceTimeRestrictions: false,
@@ -47,6 +50,7 @@ export class TestModeData {
     },
     'RUN-HOT-RETURN': {
       alwaysNewSession: false,
+      monitorable: true,
       canReview: false,
       saveResponses: true,
       forceTimeRestrictions: true,
@@ -58,6 +62,7 @@ export class TestModeData {
     },
     'RUN-HOT-RESTART': {
       alwaysNewSession: true,
+      monitorable: true,
       canReview: false,
       saveResponses: true,
       forceTimeRestrictions: true,
@@ -69,6 +74,7 @@ export class TestModeData {
     },
     'RUN-REVIEW': {
       alwaysNewSession: false,
+      monitorable: false,
       canReview: true,
       saveResponses: false,
       forceTimeRestrictions: false,
@@ -80,6 +86,7 @@ export class TestModeData {
     },
     'RUN-TRIAL': {
       alwaysNewSession: false,
+      monitorable: false,
       canReview: false,
       saveResponses: true,
       forceTimeRestrictions: true,

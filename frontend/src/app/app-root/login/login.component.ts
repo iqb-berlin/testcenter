@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemText = '';
   problemCode = 0;
   showPassword = false;
-  browserWarning: string[] = [];
+  unsupportedBrowser: string[] = [];
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -103,11 +103,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private checkBrowser() {
     const browser = new UAParser().getBrowser();
-    this.browserWarning =
-      matchesUA(
-        window.navigator.userAgent,
-        { path: 'dontleavemeemtpy!', browsers: browsersJson.browsers }
-      ) ?
+
+    let userAgent: string = window.navigator.userAgent;
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1805967
+    if ((browser.name === 'Firefox') && (userAgent.match(/rv:109/))) {
+      userAgent = userAgent.replace(/rv:109/, `rv:${browser.version}`);
+    }
+
+    this.unsupportedBrowser =
+      matchesUA(userAgent, { path: 'dont let me empty', browsers: browsersJson.browsers }) ?
         [] :
         [browser.name ?? '--', browser.version ?? '--'];
   }
