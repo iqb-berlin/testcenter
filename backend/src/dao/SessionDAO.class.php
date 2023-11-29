@@ -145,6 +145,7 @@ class SessionDAO extends DAO {
 
   public function createLoginSession(Login $login): LoginSession {
     $loginToken = Token::generate('login', $login->getName());
+    $groupToken = $this->getOrCreateGroupToken($login);
 
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
@@ -162,7 +163,6 @@ class SessionDAO extends DAO {
 
     if ($this->lastAffectedRows) {
       $id = (int) $this->pdoDBhandle->lastInsertId();
-      $groupToken = $this->getOrCreateGroupToken($login);
       return new LoginSession($id, $loginToken, $groupToken, $login);
     }
 
