@@ -50,7 +50,7 @@
     <img class="logo-img" [src]="logoImageBase64" />
     <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
     <button
-      mat-raised-button
+      mat-fab
       (click)="hiddenimgfileinput.click()"
       matTooltip="Logo hochladen/aktualisieren"
       matTooltipPosition="above"
@@ -59,7 +59,7 @@
       <mat-icon>cloud_upload</mat-icon>
     </button>
     <button
-      mat-raised-button
+      mat-fab
       (click)="removeLogoImg()"
       matTooltip="Logo auf Standard setzen"
       matTooltipPosition="above"

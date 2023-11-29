@@ -2,43 +2,47 @@
   <div class="flex-column" [style.width.%]="50">
     <div class="flex-row">
       <button
-        mat-raised-button
+        mat-fab
         matTooltip="Administrator:in hinzufügen"
         matTooltipPosition="below"
         data-cy="add-user"
-        (click)="addObject()"
         color="primary"
+        (click)="addObject()"
       >
         <mat-icon>add</mat-icon>
       </button>
       <button
-        mat-raised-button data-cy="delete-user"
+        mat-fab
         matTooltip="Markierte Administrator:in löschen"
         matTooltipPosition="below"
-        (click)="deleteObject()"
+        data-cy="delete-user"
         color="primary"
+        [disabled]="!tableSelectionRow.hasValue()"
+        (click)="deleteObject()"
       >
         <mat-icon>delete</mat-icon>
       </button>
       <button
-        mat-raised-button
+        mat-fab
         data-cy="change-password"
         matTooltip="Kennwort ändern"
         matTooltipPosition="below"
-        (click)="changePassword()"
         color="primary"
+        [disabled]="!tableSelectionRow.hasValue()"
+        (click)="changePassword()"
       >
         <mat-icon>edit</mat-icon>
       </button>
       <button
-        mat-raised-button
+        mat-fab
         data-cy="change-superadmin"
         matTooltip="Superadmin-Status ändern"
         matTooltipPosition="below"
-        (click)="changeSuperadminStatus()"
         color="primary"
+        [disabled]="!tableSelectionRow.hasValue()"
+        (click)="changeSuperadminStatus()"
       >
-        <mat-icon>edit</mat-icon>
+        <mat-icon>supervisor_account</mat-icon>
       </button>
     </div>
 
@@ -68,7 +72,7 @@
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"
-               [style.background]="tableselectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
+               [style.background]="tableSelectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
     </mat-table>
   </div>
 
@@ -81,7 +85,7 @@
     <div *ngIf="selectedUser > 0" class="flex-row" [style.justify-content]="'space-between'">
       <div>Zugriffsrechte für {{ selectedUserName }}:</div>
       <button
-        mat-raised-button
+        mat-fab
         (click)="saveWorkspaces()"
         matTooltip="Speichern"
         matTooltipPosition="above"
