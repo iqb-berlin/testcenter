@@ -45,7 +45,7 @@
   },
   "login_unsupportedBrowser" : {
     "label": "Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
-    "defaultvalue" : "Ihr Browser `%s %s` wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
+    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
   },
   "booklet_msgNavigationDeniedTitle" : {
     "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",
@@ -148,8 +148,16 @@
     "defaultvalue" : "Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist."
   },
   "syscheck_report_id" : {
-    "label" : "Platzhalter für ID-Eingabefeld vor dem Senden des Berichts",
+    "label" : "Dialog 'Bericht senden': Platzhalter für das ID-Eingabefeld vor dem Senden des Berichts",
     "defaultvalue" : "Schul-ID"
+  },
+  "syscheck_report_aboutPassword": {
+    "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
+    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Kennwort ein, das Sie von der Projektleitung erhalten haben!"
+  },
+  "syscheck_report_aboutReportId": {
+    "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
+    "defaultvalue" : "Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten '        + 'Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!"
   },
   "gm_headline" : {
     "label" : "Überschrift: Gruppenmonitor",

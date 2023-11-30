@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.0.0-rc7
+## 15.0.0-rc9
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
@@ -35,6 +35,17 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.14.0
+### Bugfixes
+* Schwerer Bug im Session-Management entfernt: Wenn sich ein Gruppen-Monitor anmeldete, wurden alle Sessions von anderen
+  Mitgliedern dieser Gruppe plötzlich ungültig.
+* CustomTexts aus SysCheck.XMLs werden wieder angezeigt.
+
+### Verbesserungen
+* Der Dialog "Bericht Senden" im Systemcheck ist weiter durch die neuen Customtexts ´syscheck_report_aboutPassword´ und
+  ´syscheck_report_aboutReportId´ konfigurierbar.
+* Das Passwort im Passwortfeld im Dialog "Bericht Senden" im Systemcheck kann nun sichtbar gemacht werden.
+
 ## 14.13.0
 ### Verbesserungen
 * Platzhalter für ID-Eingabefeld vor dem Senden des Berichts ist (via CustomTexts) anpassbar. Standardwert wurde von
@@ -42,7 +53,7 @@ layout: default
 
 ## 14.12.0
 ### Verbesserungen
-* Überarbeitete  Navigationsleiste
+* Überarbeitete Navigationsleiste
 * Die Vorwärts- und Zurück-Tasten bleiben jetzt immer neben der eigentlichen Unit-Knöpfen
 * Größenreduktion der Unit-Knöpfe, sodass mehr davon vorhanden sein können bevor in die nächste Zeile umgebrochen wird
 * Deaktivierte Unit-Knöpfe haben ein helleres Grau

@@ -37,7 +37,6 @@
     "@types/ua-parser-js": "^0.7.36",
     "browserslist-useragent": "^4.0.0",
     "core-js": "^3.24.0",
-    "fibers": "^5.0.2",
     "html-webpack-plugin": "^5.5.0",
     "material-design-icons": "~3.0.1",
     "qr-scanner": "1.4.1",
@@ -66,33 +65,10 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "^2.0.0",
-    "nyc": "15.1.0",
     "ts-node": "~10.9.1",
     "typescript": "~5.1.6"
   },
   "resolutions": {
     "tree-kill": "1.2.2"
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "all": true,
-    "exclude": [
-      "**/*.spec.ts"
-    ],
-    "include": [
-      "src"
-    ],
-    "extension": [
-      ".ts",
-      ".js"
-    ],
-    "reporter": [
-      "text-summary",
-      "json",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true,
-    "exclude-after-remap": false
   }
 }

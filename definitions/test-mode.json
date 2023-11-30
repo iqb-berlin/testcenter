@@ -3,6 +3,7 @@
     "label": "Nur Ansicht (Demo)",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": false,
       "canReview": false,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -17,6 +18,7 @@
     "label": "Testgruppen-Monitor (Demo)",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": false,
       "canReview": false,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -31,6 +33,7 @@
     "label": "Studien-Monitor (Demo)",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": false,
       "canReview": false,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -45,6 +48,7 @@
     "label": "Durchführung Test/Befragung",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": true,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,
@@ -59,6 +63,7 @@
     "label": "Durchführung Test/Befragung",
     "config": {
       "alwaysNewSession": true,
+      "monitorable": true,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,
@@ -73,6 +78,7 @@
     "label": "Prüfdurchgang ohne Speichern",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": false,
       "canReview": true,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -87,6 +93,7 @@
     "label": "Prüfdurchgang mit Speichern",
     "config": {
       "alwaysNewSession": false,
+      "monitorable": false,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,

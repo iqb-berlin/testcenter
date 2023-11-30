@@ -9,8 +9,11 @@ layout: default
 
 ## [Deutsch]
 
-Das IQB-Testcenter ist eine Webanwendung für die Durchführung von Kompetenztests oder Befragungen. Für Beschreibungen und Hinweise zur Benutzung konsultieren sie bitte unsere [Wiki-Seiten](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter).
-Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren und Entwickler gerichtet.
+Das IQB-Testcenter ist eine Webanwendung für die Durchführung von Kompetenztests oder Befragungen.
+Für Beschreibungen und Hinweise zur Benutzung konsultieren sie bitte unsere
+[Wiki-Seiten](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter).
+Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren und
+Entwickler gerichtet.
 
 Eine Versionshistorie und Änderungshinweise finden sie unter [Releases](https://github.com/iqb-berlin/testcenter/releases).
 
@@ -20,7 +23,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
 ### General
-* **[User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)** (in german)
+* **[User Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)** (in german)
 * [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
 * [Changelog](https://pages.cms.hu-berlin.de/iqb/testcenter/CHANGELOG.html)
 
@@ -48,7 +51,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 ### Test Coverage
 * [Backend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-backend-unit/index.html)
 * [Frontend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-frontend-unit/report/index.html)
-* [Broadcasting-Service by Unit-Tets](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
+* [Broadcasting-Service by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
 
 ### Misc
 * [Install and run without docker](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-local.html)

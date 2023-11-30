@@ -9,45 +9,52 @@ the images and set up networking, data persistence etc.
 
 ## Prerequisites
 
-Before you follow the instructions below, you need to
-install [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods),
-[docker-compose](https://docs.docker.com/compose/install/other/#on-linux) and `make`.
-Further explainations to these applications are beyond the scope of this document.
+### Required software
+- [Docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+- [Docker Compose](https://docs.docker.com/compose/install/other/#on-linux)
 
-## 1. Install
+### Optional software
+- [Make](https://www.gnu.org/software/make/)
 
-```
-wget -O install.sh https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/install.sh
-```
+Make-scripts are used to control the app, i.e. starting, stopping. This can be done manually as well.
+
+## Installation
+- Download the installation script from the release page of the version you want to install.
+You can find the latest release [here](https://github.com/iqb-berlin/testcenter/releases/latest).
+
+- Run script
 ```
 bash install.sh
 ```
 
-The script will try to run `docker`, `docker-compose` and `make` and notify you if it encounters problems with that.
-`make` is not mandatory to run the application, but it helps to input the correct commands. Should you choose to forego
-`make` you need to find the necessary commands in the `Makefile`.
-
-Then, you need to put in some parameters for your installation. Password presets are randomly generated.
-
-## 2. Run
-
-The install script allows to start the application after finishing. If you don't or have to stop the application at some
-point, you may run the following command to start the application.
-
+## Usage
+### Start & Stop
+Run application
 ```
 make run
 ```
-Alternatively to run it without blocking the console with log output:
+Run application without blocking the console
 ```
 make run-detached
 ```
-
-The application can be stopped with:
+Stop application
 ```
 make stop
 ```
+Show log output
+```
+make logs
+```
 
-## 3. Login and change super-user password
+### Update
+
+To update your installation to the lastest release, run
+```
+bash update.sh
+```
+from the installation directory.
+
+### Login
 
 After installation two logins are prepared:
 
@@ -58,23 +65,8 @@ After installation two logins are prepared:
 **It is strongly advised to at least change the password under "System-Admin".**
 
 ## Configuration
-
-### Update
-
-Run the script _update.sh_ in the application root directory. It will look to the latest release available and
-allows you to update to it. You may also manually enter a release-tag, which will be used if available.
-
-Refer to the [release section on GitHub](https://github.com/iqb-berlin/testcenter/releases) for available versions.
+Settings can be manipulated in the file `.env`.
 
 ### TLS
-
-To set up TLS (aka SSL aks https) run the _update.sh_ script and choose the appropriate option. This will also modify
-your Makefile with the correct commands.
-The certificates need to be placed under _config/certs_ and their name be put in _config/cert_config.yml_.
-
-### Logs
-
-Because the application is managed by Docker, you get logs via Docker. There is a command shortcut fot that:
-```
-make logs
-```
+TLS certificates need to be placed under _config/certs_ and their path may be configured in _config/tls-config.yml_.
+If no certificates are configured, self-signed certificates are generated and used. This may cause a browser warning.

@@ -33,7 +33,7 @@ test like a testtaker.
 |Es werden Antworten und Logs gespeichert.|  |  |  |X |X |  |X |
 |Alle Zeitbeschränkungen für Testabschnitte werden angewendet.|  |  |  |X |X |  |X |
 |Alle Navigationsbeschränkungen des Booklets werden angewendet (z. B. erst weiter, wenn vollständig angezeigt).|  |  |  |X |X |  |X |
-|Kann im Gruppen-Monitor beobachtet werden|  |  |  |  |  |  |  |
+|Kann im Gruppen-Monitor beobachtet werden|  |  |  |X |X |  |  |
 |Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses bei der Eingabebox schon eingetragen.|X |X |X |  |  |X |X |
 |Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.|  |  |  |  |  |X |  |
 |Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.|  |  |  |  |  |X |  |

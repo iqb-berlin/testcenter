@@ -89,4 +89,16 @@ class WorkspaceDAOTest extends TestCase {
     ];
     $this->assertEquals($expectation, $files);
   }
+
+  public function test_addLoginSource(): void {
+    $logins = new LoginArray(
+      new Login('first', 'some', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some' => 'thing']),
+      new Login('second', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, null, 0, (object) ['some' => 'thing']),
+      new Login('else', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, null, 200000, 10),
+      new Login('evil\'; select * from users; characters"  ', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some \' evil' => 'thing'])
+    );
+    $this->dbc->addLoginSource('unit-test', $logins);
+    $insertedLogins = $this->dbc->_("select count(*) as count from logins where source='unit-test'")['count'];
+    $this->assertEquals(4, $insertedLogins);
+  }
 }

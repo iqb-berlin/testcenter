@@ -79,20 +79,20 @@
 
     <mat-table [dataSource]="workspacelistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">RO | RW</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">Read | Write</mat-header-cell>
         <mat-cell *matCellDef="let row">
           <mat-checkbox
-            (change)="selectWorkspace(row, 'RO')"
-            [checked]="row.role === 'RO'"
-            matTooltip="Nur Lesen"
             [attr.data-cy]="'workspace-' + row.id + '-role-ro'"
+            matTooltip="Nur Lesen"
+            [checked]="row.role === 'RO' || row.role === 'RW'"
+            (change)="selectPermissions(row, 'RO')"
           >
           </mat-checkbox>
           <mat-checkbox
-            (change)="selectWorkspace(row, 'RW')"
-            [checked]="row.role === 'RW'"
-            matTooltip="Lesen und Schreiben"
             [attr.data-cy]="'workspace-' + row.id + '-role-rw'"
+            matTooltip="Lesen und Schreiben"
+            [checked]="row.role === 'RW'"
+            (change)="selectPermissions(row, 'RW')"
           >
           </mat-checkbox>
         </mat-cell>

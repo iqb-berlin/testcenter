@@ -119,7 +119,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.setUnitScreenHeader();
         });
 
-      this.addConsoleWarning();
     });
   }
 
@@ -402,27 +401,5 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
-  }
-
-  private addConsoleWarning(): void {
-    if (!this.isProductionMode) {
-      return;
-    }
-    const style = `
-      font-size: 200%;
-      background: yellow;
-      color: red;
-      display: block;
-      border: 3px solid red;
-      border-radius: 10px;
-      padding: 0.5em;`;
-    this.cts.getCustomText$('booklet_console_warning')
-      .pipe(filter(txt => !!txt))
-      .subscribe(text => {
-        // eslint-disable-next-line no-console
-        console.clear();
-        // eslint-disable-next-line no-console
-        console.log(`%c${text}`, style);
-      });
   }
 }

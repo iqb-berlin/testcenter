@@ -69,8 +69,8 @@ class WorkspaceCacheTest extends TestCase {
       'Booklet/booklet-broken.xml' => [
         'warning' => ['Booklet is never used'],
         'error' => [
-          'Error [76] in line 33: Opening and ending tag mismatch: Booklet line 2 and Units',
-          'Error [5] in line 34: Extra content at the end of the document'
+          'Error [76] in line 32: Opening and ending tag mismatch: Booklet line 2 and Units',
+          'Error [5] in line 33: Extra content at the end of the document'
         ],
       ],
       'Booklet/booklet-duplicate-id-1.xml' => [

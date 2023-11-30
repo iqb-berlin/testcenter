@@ -135,6 +135,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         statusMessage = 'Der Server ist augenblicklich nicht erreichbar';
         errorType = 'network_temporally';
         break;
+      case 504:
+        statusMessage = 'Der Server ist augenblicklich überlastet!'
+        break;
       default:
         statusMessage = 'Unbekanntes Verbindungsproblem';
         errorType = 'network';

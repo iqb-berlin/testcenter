@@ -239,7 +239,12 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
+  public function createOrUpdatePersonSession(
+    LoginSession $loginSession,
+    string $code,
+    bool $allowExpired = false,
+    bool $forceUpdateToken = true
+  ): PersonSession {
     $login = $loginSession->getLogin();
 
     if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
@@ -249,8 +254,6 @@ class SessionDAO extends DAO {
     if (!$allowExpired) {
       TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
     }
-
-    $newPersonToken = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
 
     $suffix = [];
     if ($code) {
@@ -265,27 +268,34 @@ class SessionDAO extends DAO {
 
     if (!Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
       $personSession = $this->_('
-        select id, valid_until from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
+        select id, valid_until, token from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
         [
           ':lsi' => $loginSession->getId(),
           ':suffix' => $suffix
         ]
       );
+
       if ($personSession) {
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($personSession['valid_until']));
-        $this->_(
-          'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
-          [
-            ':lsi' => $loginSession->getId(),
-            ':suffix' => $suffix,
-            ':token' => $newPersonToken
-          ]
-        );
+        if (!$allowExpired) {
+          TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($personSession['valid_until']));
+        }
+        $token = $personSession['token'];
+        if (!$token or $forceUpdateToken) {
+          $token = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+          $this->_(
+            'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
+            [
+              ':lsi' => $loginSession->getId(),
+              ':suffix' => $suffix,
+              ':token' => $token
+            ]
+          );
+        }
         return new PersonSession(
           $loginSession,
           new Person(
             $personSession['id'],
-            $newPersonToken,
+            $token,
             $code,
             $suffix,
             TimeStamp::fromSQLFormat($personSession['valid_until'])
@@ -295,12 +305,14 @@ class SessionDAO extends DAO {
     }
 
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
+    $token = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+
     try {
       $this->_(
         "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
             values (:token, :code, :login_id, :valid_until, :suffix)",
         [
-          ':token' => $newPersonToken,
+          ':token' => $token,
           ':code' => $code,
           ':login_id' => $loginSession->getId(),
           ':valid_until' => TimeStamp::toSQLFormat($validUntil),
@@ -317,7 +329,7 @@ class SessionDAO extends DAO {
           and (str_ends_with($originalException->errorInfo[2], "for key 'person_sessions.unique_person_session'"))
         ) {
           error_log("Create person-session: retry on duplicate suffix (`{$loginSession->getLogin()->getName()}` / `$suffix`)");
-          return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired);
+          return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired, $forceUpdateToken);
         }
       }
       throw $ee;
@@ -328,7 +340,7 @@ class SessionDAO extends DAO {
       $loginSession,
       new Person(
         (int) $this->pdoDBhandle->lastInsertId(),
-        $newPersonToken,
+        $token,
         $code,
         $suffix,
         $validUntil

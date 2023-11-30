@@ -61,8 +61,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
                   sessionId: this.itemplayerSessionId,
                   unitDefinition: this.pendingUnitDef,
                   playerConfig: {
-                    logPolicy: 'disabled',
-                    stateReportPolicy: 'eager'
+                    logPolicy: 'disabled'
                   }
                 }, '*');
 

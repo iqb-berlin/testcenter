@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.0.0-rc7/definitions/vo_Booklet.xsd">
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.0.0-rc9/definitions/vo_Booklet.xsd">
   <Metadata>
     <Id>BOOKLET.SAMPLE-1</Id>
     <Label>Sample booklet</Label>
@@ -9,7 +9,6 @@
   <BookletConfig>
     <Config key="logPolicy">debug</Config>
     <Config key="pagingMode">concat-scroll-snap</Config>
-    <Config key="stateReportPolicy">eager</Config>
     <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
     <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>

@@ -402,8 +402,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
-      stateReportPolicy: 'eager', // TODO implement stateReportPolicy 'on-demand' and 'none', then this can be
-      // stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
       unitId: this.currentUnit.unitDef.alias,
