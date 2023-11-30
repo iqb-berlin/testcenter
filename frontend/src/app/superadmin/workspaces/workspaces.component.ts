@@ -3,7 +3,6 @@ import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
@@ -92,7 +91,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   changeObject(): void {
-    let selectedRows = this.tableSelectionRow.selected;
+    const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -131,7 +130,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   deleteObject(): void {
-    let selectedRows = this.tableSelectionRow.selected;
+    const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',

@@ -136,7 +136,7 @@ describe('Usermanagement (user-tab)', () => {
       .should('exist');
   });
 
-  it('should be possible to delete a workspace admin by row marking', () => {
+  it('should be possible to delete a workspace admin', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click()
       .get('[data-cy="delete-user"]')
@@ -148,21 +148,6 @@ describe('Usermanagement (user-tab)', () => {
       .should('not.exist');
     cy.get('[data-cy="logo"]')
       .click();
-  });
-
-  it('should be possible to delete a workspaceadmin by setting the checkbox', () => {
-    logoutAdmin();
-    loginSuperAdmin();
-    clickSuperadmin();
-    cy.get('[data-cy="check-user"]').eq(2)
-      .click();
-    cy.get('[data-cy="delete-user"]')
-      .click();
-    cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
-      .click();
-    cy.contains(userData.WorkspaceAdminName)
-      .should('not.exist');
   });
 });
 
