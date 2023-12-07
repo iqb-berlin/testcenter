@@ -21,9 +21,8 @@ import { NewPasswordComponent } from './newpassword/new-password.component';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>;
-  displayedColumns = ['selectCheckbox', 'name'];
-  tableselectionCheckbox = new SelectionModel<UserData>(true, []);
+  objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();
+  displayedColumns = ['name'];
   tableselectionRow = new SelectionModel<UserData>(false, []);
   selectedUser = -1;
   selectedUserName = '';
@@ -80,10 +79,7 @@ export class UsersComponent implements OnInit {
   }
 
   changeSuperadminStatus(): void {
-    let selectedRows = this.tableselectionRow.selected;
-    if (selectedRows.length === 0) {
-      selectedRows = this.tableselectionCheckbox.selected;
-    }
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -119,10 +115,7 @@ export class UsersComponent implements OnInit {
   }
 
   changePassword(): void {
-    let selectedRows = this.tableselectionRow.selected;
-    if (selectedRows.length === 0) {
-      selectedRows = this.tableselectionCheckbox.selected;
-    }
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -158,10 +151,7 @@ export class UsersComponent implements OnInit {
   }
 
   deleteObject(): void {
-    let selectedRows = this.tableselectionCheckbox.selected;
-    if (selectedRows.length === 0) {
-      selectedRows = this.tableselectionRow.selected;
-    }
+    const selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
 
@@ -237,25 +227,11 @@ export class UsersComponent implements OnInit {
   }
 
   updateObjectList(): void {
-    this.tableselectionCheckbox.clear();
     this.tableselectionRow.clear();
     this.bs.getUsers().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
     });
-  }
-
-  isAllSelected(): boolean {
-    const numSelected = this.tableselectionCheckbox.selected.length;
-    const numRows = this.objectsDatasource.data.length;
-    return numSelected === numRows;
-  }
-
-  masterToggle(): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    this.isAllSelected() ?
-      this.tableselectionCheckbox.clear() :
-      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
   selectRow(row: UserData): void {
