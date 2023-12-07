@@ -73,7 +73,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const appConfig = this.mainDataService.appConfig?.getAppConfig();
       if (!appConfig) {
-        return;
+        throw new Error('AppConfigComponent: No AppConfig found');
       }
       this.configForm.setValue({
         appTitle: appConfig.appTitle,
