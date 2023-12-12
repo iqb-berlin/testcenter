@@ -81,9 +81,9 @@ class File extends FileData {
 
     if (!file_exists($path)) {
       $this->size = 0;
-      $this->name = '';
-      $this->modificationTime = 0;
-      $this->report('error', "File does not exist `" . dirname($path) . '/' . basename($path) . "`");
+      $this->name = basename($path);
+      $this->modificationTime = 1;
+      $this->report('error', "File does not exist: `" . dirname($path) . '/'. basename($path) . "`");
 
     } else {
       $this->size = filesize($path);
