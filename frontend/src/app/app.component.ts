@@ -63,14 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.backendService.getSysConfig()
         .subscribe(sysConfig => {
-          this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
-          this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
-          this.mainDataService.appConfig.applyBackgroundColors();
-          this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
-          const authData = this.mainDataService.getAuthData();
-          if (authData) {
-            this.customtextService.addCustomTexts(authData.customTexts);
-          }
+          this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
         });
 
       // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
