@@ -30,6 +30,10 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+    // Der Status kommt dummerweise allerding nicht immer.
+    cy.wait(1000);
     cy.wait('@response-1');
 
     forwardTo('Aufgabe2');
@@ -37,6 +41,10 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click();
+    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+    // Der Status kommt dummerweise allerding nicht immer.
+    cy.wait(1000);
     cy.wait('@response-2');
 
     backwardsTo('Aufgabe1');
@@ -77,17 +85,48 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+    // Der Status kommt dummerweise allerding nicht immer.
+    cy.wait(1000);
     cy.wait('@response-1');
 
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
     forwardTo('Aufgabe2');
-    cy.wait('@unitState102');
 
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102-2');
     cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click();
-    cy.wait(['@response-2', '@unitState102-2']);
+    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+    // Der Status kommt dummerweise allerding nicht immer.
+    cy.wait(1000);
+    cy.wait(['@response-2']);
+
+    backwardsTo('Aufgabe1');
+
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .should('be.checked');
+
+    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/state`).as('unit-102-state');
+    forwardTo('Aufgabe2');
+    cy.wait('@unit-102-state');
+
+    logoutTestTaker('hot');
+  });
+
+  it('should restore the last given replies from login: hret2', () => {
+    loginTestTaker('hret2', '202', 'test-hot');
+
+    cy.contains(/^Aufgabe2$/)
+      .should('exist');
+
+    getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
+      .should('be.checked');
+
+    backwardsTo('Aufgabe1');
+
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .should('be.checked');
 
     logoutTestTaker('hot');
   });
