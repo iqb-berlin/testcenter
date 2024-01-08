@@ -21,8 +21,7 @@ class TestDB {
         }
       }
     }
-    echo ("DB-connection failed. \n Config:" . SystemConfig::dumpDbConfig());
-    exit(1);
+    throw new RuntimeException("DB-connection failed. \n Config:" . SystemConfig::dumpDbConfig());
   }
 }
 
