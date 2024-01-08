@@ -38,14 +38,14 @@ class XMLFileTest extends TestCase {
   function test_loadFromNotExisting() {
     $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/not-existing.XML');
 
-    $this->assertEquals('', $xf->getName());
-    $this->assertEquals('', $xf->getId());
+    $this->assertEquals('not-existing.XML', $xf->getName());
+    $this->assertEquals('NOT-EXISTING.XML', $xf->getId());
     $this->assertEquals('vfs://root/data/ws_1/Booklet/not-existing.XML', $xf->getPath());
     $this->assertEquals('', $xf->getLabel());
     $this->assertEquals(0, $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals('File does not exist `vfs://root/data/ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
+    $this->assertEquals('File does not exist: `vfs://root/data/ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
   }
 
   function test_loadFromArbitrary() {

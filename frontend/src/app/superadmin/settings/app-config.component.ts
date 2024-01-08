@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { AppConfig } from '../../shared/classes/app.config';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 import { BackendService } from '../backend.service';
@@ -70,11 +70,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      const appConfig = this.mainDataService.appConfig?.getAppConfig();
-      if (!appConfig) {
-        throw new Error('AppConfigComponent: No AppConfig found');
-      }
+    setTimeout(async () => {
+      const appConfig = await lastValueFrom(this.mainDataService.appConfig$);
       this.configForm.setValue({
         appTitle: appConfig.appTitle,
         introHtml: appConfig.introHtml,

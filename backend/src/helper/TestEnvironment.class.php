@@ -161,8 +161,7 @@ class TestEnvironment {
     $errorUniqueId = ErrorHandler::logException($exception, true);
     http_response_code(500);
     header("Error-ID:$errorUniqueId");
-    echo "Could not create environment: " . $exception->getMessage();
-    exit(1);
+    throw new RuntimeException("Could not create environment: " . $exception->getMessage());
   }
 
   private static function setUpTestDataDir(bool $reset): void {
