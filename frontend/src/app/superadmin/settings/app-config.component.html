@@ -46,29 +46,21 @@
   </mat-form-field>
 
   <h4>Logo</h4>
-  <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="10">
-    <img class="logo-img" [src]="logoImageBase64" />
-    <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
-    <button
-      mat-raised-button
-      (click)="hiddenimgfileinput.click()"
-      matTooltip="Logo hochladen/aktualisieren"
-      matTooltipPosition="above"
-      color="primary"
-    >
+  <div class="flex-row" [style.gap.px]="5">
+    <button mat-mini-fab color="primary"
+            matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
+            (click)="hiddenimgfileinput.click()">
       <mat-icon>cloud_upload</mat-icon>
     </button>
-    <button
-      mat-raised-button
-      (click)="removeLogoImg()"
-      matTooltip="Logo auf Standard setzen"
-      matTooltipPosition="above"
-      color="primary"
-    >
+    <button mat-mini-fab color="primary"
+            matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
+            (click)="removeLogoImg()">
       <mat-icon>delete</mat-icon>
     </button>
-    <tc-alert *ngIf="imageError" level="error" [text]="imageError"></tc-alert>
   </div>
+  <img class="logo-img" [src]="logoImageBase64" />
+  <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
+  <tc-alert *ngIf="imageError" level="error" [text]="imageError"></tc-alert>
 
   <h4>Hintergrundfarbe Anwendung</h4>
   <mat-form-field appearance="fill">

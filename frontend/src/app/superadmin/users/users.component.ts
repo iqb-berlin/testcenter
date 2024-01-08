@@ -23,7 +23,7 @@ import { NewPasswordComponent } from './newpassword/new-password.component';
 export class UsersComponent implements OnInit {
   objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();
   displayedColumns = ['name'];
-  tableselectionRow = new SelectionModel<UserData>(false, []);
+  tableSelectionRow = new SelectionModel<UserData>(false, []);
   selectedUser = -1;
   selectedUserName = '';
 
@@ -42,7 +42,7 @@ export class UsersComponent implements OnInit {
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.tableselectionRow.changed.subscribe(
+    this.tableSelectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
           this.selectedUser = r.added[0].id;
@@ -79,7 +79,7 @@ export class UsersComponent implements OnInit {
   }
 
   changeSuperadminStatus(): void {
-    const selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -115,7 +115,7 @@ export class UsersComponent implements OnInit {
   }
 
   changePassword(): void {
-    const selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -151,7 +151,7 @@ export class UsersComponent implements OnInit {
   }
 
   deleteObject(): void {
-    const selectedRows = this.tableselectionRow.selected;
+    const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
 
@@ -227,7 +227,7 @@ export class UsersComponent implements OnInit {
   }
 
   updateObjectList(): void {
-    this.tableselectionRow.clear();
+    this.tableSelectionRow.clear();
     this.bs.getUsers().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
@@ -235,6 +235,6 @@ export class UsersComponent implements OnInit {
   }
 
   selectRow(row: UserData): void {
-    this.tableselectionRow.select(row);
+    this.tableSelectionRow.select(row);
   }
 }
