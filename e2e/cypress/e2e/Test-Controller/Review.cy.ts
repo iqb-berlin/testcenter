@@ -114,11 +114,13 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="page-navigation-1"]')
       .should('exist')
       .click();
+    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      .contains('Presentation complete');
     cy.wait(1000); // TODO wait for responses call instead
     forwardTo('Aufgabe2');
     cy.contains('bearbeitet') // TODO use data-cy
       .should('exist');
-    cy.contains('gesehen') // TODO use data-cy
+    cy.contains(/gesehen.+abgespielt/) // TODO use data-cy
       .should('not.be.exist');
     backwardsTo('Aufgabe1');
   });

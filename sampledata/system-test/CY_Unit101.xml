@@ -18,7 +18,7 @@
       <fieldset>
         <legend>Aufgabe1: Fieldset2: Presentation Complete forward</legend>
         <div style="flex: 50%; padding: 2px">
-          <p><b>Presentation complete</b></p>
+          <p data-cy= "TestController-Text-Aufg1-S2"><b>Presentation complete</b></p>
         </div>
       </fieldset>     
    ]]>
