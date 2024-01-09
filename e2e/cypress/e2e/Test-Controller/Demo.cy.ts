@@ -36,17 +36,20 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   });
 
   it('should be possible to enter the block. The password should already be filled in', () => {
-    cy.get('[mattooltip="Weiter"]')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist')
       .click();
-    cy.contains('Aufgabenblock')
-      .should('exist');
+    cy.get('[data-cy="unit-block-dialog-title"]')
+      .should('exist')
+      .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'HASE');
     // Time restricted area has been entered. Start the timer
-    cy.contains('OK').then(() => {
-      startTime = new Date().getTime();
-    })
+    cy.get('[data-cy="unit-block-dialog-submit"]')
+      .contains('OK')
+      .then(() => {
+        startTime = new Date().getTime();
+      })
       .click();
     cy.get('[data-cy="unit-title"]')
       .should('exist')
