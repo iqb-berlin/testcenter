@@ -1,17 +1,8 @@
-mat-radio-group mat-radio-button {
-  margin-right: 1em;
-  margin-bottom: 1em;
-}
-
-h3 {
-  margin-bottom: 0
-}
-
 .mat-mdc-form-field {
   display: block;
 }
 
-.mat-mdc-radio-button {
+mat-radio-group {
   display: flex;
   flex-direction: column;
 }
