@@ -12,6 +12,7 @@ import {
 import { AppConfig } from '../../classes/app.config';
 import { BackendService } from '../backend.service';
 import { SysStatus } from '../../interfaces/service-status.interfaces';
+import { filter } from 'rxjs/operators';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -37,7 +38,21 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  appConfig: AppConfig | null = null;
+  private _appConfig$ = new BehaviorSubject<AppConfig | null>(null);
+  // TODO remove this function everywhere and replace with appConfig$ and wait unit it's there to avoid race conditions
+  get appConfig(): AppConfig | null {
+    return this._appConfig$.getValue();
+  }
+
+  get appConfig$(): Observable<AppConfig> {
+    return this._appConfig$
+      .pipe(filter((v): v is AppConfig => v instanceof AppConfig));
+  }
+
+  set appConfig$(appConfig: AppConfig) {
+    this._appConfig$.next(appConfig);
+  }
+
   sysStatus: SysStatus = {
     fileService: 'unknown',
     broadcastingService: 'unknown',
@@ -84,6 +99,15 @@ export class MainDataService {
     private bs: BackendService,
     private router: Router
   ) {
+    this.appConfig$.subscribe(appConfig => {
+      this.appTitle$.next(appConfig.appTitle);
+      appConfig.applyBackgroundColors();
+      this.globalWarning = appConfig.warningMessage;
+      const authData = this.getAuthData();
+      if (authData) {
+        this.cts.addCustomTexts(authData.customTexts);
+      }
+    });
   }
 
   setAuthData(authData: AuthData): void {
