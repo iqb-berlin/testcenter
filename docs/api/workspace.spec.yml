@@ -693,7 +693,7 @@ paths:
         "200":
           description: Log report in JSON or CSV format based on aggregated unit and booklet log data.
           content:
-            text/csv;charset=UTF-8:
+            text/csv;charset=utf-8:
               schema:
                 type: string
               example: |-
@@ -743,7 +743,7 @@ paths:
         "200":
           description: Item Responses report in JSON or CSV format based on aggregated response data.
           content:
-            text/csv;charset=UTF-8:
+            text/csv;charset=utf-8:
               schema:
                 type: string
               example: |-
@@ -809,7 +809,7 @@ paths:
         "200":
           description: Reviews report in JSON or CSV format based on aggregated unit and booklet review data.
           content:
-            text/csv;charset=UTF-8:
+            text/csv;charset=utf-8:
               schema:
                 type: string
               example: |-
@@ -859,7 +859,7 @@ paths:
         "200":
           description: System Checks report in JSON or CSV format based on aggregated system check data.
           content:
-            text/csv;charset=UTF-8:
+            text/csv;charset=utf-8:
               schema:
                 type: string
               example: |-
