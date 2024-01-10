@@ -518,7 +518,7 @@ export class TestControllerService {
         TestControllerState.TERMINATED
     ); // last state that will and can be logged
 
-    this.router.navigate(['/'], { state: { force } })
+    this.router.navigate(['/r/starter'], { state: { force } })
       .then(navigationSuccessful => {
         if (!(navigationSuccessful || force)) {
           this.testStatus$.next(oldTestStatus); // navigation was denied, test continues

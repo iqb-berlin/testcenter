@@ -9,7 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -70,7 +70,13 @@ export { TestControllerService } from './services/test-controller.service';
     UnitActivateGuard,
     UnitDeactivateGuard,
     TestControllerErrorPausedActivateGuard,
-    TestControllerDeactivateGuard
+    TestControllerDeactivateGuard,
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        subscriptSizing: 'dynamic'
+      }
+    }
   ],
   exports: [
     TestControllerComponent

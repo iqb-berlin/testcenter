@@ -30,7 +30,7 @@ paths:
         "200":
           description: The file
           content:
-            application/octet-stream:
+            text/html;charset=utf-8:
               example: "(the file's content)"
           headers:
             x-source:

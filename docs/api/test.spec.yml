@@ -546,7 +546,7 @@ paths:
         "201":
           description:  OK, started
           content:
-            text/html; charset=UTF-8:
+            text/html;charset=utf-8:
               example: "1"
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
