@@ -5,6 +5,7 @@ import {
 import { Router } from '@angular/router';
 import { distinct } from 'rxjs/internal/operators/distinct';
 import { shareReplay } from 'rxjs/internal/operators/shareReplay';
+import { filter } from 'rxjs/operators';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
   AccessObject, AppError, AuthAccessType, AuthData
@@ -12,7 +13,6 @@ import {
 import { AppConfig } from '../../classes/app.config';
 import { BackendService } from '../backend.service';
 import { SysStatus } from '../../interfaces/service-status.interfaces';
-import { filter } from 'rxjs/operators';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 

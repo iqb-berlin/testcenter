@@ -123,7 +123,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
-
     });
   }
 
