@@ -1,48 +1,49 @@
-<div class="sys-check-body">
-  <div class="flex-row-wrap" [style.justify-content]="'center'">
-    <mat-card appearance="raised" [style.flex-basis.px]="810">
-      <mat-card-header>
-        <mat-card-title>
-          Netzwerk
-          <span *ngIf="!ds.networkCheckStatus.done" style="color:red"> - Test läuft, bitte warten.</span>
-        </mat-card-title>
-        <mat-card-subtitle>
-          {{ds.networkCheckStatus.message}}
-          <span *ngIf="ds.networkCheckStatus.done && (networkRating.overallRating !== 'N/A')">
-            <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
-              <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
-              <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend</span>
-              <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut</span>
-              <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil</span>
-            </span>.
+<div class="sys-check-body flex-row-wrap" [style.justify-content]="'center'">
+  <mat-card appearance="raised" [style.flex-basis.px]="810">
+    <mat-card-header>
+      <mat-card-title>
+        Netzwerk
+        <span *ngIf="!sysCheckDataService.networkCheckStatus.done" style="color:red"> - Test läuft, bitte warten.</span>
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{sysCheckDataService.networkCheckStatus.message}}
+        <span *ngIf="sysCheckDataService.networkCheckStatus.done && (networkRating.overallRating !== 'N/A')">
+          <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
+            <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
+            <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend</span>
+            <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut</span>
+            <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil</span>
+          </span>.
+        </span>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="flex-row">
+        <div [style.width.%]="50" [style.margin.px]="10">
+          <span style="font-weight: normal">Geschwindigkeit Download: </span>
+          <span *ngIf="sysCheckDataService.networkCheckStatus.avgDownloadSpeedBytesPerSecond >= 0">
+            &#8960; {{humanReadableBytes(sysCheckDataService.networkCheckStatus.avgDownloadSpeedBytesPerSecond, true, false)}}/s
           </span>
-        </mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div class="flex-row">
-          <div [style.width.%]="50">
-            <h4>
-              <span style="font-weight: normal">Geschwindigkeit Download: </span>
-              <span *ngIf="ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond, true, false)}}/s</span>
-              <span *ngIf="ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
-            </h4>
-            <tc-speed-chart #downloadChart></tc-speed-chart>
-          </div>
-
-          <div [style.width.%]="50">
-            <h4>
-              <span style="font-weight: normal">Geschwindigkeit Upload: </span>
-              <span *ngIf="ds.networkCheckStatus.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(ds.networkCheckStatus.avgUploadSpeedBytesPerSecond, true)}}/s</span>
-              <span *ngIf="ds.networkCheckStatus.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
-            </h4>
-            <tc-speed-chart #uploadChart></tc-speed-chart>
-          </div>
+          <span *ngIf="sysCheckDataService.networkCheckStatus.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+          <tc-speed-chart #downloadChart></tc-speed-chart>
         </div>
-      </mat-card-content>
-      <mat-card-actions>
-        <button [disabled]="!ds.networkCheckStatus.done" mat-raised-button color="primary" (click)="startCheck()">Neustart</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+
+        <div [style.width.%]="50" [style.margin.px]="10">
+          <span style="font-weight: normal">Geschwindigkeit Upload: </span>
+          <span *ngIf="sysCheckDataService.networkCheckStatus.avgUploadSpeedBytesPerSecond >= 0">
+            &#8960; {{humanReadableBytes(sysCheckDataService.networkCheckStatus.avgUploadSpeedBytesPerSecond, true)}}/s
+          </span>
+          <span *ngIf="sysCheckDataService.networkCheckStatus.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+          <tc-speed-chart #uploadChart></tc-speed-chart>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary"
+              [disabled]="!sysCheckDataService.networkCheckStatus.done" (click)="startCheck()">
+        Neustart
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>

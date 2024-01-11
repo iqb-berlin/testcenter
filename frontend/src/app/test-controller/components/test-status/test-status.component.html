@@ -10,7 +10,7 @@
         <b>Der Test ist aktiv.</b>
       </p>
     </mat-card-content>
-    <mat-card-actions>
+    <mat-card-actions [style.justify-content]="'space-between'">
       <button mat-raised-button data-cy="resumeTest-1" color="primary" (click)="continueTest()">
         {{ 'Test fortsetzen'  | customtext:'login_testResumeButtonLabel' | async}}
       </button>

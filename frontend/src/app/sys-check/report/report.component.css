@@ -1,3 +1,9 @@
 ul li {
   word-break: break-all;
+  margin: 3px;
+}
+
+.warning-text {
+  color: red;
+  font-weight: bold
 }

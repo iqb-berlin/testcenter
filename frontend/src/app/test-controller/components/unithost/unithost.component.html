@@ -76,7 +76,7 @@
           </ng-container>
         </mat-card-content>
 
-        <mat-card-actions>
+        <mat-card-actions [style.justify-content]="'space-between'">
           <button
             *ngIf="codeRequiringTestlets.length"
             mat-raised-button

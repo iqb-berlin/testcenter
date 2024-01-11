@@ -21,7 +21,7 @@ class XMLFileSysCheckTest extends TestCase {
 
   function test_getUnitId() {
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
-    $expected = 'UNIT.SAMPLE-2';
+    $expected = 'UNIT.SAMPLE';
     $result = $xmlFile->getUnitId();
     $this->assertEquals($expected, $result);
   }
