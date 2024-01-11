@@ -141,5 +141,21 @@
       "OFF": "Nein, der test kann nach dem Beenden wieder aufgerufen werden, so lange der account aktiv ist."
     },
     "defaultvalue": "OFF"
+  },
+  "ask_for_fullscreen": {
+    "label": "Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehen?",
+    "options": {
+      "ON": "Ja.",
+      "OFF": "Nein."
+    },
+    "defaultvalue": "OFF"
+  },
+  "show_fullscreen_button": {
+    "label": "Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?",
+    "options": {
+      "ON": "Ja.",
+      "OFF": "Nein."
+    },
+    "defaultvalue": "OFF"
   }
 }

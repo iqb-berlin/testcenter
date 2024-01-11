@@ -167,6 +167,17 @@ const beforeEach = async (transaction, done) => {
   return done();
 };
 
+const beforeEachValidation = async (transaction, done) => {
+  // nginx an apache use different spellings for this - so normalize
+  ['content-type', 'Content-Type']
+    .forEach(spellingVariant => {
+      if (transaction.real.headers[spellingVariant]) {
+        transaction.real.headers[spellingVariant] = transaction.real.headers[spellingVariant].toLowerCase().replace('; ', ';');
+      }
+    });
+  done();
+};
+
 const attachUploadFile = async (transaction, done) => {
   try {
     const form = new Multipart();
@@ -244,6 +255,7 @@ const finishAfterError = (transaction, done) => {
 };
 
 dreddHooks.beforeEach(beforeEach);
+dreddHooks.beforeEachValidation(beforeEachValidation);
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', attachUploadFile);
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > application/json', addInvalidUploadFile);
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 401', attachUploadFile);
@@ -251,12 +263,12 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 403', attachU
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 404', attachUploadFile);
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 410', attachUploadFile);
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', addHugeFile);
-dreddHooks.beforeValidation('specs > /resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', addResourceToExpectation);
-dreddHooks.beforeValidation('/resource/{group_token}/{+path} > get file by path > 200 > application/octet-stream', addResourceToExpectation);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', attachBOM);
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /file/{group_token}/{+path} > get file by path > 200 > text/html;charset=utf-8', addResourceToExpectation);
+dreddHooks.beforeValidation('/file/{group_token}/{+path} > get file by path > 200 > text/html;charset=utf-8', addResourceToExpectation);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=utf-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=utf-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=utf-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', addBookletToExpectation);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 401', attachUploadImage);

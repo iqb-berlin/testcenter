@@ -60,17 +60,11 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
       this.setupFocusListeners();
+      this.setupFullScreenListener();
 
       this.backendService.getSysConfig()
         .subscribe(sysConfig => {
-          this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
-          this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
-          this.mainDataService.appConfig.applyBackgroundColors();
-          this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
-          const authData = this.mainDataService.getAuthData();
-          if (authData) {
-            this.customtextService.addCustomTexts(authData.customTexts);
-          }
+          this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
         });
 
       // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
@@ -88,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return 'disableGlobalErrorDisplay' in routeData;
   }
 
-  private setupFocusListeners() {
+  private setupFocusListeners(): void {
     if (typeof document.hidden !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
         this.mainDataService.appWindowHasFocus$.next(!document.hidden);
@@ -103,6 +97,16 @@ export class AppComponent implements OnInit, OnDestroy {
     window.addEventListener('unload', () => {
       this.mainDataService.appWindowHasFocus$.next(!document.hidden);
     });
+  }
+
+  private setupFullScreenListener(): void {
+    document.addEventListener(
+      'fullscreenchange',
+      () => {
+        this.mainDataService.isFullScreen = !!document.fullscreenElement;
+      },
+      false
+    );
   }
 
   closeErrorBox(): void {

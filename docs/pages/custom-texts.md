@@ -76,6 +76,7 @@ Funktioniert auch nicht? Dann...
 |booklet_msgTimerCancelled|Nachricht, dass die Bearbeitung eines Abschnittes mit Timer abgebrochen wurde|Die Bearbeitung des Abschnittes wurde abgebrochen.|
 |booklet_msgTimerStarted|Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde|Die Bearbeitungszeit für diesen Abschnitt hat begonnen: |
 |booklet_pausedmessage|Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde|Der Test wurde kurz angehalten.|
+|booklet_requestFullscreen|Text für Dialogfeld 'Vollbild aktivieren?'|Vollbild aktivieren?|
 |booklet_tasklisttitle|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|geladen|
 |booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|in der Warteschleife|

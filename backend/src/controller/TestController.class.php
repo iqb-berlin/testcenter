@@ -135,7 +135,7 @@ class TestController extends Controller {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
-    header('Content-Type: application/octet-stream');
+    header('Content-type: ' . FileExt::getMimeType($resourceFile));
     header('Content-Length: ' . filesize($resourceFile));
     header('X-Source: backend');
     fpassthru($res);

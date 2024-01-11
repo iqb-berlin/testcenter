@@ -5,6 +5,7 @@ import {
 import { Router } from '@angular/router';
 import { distinct } from 'rxjs/internal/operators/distinct';
 import { shareReplay } from 'rxjs/internal/operators/shareReplay';
+import { filter } from 'rxjs/operators';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
   AccessObject, AppError, AuthAccessType, AuthData
@@ -37,7 +38,21 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  appConfig: AppConfig | null = null;
+  private _appConfig$ = new BehaviorSubject<AppConfig | null>(null);
+  // TODO remove this function everywhere and replace with appConfig$ and wait unit it's there to avoid race conditions
+  get appConfig(): AppConfig | null {
+    return this._appConfig$.getValue();
+  }
+
+  get appConfig$(): Observable<AppConfig> {
+    return this._appConfig$
+      .pipe(filter((v): v is AppConfig => v instanceof AppConfig));
+  }
+
+  set appConfig$(appConfig: AppConfig) {
+    this._appConfig$.next(appConfig);
+  }
+
   sysStatus: SysStatus = {
     fileService: 'unknown',
     broadcastingService: 'unknown',
@@ -51,6 +66,7 @@ export class MainDataService {
 
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
+  isFullScreen: boolean = false;
 
   getAuthData(): AuthData | null {
     if (this._authData$.getValue()) {
@@ -84,6 +100,15 @@ export class MainDataService {
     private bs: BackendService,
     private router: Router
   ) {
+    this.appConfig$.subscribe(appConfig => {
+      this.appTitle$.next(appConfig.appTitle);
+      appConfig.applyBackgroundColors();
+      this.globalWarning = appConfig.warningMessage;
+      const authData = this.getAuthData();
+      if (authData) {
+        this.cts.addCustomTexts(authData.customTexts);
+      }
+    });
   }
 
   setAuthData(authData: AuthData): void {
