@@ -60,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
       this.setupFocusListeners();
+      this.setupFullScreenListener();
 
       this.backendService.getSysConfig()
         .subscribe(sysConfig => {
@@ -81,7 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return 'disableGlobalErrorDisplay' in routeData;
   }
 
-  private setupFocusListeners() {
+  private setupFocusListeners(): void {
     if (typeof document.hidden !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
         this.mainDataService.appWindowHasFocus$.next(!document.hidden);
@@ -96,6 +97,16 @@ export class AppComponent implements OnInit, OnDestroy {
     window.addEventListener('unload', () => {
       this.mainDataService.appWindowHasFocus$.next(!document.hidden);
     });
+  }
+
+  private setupFullScreenListener(): void {
+    document.addEventListener(
+      'fullscreenchange',
+      () => {
+        this.mainDataService.isFullScreen = !!document.fullscreenElement;
+      },
+      false
+    );
   }
 
   closeErrorBox(): void {

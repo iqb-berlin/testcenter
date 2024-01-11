@@ -70,6 +70,14 @@
   </button>
   <button
     mat-button
+    (click)="toggleFullScreen()"
+    *ngIf="tcs.bookletConfig.show_fullscreen_button !== 'OFF'"
+    matTooltip="Vollbild"
+    data-cy="fullscreen">
+    <mat-icon>{{mainDataService.isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
+  </button>
+  <button
+    mat-button
     (click)="unitMenu.toggle(true)"
     *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
     matTooltip="Zur Aufgabenliste"

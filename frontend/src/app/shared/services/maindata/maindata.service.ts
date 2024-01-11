@@ -66,6 +66,7 @@ export class MainDataService {
 
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
+  isFullScreen: boolean = false;
 
   getAuthData(): AuthData | null {
     if (this._authData$.getValue()) {
