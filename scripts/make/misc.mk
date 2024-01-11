@@ -39,9 +39,7 @@ docs-user:
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
-	@if [ -z "$(docker ps -qa -f name=testcenter-task-runner)" ]; then\
-		docker container rm testcenter-task-runner;\
-	fi
+	docker container rm -f testcenter-task-runner 2> /dev/null || true
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run --name=testcenter-task-runner \
 		testcenter-task-runner npx --yes update-browserslist-db@latest && npm run create-interfaces
 	# can not  use compose here https://github.com/docker/compose/issues/8467
