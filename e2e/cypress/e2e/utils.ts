@@ -330,8 +330,7 @@ export const backwardsTo = (expectedLabel: string): void => {
     .should('exist');
 };
 
-export function selectFromDropdown(dropdownLabel: string, optionName: string) {
+export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
   cy.get('.cdk-overlay-container').contains(optionName).click();
 };
-
