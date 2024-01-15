@@ -12,15 +12,15 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   private readonly valueChangesSubscription: Subscription | null = null;
 
   constructor(
-    public ds: SysCheckDataService
+    public dataservice: SysCheckDataService
   ) {
     const group: { [key: string] : FormControl } = {};
-    this.ds.checkConfig.questions
+    this.dataservice.checkConfig.questions
       .forEach(question => {
         group[question.id] = new FormControl('');
       });
     this.form = new FormGroup(group);
-    this.ds.questionnaireReport
+    this.dataservice.questionnaireReport
       .forEach(reportEntry => {
         this.form.controls[reportEntry.id].setValue(reportEntry.value);
       });
@@ -29,7 +29,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.ds.setNewCurrentStep('q');
+      this.dataservice.setNewCurrentStep('q');
     });
   }
 
@@ -40,19 +40,19 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   }
 
   private updateReport() {
-    this.ds.questionnaireReport = [];
-    if (this.ds.checkConfig) {
-      this.ds.checkConfig.questions.forEach(element => {
+    this.dataservice.questionnaireReport = [];
+    if (this.dataservice.checkConfig) {
+      this.dataservice.checkConfig.questions.forEach(element => {
         if (element.type !== 'header') {
           const formControl = this.form.controls[element.id];
           if (formControl) {
-            this.ds.questionnaireReport.push({
+            this.dataservice.questionnaireReport.push({
               id: element.id,
               type: element.type,
               label: element.prompt,
               value: formControl.value,
-              // eslint-disable-next-line max-len
-              warning: (['string', 'select', 'radio', 'text'].indexOf(element.type) > -1) && (formControl.value === '') && (element.required)
+              warning: (['string', 'select', 'radio', 'text']
+                .indexOf(element.type) > -1) && (formControl.value === '') && (element.required)
             });
           }
         }

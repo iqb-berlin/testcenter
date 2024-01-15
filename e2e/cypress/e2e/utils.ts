@@ -318,3 +318,8 @@ export const backwardsTo = (expectedLabel: string): void => {
   cy.contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
 };
+
+export function selectFromDropdown(dropdownLabel: string, optionName: string) {
+  cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
+  cy.get('.cdk-overlay-container').contains(optionName).click();
+}

@@ -41,6 +41,7 @@ h1 {
   display: flex;
   align-items: safe center;
   justify-content: center;
+  text-align: center;
   overflow: clip;
   width: 30px;
   padding: 0;

@@ -96,7 +96,8 @@ class FileExt {
       return "";
     }
 
-    return FileExt::knownTypes[pathinfo($filePath, PATHINFO_EXTENSION)] ?? 'application/octet-stream';
+//    echo "\n#############" . pathinfo($filePath, PATHINFO_EXTENSION) . '##########';
+    return FileExt::knownTypes[strtolower(pathinfo($filePath, PATHINFO_EXTENSION))] ?? 'application/octet-stream';
   }
 
   static function get($filePath, int $maxDots = 0): string {

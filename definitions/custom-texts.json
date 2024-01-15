@@ -139,6 +139,10 @@
     "label" : "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
     "defaultvalue" : "Aufgabenzeit ist abgelaufen"
   },
+  "booklet_requestFullscreen" : {
+    "label" : "Text für Dialogfeld 'Vollbild aktivieren?'",
+    "defaultvalue" : "Soll das Vollbild aktiviert werden?"
+  },
   "syscheck_questionsRequiredMessage" : {
     "label" : "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
     "defaultvalue" : "Bitte prüfen Sie die Eingaben (unvollständig):"

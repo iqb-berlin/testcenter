@@ -23,7 +23,7 @@ export class UnitDeactivateGuard {
     private router: Router
   ) {}
 
-  private checkAndSolveMaxTime(newUnit: UnitWithContext): Observable<boolean> {
+  private checkAndSolveMaxTime(newUnit: UnitWithContext | null): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
@@ -61,7 +61,7 @@ export class UnitDeactivateGuard {
       );
   }
 
-  private checkAndSolveCompleteness(newUnit: UnitWithContext): Observable<boolean> {
+  private checkAndSolveCompleteness(newUnit: UnitWithContext | null): Observable<boolean> {
     const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
@@ -137,6 +137,10 @@ export class UnitDeactivateGuard {
     currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot
   ): Observable<boolean> | boolean {
+    if (nextState.url === '/r/route-dispatcher') {
+      return true;
+    }
+
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       return true;
     }
@@ -151,11 +155,6 @@ export class UnitDeactivateGuard {
     if (match) {
       const targetUnitSequenceId = Number(match[2]);
       newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
-    }
-
-    if (!newUnit) {
-      this.tcs.interruptMaxTimer();
-      return true;
     }
 
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;

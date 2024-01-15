@@ -1,6 +1,6 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, ViewChild
+  Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import {
@@ -8,7 +8,12 @@ import {
 } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CustomtextService, MainDataService } from '../../../shared/shared.module';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  CustomtextService,
+  MainDataService
+} from '../../../shared/shared.module';
 import {
   AppFocusState,
   Command, MaxTimerDataType,
@@ -50,8 +55,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   debugPane = false;
   unitScreenHeader: string = '';
 
-  @ViewChild('navButtons') navButtons!: ElementRef;
-
   constructor(
     public mainDataService: MainDataService,
     public tcs: TestControllerService,
@@ -63,6 +66,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private cts: CustomtextService,
     public cmd: CommandService,
     private tls: TestLoaderService,
+    public dialog: MatDialog,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
   }
@@ -108,6 +112,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
           this.setUnitScreenHeader();
+          await this.requestFullScreen();
         });
 
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
@@ -118,7 +123,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
-
     });
   }
 
@@ -391,6 +395,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionKey] = null;
       });
     this.tls.reset();
+    if (this.mainDataService.isFullScreen) {
+      document.exitFullscreen();
+    }
   }
 
   @HostListener('window:unload', ['$event'])
@@ -401,5 +408,56 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
+  }
+
+  async setFullScreen(): Promise<void> {
+    if (this.mainDataService.isFullScreen) {
+      return;
+    }
+    const rootElem = document.documentElement;
+    if (!rootElem) {
+      return;
+    }
+    if ('requestFullscreen' in rootElem) {
+      await rootElem.requestFullscreen();
+      return;
+    }
+    if ('webkitRequestFullscreen' in rootElem) { // iOS
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await rootElem.webkitRequestFullscreen();
+    }
+  }
+
+  async toggleFullScreen(): Promise<void> {
+    if (this.mainDataService.isFullScreen) {
+      await document.exitFullscreen();
+    } else {
+      await this.setFullScreen();
+    }
+  }
+
+  async requestFullScreen(): Promise<void> {
+    if (this.tcs.bookletConfig.ask_for_fullscreen === 'OFF') {
+      return;
+    }
+    if (this.mainDataService.isFullScreen) {
+      return;
+    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: 'auto',
+      data: <ConfirmDialogData>{
+        title: 'Vollbild',
+        content: this.cts.getCustomText('booklet_requestFullscreen'),
+        confirmbuttonlabel: 'Ja',
+        showcancel: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {
+      if (!confirmed) {
+        return;
+      }
+      await this.setFullScreen();
+    });
   }
 }
