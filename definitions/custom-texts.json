@@ -69,7 +69,7 @@
   },
   "booklet_codeToEnterWarning": {
     "label" : "Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung",
-    "defaultvalue" : "Im Eingabefeld wird automatisch alles groß geschrieben."
+    "defaultvalue" : "Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben."
   },
   "booklet_msgTimerStarted" : {
     "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",

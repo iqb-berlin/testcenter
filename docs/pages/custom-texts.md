@@ -51,7 +51,7 @@ replacements:
 |app_title|Titel der Hauptanwendung|IQB-Testcenter|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
-|booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld wird automatisch alles groß geschrieben.|
+|booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|
 |booklet_console_warning|Warnung, die auf der Browserkonsole erscheinen soll|Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*
 Gehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben.|
 |booklet_errormessage|Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist|Leider gab es ein technisches Problem. Versuche Folgendes:
