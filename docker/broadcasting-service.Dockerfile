@@ -10,6 +10,11 @@ RUN apt-get update && apt-get -y install procps # needed for webpack not to cras
 WORKDIR /app
 
 COPY broadcasting-service/package*.json ./
+
+RUN chown -R node:node /app
+
+USER node
+
 RUN npm install
 
 COPY broadcasting-service/src /app/src
