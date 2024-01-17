@@ -14,6 +14,12 @@ services:
     build:
       context: ..
       dockerfile: docker/database.Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-db
+      tags:
+        - iqbberlin/testcenter-db
     ports:
       - "9091:3306"
     command:
@@ -33,6 +39,12 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-backend:dev
+      tags:
+        - iqbberlin/testcenter-backend:dev
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
@@ -67,6 +79,12 @@ services:
       context: ..
       dockerfile: docker/frontend.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-frontend:dev
+      tags:
+        - iqbberlin/testcenter-frontend:dev
     volumes:
       - ../common:/common
       - ../definitions:/definitions
@@ -80,6 +98,12 @@ services:
       context: ..
       dockerfile: docker/broadcasting-service.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-broadcasting-service:dev
+      tags:
+        - iqbberlin/testcenter-broadcasting-service:dev
     volumes:
       - ../common:/common
       - ../broadcasting-service/src:/app/src
@@ -92,6 +116,11 @@ services:
       dockerfile: docker/file-service.Dockerfile
       args:
         ENABLED_MODULES: lua
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-file-service
+      tags:
+        - iqbberlin/testcenter-file-service
     volumes:
       - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
