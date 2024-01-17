@@ -1,0 +1,40 @@
+generate-docs:
+  stage: build
+  rules:
+    - if: "$CI_COMMIT_TAG"
+  script:
+    - apk add make
+    - make init
+    - make update-docs
+  artifacts:
+    paths:
+      - docs/index.md
+      - docs/pages/booklet-config.md
+      - docs/pages/test-mode.md
+      - docs/dist/api/index.html
+      - docs/dist/api/specs.yml
+      - docs/dist/custom-texts.md
+      - docs/dist/test-session-super-states.html
+      - docs/dist/compodoc-frontend/*
+      - docs/dist/compodoc-broadcasting-service/*
+    expire_in: 30 minutes
+
+pages:
+  stage: deploy
+  rules:
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - test-backend-unit
+    - test-frontend-unit
+    - test-broadcasting-service-unit
+    - generate-docs
+  image: ruby:3.1
+  script:
+    - mkdir public
+    - cd docs
+    - gem install bundler
+    - bundle install
+    - jekyll build -d ../public
+  artifacts:
+    paths:
+      - public
