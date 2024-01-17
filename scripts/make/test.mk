@@ -41,27 +41,21 @@ test-backend-initialization-general:
 
 test-broadcasting-service-unit:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		-v $(CURDIR)/broadcasting-service/src:/app/src \
 		testcenter-broadcasting-service \
 		npx jest
 
 test-broadcasting-service-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		-v $(CURDIR)/broadcasting-service/src:/app/src \
-		-v $(CURDIR)/docs/dist:/docs/dist \
 		testcenter-broadcasting-service \
 		npx jest --coverage
 
 test-frontend-unit:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		-v $(CURDIR)/frontend/src:/app/src \
 		testcenter-frontend \
 		npx ng test --watch=false
 
 test-frontend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		-v $(CURDIR)/frontend/src:/app/src \
-		-v $(CURDIR)/docs/dist:/docs/dist \
 		testcenter-frontend \
 		npx ng test --watch=false --code-coverage
 

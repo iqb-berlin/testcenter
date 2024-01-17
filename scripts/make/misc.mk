@@ -46,9 +46,6 @@ create-interfaces:
 	docker cp testcenter-task-runner:/app/package.json ./package.json
 	docker cp testcenter-task-runner:/app/package-lock.json ./package-lock.json
 
-init-env:
-	cp docker/default.env docker/.env
-
 composer-install:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
@@ -81,23 +78,12 @@ backend-refresh-autoload:
 		testcenter-backend-composer \
 		composer dump-autoload --working-dir=/var/www/backend
 
-init-frontend:
-	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-
-init-ensure-file-rights:
-	chmod 0444 scripts/database/my.cnf # mysql does not accept it with more rights
-	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
-
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
  		--rm --entrypoint="" \
  		testcenter-backend \
  		php /var/www/backend/test/update-sql-scheme.php
 	make run-task-runner task="new-version $(version)"
-
-fix-docker-user:
-	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' docker/.env)
-	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' docker/.env)
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
