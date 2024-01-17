@@ -89,7 +89,7 @@ services:
       - ../common:/common
       - ../definitions:/definitions
       - ../frontend/src:/app/src
-#      - ./docs/dist:/docs/dist TODO don't we need this for karma test coverage?
+      - ../docs/dist:/docs/dist
     networks:
       - testcenter
 
@@ -107,6 +107,7 @@ services:
     volumes:
       - ../common:/common
       - ../broadcasting-service/src:/app/src
+      - ../docs/dist:/docs/dist
     networks:
       - testcenter
 
