@@ -52,6 +52,7 @@
       <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
       <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
       <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
+      <xs:element name="If" type="Condition" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
@@ -76,12 +77,90 @@
   </xs:simpleType>
 
   <xs:complexType name="DenyNavigationOnIncompleteRestrictionType">
-    <xs:simpleContent><!-- TODO should be camleCase.. -->
+    <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="presentation" />
         <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="response" />
       </xs:extension>
     </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ValueType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="CodeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ScoreType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="StatusType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ConditionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:float" name="lowerThan"/>
+        <xs:attribute type="xs:float" name="greaterThan"/>
+        <xs:attribute type="xs:string" name="equal"/>
+        <xs:attribute type="xs:string" name="notEqual"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="Condition">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element type="ValueType" name="Value"/>
+        <xs:element type="StatusType" name="Status"/>
+        <xs:element type="CodeType" name="Code"/>
+        <xs:element type="ScoreType" name="Score"/>
+        <xs:element type="VariableAggregation" name="Sum" />
+        <xs:element type="VariableAggregation" name="Median" />
+        <xs:element type="ConditionAggregation" name="Count" />
+      </xs:choice>
+      <xs:element type="ConditionType" name="Is"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="VariableAggregation">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element type="ValueType" name="Value" minOccurs="2" maxOccurs="unbounded"/>
+        <xs:element type="CodeType" name="Code" minOccurs="2" maxOccurs="unbounded"/>
+        <xs:element type="ScoreType" name="Score" minOccurs="2" maxOccurs="unbounded"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConditionAggregation">
+    <xs:sequence>
+      <xs:element type="Condition" name="If" minOccurs="2" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="FirstRestrictionsType">
