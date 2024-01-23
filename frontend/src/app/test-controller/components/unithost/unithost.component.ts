@@ -11,8 +11,8 @@ import {
   WindowFocusState,
   PendingUnitData,
   StateReportEntry,
-  UnitStateKey,
-  UnitPlayerState, LoadingProgress, UnitNavigationTarget
+  UnitStateKey, Testlet,
+  UnitPlayerState, LoadingProgress, UnitNavigationTarget, Unit
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -20,7 +20,6 @@ import { MainDataService } from '../../../shared/shared.module';
 import {
   VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';
-import { Testlet, UnitWithContext } from '../../classes/test-controller.classes';
 import { AppError } from '../../../app.interfaces';
 
 @Component({
@@ -44,7 +43,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
 
-  currentUnit: UnitWithContext | null = null;
+  currentUnit: Unit | null = null;
   currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
 
@@ -108,7 +107,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.tcs.updateUnitState(
           this.currentUnitSequenceId,
           {
-            unitDbKey: this.currentUnit.unitDef.alias,
+            unitDbKey: this.currentUnit.id, // TODO x alias?
             state: [<StateReportEntry>{
               key: UnitStateKey.PLAYER,
               timeStamp: Date.now(),
@@ -151,7 +150,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
                   {
-                    unitDbKey: this.currentUnit.unitDef.alias,
+                    unitDbKey: this.currentUnit.id, // TODO X alias?
                     state: [
                       { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
                       { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
@@ -162,7 +161,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
             }
           }
-          const unitDbKey = this.currentUnit.unitDef.alias;
+          const unitDbKey = this.currentUnit.id; // TODO X alias?
           if (msgData.unitState) {
             const { unitState } = msgData;
             const timeStamp = Date.now();
@@ -227,7 +226,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(currentUnitSequenceId: number): void {
-    if (!this.tcs.rootTestlet) {
+    if (!this.tcs.booklet) {
       throw new Error('Booklet not loaded');
     }
     this.currentUnitSequenceId = currentUnitSequenceId;
@@ -240,30 +239,32 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.currentPageIndex = -1;
     this.knownPages = [];
 
-    this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
+    this.currentUnit = this.tcs.getUnit(this.currentUnitSequenceId);
 
-    this.mainDataService.appSubTitle$.next(this.currentUnit.unitDef.title);
+    this.mainDataService.appSubTitle$.next(this.currentUnit.label);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
     }
 
     const unitsToLoadIds = this.currentUnit.maxTimerRequiringTestlet ?
-      this.tcs.rootTestlet.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet.id) :
+      this.tcs.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet.id) :
       [currentUnitSequenceId];
 
     const unitsToLoad = unitsToLoadIds
       .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
 
     this.unitsToLoadLabels = unitsToLoadIds
-      .map(unitSequenceId => this.tcs.getUnitWithContext(unitSequenceId).unitDef.title);
+      .map(unitSequenceId => this.tcs.getUnit(unitSequenceId).label);
 
+    console.log(unitsToLoad);
     this.subscriptions.loading = combineLatest<LoadingProgress[]>(unitsToLoad)
       .subscribe({
         next: value => {
           this.unitsLoading$.next(value);
         },
         error: err => {
+          console.log(err);
           this.mainDataService.appError = new AppError({
             label: `Unit konnte nicht geladen werden. ${err.info}`,
             description: (err.info) ? err.info : err,
@@ -279,17 +280,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error('Unit not loaded');
     }
     this.unitsLoading$.next([]);
-    this.tcs.currentUnitDbKey = this.currentUnit.unitDef.alias;
-    this.tcs.currentUnitTitle = this.currentUnit.unitDef.title;
+    this.tcs.currentUnitDbKey = this.currentUnit.id; // TODO X alias?
+    this.tcs.currentUnitTitle = this.currentUnit.label;
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.currentUnit.unitDef.alias
+        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.tcs.currentUnitDbKey
       }]);
       this.tcs.updateUnitState(
         this.currentUnitSequenceId,
         {
-          unitDbKey: this.currentUnit.unitDef.alias,
+          unitDbKey: this.tcs.currentUnitDbKey,
           state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
         }
       );
@@ -297,7 +298,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (this.tcs.testMode.presetCode) {
       this.currentUnit.codeRequiringTestlets
-        .forEach(testlet => { this.clearCodes[testlet.id] = testlet.codeToEnter; });
+        .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
     }
 
     this.runUnit();
@@ -313,7 +314,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.currentUnit.unitDef.lockedByTime) {
+    if (this.currentUnit.lockedByTime) {
       return;
     }
 
@@ -366,7 +367,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerFileName));
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.playerFileName));
   }
 
   private adjustIframeSize(): void {
@@ -404,7 +405,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       pagingMode: this.tcs.bookletConfig.pagingMode,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
-      unitId: this.currentUnit.unitDef.alias,
+      unitId: this.currentUnit.id, // TODO X alias?
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
     if (this.pendingUnitData?.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
@@ -476,12 +477,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
           if (!this.clearCodes[testlet.id]) {
             return;
           }
-          if (testlet.codeToEnter.toUpperCase().trim() === this.clearCodes[testlet.id].toUpperCase().trim()) {
+          const requiredCode = (testlet.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
+          const givenCode = this.clearCodes[testlet.id].toUpperCase().trim();
+          if (requiredCode === givenCode) {
             this.tcs.addClearedCodeTestlet(testlet.id);
             this.runUnit();
           } else {
             this.snackBar.open(
-              `Freigabewort '${this.clearCodes[testlet.id]}' für '${testlet.title}' stimmt nicht.`,
+              `Freigabewort '${givenCode}' für '${testlet.label}' stimmt nicht.`,
               'OK',
               { duration: 3000 }
             );

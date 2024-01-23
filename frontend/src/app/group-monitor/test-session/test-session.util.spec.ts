@@ -1,7 +1,7 @@
 /* eslint-disable object-curly-newline */
 import { TestSessionUtil } from './test-session.util';
 import { unitTestExampleBooklets } from '../unit-test-example-data.spec';
-import { Testlet, UnitContext } from '../group-monitor.interfaces';
+import { TestletDef, UnitContext } from '../group-monitor.interfaces';
 
 describe('TestSessionUtil', () => {
   describe('getCurrent()', () => {

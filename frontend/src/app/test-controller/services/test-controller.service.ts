@@ -6,22 +6,23 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData, Testlet, UnitWithContext } from '../classes/test-controller.classes';
+import { MaxTimerData } from '../classes/test-controller.classes';
 import {
+  Booklet,
   KeyValuePairNumber,
   KeyValuePairString,
   LoadingProgress,
   MaxTimerDataType,
   StateReportEntry,
-  TestControllerState,
-  TestStateKey,
+  TestControllerState, Testlet,
+  TestStateKey, Unit,
   UnitDataParts,
   UnitNavigationTarget,
   UnitStateUpdate,
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { BookletConfig, TestMode } from '../../shared/shared.module';
+import { BookletDef, BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
@@ -48,7 +49,8 @@ export class TestControllerService {
 
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
-  rootTestlet: Testlet | null = null;
+  // rootTestlet: Testlet | null = null;
+  booklet: Booklet | null = null;
 
   maxTimeTimer$ = new Subject<MaxTimerData>();
   currentMaxTimerTestletId = '';
@@ -66,6 +68,9 @@ export class TestControllerService {
   resumeTargetUnitSequenceId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
+
+  unitAliasMap: { [unitId: string] : number } = {}; // TODO X fill
+
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
   }
@@ -98,8 +103,10 @@ export class TestControllerService {
   private unitResponseProgressStates: { [sequenceId: number]: string | undefined } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string | undefined } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
-  private unitDefinitionTypes: { [sequenceId: number]: string } = {};
+  private unitDefinitionTypes: { [sequenceId: number]: string } = {}; // TODO X WHAT THE FUCK
   private unitResponseTypes: { [sequenceId: number]: string } = {};
+
+  units: { [sequenceId: number]: Unit } = {}; // TODO X implement
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
@@ -193,7 +200,7 @@ export class TestControllerService {
     this.players = {};
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
-    this.rootTestlet = null;
+    // this.rootTestlet = null;
     this.clearCodeTestlets = [];
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
@@ -400,19 +407,19 @@ export class TestControllerService {
     }
   }
 
-  getUnclearedTestlets(unit: UnitWithContext): Testlet[] {
+  getUnclearedTestlets(unit: Unit): Testlet[] {
     return unit.codeRequiringTestlets
       .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
   }
 
-  getUnitIsLockedByCode(unit: UnitWithContext): boolean {
-    return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.unitDef.sequenceId;
+  getUnitIsLockedByCode(unit: Unit): boolean {
+    return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.sequenceId;
   }
 
-  getFirstSequenceIdOfLockedBlock(fromUnit: UnitWithContext): number {
+  getFirstSequenceIdOfLockedBlock(fromUnit: Unit): number {
     const unclearedTestlets = this.getUnclearedTestlets(fromUnit);
     if (!unclearedTestlets.length) {
-      return fromUnit.unitDef.sequenceId;
+      return fromUnit.sequenceId;
     }
     return unclearedTestlets
       .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
@@ -420,15 +427,15 @@ export class TestControllerService {
       .filter(child => !!child.sequenceId)[0].sequenceId;
   }
 
-  getUnitIsLocked(unit: UnitWithContext): boolean {
-    return this.getUnitIsLockedByCode(unit) || unit.unitDef.lockedByTime;
+  getUnitIsLocked(unit: Unit): boolean {
+    return this.getUnitIsLockedByCode(unit) || unit.lockedByTime;
   }
 
-  getUnitWithContext(unitSequenceId: number): UnitWithContext {
-    if (!this.rootTestlet) { // when loading process was aborted
+  getUnit(unitSequenceId: number): Unit {
+    if (!this.booklet) { // when loading process was aborted
       throw new MissingBookletError();
     }
-    const unit = this.rootTestlet.getUnitAt(unitSequenceId);
+    const unit = this.units[unitSequenceId];
     if (!unit) {
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
@@ -442,19 +449,22 @@ export class TestControllerService {
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId + step;
-    let nextUnit: UnitWithContext = this.getUnitWithContext(nextUnitSequenceId);
+    let nextUnit: Unit = this.getUnit(nextUnitSequenceId);
 
     while (nextUnit !== null && this.getUnitIsLocked(nextUnit)) {
       nextUnitSequenceId += step;
-      nextUnit = this.getUnitWithContext(nextUnitSequenceId);
+      nextUnit = this.getUnit(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
   }
 
   startMaxTimer(testlet: Testlet): void {
+    if (!testlet.restrictions?.timeMax) {
+      return;
+    }
     const timeLeftMinutes = (testlet.id in this.maxTimeTimers) ?
-      Math.min(this.maxTimeTimers[testlet.id], testlet.maxTimeLeft) :
-      testlet.maxTimeLeft;
+      Math.min(this.maxTimeTimers[testlet.id], testlet.restrictions.timeMax.minutes) :
+      testlet.restrictions.timeMax.minutes;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
@@ -538,7 +548,7 @@ export class TestControllerService {
 
   setUnitNavigationRequest(navString: string, force = false): void {
     const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
-    if (!this.rootTestlet) {
+    if (!this.booklet) {
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {
@@ -604,5 +614,21 @@ export class TestControllerService {
 
   isUnitContentLoaded(sequenceId: number): boolean {
     return !!this.unitDefinitions[sequenceId];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getAllUnitSequenceIds(testletId: string): number[] { // TODO X
+    return [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  setTimeLeft(testletId: string, number: number): void {
+    // TODO X
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getMaxSequenceId(): number {
+    // TODO X
+    return NaN;
   }
 }

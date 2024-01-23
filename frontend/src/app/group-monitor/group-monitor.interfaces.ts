@@ -1,6 +1,5 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
-// eslint-disable-next-line import/extensions
-import { BookletConfig } from '../shared/shared.module';
+import { BookletDef, TestletDef, UnitDef } from '../shared/shared.module';
 
 export interface GroupMonitorConfig {
   checkForIdleInterval: number;
@@ -21,59 +20,6 @@ export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'loc
   'controller_terminated', 'connection_lost', 'paused', 'focus_lost', 'idle',
   'connection_websocket', 'connection_polling', 'ok'] as const;
 export type TestSessionSuperState = typeof TestSessionsSuperStates[number];
-
-export interface Booklet {
-  metadata: BookletMetadata;
-  config: BookletConfig;
-  restrictions?: Restrictions;
-  units: Testlet;
-  species: string;
-}
-
-export interface BookletError {
-  error: 'xml' | 'missing-id' | 'missing-file' | 'general';
-  species: null;
-}
-
-export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
-  return bookletOrError && !('error' in bookletOrError);
-}
-
-export interface BookletMetadata {
-  id: string;
-  label: string;
-  description: string;
-  owner?: string;
-  lastchange?: string;
-  status?: string;
-  project?: string;
-}
-
-export interface Testlet {
-  id: string;
-  label: string;
-  restrictions?: Restrictions;
-  children: (Unit | Testlet)[];
-  descendantCount: number;
-  blockId?: string;
-  nextBlockId?: string;
-}
-
-export interface Unit {
-  id: string;
-  label: string;
-  labelShort: string;
-}
-
-export interface Restrictions {
-  codeToEnter?: {
-    code: string;
-    message: string;
-  };
-  timeMax?: {
-    minutes: number
-  };
-}
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
@@ -99,16 +45,8 @@ export interface CheckingOptions {
   autoCheckAll: boolean;
 }
 
-export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
-  return !('children' in testletOrUnit);
-}
-
-export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
-  return !isUnit(testletOrUnit);
-}
-
 export interface UnitContext {
-  unit?: Unit;
+  unit?: UnitDef;
   parent?: Testlet;
   ancestor?: Testlet;
   indexGlobal: number;
@@ -149,4 +87,33 @@ export interface GotoCommandData {
     testIds: number[],
     firstUnitId: string
   }
+}
+
+export type Unit = UnitDef;
+
+export interface Booklet extends BookletDef<Testlet> {
+  species: string;
+}
+
+export interface Testlet extends TestletDef<Testlet, Unit> {
+  descendantCount: number;
+  blockId?: string;
+  nextBlockId?: string;
+}
+
+export function isUnit(testletOrUnit: Testlet | UnitDef): testletOrUnit is UnitDef {
+  return !('children' in testletOrUnit);
+}
+
+export function isTestlet(testletOrUnit: Testlet | UnitDef): testletOrUnit is Testlet {
+  return !isUnit(testletOrUnit);
+}
+
+export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
+  return bookletOrError && !('error' in bookletOrError);
+}
+
+export interface BookletError {
+  error: 'xml' | 'missing-id' | 'missing-file' | 'general';
+  species: null;
 }

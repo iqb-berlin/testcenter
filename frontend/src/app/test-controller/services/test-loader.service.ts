@@ -6,10 +6,11 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
+import {
+  CustomtextService, TestMode, UnitDef, TestletDef, BookletDef, ContextInBooklet
+} from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
-  isNavigationLeaveRestrictionValue,
   LoadedFile,
   LoadingProgress,
   StateReportEntry,
@@ -20,17 +21,18 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  UnitStateKey
+  UnitStateKey, Testlet, Booklet, Unit, isUnit
 } from '../interfaces/test-controller.interfaces';
-import { EnvironmentData, NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
+import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
+import { BookletParserService } from '../../shared/services/bookletParser.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TestLoaderService {
+export class TestLoaderService extends BookletParserService<Unit, Testlet, Booklet> {
   private loadStartTimeStamp = 0;
   private unitContentLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
@@ -43,6 +45,7 @@ export class TestLoaderService {
     private bs: BackendService,
     private cts: CustomtextService
   ) {
+    super();
     this.environment = new EnvironmentData();
   }
 
@@ -60,7 +63,7 @@ export class TestLoaderService {
     this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
     this.restoreRestrictions(testData.laststate);
-    this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+    this.tcs.booklet = this.getBookletFromXml(testData.xml);
 
     this.tcs.timerWarningPoints =
       this.tcs.bookletConfig.unit_time_left_warnings
@@ -70,7 +73,7 @@ export class TestLoaderService {
 
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
-    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+    // this.tcs.rootTestlet.lockUnitsIfTimeLeftNull(); TODO what was this?
 
     // eslint-disable-next-line consistent-return
     return this.loadUnitContents(testData)
@@ -97,13 +100,11 @@ export class TestLoaderService {
   }
 
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
-    if (!this.tcs.rootTestlet) {
+    if (!this.tcs.booklet) {
       throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
     }
     const currentUnitId = lastState[TestStateKey.CURRENT_UNIT_ID];
-    this.tcs.resumeTargetUnitSequenceId = currentUnitId ?
-      this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId) :
-      1;
+    this.tcs.resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
     if (
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
@@ -141,15 +142,15 @@ export class TestLoaderService {
   }
 
   private loadUnit(sequenceId: number, testData: TestData): Observable<number> {
-    const unitDef = this.tcs.getUnitWithContext(sequenceId).unitDef;
-    const resources = testData.resources[unitDef.id.toUpperCase()];
+    const unit = this.tcs.getUnit(sequenceId);
+    const resources = testData.resources[unit.id.toUpperCase()];
     if (!resources) {
-      throw new Error(`No resources for unitId: \`${unitDef.id}\`.`);
+      throw new Error(`No resources for unitId: \`${unit.id}\`.`);
     }
     if (!(resources.usesPlayer && resources.usesPlayer.length)) {
-      throw new Error(`Unit has no player: \`${unitDef.id}\`)`);
+      throw new Error(`Unit has no player: \`${unit.id}\`)`);
     }
-    unitDef.playerFileName = resources.usesPlayer[0];
+    unit.playerFileName = resources.usesPlayer[0];
 
     const definitionFile = (resources.isDefinedBy && resources.isDefinedBy.length) ? resources.isDefinedBy[0] : null;
 
@@ -157,35 +158,35 @@ export class TestLoaderService {
       // we don't need to call `[GET] /test/{testID}/unit` when this is the first test and no inline definition
       this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
       this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
-      return this.getPlayer(testData, sequenceId, unitDef.playerFileName);
+      return this.getPlayer(testData, sequenceId, unit.playerFileName);
     }
 
-    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
+    return this.bs.getUnitData(this.tcs.testId, unit.id, unit.id) // TODO X alias ?!?!
       .pipe(
-        switchMap((unit: UnitData) => {
-          if (!unit) {
-            throw new Error(`Unit is empty ${this.tcs.testId}/${unitDef.id}.`);
+        switchMap((unitData: UnitData) => {
+          if (!unitData) {
+            throw new Error(`Unit is empty ${this.tcs.testId}/${unit.id}.`);
           }
 
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
 
-          this.tcs.setUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
-          this.tcs.setUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
-          this.tcs.setUnitStateCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
-          this.tcs.setUnitStateDataParts(sequenceId, unit.dataParts);
-          this.tcs.setUnitResponseType(sequenceId, unit.unitResponseType);
+          this.tcs.setUnitPresentationProgress(sequenceId, unitData.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setUnitResponseProgress(sequenceId, unitData.state[UnitStateKey.RESPONSE_PROGRESS]);
+          this.tcs.setUnitStateCurrentPage(sequenceId, unitData.state[UnitStateKey.CURRENT_PAGE_ID]);
+          this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
+          this.tcs.setUnitResponseType(sequenceId, unitData.unitResponseType);
 
           if (definitionFile) {
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
           } else {
             // inline unit definition
-            this.tcs.setUnitPlayerFilename(sequenceId, unitDef.playerFileName);
-            this.tcs.setUnitDefinition(sequenceId, unit.definition);
+            // this.tcs.setUnitPlayerFilename(sequenceId, unit.playerFileName); // TODO X DAFUQ?
+            this.tcs.setUnitDefinition(sequenceId, unitData.definition);
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
 
-          return this.getPlayer(testData, sequenceId, unitDef.playerFileName);
+          return this.getPlayer(testData, sequenceId, unit.playerFileName);
         })
       );
   }
@@ -214,13 +215,13 @@ export class TestLoaderService {
       );
   }
 
-  private prepareUnitContentLoadingQueueOrder(currentUnitId: string = '1'): void {
-    if (!this.tcs.rootTestlet) {
+  private prepareUnitContentLoadingQueueOrder(currentUnitId: string = '1'): void { // TODO X machte der default Sinn?
+    if (!this.tcs.booklet) {
       throw new AppError({
         description: '', label: 'Testheft noch nicht verfügbar', type: 'script'
       });
     }
-    const currentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId);
+    const currentUnitSequenceId = this.tcs.unitAliasMap[currentUnitId];
     const queue = this.unitContentLoadingQueue;
     let firstToLoadQueuePosition;
     for (firstToLoadQueuePosition = 0; firstToLoadQueuePosition < queue.length; firstToLoadQueuePosition++) {
@@ -313,171 +314,67 @@ export class TestLoaderService {
     this.tcs.totalLoadingProgress = (sumOfProgresses / maxProgresses) * 100;
   }
 
-  private getBookletFromXml(xmlString: string): Testlet {
-    const oParser = new DOMParser();
-    const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
-    const oDOM = oParser.parseFromString(xmlStringWithOutBom, 'text/xml');
+  private getBookletFromXml(xmlString: string): Booklet {
+    const booklet = this.parseBookletXml(xmlString);
 
-    if (oDOM.documentElement.nodeName !== 'Booklet') {
-      throw Error('Root element fo Booklet should be <Booklet>');
-    }
-    const metadataElements = oDOM.documentElement.getElementsByTagName('Metadata');
-    if (metadataElements.length === 0) {
-      throw Error('<Metadata>-Element missing');
-    }
-    const metadataElement = metadataElements[0];
-    const IdElement = metadataElement.getElementsByTagName('Id')[0];
-    const LabelElement = metadataElement.getElementsByTagName('Label')[0];
-    const rootTestlet = new Testlet(0, IdElement.textContent || '', LabelElement.textContent || '');
-    const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
-    if (unitsElements.length > 0) {
-      const customTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
-      if (customTextsElements.length > 0) {
-        const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
-        const customTextsForBooklet: { [key: string] : string } = {};
-        for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
-          if (customTexts[childIndex].nodeName === 'CustomText') {
-            const customTextKey = customTexts[childIndex].getAttribute('key');
-            if (customTextKey) {
-              customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent || '';
-            }
+    const registerChildren = (testlet: Testlet): void => {
+      testlet.children
+        .forEach(child => {
+          // eslint-disable-next-line no-plusplus
+          if (isUnit(child)) {
+            this.tcs.unitAliasMap[child.id] = child.sequenceId;
+            this.tcs.units[child.sequenceId] = child;
+          } else {
+            registerChildren(child);
           }
-        }
-        this.cts.addCustomTexts(customTextsForBooklet);
-      }
+        });
+    };
 
-      const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
+    registerChildren(booklet.units);
 
-      this.tcs.bookletConfig = new BookletConfig();
-      if (bookletConfigElements.length > 0) {
-        this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
-      }
-
-      // recursive call through all testlets
-      this.lastUnitSequenceId = 1;
-      this.tcs.allUnitIds = [];
-      this.addTestletContentFromBookletXml(
-        rootTestlet,
-        unitsElements[0],
-        new NavigationLeaveRestrictions(
-          this.tcs.bookletConfig.force_presentation_complete,
-          this.tcs.bookletConfig.force_response_complete
-        )
-      );
-    }
-    return rootTestlet;
+    this.tcs.bookletConfig = booklet.config;
+    this.cts.addCustomTexts(booklet.customTexts);
+    return booklet;
   }
 
-  private addTestletContentFromBookletXml(
-    targetTestlet: Testlet,
-    node: Element,
-    navigationLeaveRestrictions: NavigationLeaveRestrictions
-  ) {
-    const childElements = TestLoaderService.getChildElements(node);
-    if (childElements.length > 0) {
-      let codeToEnter = '';
-      let codePrompt = '';
-      let maxTime = -1;
-      let forcePresentationComplete = navigationLeaveRestrictions.presentationComplete;
-      let forceResponseComplete = navigationLeaveRestrictions.responseComplete;
+  // eslint-disable-next-line class-methods-use-this
+  toBooklet(bookletDef: BookletDef<Testlet>): Booklet {
+    return Object.assign(bookletDef, {});
+  }
 
-      let restrictionElement: Element | null = null;
-      for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
-        if (childElements[childIndex].nodeName === 'Restrictions') {
-          restrictionElement = childElements[childIndex];
-          break;
-        }
-      }
-      if (restrictionElement !== null) {
-        const restrictionElements = TestLoaderService.getChildElements(restrictionElement);
-        for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
-          if (restrictionElements[childIndex].nodeName === 'CodeToEnter') {
-            const restrictionParameter = restrictionElements[childIndex].getAttribute('code');
-            if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
-              codeToEnter = restrictionParameter.toUpperCase();
-              codePrompt = restrictionElements[childIndex].textContent || '';
-            }
-          }
-          if (restrictionElements[childIndex].nodeName === 'TimeMax') {
-            const restrictionParameter = restrictionElements[childIndex].getAttribute('minutes');
-            if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
-              maxTime = Number(restrictionParameter);
-              if (Number.isNaN(maxTime)) {
-                maxTime = -1;
-              }
-            }
-          }
-          if (restrictionElements[childIndex].nodeName === 'DenyNavigationOnIncomplete') {
-            const presentationComplete = restrictionElements[childIndex].getAttribute('presentation');
-            if (presentationComplete && isNavigationLeaveRestrictionValue(presentationComplete)) {
-              forcePresentationComplete = presentationComplete;
-            }
-            const responseComplete = restrictionElements[childIndex].getAttribute('response');
-            if (responseComplete && isNavigationLeaveRestrictionValue(responseComplete)) {
-              forceResponseComplete = responseComplete;
-            }
-          }
-        }
-      }
+  // eslint-disable-next-line class-methods-use-this
+  toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+    return Object.assign(testletDef, {
+      sequenceId: context.globalIndex
+    });
+  }
 
-      if (codeToEnter.length > 0) {
-        targetTestlet.codeToEnter = codeToEnter;
-        targetTestlet.codePrompt = codePrompt;
-      }
-      targetTestlet.maxTimeLeft = maxTime;
-      if (this.tcs.maxTimeTimers) {
-        if (targetTestlet.id in this.tcs.maxTimeTimers) {
-          targetTestlet.maxTimeLeft = this.tcs.maxTimeTimers[targetTestlet.id];
-        }
-      }
-      const newNavigationLeaveRestrictions =
-        new NavigationLeaveRestrictions(forcePresentationComplete, forceResponseComplete);
-
-      for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
-        if (childElements[childIndex].nodeName === 'Unit') {
-          const unitId = childElements[childIndex].getAttribute('id');
-          if (!unitId) {
-            throw new AppError({
-              description: '', label: `Unit-Id Fehlt in unit nr ${childIndex} von ${targetTestlet.id}`, type: 'xml'
-            });
-          }
-          let unitAlias = childElements[childIndex].getAttribute('alias');
-          if (!unitAlias) {
-            unitAlias = unitId;
-          }
-          let unitAliasClear = unitAlias;
-          let unitIdSuffix = 1;
-          while (this.tcs.allUnitIds.indexOf(unitAliasClear) > -1) {
-            unitAliasClear = `${unitAlias}-${unitIdSuffix.toString()}`;
-            unitIdSuffix += 1;
-          }
-          this.tcs.allUnitIds.push(unitAliasClear);
-
-          targetTestlet.addUnit(
-            this.lastUnitSequenceId,
-            unitId,
-            childElements[childIndex].getAttribute('label') ?? '',
-            unitAliasClear,
-            childElements[childIndex].getAttribute('labelshort') ?? '',
-            newNavigationLeaveRestrictions
-          );
-          this.lastUnitSequenceId += 1;
-        } else if (childElements[childIndex].nodeName === 'Testlet') {
-          const testletId = childElements[childIndex].getAttribute('id');
-          if (!testletId) {
-            throw new AppError({
-              description: '', label: `Testlet-Id fehlt in unit nr ${childIndex} von ${targetTestlet.id}`, type: 'xml'
-            });
-          }
-          const testletLabel: string = childElements[childIndex].getAttribute('label')?.trim() ?? '';
-
-          this.addTestletContentFromBookletXml(
-            targetTestlet.addTestlet(testletId, testletLabel),
-            childElements[childIndex],
-            newNavigationLeaveRestrictions
-          );
-        }
+  // eslint-disable-next-line class-methods-use-this
+  toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
+    const codeRequiringTestlets: Testlet[] = [];
+    let maxTimerRequiringTestlet = null;
+    let parent = context.parent;
+    let testletLabel = '';
+    while (context.parent) {
+      parent = context.parent;
+      if (parent.restrictions?.codeToEnter?.code) {
+        codeRequiringTestlets.push(parent);
       }
     }
+    if (parent) {
+      if (parent.restrictions?.timeMax?.minutes) {
+        maxTimerRequiringTestlet = parent;
+      }
+      testletLabel = parent.label;
+    }
+    return Object.assign(unitDef, {
+      sequenceId: context.globalIndex,
+      codeRequiringTestlets,
+      maxTimerRequiringTestlet,
+      testletLabel,
+      parent,
+      lockedByTime: false,
+      playerFileName: ''
+    });
   }
 }

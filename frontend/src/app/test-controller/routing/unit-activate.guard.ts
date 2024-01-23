@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { UnitWithContext } from '../classes/test-controller.classes';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
 
@@ -15,7 +14,7 @@ export class UnitActivateGuard {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
-    if (this.tcs.rootTestlet === null) {
+    if (this.tcs.booklet === null) {
       // unit-route got called before test is loaded. This happens on page-reload (F5).
       const testId = Number(route.parent?.params.t);
       if (!testId) {
@@ -26,7 +25,7 @@ export class UnitActivateGuard {
       this.router.navigate([`/t/${testId}`]);
       return false;
     }
-    const newUnit: UnitWithContext = this.tcs.getUnitWithContext(targetUnitSequenceId);
+    const newUnit = this.tcs.getUnit(targetUnitSequenceId);
     if (!newUnit) {
       // a unit-nr was entered in the URl which does not exist
       this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
@@ -34,7 +33,7 @@ export class UnitActivateGuard {
     }
     if (this.tcs.getUnitIsLocked(newUnit)) {
       // a unitId of a locked unit was inserted
-      const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.unitDef.sequenceId, true);
+      const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.sequenceId, true);
       if (!previousUnlockedUnit) {
         return false;
       }

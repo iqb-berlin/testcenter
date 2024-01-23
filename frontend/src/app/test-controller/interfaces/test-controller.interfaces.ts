@@ -1,5 +1,6 @@
 // used everywhere
 import { VeronaProgress } from './verona.interfaces';
+import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
@@ -224,4 +225,28 @@ export type LoadingFile = LoadingProgress | LoadedFile;
 
 export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is LoadedFile {
   return 'content' in loadingFile;
+}
+
+export interface Unit extends UnitDef {
+  readonly sequenceId: number;
+  readonly parent: Testlet | null;
+  readonly codeRequiringTestlets: Testlet[];
+  readonly maxTimerRequiringTestlet: Testlet | null;
+  readonly testletLabel: string;
+  lockedByTime: boolean;
+  playerFileName: string;
+}
+
+export interface Testlet extends TestletDef<Testlet, Unit> {
+  readonly sequenceId: number;
+}
+
+export type Booklet = BookletDef<Testlet>;
+
+export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
+  return !('children' in testletOrUnit);
+}
+
+export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
+  return !isUnit(testletOrUnit);
 }

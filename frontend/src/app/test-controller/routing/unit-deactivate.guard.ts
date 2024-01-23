@@ -7,8 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
-import { NavigationLeaveRestrictionValue, TestControllerState } from '../interfaces/test-controller.interfaces';
-import { UnitWithContext } from '../classes/test-controller.classes';
+import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
@@ -23,7 +22,7 @@ export class UnitDeactivateGuard {
     private router: Router
   ) {}
 
-  private checkAndSolveMaxTime(newUnit: UnitWithContext | null): Observable<boolean> {
+  private checkAndSolveMaxTime(newUnit: Unit | null): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
@@ -61,8 +60,8 @@ export class UnitDeactivateGuard {
       );
   }
 
-  private checkAndSolveCompleteness(newUnit: UnitWithContext | null): Observable<boolean> {
-    const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
+  private checkAndSolveCompleteness(newUnit: Unit | null): Observable<boolean> {
+    const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
       return of(true);
@@ -71,8 +70,8 @@ export class UnitDeactivateGuard {
   }
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
-    const unit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
-    if (unit.unitDef.lockedByTime) {
+    const unit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
+    if (unit.lockedByTime) {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
@@ -80,16 +79,24 @@ export class UnitDeactivateGuard {
       Next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
       Prev: <NavigationLeaveRestrictionValue[]>['ALWAYS']
     };
+    const presentationCompleteRequired =
+      unit.parent?.restrictions?.denyNavigationOnIncomplete?.presentation ||
+      this.tcs.booklet?.config.force_presentation_complete ||
+      'OFF';
     if (
-      (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
+      (checkOnValue[direction].includes(presentationCompleteRequired)) &&
       this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
     ) {
       reasons.push('presentationIncomplete');
     }
+    const responseCompleteRequired =
+      unit.parent?.restrictions?.denyNavigationOnIncomplete?.response ||
+      this.tcs.booklet?.config.force_response_complete ||
+      'OFF';
     const currentUnitResponseProgress = this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId);
     if (
-      (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
+      (checkOnValue[direction].includes(responseCompleteRequired)) &&
       currentUnitResponseProgress &&
       (['complete', 'complete-and-valid'].indexOf(currentUnitResponseProgress) === -1)
     ) {
@@ -145,16 +152,16 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
+    const currentUnit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
     if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
 
-    let newUnit: UnitWithContext | null = null;
+    let newUnit: Unit | null = null;
     const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
     if (match) {
       const targetUnitSequenceId = Number(match[2]);
-      newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
+      newUnit = this.tcs.getUnit(targetUnitSequenceId);
     }
 
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
@@ -165,7 +172,7 @@ export class UnitDeactivateGuard {
 
     return this.checkAndSolveCompleteness(newUnit)
       .pipe(
-        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit as UnitWithContext)))
+        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit)))
       );
   }
 }

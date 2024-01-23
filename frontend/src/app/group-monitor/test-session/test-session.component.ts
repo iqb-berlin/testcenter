@@ -3,13 +3,14 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  Testlet, Unit, TestViewDisplayOptions,
+  Testlet as Testlet, TestViewDisplayOptions,
   isUnit, Selected, TestSession, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { superStates } from './super-states';
+import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 interface IconData {
   icon: string,
@@ -41,10 +42,10 @@ export class TestSessionComponent {
   hasState = TestSessionUtil.hasState;
 
   // eslint-disable-next-line class-methods-use-this
-  getTestletType = (testletOrUnit: Unit | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
+  getTestletType = (testletOrUnit: UnitDef | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
 
   // eslint-disable-next-line class-methods-use-this
-  trackUnits = (index: number, testlet: Testlet | Unit): string => testlet.id || index.toString();
+  trackUnits = (index: number, testlet: Testlet | UnitDef): string => testlet.id || index.toString();
 
   mark(testletOrNull: Testlet | null = null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {

@@ -2,7 +2,7 @@
       'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
       'with-title': tcs.bookletConfig.unit_title === 'ON',
       'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-      'is-waiting': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
+      'is-waiting': currentUnit?.lockedByTime || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'"
        class="unit-title">
     <h2 >{{currentUnit?.unitDef?.title}}</h2>
@@ -42,19 +42,19 @@
                 style="text-transform:uppercase"
                 (keydown)="onKeydownInClearCodeInput($event)"
                 data-cy="unlockUnit"
-                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
+                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.label || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
               >
             </mat-form-field>
             <tc-alert
               level="info"
-              *ngIf="!testlet.codePrompt"
+              *ngIf="!testlet.restrictions.codeToEnter.message"
               customtext="booklet_codeToEnterPrompt"
               text="Bitte Freigabewort eingeben!"
             ></tc-alert>
             <tc-alert
               level="info"
-              *ngIf="testlet.codePrompt"
-              [text]="testlet.codePrompt"
+              *ngIf="testlet.restrictions.codeToEnter.message"
+              [text]="testlet.restrictions.codeToEnter.message"
             ></tc-alert>
             <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
           </ng-container>

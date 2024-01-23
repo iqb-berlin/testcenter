@@ -1,6 +1,6 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import {
-  Booklet, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
+  BookletDef, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { TestSessionUtil } from './test-session/test-session.util';
 import { BookletConfig } from '../shared/classes/booklet-config.class';

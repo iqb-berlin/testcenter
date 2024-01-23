@@ -184,7 +184,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   showReviewDialog(): void {
     const authData = this.mainDataService.getAuthData();
-    if (this.tcs.rootTestlet === null) {
+    if (this.tcs.booklet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
     } else if (!authData) {
       throw new AppError({ description: '', label: 'Nicht Angemeldet!' });
@@ -192,7 +192,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         data: <ReviewDialogData>{
           loginname: authData.displayName,
-          bookletname: this.tcs.rootTestlet.title,
+          bookletname: this.tcs.booklet.metadata.label,
           unitTitle: this.tcs.currentUnitTitle,
           unitDbKey: this.tcs.currentUnitDbKey
         }
@@ -226,7 +226,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         break;
       case 'destroy':
-        this.tcs.rootTestlet = null;
+        this.tcs.booklet = null;
         break;
       case 'pause':
         this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
@@ -256,7 +256,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
           this.tcs.cancelMaxTimer();
-          const targetUnit = this.tcs.getUnitWithContext(parseInt(gotoTarget, 10));
+          const targetUnit = this.tcs.getUnit(parseInt(gotoTarget, 10));
           if (targetUnit) {
             targetUnit.codeRequiringTestlets
               .forEach(testlet => {
@@ -272,7 +272,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleMaxTimer(maxTimerData: MaxTimerData): void {
-    if (!this.tcs.rootTestlet) {
+    if (!this.tcs.booklet) {
       throw new AppError({ description: '', label: 'Roottestlet used to early' });
     }
     const minute = maxTimerData.timeLeftSeconds / 60;
@@ -297,14 +297,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
+          this.tcs.setTimeLeft(maxTimerData.testletId, 0);
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
         }
         break;
       case MaxTimerDataType.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
+        this.tcs.setTimeLeft(maxTimerData.testletId, 0);
         this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
@@ -348,15 +348,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private refreshUnitMenu(): void {
     this.unitNavigationList = [];
-    if (!this.tcs.rootTestlet) {
+    if (!this.tcs.booklet) {
       return;
     }
     let previousBlockLabel: string | null = null;
-    const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
+    const unitCount = this.tcs.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
-      const unitData = this.tcs.getUnitWithContext(sequenceId);
+      const unit = this.tcs.getUnit(sequenceId);
 
-      const blockLabel = unitData.testletLabel || '';
+      const blockLabel = unit.testletLabel || '';
       if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
         this.unitNavigationList.push(blockLabel);
       }
@@ -364,29 +364,29 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.unitNavigationList.push({
         sequenceId,
-        shortLabel: unitData.unitDef.naviButtonLabel,
-        longLabel: unitData.unitDef.title,
-        testletLabel: unitData.testletLabel,
-        disabled: this.tcs.getUnitIsLocked(unitData),
+        shortLabel: unit.labelShort,
+        longLabel: unit.label,
+        testletLabel: unit.testletLabel,
+        disabled: this.tcs.getUnitIsLocked(unit),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }
   }
 
   private setUnitScreenHeader(): void {
-    if (!this.tcs.rootTestlet || !this.tcs.currentUnitSequenceId) {
+    if (!this.tcs.booklet || !this.tcs.currentUnitSequenceId) {
       this.unitScreenHeader = '';
       return;
     }
     switch (this.tcs.bookletConfig.unit_screenheader) {
       case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).unitDef.title;
+        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).label;
         break;
       case 'WITH_BOOKLET_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.title;
+        this.unitScreenHeader = this.tcs.booklet.metadata.label;
         break;
       case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).testletLabel;
+        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).testletLabel;
         break;
       default:
         this.unitScreenHeader = '';

@@ -4,8 +4,8 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
-  Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats
+  BookletDef, BookletError, CommandResponse, GroupMonitorConfig,
+  Selected, TestletDef, TestSessionData, TestSessionFilter, TestSessionSetStats
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';

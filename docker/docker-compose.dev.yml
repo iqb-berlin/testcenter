@@ -50,8 +50,8 @@ services:
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
-    environment:
-      TLS_ENABLED: ${TLS_ENABLED:-off}
+#    environment:
+#      TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:
       - 9005:9003
     depends_on:
