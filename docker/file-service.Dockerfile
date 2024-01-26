@@ -15,6 +15,4 @@ RUN echo "" >> /etc/nginx/conf.d/cors.conf
 
 EXPOSE 80
 
-USER nginx
-
 CMD ["nginx", "-g", "daemon off;"]
