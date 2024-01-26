@@ -6,6 +6,8 @@ init:
 	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
 	mkdir -p docs/dist
 	chmod 777 docs/dist
+	mkdir -p data
+	chmod 777 data
 
 # Build all images of the project or a specified one as dev-images.
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`

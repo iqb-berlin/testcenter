@@ -63,8 +63,6 @@ services:
       - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
-    volumes:
-      - testcenter_backend_vo_data:/var/www/data
     networks:
       testcenter:
 

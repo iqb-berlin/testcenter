@@ -92,3 +92,5 @@ COPY backend/test test
 # some initialization tests need this
 # jq - JSON parser for bash
 RUN apt-get update && apt-get install -y jq
+
+USER www-data
