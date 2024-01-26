@@ -52,7 +52,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   constructor(
     public tcs: TestControllerService,
-    private mainDataService: MainDataService,
+    private mds: MainDataService,
     private bs: BackendService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
@@ -62,7 +62,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
-      this.subscriptions.postMessage = this.mainDataService.postMessage$
+      this.subscriptions.postMessage = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
       this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
@@ -241,7 +241,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.currentUnit = this.tcs.getUnit(this.currentUnitSequenceId);
 
-    this.mainDataService.appSubTitle$.next(this.currentUnit.label);
+    this.mds.appSubTitle$.next(this.currentUnit.label);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
@@ -257,7 +257,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.unitsToLoadLabels = unitsToLoadIds
       .map(unitSequenceId => this.tcs.getUnit(unitSequenceId).label);
 
-    console.log(unitsToLoad);
     this.subscriptions.loading = combineLatest<LoadingProgress[]>(unitsToLoad)
       .subscribe({
         next: value => {
@@ -265,7 +264,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         },
         error: err => {
           console.log(err);
-          this.mainDataService.appError = new AppError({
+          this.mds.appError = new AppError({
             label: `Unit konnte nicht geladen werden. ${err.info}`,
             description: (err.info) ? err.info : err,
             type: 'network'
@@ -357,7 +356,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mainDataService.appError = new AppError({
+      this.mds.appError = new AppError({
         label: 'Veralteter Browser',
         description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
         type: 'general'
@@ -392,8 +391,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.currentUnit) {
       throw new Error('Unit not loaded');
     }
-    const groupToken = this.mainDataService.getAuthData()?.groupToken;
-    const resourceUri = this.mainDataService.appConfig?.fileServiceUri ?? this.bs.backendUrl;
+    const groupToken = this.mds.getAuthData()?.groupToken;
+    const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.currentUnitSequenceId,

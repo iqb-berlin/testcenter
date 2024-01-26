@@ -1,0 +1,73 @@
+<div class="debug-pane" cdkDrag>
+  <div class="tabs">
+    <div
+      *ngFor="let tab of tabs"
+      (click)="changeTab(tab)"
+      [class]="{'active': activeTab == tab}"
+    >
+      {{ tab }}
+    </div>
+  </div>
+  <div [class]="{'active-tab': activeTab == 'main', 'tab': 1}">
+    <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
+    <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
+    <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
+    <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
+    <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
+  </div>
+  <div [class]="{'active-tab': activeTab == 'config', 'tab': 1}">
+    <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
+  </div>
+  <div [class]="{'active-tab': activeTab == 'testmode', 'tab': 1}">
+    <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
+  </div>
+  <div [class]="{'active-tab': activeTab == 'units', 'tab': 1}" (click)="res()">
+    <ng-container *ngIf="tcs.booklet as booklet">
+      <ng-container *ngIf="tcs.booklet.units as units">
+        <ng-container  [ngTemplateOutlet]="testletTemplate" [ngTemplateOutletContext]="{item: units}"></ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-template #testletTemplate let-testlet="item">
+      <b>{{testlet.sequenceId}}: </b>{{testlet.id}}
+
+      <div *ngFor="let child of testlet.children" class="testlet">
+        <ng-container
+          [ngTemplateOutlet]="child.children ? testletTemplate : unitTemplate"
+          [ngTemplateOutletContext]="{item: child}"
+        ></ng-container>
+      </div>
+    </ng-template>
+    <ng-template #unitTemplate let-unit="item">
+      <div class="unit">
+        <b>{{unit.sequenceId}}: </b>{{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}
+        <span class='more-btn' (click)="toggleMore(unit.alias)">+</span>
+        <table *ngIf="openPanes.includes(unit.alias)">
+          <tr>
+            <td>codeRequiringTestlets</td>
+            <td><span *ngFor="let t of unit.codeRequiringTestlets">{{t.id}} </span></td>
+          </tr>
+          <tr>
+            <td>maxTimerRequiringTestlet</td>
+            <td>{{unit.maxTimerRequiringTestlet?.id}}</td>
+          </tr>
+          <tr>
+            <td>blockLabel</td>
+            <td>{{unit.blockLabel}}</td>
+          </tr>
+          <tr>
+            <td>parent</td>
+            <td>{{unit.parent?.id}}</td>
+          </tr>
+          <tr>
+            <td>playerFileName</td>
+            <td>{{unit.playerFileName}}</td>
+          </tr>
+          <tr>
+            <td>locked</td>
+            <td>{{unit.locked ? 'y' : 'n'}}</td>
+          </tr>
+        </table>
+      </div>
+    </ng-template>
+  </div>
+</div>

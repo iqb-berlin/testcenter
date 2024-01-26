@@ -45,11 +45,14 @@ export abstract class BookletParserService<
       throw new AppError({ label: 'Invalid XML', description: 'invalid metadata', type: 'xml' });
     }
 
+    const globalContext = {
+      unitIndex: 0,
+      testlets: {}
+    };
     const rootContext: ContextInBooklet<Testlet> = {
-      globalIndex: 0,
-      localIndex: 0,
-      localIndexOfTestlets: 0,
-      parent: null
+      localTestletIndex: 0,
+      parents: [],
+      global: globalContext
     };
     return this.toBooklet(
       {
@@ -84,34 +87,38 @@ export abstract class BookletParserService<
   }
 
   private parseTestlet(testletElement: Element, context: ContextInBooklet<Testlet>): Testlet {
-    let testletChildrenCount = 0;
-    const pointerContainer: { self: Testlet | null } = { self: null };
+    let testletCount = 0;
     const testlet = this.toTestlet(
       {
         id: testletElement.getAttribute('id') || '',
         label: testletElement.getAttribute('label') || '',
         restrictions: this.parseRestrictions(testletElement),
-        children: this.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
-          .map((item, index) => this.parseUnitOrTestlet(item, {
-            localIndex: index,
-            globalIndex: context.localIndex + index,
-            // eslint-disable-next-line no-plusplus
-            localIndexOfTestlets: (item.tagName === 'Testlet') ? testletChildrenCount++ : NaN,
-            parent: pointerContainer.self
-          }))
+        children: []
       },
       testletElement,
       context
     );
-    pointerContainer.self = testlet;
+    this.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
+      .forEach(item => {
+        testlet.children.push(
+          this.parseUnitOrTestlet(item, {
+            // eslint-disable-next-line no-plusplus
+            localTestletIndex: (item.tagName === 'Testlet') ? testletCount++ : testletCount,
+            global: context.global,
+            parents: testlet.id ? [testlet, ...context.parents] : []
+          })
+        );
+      });
     return testlet;
   }
 
   parseUnitOrTestlet(element: Element, context: ContextInBooklet<Testlet>): (Unit | Testlet) {
     if (element.tagName === 'Unit') {
+      context.global.unitIndex += 1;
       return this.toUnit(
         {
-          id: element.getAttribute('alias') || element.getAttribute('id') || '',
+          id: element.getAttribute('id') || '',
+          alias: element.getAttribute('alias') || element.getAttribute('id') || '',
           label: element.getAttribute('label') || '',
           labelShort: element.getAttribute('labelshort') || ''
         },

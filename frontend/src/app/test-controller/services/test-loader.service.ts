@@ -27,7 +27,7 @@ import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
-import { BookletParserService } from '../../shared/services/bookletParser.service';
+import { BookletParserService } from '../../shared/services/booklet-parser.service'; // TODO from shared module
 
 @Injectable({
   providedIn: 'root'
@@ -127,8 +127,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
+    const lastUnitSequenceId = Object.keys(this.tcs.units).length - 1;
     const sequence = [];
-    for (let i = 1; i < this.lastUnitSequenceId; i++) {
+    for (let i = 1; i < lastUnitSequenceId; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
       this.totalLoadingProgressParts[`player-${i}`] = 0;
       this.totalLoadingProgressParts[`content-${i}`] = 0;
@@ -332,6 +333,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     registerChildren(booklet.units);
 
+    // console.log(this.tcs.unitAliasMap);
+    // console.log(this.tcs.units);
+
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
@@ -345,36 +349,24 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
-      sequenceId: context.globalIndex
+      sequenceId: NaN,
+      context
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
   toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
-    const codeRequiringTestlets: Testlet[] = [];
-    let maxTimerRequiringTestlet = null;
-    let parent = context.parent;
-    let testletLabel = '';
-    while (context.parent) {
-      parent = context.parent;
-      if (parent.restrictions?.codeToEnter?.code) {
-        codeRequiringTestlets.push(parent);
-      }
-    }
-    if (parent) {
-      if (parent.restrictions?.timeMax?.minutes) {
-        maxTimerRequiringTestlet = parent;
-      }
-      testletLabel = parent.label;
-    }
     return Object.assign(unitDef, {
-      sequenceId: context.globalIndex,
-      codeRequiringTestlets,
-      maxTimerRequiringTestlet,
-      testletLabel,
-      parent,
+      sequenceId: context.global.unitIndex,
+      codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
+      maxTimerRequiringTestlet: (context.parents[0] && context.parents[0].restrictions?.timeMax?.minutes) ?
+        context.parents[0] :
+        null,
+      parent: context.parents[0] || null,
+      blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : 'k',
       lockedByTime: false,
-      playerFileName: ''
+      playerFileName: '',
+      context
     });
   }
 }

@@ -351,12 +351,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (!this.tcs.booklet) {
       return;
     }
+    console.log('refreshUnitMenu');
     let previousBlockLabel: string | null = null;
     const unitCount = this.tcs.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
-      const blockLabel = unit.testletLabel || '';
+      const blockLabel = unit.blockLabel || '';
       if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
         this.unitNavigationList.push(blockLabel);
       }
@@ -366,7 +367,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         sequenceId,
         shortLabel: unit.labelShort,
         longLabel: unit.label,
-        testletLabel: unit.testletLabel,
+        testletLabel: unit.blockLabel,
         disabled: this.tcs.getUnitIsLocked(unit),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
@@ -386,7 +387,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.unitScreenHeader = this.tcs.booklet.metadata.label;
         break;
       case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).testletLabel;
+        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).blockLabel;
         break;
       default:
         this.unitScreenHeader = '';

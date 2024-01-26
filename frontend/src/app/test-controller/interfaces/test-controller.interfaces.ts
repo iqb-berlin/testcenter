@@ -1,6 +1,8 @@
 // used everywhere
 import { VeronaProgress } from './verona.interfaces';
-import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import {
+  BookletDef, ContextInBooklet, TestletDef, UnitDef
+} from '../../shared/interfaces/booklet.interfaces';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
@@ -208,14 +210,12 @@ export interface Command {
 
 export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'ALWAYS';
 export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
-  return ['ON', 'OFF', 'ALWAYS'].indexOf(s) > -1;
+  return ['ON', 'OFF', 'ALWAYS'].includes(s);
 }
 
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }
-
-// export type LoadingProgress = LoadingProgressSpecial | LoadingProgressRegular;
 
 export interface LoadedFile {
   content: string;
@@ -232,7 +232,7 @@ export interface Unit extends UnitDef {
   readonly parent: Testlet | null;
   readonly codeRequiringTestlets: Testlet[];
   readonly maxTimerRequiringTestlet: Testlet | null;
-  readonly testletLabel: string;
+  readonly blockLabel: string;
   lockedByTime: boolean;
   playerFileName: string;
 }

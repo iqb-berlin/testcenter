@@ -30,6 +30,7 @@ import { UnitActivateGuard } from './routing/unit-activate.guard';
 import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
 import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
 import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
+import { DebugPaneComponent } from './components/debug-pane/debug-pane.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -64,7 +65,8 @@ export { TestControllerService } from './services/test-controller.service';
     TestControllerComponent,
     ReviewDialogComponent,
     TestStatusComponent,
-    UnitMenuComponent
+    UnitMenuComponent,
+    DebugPaneComponent
   ],
   providers: [
     UnitActivateGuard,

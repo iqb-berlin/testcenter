@@ -26,6 +26,7 @@ export interface TestletDef<TestletType, UnitType> {
 
 export interface UnitDef {
   readonly id: string;
+  readonly alias: string;
   readonly label: string;
   readonly labelShort: string;
 }
@@ -73,8 +74,11 @@ export interface Restrictions {
 }
 
 export interface ContextInBooklet<TestletType> {
-  parent: TestletType | null;
-  globalIndex: number;
-  localIndex: number;
-  localIndexOfTestlets: number;
+  parents: TestletType[];
+  // globalIndex: number;
+  // localIndex: number;
+  localTestletIndex: number;
+  global: {
+    unitIndex: number;
+  };
 }

@@ -5,7 +5,7 @@ import { BackendService } from '../backend.service';
 import {
   isUnit, Booklet, Testlet, BookletError, Unit
 } from '../group-monitor.interfaces';
-import { BookletParserService } from '../../shared/services/bookletParser.service';
+import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import {
   BookletDef, ContextInBooklet, TestletDef, UnitDef
 } from '../../shared/shared.module';
@@ -54,8 +54,8 @@ export class BookletService extends BookletParserService<Unit, Testlet, Booklet>
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
       descendantCount: this.xmlCountChildrenOfTagNames(elem, ['Unit']),
-      blockId: `block ${context.localIndexOfTestlets + 1}`,
-      nextBlockId: `block ${context.localIndexOfTestlets + 2}`
+      blockId: `block ${context.localTestletIndex + 1}`,
+      nextBlockId: `block ${context.localTestletIndex + 2}`
     });
   }
 

@@ -78,10 +78,10 @@ import { StarterComponent } from './app-root/starter/starter.component';
   providers: [
     BackendService,
     MatDialog,
-    {
-      provide: ErrorHandler,
-      useClass: AppErrorHandler
-    },
+    // {
+    //   provide: ErrorHandler,
+    //   useClass: AppErrorHandler
+    // },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
