@@ -27,10 +27,6 @@ services:
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
-    healthcheck: # solved timing problems on the CI even though the backend uses ConnectWithRetries
-      test: [ "CMD", "mysqladmin", "ping", "--user", "iqb_tba_db_user", "-h", "127.0.0.1", "--silent" ]
-      interval: 5s
-      retries: 120
     networks:
       - testcenter
 
@@ -66,9 +62,6 @@ services:
       TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:
       - 9005:9003
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
