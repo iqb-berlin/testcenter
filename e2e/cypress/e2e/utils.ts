@@ -329,3 +329,12 @@ export const backwardsTo = (expectedLabel: string): void => {
     .contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
 };
+
+export const readBlockTime = (): Promise <number> => new Promise(resolve => {
+  cy.get('[data-cy="time-value"]')
+    .then(currTime => {
+      const currBlockTimeStr = currTime.text().replace(/0:/, '');
+      const currBlockTimeNumber = +currBlockTimeStr;
+      resolve(currBlockTimeNumber);
+    });
+});
