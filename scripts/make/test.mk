@@ -17,11 +17,10 @@ test-backend-unit-coverage:
 			--coverage-html /docs/dist/test-coverage-backend-unit \
 				/var/www/backend/test/unit/.
 
-# Performs Api-Tests
 test-backend-api:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d testcenter-db testcenter-backend testcenter-cache-service
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs
-	make run-task-runner task=backend:api-test
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.api-test.yml run \
+		--rm \
+		testcenter-task-runner-backend npm run backend:api-test
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
@@ -63,14 +62,9 @@ test-frontend-unit-coverage:
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
 test-file-service-api:
-	make down
-	docker compose \
-		-f docker/docker-compose.yml \
-		-f docker/docker-compose.dev.yml \
-		-f docker/docker-compose.api-test.yml \
-		up -d testcenter-cache-service testcenter-file-service
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml logs
-	make run-task-runner task=file-service:api-test
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.api-test.yml run \
+		--rm \
+		testcenter-task-runner-file-service npm run file-service:api-test
 
 # Performs some integration tests with CyPress against mocked backend with Prism
 test-frontend-integration:
