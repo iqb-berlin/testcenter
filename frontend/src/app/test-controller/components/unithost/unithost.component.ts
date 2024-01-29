@@ -12,7 +12,7 @@ import {
   PendingUnitData,
   StateReportEntry,
   UnitStateKey, Testlet,
-  UnitPlayerState, LoadingProgress, UnitNavigationTarget, Unit
+  UnitPlayerState, LoadingProgress, UnitNavigationTarget, Unit, isUnit
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -247,9 +247,21 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.subscriptions.loading.unsubscribe();
     }
 
-    const unitsToLoadIds = this.currentUnit.maxTimerRequiringTestlet ?
-      this.tcs.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet.id) :
-      [currentUnitSequenceId];
+    let unitsToLoadIds: number[] = [];
+    const addChildren = (testlet: Testlet) => {
+      testlet.children.forEach(child => {
+        if (isUnit(child)) {
+          unitsToLoadIds.push(child.sequenceId);
+        } else {
+          addChildren(child);
+        }
+      });
+    };
+    if (this.currentUnit.parent) {
+      addChildren(this.currentUnit.parent);
+    } else {
+      unitsToLoadIds = [this.tcs.currentUnitSequenceId];
+    }
 
     const unitsToLoad = unitsToLoadIds
       .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
@@ -313,7 +325,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.currentUnit.lockedByTime) {
+    if (this.currentUnit.timerRequiringTestlet?.lockedByTime) {
       return;
     }
 
@@ -339,15 +351,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private startTimerIfNecessary(): void {
-    if (!this.currentUnit?.maxTimerRequiringTestlet) {
+    if (!this.currentUnit?.timerRequiringTestlet) {
       return;
     }
     if (this.tcs.currentMaxTimerTestletId &&
-      (this.currentUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+      (this.currentUnit.timerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
       return;
     }
-    this.tcs.startMaxTimer(this.currentUnit.maxTimerRequiringTestlet);
+    this.tcs.startMaxTimer(this.currentUnit.timerRequiringTestlet);
   }
 
   private prepareIframe(): void {
@@ -397,7 +409,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.currentUnitSequenceId,
         1,
-        this.tcs.allUnitIds.length,
+        this.tcs.sequenceLength,
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,

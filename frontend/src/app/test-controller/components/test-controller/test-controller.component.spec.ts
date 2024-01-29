@@ -21,7 +21,7 @@ import {
 } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
-import { MaxTimerData } from '../../classes/test-controller.classes';
+import { TimerData } from '../../classes/test-controller.classes';
 import { UnitMenuComponent } from '../unit-menu/unit-menu.component';
 
 const testData$ = new Subject<boolean | TestData>();
@@ -30,7 +30,7 @@ const connectionStatus$ = new Subject<ConnectionStatus>();
 const appWindowHasFocus$ = new Subject<WindowFocusState>();
 const appError$ = new Subject<AppError>();
 const testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.ERROR);
-const maxTimeTimer$ = new Subject<MaxTimerData>();
+const maxTimeTimer$ = new Subject<TimerData>();
 const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
 

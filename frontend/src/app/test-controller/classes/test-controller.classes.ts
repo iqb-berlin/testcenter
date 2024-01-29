@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
 import UAParser from 'ua-parser-js';
-import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
+import { MaxTimerEvent, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
 import { Restrictions } from '../../shared/interfaces/booklet.interfaces';
 
 export class TestletContentElement {
@@ -289,10 +289,10 @@ export class EnvironmentData {
   }
 }
 
-export class MaxTimerData {
+export class TimerData {
   timeLeftSeconds: number; // seconds
   testletId: string;
-  type: MaxTimerDataType;
+  type: MaxTimerEvent;
 
   get timeLeftString(): string {
     const afterDecimal = Math.round(this.timeLeftSeconds % 60);
@@ -306,7 +306,7 @@ export class MaxTimerData {
     return `${Math.round(this.timeLeftSeconds / 60).toString()} min`;
   }
 
-  constructor(timeMinutes: number, tId: string, type: MaxTimerDataType) {
+  constructor(timeMinutes: number, tId: string, type: MaxTimerEvent) {
     this.timeLeftSeconds = timeMinutes * 60;
     this.testletId = tId;
     this.type = type;

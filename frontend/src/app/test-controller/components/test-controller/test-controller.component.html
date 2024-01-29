@@ -39,14 +39,14 @@
 
     <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
        mat-fab matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+       [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>
     <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
        mat-flat-button matTooltip="Weiter" data-cy="unit-navigation-forward"
        [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+       [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>

@@ -26,8 +26,8 @@ export class UnitDeactivateGuard {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
-    if (newUnit && newUnit.maxTimerRequiringTestlet && // staying in the same timed block
-      (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    if (newUnit && newUnit.timerRequiringTestlet && // staying in the same timed block
+      (newUnit.timerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
       return of(true);
     }
@@ -71,7 +71,7 @@ export class UnitDeactivateGuard {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (unit.lockedByTime) {
+    if (unit.timerRequiringTestlet?.lockedByTime) {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];

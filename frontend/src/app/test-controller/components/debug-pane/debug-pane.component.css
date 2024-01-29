@@ -64,4 +64,10 @@ table {
 .more-btn {
   font-size: small;
   cursor: pointer;
+  width: 1em;
+}
+
+ul {
+  margin: 0;
+  padding: 0 1.2em;
 }

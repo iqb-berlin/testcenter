@@ -125,7 +125,7 @@ export interface UnitStateUpdate {
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
-export enum MaxTimerDataType {
+export enum MaxTimerEvent {
   STARTED = 'STARTED',
   STEP = 'STEP',
   CANCELLED = 'CANCELLED',
@@ -229,16 +229,16 @@ export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is Lo
 
 export interface Unit extends UnitDef {
   readonly sequenceId: number;
-  readonly parent: Testlet | null;
+  readonly parent: Testlet;
   readonly codeRequiringTestlets: Testlet[];
-  readonly maxTimerRequiringTestlet: Testlet | null;
+  readonly timerRequiringTestlet: Testlet | null;
   readonly blockLabel: string;
-  lockedByTime: boolean;
   playerFileName: string;
 }
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
+  lockedByTime: boolean;
 }
 
 export type Booklet = BookletDef<Testlet>;

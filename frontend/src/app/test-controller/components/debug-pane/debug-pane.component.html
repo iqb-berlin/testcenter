@@ -10,7 +10,15 @@
   </div>
   <div [class]="{'active-tab': activeTab == 'main', 'tab': 1}">
     <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
-    <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
+    <div>
+      <b>TIMER:</b>
+      <ul>
+        <li *ngFor="let timer of tcs.timers | keyvalue">
+          <b>{{timer.key}}</b>: {{timer.value | number:'1.0-2'}}
+        </li>
+      </ul>
+      {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b>
+    </div>
     <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
     <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
     <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
@@ -28,7 +36,24 @@
       </ng-container>
     </ng-container>
     <ng-template #testletTemplate let-testlet="item">
-      <b>{{testlet.sequenceId}}: </b>{{testlet.id}}
+      {{testlet.id}}
+      <span class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
+        {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? '-' : '+' }}
+      </span>
+      <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
+        <tr>
+          <td>label</td>
+          <td>{{testlet.label}}</td>
+        </tr>
+        <tr>
+          <td>restrictions</td>
+          <td><pre>{{testlet.restrictions| json}}</pre></td>
+        </tr>
+        <tr>
+          <td>lockedByTime</td>
+          <td>{{testlet.lockedByTime ? 'y' : 'n'}}</td>
+        </tr>
+      </table>
 
       <div *ngFor="let child of testlet.children" class="testlet">
         <ng-container
@@ -40,15 +65,17 @@
     <ng-template #unitTemplate let-unit="item">
       <div class="unit">
         <b>{{unit.sequenceId}}: </b>{{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}
-        <span class='more-btn' (click)="toggleMore(unit.alias)">+</span>
+        <span class='more-btn' (click)="toggleMore(unit.alias)">
+          {{ openPanes.includes(unit.alias) ? '-' : '+' }}
+        </span>
         <table *ngIf="openPanes.includes(unit.alias)">
           <tr>
             <td>codeRequiringTestlets</td>
             <td><span *ngFor="let t of unit.codeRequiringTestlets">{{t.id}} </span></td>
           </tr>
           <tr>
-            <td>maxTimerRequiringTestlet</td>
-            <td>{{unit.maxTimerRequiringTestlet?.id}}</td>
+            <td>timerRequiringTestlet</td>
+            <td>{{unit.timerRequiringTestlet?.id}}</td>
           </tr>
           <tr>
             <td>blockLabel</td>

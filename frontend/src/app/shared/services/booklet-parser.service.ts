@@ -113,6 +113,7 @@ export abstract class BookletParserService<
   }
 
   parseUnitOrTestlet(element: Element, context: ContextInBooklet<Testlet>): (Unit | Testlet) {
+    console.log(element.getAttribute('id') || '', ' : ', context.parents.map(o => o.id).join(' < '));
     if (element.tagName === 'Unit') {
       context.global.unitIndex += 1;
       return this.toUnit(

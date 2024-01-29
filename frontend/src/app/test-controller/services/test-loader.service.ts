@@ -36,7 +36,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   private loadStartTimeStamp = 0;
   private unitContentLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
-  private lastUnitSequenceId = 0;
   private unitContentLoadingQueue: LoadingQueueEntry[] = [];
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
 
@@ -62,8 +61,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
-    this.restoreRestrictions(testData.laststate);
     this.tcs.booklet = this.getBookletFromXml(testData.xml);
+    this.restoreRestrictions(testData.laststate);
 
     this.tcs.timerWarningPoints =
       this.tcs.bookletConfig.unit_time_left_warnings
@@ -73,7 +72,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
-    // this.tcs.rootTestlet.lockUnitsIfTimeLeftNull(); TODO what was this?
+    // this.tcs.rootTestlet.lockUnitsIfTimeLeftNull(); TODO X what was this?
 
     // eslint-disable-next-line consistent-return
     return this.loadUnitContents(testData)
@@ -119,7 +118,12 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
     if (lastState[TestStateKey.TESTLETS_TIMELEFT]) {
-      this.tcs.maxTimeTimers = JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]);
+      this.tcs.timers = JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]);
+      Object.keys(this.tcs.timers)
+        .forEach(timerKey => {
+          console.log('LL', timerKey, this.tcs.timers[timerKey], !!this.tcs.timers[timerKey]);
+          this.tcs.testlets[timerKey].lockedByTime = !this.tcs.timers[timerKey];
+        });
     }
     if (lastState[TestStateKey.TESTLETS_CLEARED_CODE]) {
       this.tcs.clearCodeTestlets = JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]);
@@ -127,9 +131,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
-    const lastUnitSequenceId = Object.keys(this.tcs.units).length - 1;
     const sequence = [];
-    for (let i = 1; i < lastUnitSequenceId; i++) {
+    for (let i = 1; i <= this.tcs.sequenceLength; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
       this.totalLoadingProgressParts[`player-${i}`] = 0;
       this.totalLoadingProgressParts[`content-${i}`] = 0;
@@ -183,6 +186,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
             // inline unit definition
             // this.tcs.setUnitPlayerFilename(sequenceId, unit.playerFileName); // TODO X DAFUQ?
             this.tcs.setUnitDefinition(sequenceId, unitData.definition);
+
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
@@ -326,6 +330,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
             this.tcs.unitAliasMap[child.id] = child.sequenceId;
             this.tcs.units[child.sequenceId] = child;
           } else {
+            this.tcs.testlets[child.id] = child;
             registerChildren(child);
           }
         });
@@ -333,9 +338,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     registerChildren(booklet.units);
 
-    // console.log(this.tcs.unitAliasMap);
-    // console.log(this.tcs.units);
-
+    this.tcs.sequenceLength = Object.keys(this.tcs.units).length;
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
@@ -350,6 +353,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
       sequenceId: NaN,
+      lockedByTime: false,
       context
     });
   }
@@ -359,11 +363,14 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
-      maxTimerRequiringTestlet: (context.parents[0] && context.parents[0].restrictions?.timeMax?.minutes) ?
-        context.parents[0] :
-        null,
-      parent: context.parents[0] || null,
-      blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : 'k',
+      timerRequiringTestlet:
+        (context.parents[context.parents.length - 1] &&
+          context.parents[context.parents.length - 1].restrictions?.timeMax?.minutes
+        ) ?
+          context.parents[context.parents.length - 1] :
+          null,
+      parent: context.parents[0],
+      blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : 'k', // TODO X k?!
       lockedByTime: false,
       playerFileName: '',
       context

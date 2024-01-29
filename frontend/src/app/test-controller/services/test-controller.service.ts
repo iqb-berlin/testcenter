@@ -6,13 +6,13 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData } from '../classes/test-controller.classes';
+import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet,
   KeyValuePairNumber,
   KeyValuePairString,
   LoadingProgress,
-  MaxTimerDataType,
+  MaxTimerEvent,
   StateReportEntry,
   TestControllerState, Testlet,
   TestStateKey, Unit,
@@ -49,27 +49,28 @@ export class TestControllerService {
 
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
-  // rootTestlet: Testlet | null = null;
-  booklet: Booklet | null = null;
 
-  maxTimeTimer$ = new Subject<MaxTimerData>();
+  // accessors of booklet pieces TODO X make private ?
+  booklet: Booklet | null = null;
+  units: { [sequenceId: number]: Unit } = {};
+  testlets: { [testletId: string] : Testlet } = {};
+  sequenceLength: number = 0;
+  unitAliasMap: { [unitId: string] : number } = {};
+
+  maxTimeTimer$ = new Subject<TimerData>();
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription | null = null;
-  maxTimeTimers: KeyValuePairNumber = {};
+  timers: KeyValuePairNumber = {};
   timerWarningPoints: number[] = [];
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
-
-  allUnitIds: string[] = [];
 
   windowFocusState$ = new Subject<WindowFocusState>();
 
   resumeTargetUnitSequenceId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
-
-  unitAliasMap: { [unitId: string] : number } = {}; // TODO X fill
 
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
@@ -105,8 +106,6 @@ export class TestControllerService {
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
   private unitDefinitionTypes: { [sequenceId: number]: string } = {}; // TODO X WHAT THE FUCK
   private unitResponseTypes: { [sequenceId: number]: string } = {};
-
-  units: { [sequenceId: number]: Unit } = {}; // TODO X implement
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
@@ -210,7 +209,7 @@ export class TestControllerService {
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
-    this.maxTimeTimers = {};
+    this.timers = {};
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
     this.unitStateCurrentPages = {};
@@ -428,7 +427,7 @@ export class TestControllerService {
   }
 
   getUnitIsLocked(unit: Unit): boolean {
-    return this.getUnitIsLockedByCode(unit) || unit.lockedByTime;
+    return this.getUnitIsLockedByCode(unit) || unit.timerRequiringTestlet?.lockedByTime || false;
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -436,6 +435,7 @@ export class TestControllerService {
       throw new MissingBookletError();
     }
     const unit = this.units[unitSequenceId];
+
     if (!unit) {
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
@@ -462,13 +462,13 @@ export class TestControllerService {
     if (!testlet.restrictions?.timeMax) {
       return;
     }
-    const timeLeftMinutes = (testlet.id in this.maxTimeTimers) ?
-      Math.min(this.maxTimeTimers[testlet.id], testlet.restrictions.timeMax.minutes) :
+    const timeLeftMinutes = (testlet.id in this.timers) ?
+      Math.min(this.timers[testlet.id], testlet.restrictions.timeMax.minutes) :
       testlet.restrictions.timeMax.minutes;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testlet.id, MaxTimerDataType.STARTED));
+    this.maxTimeTimer$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentMaxTimerTestletId = testlet.id;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
@@ -478,13 +478,13 @@ export class TestControllerService {
         map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe({
         next: val => {
-          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
+          this.maxTimeTimer$.next(new TimerData(val / 60, testlet.id, MaxTimerEvent.STEP));
         },
         error: e => {
           throw e;
         },
         complete: () => {
-          this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
+          this.maxTimeTimer$.next(new TimerData(0, testlet.id, MaxTimerEvent.ENDED));
           this.currentMaxTimerTestletId = '';
         }
       });
@@ -494,7 +494,7 @@ export class TestControllerService {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
-      this.maxTimeTimer$.next(new MaxTimerData(0, this.currentMaxTimerTestletId, MaxTimerDataType.CANCELLED));
+      this.maxTimeTimer$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.CANCELLED));
     }
     this.currentMaxTimerTestletId = '';
   }
@@ -503,7 +503,7 @@ export class TestControllerService {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
-      this.maxTimeTimer$.next(new MaxTimerData(0, this.currentMaxTimerTestletId, MaxTimerDataType.INTERRUPTED));
+      this.maxTimeTimer$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.INTERRUPTED));
     }
     this.currentMaxTimerTestletId = '';
   }
@@ -570,7 +570,7 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`], { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/${this.sequenceLength}`], { state: { force } });
           break;
         case UnitNavigationTarget.END:
           this.terminateTest(
@@ -614,21 +614,5 @@ export class TestControllerService {
 
   isUnitContentLoaded(sequenceId: number): boolean {
     return !!this.unitDefinitions[sequenceId];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getAllUnitSequenceIds(testletId: string): number[] { // TODO X
-    return [];
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  setTimeLeft(testletId: string, number: number): void {
-    // TODO X
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getMaxSequenceId(): number {
-    // TODO X
-    return NaN;
   }
 }
