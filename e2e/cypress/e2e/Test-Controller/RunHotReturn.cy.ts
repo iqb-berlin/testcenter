@@ -359,8 +359,12 @@ describe('Login3: Resp/Pres complete, leave the block and end the test with unit
     visitLoginPage();
     loginTestTaker(TesttakerName3, TesttakerPassword3, mode);
   });
-  beforeEach(useTestDB);
 
+  after(() => {
+    logoutTestTaker('hot');
+  });
+
+  beforeEach(useTestDB);
   it('should be possible to start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .should('exist')
