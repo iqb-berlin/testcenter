@@ -2,6 +2,10 @@
 layout: default
 ---
 
+[next]
+### Bugfixes
+* Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)
+
 ## 15.0.0
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
