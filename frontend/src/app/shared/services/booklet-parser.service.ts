@@ -50,6 +50,7 @@ export abstract class BookletParserService<
       testlets: {}
     };
     const rootContext: ContextInBooklet<Testlet> = {
+      localUnitIndex: 0,
       localTestletIndex: 0,
       parents: [],
       global: globalContext
@@ -88,6 +89,7 @@ export abstract class BookletParserService<
 
   private parseTestlet(testletElement: Element, context: ContextInBooklet<Testlet>): Testlet {
     let testletCount = 0;
+    let unitCount = 0;
     const testlet = this.toTestlet(
       {
         id: testletElement.getAttribute('id') || '',
@@ -105,7 +107,9 @@ export abstract class BookletParserService<
             // eslint-disable-next-line no-plusplus
             localTestletIndex: (item.tagName === 'Testlet') ? testletCount++ : testletCount,
             global: context.global,
-            parents: testlet.id ? [testlet, ...context.parents] : []
+            parents: testlet.id ? [testlet, ...context.parents] : [],
+            // eslint-disable-next-line no-plusplus
+            localUnitIndex: (item.tagName === 'Unit') ? unitCount++ : unitCount
           })
         );
       });
@@ -113,7 +117,7 @@ export abstract class BookletParserService<
   }
 
   parseUnitOrTestlet(element: Element, context: ContextInBooklet<Testlet>): (Unit | Testlet) {
-    console.log(element.getAttribute('id') || '', ' : ', context.parents.map(o => o.id).join(' < '));
+    // console.log(element.getAttribute('id') || '', ' : ', context.parents.map(o => o.id).join(' < '));
     if (element.tagName === 'Unit') {
       context.global.unitIndex += 1;
       return this.toUnit(

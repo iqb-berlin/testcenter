@@ -20,7 +20,7 @@ export interface BookletMetadata {
 export interface TestletDef<TestletType, UnitType> {
   readonly id: string;
   readonly label: string;
-  readonly restrictions?: Restrictions;
+  readonly restrictions: Restrictions;
   readonly children: (TestletType | UnitType)[];
 }
 
@@ -76,7 +76,7 @@ export interface Restrictions {
 export interface ContextInBooklet<TestletType> {
   parents: TestletType[];
   // globalIndex: number;
-  // localIndex: number;
+  localUnitIndex: number;
   localTestletIndex: number;
   global: {
     unitIndex: number;

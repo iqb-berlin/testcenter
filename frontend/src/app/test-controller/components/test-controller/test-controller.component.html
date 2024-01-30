@@ -9,7 +9,7 @@
     {{timerValue?.timeLeftString}}
   </p>
 
-  <div *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+  <div *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === tcs.testControllerStateEnum.RUNNING)"
        class="flex-row" [style.align-items]="'safe center'" [style.max-height.%]="100" [style.margin-left]="'auto'">
     <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
        mat-fab matTooltip="Zurück" data-cy="unit-navigation-backward"

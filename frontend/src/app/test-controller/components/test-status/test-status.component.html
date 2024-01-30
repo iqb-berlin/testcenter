@@ -1,4 +1,4 @@
-<div [ngSwitch]="(tcs.testStatus$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
+<div [ngSwitch]="(tcs.state$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
   <mat-card appearance="raised" class="mat-card-box" *ngSwitchDefault>
     <mat-card-header>
       <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
@@ -6,7 +6,7 @@
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
       <p><b>{{tcs.testMode.modeLabel}}</b></p>
-      <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
+      <p *ngIf="(tcs.state$ | async) === tcs.testControllerStateEnum.RUNNING" style="color: chocolate">
         <b>Der Test ist aktiv.</b>
       </p>
     </mat-card-content>
@@ -20,7 +20,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card appearance="raised" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
+  <mat-card appearance="raised" class="mat-card-box" *ngSwitchCase="tcs.testControllerStateEnum.PAUSED">
     <mat-card-header>
       <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
     </mat-card-header>
@@ -34,7 +34,7 @@
   </mat-card>
 
   <error
-    *ngSwitchCase="tcs.testStatusEnum.ERROR"
+    *ngSwitchCase="tcs.testControllerStateEnum.ERROR"
     [onClose]="reloadPage.bind(this)"
     [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
     [additionalReport]="{
@@ -46,7 +46,7 @@
     <p style="white-space: pre-wrap">{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }}</p>
   </error>
 
-  <mat-card appearance="raised" *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
+  <mat-card appearance="raised" *ngSwitchCase="tcs.testControllerStateEnum.LOADING" class="progress-bar">
     <mat-card-header>
       <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
       <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>

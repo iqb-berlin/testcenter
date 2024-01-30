@@ -104,7 +104,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       this.testStartedSubscription?.unsubscribe();
     }
 
-    this.testStartedSubscription = this.tcs.testStatus$
+    this.testStartedSubscription = this.tcs.state$
       .pipe(
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),

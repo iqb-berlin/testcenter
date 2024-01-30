@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 
@@ -16,6 +16,7 @@ export class DebugPaneComponent {
     // private cts: CustomtextService,
     public cmd: CommandService,
     // private tls: TestLoaderService,
+    private cdr: ChangeDetectorRef,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
     this.bookletConfig = Object.entries(this.tcs.bookletConfig);
@@ -24,13 +25,19 @@ export class DebugPaneComponent {
 
   tabs = ['main', 'config', 'testmode', 'units'];
 
-  activeTab : typeof this.tabs[number] = 'main';
+  activeTab : typeof this.tabs[number] = 'units';
 
   timerValue = { timeLeftString: 'TODO', testletId: 'd', type: 'd' };
 
   bookletConfig: Array<[string, string]>;
   testMode: Array<[string, string]>;
   openPanes: Array<string> = [];
+
+  onInit() {
+    this.tcs.testStructureChanges$.subscribe(nothing => {
+      this.cdr.detectChanges();
+    });
+  }
 
   changeTab(tab: typeof this.tabs[number]): void {
     this.activeTab = tab;

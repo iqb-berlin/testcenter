@@ -8,8 +8,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet,
-  KeyValuePairNumber,
+  Booklet, KeyValuePairNumber,
   KeyValuePairString,
   LoadingProgress,
   MaxTimerEvent,
@@ -22,7 +21,7 @@ import {
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { BookletDef, BookletConfig, TestMode } from '../../shared/shared.module';
+import { BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
@@ -36,8 +35,8 @@ export class TestControllerService {
   static readonly unitStateBufferMs = 2500;
 
   testId = '';
-  testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
-  testStatusEnum = TestControllerState;
+  state$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
+  testControllerStateEnum = TestControllerState;
 
   workspaceId = 0;
 
@@ -45,7 +44,7 @@ export class TestControllerService {
 
   totalLoadingProgress = 0;
 
-  clearCodeTestlets: string[] = [];
+  // clearCodeTestlets: string[] = [];
 
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
@@ -57,14 +56,14 @@ export class TestControllerService {
   sequenceLength: number = 0;
   unitAliasMap: { [unitId: string] : number } = {};
 
-  maxTimeTimer$ = new Subject<TimerData>();
+  timers$ = new Subject<TimerData>();
+  timers: KeyValuePairNumber = {}; // TODO remove the redundancy with timers$
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription | null = null;
-  timers: KeyValuePairNumber = {};
   timerWarningPoints: number[] = [];
 
-  currentUnitDbKey = '';
-  currentUnitTitle = '';
+  currentUnitDbKey = ''; // TODO X remove ?
+  currentUnitTitle = ''; // TODO X remove ?
 
   windowFocusState$ = new Subject<WindowFocusState>();
 
@@ -200,7 +199,7 @@ export class TestControllerService {
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
     // this.rootTestlet = null;
-    this.clearCodeTestlets = [];
+    // this.clearCodeTestlets = [];
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
@@ -209,7 +208,7 @@ export class TestControllerService {
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
-    this.timers = {};
+    // this.timers = {};
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
     this.unitStateCurrentPages = {};
@@ -389,45 +388,56 @@ export class TestControllerService {
     return this.unitResponseTypes[sequenceId];
   }
 
-  addClearedCodeTestlet(testletId: string): void {
-    if (this.clearCodeTestlets.indexOf(testletId) < 0) {
-      this.clearCodeTestlets.push(testletId);
-      this.testStructureChanges$.next();
-      if (this.testMode.saveResponses) {
-        this.bs.updateTestState(
-          this.testId,
-          [<StateReportEntry>{
-            key: TestStateKey.TESTLETS_CLEARED_CODE,
-            timeStamp: Date.now(),
-            content: JSON.stringify(this.clearCodeTestlets)
-          }]
-        );
-      }
+  clearTestlet(testletId: string): void {
+    if (!this.testlets[testletId] || !this.testlets[testletId].restrictions.codeToEnter?.code) {
+      return;
+    }
+    this.testlets[testletId].lockedByCode = false;
+    this.testStructureChanges$.next();
+    if (this.testMode.saveResponses) {
+      const unlockedTestlets = Object.values(this.testlets)
+        .filter(t => t.restrictions.codeToEnter?.code && !t.lockedByCode)
+        .map(t => t.id);
+      this.bs.updateTestState(
+        this.testId,
+        [<StateReportEntry>{
+          key: TestStateKey.TESTLETS_CLEARED_CODE,
+          timeStamp: Date.now(),
+          content: JSON.stringify(unlockedTestlets)
+        }]
+      );
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getUnclearedTestlets(unit: Unit): Testlet[] {
     return unit.codeRequiringTestlets
-      .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
+      .filter(t => t.restrictions?.codeToEnter?.code && !t.lockedByCode);
   }
 
-  getUnitIsLockedByCode(unit: Unit): boolean {
-    return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.sequenceId;
-  }
+  // getUnitIsLockedByCode(unit: Unit): boolean {
+  //   return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.sequenceId;
+  // }
+  //
+  // getFirstSequenceIdOfLockedBlock(fromUnit: Unit): number {
+  //   const unclearedTestlets = this.getUnclearedTestlets(fromUnit);
+  //   if (!unclearedTestlets.length) {
+  //     return fromUnit.sequenceId;
+  //   }
+  //   return unclearedTestlets
+  //     .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
+  //     .children
+  //     .filter(child => !!child.sequenceId)[0].sequenceId;
+  // }
 
-  getFirstSequenceIdOfLockedBlock(fromUnit: Unit): number {
-    const unclearedTestlets = this.getUnclearedTestlets(fromUnit);
-    if (!unclearedTestlets.length) {
-      return fromUnit.sequenceId;
-    }
-    return unclearedTestlets
-      .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
-      .children
-      .filter(child => !!child.sequenceId)[0].sequenceId;
-  }
-
-  getUnitIsLocked(unit: Unit): boolean {
-    return this.getUnitIsLockedByCode(unit) || unit.timerRequiringTestlet?.lockedByTime || false;
+  // eslint-disable-next-line class-methods-use-this
+  getUnitIsInaccessible(unit: Unit): boolean {
+    const isLockedByCode = unit.codeRequiringTestlets
+      .reduce((isLocked, testlet) => (testlet.lockedByCode || isLocked), false);
+    console.log(unit.id, unit.codeRequiringTestlets.map(t => `${t.id}: ${t.lockedByCode ? 'y' : 'n'}`));
+    const isLockedByTime = unit.timerRequiringTestlet?.lockedByTime || false;
+    const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
+    return isLockedByCodeAndNotFirstOne || isLockedByTime;
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -437,6 +447,7 @@ export class TestControllerService {
     const unit = this.units[unitSequenceId];
 
     if (!unit) {
+      console.trace();
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
         description: '',
@@ -450,15 +461,16 @@ export class TestControllerService {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId + step;
     let nextUnit: Unit = this.getUnit(nextUnitSequenceId);
-
-    while (nextUnit !== null && this.getUnitIsLocked(nextUnit)) {
+    console.log(nextUnitSequenceId);
+    while (nextUnit !== null && this.getUnitIsInaccessible(nextUnit)) {
       nextUnitSequenceId += step;
+      console.log(nextUnitSequenceId);
       nextUnit = this.getUnit(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
   }
 
-  startMaxTimer(testlet: Testlet): void {
+  startTimer(testlet: Testlet): void {
     if (!testlet.restrictions?.timeMax) {
       return;
     }
@@ -468,7 +480,7 @@ export class TestControllerService {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
+    this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentMaxTimerTestletId = testlet.id;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
@@ -478,32 +490,32 @@ export class TestControllerService {
         map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe({
         next: val => {
-          this.maxTimeTimer$.next(new TimerData(val / 60, testlet.id, MaxTimerEvent.STEP));
+          this.timers$.next(new TimerData(val / 60, testlet.id, MaxTimerEvent.STEP));
         },
         error: e => {
           throw e;
         },
         complete: () => {
-          this.maxTimeTimer$.next(new TimerData(0, testlet.id, MaxTimerEvent.ENDED));
+          this.timers$.next(new TimerData(0, testlet.id, MaxTimerEvent.ENDED));
           this.currentMaxTimerTestletId = '';
         }
       });
   }
 
-  cancelMaxTimer(): void {
+  cancelTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
-      this.maxTimeTimer$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.CANCELLED));
+      this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.CANCELLED));
     }
     this.currentMaxTimerTestletId = '';
   }
 
-  interruptMaxTimer(): void {
+  interruptTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
-      this.maxTimeTimer$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.INTERRUPTED));
+      this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.INTERRUPTED));
     }
     this.currentMaxTimerTestletId = '';
   }
@@ -514,15 +526,15 @@ export class TestControllerService {
 
   terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): void {
     if (
-      (this.testStatus$.getValue() === TestControllerState.TERMINATED) ||
-      (this.testStatus$.getValue() === TestControllerState.FINISHED)
+      (this.state$.getValue() === TestControllerState.TERMINATED) ||
+      (this.state$.getValue() === TestControllerState.FINISHED)
     ) {
       // sometimes terminateTest get called two times from player
       return;
     }
 
-    const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(
+    const oldTestStatus = this.state$.getValue();
+    this.state$.next(
       (oldTestStatus === TestControllerState.PAUSED) ?
         TestControllerState.TERMINATED_PAUSED :
         TestControllerState.TERMINATED
@@ -531,7 +543,7 @@ export class TestControllerService {
     this.router.navigate(['/r/starter'], { state: { force } })
       .then(navigationSuccessful => {
         if (!(navigationSuccessful || force)) {
-          this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
+          this.state$.next(oldTestStatus); // navigation was denied, test continues
           return;
         }
         this.finishTest(logEntryKey, lockTest);
@@ -542,7 +554,7 @@ export class TestControllerService {
     if (lockTest) {
       this.bs.lockTest(this.testId, Date.now(), logEntryKey);
     } else {
-      this.testStatus$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
+      this.state$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
     }
   }
 
@@ -602,13 +614,13 @@ export class TestControllerService {
 
   errorOut(): void {
     this.totalLoadingProgress = 0;
-    this.testStatus$.next(TestControllerState.ERROR);
+    this.state$.next(TestControllerState.ERROR);
     this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
   }
 
   pause(): void {
-    this.interruptMaxTimer();
-    this.testStatus$.next(TestControllerState.PAUSED);
+    this.interruptTimer();
+    this.state$.next(TestControllerState.PAUSED);
     this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
   }
 

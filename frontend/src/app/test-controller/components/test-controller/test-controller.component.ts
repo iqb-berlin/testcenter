@@ -77,7 +77,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
 
-      this.subscriptions.testStatus = this.tcs.testStatus$
+      this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())
         .subscribe(status => this.logTestControllerStatusChange(status));
 
@@ -121,7 +121,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           await this.requestFullScreen();
         });
 
-      this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
+      this.subscriptions.maxTimer = this.tcs.timers$
         .subscribe(maxTimerEvent => this.handleTimer(maxTimerEvent));
 
       this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
@@ -150,7 +150,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.subscriptions.appFocus = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
-      if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+      if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
         return;
       }
       if (newState === WindowFocusState.UNKNOWN) {
@@ -238,14 +238,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           (this.tcs.resumeTargetUnitSequenceId > 0) ?
             this.tcs.resumeTargetUnitSequenceId.toString() :
             UnitNavigationTarget.FIRST;
-        this.tcs.testStatus$.next(TestControllerState.RUNNING);
+        this.tcs.state$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
         this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
         break;
       case 'goto':
-        this.tcs.testStatus$.next(TestControllerState.RUNNING);
+        this.tcs.state$.next(TestControllerState.RUNNING);
         // eslint-disable-next-line no-case-declarations
         let gotoTarget: string = '';
         if ((params.length === 2) && (params[0] === 'id')) {
@@ -255,12 +255,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
-          this.tcs.cancelMaxTimer();
+          this.tcs.cancelTimer();
           const targetUnit = this.tcs.getUnit(parseInt(gotoTarget, 10));
           if (targetUnit) {
             targetUnit.codeRequiringTestlets
               .forEach(testlet => {
-                this.tcs.addClearedCodeTestlet(testlet.id);
+                this.tcs.clearTestlet(testlet.id);
               });
           }
 
@@ -368,7 +368,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         shortLabel: unit.labelShort,
         longLabel: unit.label,
         testletLabel: unit.blockLabel,
-        disabled: this.tcs.getUnitIsLocked(unit),
+        disabled: this.tcs.getUnitIsInaccessible(unit),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }

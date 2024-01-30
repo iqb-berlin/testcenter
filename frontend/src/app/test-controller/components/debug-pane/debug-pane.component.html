@@ -9,7 +9,7 @@
     </div>
   </div>
   <div [class]="{'active-tab': activeTab == 'main', 'tab': 1}">
-    <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
+    <div><b>STATUS:</b> {{tcs.state$ | async}}</div>
     <div>
       <b>TIMER:</b>
       <ul>
@@ -36,10 +36,10 @@
       </ng-container>
     </ng-container>
     <ng-template #testletTemplate let-testlet="item">
-      {{testlet.id}}
-      <span class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
-        {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? '-' : '+' }}
-      </span>
+      {{testlet.id || '/'}}
+      <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
+        {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
+      </mat-icon>
       <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
         <tr>
           <td>label</td>
@@ -53,6 +53,10 @@
           <td>lockedByTime</td>
           <td>{{testlet.lockedByTime ? 'y' : 'n'}}</td>
         </tr>
+        <tr>
+          <td>lockedByCode</td>
+          <td>{{testlet.lockedByCode ? 'y' : 'n'}}</td>
+        </tr>
       </table>
 
       <div *ngFor="let child of testlet.children" class="testlet">
@@ -64,10 +68,16 @@
     </ng-template>
     <ng-template #unitTemplate let-unit="item">
       <div class="unit">
-        <b>{{unit.sequenceId}}: </b>{{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}
-        <span class='more-btn' (click)="toggleMore(unit.alias)">
-          {{ openPanes.includes(unit.alias) ? '-' : '+' }}
-        </span>
+        {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
+        <mat-icon *ngIf="unit.timerRequiringTestlet" [matTooltip]="unit.timerRequiringTestlet.id">
+          {{unit.timerRequiringTestlet.lockedByTime ? 'hourglass_top' : 'hourglass_bottom'}}
+        </mat-icon>
+        <mat-icon *ngFor="let t of unit.codeRequiringTestlets" [matTooltip]="t.id">
+          {{t.lockedByCode ? 'lock' : 'lock_open'}}
+        </mat-icon>
+        <mat-icon class='more-btn' (click)="toggleMore(unit.alias)">
+          {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
+        </mat-icon>
         <table *ngIf="openPanes.includes(unit.alias)">
           <tr>
             <td>codeRequiringTestlets</td>
@@ -90,8 +100,8 @@
             <td>{{unit.playerFileName}}</td>
           </tr>
           <tr>
-            <td>locked</td>
-            <td>{{unit.locked ? 'y' : 'n'}}</td>
+            <td>localTestletIndex</td>
+            <td>{{unit.localIndex}}</td>
           </tr>
         </table>
       </div>

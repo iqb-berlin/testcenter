@@ -52,7 +52,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.reset();
     const ts = Date.now();
 
-    this.tcs.testStatus$.next(TestControllerState.LOADING);
+    this.tcs.state$.next(TestControllerState.LOADING);
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
     if (!testData) {
@@ -108,26 +108,29 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
     ) {
-      this.tcs.testStatus$.next(TestControllerState.PAUSED);
+      this.tcs.state$.next(TestControllerState.PAUSED);
       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
       return;
     }
-    this.tcs.testStatus$.next(TestControllerState.RUNNING);
+    this.tcs.state$.next(TestControllerState.RUNNING);
     this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
   }
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
-    if (lastState[TestStateKey.TESTLETS_TIMELEFT]) {
-      this.tcs.timers = JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]);
-      Object.keys(this.tcs.timers)
-        .forEach(timerKey => {
-          console.log('LL', timerKey, this.tcs.timers[timerKey], !!this.tcs.timers[timerKey]);
-          this.tcs.testlets[timerKey].lockedByTime = !this.tcs.timers[timerKey];
-        });
-    }
-    if (lastState[TestStateKey.TESTLETS_CLEARED_CODE]) {
-      this.tcs.clearCodeTestlets = JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]);
-    }
+    this.tcs.timers = lastState[TestStateKey.TESTLETS_TIMELEFT] ?
+      JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]) :
+      {};
+    const clearedTestlets = lastState[TestStateKey.TESTLETS_CLEARED_CODE] ?
+      JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]) :
+      [];
+
+    Object.keys(this.tcs.testlets)
+      .forEach(testletId => {
+        this.tcs.testlets[testletId].lockedByCode =
+          ('codeToEnter' in this.tcs.testlets[testletId].restrictions) && !clearedTestlets.includes(testletId);
+        this.tcs.testlets[testletId].lockedByTime =
+          ('timeMax' in this.tcs.testlets[testletId].restrictions) && !(this.tcs.timers[testletId]);
+      });
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
@@ -354,6 +357,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return Object.assign(testletDef, {
       sequenceId: NaN,
       lockedByTime: false,
+      lockedByCode: false,
       context
     });
   }
@@ -371,8 +375,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           null,
       parent: context.parents[0],
       blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : 'k', // TODO X k?!
-      lockedByTime: false,
       playerFileName: '',
+      localIndex: context.localUnitIndex,
       context
     });
   }

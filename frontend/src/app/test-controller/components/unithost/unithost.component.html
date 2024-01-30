@@ -1,8 +1,9 @@
 <div [class]="{
-      'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
-      'with-title': tcs.bookletConfig.unit_title === 'ON',
-      'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-      'is-waiting': currentUnit?.timerRequiringTestlet?.lockedByTime || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
+  'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
+  'with-title': tcs.bookletConfig.unit_title === 'ON',
+  'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
+  'is-waiting': unitRestrictions.lockedByCode || unitRestrictions.lockedByTime || ((unitsLoading$ | async) || []).length
+}">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'"
        class="unit-title">
     <h2 >{{currentUnit?.label}}</h2>
@@ -12,7 +13,7 @@
   <div #iframeHost id="iframe-host"></div>
 
   <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-    <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.timerRequiringTestlet?.lockedByTime || codeRequiringTestlets.length">
+    <div id="waiting-room" *ngIf="loadingUnits.list.length || unitRestrictions.lockedByCode || unitRestrictions.lockedByTime">
       <mat-card appearance="raised">
         <mat-card-header>
           <mat-card-title>
@@ -24,16 +25,16 @@
           <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
             {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.timerRequiringTestlet?.lockedByTime">
+          <mat-card-subtitle *ngIf="unitRestrictions.lockedByTime">
             {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit.codeRequiringTestlets.length">
+          <mat-card-subtitle *ngIf="unitRestrictions.lockedByCode">
             {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
           </mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content *ngIf="codeRequiringTestlets.length">
-          <ng-container *ngFor="let testlet of codeRequiringTestlets">
+        <mat-card-content *ngIf="unitRestrictions.lockedByCode">
+          <ng-container *ngFor="let testlet of currentUnit.codeRequiringTestlets">
             <mat-form-field appearance="outline" style="display: block" >
               <input
                 matInput
@@ -42,7 +43,7 @@
                 style="text-transform:uppercase"
                 (keydown)="onKeydownInClearCodeInput($event)"
                 data-cy="unlockUnit"
-                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.label || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
+                matTooltip="{{currentUnit.codeRequiringTestlets.length > 1 ? testlet.label || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
               >
             </mat-form-field>
             <tc-alert
@@ -56,8 +57,8 @@
               *ngIf="testlet.restrictions.codeToEnter.message"
               [text]="testlet.restrictions.codeToEnter.message"
             ></tc-alert>
-            <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
           </ng-container>
+          <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
         </mat-card-content>
         <mat-card-content>
           <ng-container *ngFor="let loading of loadingUnits.list; let index = index">
@@ -86,10 +87,10 @@
 
         <mat-card-actions [style.justify-content]="'space-between'">
           <button
-            *ngIf="codeRequiringTestlets.length"
+            *ngIf="currentUnit.codeRequiringTestlets.length"
             mat-raised-button
             color="primary"
-            [disabled]="(clearCodes | keyvalue)?.length < codeRequiringTestlets.length"
+            [disabled]="(clearCodes | keyvalue)?.length < currentUnit.codeRequiringTestlets.length"
             (click)="verifyCodes()"
           >
             OK
@@ -105,7 +106,7 @@
           <button
             *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
             mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+            [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
           >
             <i class="material-icons">chevron_right</i>

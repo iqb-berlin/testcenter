@@ -233,12 +233,14 @@ export interface Unit extends UnitDef {
   readonly codeRequiringTestlets: Testlet[];
   readonly timerRequiringTestlet: Testlet | null;
   readonly blockLabel: string;
+  readonly localIndex: number;
   playerFileName: string;
 }
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
   lockedByTime: boolean;
+  lockedByCode: boolean;
 }
 
 export type Booklet = BookletDef<Testlet>;

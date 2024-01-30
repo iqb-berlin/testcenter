@@ -47,8 +47,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
 
+  unitRestrictions: {
+    lockedByTime: boolean;
+    lockedByCode: boolean;
+  } = {
+      lockedByTime: false,
+      lockedByCode: false
+    };
+
   clearCodes: { [testletId: string]: string } = {};
-  codeRequiringTestlets: Testlet[] = [];
 
   constructor(
     public tcs: TestControllerService,
@@ -307,25 +314,31 @@ export class UnithostComponent implements OnInit, OnDestroy {
       );
     }
 
+    this.updateUnitRestrictions();
+
     if (this.tcs.testMode.presetCode) {
-      this.currentUnit.codeRequiringTestlets
-        .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
+      // this.currentUnit.codeRequiringTestlets // TODO X REIMPLEMENT!
+      //   .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
     }
 
     this.runUnit();
+  }
+
+  private updateUnitRestrictions(): void {
+    if (!this.currentUnit) {
+      throw new Error('Unit not loaded');
+    }
+    this.unitRestrictions.lockedByCode = this.currentUnit.codeRequiringTestlets
+      .reduce((isLocked, testlet) => testlet.lockedByCode || isLocked, false);
+    this.unitRestrictions.lockedByTime = this.currentUnit.timerRequiringTestlet?.lockedByTime || false;
   }
 
   private runUnit(): void {
     if (!this.currentUnit) {
       throw new Error('Unit not loaded');
     }
-    this.codeRequiringTestlets = this.tcs.getUnclearedTestlets(this.currentUnit);
 
-    if (this.codeRequiringTestlets.length) {
-      return;
-    }
-
-    if (this.currentUnit.timerRequiringTestlet?.lockedByTime) {
+    if (this.unitRestrictions.lockedByCode || this.unitRestrictions.lockedByTime) {
       return;
     }
 
@@ -359,7 +372,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.tcs.startMaxTimer(this.currentUnit.timerRequiringTestlet);
+    this.tcs.startTimer(this.currentUnit.timerRequiringTestlet);
   }
 
   private prepareIframe(): void {
@@ -485,13 +498,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.currentUnit.codeRequiringTestlets
       .forEach(
         testlet => {
+          console.log({
+            tid: testlet.id,
+            cc: this.clearCodes[testlet.id]
+          });
           if (!this.clearCodes[testlet.id]) {
             return;
           }
           const requiredCode = (testlet.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
           const givenCode = this.clearCodes[testlet.id].toUpperCase().trim();
+          console.log({requiredCode, givenCode});
           if (requiredCode === givenCode) {
-            this.tcs.addClearedCodeTestlet(testlet.id);
+            this.tcs.clearTestlet(testlet.id);
+            this.updateUnitRestrictions();
             this.runUnit();
           } else {
             this.snackBar.open(

@@ -10,22 +10,18 @@
   overflow-x: scroll;
 }
 
-.more-btn,
+
 .tabs div {
-  cursor: pointer;
   border: 1px solid orange;
   border-radius: 3px;
   text-align: center;
   display: inline-block;
 }
 
+
 .tabs div {
   padding: 3px;
   margin: 6px;
-}
-
-.more-btn {
-  padding: 0 3px;
 }
 
 .tabs div.active {
@@ -53,6 +49,7 @@ b {
 .testlet {
   padding-left: 1em;
   /*border: 1px solid orange;*/
+  /*padding-top: 0.7em;*/
 }
 
 table {
@@ -62,12 +59,17 @@ table {
 }
 
 .more-btn {
-  font-size: small;
   cursor: pointer;
-  width: 1em;
+  float:right
 }
 
 ul {
   margin: 0;
   padding: 0 1.2em;
+}
+
+mat-icon {
+  font-size: 15px;
+  height: 15px;
+  width: 15px;
 }

@@ -11,7 +11,7 @@ export class TestControllerDeactivateGuard {
 
   canDeactivate(): boolean {
     if (this.tcs.testMode.saveResponses) {
-      const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
+      const testStatus: TestControllerState = this.tcs.state$.getValue();
       if ((testStatus === TestControllerState.RUNNING) || (testStatus === TestControllerState.PAUSED)) {
         this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
         return false;

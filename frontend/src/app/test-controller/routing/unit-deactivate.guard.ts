@@ -32,7 +32,7 @@ export class UnitDeactivateGuard {
       return of(true);
     }
     if (!this.tcs.testMode.forceTimeRestrictions) {
-      this.tcs.interruptMaxTimer();
+      this.tcs.interruptTimer();
       return of(true);
     }
 
@@ -54,7 +54,7 @@ export class UnitDeactivateGuard {
             this.tcs.currentUnitSequenceId = this.tcs.currentUnitSequenceId; // to refresh menu
             return false;
           }
-          this.tcs.cancelMaxTimer(); // does locking the block
+          this.tcs.cancelTimer(); // does locking the block
           return true;
         })
       );
@@ -148,7 +148,7 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+    if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
       return true;
     }
 
@@ -166,7 +166,7 @@ export class UnitDeactivateGuard {
 
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
     if (forceNavigation) {
-      this.tcs.interruptMaxTimer();
+      this.tcs.interruptTimer();
       return true;
     }
 

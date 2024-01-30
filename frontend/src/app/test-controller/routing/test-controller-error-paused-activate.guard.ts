@@ -11,7 +11,7 @@ export class TestControllerErrorPausedActivateGuard {
   }
 
   canActivate(): boolean {
-    const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
+    const testStatus: TestControllerState = this.tcs.state$.getValue();
     return (testStatus !== TestControllerState.ERROR) &&
       (testStatus !== TestControllerState.FINISHED) &&
       (testStatus !== TestControllerState.PAUSED);
