@@ -365,6 +365,7 @@ describe('Login3: Resp/Pres complete, leave the block and end the test with unit
   });
 
   beforeEach(useTestDB);
+
   it('should be possible to start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .should('exist')
