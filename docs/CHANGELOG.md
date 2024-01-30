@@ -2,7 +2,7 @@
 layout: default
 ---
 
-[next]
+## 15.0.1
 ### Bugfixes
 * Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)
 
