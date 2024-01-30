@@ -186,6 +186,14 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
   });
 
   it('should be not possible to leave the time restricted block in unit-menu without a message', () => {
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1')
+      .should('exist');
+    cy.get('[data-cy="page-navigation-1"]')
+      .click();
+    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      .contains('Presentation complete');
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .should('exist')
       .click();
@@ -203,12 +211,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
   });
 
   it('should be not that the time stops while the exit block message is displayed', () => {
-    // todo philipp: warum wird sich hier nicht presentation complete gemerkt?
-    cy.get('[data-cy="page-navigation-1"]')
+    cy.get('[data-cy="page-navigation-0"]')
       .click();
-    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-      .contains('Presentation complete');
-    cy.wait(1000);
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {
