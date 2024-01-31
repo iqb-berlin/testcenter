@@ -37,6 +37,15 @@
     </ng-container>
     <ng-template #testletTemplate let-testlet="item">
       {{testlet.id || '/'}}
+      <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'">p</span>
+      <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'">P</span>
+      <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'">r</span>
+      <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'">R</span>
+      <span
+        class='badge'
+        *ngFor="let ifRes of testlet.restrictions.if"
+        matTooltip="IF {{ifRes.source.variable}} FROM {{ifRes.source.unitAlias}} IS {{ifRes.expression.type}} '{{ifRes.expression.value}}'"
+      >I</span>
       <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
         {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
       </mat-icon>

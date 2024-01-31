@@ -32,44 +32,52 @@ export interface UnitDef {
 }
 
 export interface BlockCondition {
-  readonly source: BlockConditionSource;
+  readonly source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation;
   readonly expression: BlockConditionExpression;
 }
 
+export const BlockConditionSourceTypes = ['Code', 'Value', 'Status', 'Score'];
+
 export interface BlockConditionSource {
-  readonly type: 'Code' | 'Value' | 'Status' | 'Score';
+  readonly type: typeof BlockConditionSourceTypes[number];
   readonly variable: string;
   readonly unitAlias: string;
 }
 
+export const BlockConditionAggregationTypes = ['Count'];
+
 export interface BlockConditionAggregation {
-  readonly type: 'count';
+  readonly type: typeof BlockConditionAggregationTypes[number];
   readonly conditions: BlockCondition[];
 }
 
-export interface BlockConditionExpressionAggregation {
-  readonly type: 'Sum' | 'Median';
-  readonly expressions: BlockConditionExpression[];
+export const BlockConditionSourceAggregationTypes = ['Sum', 'Median'];
+
+export interface BlockConditionSourceAggregation {
+  readonly type: typeof BlockConditionSourceAggregationTypes[number];
+  readonly sources: BlockConditionSource[];
 }
 
+export const BlockConditionExpressionTypes = ['equal', 'notEqual', 'greaterThan', 'lowerThan'];
+
 export interface BlockConditionExpression {
-  readonly comparator: 'equal' | 'notEqual' | 'greaterThan' | 'lowerThan';
+  readonly type: typeof BlockConditionExpressionTypes[number];
   readonly value: string;
 }
 
 export interface Restrictions {
-  codeToEnter?: {
+  readonly codeToEnter?: {
     readonly code: string;
     readonly message: string;
   };
-  timeMax?: {
+  readonly timeMax?: {
     readonly minutes: number
   };
-  denyNavigationOnIncomplete?: {
+  readonly denyNavigationOnIncomplete?: {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';
     readonly response: 'ON' | 'OFF' | 'ALWAYS';
   }
-  readonly if?: Array<BlockCondition | BlockConditionAggregation | BlockConditionExpressionAggregation>
+  readonly if?: Array<BlockCondition | BlockConditionAggregation>
 }
 
 export interface ContextInBooklet<TestletType> {
@@ -79,5 +87,6 @@ export interface ContextInBooklet<TestletType> {
   localTestletIndex: number;
   global: {
     unitIndex: number;
+    config: BookletConfig;
   };
 }
