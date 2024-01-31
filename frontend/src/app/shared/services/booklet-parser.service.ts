@@ -182,8 +182,19 @@ export abstract class BookletParserService<
   }
 
   // eslint-disable-next-line class-methods-use-this
-  xmlGetCustomTexts(element: Element): { [key: string]: string } {
-    // TODO X
-    return {};
+  xmlGetCustomTexts(bookletElement: Element): { [key: string]: string } {
+    const customTexts : { [key: string]: string } = {};
+    const customTextElement = this.xmlGetChildIfExists(bookletElement, 'CustomTexts');
+    if (!customTextElement) {
+      return customTexts;
+    }
+    this.xmlGetDirectChildrenByTagName(customTextElement, ['CustomText'])
+      .forEach(elem => {
+        const key = elem.getAttribute('key');
+        if (key) {
+          customTexts[key] = elem.textContent || '';
+        }
+      });
+    return customTexts;
   }
 }

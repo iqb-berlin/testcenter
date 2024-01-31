@@ -107,4 +107,9 @@
       </div>
     </ng-template>
   </div>
+
+  <div [class]="{'active-tab': activeTab == 'cutomtexts', 'tab': 1}" (click)="res()">
+    <input type="text" [(ngModel)]="searchCustomText" placeholder="insert custom text token">
+    <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
+  </div>
 </div>
