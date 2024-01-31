@@ -37,6 +37,7 @@ export interface BlockCondition {
 }
 
 export interface BlockConditionSource {
+  readonly type: 'Code' | 'Value' | 'Status' | 'Score';
   readonly variable: string;
   readonly unitAlias: string;
 }
@@ -47,15 +48,13 @@ export interface BlockConditionAggregation {
 }
 
 export interface BlockConditionExpressionAggregation {
-  readonly type: 'sum' | 'median';
+  readonly type: 'Sum' | 'Median';
   readonly expressions: BlockConditionExpression[];
 }
 
 export interface BlockConditionExpression {
-  equal?: string;
-  notEqual?: string;
-  greaterThan?: number;
-  lowerThan?: number;
+  readonly comparator: 'equal' | 'notEqual' | 'greaterThan' | 'lowerThan';
+  readonly value: string;
 }
 
 export interface Restrictions {
