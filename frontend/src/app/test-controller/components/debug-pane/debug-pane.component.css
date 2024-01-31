@@ -10,14 +10,19 @@
   overflow-x: scroll;
 }
 
-
 .tabs div {
   border: 1px solid orange;
   border-radius: 3px;
   text-align: center;
   display: inline-block;
+  cursor: pointer;
 }
 
+.tabs div:hover {
+  background: white;
+  color: black;
+  border-color: white;
+}
 
 .tabs div {
   padding: 3px;
@@ -61,6 +66,10 @@ table {
 .more-btn {
   cursor: pointer;
   float:right
+}
+
+.more-btn:hover {
+  color: white;
 }
 
 ul {
