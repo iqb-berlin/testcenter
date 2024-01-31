@@ -17,7 +17,7 @@
           <mat-radio-button value="b" [matTooltip]="data.bookletname">
             aktuelles Testheft "{{ data.bookletname }}"
           </mat-radio-button>
-          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey">
+          <mat-radio-button value="u" [disabled]="data.unitAlias.length === 0" [matTooltip]="data.unitAlias">
             aktuelle Aufgabe/Seite "{{ data.unitTitle }}"
           </mat-radio-button>
         </mat-radio-group>

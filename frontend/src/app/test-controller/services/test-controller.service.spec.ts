@@ -22,13 +22,13 @@ class MockBackendService {
   updateDataParts(
     testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
-    uploadedData.push({ unitDbKey, dataParts, unitStateDataType });
+    uploadedData.push({ unitAlias: unitDbKey, dataParts, unitStateDataType });
     return of(true);
   }
 
   // eslint-disable-next-line class-methods-use-this
   updateUnitState(testId: string, unitDbKey: string, state: StateReportEntry[]): Subscription {
-    uploadedStates.push({ unitDbKey, state });
+    uploadedStates.push({ alias: unitDbKey, state });
     return of(true).subscribe();
   }
 }
@@ -93,7 +93,7 @@ describe('TestControllerService', () => {
 
     tick(u * 1.5);
     expectedUploadedData.push({
-      unitDbKey: 'unit1',
+      unitAlias: 'unit1',
       dataParts: { a: 'initial A', b: 'initial B' },
       unitStateDataType: 'aType'
     });
@@ -108,7 +108,7 @@ describe('TestControllerService', () => {
     service.updateUnitStateDataParts('unit1', 1, { b: 'initial B', c: 'used C the first time' }, 'aType');
     tick(u * 1.5);
     expectedUploadedData.push({
-      unitDbKey: 'unit1',
+      unitAlias: 'unit1',
       dataParts: { a: 'new A', c: 'used C the first time' },
       unitStateDataType: 'aType'
     });
@@ -121,11 +121,11 @@ describe('TestControllerService', () => {
     service.updateUnitStateDataParts('unit2', 2, { b: 'andApplyThisB', c: 'TakeThisC' }, 'anotherType');
     tick(u * 1.5);
     expectedUploadedData.push({
-      unitDbKey: 'unit1',
+      unitAlias: 'unit1',
       dataParts: { b: 'brand new B', c: 'brand new C' },
       unitStateDataType: 'aType'
     }, {
-      unitDbKey: 'unit2',
+      unitAlias: 'unit2',
       dataParts: { b: 'andApplyThisB', c: 'TakeThisC' },
       unitStateDataType: 'anotherType'
     });
@@ -168,23 +168,23 @@ describe('TestControllerService', () => {
     const stateEntry1 = { key: UnitStateKey.PRESENTATION_PROGRESS, content: 'complete', timeStamp: Date.now() };
     const stateEntry2 = { key: UnitStateKey.PLAYER, content: 'some player state', timeStamp: Date.now() };
     const stateEntry3 = { key: UnitStateKey.RESPONSE_PROGRESS, content: 'complete', timeStamp: Date.now() };
-    service.updateUnitState(1, { unitDbKey: 'unit1', state: [stateEntry1, stateEntry2] });
+    service.updateUnitState(1, { alias: 'unit1', state: [stateEntry1, stateEntry2] });
     tick(u * 0.1);
-    service.updateUnitState(1, { unitDbKey: 'unit1', state: [stateEntry3] });
+    service.updateUnitState(1, { alias: 'unit1', state: [stateEntry3] });
     tick(u * 1.5);
-    expectedUploadedStates.push({ unitDbKey: 'unit1', state: [stateEntry1, stateEntry2, stateEntry3] });
+    expectedUploadedStates.push({ alias: 'unit1', state: [stateEntry1, stateEntry2, stateEntry3] });
     expect(uploadedStates).withContext('Merge debounced changes').toEqual(expectedUploadedStates);
 
     const unit1stateEntry = { key: UnitStateKey.PLAYER, content: 'u1/s1', timeStamp: Date.now() };
     tick(u * 1.5);
-    service.updateUnitState(1, { unitDbKey: 'unit1', state: [unit1stateEntry] });
+    service.updateUnitState(1, { alias: 'unit1', state: [unit1stateEntry] });
     tick(u * 0.1);
     const unit2stateEntry = { key: UnitStateKey.PLAYER, content: 'u2/s1', timeStamp: Date.now() };
-    service.updateUnitState(2, { unitDbKey: 'unit2', state: [unit2stateEntry] });
+    service.updateUnitState(2, { alias: 'unit2', state: [unit2stateEntry] });
     tick(u * 1.5);
     expectedUploadedStates.push(
-      { unitDbKey: 'unit1', state: [unit1stateEntry] },
-      { unitDbKey: 'unit2', state: [unit2stateEntry] }
+      { alias: 'unit1', state: [unit1stateEntry] },
+      { alias: 'unit2', state: [unit2stateEntry] }
     );
     expect(uploadedStates)
       .withContext('when unitId changes debounce timer should be killed')

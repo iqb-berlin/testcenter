@@ -20,13 +20,13 @@ export class BackendService {
 
   saveReview(
     testId: string,
-    unitName: string | null,
+    unitAlias: string | null,
     priority: number,
     categories: string,
     entry: string
   ) : Observable<void> {
     return this.http.put<void>(
-      `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
+      `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review`,
       { priority, categories, entry }
     );
   }

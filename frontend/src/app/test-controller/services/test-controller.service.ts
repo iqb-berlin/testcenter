@@ -62,7 +62,6 @@ export class TestControllerService {
   private maxTimeIntervalSubscription: Subscription | null = null;
   timerWarningPoints: number[] = [];
 
-  currentUnitDbKey = ''; // TODO X remove ?
   currentUnitTitle = ''; // TODO X remove ?
 
   windowFocusState$ = new Subject<WindowFocusState>();
@@ -133,25 +132,25 @@ export class TestControllerService {
           const sortedByUnit = dataPartsBuffer
             .reduce(
               (agg, dataParts) => {
-                if (!agg[dataParts.unitDbKey]) agg[dataParts.unitDbKey] = [];
-                agg[dataParts.unitDbKey].push(dataParts);
+                if (!agg[dataParts.unitAlias]) agg[dataParts.unitAlias] = [];
+                agg[dataParts.unitAlias].push(dataParts);
                 return agg;
               },
-              <{ [unitId: string]: UnitDataParts[] }>{}
+              <{ [unitAlias: string]: UnitDataParts[] }>{}
             );
           return Object.keys(sortedByUnit)
-            .map(unitId => ({
-              unitDbKey: unitId,
-              dataParts: Object.assign({}, ...sortedByUnit[unitId].map(entry => entry.dataParts)),
+            .map(unitAlias => ({
+              unitAlias,
+              dataParts: Object.assign({}, ...sortedByUnit[unitAlias].map(entry => entry.dataParts)),
               // verona4 does not support different dataTypes for different Chunks
-              unitStateDataType: sortedByUnit[unitId][0].unitStateDataType
+              unitStateDataType: sortedByUnit[unitAlias][0].unitStateDataType
             }));
         })
       )
       .subscribe(changedDataParts => {
         this.bs.updateDataParts(
           this.testId,
-          changedDataParts.unitDbKey,
+          changedDataParts.unitAlias,
           changedDataParts.dataParts,
           changedDataParts.unitStateDataType
         );
@@ -167,10 +166,10 @@ export class TestControllerService {
           stateBuffer
             .reduce(
               (agg, stateUpdate) => {
-                if (!agg[stateUpdate.unitDbKey]) {
-                  agg[stateUpdate.unitDbKey] = <UnitStateUpdate>{ unitDbKey: stateUpdate.unitDbKey, state: [] };
+                if (!agg[stateUpdate.alias]) {
+                  agg[stateUpdate.alias] = <UnitStateUpdate>{ alias: stateUpdate.alias, state: [] };
                 }
-                agg[stateUpdate.unitDbKey].state.push(...stateUpdate.state);
+                agg[stateUpdate.alias].state.push(...stateUpdate.state);
                 return agg;
               },
               <{ [unitId: string]: UnitStateUpdate }>{}
@@ -180,7 +179,7 @@ export class TestControllerService {
       .subscribe(aggregatedStateUpdate => {
         this.bs.updateUnitState(
           this.testId,
-          aggregatedStateUpdate.unitDbKey,
+          aggregatedStateUpdate.alias,
           aggregatedStateUpdate.state
         );
       });
@@ -198,17 +197,16 @@ export class TestControllerService {
     this.players = {};
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
-    // this.rootTestlet = null;
-    // this.clearCodeTestlets = [];
+
     this.currentUnitSequenceId = 0;
-    this.currentUnitDbKey = '';
+
     this.currentUnitTitle = '';
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
-    // this.timers = {};
+
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
     this.unitStateCurrentPages = {};
@@ -229,7 +227,7 @@ export class TestControllerService {
   }
 
   updateUnitStateDataParts(
-    unitDbKey: string,
+    unitAlias: string,
     sequenceId: number,
     dataParts: KeyValuePairString,
     unitStateDataType: string
@@ -250,7 +248,7 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      this.unitDataPartsToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsToSave$.next({ unitAlias: unitAlias, dataParts: changedParts, unitStateDataType });
     }
   }
 
@@ -434,7 +432,6 @@ export class TestControllerService {
   getUnitIsInaccessible(unit: Unit): boolean {
     const isLockedByCode = unit.codeRequiringTestlets
       .reduce((isLocked, testlet) => (testlet.lockedByCode || isLocked), false);
-    console.log(unit.id, unit.codeRequiringTestlets.map(t => `${t.id}: ${t.lockedByCode ? 'y' : 'n'}`));
     const isLockedByTime = unit.timerRequiringTestlet?.lockedByTime || false;
     const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
     return isLockedByCodeAndNotFirstOne || isLockedByTime;

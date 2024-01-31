@@ -184,6 +184,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   showReviewDialog(): void {
     const authData = this.mainDataService.getAuthData();
+    const unitAlias = this.tcs.units[this.tcs.currentUnitSequenceId].alias;
     if (this.tcs.booklet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
     } else if (!authData) {
@@ -194,7 +195,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           loginname: authData.displayName,
           bookletname: this.tcs.booklet.metadata.label,
           unitTitle: this.tcs.currentUnitTitle,
-          unitDbKey: this.tcs.currentUnitDbKey
+          unitAlias
         }
       });
 
@@ -205,7 +206,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u') ? this.tcs.currentUnitDbKey : null,
+          (result.target === 'u') ? unitAlias : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry

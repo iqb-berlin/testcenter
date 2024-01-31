@@ -104,6 +104,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
     const currentUnitId = lastState[TestStateKey.CURRENT_UNIT_ID];
     this.tcs.resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
+
     if (
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
@@ -168,7 +169,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       return this.getPlayer(testData, sequenceId, unit.playerFileName);
     }
 
-    return this.bs.getUnitData(this.tcs.testId, unit.id, unit.id) // TODO X alias ?!?!
+    return this.bs.getUnitData(this.tcs.testId, unit.id, unit.alias)
       .pipe(
         switchMap((unitData: UnitData) => {
           if (!unitData) {
@@ -330,7 +331,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         .forEach(child => {
           // eslint-disable-next-line no-plusplus
           if (isUnit(child)) {
-            this.tcs.unitAliasMap[child.id] = child.sequenceId;
+            this.tcs.unitAliasMap[child.alias] = child.sequenceId;
             this.tcs.units[child.sequenceId] = child;
           } else {
             this.tcs.testlets[child.id] = child;

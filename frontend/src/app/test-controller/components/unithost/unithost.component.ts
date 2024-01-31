@@ -114,7 +114,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.tcs.updateUnitState(
           this.currentUnitSequenceId,
           {
-            unitDbKey: this.currentUnit.id, // TODO x alias?
+            alias: this.currentUnit.alias,
             state: [<StateReportEntry>{
               key: UnitStateKey.PLAYER,
               timeStamp: Date.now(),
@@ -157,7 +157,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
                   {
-                    unitDbKey: this.currentUnit.id, // TODO X alias?
+                    alias: this.currentUnit.alias,
                     state: [
                       { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
                       { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
@@ -168,7 +168,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
             }
           }
-          const unitDbKey = this.currentUnit.id; // TODO X alias?
           if (msgData.unitState) {
             const { unitState } = msgData;
             const timeStamp = Date.now();
@@ -176,7 +175,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             this.tcs.updateUnitState(
               this.currentUnitSequenceId,
               {
-                unitDbKey,
+                alias: this.currentUnit.alias,
                 state: [
                   { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
                   { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
@@ -194,7 +193,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                   }
                 });
               this.tcs.updateUnitStateDataParts(
-                unitDbKey,
+                this.currentUnit.alias,
                 this.currentUnitSequenceId,
                 unitState.dataParts,
                 unitState.unitStateDataType
@@ -202,7 +201,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             }
           }
           if (msgData.log) {
-            this.bs.addUnitLog(this.tcs.testId, unitDbKey, msgData.log);
+            this.bs.addUnitLog(this.tcs.testId, this.currentUnit.alias, msgData.log);
           }
         }
         break;
@@ -298,17 +297,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error('Unit not loaded');
     }
     this.unitsLoading$.next([]);
-    this.tcs.currentUnitDbKey = this.currentUnit.id; // TODO X alias?
     this.tcs.currentUnitTitle = this.currentUnit.label;
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.tcs.currentUnitDbKey
+        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.currentUnit.alias
       }]);
       this.tcs.updateUnitState(
         this.currentUnitSequenceId,
         {
-          unitDbKey: this.tcs.currentUnitDbKey,
+          alias: this.currentUnit.alias,
           state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
         }
       );
@@ -429,7 +427,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       pagingMode: this.tcs.bookletConfig.pagingMode,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
-      unitId: this.currentUnit.id, // TODO X alias?
+      unitId: this.currentUnit.alias,
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
     if (this.pendingUnitData?.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
@@ -507,7 +505,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }
           const requiredCode = (testlet.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
           const givenCode = this.clearCodes[testlet.id].toUpperCase().trim();
-          console.log({requiredCode, givenCode});
+
           if (requiredCode === givenCode) {
             this.tcs.clearTestlet(testlet.id);
             this.updateUnitRestrictions();

@@ -98,7 +98,7 @@ export interface StateReportEntry {
 }
 
 export interface UnitDataParts {
-  unitDbKey: string;
+  unitAlias: string;
   dataParts: KeyValuePairString;
   unitStateDataType: string;
 }
@@ -119,7 +119,7 @@ export enum UnitStateKey {
 }
 
 export interface UnitStateUpdate {
-  unitDbKey: string;
+  alias: string;
   state: StateReportEntry[]
 }
 
@@ -153,7 +153,7 @@ export interface PageData {
 export interface ReviewDialogData {
   loginname: string;
   bookletname: string;
-  unitDbKey: string;
+  unitAlias: string;
   unitTitle: string;
 }
 

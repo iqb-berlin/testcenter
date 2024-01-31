@@ -23,7 +23,7 @@ describe('ReviewDialogComponent', () => {
   const matDialogDataStub = <ReviewDialogData> {
     loginname: 'loginname',
     bookletname: 'bookletname',
-    unitDbKey: 'unitDbKey',
+    unitAlias: 'unitAlias',
     unitTitle: 'unitTitle'
   };
 
