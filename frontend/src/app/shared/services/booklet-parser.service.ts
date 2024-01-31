@@ -153,7 +153,46 @@ export abstract class BookletParserService<
         minutes: parseFloat(timeMaxElement.getAttribute('minutes') || '')
       };
     }
+
+    const ifElements = this.xmlGetDirectChildrenByTagName('If');
+    restrictions.if = ifElements.flatMap(ifELem => this.parseIf(ifElem));
+
     return restrictions;
+  }
+
+  parseIf(ifElement: Element): BlockCondition[] {
+    const conditionSource = this.xmlGetChildIfExists(ifElement, ['Code', 'Value', 'Status', 'Score', 'Median', 'Sum']);
+    const conditionExpression = this.xmlGetChildIfExists(ifElement, ['Is']);
+    if (!conditionSource || !conditionExpression) {
+      return [];
+    }
+    let source: BlockConditionSource
+    switch (conditionSource.tagName) {
+      case 'Median':
+      case 'Sum':
+      break;
+      default:
+
+    }
+
+    return ['equal', 'notEqual', 'greaterThan', 'lowerThan']
+      .map(compType => {
+        const compAtt = conditionSource.getAttribute(compType);
+        return (compAtt == null) ?
+          null:
+          {
+            source: {
+              conditionSource.tagName,
+              variable: conditionSource.getAttribute('from') || '',
+              unit: conditionSource.getAttribute('of') || '',
+            },
+            expression: {
+              type: compType;
+              value: compAtt
+            }
+          };
+      })
+      .filter(expression => !!expression);
   }
 
   xmlGetChildIfExists(element: Element, childName: string, isOptional = false): Element | null {
