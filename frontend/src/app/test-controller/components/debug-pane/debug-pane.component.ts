@@ -24,9 +24,9 @@ export class DebugPaneComponent implements OnInit {
     this.testMode = Object.entries(this.tcs.testMode);
   }
 
-  tabs = ['main', 'config', 'testmode', 'units', 'cutomtexts'];
+  tabs = ['main', 'config', 'testmode', 'units', 'cutomtexts', 'variables'];
 
-  activeTab : typeof this.tabs[number] = 'units';
+  activeTab : typeof this.tabs[number] = 'variables';
 
   timerValue = { timeLeftString: 'TODO', testletId: 'd', type: 'd' };
 

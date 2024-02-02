@@ -7,7 +7,16 @@ import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import {
-  CustomtextService, TestMode, UnitDef, TestletDef, BookletDef, ContextInBooklet
+  CustomtextService,
+  TestMode,
+  UnitDef,
+  TestletDef,
+  BookletDef,
+  ContextInBooklet,
+  BlockCondition,
+  BlockConditionSource,
+  sourceIsConditionAggregation,
+  sourceIsSourceAggregation, sourceIsSingleSource, BlockConditionSourceAggregation
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
@@ -27,7 +36,8 @@ import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
-import { BookletParserService } from '../../shared/services/booklet-parser.service'; // TODO from shared module
+import { BookletParserService } from '../../shared/services/booklet-parser.service';
+import { IQBVariable } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -354,17 +364,31 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+    const getConditionSources = (condition: BlockCondition): BlockConditionSource[] => {
+      const source = condition.source;
+      if (sourceIsConditionAggregation(source)) {
+        return source.conditions.flatMap(getConditionSources);
+      }
+      if (sourceIsSourceAggregation(source)) {
+        return source.sources;
+      }
+      if (sourceIsSingleSource(source)) {
+        return [source];
+      }
+      return [];
+    }
     return Object.assign(testletDef, {
       sequenceId: NaN,
       lockedByTime: false,
       lockedByCode: false,
-      trackedVariables: {},
+      trackedSources: testletDef.restrictions.if.flatMap(getConditionSources),
       context
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
   toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
+    const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
@@ -378,6 +402,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : '',
       playerFileName: '',
       localIndex: context.localUnitIndex,
+      variables: Object.fromEntries(new Map(
+        context.parents.flatMap(parent => parent.trackedSources)
+          .filter(source => source.unitAlias == unitDef.alias)
+          .map(source => [source.variable, emptyVariable(source.variable)]
+      ))),
       context
     });
   }

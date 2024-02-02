@@ -156,7 +156,7 @@ export abstract class BookletParserService<
 
     const restrictionsElement = this.xmlGetChildIfExists(testletElement, 'Restrictions', true);
     if (!restrictionsElement) {
-      return { };
+      return { if: conditions };
     }
     const codeToEnterElement = restrictionsElement.querySelector('CodeToEnter');
     if (codeToEnterElement) {

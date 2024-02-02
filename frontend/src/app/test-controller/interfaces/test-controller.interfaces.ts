@@ -1,8 +1,10 @@
 // used everywhere
 import { VeronaProgress } from './verona.interfaces';
 import {
+  BlockConditionSource,
   BookletDef, ContextInBooklet, TestletDef, UnitDef
 } from '../../shared/interfaces/booklet.interfaces';
+import { IQBVariable } from './iqb.interfaces';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
@@ -234,6 +236,7 @@ export interface Unit extends UnitDef {
   readonly timerRequiringTestlet: Testlet | null;
   readonly blockLabel: string;
   readonly localIndex: number;
+  variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
 }
 
@@ -241,9 +244,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
   lockedByTime: boolean;
   lockedByCode: boolean;
-  trackedVariables: {
-    [variableId: string]: string | number
-  }
+  trackedSources: BlockConditionSource[]
 }
 
 export type Booklet = BookletDef<Testlet>;

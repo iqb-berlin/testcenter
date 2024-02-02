@@ -26,6 +26,7 @@ import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
+import { IQBVariable, isIQBVariable } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -164,6 +165,7 @@ export class TestControllerService {
         })
       )
       .subscribe(changedDataParts => {
+        this.updateVariables(changedDataParts);
         this.bs.updateDataParts(
           this.testId,
           changedDataParts.unitAlias,
@@ -643,5 +645,43 @@ export class TestControllerService {
 
   isUnitContentLoaded(sequenceId: number): boolean {
     return !!this.unitDefinitions[sequenceId];
+  }
+
+  private updateVariables(dataPartSet: {
+    unitAlias: string;
+    unitStateDataType: string;
+    dataParts: KeyValuePairString
+  }): void {
+    if (dataPartSet.unitStateDataType !== "iqb-standard@1.0") { // TODO X was wird alles unterstützt?
+      console.log('nope: type', dataPartSet.unitStateDataType);
+      return;
+    }
+    const trackedVariables =  Object.keys(this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables);
+    if (!trackedVariables.length) {
+      console.log('nope: trackedVariables', trackedVariables.length);
+      return;
+    }
+    Object.values(dataPartSet.dataParts).forEach(dataPart => {
+      // TODO x pre-check interested variables by regex? no?
+      const data = JSON.parse(dataPart);
+      if (!Array.isArray(data)) {
+        console.log('nope: array', data);
+        return;
+      }
+      data
+        .forEach(variable => {
+          if (!isIQBVariable(variable)) {
+            console.log('nope: not var', variable);
+            return;
+          }
+          if (typeof this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] === "undefined") {
+            console.log('nope: not tracked', this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id]);
+            return;
+          }
+
+          this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] = variable;
+        });
+
+    });
   }
 }

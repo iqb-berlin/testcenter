@@ -121,4 +121,30 @@
     <input type="text" [(ngModel)]="searchCustomText" placeholder="insert custom text token">
     <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
   </div>
+
+  <div [class]="{'active-tab': activeTab == 'variables', 'tab': 1}" (click)="res()">
+    <table>
+      <thead>
+        <tr>
+          <td>ID</td>
+          <td>status</td>
+          <td>value</td>
+          <td>code</td>
+          <td>score</td>
+        </tr>
+      </thead>
+      <tbody *ngFor="let unit of tcs.units | keyvalue">
+        <tr>
+          <td colspan="5"><b>{{unit.value.alias}}</b></td>
+        </tr>
+        <tr *ngFor="let uvar of unit.value.variables | keyvalue">
+          <td>{{uvar.value.id}}</td>
+          <td>{{uvar.value.status}}</td>
+          <td>{{uvar.value.value}}</td>
+          <td>{{uvar.value.code}}</td>
+          <td>{{uvar.value.score}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

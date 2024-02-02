@@ -65,6 +65,18 @@ export interface BlockConditionExpression {
   readonly value: string;
 }
 
+export const sourceIsSingleSource =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionSource =>
+    ('variable' in source);
+
+export const sourceIsSourceAggregation =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionSourceAggregation =>
+    ('sources' in source);
+
+export const sourceIsConditionAggregation =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionAggregation =>
+    ('conditions' in source);
+
 export interface Restrictions {
   readonly codeToEnter?: {
     readonly code: string;
@@ -77,7 +89,7 @@ export interface Restrictions {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';
     readonly response: 'ON' | 'OFF' | 'ALWAYS';
   }
-  readonly if?: Array<BlockCondition | BlockConditionAggregation>
+  readonly if: BlockCondition[]
 }
 
 export interface ContextInBooklet<TestletType> {
