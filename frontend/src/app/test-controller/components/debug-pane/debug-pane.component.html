@@ -43,8 +43,9 @@
       <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'">R</span>
       <span
         class='badge'
-        *ngFor="let ifRes of testlet.restrictions.if"
-        matTooltip="IF {{ifRes.source.variable}} FROM {{ifRes.source.unitAlias}} IS {{ifRes.expression.type}} '{{ifRes.expression.value}}'"
+        [class]="{ invert: testlet.firstUnsatisfiedCondition >= i }"
+        *ngFor="let ifRes of testlet.restrictions.if; let i = index"
+        matTooltip="IF {{ifRes.source.type}} OF {{ifRes.source.variable}} FROM {{ifRes.source.unitAlias}} IS {{ifRes.expression.type}} '{{ifRes.expression.value}}'"
       >I</span>
       <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
         {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}

@@ -364,6 +364,19 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+    return Object.assign(testletDef, {
+      sequenceId: NaN,
+      lockedByTime: false,
+      lockedByCode: false,
+      disabledByIf: !!testletDef.restrictions.if.length,
+      firstUnsatisfiedCondition: -1,
+      context
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
+    const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
     const getConditionSources = (condition: BlockCondition): BlockConditionSource[] => {
       const source = condition.source;
       if (sourceIsConditionAggregation(source)) {
@@ -377,18 +390,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       }
       return [];
     }
-    return Object.assign(testletDef, {
-      sequenceId: NaN,
-      lockedByTime: false,
-      lockedByCode: false,
-      trackedSources: testletDef.restrictions.if.flatMap(getConditionSources),
-      context
-    });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
-    const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
@@ -403,7 +404,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       playerFileName: '',
       localIndex: context.localUnitIndex,
       variables: Object.fromEntries(new Map(
-        context.parents.flatMap(parent => parent.trackedSources)
+        context.parents.flatMap(parent => parent.restrictions.if.flatMap(getConditionSources))
           .filter(source => source.unitAlias == unitDef.alias)
           .map(source => [source.variable, emptyVariable(source.variable)]
       ))),

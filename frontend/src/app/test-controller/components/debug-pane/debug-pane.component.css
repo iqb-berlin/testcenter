@@ -103,3 +103,8 @@ mat-icon {
   text-align: center;
   margin: 0 2px 0 0;
 }
+
+.badge.invert {
+  background: orange;
+  color: black;
+}

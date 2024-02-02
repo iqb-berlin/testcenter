@@ -21,12 +21,23 @@ import {
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { BlockCondition, BlockConditionAggregation, BookletConfig, TestMode } from '../../shared/shared.module';
+import {
+  BlockCondition, BlockConditionSource,
+  BookletConfig, sourceIsConditionAggregation,
+  sourceIsSingleSource, sourceIsSourceAggregation,
+  TestMode
+} from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
-import { IQBVariable, isIQBVariable } from '../interfaces/iqb.interfaces';
+import {
+  IQBVariableStatusList,
+  IQBVariableValueType,
+  isIQBVariable
+} from '../interfaces/iqb.interfaces';
+import { IqbVariableUtil } from '../util/iqb-variable.util';
+import { AggregatorsUtil } from '../util/aggregators.util';
 
 @Injectable({
   providedIn: 'root'
@@ -652,15 +663,16 @@ export class TestControllerService {
     unitStateDataType: string;
     dataParts: KeyValuePairString
   }): void {
-    if (dataPartSet.unitStateDataType !== "iqb-standard@1.0") { // TODO X was wird alles unterstützt?
+    if (dataPartSet.unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
       console.log('nope: type', dataPartSet.unitStateDataType);
       return;
     }
-    const trackedVariables =  Object.keys(this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables);
+    const trackedVariables = Object.keys(this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables);
     if (!trackedVariables.length) {
       console.log('nope: trackedVariables', trackedVariables.length);
       return;
     }
+    let somethingChanged = false;
     Object.values(dataPartSet.dataParts).forEach(dataPart => {
       // TODO x pre-check interested variables by regex? no?
       const data = JSON.parse(dataPart);
@@ -674,14 +686,93 @@ export class TestControllerService {
             console.log('nope: not var', variable);
             return;
           }
-          if (typeof this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] === "undefined") {
+          if (typeof this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] === 'undefined') {
             console.log('nope: not tracked', this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id]);
             return;
           }
 
+          // TODO X check if REALLY something changed?
           this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] = variable;
+          somethingChanged = true;
         });
-
     });
+    if (somethingChanged) {
+      this.updateConditions(dataPartSet.unitAlias);
+    }
+  }
+
+  private updateConditions(unitAlias: string) {
+    [this.units[this.unitAliasMap[unitAlias]].parent] // TODO X we need all parents instead
+      .forEach(testlet => {
+        this.testlets[testlet.id].firstUnsatisfiedCondition =
+          this.testlets[testlet.id].restrictions.if
+            .findIndex(condition => !this.isConditionSatisfied(condition));
+        this.testlets[testlet.id].disabledByIf = this.testlets[testlet.id].firstUnsatisfiedCondition > -1;
+      });
+  }
+
+  private isConditionSatisfied(condition: BlockCondition): boolean {
+    const getSourceValue = (source: BlockConditionSource): string | number | undefined => {
+      const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
+      // eslint-disable-next-line default-case
+      switch (source.type) {
+        case 'Code': return var1.code;
+        case 'Value': return IqbVariableUtil.variableValueAsComparable(var1.value);
+        case 'Status': return var1.status;
+        case 'Score': return var1.score;
+      }
+      return undefined;
+    };
+
+    const getSourceValueAsNumber = (source: BlockConditionSource): number => {
+      const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
+      // eslint-disable-next-line default-case
+      switch (source.type) {
+        case 'Code': return var1.code || NaN;
+        case 'Value': return IqbVariableUtil.variableValueAsNumber(var1.value);
+        case 'Status': return IQBVariableStatusList.indexOf(var1.status);
+        case 'Score': return var1.score || NaN;
+      }
+      return NaN;
+    };
+
+    let value : IQBVariableValueType | undefined;
+    if (sourceIsSingleSource(condition.source)) {
+      value = getSourceValue(condition.source);
+    }
+    if (sourceIsSourceAggregation(condition.source)) {
+      const values = condition.source.sources.map(getSourceValueAsNumber);
+      if (condition.source.type in AggregatorsUtil && (typeof condition.source.type === 'function')) {
+        value = AggregatorsUtil[condition.source.type](values);
+      }
+    }
+    if (sourceIsConditionAggregation(condition.source)) {
+      value = condition.source.conditions
+        .map(this.isConditionSatisfied.bind(this))
+        .filter(Boolean)
+        .length;
+    }
+
+    if (typeof value === 'undefined') {
+      return false;
+    }
+
+    let value2: number | string = condition.expression.value;
+    value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
+
+    // eslint-disable-next-line default-case
+    switch (condition.expression.type) {
+      case 'equal':
+        return value === value2;
+      case 'notEqual':
+        return value !== value2;
+      case 'greaterThan':
+        return IqbVariableUtil.variableValueAsNumber(value) > IqbVariableUtil.variableValueAsNumber(value2);
+      case 'lowerThan':
+        return IqbVariableUtil.variableValueAsNumber(value) > IqbVariableUtil.variableValueAsNumber(value2);
+    }
+
+    console.log('WTF', condition, value, value2);
+    return false;
   }
 }

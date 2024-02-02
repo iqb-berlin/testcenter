@@ -244,7 +244,8 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
   lockedByTime: boolean;
   lockedByCode: boolean;
-  trackedSources: BlockConditionSource[]
+  disabledByIf: boolean;
+  firstUnsatisfiedCondition: number;
 }
 
 export type Booklet = BookletDef<Testlet>;

@@ -38,8 +38,10 @@ export interface BlockCondition {
 
 export const BlockConditionSourceTypes = ['Code', 'Value', 'Status', 'Score'];
 
+export type BlockConditionSourceType = typeof BlockConditionSourceTypes[number];
+
 export interface BlockConditionSource {
-  readonly type: typeof BlockConditionSourceTypes[number];
+  readonly type: BlockConditionSourceType;
   readonly variable: string;
   readonly unitAlias: string;
 }
@@ -65,17 +67,14 @@ export interface BlockConditionExpression {
   readonly value: string;
 }
 
-export const sourceIsSingleSource =
-  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionSource =>
-    ('variable' in source);
+export const sourceIsSingleSource = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+  source is BlockConditionSource => ('variable' in source);
 
-export const sourceIsSourceAggregation =
-  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionSourceAggregation =>
-    ('sources' in source);
+export const sourceIsSourceAggregation = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+  source is BlockConditionSourceAggregation => ('sources' in source);
 
-export const sourceIsConditionAggregation =
-  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation): source is BlockConditionAggregation =>
-    ('conditions' in source);
+export const sourceIsConditionAggregation = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+  source is BlockConditionAggregation => ('conditions' in source);
 
 export interface Restrictions {
   readonly codeToEnter?: {
