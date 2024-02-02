@@ -342,7 +342,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     registerChildren(booklet.units);
 
-    this.tcs.sequenceLength = Object.keys(this.tcs.units).length;
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
@@ -359,6 +358,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       sequenceId: NaN,
       lockedByTime: false,
       lockedByCode: false,
+      trackedVariables: {},
       context
     });
   }

@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
@@ -61,7 +61,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
     public cmd: CommandService,
@@ -184,18 +183,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   showReviewDialog(): void {
     const authData = this.mainDataService.getAuthData();
-    const unitAlias = this.tcs.units[this.tcs.currentUnitSequenceId].alias;
-    if (this.tcs.booklet === null) {
-      this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
-    } else if (!authData) {
-      throw new AppError({ description: '', label: 'Nicht Angemeldet!' });
+    if (!authData) {
+      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // necessary?!
     } else {
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         data: <ReviewDialogData>{
           loginname: authData.displayName,
-          bookletname: this.tcs.booklet.metadata.label,
-          unitTitle: this.tcs.currentUnitTitle,
-          unitAlias
+          bookletname: this.tcs.booklet?.metadata.label,
+          unitTitle: this.tcs.currentUnit.label,
+          unitAlias: this.tcs.currentUnit.alias
         }
       });
 
@@ -206,7 +202,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u') ? unitAlias : null,
+          (result.target === 'u') ? this.tcs.currentUnit.alias : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry
@@ -225,9 +221,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           // eslint-disable-next-line no-console
           console.log('select (focus) app window to see the debugPane');
         }
-        break;
-      case 'destroy':
-        this.tcs.booklet = null;
         break;
       case 'pause':
         this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
@@ -273,9 +266,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleTimer(timerData: TimerData): void {
-    if (!this.tcs.booklet) {
-      throw new AppError({ description: '', label: 'Roottestlet used to early' });
-    }
     const minute = timerData.timeLeftSeconds / 60;
     switch (timerData.type) {
       case MaxTimerEvent.STARTED:
@@ -298,7 +288,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.units[this.tcs.currentUnitSequenceId].parent.lockedByTime = true;
+          this.tcs.currentUnit.parent.lockedByTime = true;
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
         }
@@ -349,13 +339,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private refreshUnitMenu(): void {
     this.unitNavigationList = [];
-    if (!this.tcs.booklet) {
-      return;
-    }
 
     let previousBlockLabel: string | null = null;
-    const unitCount = Object.entries(this.tcs.units).length;
-    for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
+    for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
       const blockLabel = unit.blockLabel || '';
@@ -376,16 +362,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private setUnitScreenHeader(): void {
-    if (!this.tcs.booklet || !this.tcs.currentUnitSequenceId) {
-      this.unitScreenHeader = '';
-      return;
-    }
     switch (this.tcs.bookletConfig.unit_screenheader) {
       case 'WITH_UNIT_TITLE':
         this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).label;
         break;
       case 'WITH_BOOKLET_TITLE':
-        this.unitScreenHeader = this.tcs.booklet.metadata.label;
+        this.unitScreenHeader = this.tcs.booklet?.metadata.label || '';
         break;
       case 'WITH_BLOCK_TITLE':
         this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).blockLabel;

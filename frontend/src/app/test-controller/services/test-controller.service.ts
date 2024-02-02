@@ -21,7 +21,7 @@ import {
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { BookletConfig, TestMode } from '../../shared/shared.module';
+import { BlockCondition, BlockConditionAggregation, BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
@@ -40,33 +40,47 @@ export class TestControllerService {
 
   workspaceId = 0;
 
-  testStructureChanges$ = new BehaviorSubject<void>(undefined);
-
   totalLoadingProgress = 0;
-
-  // clearCodeTestlets: string[] = [];
 
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
 
   // accessors of booklet pieces TODO X make private ?
-  booklet: Booklet | null = null;
+
   units: { [sequenceId: number]: Unit } = {};
   testlets: { [testletId: string] : Testlet } = {};
-  sequenceLength: number = 0;
   unitAliasMap: { [unitId: string] : number } = {};
+
+  get currentUnit(): Unit {
+    return this.units[this.currentUnitSequenceId];
+  }
+
+  private _booklet: Booklet | null = null;
+  get booklet(): Booklet {
+    if (!this._booklet) {
+      console.trace();
+      throw new MissingBookletError();
+    }
+    return this._booklet;
+  }
+
+  set booklet(booklet: Booklet) {
+    this._booklet = booklet;
+  }
+
+  get sequenceLength(): number {
+    return Object.keys(this.units).length;
+  }
 
   timers$ = new Subject<TimerData>();
   timers: KeyValuePairNumber = {}; // TODO remove the redundancy with timers$
   currentMaxTimerTestletId = '';
-  private maxTimeIntervalSubscription: Subscription | null = null;
+  private timerIntervalSubscription: Subscription | null = null;
   timerWarningPoints: number[] = [];
 
-  currentUnitTitle = ''; // TODO X remove ?
+  resumeTargetUnitSequenceId = 0;
 
   windowFocusState$ = new Subject<WindowFocusState>();
-
-  resumeTargetUnitSequenceId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
 
@@ -86,6 +100,8 @@ export class TestControllerService {
   get currentUnitSequenceId$(): Observable<number> {
     return this._currentUnitSequenceId$.asObservable();
   }
+
+  testStructureChanges$ = new BehaviorSubject<void>(undefined);
 
   /**
    * the structure of this service is weird: instead of distributing the UnitDefs into the several arrays
@@ -200,12 +216,10 @@ export class TestControllerService {
 
     this.currentUnitSequenceId = 0;
 
-    this.currentUnitTitle = '';
-    if (this.maxTimeIntervalSubscription !== null) {
-      this.maxTimeIntervalSubscription.unsubscribe();
-      this.maxTimeIntervalSubscription = null;
-    }
-    this.currentMaxTimerTestletId = '';
+    this._booklet = null;
+    this.units = {};
+    this.testlets = {};
+    this.unitAliasMap = {};
 
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
@@ -214,6 +228,12 @@ export class TestControllerService {
     this.unitResponseTypes = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
+
+    if (this.timerIntervalSubscription !== null) {
+      this.timerIntervalSubscription.unsubscribe();
+      this.timerIntervalSubscription = null;
+    }
+    this.currentMaxTimerTestletId = '';
   }
 
   // uppercase and add extension if not part
@@ -438,7 +458,7 @@ export class TestControllerService {
   }
 
   getUnit(unitSequenceId: number): Unit {
-    if (!this.booklet) { // when loading process was aborted
+    if (!this._booklet) { // when loading process was aborted
       throw new MissingBookletError();
     }
     const unit = this.units[unitSequenceId];
@@ -474,12 +494,12 @@ export class TestControllerService {
     const timeLeftMinutes = (testlet.id in this.timers) ?
       Math.min(this.timers[testlet.id], testlet.restrictions.timeMax.minutes) :
       testlet.restrictions.timeMax.minutes;
-    if (this.maxTimeIntervalSubscription !== null) {
-      this.maxTimeIntervalSubscription.unsubscribe();
+    if (this.timerIntervalSubscription !== null) {
+      this.timerIntervalSubscription.unsubscribe();
     }
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentMaxTimerTestletId = testlet.id;
-    this.maxTimeIntervalSubscription = interval(1000)
+    this.timerIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
           timer(timeLeftMinutes * 60 * 1000)
@@ -500,18 +520,18 @@ export class TestControllerService {
   }
 
   cancelTimer(): void {
-    if (this.maxTimeIntervalSubscription !== null) {
-      this.maxTimeIntervalSubscription.unsubscribe();
-      this.maxTimeIntervalSubscription = null;
+    if (this.timerIntervalSubscription !== null) {
+      this.timerIntervalSubscription.unsubscribe();
+      this.timerIntervalSubscription = null;
       this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.CANCELLED));
     }
     this.currentMaxTimerTestletId = '';
   }
 
   interruptTimer(): void {
-    if (this.maxTimeIntervalSubscription !== null) {
-      this.maxTimeIntervalSubscription.unsubscribe();
-      this.maxTimeIntervalSubscription = null;
+    if (this.timerIntervalSubscription !== null) {
+      this.timerIntervalSubscription.unsubscribe();
+      this.timerIntervalSubscription = null;
       this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.INTERRUPTED));
     }
     this.currentMaxTimerTestletId = '';
@@ -557,7 +577,7 @@ export class TestControllerService {
 
   setUnitNavigationRequest(navString: string, force = false): void {
     const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
-    if (!this.booklet) {
+    if (!this._booklet) {
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {

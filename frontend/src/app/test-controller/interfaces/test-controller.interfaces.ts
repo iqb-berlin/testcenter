@@ -241,6 +241,9 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
   lockedByTime: boolean;
   lockedByCode: boolean;
+  trackedVariables: {
+    [variableId: string]: string | number
+  }
 }
 
 export type Booklet = BookletDef<Testlet>;

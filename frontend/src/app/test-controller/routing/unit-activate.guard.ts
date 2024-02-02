@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, take, timer } from 'rxjs';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
+import { MissingBookletError } from '../classes/missing-booklet-error.class';
 
 @Injectable()
 export class UnitActivateGuard {
@@ -14,7 +15,13 @@ export class UnitActivateGuard {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
-    if (this.tcs.booklet === null) {
+    try {
+      const booklet = this.tcs.booklet;
+    } catch (err) {
+      if ((err instanceof Error) && err.name !== 'MissingBookletError') {
+        console.log('otha error');
+        throw err;
+      }
       // unit-route got called before test is loaded. This happens on page-reload (F5).
       const testId = Number(route.parent?.params.t);
       if (!testId) {

@@ -232,9 +232,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(currentUnitSequenceId: number): void {
-    if (!this.tcs.booklet) {
-      throw new Error('Booklet not loaded');
-    }
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
 
@@ -297,7 +294,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error('Unit not loaded');
     }
     this.unitsLoading$.next([]);
-    this.tcs.currentUnitTitle = this.currentUnit.label;
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [{
@@ -426,7 +422,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
       unitNumber: this.currentUnitSequenceId,
-      unitTitle: this.tcs.currentUnitTitle,
+      unitTitle: this.tcs.currentUnit.label,
       unitId: this.currentUnit.alias,
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
