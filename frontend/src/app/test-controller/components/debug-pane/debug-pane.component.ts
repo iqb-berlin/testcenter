@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef, Component, Inject, OnInit
+} from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
@@ -24,9 +26,9 @@ export class DebugPaneComponent implements OnInit {
     this.testMode = Object.entries(this.tcs.testMode);
   }
 
-  tabs = ['main', 'config', 'testmode', 'units', 'cutomtexts', 'variables'];
+  tabs = ['main', 'config', 'testmode', 'units', 'customtexts', 'variables'];
 
-  activeTab : typeof this.tabs[number] = 'variables';
+  activeTab : typeof this.tabs[number][] = ['units', 'variables'];
 
   timerValue = { timeLeftString: 'TODO', testletId: 'd', type: 'd' };
 
@@ -36,13 +38,17 @@ export class DebugPaneComponent implements OnInit {
   searchCustomText: string = '';
 
   ngOnInit() {
-    this.tcs.testStructureChanges$.subscribe(nothing => {
+    this.tcs.testStructureChanges$.subscribe(() => {
       this.cdr.detectChanges();
     });
   }
 
-  changeTab(tab: typeof this.tabs[number]): void {
-    this.activeTab = tab;
+  toggleTab(tab: typeof this.tabs[number]): void {
+    if (this.activeTab.includes(tab)) {
+      this.activeTab.splice(this.activeTab.indexOf(tab), 1);
+    } else {
+      this.activeTab.push(tab);
+    }
   }
 
   res(): void {

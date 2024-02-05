@@ -1,13 +1,19 @@
-.debug-pane {
+.tab,
+.tabs {
   color: orange;
   position: absolute;
   background: black;
   z-index: 99; /* below mat tooltip at leat */
   padding: 6px;
-  box-shadow: 0px 1px 14px 2px rgba(0,0,0,0.75);
+  box-shadow: 0 1px 14px 2px rgba(0,0,0,0.75);
   cursor: move;
   max-height: 100%;
   overflow-x: scroll;
+  border-radius: 1px;
+}
+
+.tabs {
+  top: 65px;
 }
 
 .tabs div {
@@ -35,13 +41,37 @@
 }
 
 .tab {
-  display: none;
   padding: 9px;
+  top: 130px;
 }
 
-.tab.active-tab {
-  display: block;
+/* they are all movable, but may have somehow useful starting positions */
+.tab-main {
+  top: 120px;
 }
+
+.tab-config {
+  top: 256px
+}
+
+.tab-testmode {
+  top: 639px;
+}
+
+.tab-units {
+  top: 65px;
+  right: 0;
+}
+
+.tab-customtexts {
+  top: 120px;
+  left: 160px;
+}
+
+.tab-variables {
+  top: 120px;
+}
+
 
 table tr td:first-child,
 b {
@@ -104,7 +134,7 @@ mat-icon {
   margin: 0 2px 0 0;
 }
 
-.badge.invert {
+.badge.active {
   background: orange;
   color: black;
 }

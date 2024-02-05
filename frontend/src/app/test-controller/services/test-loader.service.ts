@@ -191,8 +191,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.setUnitPresentationProgress(sequenceId, unitData.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setUnitResponseProgress(sequenceId, unitData.state[UnitStateKey.RESPONSE_PROGRESS]);
           this.tcs.setUnitStateCurrentPage(sequenceId, unitData.state[UnitStateKey.CURRENT_PAGE_ID]);
-          this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
           this.tcs.setUnitResponseType(sequenceId, unitData.unitResponseType);
+          this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
+          this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
+
 
           if (definitionFile) {
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
@@ -369,7 +371,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       lockedByTime: false,
       lockedByCode: false,
       disabledByIf: !!testletDef.restrictions.if.length,
-      firstUnsatisfiedCondition: -1,
+      firstUnsatisfiedCondition: NaN,
       context
     });
   }
@@ -389,7 +391,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         return [source];
       }
       return [];
-    }
+    };
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
@@ -405,9 +407,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       localIndex: context.localUnitIndex,
       variables: Object.fromEntries(new Map(
         context.parents.flatMap(parent => parent.restrictions.if.flatMap(getConditionSources))
-          .filter(source => source.unitAlias == unitDef.alias)
+          .filter(source => source.unitAlias === unitDef.alias)
           .map(source => [source.variable, emptyVariable(source.variable)]
-      ))),
+          ))),
       context
     });
   }

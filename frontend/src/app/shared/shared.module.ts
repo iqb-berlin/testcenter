@@ -18,7 +18,7 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { customTextDefaults } from './objects/customTextDefaults';
+import { BlockConditionPipe } from './pipes/block-condition.pipe';
 
 @NgModule({
   imports: [
@@ -40,6 +40,7 @@ import { customTextDefaults } from './objects/customTextDefaults';
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
+    BlockConditionPipe,
     AlertComponent,
     ErrorComponent
   ],
@@ -48,6 +49,7 @@ import { customTextDefaults } from './objects/customTextDefaults';
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
+    BlockConditionPipe,
     AlertComponent,
     ErrorComponent
   ],

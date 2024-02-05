@@ -38,6 +38,7 @@ import {
 } from '../interfaces/iqb.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
+import { BlockConditionUntil } from '../../unit/block-condition.until';
 
 @Injectable({
   providedIn: 'root'
@@ -176,7 +177,12 @@ export class TestControllerService {
         })
       )
       .subscribe(changedDataParts => {
-        this.updateVariables(changedDataParts);
+        // TODO X achtung: es sollte auch ohne wegspeichern der Variablen gehen!
+        this.updateVariables(
+          this.unitAliasMap[changedDataParts.unitAlias],
+          changedDataParts.unitStateDataType,
+          changedDataParts.dataParts
+        );
         this.bs.updateDataParts(
           this.testId,
           changedDataParts.unitAlias,
@@ -285,8 +291,6 @@ export class TestControllerService {
     }
   }
 
-  // TODO remove parameter unitSequenceId. getUnitWithContext is kind of expensive, when this is fixed, we need only...
-  // ...unitSequenceId or unitStateUpdate.unitDbKey and can remove the other one
   updateUnitState(unitSequenceId: number, unitStateUpdate: UnitStateUpdate): void {
     unitStateUpdate.state = unitStateUpdate.state
       .filter(state => !!state.content)
@@ -658,22 +662,18 @@ export class TestControllerService {
     return !!this.unitDefinitions[sequenceId];
   }
 
-  private updateVariables(dataPartSet: {
-    unitAlias: string;
-    unitStateDataType: string;
-    dataParts: KeyValuePairString
-  }): void {
-    if (dataPartSet.unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
-      console.log('nope: type', dataPartSet.unitStateDataType);
+  updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
+    if (unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
+      console.log('nope: type', unitStateDataType);
       return;
     }
-    const trackedVariables = Object.keys(this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables);
+    const trackedVariables = Object.keys(this.units[sequenceId].variables);
     if (!trackedVariables.length) {
       console.log('nope: trackedVariables', trackedVariables.length);
       return;
     }
     let somethingChanged = false;
-    Object.values(dataPartSet.dataParts).forEach(dataPart => {
+    Object.values(dataParts).forEach(dataPart => {
       // TODO x pre-check interested variables by regex? no?
       const data = JSON.parse(dataPart);
       if (!Array.isArray(data)) {
@@ -686,23 +686,23 @@ export class TestControllerService {
             console.log('nope: not var', variable);
             return;
           }
-          if (typeof this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] === 'undefined') {
-            console.log('nope: not tracked', this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id]);
+          if (typeof this.units[sequenceId].variables[variable.id] === 'undefined') {
+            console.log('nope: not tracked', this.units[sequenceId].variables[variable.id]);
             return;
           }
 
           // TODO X check if REALLY something changed?
-          this.units[this.unitAliasMap[dataPartSet.unitAlias]].variables[variable.id] = variable;
+          this.units[sequenceId].variables[variable.id] = variable;
           somethingChanged = true;
         });
     });
     if (somethingChanged) {
-      this.updateConditions(dataPartSet.unitAlias);
+      this.updateConditions(sequenceId);
     }
   }
 
-  private updateConditions(unitAlias: string) {
-    [this.units[this.unitAliasMap[unitAlias]].parent] // TODO X we need all parents instead
+  private updateConditions(sequenceId: number): void {
+    [this.units[sequenceId].parent] // TODO X we need all parents instead
       .forEach(testlet => {
         this.testlets[testlet.id].firstUnsatisfiedCondition =
           this.testlets[testlet.id].restrictions.if
@@ -741,24 +741,30 @@ export class TestControllerService {
       value = getSourceValue(condition.source);
     }
     if (sourceIsSourceAggregation(condition.source)) {
+      const aggregatorName = condition.source.type.toLowerCase();
       const values = condition.source.sources.map(getSourceValueAsNumber);
-      if (condition.source.type in AggregatorsUtil && (typeof condition.source.type === 'function')) {
-        value = AggregatorsUtil[condition.source.type](values);
+      if (aggregatorName in AggregatorsUtil && (typeof AggregatorsUtil[aggregatorName] === 'function')) {
+        value = AggregatorsUtil[aggregatorName](values);
       }
     }
     if (sourceIsConditionAggregation(condition.source)) {
-      value = condition.source.conditions
-        .map(this.isConditionSatisfied.bind(this))
-        .filter(Boolean)
-        .length;
+      if (condition.source.type === 'Count') {
+        value = condition.source.conditions
+          .map(this.isConditionSatisfied.bind(this))
+          .filter(Boolean)
+          .length;
+      }
     }
 
     if (typeof value === 'undefined') {
+      console.log({ isConditionSatisfied: BlockConditionUntil.stringyfy(condition), value: 'IS UNDEFINED' });
       return false;
     }
 
     let value2: number | string = condition.expression.value;
     value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
+
+    console.log({ isConditionSatisfied: BlockConditionUntil.stringyfy(condition), value, value2 });
 
     // eslint-disable-next-line default-case
     switch (condition.expression.type) {
@@ -769,7 +775,7 @@ export class TestControllerService {
       case 'greaterThan':
         return IqbVariableUtil.variableValueAsNumber(value) > IqbVariableUtil.variableValueAsNumber(value2);
       case 'lowerThan':
-        return IqbVariableUtil.variableValueAsNumber(value) > IqbVariableUtil.variableValueAsNumber(value2);
+        return IqbVariableUtil.variableValueAsNumber(value) < IqbVariableUtil.variableValueAsNumber(value2);
     }
 
     console.log('WTF', condition, value, value2);
