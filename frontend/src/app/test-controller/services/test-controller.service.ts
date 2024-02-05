@@ -71,7 +71,7 @@ export class TestControllerService {
   private _booklet: Booklet | null = null;
   get booklet(): Booklet | null {
     if (!this._booklet) {
-      console.trace();
+      // console.trace();
       // throw new MissingBookletError();
     }
     return this._booklet;
@@ -450,21 +450,6 @@ export class TestControllerService {
       .filter(t => t.restrictions?.codeToEnter?.code && !t.lockedByCode);
   }
 
-  // getUnitIsLockedByCode(unit: Unit): boolean {
-  //   return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.sequenceId;
-  // }
-  //
-  // getFirstSequenceIdOfLockedBlock(fromUnit: Unit): number {
-  //   const unclearedTestlets = this.getUnclearedTestlets(fromUnit);
-  //   if (!unclearedTestlets.length) {
-  //     return fromUnit.sequenceId;
-  //   }
-  //   return unclearedTestlets
-  //     .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
-  //     .children
-  //     .filter(child => !!child.sequenceId)[0].sequenceId;
-  // }
-
   // eslint-disable-next-line class-methods-use-this
   getUnitIsInaccessible(unit: Unit): boolean {
     const isLockedByCode = unit.codeRequiringTestlets
@@ -707,6 +692,7 @@ export class TestControllerService {
             .findIndex(condition => !this.isConditionSatisfied(condition));
         this.testlets[testletId].disabledByIf = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
+    this.testStructureChanges$.next();
   }
 
   private isConditionSatisfied(condition: BlockCondition): boolean {

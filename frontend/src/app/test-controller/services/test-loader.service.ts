@@ -407,7 +407,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           context.parents[context.parents.length - 1] :
           null,
       parent: context.parents[0],
-      blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : '',
+      blockLabel: (context.parents.length > 1) ? context.parents[context.parents.length - 2].label : '',
       playerFileName: '',
       localIndex: context.localUnitIndex,
       variables: { },

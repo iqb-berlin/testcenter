@@ -47,13 +47,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
 
-  unitRestrictions: {
-    lockedByTime: boolean;
-    lockedByCode: boolean;
-  } = {
-      lockedByTime: false,
-      lockedByCode: false
-    };
+  unitLocked: null | 'time' | 'code' | 'condition' = null;
 
   clearCodes: { [testletId: string]: string } = {};
 
@@ -322,9 +316,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.currentUnit) {
       throw new Error('Unit not loaded');
     }
-    this.unitRestrictions.lockedByCode = this.currentUnit.codeRequiringTestlets
+    this.unitLocked = null;
+    const lockedByCode = this.currentUnit.codeRequiringTestlets
       .reduce((isLocked, testlet) => testlet.lockedByCode || isLocked, false);
-    this.unitRestrictions.lockedByTime = this.currentUnit.timerRequiringTestlet?.lockedByTime || false;
+    if (lockedByCode) {
+      this.unitLocked = 'code';
+    }
+    if (this.currentUnit.timerRequiringTestlet?.lockedByTime) {
+      this.unitLocked = 'time';
+    }
+    if (this.currentUnit.parent.disabledByIf) { // TODO X what if great-parent?
+      this.unitLocked = 'condition';
+    }
   }
 
   private runUnit(): void {
@@ -332,7 +335,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error('Unit not loaded');
     }
 
-    if (this.unitRestrictions.lockedByCode || this.unitRestrictions.lockedByTime) {
+    if (this.unitLocked) {
       return;
     }
 

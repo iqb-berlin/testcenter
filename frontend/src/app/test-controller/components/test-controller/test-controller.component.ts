@@ -344,6 +344,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
+      if (unit.parent.disabledByIf) {
+        continue;
+      }
+
       const blockLabel = unit.blockLabel || '';
       if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
         this.unitNavigationList.push(blockLabel);

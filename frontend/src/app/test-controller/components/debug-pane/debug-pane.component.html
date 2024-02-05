@@ -67,6 +67,10 @@
         <td>lockedByCode</td>
         <td>{{testlet.lockedByCode ? 'y' : 'n'}}</td>
       </tr>
+      <tr>
+        <td>disabledByIf</td>
+        <td>{{testlet.disabledByIf ? 'y' : 'n'}}</td>
+      </tr>
     </table>
 
     <div *ngFor="let child of testlet.children" class="testlet">
