@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { BlockCondition } from '../interfaces/booklet.interfaces';
-import { BlockConditionUntil } from '../../unit/block-condition.until';
+import { BlockConditionUtil } from '../../unit/block-condition.util';
 
 @Pipe({
   name: 'blockcondition'
@@ -8,6 +8,6 @@ import { BlockConditionUntil } from '../../unit/block-condition.until';
 export class BlockConditionPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this
   transform(condition: BlockCondition): string {
-    return BlockConditionUntil.stringyfy(condition);
+    return BlockConditionUtil.stringyfy(condition);
   }
 }

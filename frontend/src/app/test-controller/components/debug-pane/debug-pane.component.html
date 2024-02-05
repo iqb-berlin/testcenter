@@ -51,7 +51,6 @@
       *ngFor="let ifRes of testlet.restrictions.if; let i = index"
       matTooltip="{{ifRes | blockcondition}}'"
     >I</span>
-    ({{testlet.firstUnsatisfiedCondition}})
     <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
       {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
     </mat-icon>
@@ -59,10 +58,6 @@
       <tr>
         <td>label</td>
         <td>{{testlet.label}}</td>
-      </tr>
-      <tr>
-        <td>restrictions</td>
-        <td><pre>{{testlet.restrictions| json}}</pre></td>
       </tr>
       <tr>
         <td>lockedByTime</td>

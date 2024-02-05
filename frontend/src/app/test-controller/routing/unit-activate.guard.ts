@@ -15,13 +15,8 @@ export class UnitActivateGuard {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
-    try {
-      const booklet = this.tcs.booklet;
-    } catch (err) {
-      if ((err instanceof Error) && err.name !== 'MissingBookletError') {
-        console.log('otha error');
-        throw err;
-      }
+    const booklet = this.tcs.booklet;
+    if (!booklet) {
       // unit-route got called before test is loaded. This happens on page-reload (F5).
       const testId = Number(route.parent?.params.t);
       if (!testId) {

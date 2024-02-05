@@ -9,7 +9,7 @@
   cursor: move;
   max-height: 100%;
   overflow-x: scroll;
-  border-radius: 1px;
+  border-radius: 3px;
 }
 
 .tabs {
@@ -69,7 +69,9 @@
 }
 
 .tab-variables {
-  top: 120px;
+  bottom: 0;
+  left: 50%;
+  top: unset;
 }
 
 

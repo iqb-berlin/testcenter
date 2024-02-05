@@ -5,7 +5,7 @@ import {
   sourceIsSourceAggregation
 } from '../shared/interfaces/booklet.interfaces';
 
-export class BlockConditionUntil {
+export class BlockConditionUtil {
   static stringyfy(condition: BlockCondition): string {
     const sourceToString =
       (source: BlockConditionSource): string => `${source.type} OF ${source.variable} FROM ${source.unitAlias}`;
@@ -23,7 +23,7 @@ export class BlockConditionUntil {
     if (sourceIsConditionAggregation(condition.source)) {
       nameToken.push(condition.source.type, 'OF');
       nameToken.push(condition.source.conditions
-        .map(BlockConditionUntil.stringyfy)
+        .map(BlockConditionUtil.stringyfy)
         .map(s => `(${s})`)
         .join(' AND ')
       );

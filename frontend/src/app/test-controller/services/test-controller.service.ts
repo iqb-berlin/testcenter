@@ -22,7 +22,7 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
-  BlockCondition, BlockConditionSource,
+  BlockCondition, BlockConditionSource, BlockConditionSourceTypes,
   BookletConfig, sourceIsConditionAggregation,
   sourceIsSingleSource, sourceIsSourceAggregation,
   TestMode
@@ -38,7 +38,7 @@ import {
 } from '../interfaces/iqb.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
-import { BlockConditionUntil } from '../../unit/block-condition.until';
+import { BlockConditionUtil } from '../../unit/block-condition.util';
 
 @Injectable({
   providedIn: 'root'
@@ -69,10 +69,10 @@ export class TestControllerService {
   }
 
   private _booklet: Booklet | null = null;
-  get booklet(): Booklet {
+  get booklet(): Booklet | null {
     if (!this._booklet) {
       console.trace();
-      throw new MissingBookletError();
+      // throw new MissingBookletError();
     }
     return this._booklet;
   }
@@ -664,7 +664,6 @@ export class TestControllerService {
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
     if (unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
-      console.log('nope: type', unitStateDataType);
       return;
     }
     const trackedVariables = Object.keys(this.units[sequenceId].variables);
@@ -687,7 +686,6 @@ export class TestControllerService {
             return;
           }
           if (typeof this.units[sequenceId].variables[variable.id] === 'undefined') {
-            console.log('nope: not tracked', this.units[sequenceId].variables[variable.id]);
             return;
           }
 
@@ -697,17 +695,17 @@ export class TestControllerService {
         });
     });
     if (somethingChanged) {
-      this.updateConditions(sequenceId);
+      this.updateConditions();
     }
   }
 
-  private updateConditions(sequenceId: number): void {
-    [this.units[sequenceId].parent] // TODO X we need all parents instead
-      .forEach(testlet => {
-        this.testlets[testlet.id].firstUnsatisfiedCondition =
-          this.testlets[testlet.id].restrictions.if
+  private updateConditions(): void {
+    Object.keys(this.testlets)
+      .forEach(testletId => {
+        this.testlets[testletId].firstUnsatisfiedCondition =
+          this.testlets[testletId].restrictions.if
             .findIndex(condition => !this.isConditionSatisfied(condition));
-        this.testlets[testlet.id].disabledByIf = this.testlets[testlet.id].firstUnsatisfiedCondition > -1;
+        this.testlets[testletId].disabledByIf = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
   }
 
@@ -757,14 +755,14 @@ export class TestControllerService {
     }
 
     if (typeof value === 'undefined') {
-      console.log({ isConditionSatisfied: BlockConditionUntil.stringyfy(condition), value: 'IS UNDEFINED' });
+      console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value: 'IS UNDEFINED' });
       return false;
     }
 
     let value2: number | string = condition.expression.value;
     value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
 
-    console.log({ isConditionSatisfied: BlockConditionUntil.stringyfy(condition), value, value2 });
+    console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value, value2 });
 
     // eslint-disable-next-line default-case
     switch (condition.expression.type) {

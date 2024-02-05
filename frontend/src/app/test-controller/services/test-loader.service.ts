@@ -16,7 +16,7 @@ import {
   BlockCondition,
   BlockConditionSource,
   sourceIsConditionAggregation,
-  sourceIsSourceAggregation, sourceIsSingleSource, BlockConditionSourceAggregation
+  sourceIsSourceAggregation, sourceIsSingleSource
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
@@ -195,7 +195,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
           this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
 
-
           if (definitionFile) {
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
           } else {
@@ -320,11 +319,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
   }
 
-  private static getChildElements(element: Element): Element[] {
-    return Array.prototype.slice.call(element.childNodes)
-      .filter(e => e.nodeType === 1);
-  }
-
   private incrementTotalProgress(progress: LoadingProgress, file: string): void {
     if (typeof progress.progress !== 'number') {
       return;
@@ -352,11 +346,36 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         });
     };
 
+    this.tcs.testlets[''] = booklet.units;
     registerChildren(booklet.units);
 
+    this.registerTrackedVariables();
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
+  }
+
+  registerTrackedVariables() {
+    const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
+    const registerVariablesFromSource = (source: BlockConditionSource): void => {
+      this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]].variables[source.variable] =
+        emptyVariable(source.variable);
+    };
+    const registerVariablesFromCondition = (condition: BlockCondition): void => {
+      if (sourceIsSingleSource(condition.source)) {
+        registerVariablesFromSource(condition.source);
+      }
+      if (sourceIsSourceAggregation(condition.source)) {
+        condition.source.sources.forEach(registerVariablesFromSource);
+      }
+      if (sourceIsConditionAggregation(condition.source)) {
+        condition.source.conditions.forEach(registerVariablesFromCondition);
+      }
+    };
+
+    Object.values(this.tcs.testlets)
+      .flatMap(testlet => testlet.restrictions.if)
+      .forEach(registerVariablesFromCondition);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -378,20 +397,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   // eslint-disable-next-line class-methods-use-this
   toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
-    const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
-    const getConditionSources = (condition: BlockCondition): BlockConditionSource[] => {
-      const source = condition.source;
-      if (sourceIsConditionAggregation(source)) {
-        return source.conditions.flatMap(getConditionSources);
-      }
-      if (sourceIsSourceAggregation(source)) {
-        return source.sources;
-      }
-      if (sourceIsSingleSource(source)) {
-        return [source];
-      }
-      return [];
-    };
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
@@ -405,11 +410,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       blockLabel: context.parents.length ? context.parents[context.parents.length - 1].label : '',
       playerFileName: '',
       localIndex: context.localUnitIndex,
-      variables: Object.fromEntries(new Map(
-        context.parents.flatMap(parent => parent.restrictions.if.flatMap(getConditionSources))
-          .filter(source => source.unitAlias === unitDef.alias)
-          .map(source => [source.variable, emptyVariable(source.variable)]
-          ))),
+      variables: { },
       context
     });
   }
