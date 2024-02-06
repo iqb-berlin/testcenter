@@ -137,10 +137,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     Object.keys(this.tcs.testlets)
       .forEach(testletId => {
+        console.log(testletId, this.tcs.testlets[testletId].restrictions);
         this.tcs.testlets[testletId].lockedByCode =
-          ('codeToEnter' in this.tcs.testlets[testletId].restrictions) && !clearedTestlets.includes(testletId);
+          !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
         this.tcs.testlets[testletId].lockedByTime =
-          ('timeMax' in this.tcs.testlets[testletId].restrictions) && !(this.tcs.timers[testletId]);
+          !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes && !(this.tcs.timers[testletId]);
       });
   }
 
@@ -350,6 +351,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     registerChildren(booklet.units);
 
     this.registerTrackedVariables();
+    console.log('hhmmm', this.tcs.testlets['']);
+    this.tcs.updateLocks();
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
@@ -385,13 +388,21 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+    console.log(context.parents);
+    let timerId = null;
+    if (!context.parents.length && testletDef.restrictions.timeMax?.minutes) {
+      timerId = testletDef.id;
+    } else if (context.parents.length) {
+      timerId = context.parents[0].timerId;
+    }
     return Object.assign(testletDef, {
       sequenceId: NaN,
-      lockedByTime: false,
-      lockedByCode: false,
+      lockedByTime: !!testletDef.restrictions.timeMax?.minutes,
+      lockedByCode: !!testletDef.restrictions.codeToEnter?.code,
       disabledByIf: !!testletDef.restrictions.if.length,
       firstUnsatisfiedCondition: NaN,
-      context
+      lock: null,
+      timerId
     });
   }
 
@@ -399,19 +410,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
-      codeRequiringTestlets: context.parents.filter(parent => parent?.restrictions?.codeToEnter?.code),
-      timerRequiringTestlet:
-        (context.parents[context.parents.length - 1] &&
-          context.parents[context.parents.length - 1].restrictions?.timeMax?.minutes
-        ) ?
-          context.parents[context.parents.length - 1] :
-          null,
       parent: context.parents[0],
       blockLabel: (context.parents.length > 1) ? context.parents[context.parents.length - 2].label : '',
       playerFileName: '',
       localIndex: context.localUnitIndex,
-      variables: { },
-      context
+      variables: { }
     });
   }
 }

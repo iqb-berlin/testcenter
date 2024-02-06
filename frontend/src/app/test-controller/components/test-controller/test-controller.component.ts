@@ -252,10 +252,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.cancelTimer();
           const targetUnit = this.tcs.getUnit(parseInt(gotoTarget, 10));
           if (targetUnit) {
-            targetUnit.codeRequiringTestlets
-              .forEach(testlet => {
-                this.tcs.clearTestlet(testlet.id);
-              });
+            this.tcs.clearTestlet(targetUnit.parent.id);
           }
 
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
@@ -265,17 +262,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private handleTimer(timerData: TimerData): void {
-    const minute = timerData.timeLeftSeconds / 60;
-    switch (timerData.type) {
+  private handleTimer(timer: TimerData): void {
+    const minute = timer.timeLeftSeconds / 60;
+    switch (timer.type) {
       case MaxTimerEvent.STARTED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
-          timerData.timeLeftMinString, '', { duration: 5000 });
-        this.timerValue = timerData;
+          timer.timeLeftMinString, '', { duration: 5000 });
+        this.timerValue = timer;
         break;
       case MaxTimerEvent.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
-        this.tcs.timers[timerData.testletId] = 0;
+        this.tcs.timers[timer.id] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
@@ -288,15 +285,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.currentUnit.parent.lockedByTime = true;
+          this.tcs.currentUnit.parent.lockedByTime = true; // TODO X pack in function!
+          this.tcs.updateLocks();
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
         }
         break;
       case MaxTimerEvent.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
-        // this.tcs.setTimeLeft(timerData.testletId, 0);
-        this.tcs.timers[timerData.testletId] = 0;
+        // this.tcs.setTimeLeft(timer.testletId, 0);
+        this.tcs.timers[timer.id] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
@@ -313,10 +311,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         break;
       case MaxTimerEvent.STEP:
-        this.timerValue = timerData;
-        this.tcs.timers[timerData.testletId] = timerData.timeLeftSeconds / 60;
-        if ((timerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.timers[timerData.testletId] = timerData.timeLeftSeconds / 60;
+        this.timerValue = timer;
+        this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
+        if ((timer.timeLeftSeconds % 15) === 0) {
+          this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
           if (this.tcs.testMode.saveResponses) {
             this.bs.updateTestState(
               this.tcs.testId,
@@ -344,7 +342,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
-      if (unit.parent.disabledByIf) {
+      if (unit.parent.lock?.type === 'condition') {
+        // eslint-disable-next-line no-continue
         continue;
       }
 

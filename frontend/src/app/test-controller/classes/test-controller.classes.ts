@@ -291,7 +291,7 @@ export class EnvironmentData {
 
 export class TimerData {
   timeLeftSeconds: number; // seconds
-  testletId: string;
+  id: string;
   type: MaxTimerEvent;
 
   get timeLeftString(): string {
@@ -308,7 +308,7 @@ export class TimerData {
 
   constructor(timeMinutes: number, tId: string, type: MaxTimerEvent) {
     this.timeLeftSeconds = timeMinutes * 60;
-    this.testletId = tId;
+    this.id = tId;
     this.type = type;
   }
 }

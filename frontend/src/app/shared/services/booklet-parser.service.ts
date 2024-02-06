@@ -1,6 +1,6 @@
 import { BookletConfig } from '../classes/booklet-config.class';
 import {
-  BlockCondition, BlockConditionExpression, BlockConditionSourceAggregation,
+  BlockCondition, BlockConditionSourceAggregation,
   BlockConditionSourceAggregationTypes,
   BlockConditionExpressionTypes,
   BlockConditionSource,

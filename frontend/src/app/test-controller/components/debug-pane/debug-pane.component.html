@@ -71,6 +71,10 @@
         <td>disabledByIf</td>
         <td>{{testlet.disabledByIf ? 'y' : 'n'}}</td>
       </tr>
+      <tr>
+        <td>lock</td>
+        <td>{{testlet.lock?.type}} {{testlet.lock?.by.id}}</td>
+      </tr>
     </table>
 
     <div *ngFor="let child of testlet.children" class="testlet">
@@ -140,7 +144,7 @@
     </thead>
     <tbody *ngFor="let unit of tcs.units | keyvalue">
       <tr>
-        <td colspan="5"><b>{{unit.value.alias}}</b></td>
+        <td colspan="5">{{unit.value.alias}}</td>
       </tr>
       <tr *ngFor="let uvar of unit.value.variables | keyvalue">
         <td>{{uvar.value.id}}</td>

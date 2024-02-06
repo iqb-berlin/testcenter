@@ -231,20 +231,31 @@ export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is Lo
 
 export interface Unit extends UnitDef {
   readonly sequenceId: number;
+  // readonly parent: Testlet;
+  // readonly codeRequiringTestlets: Testlet[];
+  // readonly conditionialTestlets: Testlet[];
+  // readonly timedTestlet: Testlet | null;
   readonly parent: Testlet;
-  readonly codeRequiringTestlets: Testlet[];
-  readonly timerRequiringTestlet: Testlet | null;
   readonly blockLabel: string;
   readonly localIndex: number;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
 }
 
+export type TestletLock = {
+  type: 'time' | 'code' | 'condition';
+  by: Testlet;
+};
+
 export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
+  // readonly locks: UnitLock[];
+  // parents: Testlet[];
   lockedByTime: boolean;
   lockedByCode: boolean;
   disabledByIf: boolean;
+  lock: TestletLock | null;
+  timerId: string | null;
   firstUnsatisfiedCondition: number;
 }
 

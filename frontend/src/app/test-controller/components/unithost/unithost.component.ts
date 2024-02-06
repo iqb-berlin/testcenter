@@ -46,10 +46,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   currentUnit: Unit | null = null;
   currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
-
-  unitLocked: null | 'time' | 'code' | 'condition' = null;
-
-  clearCodes: { [testletId: string]: string } = {};
+  clearCode: string = '';
 
   constructor(
     public tcs: TestControllerService,
@@ -302,8 +299,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.updateUnitRestrictions();
-
     if (this.tcs.testMode.presetCode) {
       // this.currentUnit.codeRequiringTestlets // TODO X REIMPLEMENT!
       //   .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
@@ -312,30 +307,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.runUnit();
   }
 
-  private updateUnitRestrictions(): void {
-    if (!this.currentUnit) {
-      throw new Error('Unit not loaded');
-    }
-    this.unitLocked = null;
-    const lockedByCode = this.currentUnit.codeRequiringTestlets
-      .reduce((isLocked, testlet) => testlet.lockedByCode || isLocked, false);
-    if (lockedByCode) {
-      this.unitLocked = 'code';
-    }
-    if (this.currentUnit.timerRequiringTestlet?.lockedByTime) {
-      this.unitLocked = 'time';
-    }
-    if (this.currentUnit.parent.disabledByIf) { // TODO X what if great-parent?
-      this.unitLocked = 'condition';
-    }
-  }
-
   private runUnit(): void {
     if (!this.currentUnit) {
       throw new Error('Unit not loaded');
     }
 
-    if (this.unitLocked) {
+    if (this.currentUnit.parent.lock) {
       return;
     }
 
@@ -361,15 +338,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private startTimerIfNecessary(): void {
-    if (!this.currentUnit?.timerRequiringTestlet) {
+    if (!this.currentUnit?.parent.timerId) {
       return;
     }
-    if (this.tcs.currentMaxTimerTestletId &&
-      (this.currentUnit.timerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    if (this.tcs.currentTimerId &&
+      (this.currentUnit.parent.timerId === this.tcs.currentTimerId)
     ) {
       return;
     }
-    this.tcs.startTimer(this.currentUnit.timerRequiringTestlet);
+    this.tcs.startTimer(this.tcs.units[this.currentUnit.sequenceId].parent);
   }
 
   private prepareIframe(): void {
@@ -489,36 +466,24 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   verifyCodes(): void {
-    if (!this.currentUnit) {
+    if (!this.currentUnit || (!this.currentUnit.parent.lock)) {
       throw new Error('Unit not loaded');
     }
-    this.currentUnit.codeRequiringTestlets
-      .forEach(
-        testlet => {
-          console.log({
-            tid: testlet.id,
-            cc: this.clearCodes[testlet.id]
-          });
-          if (!this.clearCodes[testlet.id]) {
-            return;
-          }
-          const requiredCode = (testlet.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
-          const givenCode = this.clearCodes[testlet.id].toUpperCase().trim();
 
-          if (requiredCode === givenCode) {
-            this.tcs.clearTestlet(testlet.id);
-            this.updateUnitRestrictions();
-            this.runUnit();
-          } else {
-            this.snackBar.open(
-              `Freigabewort '${givenCode}' für '${testlet.label}' stimmt nicht.`,
-              'OK',
-              { duration: 3000 }
-            );
-            delete this.clearCodes[testlet.id];
-          }
-        }
+    const requiredCode = (this.currentUnit.parent.lock.by.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
+    const givenCode = this.clearCode.toUpperCase().trim();
+
+    if (requiredCode === givenCode) {
+      this.tcs.clearTestlet(this.currentUnit.parent.lock.by.id);
+      this.runUnit();
+    } else {
+      this.snackBar.open(
+        `Freigabewort '${givenCode}' für '${this.currentUnit.parent.lock.by.label}' stimmt nicht.`,
+        'OK',
+        { duration: 3000 }
       );
+      this.clearCode = '';
+    }
   }
 
   onKeydownInClearCodeInput($event: KeyboardEvent): void {

@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet, KeyValuePairNumber,
+  Booklet, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
   LoadingProgress,
   MaxTimerEvent,
@@ -22,7 +22,7 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
-  BlockCondition, BlockConditionSource, BlockConditionSourceTypes,
+  BlockCondition, BlockConditionSource,
   BookletConfig, sourceIsConditionAggregation,
   sourceIsSingleSource, sourceIsSourceAggregation,
   TestMode
@@ -87,7 +87,7 @@ export class TestControllerService {
 
   timers$ = new Subject<TimerData>();
   timers: KeyValuePairNumber = {}; // TODO remove the redundancy with timers$
-  currentMaxTimerTestletId = '';
+  currentTimerId = '';
   private timerIntervalSubscription: Subscription | null = null;
   timerWarningPoints: number[] = [];
 
@@ -252,7 +252,7 @@ export class TestControllerService {
       this.timerIntervalSubscription.unsubscribe();
       this.timerIntervalSubscription = null;
     }
-    this.currentMaxTimerTestletId = '';
+    this.currentTimerId = '';
   }
 
   // uppercase and add extension if not part
@@ -429,6 +429,7 @@ export class TestControllerService {
     }
     this.testlets[testletId].lockedByCode = false;
     this.testStructureChanges$.next();
+    this.updateLocks();
     if (this.testMode.saveResponses) {
       const unlockedTestlets = Object.values(this.testlets)
         .filter(t => t.restrictions.codeToEnter?.code && !t.lockedByCode)
@@ -442,21 +443,6 @@ export class TestControllerService {
         }]
       );
     }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getUnclearedTestlets(unit: Unit): Testlet[] {
-    return unit.codeRequiringTestlets
-      .filter(t => t.restrictions?.codeToEnter?.code && !t.lockedByCode);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getUnitIsInaccessible(unit: Unit): boolean {
-    const isLockedByCode = unit.codeRequiringTestlets
-      .reduce((isLocked, testlet) => (testlet.lockedByCode || isLocked), false);
-    const isLockedByTime = unit.timerRequiringTestlet?.lockedByTime || false;
-    const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
-    return isLockedByCodeAndNotFirstOne || isLockedByTime;
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -500,7 +486,7 @@ export class TestControllerService {
       this.timerIntervalSubscription.unsubscribe();
     }
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
-    this.currentMaxTimerTestletId = testlet.id;
+    this.currentTimerId = testlet.id;
     this.timerIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
@@ -516,7 +502,7 @@ export class TestControllerService {
         },
         complete: () => {
           this.timers$.next(new TimerData(0, testlet.id, MaxTimerEvent.ENDED));
-          this.currentMaxTimerTestletId = '';
+          this.currentTimerId = '';
         }
       });
   }
@@ -525,18 +511,18 @@ export class TestControllerService {
     if (this.timerIntervalSubscription !== null) {
       this.timerIntervalSubscription.unsubscribe();
       this.timerIntervalSubscription = null;
-      this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.CANCELLED));
+      this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.CANCELLED));
     }
-    this.currentMaxTimerTestletId = '';
+    this.currentTimerId = '';
   }
 
   interruptTimer(): void {
     if (this.timerIntervalSubscription !== null) {
       this.timerIntervalSubscription.unsubscribe();
       this.timerIntervalSubscription = null;
-      this.timers$.next(new TimerData(0, this.currentMaxTimerTestletId, MaxTimerEvent.INTERRUPTED));
+      this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.INTERRUPTED));
     }
-    this.currentMaxTimerTestletId = '';
+    this.currentTimerId = '';
   }
 
   notifyNavigationDenied(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
@@ -647,6 +633,59 @@ export class TestControllerService {
     return !!this.unitDefinitions[sequenceId];
   }
 
+  updateLocks(): void {
+    const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
+      // TODO X write better
+      if (parent?.disabledByIf) {
+        testlet.lock = {
+          type: 'condition',
+          by: parent
+        };
+      } else if (testlet.disabledByIf) {
+        testlet.lock = {
+          type: 'condition',
+          by: testlet
+        };
+      } else if (parent?.lockedByTime) {
+        testlet.lock = {
+          type: 'time',
+          by: parent
+        };
+      } else if (testlet.lockedByTime) {
+        testlet.lock = {
+          type: 'time',
+          by: testlet
+        };
+      } else if (parent?.lockedByCode) {
+        testlet.lock = {
+          type: 'code',
+          by: parent
+        };
+      } else if (testlet.lockedByCode) {
+        testlet.lock = {
+          type: 'code',
+          by: testlet
+        };
+      } else {
+        testlet.lock = null;
+      }
+
+      testlet.children
+        .filter(isTestlet)
+        .forEach(child => updateLocks(child, testlet));
+    };
+
+    updateLocks(this.testlets['']);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getUnitIsInaccessible(unit: Unit): boolean {
+    const isLockedByCode = unit.parent.lock?.type === 'code';
+    const isLockedByTime = unit.parent.lock?.type === 'time';
+    const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
+    return isLockedByCodeAndNotFirstOne || isLockedByTime;
+  }
+
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
     if (unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
       return;
@@ -692,6 +731,7 @@ export class TestControllerService {
             .findIndex(condition => !this.isConditionSatisfied(condition));
         this.testlets[testletId].disabledByIf = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
+    this.updateLocks();
     this.testStructureChanges$.next();
   }
 
@@ -748,7 +788,7 @@ export class TestControllerService {
     let value2: number | string = condition.expression.value;
     value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
 
-    console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value, value2 });
+    // console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value, value2 });
 
     // eslint-disable-next-line default-case
     switch (condition.expression.type) {

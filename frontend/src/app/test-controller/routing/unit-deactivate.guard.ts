@@ -22,12 +22,12 @@ export class UnitDeactivateGuard {
     private router: Router
   ) {}
 
-  private checkAndSolveMaxTime(newUnit: Unit | null): Observable<boolean> {
-    if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
+  private checkAndSolveTimer(newUnit: Unit | null): Observable<boolean> {
+    if (!this.tcs.currentTimerId) { // leaving unit is not in a timed block
       return of(true);
     }
-    if (newUnit && newUnit.timerRequiringTestlet && // staying in the same timed block
-      (newUnit.timerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    if (newUnit && newUnit.parent.timerId && // staying in the same timed block
+      (newUnit.parent.timerId === this.tcs.currentTimerId)
     ) {
       return of(true);
     }
@@ -71,7 +71,7 @@ export class UnitDeactivateGuard {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (unit.timerRequiringTestlet?.lockedByTime) {
+    if (unit.parent.lock?.type === 'time') {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
@@ -153,7 +153,7 @@ export class UnitDeactivateGuard {
     }
 
     const currentUnit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
+    if (currentUnit && (currentUnit.parent.lock?.type !== 'code')) {
       return true;
     }
 
@@ -172,7 +172,7 @@ export class UnitDeactivateGuard {
 
     return this.checkAndSolveCompleteness(newUnit)
       .pipe(
-        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit)))
+        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveTimer(newUnit)))
       );
   }
 }
