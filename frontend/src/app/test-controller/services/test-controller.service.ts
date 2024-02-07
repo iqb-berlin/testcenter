@@ -177,18 +177,19 @@ export class TestControllerService {
         })
       )
       .subscribe(changedDataParts => {
-        // TODO X achtung: es sollte auch ohne wegspeichern der Variablen gehen!
         this.updateVariables(
           this.unitAliasMap[changedDataParts.unitAlias],
           changedDataParts.unitStateDataType,
           changedDataParts.dataParts
         );
-        this.bs.updateDataParts(
-          this.testId,
-          changedDataParts.unitAlias,
-          changedDataParts.dataParts,
-          changedDataParts.unitStateDataType
-        );
+        if (this.testMode.saveResponses) {
+          this.bs.updateDataParts(
+            this.testId,
+            changedDataParts.unitAlias,
+            changedDataParts.dataParts,
+            changedDataParts.unitStateDataType
+          );
+        }
       });
   }
 
@@ -212,11 +213,13 @@ export class TestControllerService {
         ))
       )
       .subscribe(aggregatedStateUpdate => {
-        this.bs.updateUnitState(
-          this.testId,
-          aggregatedStateUpdate.alias,
-          aggregatedStateUpdate.state
-        );
+        if (this.testMode.saveResponses) {
+          this.bs.updateUnitState(
+            this.testId,
+            aggregatedStateUpdate.alias,
+            aggregatedStateUpdate.state
+          );
+        }
       });
   }
 
@@ -286,7 +289,7 @@ export class TestControllerService {
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
-    if (Object.keys(changedParts).length && this.testMode.saveResponses) {
+    if (Object.keys(changedParts).length) {
       this.unitDataPartsToSave$.next({ unitAlias: unitAlias, dataParts: changedParts, unitStateDataType });
     }
   }
@@ -303,7 +306,7 @@ export class TestControllerService {
       });
     unitStateUpdate.state
       .forEach(changedState => this.setUnitState(unitSequenceId, changedState.key, changedState.content));
-    if (this.testMode.saveResponses && unitStateUpdate.state.length) {
+    if (unitStateUpdate.state.length) {
       this.unitStateToSave$.next(unitStateUpdate);
     }
   }
