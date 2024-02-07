@@ -395,8 +395,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.currentUnitSequenceId,
-        1,
-        this.tcs.sequenceLength,
+        this.tcs.getSequenceBounds(),
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
@@ -414,27 +413,26 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private static getEnabledNavigationTargets(
     nr: number,
-    min: number,
-    max: number,
+    bounds: [min: number, max: number],
     terminationAllowed: 'ON' | 'OFF' | 'LAST_UNIT' = 'ON'
   ): VeronaNavigationTarget[] {
     const navigationTargets: VeronaNavigationTarget[] = [];
-    if (nr < max) {
+    if (nr < bounds[1]) {
       navigationTargets.push('next');
     }
-    if (nr > min) {
+    if (nr > bounds[0]) {
       navigationTargets.push('previous');
     }
-    if (nr !== min) {
+    if (nr !== bounds[0]) {
       navigationTargets.push('first');
     }
-    if (nr !== max) {
+    if (nr !== bounds[1]) {
       navigationTargets.push('last');
     }
     if (terminationAllowed === 'ON') {
       navigationTargets.push('end');
     }
-    if ((terminationAllowed === 'LAST_UNIT') && (nr === max)) {
+    if ((terminationAllowed === 'LAST_UNIT') && (nr === bounds[1])) {
       navigationTargets.push('end');
     }
 

@@ -91,22 +91,6 @@
           >
             OK
           </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId === 0"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück"
-          >
-            <i class="material-icons">chevron_left</i>
-          </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
-          >
-            <i class="material-icons">chevron_right</i>
-          </button>
         </mat-card-actions>
       </mat-card>
     </div>

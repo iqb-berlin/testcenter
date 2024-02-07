@@ -55,6 +55,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   debugPane = false;
   unitScreenHeader: string = '';
 
+  firstAccessibleUnit: number = 1;
+  lastAccessibleUnit: number = Infinity;
+
   constructor(
     public mainDataService: MainDataService,
     public tcs: TestControllerService,
@@ -337,9 +340,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private refreshUnitMenu(): void {
     this.unitNavigationList = [];
+    [this.firstAccessibleUnit, this.lastAccessibleUnit] = this.tcs.getSequenceBounds();
+    console.log([this.firstAccessibleUnit, this.lastAccessibleUnit]);
 
     let previousBlockLabel: string | null = null;
-    for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
+    for (let sequenceId = this.firstAccessibleUnit; sequenceId <= this.lastAccessibleUnit; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
       if (unit.parent.locked?.by === 'condition') {
@@ -362,6 +367,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }
+    console.log(this.unitNavigationList);
   }
 
   private setUnitScreenHeader(): void {

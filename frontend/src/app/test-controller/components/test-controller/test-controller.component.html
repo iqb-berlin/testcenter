@@ -13,14 +13,14 @@
        class="flex-row" [style.align-items]="'safe center'" [style.max-height.%]="100" [style.margin-left]="'auto'">
     <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
        mat-fab matTooltip="Zurück" data-cy="unit-navigation-backward"
-       [disabled]="tcs.currentUnitSequenceId <= 1"
+       [disabled]="tcs.currentUnitSequenceId <= firstAccessibleUnit"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>
     </a>
     <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
        mat-flat-button matTooltip="Zurück" data-cy="unit-navigation-backward"
        [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId <= 1"
+       [disabled]="tcs.currentUnitSequenceId <= firstAccessibleUnit"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
       <i class="material-icons">chevron_left</i>
     </a>
@@ -39,14 +39,14 @@
 
     <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
        mat-fab matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
+       [disabled]="tcs.currentUnitSequenceId >= lastAccessibleUnit"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>
     <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
        mat-flat-button matTooltip="Weiter" data-cy="unit-navigation-forward"
        [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.sequenceLength"
+       [disabled]="tcs.currentUnitSequenceId >= lastAccessibleUnit"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
       <i class="material-icons">chevron_right</i>
     </a>

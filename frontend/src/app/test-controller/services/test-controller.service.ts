@@ -774,4 +774,11 @@ export class TestControllerService {
     console.log('WTF', condition, value, value2);
     return false;
   }
+
+  getSequenceBounds(): [number, number] {
+    return [
+      Object.values(this.units).find(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN,
+      Object.values(this.units).findLast(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN
+    ];
+  }
 }
