@@ -13,11 +13,11 @@
   <div #iframeHost id="iframe-host"></div>
 
   <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-    <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.parent.lock">
+    <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.parent.locked">
       <mat-card appearance="raised">
         <mat-card-header>
           <mat-card-title>
-            {{(loadingUnits.list.length > 1 || currentUnit.parent.lock) ? currentUnit?.blockLabel : currentUnit?.title}}
+            {{(loadingUnits.list.length > 1 || currentUnit.parent.locked) ? currentUnit?.blockLabel : currentUnit?.title}}
           </mat-card-title>
           <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
             {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
@@ -25,13 +25,13 @@
           <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
             {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.parent.lock === 'time'">
+          <mat-card-subtitle *ngIf="currentUnit?.parent.locked?.by === 'time'">
             {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.parent.lock === 'code'">
+          <mat-card-subtitle *ngIf="currentUnit?.parent.locked?.by === 'code'">
             {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.parent.lock === 'condition'">
+          <mat-card-subtitle *ngIf="currentUnit?.parent.locked?.by === 'condition'">
             {{'Aufgabenblock steht nicht zur Verfügung' | customtext:'booklet_blockConditionNotSatisfied' | async}}
           </mat-card-subtitle>
         </mat-card-header>

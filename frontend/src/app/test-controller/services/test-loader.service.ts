@@ -138,9 +138,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     Object.keys(this.tcs.testlets)
       .forEach(testletId => {
         console.log(testletId, this.tcs.testlets[testletId].restrictions);
-        this.tcs.testlets[testletId].lockedByCode =
+        this.tcs.testlets[testletId].locks.code =
           !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
-        this.tcs.testlets[testletId].lockedByTime =
+        this.tcs.testlets[testletId].locks.time =
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes && !(this.tcs.timers[testletId]);
       });
   }
@@ -397,11 +397,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
     return Object.assign(testletDef, {
       sequenceId: NaN,
-      lockedByTime: !!testletDef.restrictions.timeMax?.minutes,
-      lockedByCode: !!testletDef.restrictions.codeToEnter?.code,
-      disabledByIf: !!testletDef.restrictions.if.length,
+      locks: {
+        time: !!testletDef.restrictions.timeMax?.minutes,
+        code: !!testletDef.restrictions.codeToEnter?.code,
+        condition: !!testletDef.restrictions.if.length
+      },
       firstUnsatisfiedCondition: NaN,
-      lock: null,
+      locked: null,
       timerId
     });
   }

@@ -71,7 +71,7 @@ export class UnitDeactivateGuard {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (unit.parent.lock?.type === 'time') {
+    if (unit.parent.locked?.by === 'time') {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
@@ -153,7 +153,7 @@ export class UnitDeactivateGuard {
     }
 
     const currentUnit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (currentUnit && (currentUnit.parent.lock?.type !== 'code')) {
+    if (currentUnit && (currentUnit.parent.locked?.by !== 'code')) {
       return true;
     }
 

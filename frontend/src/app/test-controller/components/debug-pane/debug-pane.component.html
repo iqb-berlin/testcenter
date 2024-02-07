@@ -60,20 +60,20 @@
         <td>{{testlet.label}}</td>
       </tr>
       <tr>
-        <td>lockedByTime</td>
-        <td>{{testlet.lockedByTime ? 'y' : 'n'}}</td>
+        <td>locks.time</td>
+        <td>{{testlet.locks.time ? 'y' : 'n'}}</td>
       </tr>
       <tr>
-        <td>lockedByCode</td>
-        <td>{{testlet.lockedByCode ? 'y' : 'n'}}</td>
+        <td>locks.code</td>
+        <td>{{testlet.locks.code ? 'y' : 'n'}}</td>
       </tr>
       <tr>
-        <td>disabledByIf</td>
-        <td>{{testlet.disabledByIf ? 'y' : 'n'}}</td>
+        <td>locks.condition</td>
+        <td>{{testlet.locks.condition ? 'y' : 'n'}}</td>
       </tr>
       <tr>
         <td>lock</td>
-        <td>{{testlet.lock?.type}} {{testlet.lock?.by.id}}</td>
+        <td>By {{testlet.lock?.by}} THROUGH {{testlet.lock?.by.id}}</td>
       </tr>
     </table>
 

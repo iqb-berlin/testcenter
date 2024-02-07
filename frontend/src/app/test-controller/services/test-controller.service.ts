@@ -13,7 +13,7 @@ import {
   LoadingProgress,
   MaxTimerEvent,
   StateReportEntry,
-  TestControllerState, Testlet,
+  TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, Unit,
   UnitDataParts,
   UnitNavigationTarget,
@@ -427,12 +427,12 @@ export class TestControllerService {
     if (!this.testlets[testletId] || !this.testlets[testletId].restrictions.codeToEnter?.code) {
       return;
     }
-    this.testlets[testletId].lockedByCode = false;
+    this.testlets[testletId].locks.code = false;
     this.testStructureChanges$.next();
     this.updateLocks();
     if (this.testMode.saveResponses) {
       const unlockedTestlets = Object.values(this.testlets)
-        .filter(t => t.restrictions.codeToEnter?.code && !t.lockedByCode)
+        .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
         .map(t => t.id);
       this.bs.updateTestState(
         this.testId,
@@ -635,41 +635,10 @@ export class TestControllerService {
 
   updateLocks(): void {
     const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
-      // TODO X write better
-      if (parent?.disabledByIf) {
-        testlet.lock = {
-          type: 'condition',
-          by: parent
-        };
-      } else if (testlet.disabledByIf) {
-        testlet.lock = {
-          type: 'condition',
-          by: testlet
-        };
-      } else if (parent?.lockedByTime) {
-        testlet.lock = {
-          type: 'time',
-          by: parent
-        };
-      } else if (testlet.lockedByTime) {
-        testlet.lock = {
-          type: 'time',
-          by: testlet
-        };
-      } else if (parent?.lockedByCode) {
-        testlet.lock = {
-          type: 'code',
-          by: parent
-        };
-      } else if (testlet.lockedByCode) {
-        testlet.lock = {
-          type: 'code',
-          by: testlet
-        };
-      } else {
-        testlet.lock = null;
-      }
-
+      testlet.locked = [parent, testlet]
+        .filter((item): item is Testlet => !!item)
+        .flatMap(item => TestletLockTypes.map(lockType => ({ through: item, by: lockType })))
+        .find(isLocked => isLocked.through.locks[isLocked.by]) || null;
       testlet.children
         .filter(isTestlet)
         .forEach(child => updateLocks(child, testlet));
@@ -680,8 +649,8 @@ export class TestControllerService {
 
   // eslint-disable-next-line class-methods-use-this
   getUnitIsInaccessible(unit: Unit): boolean {
-    const isLockedByCode = unit.parent.lock?.type === 'code';
-    const isLockedByTime = unit.parent.lock?.type === 'time';
+    const isLockedByCode = unit.parent.locked?.by === 'code';
+    const isLockedByTime = unit.parent.locked?.by === 'time';
     const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
     return isLockedByCodeAndNotFirstOne || isLockedByTime;
   }
@@ -729,7 +698,7 @@ export class TestControllerService {
         this.testlets[testletId].firstUnsatisfiedCondition =
           this.testlets[testletId].restrictions.if
             .findIndex(condition => !this.isConditionSatisfied(condition));
-        this.testlets[testletId].disabledByIf = this.testlets[testletId].firstUnsatisfiedCondition > -1;
+        this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
     this.updateLocks();
     this.testStructureChanges$.next();

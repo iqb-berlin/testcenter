@@ -285,7 +285,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.currentUnit.parent.lockedByTime = true; // TODO X pack in function!
+          this.tcs.currentUnit.parent.locks.time = true; // TODO X pack in function!
           this.tcs.updateLocks();
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
@@ -342,7 +342,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
       const unit = this.tcs.getUnit(sequenceId);
 
-      if (unit.parent.lock?.type === 'condition') {
+      if (unit.parent.locked?.by === 'condition') {
         // eslint-disable-next-line no-continue
         continue;
       }

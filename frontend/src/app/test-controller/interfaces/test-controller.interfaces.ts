@@ -242,19 +242,17 @@ export interface Unit extends UnitDef {
   playerFileName: string;
 }
 
-export type TestletLock = {
-  type: 'time' | 'code' | 'condition';
-  by: Testlet;
-};
+export const TestletLockTypes = ['condition', 'time', 'code'] as const;
+
+export type TestletLockType = typeof TestletLockTypes[number];
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
-  // readonly locks: UnitLock[];
-  // parents: Testlet[];
-  lockedByTime: boolean;
-  lockedByCode: boolean;
-  disabledByIf: boolean;
-  lock: TestletLock | null;
+  locks: Required<{ [ type in TestletLockType ]: boolean }>
+  locked: {
+    by: TestletLockType;
+    through: Testlet;
+  } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
 }
