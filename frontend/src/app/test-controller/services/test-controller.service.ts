@@ -667,28 +667,40 @@ export class TestControllerService {
       console.log('nope: trackedVariables', trackedVariables.length);
       return;
     }
-    let somethingChanged = false;
-    Object.values(dataParts).forEach(dataPart => {
-      // TODO x pre-check interested variables by regex? no?
-      const data = JSON.parse(dataPart);
-      if (!Array.isArray(data)) {
-        console.log('nope: array', data);
-        return;
-      }
-      data
-        .forEach(variable => {
-          if (!isIQBVariable(variable)) {
-            console.log('nope: not var', variable);
-            return;
-          }
-          if (typeof this.units[sequenceId].variables[variable.id] === 'undefined') {
-            return;
-          }
 
-          // TODO X check if REALLY something changed?
-          this.units[sequenceId].variables[variable.id] = variable;
-          somethingChanged = true;
-        });
+    const filterRegex = new RegExp(
+      trackedVariables
+        .map(varn => `"id":\\s*"${varn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`)
+        .join('|')
+    );
+
+    let somethingChanged = false;
+    Object.values(dataParts)
+      .forEach(dataPart => {
+        if (!dataPart.match(filterRegex)) {
+          // for the sake of performance we check the appearance of the tracked variable in the chunk before JSON.parse
+          // see commit message for details
+          return;
+        }
+        const data = JSON.parse(dataPart);
+        if (!Array.isArray(data)) {
+          console.log('nope: array', data);
+          return;
+        }
+        data
+          .forEach(variable => {
+            if (!isIQBVariable(variable)) {
+              console.log('nope: not var', variable);
+              return;
+            }
+            if (typeof this.units[sequenceId].variables[variable.id] === 'undefined') {
+              return;
+            }
+
+            // TODO X check if REALLY something changed?
+            this.units[sequenceId].variables[variable.id] = variable;
+            somethingChanged = true;
+          });
     });
     if (somethingChanged) {
       this.updateConditions();
