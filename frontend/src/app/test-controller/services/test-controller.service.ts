@@ -459,10 +459,8 @@ export class TestControllerService {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId + step;
     let nextUnit: Unit = this.getUnit(nextUnitSequenceId);
-    console.log(nextUnitSequenceId);
     while (nextUnit !== null && this.getUnitIsInaccessible(nextUnit)) {
       nextUnitSequenceId += step;
-      console.log(nextUnitSequenceId);
       nextUnit = this.getUnit(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
@@ -691,7 +689,7 @@ export class TestControllerService {
             this.units[sequenceId].variables[variable.id] = variable;
             somethingChanged = true;
           });
-    });
+      });
     if (somethingChanged) {
       this.updateConditions();
     }
