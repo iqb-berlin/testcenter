@@ -288,7 +288,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.currentUnit.parent.locks.time = true; // TODO X pack in function!
+          this.tcs.currentUnit.parent.locks.time = true;
           this.tcs.updateLocks();
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);

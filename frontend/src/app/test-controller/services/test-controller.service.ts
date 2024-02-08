@@ -793,7 +793,7 @@ export class TestControllerService {
   getSequenceBounds(): [number, number] {
     const first = Object.values(this.units).find(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1, but can't update because of angular 16
+    // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
     const last = Object.values(this.units).findLast(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN;
     return [first, last];
   }

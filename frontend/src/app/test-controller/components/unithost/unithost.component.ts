@@ -468,7 +468,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error('Unit not loaded');
     }
 
-    const requiredCode = (this.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
+    const requiredCode =
+      (this.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
     const givenCode = this.clearCode.toUpperCase().trim();
 
     if (requiredCode === givenCode) {
