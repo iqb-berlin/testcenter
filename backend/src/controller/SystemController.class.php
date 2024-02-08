@@ -81,6 +81,8 @@ class SystemController extends Controller {
         'baseUrl' => Server::getUrl(),
         'veronaPlayerApiVersionMin' => SystemConfig::$system_veronaMin,
         'veronaPlayerApiVersionMax' => SystemConfig::$system_veronaMax,
+        'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,
+        'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
         'fileServiceUri' => FileService::getUri(),
         'broadcastingServiceUri' => BroadcastService::getUri()
       ]

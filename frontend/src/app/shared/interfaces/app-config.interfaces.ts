@@ -23,6 +23,8 @@ export interface SysConfig {
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
+  iqbStandardResponseTypeMin: number;
+  iqbStandardResponseTypeMax: number;
   broadcastingServiceUri: string;
   fileServiceUri: string;
 }

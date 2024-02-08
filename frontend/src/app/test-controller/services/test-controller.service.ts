@@ -23,7 +23,7 @@ import {
 import { BackendService } from './backend.service';
 import {
   BlockCondition, BlockConditionSource,
-  BookletConfig, sourceIsConditionAggregation,
+  BookletConfig, MainDataService, sourceIsConditionAggregation,
   sourceIsSingleSource, sourceIsSourceAggregation,
   TestMode
 } from '../../shared/shared.module';
@@ -142,7 +142,8 @@ export class TestControllerService {
   constructor(
     private router: Router,
     private bs: BackendService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private mds: MainDataService
   ) {
     this.setupUnitDataPartsBuffer();
     this.setupUnitStateBuffer();
@@ -647,7 +648,12 @@ export class TestControllerService {
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
-    if (unitStateDataType !== 'iqb-standard@1.0') { // TODO X was wird alles unterstützt?
+    const isIqbStandard = unitStateDataType.match(/iqb-standard@(\d+)/);
+    const iqbStandardVersion = isIqbStandard ? Number(isIqbStandard[1]) : 0;
+    if (
+      iqbStandardVersion < (this.mds.appConfig?.iqbStandardResponseTypeMin || NaN) ||
+      iqbStandardVersion > (this.mds.appConfig?.iqbStandardResponseTypeMax || NaN)
+    ) {
       return;
     }
     const trackedVariables = Object.keys(this.units[sequenceId].variables);
@@ -672,25 +678,34 @@ export class TestControllerService {
         }
         const data = JSON.parse(dataPart);
         if (!Array.isArray(data)) {
-          console.log('nope: array', data);
           return;
         }
         data
           .forEach(variable => {
             if (!isIQBVariable(variable)) {
-              console.log('nope: not var', variable);
               return;
             }
             if (typeof this.units[sequenceId].variables[variable.id] === 'undefined') {
+              // variable is not tracked
               return;
             }
 
-            // TODO X check if REALLY something changed?
+            if (
+              this.units[sequenceId].variables[variable.id].status === variable.status &&
+              this.units[sequenceId].variables[variable.id].value === variable.value &&
+              this.units[sequenceId].variables[variable.id].code === variable.code &&
+              this.units[sequenceId].variables[variable.id].score === variable.score
+            ) {
+              // nothing has actually changed
+              return;
+            }
+
             this.units[sequenceId].variables[variable.id] = variable;
             somethingChanged = true;
           });
       });
     if (somethingChanged) {
+      console.log('somethingChanged!!!!');
       this.updateConditions();
     }
   }

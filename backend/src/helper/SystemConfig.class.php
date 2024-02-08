@@ -20,6 +20,8 @@ class SystemConfig {
   public static string $system_version;
   public static int $system_veronaMax;
   public static int $system_veronaMin;
+  public static int $system_iqbStandardResponseMax;
+  public static int $system_iqbStandardResponseMin;
   public static string $system_timezone = 'Europe/Berlin';
   public static bool $debug_useInsecurePasswords = false;
   public static bool $debug_allowExternalXmlSchema = true;
@@ -110,6 +112,9 @@ class SystemConfig {
     $v = "verona-player-api-versions";
     self::$system_veronaMax = $packageJson->iqb->$v->max;
     self::$system_veronaMin = $packageJson->iqb->$v->min;
+    $v = "iqb-standard-response-type";
+    self::$system_iqbStandardResponseMax = $packageJson->iqb->$v->max;
+    self::$system_iqbStandardResponseMin = $packageJson->iqb->$v->min;
     self::$system_version =  $packageJson->version;
   }
 
