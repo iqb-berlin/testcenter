@@ -238,6 +238,7 @@ export interface Unit extends UnitDef {
   readonly parent: Testlet;
   readonly blockLabel: string;
   readonly localIndex: number;
+  readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
 }

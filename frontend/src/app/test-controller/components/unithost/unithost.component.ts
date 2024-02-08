@@ -324,7 +324,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       playerId: this.itemplayerSessionId,
       unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
       currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId),
-      unitDefinitionType: this.tcs.getUnitDefinitionType(this.currentUnitSequenceId),
+      unitDefinitionType: this.tcs.currentUnit.playerId,
       unitState: {
         dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
         unitStateDataType: this.tcs.getUnitResponseType(this.currentUnitSequenceId),

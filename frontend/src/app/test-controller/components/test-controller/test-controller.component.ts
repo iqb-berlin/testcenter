@@ -341,7 +341,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private refreshUnitMenu(): void {
     this.unitNavigationList = [];
     [this.firstAccessibleUnit, this.lastAccessibleUnit] = this.tcs.getSequenceBounds();
-    console.log([this.firstAccessibleUnit, this.lastAccessibleUnit]);
 
     let previousBlockLabel: string | null = null;
     for (let sequenceId = this.firstAccessibleUnit; sequenceId <= this.lastAccessibleUnit; sequenceId++) {
@@ -367,7 +366,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }
-    console.log(this.unitNavigationList);
   }
 
   private setUnitScreenHeader(): void {

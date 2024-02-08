@@ -131,7 +131,6 @@ export class TestControllerService {
   private unitResponseProgressStates: { [sequenceId: number]: string | undefined } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string | undefined } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
-  private unitDefinitionTypes: { [sequenceId: number]: string } = {}; // TODO X WHAT THE FUCK
   private unitResponseTypes: { [sequenceId: number]: string } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
@@ -246,7 +245,6 @@ export class TestControllerService {
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
     this.unitStateCurrentPages = {};
-    this.unitDefinitionTypes = {};
     this.unitResponseTypes = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
@@ -408,14 +406,6 @@ export class TestControllerService {
 
   getUnitLoadProgress$(sequenceId: number): Observable<LoadingProgress> {
     return this.unitContentLoadProgress$[sequenceId];
-  }
-
-  setUnitPlayerFilename(sequenceId: number, unitDefinitionType: string): void {
-    this.unitDefinitionTypes[sequenceId] = unitDefinitionType;
-  }
-
-  getUnitDefinitionType(sequenceId: number): string {
-    return this.unitDefinitionTypes[sequenceId];
   }
 
   setUnitResponseType(sequenceId: number, unitResponseType: string): void {

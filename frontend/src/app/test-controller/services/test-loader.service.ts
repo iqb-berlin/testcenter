@@ -137,7 +137,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     Object.keys(this.tcs.testlets)
       .forEach(testletId => {
-        console.log(testletId, this.tcs.testlets[testletId].restrictions);
         this.tcs.testlets[testletId].locks.code =
           !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
         this.tcs.testlets[testletId].locks.time =
@@ -200,7 +199,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
           } else {
             // inline unit definition
-            // this.tcs.setUnitPlayerFilename(sequenceId, unit.playerFileName); // TODO X DAFUQ?
             this.tcs.setUnitDefinition(sequenceId, unitData.definition);
 
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
@@ -351,7 +349,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     registerChildren(booklet.units);
 
     this.registerTrackedVariables();
-    console.log('hhmmm', this.tcs.testlets['']);
     this.tcs.updateLocks();
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
@@ -388,7 +385,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
-    console.log(context.parents);
     let timerId = null;
     if (!context.parents.length && testletDef.restrictions.timeMax?.minutes) {
       timerId = testletDef.id;
@@ -415,6 +411,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       parent: context.parents[0],
       blockLabel: (context.parents.length > 1) ? context.parents[context.parents.length - 2].label : '',
       playerFileName: '',
+      // type is deprecated but support everything
+      playerId: elem.getAttribute('type') || elem.getAttribute('player') || '',
       localIndex: context.localUnitIndex,
       variables: { }
     });
