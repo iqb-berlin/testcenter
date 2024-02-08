@@ -234,7 +234,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       );
   }
 
-  private prepareUnitContentLoadingQueueOrder(currentUnitId: string = '1'): void { // TODO X machte der default Sinn?
+  private prepareUnitContentLoadingQueueOrder(currentUnitId: string): void {
     if (!this.tcs.booklet) {
       throw new AppError({
         description: '', label: 'Testheft noch nicht verfügbar', type: 'script'

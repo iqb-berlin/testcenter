@@ -705,7 +705,6 @@ export class TestControllerService {
           });
       });
     if (somethingChanged) {
-      console.log('somethingChanged!!!!');
       this.updateConditions();
     }
   }
