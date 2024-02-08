@@ -8,7 +8,7 @@
         (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
         [disabled]="blockLabelOrUnit.disabled"
       >
-        <mat-icon *ngIf="!tcs.isUnitContentLoaded(blockLabelOrUnit.sequenceId)" matTooltip="wird geladen">
+        <mat-icon *ngIf="!tcs.units[blockLabelOrUnit.sequenceId].definition" matTooltip="wird geladen">
           hourglass_empty
         </mat-icon>
         {{blockLabelOrUnit.longLabel}}

@@ -35,7 +35,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   currentUnitSequenceId = -1;
 
-  private itemplayerSessionId = '';
+  private playerSessionId = '';
   private postMessageTarget: Window = window;
   private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
 
@@ -81,7 +81,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const msgType = msgData.type;
     let msgPlayerId = msgData.sessionId;
     if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
-      msgPlayerId = this.itemplayerSessionId;
+      msgPlayerId = this.playerSessionId;
     }
 
     switch (msgType) {
@@ -117,7 +117,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
         this.postMessageTarget.postMessage({
           type: 'vopStartCommand',
-          sessionId: this.itemplayerSessionId,
+          sessionId: this.playerSessionId,
           unitDefinition: this.pendingUnitData.unitDefinition,
           unitDefinitionType: this.pendingUnitData.unitDefinitionType,
           unitState: this.pendingUnitData.unitState,
@@ -129,7 +129,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         break;
 
       case 'vopStateChangedNotification':
-        if (msgPlayerId === this.itemplayerSessionId) {
+        if (msgPlayerId === this.playerSessionId) {
           if (msgData.playerState) {
             const { playerState } = msgData;
 
@@ -198,7 +198,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         break;
 
       case 'vopUnitNavigationRequestedNotification':
-        if (msgPlayerId === this.itemplayerSessionId) {
+        if (msgPlayerId === this.playerSessionId) {
           // support Verona2 and Verona3 version
           const target = msgData.target ? `#${msgData.target}` : msgData.targetRelative;
           this.tcs.setUnitNavigationRequest(target);
@@ -318,16 +318,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.startTimerIfNecessary();
 
-    this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
     this.pendingUnitData = {
-      playerId: this.itemplayerSessionId,
-      unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
-      currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId),
+      playerId: this.playerSessionId,
+      unitDefinition: this.tcs.currentUnit.definition,
+      currentPage: this.tcs.currentUnit.currentPage || null,
       unitDefinitionType: this.tcs.currentUnit.playerId,
       unitState: {
         dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
-        unitStateDataType: this.tcs.getUnitResponseType(this.currentUnitSequenceId),
+        unitStateDataType: this.tcs.currentUnit.responseType || '(unknown)',
         presentationProgress: <VeronaProgress> this.tcs.getUnitPresentationProgress(this.currentUnitSequenceId),
         responseProgress: <VeronaProgress> this.tcs.getUnitResponseProgress(this.currentUnitSequenceId)
       }
@@ -443,7 +443,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (typeof this.postMessageTarget !== 'undefined') {
       this.postMessageTarget.postMessage({
         type: 'vopPageNavigationCommand',
-        sessionId: this.itemplayerSessionId,
+        sessionId: this.playerSessionId,
         target: navigationTarget
       }, '*');
     }
@@ -458,7 +458,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.postMessageTarget.postMessage({
       type: 'vopNavigationDeniedNotification',
-      sessionId: this.itemplayerSessionId,
+      sessionId: this.playerSessionId,
       reason: navigationDenial.reason
     }, '*');
   }

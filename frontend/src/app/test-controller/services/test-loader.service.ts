@@ -190,8 +190,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
           this.tcs.setUnitPresentationProgress(sequenceId, unitData.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setUnitResponseProgress(sequenceId, unitData.state[UnitStateKey.RESPONSE_PROGRESS]);
-          this.tcs.setUnitStateCurrentPage(sequenceId, unitData.state[UnitStateKey.CURRENT_PAGE_ID]);
-          this.tcs.setUnitResponseType(sequenceId, unitData.unitResponseType);
+          this.tcs.units[sequenceId].currentPage = unitData.state[UnitStateKey.CURRENT_PAGE_ID];
+          this.tcs.units[sequenceId].responseType = unitData.unitResponseType;
           this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
           this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
 
@@ -199,7 +199,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
           } else {
             // inline unit definition
-            this.tcs.setUnitDefinition(sequenceId, unitData.definition);
+            this.tcs.units[sequenceId].definition = unitData.definition;
 
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
@@ -283,7 +283,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  this.tcs.setUnitDefinition(queueEntry.sequenceId, loadingFile.content);
+                  this.tcs.units[queueEntry.sequenceId].definition = loadingFile.content;
                   return { progress: 100 };
                 }),
                 distinctUntilChanged((v1, v2) => v1.progress === v2.progress),
@@ -414,7 +414,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       // type is deprecated but support everything
       playerId: elem.getAttribute('type') || elem.getAttribute('player') || '',
       localIndex: context.localUnitIndex,
-      variables: { }
+      variables: { },
+      responseType: undefined,
+      currentPage: undefined,
+      definition: ''
     });
   }
 }

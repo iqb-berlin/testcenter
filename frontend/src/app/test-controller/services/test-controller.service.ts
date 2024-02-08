@@ -125,13 +125,10 @@ export class TestControllerService {
    * TODO simplify data structure
    */
   private players: { [filename: string]: string } = {};
-  private unitDefinitions: { [sequenceId: number]: string } = {};
   private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
   private unitPresentationProgressStates: { [sequenceId: number]: string | undefined } = {};
   private unitResponseProgressStates: { [sequenceId: number]: string | undefined } = {};
-  private unitStateCurrentPages: { [sequenceId: number]: string | undefined } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
-  private unitResponseTypes: { [sequenceId: number]: string } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
@@ -233,7 +230,6 @@ export class TestControllerService {
 
   resetDataStore(): void {
     this.players = {};
-    this.unitDefinitions = {};
     this.unitStateDataParts = {};
 
     this.currentUnitSequenceId = 0;
@@ -245,8 +241,6 @@ export class TestControllerService {
 
     this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
-    this.unitStateCurrentPages = {};
-    this.unitResponseTypes = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
 
@@ -321,7 +315,7 @@ export class TestControllerService {
     }
 
     if (stateKey === 'CURRENT_PAGE_ID') {
-      return this.unitStateCurrentPages[unitSequenceId];
+      return this.units[unitSequenceId].currentPage;
     }
 
     return undefined;
@@ -337,7 +331,7 @@ export class TestControllerService {
     }
 
     if (stateKey === 'CURRENT_PAGE_ID') {
-      this.unitStateCurrentPages[unitSequenceId] = value;
+      this.units[unitSequenceId].currentPage = value;
     }
   }
 
@@ -351,14 +345,6 @@ export class TestControllerService {
 
   getPlayer(fileName: string): string {
     return this.players[fileName];
-  }
-
-  setUnitDefinition(sequenceId: number, uDef: string): void {
-    this.unitDefinitions[sequenceId] = uDef;
-  }
-
-  getUnitDefinition(sequenceId: number): string {
-    return this.unitDefinitions[sequenceId];
   }
 
   setUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
@@ -393,28 +379,12 @@ export class TestControllerService {
     return this.unitResponseProgressStates[sequenceId];
   }
 
-  getUnitStateCurrentPage(sequenceId: number): string | null {
-    return this.unitStateCurrentPages[sequenceId] ?? null;
-  }
-
-  setUnitStateCurrentPage(sequenceId: number, pageId: string | undefined): void {
-    this.unitStateCurrentPages[sequenceId] = pageId;
-  }
-
   setUnitLoadProgress$(sequenceId: number, progress: Observable<LoadingProgress>): void {
     this.unitContentLoadProgress$[sequenceId] = progress;
   }
 
   getUnitLoadProgress$(sequenceId: number): Observable<LoadingProgress> {
     return this.unitContentLoadProgress$[sequenceId];
-  }
-
-  setUnitResponseType(sequenceId: number, unitResponseType: string): void {
-    this.unitResponseTypes[sequenceId] = unitResponseType;
-  }
-
-  getUnitResponseType(sequenceId: number): string {
-    return this.unitResponseTypes[sequenceId];
   }
 
   clearTestlet(testletId: string): void {
@@ -619,10 +589,6 @@ export class TestControllerService {
     this.interruptTimer();
     this.state$.next(TestControllerState.PAUSED);
     this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
-  }
-
-  isUnitContentLoaded(sequenceId: number): boolean {
-    return !!this.unitDefinitions[sequenceId];
   }
 
   updateLocks(): void {

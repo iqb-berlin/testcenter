@@ -231,16 +231,15 @@ export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is Lo
 
 export interface Unit extends UnitDef {
   readonly sequenceId: number;
-  // readonly parent: Testlet;
-  // readonly codeRequiringTestlets: Testlet[];
-  // readonly conditionialTestlets: Testlet[];
-  // readonly timedTestlet: Testlet | null;
   readonly parent: Testlet;
   readonly blockLabel: string;
   readonly localIndex: number;
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
+  responseType: string | undefined;
+  currentPage: string | undefined;
+  definition: string;
 }
 
 export const TestletLockTypes = ['condition', 'time', 'code'] as const;
