@@ -22,7 +22,7 @@
       "jasmine"
     ],
     "lib": [
-      "es2023",
+      "es2022",
       "dom"
     ],
     "paths": {
