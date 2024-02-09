@@ -4,7 +4,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   Testlet as Testlet, TestViewDisplayOptions,
-  isUnit, Selected, TestSession, TestSessionSuperState
+  isUnit, Selected, TestSession, TestSessionSuperState, isBooklet, BookletError
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -43,9 +43,10 @@ export class TestSessionComponent {
 
   // eslint-disable-next-line class-methods-use-this
   getTestletType = (testletOrUnit: UnitDef | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
-
+  isBooklet = isBooklet;
   // eslint-disable-next-line class-methods-use-this
   trackUnits = (index: number, testlet: Testlet | UnitDef): string => testlet.id || index.toString();
+  testletContext?: { $implicit: Testlet };
 
   mark(testletOrNull: Testlet | null = null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {

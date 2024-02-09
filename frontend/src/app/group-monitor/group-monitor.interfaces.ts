@@ -46,9 +46,9 @@ export interface CheckingOptions {
 }
 
 export interface UnitContext {
-  unit?: UnitDef;
-  parent?: Testlet;
-  ancestor?: Testlet;
+  unit: UnitDef;
+  parent: Testlet;
+  ancestor: Testlet;
   indexGlobal: number;
   indexLocal: number;
   indexAncestor: number;

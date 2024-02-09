@@ -13,16 +13,16 @@
   <div #iframeHost id="iframe-host"></div>
 
   <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-    <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.parent.locked">
+    <div id="waiting-room" *ngIf="loadingUnits.list?.length || currentUnit?.parent.locked">
       <mat-card appearance="raised">
         <mat-card-header>
           <mat-card-title>
-            {{(loadingUnits.list.length > 1 || currentUnit.parent.locked) ? currentUnit?.blockLabel : currentUnit?.title}}
+            {{(loadingUnits.list?.length > 1 || currentUnit?.parent.locked) ? currentUnit?.blockLabel : currentUnit?.label}}
           </mat-card-title>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
+          <mat-card-subtitle *ngIf="loadingUnits.list?.length > 1">
             {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
+          <mat-card-subtitle *ngIf="loadingUnits.list?.length === 1">
             {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
           </mat-card-subtitle>
           <mat-card-subtitle *ngIf="currentUnit?.parent.locked?.by === 'time'">
@@ -49,7 +49,7 @@
           </mat-form-field>
           <tc-alert
             level="info"
-            *ngIf="!currentUnit?.parent.locked?.through.restrictions.codeToEnter.message"
+            *ngIf="!currentUnit?.parent.locked?.through.restrictions.codeToEnter?.message"
             customtext="booklet_codeToEnterPrompt"
             text="Bitte Freigabewort eingeben!"
           ></tc-alert>
@@ -83,7 +83,7 @@
 
         <mat-card-actions [style.justify-content]="'space-between'">
           <button
-            *ngIf="currentUnit.parent.locked?.by == 'code'"
+            *ngIf="currentUnit?.parent.locked?.by == 'code'"
             mat-raised-button
             color="primary"
             [disabled]="!clearCode.length"

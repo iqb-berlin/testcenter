@@ -33,7 +33,7 @@
   (click)="deselect($event)"
   (contextmenu)="deselectForce($event)"
 >
-  <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
+  <ng-container *ngIf="isBooklet(testSession.booklet); else: noBooklet">
     <div class="vertical-align-middle" [matTooltip]="testSession.booklet.metadata.label">
       {{testSession.booklet.metadata.label}}
     </div>
@@ -58,7 +58,7 @@
 </td>
 
 <td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-  <ng-container *ngIf="!testSession?.booklet?.error; else: noBookletReason">
+  <ng-container *ngIf="isBooklet(testSession.booklet); else: noBookletReason">
     <div
       *ngIf="testSession.booklet.units as testlet"
       class="units-container"
@@ -87,22 +87,24 @@
   </ng-container>
 
   <ng-template #noBookletReason>
-    <span *ngIf="testSession.booklet.error == 'missing-id'">
-      {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
-      {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
-      {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'general'" class="warning">
-      {{'Fehler beim Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
-    </span>
+    <ng-container *ngIf="!isBooklet(testSession.booklet)">
+      <span *ngIf="testSession.booklet.error == 'missing-id'">
+        {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
+        {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
+        {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'general'" class="warning">
+        {{'Fehler beim Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
+      </span>
+    </ng-container>
   </ng-template>
 </td>
 
-<ng-template #testletFull let-testlet>
+<ng-template #testletFull let-testlet [appTemplateContext]="testletContext">
   <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testlet }"></ng-container>
 
   <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">

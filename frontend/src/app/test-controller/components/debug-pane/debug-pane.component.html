@@ -84,13 +84,13 @@
       ></ng-container>
     </div>
   </ng-template>
-  <ng-template #unitTemplate let-unit="item">
-    <div class="unit">
+  <ng-template #unitTemplate let-unit="item" [appTemplateContext]="unitContext">
+    <div class="unit" *ngIf="unit">
       {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
-      <mat-icon *ngIf="unit.timerRequiringTestlet" [matTooltip]="unit.timerRequiringTestlet.id">
-        {{unit.timerRequiringTestlet.lockedByTime ? 'hourglass_top' : 'hourglass_bottom'}}
+      <mat-icon *ngIf="unit.parent.locked?.by.time" [matTooltip]="unit.parent.locked.through.id">
+        {{unit.parent.locked?.by.time ? 'hourglass_top' : 'hourglass_bottom'}}
       </mat-icon>
-      <mat-icon *ngFor="let t of unit.codeRequiringTestlets" [matTooltip]="t.id">
+      <mat-icon *ngFor="let t of unit.parent.locked?.by.code" [matTooltip]="t.id">
         {{t.lockedByCode ? 'lock' : 'lock_open'}}
       </mat-icon>
       <mat-icon class='more-btn' (click)="toggleMore(unit.alias)">
@@ -125,17 +125,9 @@
           <td>definition</td>
           <td>{{unit.definition | slice:0:20 }}</td>
         </tr>
-        <tr>
-          <td>state.currentPage</td>
-          <td>{{unit.state.currentPage}}</td>
-        </tr>
-        <tr>
-          <td>state.responseProgress</td>
-          <td>{{unit.state.responseProgress}}</td>
-        </tr>
-        <tr>
-          <td>state.presentationProgress</td>
-          <td>{{unit.state.presentationProgress}}</td>
+        <tr *ngFor="let stateEntry of unit.state | keyvalue">
+          <td>state.{{stateEntry.key}}</td>
+          <td>{{stateEntry.value}}</td>
         </tr>
       </table>
     </div>

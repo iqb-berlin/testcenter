@@ -5,7 +5,7 @@
     <span *ngIf="connectionStatus$ | async as connectionStatus">
 
       <span [class]="connectionStatus + ' connection-status'" style="color:white">
-        <mat-icon style="height: auto">
+        <mat-icon>
           {{connectionStatus === 'error' ? 'error' : ''}}
           {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
           {{connectionStatus === 'polling-sleep' ? 'loop' : ''}}
@@ -166,7 +166,7 @@
           [text]="m.text"
           [level]="m.level"
           customtext="m.customtext"
-          [replacements]="m.replacements"
+          [replacements]="m.replacements || []"
         ></tc-alert>
       </div>
 

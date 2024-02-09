@@ -38,6 +38,9 @@
     },
     "useDefineForClassFields": false
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
   "exclude": [
     "node_modules",
     "../*/node_modules/**/*",

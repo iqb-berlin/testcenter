@@ -19,6 +19,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
 import { BlockConditionPipe } from './pipes/block-condition.pipe';
+import { TemplateContextDirective } from './pipes/templateContext.directive';
 
 @NgModule({
   imports: [
@@ -42,7 +43,8 @@ import { BlockConditionPipe } from './pipes/block-condition.pipe';
     CustomtextPipe,
     BlockConditionPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    TemplateContextDirective
   ],
   exports: [
     ConfirmDialogComponent,
@@ -51,7 +53,8 @@ import { BlockConditionPipe } from './pipes/block-condition.pipe';
     CustomtextPipe,
     BlockConditionPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    TemplateContextDirective
   ],
   providers: [
     BackendService

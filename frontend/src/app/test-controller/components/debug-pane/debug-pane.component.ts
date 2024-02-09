@@ -4,6 +4,7 @@ import {
 import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
+import { Unit } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -36,6 +37,8 @@ export class DebugPaneComponent implements OnInit {
   testMode: Array<[string, string]>;
   openPanes: Array<string> = [];
   searchCustomText: string = '';
+
+  unitContext?: { item: Unit; unit: Unit };
 
   ngOnInit() {
     this.tcs.testStructureChanges$.subscribe(() => {
