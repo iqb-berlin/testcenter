@@ -98,14 +98,6 @@
       </mat-icon>
       <table *ngIf="openPanes.includes(unit.alias)">
         <tr>
-          <td>codeRequiringTestlets</td>
-          <td><span *ngFor="let t of unit.codeRequiringTestlets">{{t.id}} </span></td>
-        </tr>
-        <tr>
-          <td>timerRequiringTestlet</td>
-          <td>{{unit.timerRequiringTestlet?.id}}</td>
-        </tr>
-        <tr>
           <td>blockLabel</td>
           <td>{{unit.blockLabel}}</td>
         </tr>
@@ -114,12 +106,36 @@
           <td>{{unit.parent?.id}}</td>
         </tr>
         <tr>
+          <td>localIndex</td>
+          <td>{{unit.localIndex}}</td>
+        </tr>
+        <tr>
           <td>playerFileName</td>
           <td>{{unit.playerFileName}}</td>
         </tr>
         <tr>
-          <td>localTestletIndex</td>
-          <td>{{unit.localIndex}}</td>
+          <td>playerId</td>
+          <td>{{unit.playerId}}</td>
+        </tr>
+        <tr>
+          <td>responseType</td>
+          <td>{{unit.responseType}}</td>
+        </tr>
+        <tr>
+          <td>definition</td>
+          <td>{{unit.definition | slice:0:20 }}</td>
+        </tr>
+        <tr>
+          <td>state.currentPage</td>
+          <td>{{unit.state.currentPage}}</td>
+        </tr>
+        <tr>
+          <td>state.responseProgress</td>
+          <td>{{unit.state.responseProgress}}</td>
+        </tr>
+        <tr>
+          <td>state.presentationProgress</td>
+          <td>{{unit.state.presentationProgress}}</td>
         </tr>
       </table>
     </div>

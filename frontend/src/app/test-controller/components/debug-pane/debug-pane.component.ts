@@ -41,6 +41,9 @@ export class DebugPaneComponent implements OnInit {
     this.tcs.testStructureChanges$.subscribe(() => {
       this.cdr.detectChanges();
     });
+    this.tcs.currentUnitSequenceId$.subscribe(() => {
+      this.openPanes = [this.tcs.currentUnit.alias];
+    });
   }
 
   toggleTab(tab: typeof this.tabs[number]): void {

@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet, isTestlet, KeyValuePairNumber,
+  Booklet, isTestlet, isUnitStateKey, KeyValuePairNumber,
   KeyValuePairString,
   LoadingProgress,
   MaxTimerEvent,
@@ -16,7 +16,7 @@ import {
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, Unit,
   UnitDataParts,
-  UnitNavigationTarget,
+  UnitNavigationTarget, UnitStateKey,
   UnitStateUpdate,
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
@@ -27,7 +27,7 @@ import {
   sourceIsSingleSource, sourceIsSourceAggregation,
   TestMode
 } from '../../shared/shared.module';
-import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
+import { isVeronaProgress, VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
@@ -116,6 +116,8 @@ export class TestControllerService {
 
   testStructureChanges$ = new BehaviorSubject<void>(undefined);
 
+  private players: { [filename: string]: string } = {};
+
   /**
    * the structure of this service is weird: instead of distributing the UnitDefs into the several arrays
    * below we could store a single array with UnitDefs (wich would be a flattened version of the root testlet). Thus
@@ -124,7 +126,7 @@ export class TestControllerService {
    * sending vopStartCommand. They are almost never updated.
    * TODO simplify data structure
    */
-  private players: { [filename: string]: string } = {};
+
   private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
   private unitPresentationProgressStates: { [sequenceId: number]: string | undefined } = {};
   private unitResponseProgressStates: { [sequenceId: number]: string | undefined } = {};
@@ -239,7 +241,6 @@ export class TestControllerService {
     this.testlets = {};
     this.unitAliasMap = {};
 
-    this.unitPresentationProgressStates = {};
     this.unitResponseProgressStates = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
@@ -306,32 +307,20 @@ export class TestControllerService {
 
   // TODO the following two functions are workarounds to the shitty structure of this service (see above)
   private getUnitState(unitSequenceId: number, stateKey: string): string | undefined {
-    if (stateKey === 'RESPONSE_PROGRESS') {
-      return this.unitResponseProgressStates[unitSequenceId];
-    }
-
-    if (stateKey === 'PRESENTATION_PROGRESS') {
-      return this.unitPresentationProgressStates[unitSequenceId];
-    }
-
-    if (stateKey === 'CURRENT_PAGE_ID') {
-      return this.units[unitSequenceId].currentPage;
-    }
-
-    return undefined;
+    return isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
   }
 
-  private setUnitState(unitSequenceId: number, stateKey: string, value: string): void {
-    if (stateKey === 'RESPONSE_PROGRESS') {
-      this.unitResponseProgressStates[unitSequenceId] = value;
+  setUnitState(unitSequenceId: number, stateKey: string, value: string | undefined): void {
+    if ((stateKey === 'RESPONSE_PROGRESS') && ((typeof value === 'undefined') || isVeronaProgress(value))) {
+      this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
     }
 
-    if (stateKey === 'PRESENTATION_PROGRESS') {
-      this.unitPresentationProgressStates[unitSequenceId] = value;
+    if ((stateKey === 'PRESENTATION_PROGRESS') && ((typeof value === 'undefined') || isVeronaProgress(value))) {
+      this.units[unitSequenceId].state.PRESENTATION_PROGRESS = value;
     }
 
     if (stateKey === 'CURRENT_PAGE_ID') {
-      this.units[unitSequenceId].currentPage = value;
+      this.units[unitSequenceId].state.CURRENT_PAGE_ID = value;
     }
   }
 
@@ -355,17 +344,17 @@ export class TestControllerService {
     return this.unitStateDataParts[sequenceId];
   }
 
-  setUnitPresentationProgress(sequenceId: number, state: string | undefined): void {
-    this.unitPresentationProgressStates[sequenceId] = state;
-  }
-
-  hasUnitPresentationProgress(sequenceId: number): boolean {
-    return sequenceId in this.unitPresentationProgressStates;
-  }
-
-  getUnitPresentationProgress(sequenceId: number): string | undefined {
-    return this.unitPresentationProgressStates[sequenceId];
-  }
+  // setUnitPresentationProgress(sequenceId: number, state: string | undefined): void {
+  //   this.unitPresentationProgressStates[sequenceId] = state;
+  // }
+  //
+  // hasUnitPresentationProgress(sequenceId: number): boolean {
+  //   return sequenceId in this.unitPresentationProgressStates;
+  // }
+  //
+  // getUnitPresentationProgress(sequenceId: number): string | undefined {
+  //   return this.unitPresentationProgressStates[sequenceId];
+  // }
 
   hasUnitResponseProgress(sequenceId: number): boolean {
     return sequenceId in this.unitResponseProgressStates;

@@ -321,15 +321,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
     this.pendingUnitData = {
-      playerId: this.playerSessionId,
+      playerId: this.playerSessionId, // TODO X WhAT=!
       unitDefinition: this.tcs.currentUnit.definition,
-      currentPage: this.tcs.currentUnit.currentPage || null,
+      currentPage: this.tcs.currentUnit.state.CURRENT_PAGE_ID || null,
       unitDefinitionType: this.tcs.currentUnit.playerId,
       unitState: {
         dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
-        unitStateDataType: this.tcs.currentUnit.responseType || '(unknown)',
-        presentationProgress: <VeronaProgress> this.tcs.getUnitPresentationProgress(this.currentUnitSequenceId),
-        responseProgress: <VeronaProgress> this.tcs.getUnitResponseProgress(this.currentUnitSequenceId)
+        unitStateDataType: this.tcs.currentUnit.responseType || '(unknown)', // TODO X check fallback values
+        presentationProgress: this.tcs.currentUnit.state.PRESENTATION_PROGRESS || '',
+        responseProgress: this.tcs.currentUnit.state.RESPONSE_PROGRESS || ''
       }
     };
     this.leaveWarning = false;

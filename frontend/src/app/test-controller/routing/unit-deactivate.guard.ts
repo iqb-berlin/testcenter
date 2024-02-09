@@ -10,7 +10,7 @@ import {
 import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
-import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
+import { VeronaNavigationDeniedReason, VeronaProgressCompleteValues } from '../interfaces/verona.interfaces';
 
 @Injectable()
 export class UnitDeactivateGuard {
@@ -85,8 +85,7 @@ export class UnitDeactivateGuard {
       'OFF';
     if (
       (checkOnValue[direction].includes(presentationCompleteRequired)) &&
-      this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
-      (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
+      (this.tcs.currentUnit.state.PRESENTATION_PROGRESS !== 'complete')
     ) {
       reasons.push('presentationIncomplete');
     }
@@ -94,11 +93,11 @@ export class UnitDeactivateGuard {
       unit.parent?.restrictions?.denyNavigationOnIncomplete?.response ||
       this.tcs.booklet?.config.force_response_complete ||
       'OFF';
-    const currentUnitResponseProgress = this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId);
+    const currentUnitResponseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     if (
       (checkOnValue[direction].includes(responseCompleteRequired)) &&
       currentUnitResponseProgress &&
-      (['complete', 'complete-and-valid'].indexOf(currentUnitResponseProgress) === -1)
+      (VeronaProgressCompleteValues.includes(currentUnitResponseProgress))
     ) {
       reasons.push('responsesIncomplete');
     }

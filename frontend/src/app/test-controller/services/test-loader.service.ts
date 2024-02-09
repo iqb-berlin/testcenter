@@ -38,6 +38,7 @@ import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import { IQBVariable } from '../interfaces/iqb.interfaces';
+import { VeronaProgress } from '../interfaces/verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -188,9 +189,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
 
-          this.tcs.setUnitPresentationProgress(sequenceId, unitData.state[UnitStateKey.PRESENTATION_PROGRESS]);
-          this.tcs.setUnitResponseProgress(sequenceId, unitData.state[UnitStateKey.RESPONSE_PROGRESS]);
-          this.tcs.units[sequenceId].currentPage = unitData.state[UnitStateKey.CURRENT_PAGE_ID];
+          this.tcs.units[sequenceId].state = unitData.state;
           this.tcs.units[sequenceId].responseType = unitData.unitResponseType;
           this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
           this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
@@ -416,7 +415,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       localIndex: context.localUnitIndex,
       variables: { },
       responseType: undefined,
-      currentPage: undefined,
+      state: { },
       definition: ''
     });
   }

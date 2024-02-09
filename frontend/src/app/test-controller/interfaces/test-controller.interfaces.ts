@@ -75,8 +75,7 @@ export enum TestControllerState {
  */
 export enum AppFocusState {
   HAS = 'HAS',
-  HAS_NOT = 'HAS_NOT',
-  DEAD = 'DEAD'
+  HAS_NOT = 'HAS_NOT'
 }
 
 /**
@@ -107,8 +106,7 @@ export interface UnitDataParts {
 
 export enum UnitPlayerState {
   LOADING = 'LOADING',
-  RUNNING = 'RUNNING',
-  PAGE_NAVIGATING = 'PAGE_NAVIGATING'
+  RUNNING = 'RUNNING'
 }
 
 export enum UnitStateKey {
@@ -119,6 +117,8 @@ export enum UnitStateKey {
   PAGE_COUNT = 'PAGE_COUNT',
   PLAYER = 'PLAYER'
 }
+
+export const isUnitStateKey = (key: string): key is UnitStateKey => Object.keys(UnitStateKey).includes(key);
 
 export interface UnitStateUpdate {
   alias: string;
@@ -232,14 +232,15 @@ export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is Lo
 export interface Unit extends UnitDef {
   readonly sequenceId: number;
   readonly parent: Testlet;
-  readonly blockLabel: string;
+  readonly blockLabel: string; // TODO X remove ot move to testlet
   readonly localIndex: number;
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
   responseType: string | undefined;
-  currentPage: string | undefined;
+  // currentPage: string | undefined;
   definition: string;
+  state: { [k in UnitStateKey]?: string };
 }
 
 export const TestletLockTypes = ['condition', 'time', 'code'] as const;
