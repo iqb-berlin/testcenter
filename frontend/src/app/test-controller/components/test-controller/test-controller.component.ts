@@ -51,7 +51,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   timerValue: TimerData | null = null;
   unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: Array<UnitNaviButtonData | string> = [];
+  unitNavigationList: Array<UnitNaviButtonData> = [];
   debugPane = false;
   unitScreenHeader: string = '';
 
@@ -352,9 +352,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
 
       const blockLabel = unit.blockLabel || '';
-      if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
-        this.unitNavigationList.push(blockLabel);
-      }
+      const headline = ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) ? blockLabel : '';
       previousBlockLabel = blockLabel;
 
       this.unitNavigationList.push({
@@ -363,7 +361,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         longLabel: unit.label,
         testletLabel: unit.blockLabel,
         disabled: this.tcs.getUnitIsInaccessible(unit),
-        isCurrent: sequenceId === this.tcs.currentUnitSequenceId
+        isCurrent: sequenceId === this.tcs.currentUnitSequenceId,
+        headline
       });
     }
   }

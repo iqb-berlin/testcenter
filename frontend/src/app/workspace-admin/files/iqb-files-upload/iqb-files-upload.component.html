@@ -21,7 +21,9 @@
       {{uploadedFile.key}} - {{uploadedFile.value.error ? 'Abgelehnt' : 'Erfolgreich hochgeladen'}}
     </div>
     <ng-container *ngFor="let report of uploadedFile.value | keyvalue">
-      <tc-alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></tc-alert>
+      <ng-container *ngIf="isAlertLevel(report.key)">
+        <tc-alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></tc-alert>
+      </ng-container>
     </ng-container>
   </ng-container>
 </ng-container>

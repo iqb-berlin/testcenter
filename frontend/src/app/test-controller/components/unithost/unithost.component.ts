@@ -18,7 +18,7 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
-  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
+  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
 
@@ -45,7 +45,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   currentUnit: Unit | null = null;
   currentPageIndex: number = -1;
-  unitNavigationTarget = UnitNavigationTarget;
   clearCode: string = '';
 
   constructor(

@@ -9,7 +9,7 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   styleUrls: ['./unit-menu.component.css']
 })
 export class UnitMenuComponent {
-  @Input() menu: Array<UnitNaviButtonData | string> = [];
+  @Input() menu: Array<UnitNaviButtonData> = [];
 
   constructor(
     public tcs: TestControllerService,

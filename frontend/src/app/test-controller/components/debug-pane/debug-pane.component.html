@@ -18,7 +18,7 @@
         <b>{{timer.key}}</b>: {{timer.value | number:'1.0-2'}}
       </li>
     </ul>
-    {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b>
+    {{timerValue.timeLeftString}}<b> {{timerValue.testletId}} {{timerValue.type}}</b>
   </div>
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
   <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
@@ -39,10 +39,10 @@
       <ng-container  [ngTemplateOutlet]="testletTemplate" [ngTemplateOutletContext]="{item: units}"></ng-container>
     </ng-container>
   </ng-container>
-  <ng-template #testletTemplate let-testlet="item">
+  <ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
     {{testlet.id || '&lt;units&gt;'}}
-    <span class='badge' *ngIf="testlet?.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'">p</span>
-    <span class='badge' *ngIf="testlet?.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'">P</span>
+    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'">p</span>
+    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'">P</span>
     <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'">r</span>
     <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'">R</span>
     <span
@@ -71,15 +71,15 @@
         <td>locks.condition</td>
         <td>{{testlet.locks.condition ? 'y' : 'n'}}</td>
       </tr>
-      <tr>
-        <td>lock</td>
-        <td>BY {{testlet.locked?.by}} THROUGH {{testlet.locked?.through.id}}</td>
+      <tr *ngIf="testlet.locked">
+        <td>locked</td>
+        <td>BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
       </tr>
     </table>
 
     <div *ngFor="let child of testlet.children" class="testlet">
       <ng-container
-        [ngTemplateOutlet]="child.children ? testletTemplate : unitTemplate"
+        [ngTemplateOutlet]="isTestlet(child) ? testletTemplate : unitTemplate"
         [ngTemplateOutletContext]="{item: child}"
       ></ng-container>
     </div>
@@ -87,12 +87,14 @@
   <ng-template #unitTemplate let-unit="item" [appTemplateContext]="unitContext">
     <div class="unit" *ngIf="unit">
       {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
-      <mat-icon *ngIf="unit.parent.locked?.by.time" [matTooltip]="unit.parent.locked.through.id">
-        {{unit.parent.locked?.by.time ? 'hourglass_top' : 'hourglass_bottom'}}
-      </mat-icon>
-      <mat-icon *ngFor="let t of unit.parent.locked?.by.code" [matTooltip]="t.id">
-        {{t.lockedByCode ? 'lock' : 'lock_open'}}
-      </mat-icon>
+      <ng-container *ngIf="unit.parent.locked && unit.parent.locked.through.restrictions">
+        <mat-icon *ngIf="unit.parent.locked.through.restrictions.timeMax" [matTooltip]="unit.parent.locked.through.id">
+          {{unit.parent.locked.by === 'time' ? 'hourglass_top' : 'hourglass_bottom'}}
+        </mat-icon>
+        <mat-icon *ngIf="unit.parent.locked.through.restrictions.codeToEnter" [matTooltip]="unit.parent.locked.through.id">
+          {{unit.parent.locked.by === 'code' ? 'lock' : 'lock_open'}}
+        </mat-icon>
+      </ng-container>
       <mat-icon class='more-btn' (click)="toggleMore(unit.alias)">
         {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
       </mat-icon>
@@ -103,7 +105,7 @@
         </tr>
         <tr>
           <td>parent</td>
-          <td>{{unit.parent?.id}}</td>
+          <td>{{unit.parent.id}}</td>
         </tr>
         <tr>
           <td>localIndex</td>

@@ -4,7 +4,7 @@ import {
 import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
-import { Unit } from '../../interfaces/test-controller.interfaces';
+import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -39,6 +39,7 @@ export class DebugPaneComponent implements OnInit {
   searchCustomText: string = '';
 
   unitContext?: { item: Unit; unit: Unit };
+  TestletContext?: { item: Testlet };
 
   ngOnInit() {
     this.tcs.testStructureChanges$.subscribe(() => {
@@ -69,4 +70,6 @@ export class DebugPaneComponent implements OnInit {
       this.openPanes.push(id);
     }
   }
+
+  protected readonly isTestlet = isTestlet;
 }

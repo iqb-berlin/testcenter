@@ -10,7 +10,6 @@ export class TemplateContextDirective<T> {
     directive: TemplateContextDirective<T>,
     context: unknown
   ): context is T {
-    console.log('!', context);
     return true;
   }
 }

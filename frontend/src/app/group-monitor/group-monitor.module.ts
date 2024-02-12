@@ -25,11 +25,15 @@ import { TestSessionComponent } from './test-session/test-session.component';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
+import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
+import { TimeLeftPipe } from './test-session/timeleft.pipe';
 
 @NgModule({
   declarations: [
     GroupMonitorComponent,
-    TestSessionComponent
+    TestSessionComponent,
+    IsCodeClearPipe,
+    TimeLeftPipe
   ],
   imports: [
     CommonModule,

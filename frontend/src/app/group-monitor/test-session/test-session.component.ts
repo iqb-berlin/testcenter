@@ -4,7 +4,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   Testlet as Testlet, TestViewDisplayOptions,
-  isUnit, Selected, TestSession, TestSessionSuperState, isBooklet, BookletError
+  isUnit, Selected, TestSession, TestSessionSuperState, isBooklet, BookletError, isTestlet
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -37,15 +37,14 @@ export class TestSessionComponent {
 
   superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
 
+  // TODO use pipes for the following functions
   stateString = TestSessionUtil.stateString;
-
   hasState = TestSessionUtil.hasState;
-
-  // eslint-disable-next-line class-methods-use-this
-  getTestletType = (testletOrUnit: UnitDef | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
   isBooklet = isBooklet;
+  isTestlet = isTestlet;
   // eslint-disable-next-line class-methods-use-this
   trackUnits = (index: number, testlet: Testlet | UnitDef): string => testlet.id || index.toString();
+
   testletContext?: { $implicit: Testlet };
 
   mark(testletOrNull: Testlet | null = null): void {
@@ -124,4 +123,6 @@ export class TestSessionComponent {
       inversion
     };
   }
+
+  protected readonly parseInt = parseInt;
 }

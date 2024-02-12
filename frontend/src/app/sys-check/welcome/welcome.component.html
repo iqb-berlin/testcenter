@@ -2,7 +2,7 @@
   <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
     <mat-card appearance="raised" [style.flex-basis.px]="400">
       <mat-card-header>
-        <mat-card-title>{{ds.checkConfig?.label}}</mat-card-title>
+        <mat-card-title>{{ds.checkConfig.label}}</mat-card-title>
       </mat-card-header>
       <mat-card-content *ngIf="ds.loadConfigComplete">
         <p>{{'Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.'| customtext:'syscheck_intro' | async}}

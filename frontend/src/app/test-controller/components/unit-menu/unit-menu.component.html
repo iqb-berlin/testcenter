@@ -1,24 +1,19 @@
 <div class="sidebar-main">
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
   <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">
-
-    <ng-container *ngIf="blockLabelOrUnit.sequenceId; else testletLabel">
-      <a mat-raised-button
-        [class]="{'current': blockLabelOrUnit.isCurrent}"
-        (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
-        [disabled]="blockLabelOrUnit.disabled"
-      >
-        <mat-icon *ngIf="!tcs.units[blockLabelOrUnit.sequenceId].definition" matTooltip="wird geladen">
-          hourglass_empty
-        </mat-icon>
-        {{blockLabelOrUnit.longLabel}}
-      </a>
-    </ng-container>
-    <ng-template #testletLabel>
-      <h4 *ngIf="blockLabelOrUnit || i > 0" class='testlet-label'>
-        {{blockLabelOrUnit}}
-      </h4>
-    </ng-template>
+    <h4 *ngIf="blockLabelOrUnit.headline || i > 0" class='testlet-label'>
+      {{blockLabelOrUnit.headline}}
+    </h4>
+    <a mat-raised-button
+      [class]="{'current': blockLabelOrUnit.isCurrent}"
+      (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
+      [disabled]="blockLabelOrUnit.disabled"
+    >
+      <mat-icon *ngIf="!tcs.units[blockLabelOrUnit.sequenceId].definition" matTooltip="wird geladen">
+        hourglass_empty
+      </mat-icon>
+      {{blockLabelOrUnit.longLabel}}
+    </a>
   </ng-container>
 </div>
 

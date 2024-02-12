@@ -142,6 +142,7 @@ export interface UnitNaviButtonData {
   longLabel: string;
   testletLabel: string;
   isCurrent: boolean;
+  headline: string | null;
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++

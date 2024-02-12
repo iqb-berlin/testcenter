@@ -48,8 +48,8 @@
     {{current.parent.label || current.parent.blockId || current.parent.id}}
     <mat-icon
       class="unit-badge"
-      *ngIf="testSession.timeLeft && (testSession?.timeLeft[current.parent.id] !== undefined)"
-      matBadge="{{testSession?.timeLeft[current.parent.id] | number: '1.0-0'}}"
+      *ngIf="testSession | timeleft : current.parent as timeLeft"
+      matBadge="{{timeLeft | number: '1.0-0'}}"
       matBadgeColor="accent"
       matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async}}"
     >schedule
@@ -105,11 +105,11 @@
 </td>
 
 <ng-template #testletFull let-testlet [appTemplateContext]="testletContext">
-  <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testlet }"></ng-container>
+  <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testlet }"></ng-container>
 
-  <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
+  <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
     <span
-      *ngSwitchCase="'unit'"
+      *ngIf="!isTestlet(testletOrUnit)"
       [class]="{
         unit: true,
         current: testSession.data.unitName === testletOrUnit.id
@@ -120,7 +120,8 @@
       {{testletOrUnit.labelShort || "&nbsp;"}}
     </span>
 
-    <span *ngSwitchCase="'testlet'"
+    <span
+      *ngIf="isTestlet(testletOrUnit)"
       [class]="{
         testlet: true,
         selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
@@ -136,17 +137,18 @@
 </ng-template>
 
 
-<ng-template #bookletMedium let-testlet>
-  <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet}">
+<ng-template #bookletMedium let-testlet [appTemplateContext]="testletContext">
+  <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {$implicit: testlet}">
   </ng-container>
 </ng-template>
 
 
-<ng-template #testletTemplateMedium let-testlet="testlet">
+<ng-template #testletTemplateMedium let-testlet [appTemplateContext]="testletContext">
 
-  <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
+  <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits">
 
-    <span *ngSwitchCase="'unit'"
+    <span
+      *ngIf="!isTestlet(testletOrUnit)"
       [class]="(testSession.data.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
       matTooltip="{{testletOrUnit.label}}"
       matTooltipPosition="above"
@@ -154,13 +156,13 @@
     </span>
 
     <span
-      *ngSwitchCase="'testlet'"
+      *ngIf="isTestlet(testletOrUnit)"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
-      [class]="{ 'timeup' : testletOrUnit.restrictions?.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession?.timeLeft[testletOrUnit.id] === 0 }"
+      [class]="{ 'timeup' : testletOrUnit.restrictions.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
     >
 
-      <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testletOrUnit }"></ng-container>
+      <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testletOrUnit }"></ng-container>
 
       <ng-container *ngIf="testSession.current; else: unFeaturedTestlet">
         <span
@@ -172,7 +174,7 @@
             selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
             marked: isMarked(testletOrUnit) && testletOrUnit.blockId
           }"
-          matTooltip="{{testSession.current.unit.label}}"
+          matTooltip="{{testSession.current.unit?.label}}"
           matTooltipPosition="above"
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
@@ -201,11 +203,12 @@
 <ng-template #bookletSmall let-testlet>
   <span
     class="testlet" *ngIf="testSession.current; else: unFeaturedTestlet"
-    matTooltip="{{testSession.current.parent?.label}}"
+    matTooltip="{{testSession.current.parent.label}}"
   >
     <span
+      *ngIf="isBooklet(testSession.booklet)"
       class="unit current aggregated"
-      matTooltip="{{testSession.current.unit.label}}"
+      matTooltip="{{testSession.current.unit?.label}}"
       matTooltipPosition="above"
     >
       {{testSession.current.indexGlobal + 1}} / {{testSession.booklet.units.descendantCount}}
@@ -219,7 +222,7 @@
   </ng-template>
 </ng-template>
 
-<ng-template #restrictions let-testlet="testlet">
+<ng-template #restrictions let-testlet [appTemplateContext]="testletContext">
   <span
     *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
     class="unit restriction"
@@ -227,7 +230,7 @@
     matTooltipPosition="above"
   >
     <mat-icon>
-      {{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}
+      {{(testSession | iscodeclear : testlet) ? 'lock_open' : 'lock'}}
     </mat-icon>
   </span>
 
@@ -259,7 +262,7 @@
 
 <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-    <h2 matTooltip="{{current.unit.label}}">{{current.unit.id}}</h2>
+    <h2 matTooltip="{{current.unit?.label}}">{{current.unit?.id}}</h2>
     <mat-icon
       class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'PRESENTATION_PROGRESS', 'complete')"

@@ -18,7 +18,7 @@
               <mat-header-cell *matHeaderCellDef class="checkboxcell">
                 <mat-checkbox [attr.data-cy]="'files-checkAll-' + type" (change)="checkAll($event.checked, type)"></mat-checkbox>
               </mat-header-cell>
-              <mat-cell *matCellDef="let element" class="checkboxcell" >
+              <mat-cell *matCellDef="let element" class="checkboxcell">
                 <mat-checkbox [attr.data-cy]="'files-checkbox-' + element.id" [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -106,7 +106,7 @@
         (click)="hiddenfileinput.click()"
         matTooltip="Dateien hochladen/aktualisieren"
         matTooltipPosition="above"
-        [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files?.length)"
+        [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files.length)"
         data-cy="upload-files"
       >
         <mat-icon>cloud_upload</mat-icon>

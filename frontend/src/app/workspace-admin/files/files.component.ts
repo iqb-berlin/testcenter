@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, Inject, ViewChild, OnDestroy
+  Component, OnInit, ViewChild, OnDestroy
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -66,6 +66,10 @@ export class FilesComponent implements OnInit, OnDestroy {
   private wsIdSubscription: Subscription | null = null;
 
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
+
+  IQBFileContext?: {
+    $implicit: IQBFile
+  };
 
   constructor(
     private bs: BackendService,

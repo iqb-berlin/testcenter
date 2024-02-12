@@ -1,7 +1,7 @@
 <div [ngSwitch]="(tcs.state$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
   <mat-card appearance="raised" class="mat-card-box" *ngSwitchDefault>
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -22,7 +22,7 @@
 
   <mat-card appearance="raised" class="mat-card-box" *ngSwitchCase="tcs.testControllerStateEnum.PAUSED">
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -36,10 +36,10 @@
   <error
     *ngSwitchCase="tcs.testControllerStateEnum.ERROR"
     [onClose]="reloadPage.bind(this)"
-    [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
+    [closeCaption]="('Neu Laden' | customtext:'booklet_reload' | async) || ''"
     [additionalReport]="{
       login: loginName,
-      booklet: tcs.rootTestlet?.title,
+      booklet: tcs.booklet?.metadata?.label || tcs.booklet?.metadata?.id || '',
       mode: tcs.testMode.modeLabel
     }"
   >
@@ -48,7 +48,7 @@
 
   <mat-card appearance="raised" *ngSwitchCase="tcs.testControllerStateEnum.LOADING" class="progress-bar">
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label || 'Test' }}</mat-card-title>
       <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>

@@ -12,8 +12,8 @@ export interface TestSession {
   readonly state: TestSessionSuperState;
   readonly current: UnitContext | null;
   readonly booklet: Booklet | BookletError;
-  readonly clearedCodes: Record<string, unknown> | null;
-  readonly timeLeft: Record<string, string> | null;
+  readonly clearedCodes: string[] | null;
+  readonly timeLeft: Record<string, number> | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -46,7 +46,7 @@ export interface CheckingOptions {
 }
 
 export interface UnitContext {
-  unit: UnitDef;
+  unit: UnitDef | undefined;
   parent: Testlet;
   ancestor: Testlet;
   indexGlobal: number;

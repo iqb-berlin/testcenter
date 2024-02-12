@@ -1,12 +1,11 @@
-import {
-  Component, Input, OnChanges, ViewEncapsulation
-} from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import {
   Observable, ReplaySubject, Subject, Subscription
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CustomtextPipe } from '../../pipes/customtext/customtext.pipe';
 import { CustomtextService } from '../../services/customtext/customtext.service';
+import { AlertLevel } from '../../interfaces/alert.interfaces';
 
 @Component({
   selector: 'tc-alert',
@@ -17,9 +16,9 @@ export class AlertComponent implements OnChanges {
   @Input() text: string = '';
   @Input() customtext: string = '';
   @Input() replacements: string[] = [];
-  @Input() level: 'error' | 'warning' | 'info' | 'success' = 'info';
+  @Input() level: AlertLevel = 'info';
 
-  icons = {
+  icons: { [level in AlertLevel]: string } = {
     error: 'error',
     warning: 'warning',
     info: 'info',
