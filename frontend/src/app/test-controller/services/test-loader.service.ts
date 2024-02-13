@@ -141,7 +141,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         this.tcs.testlets[testletId].locks.code =
           !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
         this.tcs.testlets[testletId].locks.time =
-          !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes && !(this.tcs.timers[testletId]);
+          !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
+          ((typeof this.tcs.timers[testletId] !== 'undefined') && !!this.tcs.timers[testletId])
       });
   }
 

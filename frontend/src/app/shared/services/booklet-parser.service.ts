@@ -104,9 +104,10 @@ export abstract class BookletParserService<
   private parseTestlet(testletElement: Element, context: ContextInBooklet<Testlet>): Testlet {
     let testletCount = 0;
     let unitCount = 0;
+    const genericTestletId = `${context.parents.map(p => p.id).join('>')}[${  testletCount  }]`;
     const testlet = this.toTestlet(
       {
-        id: testletElement.getAttribute('id') || '',
+        id: testletElement.getAttribute('id') || genericTestletId,
         label: testletElement.getAttribute('label') || '',
         restrictions: this.parseRestrictions(testletElement, context),
         children: []
