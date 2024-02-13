@@ -534,7 +534,11 @@ export class TestControllerService {
         .forEach(child => updateLocks(child, testlet));
     };
 
-    updateLocks(this.testlets['']);
+    if (!this.booklet) {
+      return;
+    }
+    
+    updateLocks(this.testlets[this.booklet.units.id]);
   }
 
   static unitIsInaccessible(unit: Unit): boolean {

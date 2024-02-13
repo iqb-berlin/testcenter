@@ -36,7 +36,6 @@ export class UnitActivateGuard {
       // a unitId of a locked unit was inserted
       const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.sequenceId, true);
       if (!previousUnlockedUnit) {
-        console.log('!');
         return true;
       }
       if (previousUnlockedUnit !== targetUnitSequenceId) {

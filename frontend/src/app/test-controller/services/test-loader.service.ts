@@ -82,7 +82,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
-    // this.tcs.rootTestlet.lockUnitsIfTimeLeftNull(); TODO X what was this?
 
     // eslint-disable-next-line consistent-return
     return this.loadUnitContents(testData)
@@ -141,7 +140,14 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
         this.tcs.testlets[testletId].locks.time =
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
-          ((typeof this.tcs.timers[testletId] !== 'undefined') && !!this.tcs.timers[testletId]);
+          ((typeof this.tcs.timers[testletId] !== 'undefined') && !this.tcs.timers[testletId]);
+        console.log({
+          testletId,
+          hasRes: !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes,
+          timerSet: (typeof this.tcs.timers[testletId] !== 'undefined'),
+          timerValue: !this.tcs.timers[testletId],
+          lock: this.tcs.testlets[testletId].locks.time
+        })
       });
   }
 
@@ -341,7 +347,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         });
     };
 
-    this.tcs.testlets[''] = booklet.units;
+    this.tcs.testlets[booklet.units.id] = booklet.units;
     registerChildren(booklet.units);
 
     this.registerTrackedVariables();
