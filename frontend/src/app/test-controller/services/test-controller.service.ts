@@ -538,8 +538,9 @@ export class TestControllerService {
   }
 
   static unitIsInaccessible(unit: Unit): boolean {
+    // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
     return !!unit.parent.locked &&
-      (!((unit.parent.locked.by === 'code') && (unit.localIndex !== 0)));
+      ((unit.parent.locked.by !== 'code') || (unit.localIndex !== 0) || (unit.parent.id !== unit.parent.locked.through.id));
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
