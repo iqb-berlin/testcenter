@@ -17,7 +17,7 @@
         <mat-card appearance="raised">
           <mat-card-header>
             <mat-card-title>
-              {{(loadingUnits.length > 1 || unit.parent.locked) ? unit.blockLabel : unit.label}}
+              {{(loadingUnits.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
             </mat-card-title>
             <mat-card-subtitle *ngIf="loadingUnits.length > 1">
               {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}

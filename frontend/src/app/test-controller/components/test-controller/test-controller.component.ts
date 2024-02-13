@@ -351,7 +351,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         continue;
       }
 
-      const blockLabel = unit.blockLabel || '';
+      const blockLabel = unit.parent.blockLabel;
       const headline = ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) ? blockLabel : '';
       previousBlockLabel = blockLabel;
 
@@ -359,7 +359,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         sequenceId,
         shortLabel: unit.labelShort,
         longLabel: unit.label,
-        testletLabel: unit.blockLabel,
         disabled: TestControllerService.unitIsInaccessible(unit),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId,
         headline
@@ -370,13 +369,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private setUnitScreenHeader(): void {
     switch (this.tcs.bookletConfig.unit_screenheader) {
       case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).label;
+        this.unitScreenHeader = this.tcs.currentUnit.label;
         break;
       case 'WITH_BOOKLET_TITLE':
         this.unitScreenHeader = this.tcs.booklet?.metadata.label || '';
         break;
       case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.getUnit(this.tcs.currentUnitSequenceId).blockLabel;
+        this.unitScreenHeader = this.tcs.currentUnit.parent.blockLabel;
         break;
       default:
         this.unitScreenHeader = '';

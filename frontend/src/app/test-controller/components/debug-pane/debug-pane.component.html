@@ -74,6 +74,10 @@
         <td>{{testlet.label}}</td>
       </tr>
       <tr>
+        <td>blockLabel</td>
+        <td>{{testlet.blockLabel}}</td>
+      </tr>
+      <tr>
         <td>locks.time</td>
         <td>{{testlet.locks.time ? 'y' : 'n'}}</td>
       </tr>
@@ -105,10 +109,6 @@
         {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
       </mat-icon>
       <table *ngIf="openPanes.includes(unit.alias)">
-        <tr>
-          <td>blockLabel</td>
-          <td>{{unit.blockLabel}}</td>
-        </tr>
         <tr>
           <td>parent</td>
           <td>{{unit.parent.id}}</td>

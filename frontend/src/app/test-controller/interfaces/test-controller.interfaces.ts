@@ -141,7 +141,6 @@ export interface UnitNaviButtonData {
   disabled: boolean;
   shortLabel: string;
   longLabel: string;
-  testletLabel: string;
   isCurrent: boolean;
   headline: string | null;
 }
@@ -234,7 +233,6 @@ export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is Lo
 export interface Unit extends UnitDef {
   readonly sequenceId: number;
   readonly parent: Testlet;
-  readonly blockLabel: string; // TODO X remove ot move to testlet
   readonly localIndex: number;
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
@@ -253,6 +251,7 @@ export type TestletLockType = typeof TestletLockTypes[number];
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
   readonly sequenceId: number;
+  readonly blockLabel: string;
   locks: Required<{ [ type in TestletLockType ]: boolean }>
   locked: {
     by: TestletLockType;

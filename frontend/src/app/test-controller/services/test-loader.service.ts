@@ -389,6 +389,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     }
     return Object.assign(testletDef, {
       sequenceId: NaN,
+      blockLabel: (context.parents.length <= 1) ? testletDef.label : context.parents[context.parents.length - 2].label,
       locks: {
         time: !!testletDef.restrictions.timeMax?.minutes,
         code: !!testletDef.restrictions.codeToEnter?.code,
@@ -405,7 +406,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       parent: context.parents[0],
-      blockLabel: (context.parents.length > 1) ? context.parents[context.parents.length - 2].label : '',
       playerFileName: '',
       // type is deprecated but support everything
       playerId: elem.getAttribute('type') || elem.getAttribute('player') || '',
