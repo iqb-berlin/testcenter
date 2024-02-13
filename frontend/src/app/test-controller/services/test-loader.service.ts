@@ -192,7 +192,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.units[sequenceId].state = unitData.state;
           this.tcs.units[sequenceId].responseType = unitData.unitResponseType;
           this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
-          this.tcs.setUnitStateDataParts(sequenceId, unitData.dataParts);
+          this.tcs.units[sequenceId].dataParts = unitData.dataParts;
 
           if (definitionFile) {
             this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
@@ -416,7 +416,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       variables: { },
       responseType: undefined,
       state: { },
-      definition: ''
+      definition: '',
+      dataParts: {}
     });
   }
 }

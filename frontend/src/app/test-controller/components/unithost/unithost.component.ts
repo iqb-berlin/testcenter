@@ -184,7 +184,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 });
               this.tcs.updateUnitStateDataParts(
                 this.currentUnit.alias,
-                this.currentUnitSequenceId,
                 unitState.dataParts,
                 unitState.unitStateDataType
               );
@@ -325,7 +324,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       currentPage: this.tcs.currentUnit.state.CURRENT_PAGE_ID || null,
       unitDefinitionType: this.tcs.currentUnit.playerId,
       unitState: {
-        dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
+        dataParts: this.tcs.currentUnit.dataParts,
         unitStateDataType: this.tcs.currentUnit.responseType || '(unknown)', // TODO X check fallback values
         presentationProgress: this.tcs.currentUnit.state.PRESENTATION_PROGRESS || '',
         responseProgress: this.tcs.currentUnit.state.RESPONSE_PROGRESS || ''

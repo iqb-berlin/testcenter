@@ -127,9 +127,8 @@ export class TestControllerService {
    * TODO simplify data structure
    */
 
-  private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
-  private unitPresentationProgressStates: { [sequenceId: number]: string | undefined } = {};
-  private unitResponseProgressStates: { [sequenceId: number]: string | undefined } = {};
+  // private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
+
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
@@ -232,7 +231,6 @@ export class TestControllerService {
 
   resetDataStore(): void {
     this.players = {};
-    this.unitStateDataParts = {};
 
     this.currentUnitSequenceId = 0;
 
@@ -241,7 +239,6 @@ export class TestControllerService {
     this.testlets = {};
     this.unitAliasMap = {};
 
-    this.unitResponseProgressStates = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
 
@@ -264,7 +261,6 @@ export class TestControllerService {
 
   updateUnitStateDataParts(
     unitAlias: string,
-    sequenceId: number,
     dataParts: KeyValuePairString,
     unitStateDataType: string
   ): void {
@@ -272,14 +268,11 @@ export class TestControllerService {
 
     Object.keys(dataParts)
       .forEach(dataPartId => {
-        if (!this.unitStateDataParts[sequenceId]) {
-          this.unitStateDataParts[sequenceId] = {};
-        }
         if (
-          !this.unitStateDataParts[sequenceId][dataPartId] ||
-          (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
+          !this.currentUnit.dataParts[dataPartId] ||
+          (this.currentUnit.dataParts[dataPartId] !== dataParts[dataPartId])
         ) {
-          this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
+          this.currentUnit.dataParts[dataPartId] = dataParts[dataPartId];
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
@@ -336,37 +329,6 @@ export class TestControllerService {
     return this.players[fileName];
   }
 
-  setUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
-    this.unitStateDataParts[unitSequenceId] = dataParts;
-  }
-
-  getUnitStateDataParts(sequenceId: number): KeyValuePairString {
-    return this.unitStateDataParts[sequenceId];
-  }
-
-  // setUnitPresentationProgress(sequenceId: number, state: string | undefined): void {
-  //   this.unitPresentationProgressStates[sequenceId] = state;
-  // }
-  //
-  // hasUnitPresentationProgress(sequenceId: number): boolean {
-  //   return sequenceId in this.unitPresentationProgressStates;
-  // }
-  //
-  // getUnitPresentationProgress(sequenceId: number): string | undefined {
-  //   return this.unitPresentationProgressStates[sequenceId];
-  // }
-
-  hasUnitResponseProgress(sequenceId: number): boolean {
-    return sequenceId in this.unitResponseProgressStates;
-  }
-
-  setUnitResponseProgress(sequenceId: number, state: string | undefined): void {
-    this.unitResponseProgressStates[sequenceId] = state;
-  }
-
-  getUnitResponseProgress(sequenceId: number): string | undefined {
-    return this.unitResponseProgressStates[sequenceId];
-  }
 
   setUnitLoadProgress$(sequenceId: number, progress: Observable<LoadingProgress>): void {
     this.unitContentLoadProgress$[sequenceId] = progress;

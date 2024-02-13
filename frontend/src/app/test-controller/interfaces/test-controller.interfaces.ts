@@ -242,6 +242,7 @@ export interface Unit extends UnitDef {
   // currentPage: string | undefined;
   definition: string;
   state: { [k in UnitStateKey]?: string };
+  dataParts: KeyValuePairString;
 }
 
 export const TestletLockTypes = ['condition', 'time', 'code'] as const;

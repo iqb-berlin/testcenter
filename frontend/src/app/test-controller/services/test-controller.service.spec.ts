@@ -79,7 +79,7 @@ describe('TestControllerService', () => {
   });
 
   it('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
-    service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync
+    // service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync TODO X TEST
     service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
     service.setupUnitDataPartsBuffer();
@@ -137,9 +137,9 @@ describe('TestControllerService', () => {
   }));
 
   it('Incoming unitState should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
-    service.setUnitStateCurrentPage(1, '1');
-    service.setUnitPresentationProgress(1, 'none');
-    service.setUnitResponseProgress(1, 'none');
+    // service.setUnitStateCurrentPage(1, '1'); TODOD X TEST
+    // service.setUnitPresentationProgress(1, 'none');
+    // service.setUnitResponseProgress(1, 'none');
     service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
     service.setupUnitStateBuffer();
