@@ -13,7 +13,8 @@
 }
 
 .tabs {
-  top: 65px;
+  top: 0;
+  left: 120px;
 }
 
 .tabs div {
@@ -47,7 +48,7 @@
 
 /* they are all movable, but may have somehow useful starting positions */
 .tab-main {
-  top: 120px;
+  top: 70px;
 }
 
 .tab-config {
@@ -81,8 +82,6 @@ b {
   font-weight: normal;
 }
 
-
-
 .testlet {
   padding-left: 1em;
   /*border: 1px solid orange;*/
@@ -90,7 +89,6 @@ b {
 }
 
 table {
-  border-radius: 3px;
   padding: 3px;
   width: 100%;
 }
@@ -98,6 +96,12 @@ table {
 tbody tr:first-child td {
   background: orange;
   color: black;
+}
+
+.tab-units table {
+  border-left: 2px solid orange;
+  padding-left: 1px;
+  margin-left: 4px;
 }
 
 

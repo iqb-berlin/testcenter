@@ -18,7 +18,6 @@
         <b>{{timer.key}}</b>: {{timer.value | number:'1.0-2'}}
       </li>
     </ul>
-    {{timerValue.timeLeftString}}<b> {{timerValue.testletId}} {{timerValue.type}}</b>
   </div>
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
   <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
@@ -41,6 +40,20 @@
   </ng-container>
   <ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
     {{testlet.id || '&lt;units&gt;'}}
+
+    <span
+      class='badge'
+      [class]="{active: (testlet.locked && testlet.locked.by === 'time' && testlet.locked.through.id === testlet.id)}"
+      *ngIf="testlet.restrictions.timeMax"
+      [matTooltip]="testlet.restrictions.timeMax.minutes + 'min'"
+    >T</span>
+
+    <span
+      class='badge'
+      [class]="{active: (testlet.locked && testlet.locked.by === 'code' && testlet.locked.through.id === testlet.id)}"
+      *ngIf="testlet.restrictions.codeToEnter"
+     >C</span>
+
     <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'">p</span>
     <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'">P</span>
     <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'">r</span>
@@ -51,6 +64,7 @@
       *ngFor="let ifRes of testlet.restrictions.if; let i = index"
       matTooltip="{{ifRes | blockcondition}}'"
     >I</span>
+
     <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
       {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
     </mat-icon>
@@ -87,14 +101,6 @@
   <ng-template #unitTemplate let-unit="item" [appTemplateContext]="unitContext">
     <div class="unit" *ngIf="unit">
       {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
-      <ng-container *ngIf="unit.parent.locked && unit.parent.locked.through.restrictions">
-        <mat-icon *ngIf="unit.parent.locked.through.restrictions.timeMax" [matTooltip]="unit.parent.locked.through.id">
-          {{unit.parent.locked.by === 'time' ? 'hourglass_top' : 'hourglass_bottom'}}
-        </mat-icon>
-        <mat-icon *ngIf="unit.parent.locked.through.restrictions.codeToEnter" [matTooltip]="unit.parent.locked.through.id">
-          {{unit.parent.locked.by === 'code' ? 'lock' : 'lock_open'}}
-        </mat-icon>
-      </ng-container>
       <mat-icon class='more-btn' (click)="toggleMore(unit.alias)">
         {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
       </mat-icon>
