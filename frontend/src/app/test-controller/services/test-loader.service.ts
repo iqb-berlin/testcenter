@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, Subject, Subscription
+  BehaviorSubject, from, Observable, of, ReplaySubject, Subject, Subscription
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
@@ -199,8 +199,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           } else {
             // inline unit definition
             this.tcs.units[sequenceId].definition = unitData.definition;
-
-            this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
+            this.tcs.units[sequenceId].loadingProgress = of({ progress: 100 });
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
 
@@ -258,10 +257,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       .forEach(unitToLoad => {
         unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)] =
           new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
-        this.tcs.setUnitLoadProgress$(
-          Number(unitToLoad.sequenceId),
-          unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)].asObservable()
-        );
+        this.tcs.units[Number(unitToLoad.sequenceId)].loadingProgress =
+          unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)].asObservable();
       });
 
     return new Promise<void>(resolve => {
@@ -417,7 +414,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       responseType: undefined,
       state: { },
       definition: '',
-      dataParts: {}
+      dataParts: {},
+      loadingProgress: new Observable<LoadingProgress>()
     });
   }
 }

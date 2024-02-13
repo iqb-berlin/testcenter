@@ -10,7 +10,6 @@ import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, isUnitStateKey, KeyValuePairNumber,
   KeyValuePairString,
-  LoadingProgress,
   MaxTimerEvent,
   StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
@@ -95,10 +94,10 @@ export class TestControllerService {
 
   windowFocusState$ = new Subject<WindowFocusState>();
 
-  private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
+  private _navigationDenial$ = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
 
-  get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
-    return this._navigationDenial;
+  get navigationDenial$(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
+    return this._navigationDenial$;
   }
 
   private _currentUnitSequenceId$: BehaviorSubject<number> = new BehaviorSubject<number>(-Infinity);
@@ -117,19 +116,6 @@ export class TestControllerService {
   testStructureChanges$ = new BehaviorSubject<void>(undefined);
 
   private players: { [filename: string]: string } = {};
-
-  /**
-   * the structure of this service is weird: instead of distributing the UnitDefs into the several arrays
-   * below we could store a single array with UnitDefs (wich would be a flattened version of the root testlet). Thus
-   * we would could get rid of all those arrays, get-, set- and has- functions. I leave this out for the next
-   * refactoring. Also those data-stores are only used to transfer restored data from loading process to the moment of
-   * sending vopStartCommand. They are almost never updated.
-   * TODO simplify data structure
-   */
-
-  // private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
-
-  private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
@@ -329,15 +315,6 @@ export class TestControllerService {
     return this.players[fileName];
   }
 
-
-  setUnitLoadProgress$(sequenceId: number, progress: Observable<LoadingProgress>): void {
-    this.unitContentLoadProgress$[sequenceId] = progress;
-  }
-
-  getUnitLoadProgress$(sequenceId: number): Observable<LoadingProgress> {
-    return this.unitContentLoadProgress$[sequenceId];
-  }
-
   clearTestlet(testletId: string): void {
     if (!this.testlets[testletId] || !this.testlets[testletId].restrictions.codeToEnter?.code) {
       return;
@@ -443,7 +420,7 @@ export class TestControllerService {
   }
 
   notifyNavigationDenied(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
-    this._navigationDenial.next({ sourceUnitSequenceId, reason });
+    this._navigationDenial$.next({ sourceUnitSequenceId, reason });
   }
 
   terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): void {

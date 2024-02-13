@@ -63,7 +63,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
       this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
-      this.subscriptions.navigationDenial = this.tcs.navigationDenial
+      this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
     });
   }
@@ -256,7 +256,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     const unitsToLoad = unitsToLoadIds
-      .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
+      .map(unitSequenceId => this.tcs.units[unitSequenceId].loadingProgress);
 
     this.unitsToLoadLabels = unitsToLoadIds
       .map(unitSequenceId => this.tcs.getUnit(unitSequenceId).label);

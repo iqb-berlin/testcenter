@@ -5,6 +5,7 @@ import {
   BookletDef, ContextInBooklet, TestletDef, UnitDef
 } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
+import { Observable } from 'rxjs';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
@@ -243,6 +244,7 @@ export interface Unit extends UnitDef {
   definition: string;
   state: { [k in UnitStateKey]?: string };
   dataParts: KeyValuePairString;
+  loadingProgress: Observable<LoadingProgress>;
 }
 
 export const TestletLockTypes = ['condition', 'time', 'code'] as const;
