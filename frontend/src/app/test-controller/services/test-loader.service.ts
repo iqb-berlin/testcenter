@@ -141,13 +141,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         this.tcs.testlets[testletId].locks.time =
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
           ((typeof this.tcs.timers[testletId] !== 'undefined') && !this.tcs.timers[testletId]);
-        console.log({
-          testletId,
-          hasRes: !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes,
-          timerSet: (typeof this.tcs.timers[testletId] !== 'undefined'),
-          timerValue: !this.tcs.timers[testletId],
-          lock: this.tcs.testlets[testletId].locks.time
-        })
       });
   }
 

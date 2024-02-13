@@ -2,16 +2,16 @@
   'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
   'with-title': tcs.bookletConfig.unit_title === 'ON',
   'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-  'is-waiting': (currentUnit && currentUnit.parent.locked) || ((unitsLoading$ | async) || []).length
+  'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((unitsLoading$ | async) || []).length
 }">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
-    <h2 >{{currentUnit?.label}}</h2>
+    <h2 >{{tcs.currentUnit ? tcs.currentUnit.label : 'no unit'}}</h2>
     <mat-divider></mat-divider>
   </div>
 
   <div #iframeHost id="iframe-host"></div>
 
-  <ng-container *ngIf="currentUnit as unit">
+  <ng-container *ngIf="tcs.currentUnit as unit">
     <ng-container *ngIf="unitsLoading$ | async as loadingUnits">
       <div id="waiting-room" *ngIf="loadingUnits.length || unit.parent.locked">
         <mat-card appearance="raised">
@@ -83,7 +83,7 @@
 
           <mat-card-actions [style.justify-content]="'space-between'">
             <button
-              *ngIf="currentUnit && unit.parent.locked?.by == 'code'"
+              *ngIf="tcs.currentUnit && unit.parent.locked?.by == 'code'"
               mat-raised-button
               color="primary"
               [disabled]="!clearCode.length"

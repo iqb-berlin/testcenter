@@ -33,8 +33,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
-  currentUnitSequenceId = -1;
-
   private playerSessionId = '';
   private postMessageTarget: Window = window;
   private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
@@ -43,7 +41,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
 
-  currentUnit: Unit | null = null;
   currentPageIndex: number = -1;
   clearCode: string = '';
 
@@ -73,7 +70,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private handleIncomingMessage(messageEvent: MessageEvent): void {
-    if (!this.currentUnit) {
+    if (!this.tcs.currentUnit) {
       return;
     }
     const msgData = messageEvent.data;
@@ -102,9 +99,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
           };
         }
         this.tcs.updateUnitState(
-          this.currentUnitSequenceId,
+          this.tcs.currentUnitSequenceId,
           {
-            alias: this.currentUnit.alias,
+            alias: this.tcs.currentUnit.alias,
             state: [<StateReportEntry>{
               key: UnitStateKey.PLAYER,
               timeStamp: Date.now(),
@@ -145,9 +142,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
               const pageCount = this.knownPages.length;
               if (this.knownPages.length > 1 && playerState.validPages[playerState.currentPage]) {
                 this.tcs.updateUnitState(
-                  this.currentUnitSequenceId,
+                  this.tcs.currentUnitSequenceId,
                   {
-                    alias: this.currentUnit.alias,
+                    alias: this.tcs.currentUnit.alias,
                     state: [
                       { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
                       { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
@@ -163,9 +160,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
             const timeStamp = Date.now();
 
             this.tcs.updateUnitState(
-              this.currentUnitSequenceId,
+              this.tcs.currentUnitSequenceId,
               {
-                alias: this.currentUnit.alias,
+                alias: this.tcs.currentUnit.alias,
                 state: [
                   { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
                   { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
@@ -183,14 +180,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
                   }
                 });
               this.tcs.updateUnitStateDataParts(
-                this.currentUnit.alias,
+                this.tcs.currentUnit.alias,
                 unitState.dataParts,
                 unitState.unitStateDataType
               );
             }
           }
           if (msgData.log) {
-            this.bs.addUnitLog(this.tcs.testId, this.currentUnit.alias, msgData.log);
+            this.bs.addUnitLog(this.tcs.testId, this.tcs.currentUnit.alias, msgData.log);
           }
         }
         break;
@@ -220,9 +217,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private open(currentUnitSequenceId: number): void {
-    this.currentUnitSequenceId = currentUnitSequenceId;
-    this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
+  private open(unitSequenceId: number): void {
+    this.tcs.currentUnitSequenceId = unitSequenceId;
 
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
@@ -231,9 +227,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.currentPageIndex = -1;
     this.knownPages = [];
 
-    this.currentUnit = this.tcs.getUnit(this.currentUnitSequenceId);
+    // this.tcs.currentUnit = this.tcs.getUnit(this.currentUnitSequenceId);
 
-    this.mds.appSubTitle$.next(this.currentUnit.label);
+    this.mds.appSubTitle$.next(this.tcs.currentUnit.label);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
@@ -249,8 +245,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       });
     };
-    if (this.currentUnit.parent) {
-      addChildren(this.currentUnit.parent);
+    if (this.tcs.currentUnit.parent) {
+      addChildren(this.tcs.currentUnit.parent);
     } else {
       unitsToLoadIds = [this.tcs.currentUnitSequenceId];
     }
@@ -279,26 +275,26 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private prepareUnit(): void {
-    if (!this.currentUnit) {
+    if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
     this.unitsLoading$.next([]);
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.currentUnit.alias
+        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.tcs.currentUnit.alias
       }]);
       this.tcs.updateUnitState(
-        this.currentUnitSequenceId,
+        this.tcs.currentUnitSequenceId,
         {
-          alias: this.currentUnit.alias,
+          alias: this.tcs.currentUnit.alias,
           state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
         }
       );
     }
 
     if (this.tcs.testMode.presetCode) {
-      // this.currentUnit.codeRequiringTestlets // TODO X REIMPLEMENT!
+      // this.tcs.currentUnit.codeRequiringTestlets // TODO X REIMPLEMENT!
       //   .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
     }
 
@@ -306,11 +302,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private runUnit(): void {
-    if (!this.currentUnit) {
-      throw new Error('Unit not loaded');
-    }
-
-    if (this.currentUnit.parent.locked) {
+    if (this.tcs.currentUnit.parent.locked) {
+      console.log('RETURN');
       return;
     }
 
@@ -336,19 +329,22 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private startTimerIfNecessary(): void {
-    if (!this.currentUnit?.parent.timerId) {
+    if (!this.tcs.currentUnit?.parent.timerId) {
+      console.log('startTimerIfNecessary',1);
       return;
     }
     if (this.tcs.currentTimerId &&
-      (this.currentUnit.parent.timerId === this.tcs.currentTimerId)
+      (this.tcs.currentUnit.parent.timerId === this.tcs.currentTimerId)
     ) {
+      console.log('startTimerIfNecessary',2);
       return;
     }
-    this.tcs.startTimer(this.tcs.units[this.currentUnit.sequenceId].parent);
+    console.log('startTimerIfNecessary',3);
+    this.tcs.startTimer(this.tcs.currentUnit.parent);
   }
 
   private prepareIframe(): void {
-    if (!this.currentUnit) {
+    if (!this.tcs.currentUnit) {
       return;
     }
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
@@ -363,7 +359,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.playerFileName));
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
   }
 
   private adjustIframeSize(): void {
@@ -371,10 +367,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private reload(): void {
-    if (!this.currentUnitSequenceId || !this.currentUnit) {
+    if (!this.tcs.currentUnitSequenceId || !this.tcs.currentUnit) {
       return;
     }
-    this.open(this.currentUnitSequenceId);
+    this.open(this.tcs.currentUnitSequenceId);
   }
 
   @HostListener('window:resize')
@@ -385,22 +381,22 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private getPlayerConfig(): VeronaPlayerConfig {
-    if (!this.currentUnit) {
+    if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
     const groupToken = this.mds.getAuthData()?.groupToken;
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
-        this.currentUnitSequenceId,
+        this.tcs.currentUnitSequenceId,
         this.tcs.getSequenceBounds(),
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
-      unitNumber: this.currentUnitSequenceId,
+      unitNumber: this.tcs.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnit.label,
-      unitId: this.currentUnit.alias,
+      unitId: this.tcs.currentUnit.alias,
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
     if (this.pendingUnitData?.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
@@ -450,7 +446,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private handleNavigationDenial(
     navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }
   ): void {
-    if (navigationDenial.sourceUnitSequenceId !== this.currentUnitSequenceId) {
+    if (navigationDenial.sourceUnitSequenceId !== this.tcs.currentUnitSequenceId) {
       return;
     }
 
@@ -462,20 +458,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   verifyCodes(): void {
-    if (!this.currentUnit || (!this.currentUnit.parent.locked)) {
+    if (!this.tcs.currentUnit || (!this.tcs.currentUnit.parent.locked)) {
       throw new Error('Unit not loaded');
     }
 
     const requiredCode =
-      (this.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
+      (this.tcs.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
     const givenCode = this.clearCode.toUpperCase().trim();
 
     if (requiredCode === givenCode) {
-      this.tcs.clearTestlet(this.currentUnit.parent.locked.through.id);
+      this.tcs.clearTestlet(this.tcs.currentUnit.parent.locked.through.id);
       this.runUnit();
     } else {
       this.snackBar.open(
-        `Freigabewort '${givenCode}' für '${this.currentUnit.parent.locked.through.label}' stimmt nicht.`,
+        `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
         'OK',
         { duration: 3000 }
       );
