@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { Observable, take, timer } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
-import { MissingBookletError } from '../classes/missing-booklet-error.class';
 
 @Injectable()
 export class UnitActivateGuard {

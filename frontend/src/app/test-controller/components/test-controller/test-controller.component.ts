@@ -341,7 +341,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private refreshUnitMenu(): void {
     this.unitNavigationList = [];
     [this.firstAccessibleUnit, this.lastAccessibleUnit] = this.tcs.getSequenceBounds();
-    console.log('refreshUnitMenu', this.firstAccessibleUnit, this.lastAccessibleUnit);
 
     let previousBlockLabel: string | null = null;
     for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {

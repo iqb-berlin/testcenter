@@ -57,6 +57,7 @@ export class DebugPaneComponent implements OnInit {
   }
 
   res(): void {
+    // eslint-disable-next-line no-console
     console.log(this.tcs.booklet);
   }
 

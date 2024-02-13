@@ -30,7 +30,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  UnitStateKey, Testlet, Booklet, Unit, isUnit
+  Testlet, Booklet, Unit, isUnit
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -38,7 +38,6 @@ import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import { IQBVariable } from '../interfaces/iqb.interfaces';
-import { VeronaProgress } from '../interfaces/verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -142,7 +141,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           !!this.tcs.testlets[testletId].restrictions.codeToEnter?.code && !clearedTestlets.includes(testletId);
         this.tcs.testlets[testletId].locks.time =
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
-          ((typeof this.tcs.timers[testletId] !== 'undefined') && !!this.tcs.timers[testletId])
+          ((typeof this.tcs.timers[testletId] !== 'undefined') && !!this.tcs.timers[testletId]);
       });
   }
 

@@ -16,7 +16,7 @@ import {
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, Unit,
   UnitDataParts,
-  UnitNavigationTarget, UnitStateKey,
+  UnitNavigationTarget,
   UnitStateUpdate,
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
@@ -405,6 +405,7 @@ export class TestControllerService {
     const unit = this.units[unitSequenceId];
 
     if (!unit) {
+      // eslint-disable-next-line no-console
       console.trace();
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
