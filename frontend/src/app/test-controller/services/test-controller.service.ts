@@ -215,7 +215,7 @@ export class TestControllerService {
     if (this.unitStateToSaveSubscription) this.unitStateToSaveSubscription.unsubscribe();
   }
 
-  resetDataStore(): void {
+  reset(): void {
     this.players = {};
 
     this.currentUnitSequenceId = 0;

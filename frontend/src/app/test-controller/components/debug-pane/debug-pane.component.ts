@@ -40,12 +40,16 @@ export class DebugPaneComponent implements OnInit {
   TestletContext?: { item: Testlet };
 
   ngOnInit() {
-    this.tcs.testStructureChanges$.subscribe(() => {
-      this.cdr.detectChanges();
-    });
-    this.tcs.currentUnitSequenceId$.subscribe(() => {
-      this.openPanes = [this.tcs.currentUnit.alias];
-    });
+    this.tcs.testStructureChanges$
+      .subscribe(() => {
+        this.cdr.detectChanges();
+      });
+    this.tcs.currentUnitSequenceId$
+      .subscribe(cuid => {
+        if (cuid > 0) {
+          this.openPanes = [this.tcs.currentUnit.alias];
+        }
+      });
   }
 
   toggleTab(tab: typeof this.tabs[number]): void {

@@ -98,7 +98,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     // Reset TestMode to be Demo, before the correct one comes with getTestData
     // TODO maybe it would be better to retrieve the testmode from the login
     this.tcs.testMode = new TestMode();
-    this.tcs.resetDataStore();
+    this.tcs.reset();
 
     this.tcs.totalLoadingProgress = 0;
     this.totalLoadingProgressParts = {};
