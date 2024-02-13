@@ -1,27 +1,45 @@
 <tc-debug-pane *ngIf="!debugPane" />
 
-<div *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'"
-     class="header flex-row" [style.align-items]="'center'">
+<div
+  *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'"
+  class="header flex-row" [style.align-items]="'center'"
+>
   <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
 
-  <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')"
-     [style.margin-left]="'auto'">
+  <p
+    class="timer"
+    *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')"
+    [style.margin-left]="'auto'"
+  >
     {{timerValue?.timeLeftString}}
   </p>
 
-  <div *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === tcs.testControllerStateEnum.RUNNING)"
-       class="flex-row" [style.align-items]="'safe center'" [style.max-height.%]="100" [style.margin-left]="'auto'">
-    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
-       mat-fab matTooltip="Zurück" data-cy="unit-navigation-backward"
-       [disabled]="tcs.currentUnitSequenceId <= firstAccessibleUnit"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
+  <div
+    *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === tcs.testControllerStateEnum.RUNNING)"
+    class="flex-row"
+    [style.align-items]="'safe center'"
+    [style.max-height.%]="100"
+    [style.margin-left]="'auto'"
+  >
+    <a
+      *ngIf="tcs.bookletConfig.controller_design === '2018'"
+      mat-fab
+      matTooltip="Zurück"
+      data-cy="unit-navigation-backward"
+      [disabled]="firstAccessibleUnit && tcs.currentUnitSequenceId <= firstAccessibleUnit"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+    >
       <i class="material-icons">chevron_left</i>
     </a>
-    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-       mat-flat-button matTooltip="Zurück" data-cy="unit-navigation-backward"
-       [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId <= firstAccessibleUnit"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
+    <a
+      *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+      mat-flat-button
+      matTooltip="Zurück"
+      data-cy="unit-navigation-backward"
+      [style.border-radius]="0"
+      [disabled]="firstAccessibleUnit && tcs.currentUnitSequenceId <= firstAccessibleUnit"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+    >
       <i class="material-icons">chevron_left</i>
     </a>
 
@@ -37,17 +55,25 @@
       </ng-container>
     </div>
 
-    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
-       mat-fab matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [disabled]="tcs.currentUnitSequenceId >= lastAccessibleUnit"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
+    <a
+      *ngIf="tcs.bookletConfig.controller_design === '2018'"
+      mat-fab
+      matTooltip="Weiter"
+      data-cy="unit-navigation-forward"
+      [disabled]="lastAccessibleUnit && tcs.currentUnitSequenceId >= lastAccessibleUnit"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+    >
       <i class="material-icons">chevron_right</i>
     </a>
-    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-       mat-flat-button matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId >= lastAccessibleUnit"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
+    <a
+      *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+      mat-flat-button
+      matTooltip="Weiter"
+      data-cy="unit-navigation-forward"
+      [style.border-radius]="0"
+      [disabled]="lastAccessibleUnit && tcs.currentUnitSequenceId >= lastAccessibleUnit"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+    >
       <i class="material-icons">chevron_right</i>
     </a>
   </div>

@@ -417,12 +417,15 @@ export class TestControllerService {
 
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
     const step = reverse ? -1 : 1;
-    let nextUnitSequenceId = currentUnitSequenceId + step;
-    let nextUnit: Unit = this.getUnit(nextUnitSequenceId);
-    while (nextUnit !== null && this.getUnitIsInaccessible(nextUnit)) {
+    let nextUnitSequenceId = currentUnitSequenceId;
+    let nextUnit: Unit;
+    do {
       nextUnitSequenceId += step;
+      if ((nextUnitSequenceId > this.sequenceLength) || (nextUnitSequenceId < 1)) {
+        return null;
+      }
       nextUnit = this.getUnit(nextUnitSequenceId);
-    }
+    } while (TestControllerService.unitIsInaccessible(nextUnit));
     return nextUnit ? nextUnitSequenceId : null;
   }
 
@@ -594,12 +597,9 @@ export class TestControllerService {
     updateLocks(this.testlets['']);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getUnitIsInaccessible(unit: Unit): boolean {
-    const isLockedByCode = unit.parent.locked?.by === 'code';
-    const isLockedByTime = unit.parent.locked?.by === 'time';
-    const isLockedByCodeAndNotFirstOne = isLockedByCode && (unit.localIndex !== 0);
-    return isLockedByCodeAndNotFirstOne || isLockedByTime;
+  static unitIsInaccessible(unit: Unit): boolean {
+    return !!unit.parent.locked &&
+      (!((unit.parent.locked.by === 'code') && (unit.localIndex !== 0)));
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
@@ -748,10 +748,14 @@ export class TestControllerService {
   }
 
   getSequenceBounds(): [number, number] {
-    const first = Object.values(this.units).find(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-    const last = Object.values(this.units).findLast(unit => unit.parent.locked?.by !== 'condition')?.sequenceId || NaN;
+    const first = Object.values(this.units)
+      .find(unit => !TestControllerService.unitIsInaccessible(unit))
+      ?.sequenceId || NaN;
+    const last = Object.values(this.units)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
+      .findLast(unit => !TestControllerService.unitIsInaccessible(unit))
+      ?.sequenceId || NaN;
     return [first, last];
   }
 }
