@@ -160,24 +160,6 @@ export interface ReviewDialogData {
   unitTitle: string;
 }
 
-export enum NoUnitFlag {
-  END = 'end',
-  ERROR = 'error'
-}
-
-export interface PendingUnitData {
-  playerId: string;
-  unitDefinition: string;
-  currentPage: string | null;
-  unitDefinitionType: string;
-  unitState: {
-    unitStateDataType: string;
-    dataParts: KeyValuePairString;
-    presentationProgress: VeronaProgress;
-    responseProgress: VeronaProgress;
-  }
-}
-
 export interface KeyValuePairNumber {
   [K: string]: number;
 }
@@ -241,7 +223,8 @@ export interface Unit extends UnitDef {
   // currentPage: string | undefined;
   definition: string;
   state: { [k in UnitStateKey]?: string };
-  dataParts: KeyValuePairString;
+  dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
+  // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: Observable<LoadingProgress>;
 }
 

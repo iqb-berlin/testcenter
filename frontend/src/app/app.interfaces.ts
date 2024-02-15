@@ -36,7 +36,7 @@ export interface KeyValuePairs {
 }
 
 export type AppErrorType =
-  'session' | 'general' | 'backend' | 'network' | 'script' | 'warning' | 'fatal' | 'network_temporally' | 'xml';
+  'session' | 'general' | 'backend' | 'network' | 'script' | 'warning' | 'fatal' | 'network_temporally' | 'xml' | 'player';
 
 export interface AppErrorInterface {
   label: string;

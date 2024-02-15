@@ -57,8 +57,6 @@ export class TestControllerService {
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
 
-  // accessors of booklet pieces TODO X make private ?
-
   units: { [sequenceId: number]: Unit } = {};
   testlets: { [testletId: string] : Testlet } = {};
   unitAliasMap: { [unitId: string] : number } = {};
@@ -537,7 +535,7 @@ export class TestControllerService {
     if (!this.booklet) {
       return;
     }
-    
+
     updateLocks(this.testlets[this.booklet.units.id]);
   }
 
