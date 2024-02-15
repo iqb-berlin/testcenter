@@ -290,7 +290,7 @@ export abstract class BookletParserService<
   // eslint-disable-next-line class-methods-use-this
   parseCustomTexts(bookletElement: Element): { [key: string]: string } {
     const customTexts : { [key: string]: string } = {};
-    const customTextElement = this.xmlGetChildIfExists(bookletElement, 'CustomTexts');
+    const customTextElement = this.xmlGetChildIfExists(bookletElement, 'CustomTexts', true);
     if (!customTextElement) {
       return customTexts;
     }
