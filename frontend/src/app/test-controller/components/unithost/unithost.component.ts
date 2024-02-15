@@ -109,7 +109,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private handleReadyNotification(msgData: any): void {
-    console.log(msgData);
     // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
     // eslint-disable-next-line no-case-declarations
@@ -476,8 +475,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
         'OK',
         { duration: 3000 }
       );
-      this.clearCode = '';
     }
+    this.clearCode = '';
   }
 
   onKeydownInClearCodeInput($event: KeyboardEvent): void {

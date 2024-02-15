@@ -30,7 +30,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  Testlet, Booklet, Unit, isUnit
+  Testlet, Booklet, Unit, isUnit, TestletLockTypes
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -142,6 +142,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
           ((typeof this.tcs.timers[testletId] !== 'undefined') && !this.tcs.timers[testletId]);
       });
+    this.tcs.updateLocks();
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
@@ -344,7 +345,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     registerChildren(booklet.units);
 
     this.registerTrackedVariables();
-    this.tcs.updateLocks();
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
     return booklet;
@@ -386,18 +386,27 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     } else if (context.parents.length) {
       timerId = context.parents[0].timerId;
     }
-    return Object.assign(testletDef, {
+    const testlet: Testlet = Object.assign(testletDef, {
       sequenceId: NaN,
       blockLabel: (context.parents.length <= 1) ? testletDef.label : context.parents[context.parents.length - 2].label,
       locks: {
+        condition: !!testletDef.restrictions.if.length,
         time: !!testletDef.restrictions.timeMax?.minutes,
-        code: !!testletDef.restrictions.codeToEnter?.code,
-        condition: !!testletDef.restrictions.if.length
+        code: !!testletDef.restrictions.codeToEnter?.code
       },
       firstUnsatisfiedCondition: NaN,
       locked: null,
       timerId
     });
+    const lockedBy = TestletLockTypes
+      .find(lockType => testlet.locks[lockType]);
+    if (lockedBy) {
+      testlet.locked = {
+        by: lockedBy,
+        through: testlet
+      };
+    }
+    return testlet;
   }
 
   // eslint-disable-next-line class-methods-use-this

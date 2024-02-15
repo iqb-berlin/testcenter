@@ -318,8 +318,8 @@ export class TestControllerService {
       return;
     }
     this.testlets[testletId].locks.code = false;
-    this.testStructureChanges$.next();
     this.updateLocks();
+    this.testStructureChanges$.next();
     if (this.testMode.saveResponses) {
       const unlockedTestlets = Object.values(this.testlets)
         .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
