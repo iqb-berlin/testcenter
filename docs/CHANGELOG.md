@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## [next]
+### Sicherheit
+* Upgrade auf neuste PHP-Version 8.3.0
+
 ## 15.0.1
 ### Bugfixes
 * Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)
