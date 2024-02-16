@@ -313,8 +313,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     if (this.tcs.testMode.presetCode) {
-      // this.tcs.currentUnit.codeRequiringTestlets // TODO X REIMPLEMENT!
-      //   .forEach(testlet => { this.clearCodes[testlet.id] = testlet.restrictions?.codeToEnter?.code || ''; });
+      this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';
     }
 
     this.runUnit();
