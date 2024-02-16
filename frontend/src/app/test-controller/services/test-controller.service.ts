@@ -319,7 +319,6 @@ export class TestControllerService {
     }
     this.testlets[testletId].locks.code = false;
     this.updateLocks();
-    this.testStructureChanges$.next();
     if (this.testMode.saveResponses) {
       const unlockedTestlets = Object.values(this.testlets)
         .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
@@ -537,12 +536,17 @@ export class TestControllerService {
     }
 
     updateLocks(this.testlets[this.booklet.units.id]);
+    this.testStructureChanges$.next();
   }
 
   static unitIsInaccessible(unit: Unit): boolean {
     // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
     return !!unit.parent.locked &&
-      ((unit.parent.locked.by !== 'code') || (unit.localIndex !== 0) || (unit.parent.id !== unit.parent.locked.through.id));
+      (
+        (unit.parent.locked.by !== 'code') ||
+        (unit.localIndex !== 0) ||
+        (unit.parent.id !== unit.parent.locked.through.id)
+      );
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
@@ -616,7 +620,6 @@ export class TestControllerService {
         this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
     this.updateLocks();
-    this.testStructureChanges$.next();
   }
 
   private isConditionSatisfied(condition: BlockCondition): boolean {

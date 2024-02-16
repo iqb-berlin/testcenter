@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, ReplaySubject, Subject, Subscription
+  BehaviorSubject, from, Observable, of, Subject, Subscription
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
@@ -381,10 +381,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     let timerId = null;
-    if (!context.parents.length && testletDef.restrictions.timeMax?.minutes) {
+    if ((context.parents.length <= 1) && testletDef.restrictions.timeMax?.minutes) { // we are on block-level
       timerId = testletDef.id;
-    } else if (context.parents.length) {
-      timerId = context.parents[0].timerId;
+    } else if (context.parents.length > 1) {
+      timerId = context.parents[context.parents.length - 2].timerId;
     }
     const testlet: Testlet = Object.assign(testletDef, {
       sequenceId: NaN,

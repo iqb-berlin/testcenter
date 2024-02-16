@@ -50,8 +50,6 @@ export class UnitDeactivateGuard {
       .pipe(
         map(cdresult => {
           if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-            // eslint-disable-next-line no-self-assign
-            this.tcs.currentUnitSequenceId = this.tcs.currentUnitSequenceId; // to refresh menu  TODO X can this be removed?
             return false;
           }
           this.tcs.cancelTimer(); // does locking the block
@@ -119,8 +117,7 @@ export class UnitDeactivateGuard {
         }
       });
       return dialogCDRef.afterClosed().pipe(map(() => {
-        // eslint-disable-next-line no-self-assign
-        this.tcs.currentUnitSequenceId = this.tcs.currentUnitSequenceId; // to refresh menu TODO X can this be removed?
+        this.tcs.testStructureChanges$.next();
         return false;
       }));
     }
