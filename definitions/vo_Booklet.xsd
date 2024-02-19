@@ -141,6 +141,7 @@
         <xs:element type="ScoreType" name="Score"/>
         <xs:element type="VariableAggregation" name="Sum" />
         <xs:element type="VariableAggregation" name="Median" />
+        <xs:element type="VariableAggregation" name="Mean" />
         <xs:element type="ConditionAggregation" name="Count" />
       </xs:choice>
       <xs:element type="ConditionType" name="Is"/>

@@ -53,7 +53,7 @@ export interface BlockConditionAggregation {
   readonly conditions: BlockCondition[];
 }
 
-export const BlockConditionSourceAggregationTypes = ['Sum', 'Median'];
+export const BlockConditionSourceAggregationTypes = ['Sum', 'Median', 'Mean'];
 
 export interface BlockConditionSourceAggregation {
   readonly type: typeof BlockConditionSourceAggregationTypes[number];
