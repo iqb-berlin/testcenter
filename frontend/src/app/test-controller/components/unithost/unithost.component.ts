@@ -108,6 +108,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleReadyNotification(msgData: any): void {
     // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
@@ -151,10 +152,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       },
       playerConfig: this.getPlayerConfig()
     }, '*');
-
-    // TODO maybe clean up memory?
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleStateChangedNotification(msgData: any): void {
     if (msgData.playerState) {
       const { playerState } = msgData;
@@ -221,6 +221,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleUnitNavigationRequestedNotification(msgData: any): void {
     // support Verona2 and Verona3 version
     const target = msgData.target ? `#${msgData.target}` : msgData.targetRelative;
@@ -398,7 +399,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitId: this.tcs.currentUnit.alias,
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
-    if (this.tcs.currentUnit.state.CURRENT_PAGE_ID && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
+    if (
+      this.tcs.currentUnit.state.CURRENT_PAGE_ID &&
+      (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')
+    ) {
       playerConfig.startPage = this.tcs.currentUnit.state.CURRENT_PAGE_ID;
     }
     return playerConfig;

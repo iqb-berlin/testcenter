@@ -37,7 +37,6 @@ import {
 } from '../interfaces/iqb.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
-import { BlockConditionUtil } from '../../unit/block-condition.util';
 
 @Injectable({
   providedIn: 'root'
@@ -282,7 +281,6 @@ export class TestControllerService {
     }
   }
 
-  // TODO the following two functions are workarounds to the shitty structure of this service (see above)
   private getUnitState(unitSequenceId: number, stateKey: string): string | undefined {
     return isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
   }
@@ -560,7 +558,6 @@ export class TestControllerService {
     }
     const trackedVariables = Object.keys(this.units[sequenceId].variables);
     if (!trackedVariables.length) {
-      console.log('nope: trackedVariables', trackedVariables.length);
       return;
     }
 
@@ -668,7 +665,6 @@ export class TestControllerService {
     }
 
     if (typeof value === 'undefined') {
-      console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value: 'IS UNDEFINED' });
       return false;
     }
 
@@ -689,7 +685,6 @@ export class TestControllerService {
         return IqbVariableUtil.variableValueAsNumber(value) < IqbVariableUtil.variableValueAsNumber(value2);
     }
 
-    console.log('WTF', condition, value, value2);
     return false;
   }
 
