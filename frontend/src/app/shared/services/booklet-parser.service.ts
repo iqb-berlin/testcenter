@@ -156,32 +156,30 @@ export abstract class BookletParserService<
     let conditions: BlockCondition[] = [];
 
     const restrictionsElement = this.xmlGetChildIfExists(testletElement, 'Restrictions', true);
-    if (!restrictionsElement) {
-      return { if: conditions };
-    }
-    const codeToEnterElement = restrictionsElement.querySelector('CodeToEnter');
-    if (codeToEnterElement) {
-      codeToEnter = {
-        code: codeToEnterElement.getAttribute('code') || '',
-        message: codeToEnterElement.textContent || ''
-      };
-    }
-    const timeMaxElement = restrictionsElement.querySelector('TimeMax');
-    if (timeMaxElement) {
-      timeMax = {
-        minutes: parseFloat(timeMaxElement.getAttribute('minutes') || '')
-      };
+
+    if (restrictionsElement) {
+      const codeToEnterElement = this.xmlGetChildIfExists(restrictionsElement, 'CodeToEnter', true);
+      if (codeToEnterElement) {
+        codeToEnter = {
+          code: codeToEnterElement.getAttribute('code') || '',
+          message: codeToEnterElement.textContent || ''
+        };
+      }
+
+      const timeMaxElement = this.xmlGetChildIfExists(restrictionsElement, 'TimeMax', true);
+      if (timeMaxElement) {
+        timeMax = {
+          minutes: parseFloat(timeMaxElement.getAttribute('minutes') || '')
+        };
+      }
+
+      const ifElements = this.xmlGetDirectChildrenByTagName(restrictionsElement, ['If']);
+      conditions = ifElements.flatMap(ifElem => this.parseIf(ifElem));
     }
 
-    const ifElements = this.xmlGetDirectChildrenByTagName(restrictionsElement, ['If']);
-    conditions = ifElements.flatMap(ifElem => this.parseIf(ifElem));
-
-    // TODO X inkonsequent:
-    // a) hier wird die erb-eigenschaft schon im generischen parser umgesetzt, beim timeMax und codeToEnter
-    // erst in der ausprägung
-    // b) hier wird die eigeschaft geertb, bei den anderen beiden das testlet.
-
-    const denyNavigationOnIncompleteElement = restrictionsElement.querySelector('DenyNavigationOnIncomplete');
+    const denyNavigationOnIncompleteElement = restrictionsElement ?
+      this.xmlGetChildIfExists(restrictionsElement, 'DenyNavigationOnIncomplete', true) :
+      null;
     const presentationValue = denyNavigationOnIncompleteElement?.getAttribute('presentation') || '';
     const presentation = isNavigationLeaveRestrictionValue(presentationValue) ?
       presentationValue :
@@ -200,11 +198,26 @@ export abstract class BookletParserService<
     // eslint-disable-next-line prefer-const
     denyNavigationOnIncomplete = { presentation, response };
 
+    const lockAfterLeavingElem = restrictionsElement ?
+      this.xmlGetChildIfExists(restrictionsElement, 'LockAfterLeaving', true) :
+      null;
+    const lockAfterLeaving =
+      lockAfterLeavingElem ?
+        {
+          confirm: this.xmlGetBooleanAttribute(lockAfterLeavingElem, 'confirm', false),
+          scope: lockAfterLeavingElem.getAttribute('scope') || 'testlet'
+        } :
+        context.parents
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
+          .findLast(testlet => testlet.restrictions.lockAfterLeaving) || undefined;
+
     return {
       codeToEnter,
       timeMax,
       denyNavigationOnIncomplete,
-      if: conditions
+      if: conditions,
+      lockAfterLeaving
     };
   }
 
@@ -285,6 +298,12 @@ export abstract class BookletParserService<
   // eslint-disable-next-line class-methods-use-this
   xmlCountChildrenOfTagNames(element: Element, tagNames: string[]): number {
     return element.querySelectorAll(tagNames.join(', ')).length;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  xmlGetBooleanAttribute(element: Element, attributeName: string, defaultValue: boolean): boolean {
+    const attr = element.getAttribute(attributeName);
+    return ['true', '1', true].includes(attr === null ? defaultValue : attr.toLowerCase());
   }
 
   // eslint-disable-next-line class-methods-use-this

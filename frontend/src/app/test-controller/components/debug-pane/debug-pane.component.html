@@ -52,12 +52,44 @@
       class='badge'
       [class]="{active: (testlet.locked && testlet.locked.by === 'code' && testlet.locked.through.id === testlet.id)}"
       *ngIf="testlet.restrictions.codeToEnter"
-     >C</span>
+    >C</span>
 
-    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'">p</span>
-    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'">P</span>
-    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'">r</span>
-    <span class='badge' *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'">R</span>
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'"
+      matTooltip="denyNavigation on presentation ON"
+    >p</span>
+
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'"
+      matTooltip="denyNavigation on presentation ALWAYS"
+    >P</span>
+
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'"
+      matTooltip="denyNavigation on response ON"
+    >r</span>
+
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'"
+      matTooltip="denyNavigation on response ALWAYS"
+    >R</span>
+
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'testlet'"
+      matTooltip="lockAfterLeaving"
+    >L</span>
+
+    <span
+      class='badge'
+      *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'unit'"
+      matTooltip="lockUnitAfterLeaving"
+    >U</span>
+
     <span
       class='badge'
       [class]="{ active: testlet.firstUnsatisfiedCondition === -1 || i < testlet.firstUnsatisfiedCondition }"
@@ -68,6 +100,7 @@
     <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
       {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
     </mat-icon>
+
     <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
       <tr>
         <td>label</td>

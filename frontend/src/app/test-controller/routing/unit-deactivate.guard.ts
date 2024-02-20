@@ -1,7 +1,7 @@
-import { map, switchMap } from 'rxjs/operators';
+import { concatMap, last, map, switchMap, takeWhile } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -10,7 +10,11 @@ import {
 import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
-import { VeronaNavigationDeniedReason, VeronaProgressCompleteValues } from '../interfaces/verona.interfaces';
+import {
+  VeronaNavigationDeniedReason,
+  VeronaProgressCompleteValues,
+  VeronaProgressInCompleteValues
+} from '../interfaces/verona.interfaces';
 
 @Injectable()
 export class UnitDeactivateGuard {
@@ -95,7 +99,7 @@ export class UnitDeactivateGuard {
     if (
       (checkOnValue[direction].includes(responseCompleteRequired)) &&
       currentUnitResponseProgress &&
-      (VeronaProgressCompleteValues.includes(currentUnitResponseProgress))
+      (VeronaProgressInCompleteValues.includes(currentUnitResponseProgress))
     ) {
       reasons.push('responsesIncomplete');
     }
@@ -126,11 +130,65 @@ export class UnitDeactivateGuard {
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
     };
     this.snackBar.open(
-      `Im Testmodus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'}geblättert
+      `Im Testmodus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'} geblättert
                 werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
-      'Blättern',
+      'OK',
       { duration: 3000 }
     );
+    return of(true);
+  }
+
+  private checkAndSolveLeaveLocks(newUnit: Unit | null): Observable<boolean> {
+    if (!this.tcs.currentUnit.parent.restrictions.lockAfterLeaving) {
+      return of(true);
+    }
+
+    const lockScope = this.tcs.currentUnit.parent.restrictions.lockAfterLeaving.scope;
+
+    if ((lockScope === 'testlet') && (newUnit?.parent.id === this.tcs.currentUnit.parent.id)) {
+      return of(true);
+    }
+
+    const leaveLock = () => {
+      if (this.tcs.testMode.forceNaviRestrictions) {
+        if (lockScope === 'testlet') {
+          this.tcs.leaveLockTestlet(this.tcs.currentUnit.parent.id);
+        }
+        if (lockScope === 'unit') {
+          this.tcs.leaveLockUnit(this.tcs.currentUnit.sequenceId);
+        }
+      } else {
+        this.snackBar.open(
+          `${lockScope} würde im Testmodus nun gesperrt werden.`,
+          'OK',
+          { duration: 3000 }
+        );
+      }
+    };
+
+    if (this.tcs.currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: <ConfirmDialogData>{
+          title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
+          content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
+          confirmbuttonlabel: 'Trotzdem weiter',
+          confirmbuttonreturn: true,
+          showcancel: true
+        }
+      });
+      return dialogCDRef.afterClosed()
+        .pipe(
+          map(cdresult => {
+            if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+              return false;
+            }
+            leaveLock();
+            return true;
+          })
+        );
+    }
+    leaveLock();
     return of(true);
   }
 
@@ -148,8 +206,7 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    const currentUnit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
-    if (currentUnit && (currentUnit.parent.locked?.by !== 'code')) {
+    if (this.tcs.currentUnit.parent.locked) {
       return true;
     }
 
@@ -166,9 +223,15 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    return this.checkAndSolveCompleteness(newUnit)
+    return from([
+      this.checkAndSolveCompleteness.bind(this),
+      this.checkAndSolveTimer.bind(this),
+      this.checkAndSolveLeaveLocks.bind(this)
+    ])
       .pipe(
-        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveTimer(newUnit)))
+        concatMap(check => check(newUnit)),
+        takeWhile(checkResult => checkResult, true),
+        last()
       );
   }
 }

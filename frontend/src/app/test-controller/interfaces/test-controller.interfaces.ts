@@ -50,6 +50,8 @@ export enum TestStateKey {
   CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
   TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
   TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
+  TESTLETS_LOCKED_AFTER_LEAVE = 'TESTLETS_LOCKED_AFTER_LEAVE',
+  UNITS_LOCKED_AFTER_LEAVE = 'UNITS_LOCKED_AFTER_LEAVE',
   FOCUS = 'FOCUS',
   CONTROLLER = 'CONTROLLER',
   CONNECTION = 'CONNECTION'
@@ -220,15 +222,15 @@ export interface Unit extends UnitDef {
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
   responseType: string | undefined;
-  // currentPage: string | undefined;
   definition: string;
   state: { [k in UnitStateKey]?: string };
   dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: Observable<LoadingProgress>;
+  lockedAfterLeaving: boolean;
 }
 
-export const TestletLockTypes = ['condition', 'time', 'code'] as const;
+export const TestletLockTypes = ['condition', 'time', 'code', 'afterLeave'] as const;
 
 export type TestletLockType = typeof TestletLockTypes[number];
 

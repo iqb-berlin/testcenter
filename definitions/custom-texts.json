@@ -19,6 +19,22 @@
     "label" : "Schalterbeschriftung für 'Zurück zum Test'",
     "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
   },
+  "booklet_warningLeaveTitle-testlet" : {
+    "label" : "Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Aufgabenbereich verlassen?"
+  },
+  "booklet_warningLeaveTitle-unit" : {
+    "label" : "Titel für Warnung (Dialogbox) einer nur einmal betretbaren Aufgabe.",
+    "defaultvalue" : "Aufgabe verlassen?"
+  },
+  "booklet_warningLeaveTextPrompt-testlet" : {
+    "label" : "Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_warningLeaveTextPrompt-unit" : {
+    "label" : "Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
   "login_bookletSelectPromptNull" : {
     "label" : "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
     "defaultvalue" : "Beendet. Es können keine weiteren Testhefte gestartet werden."

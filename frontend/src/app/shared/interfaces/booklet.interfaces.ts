@@ -67,13 +67,16 @@ export interface BlockConditionExpression {
   readonly value: string;
 }
 
-export const sourceIsSingleSource = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+export const sourceIsSingleSource =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
   source is BlockConditionSource => ('variable' in source);
 
-export const sourceIsSourceAggregation = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+export const sourceIsSourceAggregation =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
   source is BlockConditionSourceAggregation => ('sources' in source);
 
-export const sourceIsConditionAggregation = (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
+export const sourceIsConditionAggregation =
+  (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
   source is BlockConditionAggregation => ('conditions' in source);
 
 export interface Restrictions {
@@ -87,8 +90,12 @@ export interface Restrictions {
   readonly denyNavigationOnIncomplete?: {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';
     readonly response: 'ON' | 'OFF' | 'ALWAYS';
-  }
-  readonly if: BlockCondition[]
+  };
+  readonly if: BlockCondition[];
+  readonly lockAfterLeaving?: {
+    readonly confirm: boolean;
+    readonly scope: 'testlet' | 'unit'
+  };
 }
 
 export interface ContextInBooklet<TestletType> {

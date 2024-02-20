@@ -133,6 +133,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     const clearedTestlets = lastState[TestStateKey.TESTLETS_CLEARED_CODE] ?
       JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]) :
       [];
+    const afterLeaveLocked = lastState[TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE] ?
+      JSON.parse(lastState[TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE]) :
+      [];
 
     Object.keys(this.tcs.testlets)
       .forEach(testletId => {
@@ -141,7 +144,18 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         this.tcs.testlets[testletId].locks.time =
           !!this.tcs.testlets[testletId].restrictions.timeMax?.minutes &&
           ((typeof this.tcs.timers[testletId] !== 'undefined') && !this.tcs.timers[testletId]);
+        this.tcs.testlets[testletId].locks.afterLeave =
+          !!this.tcs.testlets[testletId].restrictions.lockAfterLeaving && afterLeaveLocked.includes(testletId);
       });
+
+    const afterLeaveLockedUnits = lastState[TestStateKey.UNITS_LOCKED_AFTER_LEAVE] ?
+      JSON.parse(lastState[TestStateKey.UNITS_LOCKED_AFTER_LEAVE]) :
+      [];
+    afterLeaveLockedUnits
+      .forEach((unitSequenceId: string | number) => {
+        this.tcs.units[Number(unitSequenceId)].lockedAfterLeaving = true;
+      });
+
     this.tcs.updateLocks();
   }
 
@@ -392,7 +406,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       locks: {
         condition: !!testletDef.restrictions.if.length,
         time: !!testletDef.restrictions.timeMax?.minutes,
-        code: !!testletDef.restrictions.codeToEnter?.code
+        code: !!testletDef.restrictions.codeToEnter?.code,
+        afterLeave: false
       },
       firstUnsatisfiedCondition: NaN,
       locked: null,
@@ -423,7 +438,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       state: { },
       definition: '',
       dataParts: {},
-      loadingProgress: new Observable<LoadingProgress>()
+      loadingProgress: new Observable<LoadingProgress>(),
+      lockedAfterLeaving: false
     });
   }
 }

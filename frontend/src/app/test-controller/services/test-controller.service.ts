@@ -332,6 +332,41 @@ export class TestControllerService {
     }
   }
 
+  leaveLockTestlet(testletId: string): void {
+    this.testlets[testletId].locks.afterLeave = true;
+    this.updateLocks();
+    if (this.testMode.saveResponses) {
+      const lockedTestlets = Object.values(this.testlets)
+        .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
+        .map(t => t.id);
+      this.bs.updateTestState(
+        this.testId,
+        [{
+          key: TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE,
+          timeStamp: Date.now(),
+          content: JSON.stringify(lockedTestlets)
+        }]
+      );
+    }
+  }
+
+  leaveLockUnit(unitSequenceId: number): void {
+    this.units[unitSequenceId].lockedAfterLeaving = true;
+    if (this.testMode.saveResponses) {
+      const lockedUnits = Object.values(this.units)
+        .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
+        .map(u => u.sequenceId);
+      this.bs.updateTestState(
+        this.testId,
+        [{
+          key: TestStateKey.UNITS_LOCKED_AFTER_LEAVE,
+          timeStamp: Date.now(),
+          content: JSON.stringify(lockedUnits)
+        }]
+      );
+    }
+  }
+
   getUnit(unitSequenceId: number): Unit {
     if (!this._booklet) { // when loading process was aborted
       throw new MissingBookletError();
@@ -538,13 +573,15 @@ export class TestControllerService {
   }
 
   static unitIsInaccessible(unit: Unit): boolean {
-    // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
-    return !!unit.parent.locked &&
-      (
-        (unit.parent.locked.by !== 'code') ||
-        (unit.localIndex !== 0) ||
-        (unit.parent.id !== unit.parent.locked.through.id)
-      );
+    return unit.lockedAfterLeaving || (
+      !!unit.parent.locked &&
+        (
+          // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
+          (unit.parent.locked.by !== 'code') ||
+          (unit.localIndex !== 0) ||
+          (unit.parent.id !== unit.parent.locked.through.id)
+        )
+    );
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {

@@ -51,8 +51,9 @@
     <xs:sequence>
       <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
       <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
-      <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
       <xs:element name="If" type="Condition" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
+      <xs:element name="LockAfterLeaving" type="LockAfterLeavingRestrictionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
@@ -84,6 +85,18 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+
+  <xs:complexType name="LockAfterLeavingRestrictionType">
+    <xs:attribute type="xs:boolean" name="confirm" />
+    <xs:attribute type="LockAfterLeavingRestrictionScopeType" name="scope" />
+  </xs:complexType>
+
+  <xs:simpleType name="LockAfterLeavingRestrictionScopeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unit" />
+      <xs:enumeration value="testlet" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="ValueType">
     <xs:simpleContent>
