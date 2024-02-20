@@ -3,6 +3,9 @@ layout: default
 ---
 
 ## [next]
+### Testtaker Modus
+* Im run-trial Modus werden nun Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben ein Review durchzuführen.
+
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
 

@@ -90,17 +90,17 @@
     }
   },
   "RUN-TRIAL": {
-    "label": "Prüfdurchgang mit Speichern",
+    "label": "Prüfdurchgang mit Speichern und Review Funktionalität",
     "config": {
       "alwaysNewSession": false,
-      "monitorable": false,
-      "canReview": false,
+      "monitorable": true,
+      "canReview": true,
       "saveResponses": true,
-      "forceTimeRestrictions": true,
-      "forceNaviRestrictions": true,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
       "presetCode": true,
-      "showTimeLeft": false,
-      "showUnitMenu": false,
+      "showTimeLeft": true,
+      "showUnitMenu": true,
       "receiveRemoteCommands": false
     }
   }
