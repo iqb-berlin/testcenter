@@ -22,7 +22,7 @@
     [style.margin-left]="'auto'"
   >
     <a
-      *ngIf="tcs.bookletConfig.controller_design === '2018'"
+      *ngIf="(tcs.bookletConfig.controller_design === '2018') && (tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY')"
       mat-fab
       matTooltip="Zurück"
       data-cy="unit-navigation-backward"
@@ -32,7 +32,7 @@
       <i class="material-icons">chevron_left</i>
     </a>
     <a
-      *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+      *ngIf="(tcs.bookletConfig.controller_design !== '2018') && (tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY')"
       mat-flat-button
       matTooltip="Zurück"
       data-cy="unit-navigation-backward"

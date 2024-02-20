@@ -82,8 +82,12 @@ Funktioniert auch nicht? Dann...
 |booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|geladen|
 |booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|in der Warteschleife|
 |booklet_unitLoadingUnknownProgress|Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt|wird geladen|
+|booklet_warningLeaveTextPrompt-testlet|Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
+|booklet_warningLeaveTextPrompt-unit|Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTextPrompt|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTitle|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
+|booklet_warningLeaveTitle-testlet|Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Aufgabenbereich verlassen?|
+|booklet_warningLeaveTitle-unit|Titel für Warnung (Dialogbox) einer nur einmal betretbaren Aufgabe.|Aufgabe verlassen?|
 |gm_auto_checkall|Der 'Immer alle Auswählen'-Schalter|Alle Tests gleichzeitig steuern|
 |gm_booklet_error_general|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff auf Testheft-Datei!|
 |gm_booklet_error_missing_file|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|

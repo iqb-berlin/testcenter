@@ -111,7 +111,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     this.unsupportedBrowser =
-      matchesUA(userAgent, { path: 'dont let me empty', browsers: browsersJson.browsers }) ?
+      matchesUA(userAgent, { path: 'dont let me empty', browsers: browsersJson.browsers, allowHigherVersions: true }) ?
         [] :
         [browser.name ?? '--', browser.version ?? '--'];
   }

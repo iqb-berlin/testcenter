@@ -49,6 +49,7 @@ Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
 Navigationsbuttons für die Navigation zwischen den Aufgaben
  * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
  * "ARROWS_ONLY" - Nur die Buttons für 'Weiter' und 'Zurück' anzeigen
+ * "FORWARD_ONLY" - Nur der Vorwärtsbutton soll gezeigt werden
  * **"FULL" - Buttons für 'Weiter' und 'Zurück' und dazwischen kleine Buttons für jede Aufgabe anzeigen**
 
 ### unit_menu
