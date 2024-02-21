@@ -387,12 +387,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
     this.nextUnitButton.visible = true;
     this.nextUnitButton.enabled = this.tcs.currentUnitSequenceId < this.lastAccessibleUnit;
-    console.log({
-      prev: this.previousUnitButton,
-      next: this.nextUnitButton,
-      cusi: this.tcs.currentUnitSequenceId,
-      laui: this.lastAccessibleUnit
-    });
   }
 
   private setUnitScreenHeader(): void {

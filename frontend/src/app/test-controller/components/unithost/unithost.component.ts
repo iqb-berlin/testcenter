@@ -228,6 +228,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.setUnitNavigationRequest(target);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleWindowFocusChangedNotification(msgData: any): void {
     if (msgData.hasFocus) {
       this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
@@ -340,7 +341,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.tcs.startTimer(this.tcs.currentUnit.parent);
+    this.tcs.startTimer(this.tcs.testlets[this.tcs.currentUnit.parent.timerId]);
   }
 
   private prepareIframe(): void {
