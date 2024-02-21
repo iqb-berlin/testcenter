@@ -647,6 +647,7 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
+    console.log('evaluateConditions');
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
@@ -711,6 +712,7 @@ export class TestControllerService {
 
     // console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value, value2 });
 
+    console.log({ condition, value, value2 });
     // eslint-disable-next-line default-case
     switch (condition.expression.type) {
       case 'equal':

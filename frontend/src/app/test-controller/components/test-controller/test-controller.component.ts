@@ -390,6 +390,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private setUnitScreenHeader(): void {
+    if (!this.tcs.currentUnit) {
+      return;
+    }
     switch (this.tcs.bookletConfig.unit_screenheader) {
       case 'WITH_UNIT_TITLE':
         this.unitScreenHeader = this.tcs.currentUnit.label;

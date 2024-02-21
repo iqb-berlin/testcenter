@@ -72,7 +72,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
     this.tcs.booklet = this.getBookletFromXml(testData.xml);
-    this.restoreRestrictions(testData.laststate);
 
     this.tcs.timerWarningPoints =
       this.tcs.bookletConfig.unit_time_left_warnings
@@ -111,6 +110,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     if (!this.tcs.booklet) {
       throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
     }
+
+    this.restoreRestrictions(lastState);
+
     const currentUnitId = lastState[TestStateKey.CURRENT_UNIT_ID];
     this.tcs.resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
 
@@ -156,7 +158,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         this.tcs.units[Number(unitSequenceId)].lockedAfterLeaving = true;
       });
 
-    this.tcs.updateLocks();
+    this.tcs.evaluateConditions();
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
