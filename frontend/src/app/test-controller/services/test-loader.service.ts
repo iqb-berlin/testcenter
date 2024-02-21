@@ -395,11 +395,12 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   // eslint-disable-next-line class-methods-use-this
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     let timerId = null;
-    if ((context.parents.length <= 1) && testletDef.restrictions.timeMax?.minutes) { // we are on block-level
+    if (context.parents.length && context.parents[0].timerId) {
+      timerId = context.parents[0].timerId;
+    } else if (testletDef.restrictions.timeMax?.minutes) {
       timerId = testletDef.id;
-    } else if (context.parents.length > 1) {
-      timerId = context.parents[context.parents.length - 2].timerId;
     }
+
     const testlet: Testlet = Object.assign(testletDef, {
       blockLabel: (context.parents.length <= 1) ? testletDef.label : context.parents[context.parents.length - 2].label,
       locks: {
