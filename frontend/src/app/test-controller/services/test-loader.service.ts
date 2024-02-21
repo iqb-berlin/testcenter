@@ -46,7 +46,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   private loadStartTimeStamp = 0;
   private unitContentLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
-  private unitContentLoadingQueue: LoadingQueueEntry[] = [];
+  private loadingQueue: LoadingQueueEntry[] = [];
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
 
   constructor(
@@ -103,7 +103,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.environment = new EnvironmentData();
     this.loadStartTimeStamp = Date.now();
-    this.unitContentLoadingQueue = [];
+    this.loadingQueue = [];
   }
 
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
@@ -167,6 +167,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
       this.totalLoadingProgressParts[`player-${i}`] = 0;
       this.totalLoadingProgressParts[`content-${i}`] = 0;
+      this.totalLoadingProgressParts[`scheme-${i}`] = 0;
       sequence.push(i);
     }
     return from(sequence)
@@ -188,11 +189,18 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     unit.playerFileName = resources.usesPlayer[0];
 
     const definitionFile = (resources.isDefinedBy && resources.isDefinedBy.length) ? resources.isDefinedBy[0] : null;
+    const schemeFile = (resources.usesScheme && resources.usesScheme.length) ? resources.usesScheme[0] : null;
+
+    if (!schemeFile) {
+      this.incrementTotalProgress({ progress: 100 }, `scheme-${sequenceId}`);
+    } else {
+      this.loadingQueue.push({ sequenceId, file: schemeFile, type: 'scheme' });
+    }
 
     if (testData.firstStart && definitionFile) {
       // we don't need to call `[GET] /test/{testID}/unit` when this is the first test and no inline definition
       this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
-      this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
+      this.loadingQueue.push({ sequenceId, file: definitionFile, type: 'definition' });
       return this.getPlayer(testData, sequenceId, unit.playerFileName);
     }
 
@@ -211,7 +219,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.units[sequenceId].dataParts = unitData.dataParts;
 
           if (definitionFile) {
-            this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
+            this.loadingQueue.push({ sequenceId, file: definitionFile, type: 'definition' });
           } else {
             // inline unit definition
             this.tcs.units[sequenceId].definition = unitData.definition;
@@ -255,7 +263,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       });
     }
     const currentUnitSequenceId = this.tcs.unitAliasMap[currentUnitId];
-    const queue = this.unitContentLoadingQueue;
+    const queue = this.loadingQueue;
     let firstToLoadQueuePosition;
     for (firstToLoadQueuePosition = 0; firstToLoadQueuePosition < queue.length; firstToLoadQueuePosition++) {
       if (Number(queue[firstToLoadQueuePosition % queue.length].sequenceId) >= currentUnitSequenceId) {
@@ -263,13 +271,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       }
     }
     const offset = ((firstToLoadQueuePosition % queue.length) + queue.length) % queue.length;
-    this.unitContentLoadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
+    this.loadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
   }
 
   private loadUnitContents(testData: TestData): Promise<void> {
     // we don't load files in parallel since it made problems, when a whole class tried it at once
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
-    this.unitContentLoadingQueue
+    this.loadingQueue
       .forEach(unitToLoad => {
         unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)] =
           new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
@@ -282,11 +290,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         resolve();
       }
 
-      this.unitContentLoadSubscription = from(this.unitContentLoadingQueue)
+      this.unitContentLoadSubscription = from(this.loadingQueue)
         .pipe(
           concatMap(queueEntry => {
             const unitContentLoading$ =
-              this.bs.getResource(testData.workspaceId, queueEntry.definitionFile)
+              this.bs.getResource(testData.workspaceId, queueEntry.file)
                 .pipe(shareReplay());
 
             unitContentLoading$
@@ -295,7 +303,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  this.tcs.units[queueEntry.sequenceId].definition = loadingFile.content;
+                  this.tcs.units[queueEntry.sequenceId][queueEntry.type] = loadingFile.content;
                   return { progress: 100 };
                 }),
                 distinctUntilChanged((v1, v2) => v1.progress === v2.progress),
@@ -441,7 +449,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       definition: '',
       dataParts: {},
       loadingProgress: new Observable<LoadingProgress>(),
-      lockedAfterLeaving: false
+      lockedAfterLeaving: false,
+      scheme: ''
     });
   }
 }

@@ -21,14 +21,14 @@ class XMLFileUnit extends XMLFile {
     $this->getPlayerIfExists($workspaceCache);
   }
 
-  public function getPlayerIfExists(WorkspaceCache $validator): ?ResourceFile {
+  public function getPlayerIfExists(WorkspaceCache $workspaceCache): ?ResourceFile {
     if (!$this->isValid()) {
       return null;
     }
 
     $playerId = $this->readPlayerId();
 
-    $resource = $validator->getResource($playerId);
+    $resource = $workspaceCache->getResource($playerId);
 
     if ($resource != null) {
       $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
@@ -39,29 +39,51 @@ class XMLFileUnit extends XMLFile {
     return $resource;
   }
 
-  private function checkIfResourcesExist(WorkspaceCache $validator): void {
-    $this->contextData['totalSize'] = $this->size;
-
-    $definitionRef = $this->getDefinitionRef();
-
-    $resources = $this->readPlayerDependencies();
-
-    if ($definitionRef) {
-      $resources['definition'] = $definitionRef;
+  private function getSchemeRef(): string {
+    if (!$this->isValid()) {
+      echo "<E>";
+      return '';
     }
 
-    foreach ($resources as $key => $resourceName) {
-      $resourceId = strtoupper($resourceName);
-      $resource = $validator->getResource($resourceId, false);
+    $reference = $this->getXml()->xpath('/Unit/CodingSchemeRef');
 
-      if ($resource != null) {
-        $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
-        $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
-        $this->contextData['totalSize'] += $resource->getSize();
+    $schemeIdRaw = count($reference) ? (string) $reference[0] : '';
+    echo "[$schemeIdRaw]";
 
-      } else {
-        $this->report('error', "Resource `$resourceName` not found");
-      }
+    // TODO XZ check if schemer & scheme type is supported
+
+    return $schemeIdRaw;
+  }
+
+  private function checkIfResourcesExist(WorkspaceCache $cache): void {
+    $this->contextData['totalSize'] = $this->size;
+
+    $this->addDependency($cache, FileRelationshipType::isDefinedBy, $this->getDefinitionRef());
+    $this->addDependency($cache, FileRelationshipType::usesScheme, $this->getSchemeRef());
+
+    $resources = $this->readPlayerDependencies();
+    foreach ($resources as $dependency) {
+      $this->addDependency($cache, FileRelationshipType::usesPlayerResource, $dependency);
+    }
+  }
+
+  private function addDependency(
+    WorkspaceCache $cache,
+    FileRelationshipType $relationshipType,
+    string $resourceName
+  ): void {
+    if (!$resourceName) {
+      return;
+    }
+
+    $resourceId = strtoupper($resourceName);
+    $resource = $cache->getResource($resourceId);
+
+    if ($resource != null) {
+      $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
+      $this->contextData['totalSize'] += $resource->getSize();
+    } else {
+      $this->report('error', "Resource `$resourceName` not found");
     }
   }
 

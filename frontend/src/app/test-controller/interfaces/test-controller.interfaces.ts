@@ -4,7 +4,8 @@ import { IQBVariable } from './iqb.interfaces';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
-  definitionFile: string;
+  file: string;
+  type: 'definition' | 'scheme'
 }
 
 export interface KeyValuePairString {
@@ -24,7 +25,7 @@ export type UnitData = {
   definition : string;
 };
 
-export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer';
+export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer' | 'usesScheme';
 
 export interface TestDataResourcesMap {
   [unitId: string]: {
@@ -216,6 +217,7 @@ export interface Unit extends UnitDef {
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
+  scheme: string;
   responseType: string | undefined;
   definition: string;
   state: { [k in UnitStateKey]?: string };
