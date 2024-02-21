@@ -37,7 +37,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
-import { IQBVariable } from '../interfaces/iqb.interfaces';
+import { Response as IQBVariable } from '@iqb/responses';
 
 @Injectable({
   providedIn: 'root'

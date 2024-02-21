@@ -32,11 +32,11 @@ import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
 import {
   IQBVariableStatusList,
-  IQBVariableValueType,
   isIQBVariable
 } from '../interfaces/iqb.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
+import { CodingScheme, ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 
 @Injectable({
   providedIn: 'root'
@@ -643,6 +643,28 @@ export class TestControllerService {
             somethingChanged = true;
           });
       });
+    if (somethingChanged) {
+      try {
+        const what = JSON.parse(this.units[sequenceId].scheme);
+        const variableCodings = (
+          (typeof what === 'object')
+          && (what.variableCodings)
+          && Array.isArray(what.variableCodings)
+        ) ? what.variableCodings
+          : [];
+        const codingScheme = new CodingScheme(variableCodings);
+        const codesVariables = codingScheme.code(Object.values(this.units[sequenceId].variables));
+        codesVariables
+          .forEach(variable => {
+            this.units[sequenceId].variables[variable.id] = variable;
+          });
+      } catch (e) {
+        console.warn(e);
+        return true;
+      }
+    }
+
+
     return somethingChanged;
   }
 

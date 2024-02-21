@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
-import { IQBVariable } from './iqb.interfaces';
+import { Response as IQBVariable } from '@iqb/responses';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
