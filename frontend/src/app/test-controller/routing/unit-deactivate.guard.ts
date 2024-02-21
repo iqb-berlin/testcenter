@@ -1,4 +1,6 @@
-import { concatMap, last, map, switchMap, takeWhile } from 'rxjs/operators';
+import {
+  concatMap, last, map, takeWhile
+} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { from, Observable, of } from 'rxjs';
@@ -10,11 +12,7 @@ import {
 import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
-import {
-  VeronaNavigationDeniedReason,
-  VeronaProgressCompleteValues,
-  VeronaProgressInCompleteValues
-} from '../interfaces/verona.interfaces';
+import { VeronaNavigationDeniedReason, VeronaProgressInCompleteValues } from '../interfaces/verona.interfaces';
 
 @Injectable()
 export class UnitDeactivateGuard {
@@ -192,6 +190,20 @@ export class UnitDeactivateGuard {
     return of(true);
   }
 
+  private evaluateConditionsIfNecessary(newUnit: Unit | null): Observable<boolean> {
+    if (
+      (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_UNIT') ||
+      (
+        (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_TESTLET') &&
+        newUnit &&
+        (newUnit.parent.id !== this.tcs.currentUnit.parent.id)
+      )
+    ) {
+      this.tcs.evaluateConditions();
+    }
+    return of(true);
+  }
+
   canDeactivate(
     component: UnithostComponent,
     currentRoute: ActivatedRouteSnapshot,
@@ -217,6 +229,8 @@ export class UnitDeactivateGuard {
       newUnit = this.tcs.getUnit(targetUnitSequenceId);
     }
 
+    // TODO maybe move all of this into testControllerService
+
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
     if (forceNavigation) {
       this.tcs.interruptTimer();
@@ -226,7 +240,8 @@ export class UnitDeactivateGuard {
     return from([
       this.checkAndSolveCompleteness.bind(this),
       this.checkAndSolveTimer.bind(this),
-      this.checkAndSolveLeaveLocks.bind(this)
+      this.checkAndSolveLeaveLocks.bind(this),
+      this.evaluateConditionsIfNecessary.bind(this)
     ])
       .pipe(
         concatMap(check => check(newUnit)),

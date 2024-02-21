@@ -22,22 +22,22 @@
     [style.margin-left]="'auto'"
   >
     <a
-      *ngIf="(tcs.bookletConfig.controller_design === '2018') && (tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY')"
+      *ngIf="previousUnitButton.visible && (tcs.bookletConfig.controller_design === '2018')"
       mat-fab
       matTooltip="Zurück"
       data-cy="unit-navigation-backward"
-      [disabled]="firstAccessibleUnit && tcs.currentUnitSequenceId <= firstAccessibleUnit"
+      [disabled]="!previousUnitButton.enabled"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
     >
       <i class="material-icons">chevron_left</i>
     </a>
     <a
-      *ngIf="(tcs.bookletConfig.controller_design !== '2018') && (tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY')"
+      *ngIf="previousUnitButton.visible && (tcs.bookletConfig.controller_design !== '2018')"
       mat-flat-button
       matTooltip="Zurück"
       data-cy="unit-navigation-backward"
       [style.border-radius]="0"
-      [disabled]="firstAccessibleUnit && tcs.currentUnitSequenceId <= firstAccessibleUnit"
+      [disabled]="!previousUnitButton.enabled"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
     >
       <i class="material-icons">chevron_left</i>
@@ -56,22 +56,22 @@
     </div>
 
     <a
-      *ngIf="tcs.bookletConfig.controller_design === '2018'"
+      *ngIf="nextUnitButton.visible && (tcs.bookletConfig.controller_design === '2018')"
       mat-fab
       matTooltip="Weiter"
       data-cy="unit-navigation-forward"
-      [disabled]="lastAccessibleUnit && tcs.currentUnitSequenceId >= lastAccessibleUnit"
+      [disabled]="!nextUnitButton.enabled"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
     >
       <i class="material-icons">chevron_right</i>
     </a>
     <a
-      *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+      *ngIf="nextUnitButton.visible && (tcs.bookletConfig.controller_design !== '2018')"
       mat-flat-button
       matTooltip="Weiter"
       data-cy="unit-navigation-forward"
       [style.border-radius]="0"
-      [disabled]="lastAccessibleUnit && tcs.currentUnitSequenceId >= lastAccessibleUnit"
+      [disabled]="!nextUnitButton.enabled"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
     >
       <i class="material-icons">chevron_right</i>

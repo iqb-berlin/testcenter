@@ -52,6 +52,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   timerValue: TimerData | null = null;
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: Array<UnitNaviButtonData> = [];
+  nextUnitButton = {
+    visible: true,
+    enabled: false
+  };
+  previousUnitButton = {
+    visible: true,
+    enabled: false
+  };
   debugPane = false;
   unitScreenHeader: string = '';
 
@@ -368,6 +376,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         headline
       });
     }
+    this.refreshNavigationButtons();
+  }
+
+  private refreshNavigationButtons(): void {
+    this.previousUnitButton.visible = this.tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY';
+    this.previousUnitButton.enabled = this.tcs.currentUnitSequenceId > this.firstAccessibleUnit;
+
+    this.nextUnitButton.visible = true;
+    this.nextUnitButton.enabled = this.tcs.currentUnitSequenceId < this.lastAccessibleUnit;
+    console.log({
+      prev: this.previousUnitButton,
+      next: this.nextUnitButton,
+      cusi: this.tcs.currentUnitSequenceId,
+      laui: this.lastAccessibleUnit
+    });
   }
 
   private setUnitScreenHeader(): void {

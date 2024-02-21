@@ -127,3 +127,10 @@ Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehe
 Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
  * "ON" - Ja.
  * **"OFF" - Nein.**
+
+### evaluate_testlet_conditions
+Wann sollen Verzweigungsbedingungen ausgewertet werden?
+ * **"LIVE" - Bedingungen werden direkt ausgewertet.**
+ * "ON_LEAVE_TESTLET" - Bedingungen werden beim verlassen des Testlets ausgewertet
+ * "ON_LEAVE_UNIT" - Bedingungen werden beim verlassen der Aufgabe ausgewertet
+ * "OFF" - Bedingungen werden nicht ausgewertet.

@@ -158,11 +158,14 @@ export class TestControllerService {
         })
       )
       .subscribe(changedDataParts => {
-        this.updateVariables(
+        const trackedVariablesChanged = this.updateVariables(
           this.unitAliasMap[changedDataParts.unitAlias],
           changedDataParts.unitStateDataType,
           changedDataParts.dataParts
         );
+        if (trackedVariablesChanged && this.booklet?.config.evaluate_testlet_conditions === 'LIVE') {
+          this.evaluateConditions();
+        }
         if (this.testMode.saveResponses) {
           this.bs.updateDataParts(
             this.testId,
@@ -584,18 +587,18 @@ export class TestControllerService {
     );
   }
 
-  updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): void {
+  updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): boolean {
     const isIqbStandard = unitStateDataType.match(/iqb-standard@(\d+)/);
     const iqbStandardVersion = isIqbStandard ? Number(isIqbStandard[1]) : 0;
     if (
       iqbStandardVersion < (this.mds.appConfig?.iqbStandardResponseTypeMin || NaN) ||
       iqbStandardVersion > (this.mds.appConfig?.iqbStandardResponseTypeMax || NaN)
     ) {
-      return;
+      return false;
     }
     const trackedVariables = Object.keys(this.units[sequenceId].variables);
     if (!trackedVariables.length) {
-      return;
+      return false;
     }
 
     const filterRegex = new RegExp(
@@ -640,12 +643,11 @@ export class TestControllerService {
             somethingChanged = true;
           });
       });
-    if (somethingChanged) {
-      this.updateConditions();
-    }
+    return somethingChanged;
   }
 
-  private updateConditions(): void {
+  evaluateConditions(): void {
+    console.log('evaluateConditions!');
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
