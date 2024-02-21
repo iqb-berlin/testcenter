@@ -401,7 +401,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       timerId = context.parents[context.parents.length - 2].timerId;
     }
     const testlet: Testlet = Object.assign(testletDef, {
-      sequenceId: NaN,
       blockLabel: (context.parents.length <= 1) ? testletDef.label : context.parents[context.parents.length - 2].label,
       locks: {
         condition: !!testletDef.restrictions.if.length,

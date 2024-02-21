@@ -1,11 +1,6 @@
-// used everywhere
-import { VeronaProgress } from './verona.interfaces';
-import {
-  BlockConditionSource,
-  BookletDef, ContextInBooklet, TestletDef, UnitDef
-} from '../../shared/interfaces/booklet.interfaces';
-import { IQBVariable } from './iqb.interfaces';
 import { Observable } from 'rxjs';
+import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import { IQBVariable } from './iqb.interfaces';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
@@ -235,7 +230,6 @@ export const TestletLockTypes = ['condition', 'time', 'code', 'afterLeave'] as c
 export type TestletLockType = typeof TestletLockTypes[number];
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
-  readonly sequenceId: number;
   readonly blockLabel: string;
   locks: Required<{ [ type in TestletLockType ]: boolean }>
   locked: {

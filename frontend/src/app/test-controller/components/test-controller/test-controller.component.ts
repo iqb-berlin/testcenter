@@ -56,10 +56,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     visible: true,
     enabled: false
   };
+
   previousUnitButton = {
     visible: true,
     enabled: false
   };
+
   debugPane = false;
   unitScreenHeader: string = '';
 

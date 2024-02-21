@@ -5,6 +5,8 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.interfaces';
+import { MainDataService } from '../../../shared/services/maindata/maindata.service';
+import { AuthData } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -13,50 +15,48 @@ import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.inter
 })
 export class DebugPaneComponent implements OnInit {
   constructor(
-    // public mainDataService: MainDataService,
+    public mds: MainDataService,
     public tcs: TestControllerService,
-    // private router: Router,
-    // private route: ActivatedRoute,
     private cts: CustomtextService,
     public cmd: CommandService,
-    // private tls: TestLoaderService,
     private cdr: ChangeDetectorRef,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
-    this.bookletConfig = Object.entries(this.tcs.bookletConfig);
-    this.testMode = Object.entries(this.tcs.testMode);
   }
 
-  tabs = ['main', 'config', 'testmode', 'units', 'customtexts', 'variables'];
+  tabs = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system'];
+  activeTabs : typeof this.tabs[number][] = ['main', 'booklet'];
 
-  activeTab : typeof this.tabs[number][] = ['main', 'units', 'variables'];
-
-  bookletConfig: Array<[string, string]>;
-  testMode: Array<[string, string]>;
+  bookletConfig: Array<[string, string]> = [];
+  testMode: Array<[string, string]> = [];
   openPanes: Array<string> = [];
   searchCustomText: string = '';
+  customTextKeys: Array<string> = [];
+  auth: AuthData | null = null;
 
-  unitContext?: { item: Unit; unit: Unit };
+  unitContext?: { item: Unit; unit: Unit; single: boolean };
   TestletContext?: { item: Testlet };
+
+  private getData(): void {
+    this.bookletConfig = Object.entries(this.tcs.bookletConfig);
+    this.testMode = Object.entries(this.tcs.testMode);
+    this.customTextKeys = this.cts.getCustomTextKeys();
+    this.auth = this.mds.getAuthData();
+  }
 
   ngOnInit() {
     this.tcs.testStructureChanges$
       .subscribe(() => {
         this.cdr.detectChanges();
-      });
-    this.tcs.currentUnitSequenceId$
-      .subscribe(cuid => {
-        if (cuid > 0) {
-          this.openPanes = [this.tcs.currentUnit.alias];
-        }
+        this.getData();
       });
   }
 
   toggleTab(tab: typeof this.tabs[number]): void {
-    if (this.activeTab.includes(tab)) {
-      this.activeTab.splice(this.activeTab.indexOf(tab), 1);
+    if (this.activeTabs.includes(tab)) {
+      this.activeTabs.splice(this.activeTabs.indexOf(tab), 1);
     } else {
-      this.activeTab.push(tab);
+      this.activeTabs.push(tab);
     }
   }
 

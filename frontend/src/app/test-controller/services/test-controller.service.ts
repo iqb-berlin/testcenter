@@ -647,7 +647,6 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
-    console.log('evaluateConditions!');
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =

@@ -19,6 +19,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
@@ -59,7 +60,8 @@ export { TestControllerService } from './services/test-controller.service';
     FormsModule,
     MatSidenavModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatAutocompleteModule
   ],
   declarations: [
     UnithostComponent,

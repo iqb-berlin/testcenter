@@ -2,14 +2,13 @@
   <div
     *ngFor="let tab of tabs"
     (click)="toggleTab(tab)"
-    [class]="{'active': activeTab.includes(tab)}"
+    [class]="{'active': activeTabs.includes(tab)}"
   >
     {{ tab }}
   </div>
 </div>
 
-
-<div class="tab tab-main" *ngIf="activeTab.includes('main')" cdkDrag>
+<div class="tab tab-main" *ngIf="activeTabs.includes('main')" cdkDrag>
   <div><b>STATUS:</b> {{tcs.state$ | async}}</div>
   <div>
     <b>TIMER:</b>
@@ -22,165 +21,50 @@
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
   <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
   <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
+  <div *ngIf="auth"><b>USER:</b>{{auth.displayName}}</div>
 </div>
 
-<div class="tab tab-config" *ngIf="activeTab.includes('config')" cdkDrag>
+<div class="tab tab-config" *ngIf="activeTabs.includes('config')" cdkDrag>
+  <h1>Booklet-Config</h1>
   <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
-<div class="tab tab-testmode" *ngIf="activeTab.includes('testmode')" cdkDrag>
+<div class="tab tab-testmode" *ngIf="activeTabs.includes('testmode')" cdkDrag>
+  <h1>Test-Mode</h1>
   <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
-<div class="tab tab-units" *ngIf="activeTab.includes('units')" cdkDrag>
+<div class="tab tab-booklet" *ngIf="activeTabs.includes('booklet')" cdkDrag>
+  <h1>Booklet</h1>
   <ng-container *ngIf="tcs.booklet as booklet">
     <ng-container *ngIf="tcs.booklet.units as units">
       <ng-container  [ngTemplateOutlet]="testletTemplate" [ngTemplateOutletContext]="{item: units}"></ng-container>
     </ng-container>
   </ng-container>
-  <ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
-    {{testlet.id || '&lt;units&gt;'}}
 
-    <span
-      class='badge'
-      [class]="{active: (testlet.locked && testlet.locked.by === 'time' && testlet.locked.through.id === testlet.id)}"
-      *ngIf="testlet.restrictions.timeMax"
-      [matTooltip]="testlet.restrictions.timeMax.minutes + 'min'"
-    >T</span>
-
-    <span
-      class='badge'
-      [class]="{active: (testlet.locked && testlet.locked.by === 'code' && testlet.locked.through.id === testlet.id)}"
-      *ngIf="testlet.restrictions.codeToEnter"
-    >C</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'"
-      matTooltip="denyNavigation on presentation ON"
-    >p</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'"
-      matTooltip="denyNavigation on presentation ALWAYS"
-    >P</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'"
-      matTooltip="denyNavigation on response ON"
-    >r</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'"
-      matTooltip="denyNavigation on response ALWAYS"
-    >R</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'testlet'"
-      matTooltip="lockAfterLeaving"
-    >L</span>
-
-    <span
-      class='badge'
-      *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'unit'"
-      matTooltip="lockUnitAfterLeaving"
-    >U</span>
-
-    <span
-      class='badge'
-      [class]="{ active: testlet.firstUnsatisfiedCondition === -1 || i < testlet.firstUnsatisfiedCondition }"
-      *ngFor="let ifRes of testlet.restrictions.if; let i = index"
-      matTooltip="{{ifRes | blockcondition}}'"
-    >I</span>
-
-    <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
-      {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
-    </mat-icon>
-
-    <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
-      <tr>
-        <td>label</td>
-        <td>{{testlet.label}}</td>
-      </tr>
-      <tr>
-        <td>blockLabel</td>
-        <td>{{testlet.blockLabel}}</td>
-      </tr>
-      <tr>
-        <td>locks.time</td>
-        <td>{{testlet.locks.time ? 'y' : 'n'}}</td>
-      </tr>
-      <tr>
-        <td>locks.code</td>
-        <td>{{testlet.locks.code ? 'y' : 'n'}}</td>
-      </tr>
-      <tr>
-        <td>locks.condition</td>
-        <td>{{testlet.locks.condition ? 'y' : 'n'}}</td>
-      </tr>
-      <tr *ngIf="testlet.locked">
-        <td>locked</td>
-        <td>BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
-      </tr>
-    </table>
-
-    <div *ngFor="let child of testlet.children" class="testlet">
-      <ng-container
-        [ngTemplateOutlet]="isTestlet(child) ? testletTemplate : unitTemplate"
-        [ngTemplateOutletContext]="{item: child}"
-      ></ng-container>
-    </div>
-  </ng-template>
-  <ng-template #unitTemplate let-unit="item" [appTemplateContext]="unitContext">
-    <div class="unit" *ngIf="unit">
-      {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
-      <mat-icon class='more-btn' (click)="toggleMore(unit.alias)">
-        {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
-      </mat-icon>
-      <table *ngIf="openPanes.includes(unit.alias)">
-        <tr>
-          <td>parent</td>
-          <td>{{unit.parent.id}}</td>
-        </tr>
-        <tr>
-          <td>localIndex</td>
-          <td>{{unit.localIndex}}</td>
-        </tr>
-        <tr>
-          <td>playerFileName</td>
-          <td>{{unit.playerFileName}}</td>
-        </tr>
-        <tr>
-          <td>playerId</td>
-          <td>{{unit.playerId}}</td>
-        </tr>
-        <tr>
-          <td>responseType</td>
-          <td>{{unit.responseType}}</td>
-        </tr>
-        <tr>
-          <td>definition</td>
-          <td>{{unit.definition | slice:0:20 }}</td>
-        </tr>
-        <tr *ngFor="let stateEntry of unit.state | keyvalue">
-          <td>state.{{stateEntry.key}}</td>
-          <td>{{stateEntry.value}}</td>
-        </tr>
-      </table>
-    </div>
-  </ng-template>
 </div>
 
-<div class="tab tab-customtexts" *ngIf="activeTab.includes('customtexts')" cdkDrag>
-  <input type="text" [(ngModel)]="searchCustomText" placeholder="insert custom text token">
+<div class="tab tab-unit" *ngIf="activeTabs.includes('unit')" cdkDrag>
+  <h1>Current Unit</h1>
+  <ng-container [ngTemplateOutlet]="unitTemplate" [ngTemplateOutletContext]="{item: tcs.currentUnit, single: true}">
+  </ng-container>
+</div>
+
+<div class="tab tab-customtexts" *ngIf="activeTabs.includes('customtexts')" cdkDrag>
+  <h1>Customtexts</h1>
+  <input type="text" matInput [(ngModel)]="searchCustomText" placeholder="insert custom text token" [matAutocomplete]="auto">
   <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
+
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option *ngFor="let option of customTextKeys" [value]="option">
+      {{ option }}
+    </mat-option>
+  </mat-autocomplete>
+
 </div>
 
-<div class="tab tab-variables" *ngIf="activeTab.includes('variables')" cdkDrag (click)="res()">
+<div class="tab tab-variables" *ngIf="activeTabs.includes('variables')" cdkDrag (click)="res()">
+  <h1>Tracked Variables</h1>
   <table>
     <thead>
       <tr>
@@ -205,3 +89,161 @@
     </tbody>
   </table>
 </div>
+
+<div class="tab tab-system" *ngIf="activeTabs.includes('system')" cdkDrag>
+  <h1>System-Status</h1>
+  <div><b>broadcastingService: </b>{{mds.sysStatus.broadcastingService}}</div>
+  <div><b>cacheService: </b>{{mds.sysStatus.cacheService}}</div>
+  <div><b>fileService: </b>{{mds.sysStatus.fileService}}</div>
+  <div class='btn' (click)="mds.refreshSysStatus()">Refresh</div>
+</div>
+
+<ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
+  {{testlet.id || '&lt;units&gt;'}}
+
+  <span
+    class='badge'
+    [class]="{active: (testlet.locked && testlet.locked.by === 'time' && testlet.locked.through.id === testlet.id)}"
+    *ngIf="testlet.restrictions.timeMax"
+    [matTooltip]="testlet.restrictions.timeMax.minutes + 'min'"
+  >T</span>
+
+  <span
+    class='badge'
+    [class]="{active: (testlet.locked && testlet.locked.by === 'code' && testlet.locked.through.id === testlet.id)}"
+    *ngIf="testlet.restrictions.codeToEnter"
+  >C</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'"
+    matTooltip="denyNavigation on presentation ON"
+  >p</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'"
+    matTooltip="denyNavigation on presentation ALWAYS"
+  >P</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'"
+    matTooltip="denyNavigation on response ON"
+  >r</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'"
+    matTooltip="denyNavigation on response ALWAYS"
+  >R</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'testlet'"
+    matTooltip="lockAfterLeaving"
+  >L</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'unit'"
+    matTooltip="lockUnitAfterLeaving"
+  >U</span>
+
+  <span
+    class='badge'
+    [class]="{ active: testlet.firstUnsatisfiedCondition === -1 || i < testlet.firstUnsatisfiedCondition }"
+    *ngFor="let ifRes of testlet.restrictions.if; let i = index"
+    matTooltip="{{ifRes | blockcondition}}'"
+  >I</span>
+
+  <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
+    {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
+  </mat-icon>
+
+  <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
+    <tr>
+      <td>label</td>
+      <td>{{testlet.label}}</td>
+    </tr>
+    <tr>
+      <td>blockLabel</td>
+      <td>{{testlet.blockLabel}}</td>
+    </tr>
+    <tr>
+      <td>timerId</td>
+      <td>{{testlet.timerId}}</td>
+    </tr>
+    <tr>
+      <td>firstUnsatisfiedCondition</td>
+      <td>{{testlet.firstUnsatisfiedCondition}}</td>
+    </tr>
+    <tr>
+      <td>locks.time</td>
+      <td>{{testlet.locks.time ? 'y' : 'n'}}</td>
+    </tr>
+    <tr>
+      <td>locks.code</td>
+      <td>{{testlet.locks.code ? 'y' : 'n'}}</td>
+    </tr>
+    <tr>
+      <td>locks.condition</td>
+      <td>{{testlet.locks.condition ? 'y' : 'n'}}</td>
+    </tr>
+    <tr>
+      <td>locks.afterLeave</td>
+      <td>{{testlet.locks.afterLeave ? 'y' : 'n'}}</td>
+    </tr>
+    <tr *ngIf="testlet.locked">
+      <td>locked</td>
+      <td>BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
+    </tr>
+  </table>
+
+  <div *ngFor="let child of testlet.children" class="testlet">
+    <ng-container
+      [ngTemplateOutlet]="isTestlet(child) ? testletTemplate : unitTemplate"
+      [ngTemplateOutletContext]="{item: child}"
+    ></ng-container>
+  </div>
+</ng-template>
+<ng-template #unitTemplate let-unit="item" let-single="single" [appTemplateContext]="unitContext">
+  <div class="unit" *ngIf="unit" [class]="{current: unit.sequenceId === tcs.currentUnitSequenceId}">
+    <span class="title">
+      {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
+      <mat-icon class='more-btn' (click)="toggleMore(unit.alias)" *ngIf="!single">
+        {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
+      </mat-icon>
+    </span>
+    <table *ngIf="openPanes.includes(unit.alias) || single">
+      <tr>
+        <td>parent</td>
+        <td>{{unit.parent.id}}</td>
+      </tr>
+      <tr>
+        <td>localIndex</td>
+        <td>{{unit.localIndex}}</td>
+      </tr>
+      <tr>
+        <td>playerFileName</td>
+        <td>{{unit.playerFileName}}</td>
+      </tr>
+      <tr>
+        <td>playerId</td>
+        <td>{{unit.playerId}}</td>
+      </tr>
+      <tr>
+        <td>responseType</td>
+        <td>{{unit.responseType}}</td>
+      </tr>
+      <tr>
+        <td>definition</td>
+        <td>{{unit.definition | slice:0:20 }}</td>
+      </tr>
+      <tr *ngFor="let stateEntry of unit.state | keyvalue">
+        <td>state.{{stateEntry.key}}</td>
+        <td>{{stateEntry.value}}</td>
+      </tr>
+    </table>
+  </div>
+</ng-template>
