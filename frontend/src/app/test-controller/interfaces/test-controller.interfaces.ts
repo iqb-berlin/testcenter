@@ -1,11 +1,13 @@
 import { Observable } from 'rxjs';
+import { CodingScheme, Response as IQBVariable } from '@iqb/responses';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
-import { Response as IQBVariable } from '@iqb/responses';
+
+export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
   file: string;
-  type: 'definition' | 'scheme'
+  type: LoadingQueueEntryTypeType
 }
 
 export interface KeyValuePairString {
@@ -217,13 +219,13 @@ export interface Unit extends UnitDef {
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
   playerFileName: string;
-  scheme: string;
+  scheme: CodingScheme;
   responseType: string | undefined;
   definition: string;
   state: { [k in UnitStateKey]?: string };
   dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
-  loadingProgress: Observable<LoadingProgress>;
+  loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };
   lockedAfterLeaving: boolean;
 }
 

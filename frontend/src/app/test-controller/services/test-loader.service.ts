@@ -6,6 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
+import { CodingScheme, Response as IQBVariable } from '@iqb/responses';
 import {
   CustomtextService,
   TestMode,
@@ -37,14 +38,13 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
-import { Response as IQBVariable } from '@iqb/responses';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestLoaderService extends BookletParserService<Unit, Testlet, Booklet> {
   private loadStartTimeStamp = 0;
-  private unitContentLoadSubscription: Subscription | null = null;
+  private resourcesLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
   private loadingQueue: LoadingQueueEntry[] = [];
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
@@ -83,7 +83,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
 
     // eslint-disable-next-line consistent-return
-    return this.loadUnitContents(testData)
+    return this.loadResources(testData)
       .then(() => {
         console.log({ loaded: (Date.now() - ts) });
         this.resumeTest(testData.laststate);
@@ -223,8 +223,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           } else {
             // inline unit definition
             this.tcs.units[sequenceId].definition = unitData.definition;
-            this.tcs.units[sequenceId].loadingProgress = of({ progress: 100 });
-            this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
+            this.tcs.units[sequenceId].loadingProgress.definition = of({ progress: 100 });
+            this.incrementTotalProgress({ progress: 100 }, `definition-${sequenceId}`);
           }
 
           return this.getPlayer(testData, sequenceId, unit.playerFileName);
@@ -274,15 +274,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.loadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
   }
 
-  private loadUnitContents(testData: TestData): Promise<void> {
+  private loadResources(testData: TestData): Promise<void> {
     // we don't load files in parallel since it made problems, when a whole class tried it at once
-    const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
+    const progress$: { [queueIndex: number] : Subject<LoadingProgress> } = {};
     this.loadingQueue
-      .forEach(unitToLoad => {
-        unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)] =
-          new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
-        this.tcs.units[Number(unitToLoad.sequenceId)].loadingProgress =
-          unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)].asObservable();
+      .forEach((queueEntry, i) => {
+        progress$[i] = new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
+        this.tcs.units[queueEntry.sequenceId].loadingProgress[queueEntry.type] = progress$[i].asObservable();
       });
 
     return new Promise<void>(resolve => {
@@ -290,28 +288,32 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         resolve();
       }
 
-      this.unitContentLoadSubscription = from(this.loadingQueue)
+      this.resourcesLoadSubscription = from(this.loadingQueue)
         .pipe(
-          concatMap(queueEntry => {
-            const unitContentLoading$ =
+          concatMap((queueEntry, queueIndex) => {
+            const resourceLoading$ =
               this.bs.getResource(testData.workspaceId, queueEntry.file)
                 .pipe(shareReplay());
 
-            unitContentLoading$
+            resourceLoading$
               .pipe(
                 map(loadingFile => {
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  this.tcs.units[queueEntry.sequenceId][queueEntry.type] = loadingFile.content;
+                  if (queueEntry.type === 'definition') {
+                    this.tcs.units[queueEntry.sequenceId].definition = loadingFile.content;
+                  } else if (queueEntry.type === 'scheme') {
+                    this.tcs.units[queueEntry.sequenceId].scheme = this.getCodingScheme(loadingFile.content);
+                  }
                   return { progress: 100 };
                 }),
                 distinctUntilChanged((v1, v2) => v1.progress === v2.progress),
-                tap(progress => this.incrementTotalProgress(progress, `content-${queueEntry.sequenceId}`))
+                tap(progress => this.incrementTotalProgress(progress, `${queueEntry.type}-${queueEntry.sequenceId}`))
               )
-              .subscribe(unitContentLoadingProgresses$[queueEntry.sequenceId]);
+              .subscribe(progress$[queueIndex]);
 
-            return unitContentLoading$;
+            return resourceLoading$;
           })
         )
         .subscribe({
@@ -332,9 +334,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   private unsubscribeTestSubscriptions(): void {
-    if (this.unitContentLoadSubscription !== null) {
-      this.unitContentLoadSubscription.unsubscribe();
-      this.unitContentLoadSubscription = null;
+    if (this.resourcesLoadSubscription !== null) {
+      this.resourcesLoadSubscription.unsubscribe();
+      this.resourcesLoadSubscription = null;
     }
   }
 
@@ -346,6 +348,24 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     const sumOfProgresses = Object.values(this.totalLoadingProgressParts).reduce((i, a) => i + a, 0);
     const maxProgresses = Object.values(this.totalLoadingProgressParts).length * 100;
     this.tcs.totalLoadingProgress = (sumOfProgresses / maxProgresses) * 100;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private getCodingScheme(jsonString: string): CodingScheme {
+    try {
+      const what = JSON.parse(jsonString);
+      const variableCodings = (
+        (typeof what === 'object') &&
+        (what.variableCodings) &&
+        Array.isArray(what.variableCodings)
+      ) ?
+        what.variableCodings :
+        [];
+      return new CodingScheme(variableCodings);
+    } catch (e) {
+      console.warn(e);
+    }
+    return new CodingScheme([]);
   }
 
   private getBookletFromXml(xmlString: string): Booklet {
@@ -448,9 +468,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       state: { },
       definition: '',
       dataParts: {},
-      loadingProgress: new Observable<LoadingProgress>(),
+      loadingProgress: { },
       lockedAfterLeaving: false,
-      scheme: ''
+      scheme: new CodingScheme([])
     });
   }
 }

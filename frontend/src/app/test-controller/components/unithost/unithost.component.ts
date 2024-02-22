@@ -36,8 +36,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = window;
 
   knownPages: { id: string; label: string }[] = [];
-  unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
-  unitsToLoadLabels: string[] = [];
+  resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
+  resourcesToLoadLabels: string[] = [];
 
   currentPageIndex: number = -1;
   clearCode: string = '';
@@ -273,16 +273,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitsToLoadIds = [this.tcs.currentUnitSequenceId];
     }
 
-    const unitsToLoad = unitsToLoadIds
-      .map(sequenceId => this.tcs.getUnit(sequenceId).loadingProgress);
+    const resourcesToLoad = unitsToLoadIds
+      .flatMap(sequenceId => Object.values(this.tcs.getUnit(sequenceId).loadingProgress));
 
-    this.unitsToLoadLabels = unitsToLoadIds
-      .map(sequenceId => this.tcs.getUnit(sequenceId).label);
+    this.resourcesToLoadLabels = unitsToLoadIds
+      .flatMap(sequenceId => Object.keys(this.tcs.getUnit(sequenceId).loadingProgress)
+        .map(key => `${this.tcs.getUnit(sequenceId).label} (${key})`)
+      );
 
-    this.subscriptions.loading = combineLatest<LoadingProgress[]>(unitsToLoad)
+    this.subscriptions.loading = combineLatest<LoadingProgress[]>(resourcesToLoad)
       .subscribe({
         next: value => {
-          this.unitsLoading$.next(value);
+          this.resourcesLoading$.next(value);
         },
         error: err => {
           this.mds.appError = new AppError({
@@ -299,7 +301,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
-    this.unitsLoading$.next([]);
+    this.resourcesLoading$.next([]);
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [{

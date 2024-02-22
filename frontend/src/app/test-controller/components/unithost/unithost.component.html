@@ -2,7 +2,7 @@
   'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
   'with-title': tcs.bookletConfig.unit_title === 'ON',
   'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-  'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((unitsLoading$ | async) || []).length
+  'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((resourcesLoading$ | async) || []).length
 }">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
     <h2 >{{tcs.currentUnit ? tcs.currentUnit.label : 'no unit'}}</h2>
@@ -12,17 +12,17 @@
   <div #iframeHost id="iframe-host"></div>
 
   <ng-container *ngIf="tcs.currentUnit as unit">
-    <ng-container *ngIf="unitsLoading$ | async as loadingUnits">
-      <div id="waiting-room" *ngIf="loadingUnits.length || unit.parent.locked">
+    <ng-container *ngIf="resourcesLoading$ | async as loadingResources">
+      <div id="waiting-room" *ngIf="loadingResources.length || unit.parent.locked">
         <mat-card appearance="raised">
           <mat-card-header>
             <mat-card-title>
-              {{(loadingUnits.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
+              {{(loadingResources.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
             </mat-card-title>
-            <mat-card-subtitle *ngIf="loadingUnits.length > 1">
+            <mat-card-subtitle *ngIf="loadingResources.length > 1">
               {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
             </mat-card-subtitle>
-            <mat-card-subtitle *ngIf="loadingUnits.length === 1">
+            <mat-card-subtitle *ngIf="loadingResources.length === 1">
               {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
             </mat-card-subtitle>
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'time'">
@@ -57,7 +57,7 @@
           </mat-card-content>
 
           <mat-card-content>
-            <ng-container *ngFor="let loading of loadingUnits; let index = index">
+            <ng-container *ngFor="let loading of loadingResources; let index = index">
               <mat-progress-bar
                 color="primary"
                 [mode]="loading | progressbarmode"
@@ -65,7 +65,7 @@
               >
               </mat-progress-bar>
               <p class="progress-bar-sub-text">
-                {{unitsToLoadLabels[index]}}
+                {{resourcesToLoadLabels[index]}}
                 <ng-container [ngSwitch]="loading.progress">
                   <span *ngSwitchCase="'UNKNOWN'">
                     ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})

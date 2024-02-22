@@ -6,6 +6,7 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, isUnitStateKey, KeyValuePairNumber,
@@ -36,7 +37,6 @@ import {
 } from '../interfaces/iqb.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
-import { CodingScheme, ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 
 @Injectable({
   providedIn: 'root'
@@ -644,32 +644,17 @@ export class TestControllerService {
           });
       });
     if (somethingChanged) {
-      try {
-        const what = JSON.parse(this.units[sequenceId].scheme);
-        const variableCodings = (
-          (typeof what === 'object')
-          && (what.variableCodings)
-          && Array.isArray(what.variableCodings)
-        ) ? what.variableCodings
-          : [];
-        const codingScheme = new CodingScheme(variableCodings);
-        const codesVariables = codingScheme.code(Object.values(this.units[sequenceId].variables));
-        codesVariables
-          .forEach(variable => {
-            this.units[sequenceId].variables[variable.id] = variable;
-          });
-      } catch (e) {
-        console.warn(e);
-        return true;
-      }
+      const codedVariables = this.units[sequenceId].scheme.code(Object.values(this.units[sequenceId].variables));
+      codedVariables
+        .forEach(variable => {
+          this.units[sequenceId].variables[variable.id] = variable;
+        });
     }
-
 
     return somethingChanged;
   }
 
   evaluateConditions(): void {
-    console.log('evaluateConditions');
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
@@ -732,9 +717,6 @@ export class TestControllerService {
     let value2: number | string = condition.expression.value;
     value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
 
-    // console.log({ isConditionSatisfied: BlockConditionUtil.stringyfy(condition), value, value2 });
-
-    console.log({ condition, value, value2 });
     // eslint-disable-next-line default-case
     switch (condition.expression.type) {
       case 'equal':
