@@ -400,7 +400,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     $this->assertEquals(207, $response->getStatusCode());
     $this->assertEquals(
-      '{"Booklet.xml":[],"Unit2.xml":{"error":["Error [5] in line 37: Extra content at the end of the document"]},"Testtakers.xml":[]}',
+      '{"Booklet.xml":[],"Unit2.xml":{"error":["Error [5] in line 63: Extra content at the end of the document"]},"Testtakers.xml":[]}',
       $response->getBody()->getContents()
     );
   }

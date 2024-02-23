@@ -6,10 +6,14 @@
     <Description>This is a sample unit showing the possibilities of the sample player.</Description>
   </Metadata>
 
-  <DefinitionRef player="verona-player-simple-4.0" editor="verona-editor-plaintext-1" lastChange="2022-10-11T09:30:00+00:00">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
+  <DefinitionRef
+    player="verona-player-simple-5.1"
+    editor="verona-editor-plaintext-1"
+    lastChange="2022-10-11T09:30:00+00:00"
+  >SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
 
-  <CodingSchemeRef schemer="default-schemer-1" lastChange="2022-10-11T09:30:00+00:00" />
 
+  <!-- todo include an actually useful list of variables -->
   <BaseVariables>
     <Variable id="v1" type="integer" />
     <Variable id="v2" type="attachment" format="capture-image" />
@@ -34,4 +38,9 @@
   <DerivedVariables>
     <Variable id="v1D" type="string" />
   </DerivedVariables>
+
+  <Dependencies>
+    <File for="player">sample_resource_package.itcr.zip</File>
+    <File for="editor">sample_resource_package.itcr.zip</File>
+  </Dependencies>
 </Unit>

@@ -251,7 +251,7 @@ CREATE TABLE `file_relations` (
   `workspace_id` bigint unsigned NOT NULL,
   `subject_name` varbinary(120) NOT NULL,
   `subject_type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci NOT NULL,
-  `relationship_type` enum('hasBooklet','containsUnit','usesPlayer','usesPlayerResource','isDefinedBy','unknown') COLLATE utf8mb3_german2_ci NOT NULL,
+  `relationship_type` enum('hasBooklet','containsUnit','usesPlayer','usesPlayerResource','isDefinedBy','usesScheme','unknown') COLLATE utf8mb3_german2_ci NOT NULL,
   `object_type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci NOT NULL,
   `object_name` varbinary(120) DEFAULT NULL,
   UNIQUE KEY `unique_combination` (`workspace_id`,`subject_name`,`subject_type`,`relationship_type`,`object_type`,`object_name`),

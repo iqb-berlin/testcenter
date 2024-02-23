@@ -6,31 +6,57 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-player-simple-4.0" type="this-should-trigger-a-deprecation-warning">
-    <![CDATA[
-      <div class="container">
-        <h1>Sample Unit calling external File</h1>
-        <p id="sample-unit-message">This unit can fetch some data dynamically. It will fetch the other unit.</p>
-      </div>
-      <script>
-        document.addEventListener('vopStartCommand', event => {
-          if (!playerConfig.directDownloadUrl) {
-            document.querySelector("#sample-unit-message").innerHTML = "Fetching external content is not supported by host";
-            return;
-          }
-          fetch(`${playerConfig.directDownloadUrl}/sample_resource_package/file.text`)
-            .then(
-              async res => {
-                document.querySelector("#unit").innerHTML += await res.text();
-              });
-        });
-      </script>
+  <Definition
+    player="verona-player-simple-5.1"
+    type="this-should-trigger-a-deprecation-warning"
+  ><![CDATA[
+    <div style="display: flex; justify-content: center; align-items: center; height: 90%;">
+      <table>
+        <tr>
+          <td><label for="var1">var1</label></td>
+          <td><input id="var1" style="width: 50%" type="text" name="var1"></td>
+        </tr>
 
-    ]]>
-  </Definition>
+        <tr>
+          <td><label for="var2">var2</label></td>
+          <td><input id="var2" style="width: 50%" type="text" name="var2"></td>
+        </tr>
 
-  <Dependencies>
-    <File for="player">sample_resource_package.itcr.zip</File>
-    <File for="editor">sample_resource_package.itcr.zip</File>
-  </Dependencies>
+        <tr>
+          <td><label for="var3">var3</label></td>
+          <td><input id="var3" style="width: 50%" type="text" name="var3"></td>
+        </tr>
+
+        <tr>
+          <td><label for="var4">var4</label></td>
+          <td><input id="var4" style="width: 50%" type="text" name="var4"></td>
+        </tr>
+
+        <tr>
+          <td><label for="var5">var5</label></td>
+          <td><input id="var5" style="width: 50%" type="text" name="var5"></td>
+        </tr>
+
+        <tr>
+          <td><label for="var6">var6</label></td>
+          <td><input id="var6" style="width: 50%" type="text" name="var6"></td>
+        </tr>
+      </table>
+    </div>
+  ]]></Definition>
+
+  <CodingSchemeRef
+    schemer="iqb-schemer@1.5"
+    schemeType="iqb@1.2"
+    lastChange="2022-10-11T09:30:00+00:00"
+  >scheme.vocs.json</CodingSchemeRef>
+
+  <BaseVariables>
+    <Variable id="v1" type="string" />
+    <Variable id="v2" type="string" />
+    <Variable id="v3" type="string" />
+    <Variable id="v4" type="string" />
+    <Variable id="v5" type="string" />
+    <Variable id="v6" type="string" />
+  </BaseVariables>
 </Unit>

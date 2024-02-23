@@ -1,0 +1,37 @@
+{
+  "variableCodings" : [
+    {
+      "id" : "var6",
+      "label" : "",
+      "sourceType" : "BASE",
+      "deriveSources" : [],
+      "processing" : [],
+      "manualInstruction" : "",
+      "codeModel" : "NONE",
+      "codeModelParameters" : [],
+      "codes" : [
+        {
+          "id" : 1,
+          "label" : "Richtig",
+          "score" : 100,
+          "ruleSetOperatorAnd" : false,
+          "ruleSets" : [
+            {
+              "ruleOperatorAnd" : false,
+              "rules" : [
+                {
+                  "method" : "MATCH",
+                  "parameters" : [
+                    "x"
+                  ]
+                }
+              ]
+            }
+          ],
+          "manualInstruction" : ""
+        }
+      ],
+      "page" : ""
+    }
+  ]
+}

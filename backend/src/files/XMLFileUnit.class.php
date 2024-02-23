@@ -41,14 +41,12 @@ class XMLFileUnit extends XMLFile {
 
   private function getSchemeRef(): string {
     if (!$this->isValid()) {
-      echo "<E>";
       return '';
     }
 
     $reference = $this->getXml()->xpath('/Unit/CodingSchemeRef');
 
     $schemeIdRaw = count($reference) ? (string) $reference[0] : '';
-    echo "[$schemeIdRaw]";
 
     // TODO XZ check if schemer & scheme type is supported
 

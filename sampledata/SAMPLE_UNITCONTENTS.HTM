@@ -20,7 +20,7 @@
 <div id="sample-unit-badge">Sample Unit</div>
 
 <fieldset>
-  <legend data-cy="legend-about">About</legend>
+  <legend>About</legend>
   <div id="player-info"></div>
   <script>
     document.addEventListener('vopStartCommand', _ => {
@@ -30,7 +30,7 @@
 </fieldset>
 
 <fieldset>
-  <legend data-cy="legend-longContent">Long Content and Form Elements</legend>
+  <legend>Long Content and Form Elements</legend>
   <div style="display: flex;">
     <div style="flex: 50%; padding: 2px">
       <p id="long-content"><b>This is random content to have an example with a lot of content: </b>Lorem ipsum </p>
@@ -99,7 +99,7 @@
 </fieldset>
 
 <fieldset>
-  <legend data-cy="legend-extensibility">Extensibility</legend>
+  <legend>Extensibility</legend>
   <div style="display: flex;">
     <div style="flex: 50%; padding: 2px">
       <p><b>The player is easily extensible, </b> in this example with an audio-element.</p>
@@ -247,12 +247,6 @@
           SoundModule.stop();
         });
 
-        document.addEventListener('vopGetStateRequest', data => {
-          if (data.stop) {
-            PlayerUI.togglePlayerRunning(false);
-          }
-        });
-
         PlayerUI.addEventListener('click', '#melody-play', e => {
           e.preventDefault();
           SoundModule.play();
@@ -300,7 +294,7 @@
 </fieldset>
 
 <fieldset>
-  <legend data-cy="legend-logging">Logging</legend>
+  <legend>Logging</legend>
   <p><b>You can try out the logging mechanism here.</b></p>
   <p>Your <code>playerConfig.logPolicy</code> is <code id="log-policy"></code>.</p>
   <button onclick="Log.rich('sample-log', 'log entry, if mode is rich'); return false"> Write log, if mode is 'rich'</button>
@@ -313,7 +307,7 @@
       document.querySelector('#log-display').innerHTML = '';
       Log.getAll().forEach(entry => {
         document.querySelector('#log-display').innerHTML += `<tr><td>${entry.timeStamp}</td>`
-                + `<td>${entry.key}</td><td>${entry.content}</td><td>${entry.sent ? '✓' : ''}</td></td>`;
+          + `<td>${entry.key}</td><td>${entry.content}</td><td>${entry.sent ? '✓' : ''}</td></td>`;
       });
     }
     document.addEventListener('sent:vopStateChangedNotification', updateLogView);
@@ -325,4 +319,27 @@
     </thead>
     <tbody id="log-display"></tbody>
   </table>
+</fieldset>
+
+<fieldset>
+  <![CDATA[
+  <div class="container">
+    <h1>Sample Unit calling external File</h1>
+    <p id="sample-unit-message">This unit can fetch some data dynamically.</p>
+  </div>
+  <script>
+    document.addEventListener('vopStartCommand', event => {
+      if (!playerConfig.directDownloadUrl) {
+        document.querySelector("#sample-unit-message").innerHTML = "Fetching external content is not supported by host";
+        return;
+      }
+      fetch(`${playerConfig.directDownloadUrl}/sample_resource_package/file.text`)
+        .then(
+          async res => {
+            document.querySelector("#unit").innerHTML += await res.text();
+          });
+    });
+  </script>
+
+  ]]>
 </fieldset>

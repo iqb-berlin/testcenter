@@ -1,12 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.0.1/definitions/vo_Booklet.xsd">
+<Booklet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.1.0/definitions/vo_Booklet.xsd"
+>
   <Metadata>
     <Id>BOOKLET.SAMPLE-2</Id>
-    <Label>Reduced Booklet</Label>
+    <Label>Adaptive Booklet</Label>
   </Metadata>
 
+  <BookletConfig>
+    <Config key="loading_mode">EAGER</Config>
+    <Config key="page_navibuttons">SEPARATE_TOP</Config>
+    <Config key="unit_navibuttons">ON</Config>
+    <Config key="unit_menu">ON</Config>
+    <Config key="unit_screenheader">WITH_BLOCK_TITLE</Config>
+    <Config key="unit_show_time_left">ON</Config>
+    <Config key="show_fullscreen_button">ON</Config>
+    <Config key="lock_test_on_termination">ON</Config>
+    <Config key="evaluate_testlet_conditions">LIVE</Config>
+  </BookletConfig>
+
   <Units>
-     <Unit id="UNIT.SAMPLE" label="A Sample Unit to demonstrate the SamplePlayer2" labelshort="Sample Unit" />
-     <Unit id="UNIT.SAMPLE-2" label="A very Simple Sample Unit" labelshort="2nd Sample Unit" />
+
+    <Restrictions>
+      <TimeMax minutes="45" />
+    </Restrictions>
+
+    <Unit id="UNIT.SAMPLE-2" label="Startunit" labelshort="·" alias="start_unit" />
+
+    <Testlet id="decision_zone" label="Entscheidungsblock">
+
+      <Restrictions>
+        <!--        <LockAfterLeaving scope="testlet" />-->
+      </Restrictions>
+
+      <Unit id="UNIT.SAMPLE-2" label="unit decision_zone_1" labelshort="1.1" alias="decision_zone_1" />
+      <Unit id="UNIT.SAMPLE-2" label="unit decision_zone_2" labelshort="1.2" alias="decision_zone_2" />
+    </Testlet>
+
+    <Unit id="UNIT.SAMPLE-2" label="Zwischenunit" labelshort="·" alias="between_blocks" />
+
+    <Testlet id="optional_zone" label="optional_zone">
+      <Restrictions>
+
+
+        <If><Value of="var1" from="decision_zone_1"/><Is equal="x" /></If>
+
+
+
+        <If><Status of="var2" from="decision_zone_1"/><Is equal="VALUE_CHANGED" /></If>
+
+
+
+        <If><Value of="var2" from="decision_zone_2"/><Is greaterThan="4" /></If>
+
+
+
+        <If><Value of="var2" from="decision_zone_2"/><Is greaterThan="5" lowerThan="8" /></If>
+
+
+
+        <If><Value of="var2" from="decision_zone_2"/><Is equal="7" /></If>
+
+
+
+        <If>
+          <Sum>
+            <Value of="var2" from="decision_zone_2"/>
+            <Value of="var3" from="decision_zone_2"/>
+          </Sum>
+          <Is greaterThan="15" />
+        </If>
+
+
+
+        <If>
+          <Median>
+            <Value of="var2" from="decision_zone_2"/>
+            <Value of="var3" from="decision_zone_2"/>
+            <Value of="var4" from="decision_zone_2"/>
+            <Value of="var5" from="decision_zone_2"/>
+          </Median>
+          <Is greaterThan="20" />
+        </If>
+
+
+
+        <If>
+          <Mean>
+            <Value of="var2" from="decision_zone_2"/>
+            <Value of="var3" from="decision_zone_2"/>
+            <Value of="var4" from="decision_zone_2"/>
+            <Value of="var5" from="decision_zone_2"/>
+          </Mean>
+          <Is greaterThan="100" />
+        </If>
+
+
+
+        <If>
+          <Count>
+            <If><Value of="var1" from="decision_zone_2"/><Is equal="x" /></If>
+            <If><Value of="var2" from="decision_zone_2"/><Is equal="7" /></If>
+            <If><Value of="var5" from="decision_zone_2"/><Is equal="1000" /></If>
+            <If><Status of="var1" from="decision_zone_2"/><Is equal="UNSET" /></If>
+          </Count>
+          <Is greaterThan="2" />
+        </If>
+
+
+
+        <If><Score of="var6" from="decision_zone_2" /><Is equal="100" /></If>
+
+
+
+
+      </Restrictions>
+
+      <Unit id="UNIT.SAMPLE-2" label="unit optional_zone_1" labelshort="2.2" alias="optional_zone_1" />
+
+      <Testlet id="optional-sub-testlet" label="optional sub testlet">
+        <Restrictions>
+          <If><Value of="var6" from="decision2"/><Is equal="x"/></If>
+        </Restrictions>
+
+        <Unit id="UNIT.SAMPLE-2" label="unit optional_zone_1_2" labelshort="2.2.1" alias="optional_zone_1_2" />
+
+      </Testlet>
+
+    </Testlet>
+
   </Units>
 </Booklet>
