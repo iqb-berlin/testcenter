@@ -366,7 +366,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
 
       const blockLabel = unit.parent.blockLabel;
-      const headline = ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) ? blockLabel : '';
+
+      const isOnRoot = unit.parent.id === this.tcs.testlets[this.tcs.booklet?.units.id || ''].id;
+
+      let headline: string | null = null;
+      if (blockLabel !== previousBlockLabel) {
+        headline = isOnRoot ? '' : blockLabel;
+      }
       previousBlockLabel = blockLabel;
 
       this.unitNavigationList.push({

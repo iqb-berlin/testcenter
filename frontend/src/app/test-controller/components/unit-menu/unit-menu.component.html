@@ -1,7 +1,7 @@
 <div class="sidebar-main">
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
   <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">
-    <h4 *ngIf="blockLabelOrUnit.headline || i > 0" class='testlet-label'>
+    <h4 *ngIf="blockLabelOrUnit.headline != null" class='testlet-label'>
       {{blockLabelOrUnit.headline}}
     </h4>
     <a mat-raised-button
