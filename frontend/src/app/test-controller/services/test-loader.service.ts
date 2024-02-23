@@ -85,8 +85,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     // eslint-disable-next-line consistent-return
     return this.loadResources(testData)
       .then(() => {
+        this.updateVariables();
         console.log({ loaded: (Date.now() - ts) });
-        this.resumeTest(testData.laststate);
+        return this.resumeTest(testData.laststate);
       });
   }
 
@@ -166,7 +167,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     for (let i = 1; i <= this.tcs.sequenceLength; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
       this.totalLoadingProgressParts[`player-${i}`] = 0;
-      this.totalLoadingProgressParts[`content-${i}`] = 0;
+      this.totalLoadingProgressParts[`definition-${i}`] = 0;
       this.totalLoadingProgressParts[`scheme-${i}`] = 0;
       sequence.push(i);
     }
@@ -215,7 +216,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
           this.tcs.units[sequenceId].state = unitData.state;
           this.tcs.units[sequenceId].responseType = unitData.unitResponseType;
-          this.tcs.updateVariables(sequenceId, unitData.unitResponseType, unitData.dataParts);
           this.tcs.units[sequenceId].dataParts = unitData.dataParts;
 
           if (definitionFile) {
@@ -331,6 +331,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           }
         });
     });
+  }
+
+  private updateVariables(): void {
+    Object.values(this.tcs.units)
+      .forEach(unit => {
+        this.tcs.updateVariables(unit.sequenceId, unit.responseType || 'unknown', unit.dataParts);
+      });
   }
 
   private unsubscribeTestSubscriptions(): void {
