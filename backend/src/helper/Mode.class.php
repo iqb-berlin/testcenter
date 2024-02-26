@@ -27,7 +27,9 @@ class Mode {
     'run-demo' => [
       'alwaysNewSession'
     ],
-    'run-trial' => [],
+    'run-trial' => [
+      'monitorable'
+    ],
     'run-review' => [],
     'monitor-group' => [],
     'monitor-study' => []
