@@ -276,16 +276,13 @@ export const convertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'log
 
   if (fileType === 'responses') {
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist')
       .then(splitCSVLogin);
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
-      .should('exist')
       .then(splitCSVLogin);
   }
   return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-    .should('exist')
     .then(splitCSVLogin);
 };
 
