@@ -36,6 +36,21 @@
     </Login>
   </Group>
 
+  <Group id="runhotres" label="RunHotRestart">
+    <Login mode="run-hot-restart" name="Test_HotRestart_Ctrl1" pw="123">
+      <Booklet>runhotres</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_HotRestart_Ctrl2" pw="123">
+      <Booklet>runhotres</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_HotRestart_Ctrl3" pw="123">
+      <Booklet>runhotres</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_HotRestart_Ctrl4" pw="123">
+      <Booklet>runhotres</Booklet>
+    </Login>
+  </Group>
+
   <Group id="SM_LoginPossibilities" label="Sessionmanagement Login Possibilities">
     <Login mode="run-demo" name="without_pw" pw="">
       <Booklet>rundemo</Booklet>
