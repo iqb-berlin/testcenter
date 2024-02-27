@@ -3,4 +3,5 @@ export interface ConfirmDialogData {
   content: string;
   confirmbuttonlabel: string;
   showcancel: boolean;
+  cancelbuttonlabel?: string;
 }
