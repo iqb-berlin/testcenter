@@ -60,12 +60,16 @@
     "defaultvalue" : "Es müssen erst alle Teilaufgaben bearbeitet werden."
   },
   "booklet_codeToEnterTitle" : {
-    "label" : "Titel der Dialogbox für die Eingabe eines Freigabewortes",
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Titel",
     "defaultvalue" : "Aufgabenblock ist noch gesperrt"
   },
   "booklet_codeToEnterPrompt" : {
-    "label" : "Aufforderung für die Eingabe eines Freigabewortes (Dialog-Box)",
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes",
     "defaultvalue" : "Bitte gib das Freigabewort ein, das angesagt wurde!"
+  },
+  "booklet_codeToEnterWarning": {
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung",
+    "defaultvalue" : "Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben."
   },
   "booklet_msgTimerStarted" : {
     "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",

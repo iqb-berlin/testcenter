@@ -31,18 +31,40 @@
           {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
         </mat-card-subtitle>
       </mat-card-header>
-
-      <mat-card-content *ngIf="codeRequiringTestlets.length">
-        <ng-container *ngFor="let testlet of codeRequiringTestlets">
-          <mat-form-field appearance="outline" style="display: block" >
-            <input
-              matInput
-              type="text"
-              [(ngModel)]="clearCodes[testlet.id]"
-              style="text-transform:uppercase"
-              (keydown)="onKeydownInClearCodeInput($event)"
-              data-cy="unlockUnit"
-              matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
+      
+        <mat-card-content *ngIf="codeRequiringTestlets.length">
+          <ng-container *ngFor="let testlet of codeRequiringTestlets">
+            <mat-form-field appearance="outline" style="display: block" >
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="clearCodes[testlet.id]"
+                style="text-transform:uppercase"
+                (keydown)="onKeydownInClearCodeInput($event)"
+                data-cy="unlockUnit"
+                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
+              >
+            </mat-form-field>
+            <tc-alert
+              level="info"
+              *ngIf="!testlet.codePrompt"
+              customtext="booklet_codeToEnterPrompt"
+              text="Bitte Freigabewort eingeben!"
+            ></tc-alert>
+            <tc-alert
+              level="info"
+              *ngIf="testlet.codePrompt"
+              [text]="testlet.codePrompt"
+            ></tc-alert>
+            <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
+          </ng-container>
+        </mat-card-content>
+        <mat-card-content>
+          <ng-container *ngFor="let loading of loadingUnits.list; let index = index">
+            <mat-progress-bar
+              color="primary"
+              [mode]="({'UNKNOWN': 'indeterminate', 'PENDING': 'query'})[loading.progress] || 'determinate'"
+              [value]="loading.progress"
             >
             <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
             <mat-hint *ngIf="!testlet.codePrompt">
