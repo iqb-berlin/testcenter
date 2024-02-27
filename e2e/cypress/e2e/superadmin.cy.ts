@@ -141,8 +141,12 @@ describe('Usermanagement (user-tab)', () => {
       .click()
       .get('[data-cy="delete-user"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Administrator:innen');
     cy.get('[data-cy="dialog-confirm"]')
       .should('exist')
+      .contains('Administrator:in löschen')
       .click();
     cy.contains(userData.WorkspaceAdminName)
       .should('not.exist');
@@ -202,7 +206,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.contains('sample_workspace')
       .click();
-    cy.get('[data-cy="workspace-2-role-ro"]')
+    cy.get('[data-cy="workspace-role-ro2"]')
       .click()
       .get('[data-cy="save"]')
       .click();
@@ -222,7 +226,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.contains('sample_workspace')
       .click();
-    cy.get('[data-cy="workspace-2-role-rw"]')
+    cy.get('[data-cy="workspace-role-rw2"]')
       .should('exist')
       .click()
       .get('[data-cy="save"]')
@@ -277,8 +281,12 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.get('[data-cy="delete-workspace"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Arbeitsbereichen');
     cy.get('[data-cy="dialog-confirm"]')
       .should('exist')
+      .contains('Arbeitsbereich/e löschen')
       .click();
     cy.contains('sample_workspace')
       .should('not.exist');
