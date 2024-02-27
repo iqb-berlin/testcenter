@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>{{ confirmdata.title }}</h1>
+<h1 mat-dialog-title data-cy="dialog-title">{{ confirmdata.title }}</h1>
 
-<mat-dialog-content>
+<mat-dialog-content data-cy="dialog-content">
   <p>
     {{ confirmdata.content }}
   </p>
@@ -10,3 +10,4 @@
   <button mat-raised-button color="primary" [mat-dialog-close]="true" data-cy="dialog-confirm">{{ confirmdata.confirmbuttonlabel }}</button>
   <button mat-raised-button *ngIf="showcancel" [mat-dialog-close]="false" data-cy="dialog-cancel">{{ confirmdata.cancelbuttonlabel }}</button>
 </mat-dialog-actions>
+
