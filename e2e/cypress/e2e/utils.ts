@@ -216,11 +216,13 @@ export const deleteFilesSampleWorkspace = (): void => {
     .click();
   cy.get('[data-cy="delete-files"]')
     .should('exist')
-    .should('exist')
     .click();
+  cy.get('[data-cy="dialog-title"]')
+    .should('exist')
+    .contains('Löschen von Dateien');
   cy.get('[data-cy="dialog-confirm"]')
     .should('exist')
-    .should('exist')
+    .contains('Löschen')
     .click();
   cy.contains('erfolgreich gelöscht.')
     .should('exist');
@@ -239,7 +241,12 @@ export const deleteTesttakersFiles = (): void => {
     .click();
   cy.get('[data-cy="delete-files"]')
     .click();
+  cy.get('[data-cy="dialog-title"]')
+    .should('exist')
+    .contains('Löschen von Dateien');
   cy.get('[data-cy="dialog-confirm"]')
+    .should('exist')
+    .contains('Löschen')
     .click();
   cy.contains('1 Dateien erfolgreich gelöscht.')
     .should('exist');
@@ -308,18 +315,22 @@ export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> 
 export const forwardTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-forward"]')
     .click();
-  cy.contains(new RegExp(`^${expectedLabel}$`))
+  cy.get('[data-cy="unit-title"]')
+    .should('exist')
+    .contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
 };
 
 export const backwardsTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-backward"]')
     .click();
-  cy.contains(new RegExp(`^${expectedLabel}$`))
+  cy.get('[data-cy="unit-title"]')
+    .should('exist')
+    .contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
 };
 
-export function selectFromDropdown(dropdownLabel: string, optionName: string) {
+export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
   cy.get('.cdk-overlay-container').contains(optionName).click();
-}
+};

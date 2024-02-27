@@ -456,7 +456,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         title: 'Vollbild',
         content: this.cts.getCustomText('booklet_requestFullscreen'),
         confirmbuttonlabel: 'Ja',
-        showcancel: true
+        showcancel: true,
+        cancelbuttonlabel: 'Nein'
       }
     });
     dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {

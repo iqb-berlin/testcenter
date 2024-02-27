@@ -1,6 +1,6 @@
 import {
   loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
-  useTestDB, credentialsControllerTest, visitLoginPage
+  useTestDB, credentialsControllerTest, visitLoginPage, getFromIframe, forwardTo, backwardsTo
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -22,9 +22,10 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   });
   beforeEach(useTestDB);
 
-  it('should be possible to choose a demo-mode booklet', () => {
-    cy.contains(/^Startseite$/)
-      .should('exist');
+  it('should be possible to start a demo-test without booklet selection', () => {
+    cy.get('[data-cy="unit-title"]')
+      .should('exist')
+      .contains('Startseite');
     cy.url()
       .should('include', '/u/1');
   });
@@ -35,20 +36,24 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   });
 
   it('should be possible to enter the block. The password should already be filled in', () => {
-    cy.get('[mattooltip="Weiter"]')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist')
       .click();
-    cy.contains('Aufgabenblock')
-      .should('exist');
+    cy.get('[data-cy="unit-block-dialog-title"]')
+      .should('exist')
+      .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'HASE');
     // Time restricted area has been entered. Start the timer
-    cy.contains('OK').then(() => {
-      startTime = new Date().getTime();
-    })
+    cy.get('[data-cy="unit-block-dialog-submit"]')
+      .contains('OK')
+      .then(() => {
+        startTime = new Date().getTime();
+      })
       .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
+    cy.get('[data-cy="unit-title"]')
+      .should('exist')
+      .contains('Aufgabe1');
     cy.url()
       .should('include', '/u/2');
     cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
@@ -56,63 +61,39 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   });
 
   it('should be possible to navigate to next unit without responses/presentation complete but with a message', () => {
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .click();
+    forwardTo('Aufgabe2');
     cy.contains('abgespielt')
-      .should('exist');
-    cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.url()
       .should('include', '/u/3');
-    cy.get('[data-cy="unit-navigation-backward"]')
-      .should('exist')
-      .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
+    backwardsTo('Aufgabe1');
   });
 
   it('should be possible to navigate to the next unit without responses complete but with a message', () => {
     cy.get('[data-cy="page-navigation-1"]')
       .should('exist')
       .click();
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible'); // TODO why does this take sos long?
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .click();
-    cy.contains(/.*bearbeitet.*/)
+    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      .contains('Presentation complete');
+    forwardTo('Aufgabe2');
+    cy.contains('bearbeitet') // TODO use data-cy
       .should('exist');
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
-    cy.get('[data-cy="unit-navigation-backward"]')
-      .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
+    cy.contains(/gesehen.+abgespielt/) // TODO use data-cy
+      .should('not.be.exist');
+    backwardsTo('Aufgabe1');
   });
 
   it('should be possible to navigate to the next unit when required fields have been filled', () => {
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('not.be.empty')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]') // TODO use data-cy
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
     cy.wait(1000); // so the answer gets saved
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .click();
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
+    forwardTo('Aufgabe2');
   });
 
   it('should be possible to navigate backwards and verify that the last answer is there', () => {
-    cy.get('[data-cy="unit-navigation-backward"]')
-      .click();
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('not.be.empty')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+    backwardsTo('Aufgabe1');
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
 
@@ -123,8 +104,9 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
     cy.contains(/Die Bearbeitung des Abschnittes ist beendet./) // TODO use data-cy
       .should('exist');
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
+    cy.get('[data-cy="unit-title"]')
+      .should('exist')
+      .contains('Aufgabe1');
   });
 
   it('should be possible to start the booklet again after exiting the test', () => {
@@ -136,8 +118,9 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist')
       .contains('Fortsetzen') // TODO use data-cy
       .click();
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('exist');
+    cy.get('[data-cy="unit-title"]')
+      .should('exist')
+      .contains('Startseite');
   });
 
   it('should be no longer exists the last answers', () => {
@@ -146,17 +129,12 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="unlockUnit"]');
     cy.contains('OK')
       .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
+    cy.get('[data-cy="unit-title"]')
+      .should('exist')
+      .contains('Aufgabe1');
     cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
       .should('exist');
-    cy.contains('Aufgabe1')
-      .should('exist');
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
   });
 

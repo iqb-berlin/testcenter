@@ -1,5 +1,5 @@
 <form [formGroup]="reviewForm">
-  <p mat-dialog-title>Kommentar geben</p>
+  <p mat-dialog-title data-cy="comment-diag-title">Kommentar geben</p>
 
   <mat-dialog-content>
     <div class="flex-row" [style.gap.px]="60">
@@ -9,31 +9,31 @@
           Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.
         </p>
         <mat-form-field>
-          <input matInput formControlName="sender" placeholder="Mein Name">
+          <input matInput formControlName="sender" placeholder="Mein Name" data-cy="comment-diag-sender">
         </mat-form-field>
 
         <mat-radio-group formControlName="target">
           <label>Der Kommentar wird gegeben für:</label>
-          <mat-radio-button value="b" [matTooltip]="data.bookletname">
+          <mat-radio-button value="b" [matTooltip]="data.bookletname" data-cy="comment-diag-currentBklt">
             aktuelles Testheft "{{ data.bookletname }}"
           </mat-radio-button>
-          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey">
+          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey" data-cy="comment-diag-currentUnit">
             aktuelle Aufgabe/Seite "{{ data.unitTitle }}"
           </mat-radio-button>
         </mat-radio-group>
         <div>
           <label>Priorität</label>
           <mat-radio-group formControlName="priority">
-            <mat-radio-button value="1">dringend/kritisch</mat-radio-button>
-            <mat-radio-button value="2">mittelfristig</mat-radio-button>
-            <mat-radio-button value="3">optional</mat-radio-button>
+            <mat-radio-button value="1" data-cy="comment-diag-priority1">dringend/kritisch</mat-radio-button>
+            <mat-radio-button value="2" data-cy="comment-diag-priority2">mittelfristig</mat-radio-button>
+            <mat-radio-button value="3" data-cy="comment-diag-priority3">optional</mat-radio-button>
           </mat-radio-group>
         </div>
         <ul>
           <label>Kategorie</label>
-          <li><mat-checkbox formControlName="tech">Technisches</mat-checkbox></li>
-          <li><mat-checkbox formControlName="content">Inhaltliches</mat-checkbox></li>
-          <li><mat-checkbox formControlName="design">Gestaltung</mat-checkbox></li>
+          <li><mat-checkbox formControlName="tech" data-cy="comment-diag-cat-tech">Technisches</mat-checkbox></li>
+          <li><mat-checkbox formControlName="content" data-cy="comment-diag-cat-content">Inhaltliches</mat-checkbox></li>
+          <li><mat-checkbox formControlName="design" data-cy="comment-diag-cat-design">Gestaltung</mat-checkbox></li>
         </ul>
       </div>
 
@@ -41,14 +41,16 @@
         <mat-label>Kommentar</mat-label>
         <textarea matInput formControlName="entry"
                   style="resize: none;"
-                  rows="28"></textarea>
+                  rows="28"
+                  data-cy="comment-diag-comment"
+                  ></textarea>
       </mat-form-field>
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions>
     <button mat-raised-button color="primary" type="submit"
-            [mat-dialog-close]="reviewForm.value" [disabled]="reviewForm.invalid">
+            [mat-dialog-close]="reviewForm.value" [disabled]="reviewForm.invalid" data-cy="comment-diag-submit">
       Speichern
     </button>
     <button mat-raised-button [mat-dialog-close]="false">
