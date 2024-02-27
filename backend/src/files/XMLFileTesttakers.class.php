@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
-  const type = 'Testtakers';
-  const canBeRelationSubject = true;
-  const canBeRelationObject = false;
+  const string type = 'Testtakers';
+  const bool canBeRelationSubject = true;
+  const bool canBeRelationObject = false;
   protected LoginArray $logins;
 
   public function crossValidate(WorkspaceCache $workspaceCache): void {
@@ -14,7 +14,7 @@ class XMLFileTesttakers extends XMLFile {
     $this->logins = $this->getAllLogins();
     $this->contextData['testtakers'] = count($this->logins->asArray());
 
-    $this->checkForDuplicateLogins();
+//    $this->checkForDuplicateLogins();
 
     foreach ($this->logins as $login) {
       /* @var Login $login */
@@ -22,15 +22,6 @@ class XMLFileTesttakers extends XMLFile {
     }
 
     $this->checkIfIdsAreUsedInOtherFiles($workspaceCache);
-  }
-
-  private function checkForDuplicateLogins(): void {
-    $doubleLogins = $this->getDoubleLoginNames();
-    if (count($doubleLogins) > 0) {
-      foreach ($doubleLogins as $login) {
-        $this->report('error', "Duplicate login: `$login`");
-      }
-    }
   }
 
   private function checkIfBookletsArePresent(Login $testtaker, WorkspaceCache $validator): void {
@@ -115,22 +106,6 @@ class XMLFileTesttakers extends XMLFile {
     }
 
     return new LoginArray(...$testTakers);
-  }
-
-  public function getDoubleLoginNames(): array {
-    if (!$this->isValid()) {
-      return [];
-    }
-
-    $loginNames = [];
-
-    foreach ($this->getXml()->xpath('Group/Login[@name]') as $loginElement) {
-      $loginNames[] = (string) $loginElement['name'];
-    }
-
-    return array_keys(array_filter(array_count_values($loginNames), function($count) {
-      return $count > 1;
-    }));
   }
 
   public function getAllLoginNames(): array {
