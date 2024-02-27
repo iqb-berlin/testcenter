@@ -29,7 +29,6 @@ services:
       retries: 120
     ports:
       - "9091:3306"
-      - "22:22"
     networks:
       testcenter-initialization-test:
 

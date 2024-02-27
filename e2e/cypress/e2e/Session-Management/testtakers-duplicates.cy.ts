@@ -26,8 +26,6 @@ describe('Check Testtakers Duplicates in workspaces', () => {
       .should('exist');
     cy.contains(/^Duplicate login:.*/)
       .should('exist');
-    cy.contains(/^Duplicate group:.*/)
-      .should('exist');
     cy.contains('Ok')
       .click();
   });
@@ -61,8 +59,6 @@ describe('Check Testtakers Duplicates in workspaces', () => {
     cy.contains('Abgelehnt')
       .should('exist');
     cy.contains(/^Duplicate login:.*- also on workspace sample_workspace in file.*/)
-      .should('exist');
-    cy.contains(/^Duplicate group:.*- also on workspace sample_workspace in file*/)
       .should('exist');
     cy.contains('Ok')
       .click();

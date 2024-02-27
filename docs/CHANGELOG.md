@@ -2,7 +2,15 @@
 layout: default
 ---
 
-## 15.0.0-rc9
+## [next]
+### Sicherheit
+* Upgrade auf neuste PHP-Version 8.3.0
+
+## 15.0.1
+### Bugfixes
+* Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)
+
+## 15.0.0
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.

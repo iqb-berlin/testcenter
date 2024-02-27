@@ -1,36 +1,35 @@
 <div [class]="{
-      'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
-      'with-title': tcs.bookletConfig.unit_title === 'ON',
-      'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-      'is-waiting': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
-  <div *ngIf="tcs.bookletConfig.unit_title === 'ON'"
-       class="unit-title">
-    <h2 >{{currentUnit?.unitDef?.title}}</h2>
-    <mat-divider></mat-divider>
-  </div>
+  'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
+  'with-title': tcs.bookletConfig.unit_title === 'ON',
+  'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
+  'is-waiting': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
+<div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
+  <h2 data-cy="unit-title">{{currentUnit?.unitDef?.title}}</h2>
+  <mat-divider></mat-divider>
+</div>
 
-  <div #iframeHost id="iframe-host"></div>
+<div #iframeHost id="iframe-host"></div>
 
-  <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-    <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || codeRequiringTestlets.length">
-      <mat-card appearance="raised">
-        <mat-card-header>
-          <mat-card-title>
-            {{(loadingUnits.list.length > 1 || currentUnit.codeRequiringTestlets.length) ? currentUnit?.testletLabel : currentUnit?.unitDef?.title}}
-          </mat-card-title>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
-            {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
-            {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.unitDef?.locked">
-            {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit.codeRequiringTestlets.length">
-            {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
-          </mat-card-subtitle>
-        </mat-card-header>
+<ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
+  <div id="waiting-room"  *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || codeRequiringTestlets.length">
+    <mat-card appearance="raised">
+      <mat-card-header>
+        <mat-card-title data-cy="unit-block-dialog-title">
+          {{(loadingUnits.list.length > 1 || currentUnit.codeRequiringTestlets.length) ? currentUnit?.testletLabel : currentUnit?.unitDef?.title}}
+        </mat-card-title>
+        <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
+          {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
+        </mat-card-subtitle>
+        <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
+          {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
+        </mat-card-subtitle>
+        <mat-card-subtitle *ngIf="currentUnit?.unitDef?.locked">
+          {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
+        </mat-card-subtitle>
+        <mat-card-subtitle *ngIf="currentUnit.codeRequiringTestlets.length">
+          {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
+        </mat-card-subtitle>
+      </mat-card-header>
 
         <mat-card-content *ngIf="codeRequiringTestlets.length">
           <ng-container *ngFor="let testlet of codeRequiringTestlets">
@@ -44,11 +43,19 @@
                 data-cy="unlockUnit"
                 matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
               >
-              <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
-              <mat-hint *ngIf="!testlet.codePrompt">
-                {{'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt' | async}}
-              </mat-hint>
             </mat-form-field>
+            <tc-alert
+              level="info"
+              *ngIf="!testlet.codePrompt"
+              customtext="booklet_codeToEnterPrompt"
+              text="Bitte Freigabewort eingeben!"
+            ></tc-alert>
+            <tc-alert
+              level="info"
+              *ngIf="testlet.codePrompt"
+              [text]="testlet.codePrompt"
+            ></tc-alert>
+            <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
           </ng-container>
         </mat-card-content>
         <mat-card-content>
@@ -59,79 +66,80 @@
               [value]="loading.progress"
             >
             </mat-progress-bar>
-            <p class="progress-bar-sub-text">
-              {{unitsToLoadLabels[index]}}
-              <ng-container [ngSwitch]="loading.progress">
-                <span *ngSwitchCase="'UNKNOWN'">
-                  ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
-                </span>
-                <span *ngSwitchCase="'PENDING'">
-                  ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
-                </span>
-                <span *ngSwitchDefault>
-                  ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
-                </span>
-              </ng-container>
-            </p>
-          </ng-container>
-        </mat-card-content>
-
-        <mat-card-actions [style.justify-content]="'space-between'">
-          <button
-            *ngIf="codeRequiringTestlets.length"
-            mat-raised-button
-            color="primary"
-            [disabled]="(clearCodes | keyvalue)?.length < codeRequiringTestlets.length"
-            (click)="verifyCodes()"
-          >
-            OK
-          </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId === 0"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück"
-          >
-            <i class="material-icons">chevron_left</i>
-          </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
-          >
-            <i class="material-icons">chevron_right</i>
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
-  </ng-container>
-
-  <div *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' &&
-              knownPages && knownPages.length && (knownPages.length > 1)"
-       class="page-navigation">
-    <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
-      <span [style.color]="'white'" [style.padding-right.px]="8">
-        {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
-      </span>
-
-      <mat-button-toggle-group>
-        <mat-button-toggle [disabled]="currentPageIndex <= 0"
-                           (click)="gotoPage(knownPages[currentPageIndex - 1].id);">
+          <p class="progress-bar-sub-text">
+            {{unitsToLoadLabels[index]}}
+            <ng-container [ngSwitch]="loading.progress">
+              <span *ngSwitchCase="'UNKNOWN'">
+                ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
+              </span>
+              <span *ngSwitchCase="'PENDING'">
+                ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
+              </span>
+              <span *ngSwitchDefault>
+                ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
+              </span>
+            </ng-container>
+          </p>
+        </ng-container>
+      </mat-card-content>
+      <mat-card-actions [style.justify-content]="'space-between'">
+        <button
+          *ngIf="codeRequiringTestlets.length"
+          mat-raised-button
+          color="primary"
+          [disabled]="(clearCodes | keyvalue)?.length < codeRequiringTestlets.length"
+          (click)="verifyCodes()"
+          data-cy="unit-block-dialog-submit"
+        >
+          OK
+        </button>
+        <button
+          *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
+          mat-raised-button
+          [disabled]="tcs.currentUnitSequenceId === 0"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück"
+        >
           <i class="material-icons">chevron_left</i>
-        </mat-button-toggle>
-        <mat-button-toggle *ngFor="let page of knownPages; let index = index"
-                           [matTooltip]="page.label"
-                           [checked]="currentPageIndex === index"
-                           [attr.data-cy]="'page-navigation-' + index"
-                           (click)="gotoPage(page.id)">
-          {{ index + 1 }}
-        </mat-button-toggle>
-        <mat-button-toggle [disabled]="currentPageIndex >= knownPages.length - 1"
-                           (click)="gotoPage(knownPages[currentPageIndex + 1].id);">
+        </button>
+        <button
+          *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
+          mat-raised-button
+          [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
+        >
           <i class="material-icons">chevron_right</i>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-    </div>
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
+</ng-container>
+
+
+<div *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' &&
+          knownPages && knownPages.length && (knownPages.length > 1)"
+   class="page-navigation">
+<div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
+  <span [style.color]="'white'" [style.padding-right.px]="8">
+    {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
+  </span>
+
+  <mat-button-toggle-group>
+    <mat-button-toggle [disabled]="currentPageIndex <= 0"
+                       (click)="gotoPage(knownPages[currentPageIndex - 1].id);">
+      <i class="material-icons">chevron_left</i>
+    </mat-button-toggle>
+    <mat-button-toggle *ngFor="let page of knownPages; let index = index"
+                       [matTooltip]="page.label"
+                       [checked]="currentPageIndex === index"
+                       [attr.data-cy]="'page-navigation-' + index"
+                       (click)="gotoPage(page.id)">
+      {{ index + 1 }}
+    </mat-button-toggle>
+    <mat-button-toggle [disabled]="currentPageIndex >= knownPages.length - 1"
+                       (click)="gotoPage(knownPages[currentPageIndex + 1].id);">
+      <i class="material-icons">chevron_right</i>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+</div>
 </div>
