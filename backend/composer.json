@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "require": {
-    "php": "8.2.12",
+    "php": "8.3.2",
     "php-di/php-di": "^6.4",
     "slim/http": "^1.2",
     "slim/psr7": "^1.5",

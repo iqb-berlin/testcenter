@@ -25,5 +25,11 @@ export class ConfirmDialogComponent implements OnInit {
     if (!this.confirmdata.showcancel) {
       this.showcancel = false;
     }
+    if (
+      (typeof this.confirmdata.cancelbuttonlabel === 'undefined') ||
+      (this.confirmdata.cancelbuttonlabel.length === 0)
+    ) {
+      this.confirmdata.cancelbuttonlabel = 'Abbrechen';
+    }
   }
 }

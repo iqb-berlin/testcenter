@@ -16,8 +16,8 @@ import { TcSpeedChartComponent, TcSpeedChartSettings } from './tc-speed-chart.co
 
 export class NetworkCheckComponent implements OnInit, OnDestroy {
   constructor(
-    public ds: SysCheckDataService,
-    private bs: BackendService
+    public sysCheckDataService: SysCheckDataService,
+    private backendService: BackendService
   ) {}
 
   @ViewChild('downloadChart', { static: true }) downloadPlotter!: TcSpeedChartComponent;
@@ -50,8 +50,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.ds.setNewCurrentStep('n');
-      if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
+      this.sysCheckDataService.setNewCurrentStep('n');
+      if (this.sysCheckDataService.checkConfig && this.sysCheckDataService.networkReport.length === 0) {
         this.startCheck();
       }
       this.readExperimentalNetworkInfosIfAvailable();
@@ -88,8 +88,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   startCheck(): void {
-    this.ds.networkReport = [];
-    this.ds.networkCheckStatus = {
+    this.sysCheckDataService.networkReport = [];
+    this.sysCheckDataService.networkCheckStatus = {
       done: false,
       message: 'Netzwerk-Analyse wird gestartet',
       avgUploadSpeedBytesPerSecond: -1,
@@ -106,12 +106,12 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private plotPrepare(isDownloadPart: boolean) {
-    if (!this.ds.checkConfig) {
+    if (!this.sysCheckDataService.checkConfig) {
       return;
     }
     const testSizes = (isDownloadPart) ?
-      this.ds.checkConfig.downloadSpeed.sequenceSizes :
-      this.ds.checkConfig.uploadSpeed.sequenceSizes;
+      this.sysCheckDataService.checkConfig.downloadSpeed.sequenceSizes :
+      this.sysCheckDataService.checkConfig.uploadSpeed.sequenceSizes;
     const plotterSettings: TcSpeedChartSettings = {
       axisColor: '',
       gridColor: '',
@@ -141,11 +141,11 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
   private loopBenchmarkSequence(isDownloadPart: boolean): Promise<void> {
     if (isDownloadPart) {
-      this.ds.networkCheckStatus.message = `Benchmark Loop Download nr.: ${this.networkStatsDownload.length}`;
+      this.sysCheckDataService.networkCheckStatus.message = `Benchmark Loop Download nr.: ${this.networkStatsDownload.length}`;
     } else {
-      this.ds.networkCheckStatus.message = `Benchmark Loop Upload nr.: ${this.networkStatsUpload.length}`;
+      this.sysCheckDataService.networkCheckStatus.message = `Benchmark Loop Upload nr.: ${this.networkStatsUpload.length}`;
     }
-    const benchmarkDefinition = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed : this.ds.checkConfig.uploadSpeed;
+    const benchmarkDefinition = (isDownloadPart) ? this.sysCheckDataService.checkConfig.downloadSpeed : this.sysCheckDataService.checkConfig.uploadSpeed;
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(isDownloadPart)
         .then(results => {
@@ -192,7 +192,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private benchmarkSequence(isDownloadPart: boolean): Promise<Array<NetworkRequestTestResult>> {
-    const benchmarkDefinition = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed : this.ds.checkConfig.uploadSpeed;
+    const benchmarkDefinition = (isDownloadPart) ? this.sysCheckDataService.checkConfig.downloadSpeed : this.sysCheckDataService.checkConfig.uploadSpeed;
 
     return benchmarkDefinition.sequenceSizes.reduce(
       (sequence, testSize) => sequence
@@ -209,20 +209,20 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     const testRound = (isDownloadPart) ? (this.networkStatsDownload.length + 1) : (this.networkStatsUpload.length + 1);
     const testPackage = this.humanReadableBytes(requestSize);
     if (isDownloadPart) {
-      this.ds.networkCheckStatus.message =
+      this.sysCheckDataService.networkCheckStatus.message =
         `Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`;
-      return this.bs.benchmarkDownloadRequest(requestSize);
+      return this.backendService.benchmarkDownloadRequest(requestSize);
     }
-    this.ds.networkCheckStatus.message = `Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`;
-    return this.bs.benchmarkUploadRequest(requestSize);
+    this.sysCheckDataService.networkCheckStatus.message = `Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`;
+    return this.backendService.benchmarkUploadRequest(requestSize);
   }
 
   // eslint-disable-next-line max-len
   private showBenchmarkSequenceResults(isDownloadPart: boolean, avgBytesPerSecond: number, results: Array<NetworkRequestTestResult> = []) {
     if (isDownloadPart) {
-      this.ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond = avgBytesPerSecond;
+      this.sysCheckDataService.networkCheckStatus.avgDownloadSpeedBytesPerSecond = avgBytesPerSecond;
     } else {
-      this.ds.networkCheckStatus.avgUploadSpeedBytesPerSecond = avgBytesPerSecond;
+      this.sysCheckDataService.networkCheckStatus.avgUploadSpeedBytesPerSecond = avgBytesPerSecond;
     }
 
     this.plotStatistics(isDownloadPart, results);
@@ -252,55 +252,55 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         overallRating: 'unstable'
       };
     }
-    this.ds.networkCheckStatus.message = 'Die folgenden Netzwerkeigenschaften wurden festgestellt:';
-    this.ds.networkCheckStatus.done = true;
+    this.sysCheckDataService.networkCheckStatus.message = 'Die folgenden Netzwerkeigenschaften wurden festgestellt:';
+    this.sysCheckDataService.networkCheckStatus.done = true;
 
     const downAvg = this.getAverageNetworkStat(true);
     const upAvg = this.getAverageNetworkStat(false);
 
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-download',
       type: 'network',
       label: 'Downloadgeschwindigkeit',
       warning: false,
       value: `${this.humanReadableBytes(downAvg, true)}/s`
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-download-needed',
       type: 'network',
       label: 'Downloadgeschwindigkeit benötigt',
       warning: false,
-      value: `${this.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true)}/s`
+      value: `${this.humanReadableBytes(this.sysCheckDataService.checkConfig.downloadSpeed.min, true)}/s`
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-download-evaluation',
       type: 'network',
       label: 'Downloadbewertung',
       warning: this.networkRating.downloadRating === 'insufficient',
       value: this.networkRating.downloadRating
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-upload',
       type: 'network',
       label: 'Uploadgeschwindigkeit',
       warning: false,
       value: `${this.humanReadableBytes(upAvg, true)}/s`
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-upload-needed',
       type: 'network',
       label: 'Uploadgeschwindigkeit benötigt',
       warning: false,
-      value: `${this.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true)}/s`
+      value: `${this.humanReadableBytes(this.sysCheckDataService.checkConfig.uploadSpeed.min, true)}/s`
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-upload-evaluation',
       type: 'network',
       label: 'Uploadbewertung',
       warning: this.networkRating.uploadRating === 'insufficient',
       value: this.networkRating.uploadRating
     });
-    this.ds.networkReport.push({
+    this.sysCheckDataService.networkReport.push({
       id: 'nw-overall',
       type: 'network',
       label: 'Gesamtbewertung',
@@ -310,7 +310,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
     if (this.detectedNetworkInformation.available) {
       if (this.detectedNetworkInformation.roundTripTimeMs) {
-        this.ds.networkReport.push({
+        this.sysCheckDataService.networkReport.push({
           id: 'bnni-roundtrip',
           type: 'network',
           label: 'RoundTrip in Ms',
@@ -319,7 +319,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.effectiveNetworkType) {
-        this.ds.networkReport.push({
+        this.sysCheckDataService.networkReport.push({
           id: 'bnni-effective-network-type',
           type: 'network',
           label: 'Netzwerktyp nach Leistung',
@@ -328,7 +328,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.networkType) {
-        this.ds.networkReport.push({
+        this.sysCheckDataService.networkReport.push({
           id: 'bnni-network-type',
           type: 'network',
           label: 'Netzwerktyp',
@@ -337,7 +337,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.downlinkMegabitPerSecond) {
-        this.ds.networkReport.push({
+        this.sysCheckDataService.networkReport.push({
           id: 'bnni-downlink',
           type: 'network',
           label: 'Downlink MB/s',
@@ -346,7 +346,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
     } else {
-      this.ds.networkReport.push({
+      this.sysCheckDataService.networkReport.push({
         id: 'bnni-fail',
         type: 'network',
         label: 'Netzwerkprofil des Browsers',
@@ -371,18 +371,18 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     // the ratings are calculated individually, by a "how low can you go" approach
 
     networkRating.downloadRating = 'good';
-    if (nd.avgDownloadSpeed < this.ds.checkConfig.downloadSpeed.good) {
+    if (nd.avgDownloadSpeed < this.sysCheckDataService.checkConfig.downloadSpeed.good) {
       networkRating.downloadRating = 'ok';
     }
-    if (nd.avgDownloadSpeed < this.ds.checkConfig.downloadSpeed.min) {
+    if (nd.avgDownloadSpeed < this.sysCheckDataService.checkConfig.downloadSpeed.min) {
       networkRating.downloadRating = 'insufficient';
     }
 
     networkRating.uploadRating = 'good';
-    if (nd.avgUploadSpeed < this.ds.checkConfig.uploadSpeed.good) {
+    if (nd.avgUploadSpeed < this.sysCheckDataService.checkConfig.uploadSpeed.good) {
       networkRating.uploadRating = 'ok';
     }
-    if (nd.avgUploadSpeed < this.ds.checkConfig.uploadSpeed.min) {
+    if (nd.avgUploadSpeed < this.sysCheckDataService.checkConfig.uploadSpeed.min) {
       networkRating.uploadRating = 'insufficient';
     }
 
