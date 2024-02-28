@@ -255,9 +255,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
-          this.tcs.cancelMaxTimer();
           const targetUnit = this.tcs.getUnitWithContext(parseInt(gotoTarget, 10));
           if (targetUnit) {
+            const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
+            if (targetUnit.maxTimerRequiringTestlet?.id !== currentUnit?.maxTimerRequiringTestlet?.id) {
+              this.tcs.cancelMaxTimer();
+            }
             targetUnit.codeRequiringTestlets
               .forEach(testlet => {
                 this.tcs.addClearedCodeTestlet(testlet.id);
