@@ -87,7 +87,7 @@
         text="Für diese Anmeldung wurde kein Test gefunden."
       ></tc-alert>
     </mat-card-content>
-    <mat-card-actions>
+    <mat-card-actions [style.justify-content]="'space-between'">
       <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
         Systemverwaltung
       </button>

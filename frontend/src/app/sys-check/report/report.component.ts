@@ -11,12 +11,12 @@ import { ReportEntry } from '../sys-check.interfaces';
   styleUrls: ['./report.component.css', '../sys-check.component.css']
 })
 export class ReportComponent implements OnInit {
-  saved = false;
+  isReportSaved = false;
   questionnaireDataWarnings: ReportEntry[] = [];
 
   constructor(
-    private bs: BackendService,
-    public ds: SysCheckDataService,
+    private backendService: BackendService,
+    public dataService: SysCheckDataService,
     private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -32,20 +32,20 @@ export class ReportComponent implements OnInit {
         if (result !== false) {
           const reportKey = result.get('key').value as string;
           const reportTitle = result.get('title').value as string;
-          this.bs.saveReport(
-            this.ds.checkConfig.workspaceId,
-            this.ds.checkConfig.name,
+          this.backendService.saveReport(
+            this.dataService.checkConfig.workspaceId,
+            this.dataService.checkConfig.name,
             {
               keyPhrase: reportKey,
               title: reportTitle,
-              environment: this.ds.environmentReport,
-              network: this.ds.networkReport,
-              questionnaire: this.ds.questionnaireReport,
+              environment: this.dataService.environmentReport,
+              network: this.dataService.networkReport,
+              questionnaire: this.dataService.questionnaireReport,
               unit: []
             }
           ).subscribe(() => {
             this.snackBar.open('Bericht gespeichert.', '', { duration: 3000 });
-            this.saved = true;
+            this.isReportSaved = true;
           });
         }
       }
@@ -54,11 +54,11 @@ export class ReportComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.ds.setNewCurrentStep('r');
+      this.dataService.setNewCurrentStep('r');
       this.questionnaireDataWarnings = [];
-      if (this.ds.checkConfig && this.ds.checkConfig.questions.length > 0) {
-        if (this.ds.questionnaireReport.length > 0) {
-          this.ds.questionnaireReport.forEach(re => {
+      if (this.dataService.checkConfig && this.dataService.checkConfig.questions.length > 0) {
+        if (this.dataService.questionnaireReport.length > 0) {
+          this.dataService.questionnaireReport.forEach(re => {
             if (re.warning) {
               this.questionnaireDataWarnings.push(re);
             }

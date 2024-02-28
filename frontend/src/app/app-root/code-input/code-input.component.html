@@ -15,7 +15,7 @@
         </mat-form-field>
         <p style="color: chocolate"><b>{{ problemText }}</b></p>
       </mat-card-content>
-      <mat-card-actions>
+      <mat-card-actions [style.justify-content]="'space-between'">
         <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
                 color="primary" data-cy="continue">
           Weiter
