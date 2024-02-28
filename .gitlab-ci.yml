@@ -1,7 +1,7 @@
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - local: scripts/gitlab-ci/tests.yml
-  - local: scripts/gitlab-ci/docs.yml
+#  - local: scripts/gitlab-ci/docs.yml
 
 gemnasium-dependency_scanning:
   rules:
