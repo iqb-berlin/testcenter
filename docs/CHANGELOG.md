@@ -3,8 +3,13 @@ layout: default
 ---
 
 ## [next]
-### Testtaker Modus
+
+### Verbesserungen
 * Im run-trial Modus werden nun Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben ein Review durchzuführen.
+
+### Neue Features
+* Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
+
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
