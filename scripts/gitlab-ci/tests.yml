@@ -99,3 +99,21 @@ test-backend-initialization:
     - apk add make
     - make init
     - make test-backend-initialization-general
+
+test-e2e:
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - !reference [ .frontend-change, rules ]
+    - changes:
+        - e2e/**/*
+  script:
+    - apk add make
+    - make init
+    - make test-system-headless
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress/videos/**/*.mp4
+      - e2e/cypress/screenshots/**/*.png
