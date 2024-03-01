@@ -105,36 +105,53 @@
 </td>
 
 <ng-template #testletFull let-testlet [appTemplateContext]="testletContext">
+
   <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testlet }"></ng-container>
 
-  <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
-    <span
-      *ngIf="!isTestlet(testletOrUnit)"
-      [class]="{
-        unit: true,
-        current: testSession.data.unitName === testletOrUnit.id
-      }"
-      matTooltip="{{testletOrUnit.label}}"
-      matTooltipPosition="above"
-    >
-      {{testletOrUnit.labelShort || "&nbsp;"}}
-    </span>
 
-    <span
-      *ngIf="isTestlet(testletOrUnit)"
-      [class]="{
-        testlet: true,
-        selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
-        marked: isMarked(testletOrUnit) && testletOrUnit.blockId
-      }"
-      (mouseenter)="mark(testletOrUnit)"
-      (click)="select($event, testletOrUnit)"
-      matTooltip="{{testletOrUnit.label}}"
-    >
-      <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
-    </span>
+
+    <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
+      <span
+        *ngIf="!isTestlet(testletOrUnit)"
+        [class]="{
+          unit: true,
+          current: testSession.current?.unit?.alias === testletOrUnit.alias
+        }"
+        matTooltip="{{testletOrUnit.label}}"
+        matTooltipPosition="above"
+      >
+        {{testletOrUnit.labelShort || "&nbsp;"}}
+      </span>
+
+      <ng-container
+        *ngIf="isTestlet(testletOrUnit)"
+      >
+        <span
+          *ngIf="!testletOrUnit.restrictions.if.length || (testSession.current && (testSession.current.parent.id === testletOrUnit.id));
+            else: conditionedTestlet"
+          [class]="{
+            testlet: true,
+            selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+            marked: isMarked(testletOrUnit) && testletOrUnit.blockId
+          }"
+          (mouseenter)="mark(testletOrUnit)"
+          (click)="select($event, testletOrUnit)"
+          matTooltip="{{testletOrUnit.label}}"
+        >
+          <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
+        </span>
+      </ng-container>
+      <ng-template #conditionedTestlet>
+        <span class="testlet">
+          <span class="unit aggregated">?</span>
+        </span>
+      </ng-template>
+
   </ng-container>
+
+
 </ng-template>
+
 
 
 <ng-template #bookletMedium let-testlet [appTemplateContext]="testletContext">
@@ -149,7 +166,7 @@
 
     <span
       *ngIf="!isTestlet(testletOrUnit)"
-      [class]="(testSession.data.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
+      [class]="(testSession.data.unitName === testletOrUnit.alias) ? 'unit current': 'unit'"
       matTooltip="{{testletOrUnit.label}}"
       matTooltipPosition="above"
     >·
@@ -159,14 +176,18 @@
       *ngIf="isTestlet(testletOrUnit)"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
-      [class]="{ 'timeup' : testletOrUnit.restrictions.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
+      [class]="{
+        timeup: testletOrUnit.restrictions.timeMax &&
+          testSession.timeLeft &&
+          testSession.timeLeft.hasOwnProperty(testletOrUnit.id) &&
+          testSession.timeLeft[testletOrUnit.id] === 0
+      }"
     >
 
       <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testletOrUnit }"></ng-container>
 
-      <ng-container *ngIf="testSession.current; else: unFeaturedTestlet">
+      <ng-container *ngIf="testSession.current && (testSession.current.ancestor.id === testletOrUnit.id); else: unFeaturedTestlet">
         <span
-          *ngIf="testSession.current.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
           [class]="{
             unit: true,
             aggregated: true,
@@ -184,18 +205,23 @@
       </ng-container>
 
       <ng-template #unFeaturedTestlet>
-        <span
-          [class]="{
-            unit: true,
-            aggregated: true,
-            selected: isSelected(testletOrUnit) && checked,
-            marked: isMarked(testletOrUnit)
-          }"
-          (mouseenter)="mark(testletOrUnit)"
-          (click)="select($event, testletOrUnit)"
-        >{{testletOrUnit.descendantCount}}</span>
+        <ng-container *ngIf="!testletOrUnit.restrictions.if.length; else: conditionedTestlet">
+          <span
+            [class]="{
+              unit: true,
+              aggregated: true,
+              selected: isSelected(testletOrUnit) && checked,
+              marked: isMarked(testletOrUnit)
+            }"
+            (mouseenter)="mark(testletOrUnit)"
+            (click)="select($event, testletOrUnit)"
+          >{{testletOrUnit.descendantCount}}</span>
+        </ng-container>
+        <ng-template #conditionedTestlet>
+          <span class="unit aggregated">?</span>
+        </ng-template>
       </ng-template>
-  </span>
+    </span>
   </ng-container>
 </ng-template>
 

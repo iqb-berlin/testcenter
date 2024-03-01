@@ -379,6 +379,7 @@ export class TestControllerService {
     if (!unit) {
       // eslint-disable-next-line no-console
       console.trace();
+      console.log(`Unit not found:${unitSequenceId}`, this.units);
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
         description: '',

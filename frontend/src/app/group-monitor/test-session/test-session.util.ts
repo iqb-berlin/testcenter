@@ -124,7 +124,7 @@ export class TestSessionUtil {
         result.indexAncestor += 1;
         result.indexGlobal += 1;
 
-        if (child.id === searchUnitId) {
+        if (child.alias === searchUnitId) {
           result.unit = child;
           return result;
         }

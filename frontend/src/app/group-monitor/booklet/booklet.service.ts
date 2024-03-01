@@ -53,7 +53,10 @@ export class BookletService extends BookletParserService<Unit, Testlet, Booklet>
 
   toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
-      descendantCount: this.xmlCountChildrenOfTagNames(elem, ['Unit']),
+      descendantCount:
+        elem.querySelectorAll('If').length ?
+          '?' :
+          this.xmlCountChildrenOfTagNames(elem, ['Unit']),
       blockId: `block ${context.localTestletIndex + 1}`,
       nextBlockId: `block ${context.localTestletIndex + 2}`
     });

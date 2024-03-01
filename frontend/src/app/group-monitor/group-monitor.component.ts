@@ -39,7 +39,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   markedElement: Selected | null = null;
 
   displayOptions: TestViewDisplayOptions = {
-    view: 'medium',
+    view: 'small',
     groupColumn: 'hide',
     bookletColumn: 'show',
     blockColumn: 'show',

@@ -96,7 +96,7 @@ export interface Booklet extends BookletDef<Testlet> {
 }
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
-  descendantCount: number;
+  descendantCount: number | string;
   blockId?: string;
   nextBlockId?: string;
 }

@@ -256,7 +256,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         // eslint-disable-next-line no-case-declarations
         let gotoTarget: string = '';
         if ((params.length === 2) && (params[0] === 'id')) {
-          gotoTarget = (this.tcs.unitAliasMap[params[1]] + 1).toString(10);
+          gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
         } else if (params.length === 1) {
           gotoTarget = params[0];
         }

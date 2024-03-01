@@ -329,7 +329,7 @@ export class TestSessionManager {
         if (firstUnit) {
           groupedByBooklet[session.data.bookletName] = {
             testIds: [],
-            firstUnitId: firstUnit.id
+            firstUnitId: firstUnit.alias
           };
         }
       }

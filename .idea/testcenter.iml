@@ -29,11 +29,11 @@
       <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/screenshots" />
       <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/videos" />
       <excludeFolder url="file://$MODULE_DIR$/testcenter-scripts" />
-      <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/e2e/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/data-main" />
+      <excludeFolder url="file://$MODULE_DIR$/data-master" />
     </content>
     <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="jdk" jdkName="Python 3.7 (isaac-sas-backend)" jdkType="Python SDK" />
