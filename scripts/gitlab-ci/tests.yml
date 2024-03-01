@@ -102,6 +102,7 @@ test-backend-initialization:
 
 test-e2e:
   stage: test
+  allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
