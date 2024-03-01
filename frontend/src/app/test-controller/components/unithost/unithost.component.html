@@ -5,7 +5,7 @@
   'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((resourcesLoading$ | async) || []).length
 }">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
-    <h2 >{{tcs.currentUnit ? tcs.currentUnit.label : 'no unit'}}</h2>
+    <h2 data-cy="unit-title">{{tcs.currentUnit ? tcs.currentUnit.label : 'no unit'}}</h2>
     <mat-divider></mat-divider>
   </div>
 
@@ -16,7 +16,7 @@
       <div id="waiting-room" *ngIf="loadingResources.length || unit.parent.locked">
         <mat-card appearance="raised">
           <mat-card-header>
-            <mat-card-title>
+            <mat-card-title data-cy="unit-block-dialog-title">
               {{(loadingResources.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
             </mat-card-title>
             <mat-card-subtitle *ngIf="loadingResources.length > 1">
@@ -88,6 +88,7 @@
               color="primary"
               [disabled]="!clearCode.length"
               (click)="verifyCodes()"
+              data-cy="unit-block-dialog-submit"
             >
               OK
             </button>

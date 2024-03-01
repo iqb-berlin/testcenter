@@ -36,7 +36,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.get('[data-cy="SAMPLE_SYSCHECK.XML"]')
       .should('not.exist');
@@ -47,7 +52,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('1 Dateien werden von anderen verwendet und wurden nicht gelöscht.')
       .should('exist');
@@ -62,7 +72,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('1 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -72,7 +87,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('1 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -85,7 +105,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('1 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -271,7 +296,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -296,7 +326,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -319,7 +354,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -340,7 +380,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -369,7 +414,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -396,7 +446,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
@@ -456,7 +511,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Gruppendaten');
     cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Gruppendaten löschen')
       .click();
     cy.get('[data-cy="results-checkbox"]')
       .should('not.exist');

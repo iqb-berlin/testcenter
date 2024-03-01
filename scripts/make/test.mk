@@ -5,7 +5,8 @@ test-backend-unit:
 		php -dxdebug.mode='debug' /var/www/backend/vendor/phpunit/phpunit/phpunit \
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
-				/var/www/backend/test/unit/.
+				/var/www/backend/test/unit/. \
+
 
 test-backend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
@@ -15,7 +16,8 @@ test-backend-unit-coverage:
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
 			--coverage-html /docs/dist/test-coverage-backend-unit \
-				/var/www/backend/test/unit/.
+				/var/www/backend/test/unit/. \
+			--testdox
 
 # Performs Api-Tests
 test-backend-api:

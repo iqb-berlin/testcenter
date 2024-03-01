@@ -2,6 +2,18 @@
 layout: default
 ---
 
+## [next]
+### Bugfixes
+* Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
+  dieser beendet und gesperrt. Dies ist behoben. (#447)
+
+### Neue Features
+* Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
+
+### Sicherheit
+* Upgrade auf neuste PHP-Version 8.3.0
+
+
 ## 15.0.1
 ### Bugfixes
 * Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)

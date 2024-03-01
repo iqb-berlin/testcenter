@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.2.12
+ARG PHP_VERSION=8.3.2
 
 FROM php:${PHP_VERSION} AS backend-composer
 
@@ -84,6 +84,7 @@ FROM prod as dev
 WORKDIR /var/www/backend
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 # Add testing code
 COPY backend/phpunit.xml .

@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
@@ -262,9 +262,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
-          this.tcs.cancelTimer();
           const targetUnit = this.tcs.getUnit(parseInt(gotoTarget, 10));
           if (targetUnit) {
+            if (targetUnit.parent.timerId !== this.tcs.currentUnit.parent.timerId) {
+              this.tcs.cancelTimer();
+            }
             this.tcs.clearTestlet(targetUnit.parent.id);
           }
 
@@ -477,7 +479,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         title: 'Vollbild',
         content: this.cts.getCustomText('booklet_requestFullscreen'),
         confirmbuttonlabel: 'Ja',
-        showcancel: true
+        showcancel: true,
+        cancelbuttonlabel: 'Nein'
       }
     });
     dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {
