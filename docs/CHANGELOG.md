@@ -3,16 +3,19 @@ layout: default
 ---
 
 ## [next]
-
-### Verbesserungen
-* Im run-trial Modus werden nun Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben ein Review durchzuführen.
+### Bugfixes
+* Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
+  dieser beendet und gesperrt. Dies ist behoben. (#447)
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
 
+### Verbesserungen
+* Im run-trial Modus werden nun Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben ein Review durchzuführen.
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
+
 
 ## 15.0.1
 ### Bugfixes

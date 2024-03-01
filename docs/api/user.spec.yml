@@ -113,8 +113,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: './components.spec.yml#/components/schemas/user'
             example:
               n: thirdUser
               p: thirdUsersPassword
@@ -153,8 +151,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: './components.spec.yml#/components/schemas/user'
             example:
               p: secondUsersNewPassword
 

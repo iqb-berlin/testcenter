@@ -84,6 +84,7 @@ FROM prod as dev
 WORKDIR /var/www/backend
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 # Add testing code
 COPY backend/phpunit.xml .
