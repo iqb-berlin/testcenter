@@ -3,6 +3,9 @@ layout: default
 ---
 
 ## [next]
+### Verbesserungen
+* Login: Passwortfeld zeigt Warnung an, wenn die Feststelltaste aktiviert ist. Das verhindert unbemerkte Falscheingaben.
+
 ### Bugfixes
 * Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
   dieser beendet und gesperrt. Dies ist behoben. (#447)
