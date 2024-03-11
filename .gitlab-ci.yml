@@ -1,5 +1,7 @@
 include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  - local: scripts/gitlab-ci/tests.yml
+  - local: scripts/gitlab-ci/docs.yml
 
 gemnasium-dependency_scanning:
   rules:
@@ -45,6 +47,20 @@ stages:
     - changes:
         - scripts/file-service/**/*
 
+build-db:
+  stage: build
+  rules:
+    - !reference [ .backend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - apk add make
+    - make init
+    - make build service=testcenter-db
+    - docker push iqbberlin/testcenter-db
+
 build-backend:
   stage: build
   rules:
@@ -54,36 +70,12 @@ build-backend:
     - changes:
         - e2e/**/*
   before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
     - apk add make
     - make init
     - make build service=testcenter-backend
-    - docker save iqbberlin/testcenter-backend > backend_image.tar
-  artifacts:
-    paths:
-      - backend_image.tar
-    expire_in: 30 minutes
-
-build-db:
-  stage: build
-  rules:
-    - !reference [ .backend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init
-    - make build service=testcenter-db
-    - docker save iqbberlin/testcenter-db > db_image.tar
-  artifacts:
-    paths:
-      - db_image.tar
-    expire_in: 30 minutes
+    - docker push iqbberlin/testcenter-backend:dev
 
 build-frontend:
   stage: build
@@ -94,17 +86,12 @@ build-frontend:
     - changes:
         - e2e/**/*
   before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
     - apk add make
     - make init
     - make build service=testcenter-frontend
-    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
-  artifacts:
-    paths:
-      - frontend_image.tar
-    expire_in: 30 minutes
+    - docker push iqbberlin/testcenter-frontend:dev
 
 build-broadcasting-service:
   stage: build
@@ -115,17 +102,12 @@ build-broadcasting-service:
     - changes:
         - e2e/**/*
   before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
     - apk add make
     - make init
     - make build service=testcenter-broadcasting-service
-    - docker save iqbberlin/testcenter-broadcasting-service > bs_image.tar
-  artifacts:
-    paths:
-      - bs_image.tar
-    expire_in: 30 minutes
+    - docker push iqbberlin/testcenter-broadcasting-service:dev
 
 build-file-service:
   stage: build
@@ -136,168 +118,35 @@ build-file-service:
     - changes:
         - e2e/**/*
   before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
     - apk add make
     - make init
     - make build service=testcenter-file-service
-    - docker save iqbberlin/testcenter-file-service > fs_image.tar
-  artifacts:
-    paths:
-      - fs_image.tar
-    expire_in: 30 minutes
+    - docker push iqbberlin/testcenter-file-service
 
-test-backend-unit:
-  stage: test
+build-db-prod:
+  stage: deploy
   rules:
-    - !reference [ .backend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
     - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-backend
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
+  cache:
+    paths:
+      - .trivycache/
   script:
-    - apk add make
+    - apk add make curl
     - make init
-    - docker load -i backend_image.tar
-    - make test-backend-unit-coverage
+    - docker build --no-cache -t iqbberlin/testcenter-db:$CI_COMMIT_TAG -f docker/database.Dockerfile .
+    - |
+      docker run --rm \
+      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
+      aquasec/trivy image --exit-code 0 --cache-dir .trivycache/ --security-checks vuln \
+      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
+      iqbberlin/testcenter-db:$CI_COMMIT_TAG
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker push iqbberlin/testcenter-db:$CI_COMMIT_TAG
   artifacts:
-    paths:
-      - docs/dist/test-coverage-backend-unit/*
-    expire_in: 30 minutes
-
-test-frontend-unit:
-  stage: test
-  rules:
-    - !reference [ .frontend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-frontend
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init-env
-    - make init-frontend
-    - docker load -i frontend_image.tar
-    - make test-frontend-unit-coverage
-  artifacts:
-    paths:
-      - docs/dist/test-coverage-frontend-unit/*
-    expire_in: 30 minutes
-
-test-broadcasting-service-unit:
-  stage: test
-  rules:
-    - !reference [ .bs-change, rules ]
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-broadcasting-service
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init-env
-    - docker load -i bs_image.tar
-    - make test-broadcasting-service-unit-coverage
-  artifacts:
-    paths:
-      - docs/dist/test-coverage-broadcasting-service-unit/*
-    expire_in: 30 minutes
-
-test-e2e:
-  stage: test
-  allow_failure: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-    - !reference [ .frontend-change, rules ]
-    - changes:
-        - e2e/**/*
-  dependencies:
-    - build-frontend
-    - build-backend
-    - build-broadcasting-service
-    - build-file-service
-    - build-db
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - docker load -i frontend_image.tar
-    - docker load -i backend_image.tar
-    - docker load -i bs_image.tar
-    - docker load -i fs_image.tar
-    - docker load -i db_image.tar
-    - make init
-    - make test-system-headless
-  artifacts:
-    when: always
-    paths:
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
-    expire_in: 30 minutes
-
-test-backend-api:
-  stage: test
-  rules:
-    - !reference [ .backend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-backend
-    - build-db
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init
-    - docker load -i backend_image.tar
-    - docker load -i db_image.tar
-    - make test-backend-api
-
-test-file-service-api:
-  stage: test
-  rules:
-    - !reference [ .fs-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-file-service
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init
-    - docker load -i fs_image.tar
-    - make test-file-service-api
-
-test-backend-initialization:
-   stage: test
-   rules:
-     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-     - if: "$CI_COMMIT_TAG"
-   dependencies:
-     - build-backend
-     - build-db
-   before_script:
-     - ip a | grep mtu
-     - docker network inspect bridge | grep mtu
-   script:
-     - apk add make
-     - make init
-     - docker load -i backend_image.tar
-     - docker load -i db_image.tar
-     - make test-backend-initialization-general
+    reports:
+      container_scanning: gl-container-scanning-report.json
 
 build-backend-prod:
   stage: deploy
@@ -306,13 +155,10 @@ build-backend-prod:
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
   script:
     - apk add make
     - make init
-    - docker build --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f docker/backend.Dockerfile .
+    - docker build --no-cache --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f docker/backend.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
@@ -332,15 +178,10 @@ build-frontend-prod:
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
     - make init
-    - docker build --target prod -t iqbberlin/testcenter-frontend:$CI_COMMIT_TAG -f docker/frontend.Dockerfile .
+    - docker build --no-cache --target prod -t iqbberlin/testcenter-frontend:$CI_COMMIT_TAG -f docker/frontend.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
@@ -360,15 +201,10 @@ build-broadcasting-service-prod:
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
     - make init
-    - docker build --target prod -t iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG -f docker/broadcasting-service.Dockerfile .
+    - docker build --no-cache --target prod -t iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG -f docker/broadcasting-service.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
@@ -388,15 +224,10 @@ build-file-service-prod:
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
   script:
     - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
     - make init
-    - docker build -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
+    - docker build --no-cache -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
@@ -408,75 +239,3 @@ build-file-service-prod:
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json
-
-build-db-prod:
-  stage: deploy
-  rules:
-    - if: "$CI_COMMIT_TAG"
-  cache:
-    paths:
-      - .trivycache/
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - make init
-    - docker build -t iqbberlin/testcenter-db:$CI_COMMIT_TAG -f docker/database.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-db:$CI_COMMIT_TAG
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-    - docker push iqbberlin/testcenter-db:$CI_COMMIT_TAG
-  artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
-
-generate-docs:
-  stage: build
-  rules:
-    - if: "$CI_COMMIT_TAG"
-  before_script:
-    - ip a | grep mtu
-    - docker network inspect bridge | grep mtu
-  script:
-    - apk add make
-    - make init
-    - make update-docs
-  artifacts:
-    paths:
-      - docs/index.md
-      - docs/pages/booklet-config.md
-      - docs/pages/test-mode.md
-      - docs/dist/api/index.html
-      - docs/dist/api/specs.yml
-      - docs/dist/custom-texts.md
-      - docs/dist/test-session-super-states.html
-      - docs/dist/compodoc-frontend/*
-      - docs/dist/compodoc-broadcasting-service/*
-    expire_in: 30 minutes
-
-pages:
-  stage: deploy
-  rules:
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - test-backend-unit
-    - test-frontend-unit
-    - test-broadcasting-service-unit
-    - generate-docs
-  image: ruby:3.1
-  script:
-    - mkdir public
-    - cd docs
-    - gem install bundler
-    - bundle install
-    - jekyll build -d ../public
-  artifacts:
-    paths:
-      - public
