@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   checkCapsLock(event: KeyboardEvent): void {
     if (event.getModifierState('CapsLock')) {
-      this.problemText = 'caps lock an';
+      this.problemText = 'Feststelltaste ist aktiviert!';
       this.problemLevel = 'warning';
     }
   }
