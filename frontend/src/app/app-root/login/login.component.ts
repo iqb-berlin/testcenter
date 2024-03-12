@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;
   returnTo = '';
   problemText = '';
+  problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
   unsupportedBrowser: string[] = [];
@@ -91,13 +92,22 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
+        this.problemLevel = 'error';
         this.loginForm.reset();
       }
     });
   }
 
+  checkCapsLock(event: KeyboardEvent): void {
+    if (event.getModifierState('CapsLock')) {
+      this.problemText = 'Feststelltaste ist aktiviert!';
+      this.problemLevel = 'warning';
+    }
+  }
+
   clearWarning(): void {
     this.problemText = '';
+    this.problemLevel = 'error';
     this.problemCode = 0;
   }
 
