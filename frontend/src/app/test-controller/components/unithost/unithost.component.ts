@@ -40,12 +40,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = window;
   private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
 
-  knownPages: { id: string; label: string }[] = [];
+  pageList: string[] = [];
+  currentPageIndex: number = -1;
+
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
 
   currentUnit: UnitWithContext | null = null;
-  currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
 
   clearCodes: { [testletId: string]: string } = {};
@@ -136,18 +137,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
           if (msgData.playerState) {
             const { playerState } = msgData;
 
-            if (playerState.validPages) {
-              this.knownPages = Object.keys(playerState.validPages)
-                .map(id => ({ id, label: playerState.validPages[id] }));
-            }
-
-            this.currentPageIndex = this.knownPages.findIndex(page => page.id === playerState.currentPage);
+            this.pageList = Object.values(playerState.validPages);
+            this.currentPageIndex = playerState.currentPage - 1;
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
-              const pageNr = Object.keys(playerState.validPages).indexOf(playerState.currentPage) + 1;
-              const pageCount = this.knownPages.length;
-              if (this.knownPages.length > 1 && playerState.validPages[playerState.currentPage]) {
+              const pageNr = playerState.currentPage + 1;
+              const pageCount = this.pageList.length;
+              if (this.pageList.length > 1 && playerState.validPages[playerState.currentPage]) {
                 this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
                   {
@@ -238,7 +235,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.currentPageIndex = -1;
-    this.knownPages = [];
+    this.pageList = [];
 
     this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
 
@@ -442,14 +439,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
     return navigationTargets;
   }
 
-  gotoPage(navigationTarget: string): void {
-    if (typeof this.postMessageTarget !== 'undefined') {
-      this.postMessageTarget.postMessage({
-        type: 'vopPageNavigationCommand',
-        sessionId: this.itemplayerSessionId,
-        target: navigationTarget
-      }, '*');
-    }
+  gotoNextPage(): void {
+    this.gotoPage(this.currentPageIndex + 1);
+  }
+
+  gotoPreviousPage(): void {
+    this.gotoPage(this.currentPageIndex - 1);
+  }
+
+  gotoPage(targetPageIndex: number): void {
+    this.postMessageTarget?.postMessage({
+      type: 'vopPageNavigationCommand',
+      sessionId: this.itemplayerSessionId,
+      target: targetPageIndex + 1
+    }, '*');
   }
 
   private handleNavigationDenial(

@@ -5,26 +5,12 @@
 
 <div #iFrameHost id="iFrameHost" *ngIf="!errorText"></div>
 
-<div id="pageNav" class="flex-row">
-  <div *ngIf="pageList.length > 1" class="flex-row">
-    <mat-button-toggle-group *ngFor="let p of pageList">
-      <mat-button-toggle *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
-        <i class="material-icons">chevron_left</i>
-      </mat-button-toggle>
-      <mat-button-toggle *ngIf="p.type === '#next'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
-        <i class="material-icons">chevron_right</i>
-      </mat-button-toggle>
-
-      <mat-button-toggle *ngIf="p.type === '#goto'"
-                         (click)="gotoPage(p.type, p.index)"
-                         [disabled]="p.disabled"
-                         [checked]="currentPage === p.index">
-        {{ p.index }}
-      </mat-button-toggle>
-
-    </mat-button-toggle-group>
-  </div>
-</div>
+<tc-page-nav class="pageNav"
+             [pages]="pageList" [currentPageIndex]="currentPageIndex"
+             (navToPage)="gotoPage($event)"
+             (navPrevious)="gotoPreviousPage()"
+             (navNext)="gotoNextPage()">
+</tc-page-nav>
 
 <mat-card appearance="outlined" *ngIf="errorText" [style.width.px]="700" [style.margin]="'auto'">
   <mat-card-header>

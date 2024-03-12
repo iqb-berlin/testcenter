@@ -12,8 +12,8 @@ import { SysCheckDataService } from '../sys-check-data.service';
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  pageList: PageData[] = [];
-  currentPage: number = -1;
+  pageList: string[] = [];
+  currentPageIndex: number = -1;
   errorText = '';
   @ViewChild('iFrameHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -69,8 +69,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               case 'vopStateChangedNotification':
                 if (msgData.playerState) {
                   const { playerState } = msgData;
-                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-                  this.currentPage = playerState.currentPage;
+                  this.pageList = Object.values(playerState.validPages);
+                  this.currentPageIndex = playerState.currentPage - 1;
                 }
                 break;
 
@@ -104,79 +104,20 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     });
   }
 
-  setPageList(validPages: string[], currentPage: string): void {
-    const newPageList: PageData[] = [];
-    if (validPages.length > 1) {
-      for (let i = 0; i < validPages.length; i++) {
-        if (i === 0) {
-          newPageList.push({
-            index: -1,
-            id: '#previous',
-            disabled: validPages[i] === currentPage,
-            type: '#previous'
-          });
-        }
-
-        newPageList.push({
-          index: i + 1,
-          id: validPages[i],
-          disabled: validPages[i] === currentPage,
-          type: '#goto'
-        });
-
-        if (i === validPages.length - 1) {
-          newPageList.push({
-            index: -1,
-            id: '#next',
-            disabled: validPages[i] === currentPage,
-            type: '#next'
-          });
-        }
-      }
-    }
-    this.pageList = newPageList;
+  gotoNextPage(): void {
+    this.gotoPage(this.currentPageIndex + 1);
   }
 
-  gotoPage(action: string, index = 0): void {
-    let nextPageId = '';
-    if (action === '#next') {
-      let currentPageIndex = 0;
-      for (let i = 0; i < this.pageList.length; i++) {
-        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
-          currentPageIndex = i;
-          break;
-        }
-      }
-      if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
-        nextPageId = this.pageList[currentPageIndex + 1].id;
-      }
-    } else if (action === '#previous') {
-      let currentPageIndex = 0;
-      for (let i = 0; i < this.pageList.length; i++) {
-        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
-          currentPageIndex = i;
-          break;
-        }
-      }
-      if (currentPageIndex > 1) {
-        nextPageId = this.pageList[currentPageIndex - 1].id;
-      }
-    } else if (action === '#goto') {
-      if ((index > 0) && (index < this.pageList.length - 1)) {
-        nextPageId = this.pageList[index].id;
-      }
-    } else if (index === 0) {
-      // call from player
-      nextPageId = action;
-    }
+  gotoPreviousPage(): void {
+    this.gotoPage(this.currentPageIndex - 1);
+  }
 
-    if (nextPageId.length > 0) {
-      this.postMessageTarget?.postMessage({
-        type: 'vopPageNavigationCommand',
-        sessionId: this.itemplayerSessionId,
-        target: nextPageId
-      }, '*');
-    }
+  gotoPage(targetPageIndex: number): void {
+    this.postMessageTarget?.postMessage({
+      type: 'vopPageNavigationCommand',
+      sessionId: this.itemplayerSessionId,
+      target: targetPageIndex + 1
+    }, '*');
   }
 
   ngOnDestroy(): void {
@@ -187,11 +128,4 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       this.postMessageSubscription.unsubscribe();
     }
   }
-}
-
-export interface PageData {
-  index: number;
-  id: string;
-  type: '#next' | '#previous' | '#goto';
-  disabled: boolean;
 }

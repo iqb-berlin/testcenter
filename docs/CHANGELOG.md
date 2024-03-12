@@ -9,6 +9,7 @@ layout: default
 ### Bugfixes
 * Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
   dieser beendet und gesperrt. Dies ist behoben. (#447)
+* System-Check: Seitennavigationsleiste repariert
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
