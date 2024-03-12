@@ -90,7 +90,7 @@
     }
   },
   "RUN-TRIAL": {
-    "label": "Prüfdurchgang mit Speichern und Review Funktionalität",
+    "label": "Prüfdurchgang mit Speichern und Reviewfunktionalität",
     "config": {
       "alwaysNewSession": false,
       "monitorable": true,
@@ -100,6 +100,21 @@
       "forceNaviRestrictions": false,
       "presetCode": true,
       "showTimeLeft": true,
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false
+    }
+  },
+  "RUN-SIMULATION": {
+    "label": "Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
       "showUnitMenu": true,
       "receiveRemoteCommands": false
     }

@@ -31,6 +31,7 @@ class Mode {
       'monitorable'
     ],
     'run-review' => [],
+    'run-simulation' => [],
     'monitor-group' => [],
     'monitor-study' => []
   ];
