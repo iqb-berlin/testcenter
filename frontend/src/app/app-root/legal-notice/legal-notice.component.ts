@@ -6,7 +6,9 @@ import { ServiceStatus } from '../../shared/interfaces/service-status.interfaces
   templateUrl: './legal-notice.component.html',
   styles: [
     'mat-card { width: 500px; }',
-    'ul { margin-top: 0; }'
+    'ul { margin-top: 0; }',
+    'h1 {margin-block-start: 5%}',
+    'mat-card-actions {padding-top: 30px;}'
   ]
 })
 export class LegalNoticeComponent implements OnInit {
