@@ -90,7 +90,7 @@ export class AppConfig {
   setAppConfig(appConfig: AppSettings): void {
     this.appTitle = this.cts?.getCustomText('app_title') ?? 'IQB-Testcenter';
     this.introHtml = this.cts?.getCustomText('app_intro1') ?? 'Einführungstext nicht definiert';
-    this.legalNoticeHtml = this.cts?.getCustomText('app_intro1') ?? 'Impressum/Datenschutz nicht definiert';
+    this.legalNoticeHtml = this.cts?.getCustomText('app_legal_notice') ?? 'Impressum/Datenschutz nicht definiert';
     // TODO does this makes sense
     this.mainLogo = DEFAULT_LOGO;
     this.backgroundBody = DEFAULT_BACKGROUND_BODY;

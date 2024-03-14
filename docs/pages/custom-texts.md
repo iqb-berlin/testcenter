@@ -49,6 +49,7 @@ replacements:
 | :------------- | :---------- | :----------- |
 |app_intro1|Begrüßungstext auf der Startseite (Text nach IQB-Link)|betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.|
 |app_title|Titel der Hauptanwendung|IQB-Testcenter|
+|app_legal_notice|Impressum|<p>Anbieter:<br>Max Mustermann<br>Musterstraße 1<br>13088 Berlin<br><br>Kontakt:<br>Telefon: 030/1234567-8<br>Telefax: 030/1234567-9<br>E-Mail: mail@mustermann.de<br>Website: www.mustermann.de</p>|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
 |booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|
