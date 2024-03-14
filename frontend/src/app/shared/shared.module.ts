@@ -18,7 +18,6 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { customTextDefaults } from './objects/customTextDefaults';
 
 @NgModule({
   imports: [
@@ -67,6 +66,7 @@ export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
 export { MainDataService } from './services/maindata/maindata.service';
 export { BugReportService } from './services/bug-report.service';
+export { UserAgentService } from './services/user-agent/user-agent.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
 export { BookletConfig } from './classes/booklet-config.class';
 export { TestMode } from './classes/test-mode.class';
