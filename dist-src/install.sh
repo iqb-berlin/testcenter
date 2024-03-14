@@ -48,6 +48,7 @@ download_files() {
   wget -nv -O .env https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/.env
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/docker/docker-compose.yml
+  wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.yml
   wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/frontend/config/nginx.conf
