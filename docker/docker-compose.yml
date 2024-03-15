@@ -75,6 +75,7 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
     networks:
       testcenter:
@@ -90,6 +91,7 @@ services:
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
       - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
@@ -117,6 +119,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
       - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend"
     networks:
       testcenter:
@@ -133,6 +136,7 @@ services:
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
       - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
     networks:
       testcenter:
