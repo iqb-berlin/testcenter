@@ -320,6 +320,19 @@ END;
         (object) ["somestr" => "string"]
       ),
       new Login(
+       'test-simulation',
+       'user123',
+       'run-simulation',
+       'trial_group',
+       'A Group for Trials and Demos',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+       -1,
+       0,
+       0,
+       45,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
         'test-no-pw',
         '',
         'run-hot-restart',

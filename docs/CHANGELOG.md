@@ -13,10 +13,21 @@ layout: default
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
+* Es gibt einen neuen Modus der Durchführung für das Interaktives Übungsmodul: `run-simulation`. Sämtliche Restriktionen
+  werden hier angewendet, aber keine Antwortdaten gespeichert. (#454)
+
+### Verbesserungen
+* Im run-trial Modus werden nun sowohl Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben,
+  ein Review durchzuführen.
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
 * referrer-policy Hinzugefügt
+
+### Administration
+* Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
+  Hauptdomain weitergeleitet und das www ignoriert.
+
 
 ## 15.0.1
 ### Bugfixes
