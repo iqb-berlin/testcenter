@@ -16,7 +16,7 @@ layout: default
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
-
+* referrer-policy Hinzugefügt
 
 ## 15.0.1
 ### Bugfixes
