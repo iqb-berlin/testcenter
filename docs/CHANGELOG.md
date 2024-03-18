@@ -22,10 +22,12 @@ layout: default
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
+* referrer-policy Hinzugefügt
 
 ### Administration
 * Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
   Hauptdomain weitergeleitet und das www ignoriert.
+
 
 ## 15.0.1
 ### Bugfixes
