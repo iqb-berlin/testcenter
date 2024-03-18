@@ -37,7 +37,7 @@ fi
 
 echo_h2 "File data should be correctly stored in DB"
 expect_table_to_have_rows files 10
-expect_table_to_have_rows logins 12
+expect_table_to_have_rows logins 13
 expect_table_to_have_rows unit_defs_attachments 3
 
 
@@ -55,7 +55,7 @@ RESPONSE=$(
     ]}'
 )
 expect_table_to_have_rows files 10
-expect_table_to_have_rows logins 12
+expect_table_to_have_rows logins 13
 expect_table_to_have_rows unit_defs_attachments 3
 expect_data_dir_equals sample_content_present
 expect_equals '{"deleted":[],"did_not_exist":[],"not_allowed":[],"was_used":["Resource\/SAMPLE_UNITCONTENTS.HTM","Resource\/sample_resource_package.itcr.zip","Resource\/verona-player-simple-4.0.0.html","Unit\/SAMPLE_UNIT.XML","Unit\/SAMPLE_UNIT2.XML"]}' "$RESPONSE"
