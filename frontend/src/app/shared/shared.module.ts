@@ -19,6 +19,8 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
 import { customTextDefaults } from './objects/customTextDefaults';
+import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   imports: [
@@ -33,7 +35,8 @@ import { customTextDefaults } from './objects/customTextDefaults';
     FormsModule,
     MatInputModule,
     HttpClientModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonToggleModule
   ],
   declarations: [
     ConfirmDialogComponent,
@@ -41,7 +44,8 @@ import { customTextDefaults } from './objects/customTextDefaults';
     BytesPipe,
     CustomtextPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    PageNavBarComponent
   ],
   exports: [
     ConfirmDialogComponent,
@@ -49,7 +53,8 @@ import { customTextDefaults } from './objects/customTextDefaults';
     BytesPipe,
     CustomtextPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    PageNavBarComponent
   ],
   providers: [
     BackendService

@@ -64,18 +64,17 @@ RUN mkdir /var/www/backend/config
 
 RUN chown -R www-data:www-data /var/www
 
+USER www-data
+
 EXPOSE 80
 
 #===============================
 
 FROM base as prod
 
-COPY docker/backend-entrypoint.sh /root/entrypoint.sh
+COPY docker/backend-entrypoint.sh /entrypoint.sh
 
-# CI needs this:
-RUN chmod +x /root/entrypoint.sh
-
-ENTRYPOINT ["/root/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 #===============================
 
@@ -83,7 +82,9 @@ FROM prod as dev
 
 WORKDIR /var/www/backend
 
+USER root
 RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 # Add testing code
 COPY backend/phpunit.xml .
@@ -92,3 +93,5 @@ COPY backend/test test
 # some initialization tests need this
 # jq - JSON parser for bash
 RUN apt-get update && apt-get install -y jq
+
+USER www-data

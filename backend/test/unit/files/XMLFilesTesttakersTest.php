@@ -30,14 +30,35 @@ class XMLFilesTesttakersTest extends TestCase {
   </CustomTexts>
 
   <Group id="first_group" label="1st">
-    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="one" />
-    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="two" />
-    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="three" />
+    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="one" />
+    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="two" />
+    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="three" />
     <Login mode="run-hot-return" name="noDuplicate" pw="four" />
   </Group>
 
   <Group id="second_group" label="2nd">
-    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="two" />
+    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="two" />
+    <Login mode="run-hot-return" name="noDuplicateAgain" pw="four" />
+  </Group>
+</Testtakers>
+END;
+
+  private $exampleXML2 = <<<END
+<Testtakers>
+  <Metadata>
+    <Description>example</Description>
+  </Metadata>
+  
+  <CustomTexts>
+    <CustomText key="first_key">first_value</CustomText>
+    <CustomText key="second_key">second_value</CustomText>
+  </CustomTexts>
+
+  <Group id="first_group" label="1st">
+    <Login mode="run-hot-return" name="noDuplicate" pw="four" />
+  </Group>
+
+  <Group id="second_group" label="2nd">
     <Login mode="run-hot-return" name="noDuplicateAgain" pw="four" />
   </Group>
 </Testtakers>
@@ -299,6 +320,19 @@ END;
         (object) ["somestr" => "string"]
       ),
       new Login(
+       'test-simulation',
+       'user123',
+       'run-simulation',
+       'trial_group',
+       'A Group for Trials and Demos',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+       -1,
+       0,
+       0,
+       45,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
         'test-no-pw',
         '',
         'run-hot-restart',
@@ -383,22 +417,10 @@ END;
     $this->assertEquals($expected, $result);
   }
 
-  function test_getDoubleLoginNames() {
-    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1);
-
-    $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
-
-    $result = $xmlFile->getDoubleLoginNames();
-
-    $this->assertEquals($expected, $result);
-  }
-
   function test_getAllLoginNames() {
-    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML2, false);
 
     $expected = [
-      'duplicateInSameGroup',
-      'duplicateInDifferentGroup',
       'noDuplicate',
       'noDuplicateAgain'
     ];
@@ -409,7 +431,7 @@ END;
   }
 
   function test_getCustomTexts() {
-    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false);
 
     $expected = (object) [
       'first_key' => 'first_value',

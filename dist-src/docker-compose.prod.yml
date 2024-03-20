@@ -27,6 +27,8 @@ services:
       - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
+    volumes:
+      - testcenter_backend_vo_data:/var/www/data
 
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:${VERSION}
@@ -36,7 +38,9 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls=true"
       - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsIncludeSubdomains=true"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, tls-security-headers-frontend"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, tls-security-headers-frontend, stripwww-fe"
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:${VERSION}

@@ -14,6 +14,9 @@ services:
 
   testcenter-e2e:
     container_name: testcenter-e2e
+    depends_on:
+      testcenter-backend:
+        condition: service_healthy
     build:
       context: ..
       dockerfile: docker/e2e.Dockerfile

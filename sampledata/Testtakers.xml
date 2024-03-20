@@ -38,6 +38,9 @@
     <Login mode="run-demo" name="test-demo" pw="user123">
       <Booklet>BOOKLET.SAMPLE-1</Booklet>
     </Login>
+    <Login mode="run-simulation" name="test-simulation" pw="user123">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
   </Group>
 
   <Group id="passwordless_group" label="A group of persons without password">

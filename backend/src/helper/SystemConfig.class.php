@@ -76,7 +76,7 @@ class SystemConfig {
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
 
     $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
-    $config['system']['hostname'] = self::stringEnv('HOSTNAME');
+    $config['system']['hostname'] = preg_replace('#^[Ww][Ww][Ww]\.#', '', self::stringEnv('HOSTNAME'));
 
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
       $port = $config['system']['tlsEnabled']

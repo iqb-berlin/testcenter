@@ -86,14 +86,26 @@ export class TestModeData {
     },
     'RUN-TRIAL': {
       alwaysNewSession: false,
+      monitorable: true,
+      canReview: true,
+      saveResponses: true,
+      forceTimeRestrictions: false,
+      forceNaviRestrictions: false,
+      presetCode: true,
+      showTimeLeft: true,
+      showUnitMenu: true,
+      receiveRemoteCommands: false
+    },
+    'RUN-SIMULATION': {
+      alwaysNewSession: false,
       monitorable: false,
       canReview: false,
-      saveResponses: true,
+      saveResponses: false,
       forceTimeRestrictions: true,
       forceNaviRestrictions: true,
-      presetCode: true,
+      presetCode: false,
       showTimeLeft: false,
-      showUnitMenu: false,
+      showUnitMenu: true,
       receiveRemoteCommands: false
     }
   };
@@ -105,6 +117,7 @@ export class TestModeData {
     'RUN-HOT-RETURN': 'Durchführung Test/Befragung',
     'RUN-HOT-RESTART': 'Durchführung Test/Befragung',
     'RUN-REVIEW': 'Prüfdurchgang ohne Speichern',
-    'RUN-TRIAL': 'Prüfdurchgang mit Speichern'
+    'RUN-TRIAL': 'Prüfdurchgang mit Speichern und Reviewfunktionalität',
+    'RUN-SIMULATION': 'Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen'
   };
 }
