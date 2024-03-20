@@ -533,6 +533,7 @@ describe('Check responses and logs', { testIsolation: false }, () => {
   before(() => {
     useTestDB();
     cy.reload();
+    logoutTestTaker('hot');
     visitLoginPage();
   });
 
