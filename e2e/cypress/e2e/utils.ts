@@ -335,3 +335,8 @@ export const readBlockTime = (): Promise <number> => new Promise(resolve => {
       resolve(currBlockTimeNumber);
     });
 });
+
+export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
+  cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
+  cy.get('.cdk-overlay-container').contains(optionName).click();
+};

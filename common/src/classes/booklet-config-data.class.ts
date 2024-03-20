@@ -17,4 +17,6 @@ export class BookletConfigData {
   restore_current_page_on_return: 'OFF' | 'ON' = 'OFF';
   allow_player_to_terminate_test: 'OFF' | 'LAST_UNIT' | 'ON' = 'ON';
   lock_test_on_termination: 'ON' | 'OFF' = 'OFF';
+  ask_for_fullscreen: 'ON' | 'OFF' = 'OFF';
+  show_fullscreen_button: 'ON' | 'OFF' = 'OFF';
 }

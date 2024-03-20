@@ -116,3 +116,13 @@ Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen 
 Legt fest, ob der test gesperrt werden soll, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
  * "ON" - Ja, der Test soll gesperrt werden, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
  * **"OFF" - Nein, der test kann nach dem Beenden wieder aufgerufen werden, so lange der account aktiv ist.**
+
+### ask_for_fullscreen
+Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehen?
+ * "ON" - Ja.
+ * **"OFF" - Nein.**
+
+### show_fullscreen_button
+Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
+ * "ON" - Ja.
+ * **"OFF" - Nein.**

@@ -45,7 +45,7 @@
   },
   "login_unsupportedBrowser" : {
     "label": "Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
-    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
+    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a>, <a href='https://www.microsoft.com/en-us/edge/download' target='_blank'>Microsoft Edge</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
   },
   "booklet_msgNavigationDeniedTitle" : {
     "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",
@@ -60,12 +60,16 @@
     "defaultvalue" : "Es müssen erst alle Teilaufgaben bearbeitet werden."
   },
   "booklet_codeToEnterTitle" : {
-    "label" : "Titel der Dialogbox für die Eingabe eines Freigabewortes",
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Titel",
     "defaultvalue" : "Aufgabenblock ist noch gesperrt"
   },
   "booklet_codeToEnterPrompt" : {
-    "label" : "Aufforderung für die Eingabe eines Freigabewortes (Dialog-Box)",
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes",
     "defaultvalue" : "Bitte gib das Freigabewort ein, das angesagt wurde!"
+  },
+  "booklet_codeToEnterWarning": {
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung",
+    "defaultvalue" : "Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben."
   },
   "booklet_msgTimerStarted" : {
     "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",
@@ -134,6 +138,10 @@
   "booklet_lockedBlock" : {
     "label" : "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
     "defaultvalue" : "Aufgabenzeit ist abgelaufen"
+  },
+  "booklet_requestFullscreen" : {
+    "label" : "Text für Dialogfeld 'Vollbild aktivieren?'",
+    "defaultvalue" : "Soll das Vollbild aktiviert werden?"
   },
   "syscheck_questionsRequiredMessage" : {
     "label" : "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",

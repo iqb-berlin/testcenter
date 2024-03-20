@@ -2,7 +2,39 @@
 layout: default
 ---
 
-## 15.0.0-rc9
+## [next]
+### Verbesserungen
+* Login: Passwortfeld zeigt Warnung an, wenn die Feststelltaste aktiviert ist. Das verhindert unbemerkte Falscheingaben.
+
+### Bugfixes
+* Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
+  dieser beendet und gesperrt. Dies ist behoben. (#447)
+* System-Check: Seitennavigationsleiste repariert
+* Login: Bei fehlgeschlagenem Anmeldeversuch werden nicht mehr Teile des Passworts in der Serverantwort angezeigt
+
+### Neue Features
+* Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
+* Es gibt einen neuen Modus der Durchführung für das Interaktives Übungsmodul: `run-simulation`. Sämtliche Restriktionen
+  werden hier angewendet, aber keine Antwortdaten gespeichert. (#454)
+
+### Verbesserungen
+* Im run-trial Modus werden nun sowohl Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben,
+  ein Review durchzuführen.
+
+### Sicherheit
+* Upgrade auf neuste PHP-Version 8.3.0
+* referrer-policy Hinzugefügt
+
+### Administration
+* Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
+  Hauptdomain weitergeleitet und das www ignoriert.
+
+
+## 15.0.1
+### Bugfixes
+* Die Settings-Seite kann wieder verwendet werden, um die Anwendung zu konfigurieren. (#433)
+
+## 15.0.0
 ### Performance
 * Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die
   Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
@@ -11,17 +43,20 @@ layout: default
   Durchführung entlastet werden.
 * Das Backend allgemein wurde performanter und ressourcen-sparender gemacht, indem der selbst implementierte 
   Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
-* Beim ersten Start eines Tests werden keine bisher gespeicherten abgefragt, da keine existieren können und somit Calls
-  ans Backend gespart.
+* Beim ersten Start eines Tests werden keine bisher gespeicherten Antwortdaten abgefragt, da keine existieren können
+  und somit Calls ans Backend gespart.
 
 ### Neue Features
 * In der Übersicht der Arbeitsbereiche für den Super-Admin wird nun das letzte Änderungsdatum angezeigt, um
   die Verwaltung zu erleichtern.
 * Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
   im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
+* [Experimentell] Testdurchführung optional im Vollbild, steuerbar mit den Booklet-Parametern `ask_for_fullscreen` 
+  und `show_fullscreen_button`. 
 
 ### Sicherheit
-* Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript
+* Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript.
+* Es wird eine Warnung bei nicht unterstützten Browsern auf der Startseite angezeigt.
 
 ### Verbesserungen
 * Das Verhalten im Fehlerfall wurde komplett überarbeitet, um sinnvollere Nachrichten und Optionen anzubieten.

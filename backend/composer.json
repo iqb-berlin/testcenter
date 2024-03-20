@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "require": {
-    "php": "8.2.12",
+    "php": "8.3.2",
     "php-di/php-di": "^6.4",
     "slim/http": "^1.2",
     "slim/psr7": "^1.5",
@@ -35,6 +35,7 @@
     "amphp/parallel": "2.2.2",
     "mikey179/vfsstream": "1.6.11",
     "phpunit/phpunit":  "10.4.2",
-    "mockery/mockery": "1.6.6"
+    "mockery/mockery": "1.6.6",
+    "ext-pcntl" : "*"
   }
 }

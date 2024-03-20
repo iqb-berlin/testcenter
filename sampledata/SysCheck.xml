@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SysCheck xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.0.0-rc9/definitions/vo_SysCheck.xsd">
+<SysCheck xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.0.1/definitions/vo_SysCheck.xsd">
   <Metadata>
     <Id>SYSCHECK.SAMPLE</Id>
-    <Label>An example SysCheck definition</Label>
-    <Description>An example SysCheck definition with long description</Description>
+    <Label>System-Check Beispiel</Label>
+    <Description>Beschreibungstext für den Systemcheck</Description>
   </Metadata>
 
-  <Config unit="UNIT.SAMPLE-2" savekey="saveme" skipnetwork="false">
-    <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">100000, 200000, 400000, 800000</UploadSpeed>
-    <DownloadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="200000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">400000, 800000, 1600000, 3200000</DownloadSpeed>
-    <Q id="1" type="header" prompt="A questionaire" required="true"/>
-    <Q id="2" type="string" prompt="Name"/>
-    <Q id="3" type="select" prompt="Who am I?">Harvy Dent#Two-Face</Q>
-    <Q id="4" type="text" prompt="Why so serious?" />
-    <Q id="5" type="check" prompt="Check this out" />
-    <Q id="6" type="radio" prompt="All we here is">Radio Gaga#Radio Gugu</Q>
+  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="false">
+    <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">
+      100000, 200000, 400000, 800000
+    </UploadSpeed>
+    <DownloadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="200000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">
+      400000, 800000, 1600000, 3200000
+    </DownloadSpeed>
+
+    <Q id="1" type="header" prompt="Beispielüberschrift"/>
+    <Q id="2" type="string" prompt="Eingabefeld" required="true"/>
+    <Q id="3" type="select" prompt="Auswahl">Option A#Option B</Q>
+    <Q id="4" type="text" prompt="Eingabebereich"/>
+    <Q id="5" type="check" prompt="Kontrollkästchen"/>
+    <Q id="6" type="radio" prompt="Optionsfelder">Option A#Option B</Q>
   </Config>
 </SysCheck>

@@ -46,7 +46,7 @@ class WorkspaceCacheTest extends TestCase {
 
     $expected = [
       'Testtakers/testtakers-duplicate-login-name.xml' => [
-        'error' => ['Duplicate login: `duplicate_login`'],
+        'error' => ["Error [1877] in line 2: Element 'Login': Duplicate key-sequence ['duplicate_login'] in unique identity-constraint 'TesttakerLogin'."],
         'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Testtakers/testtakers-missing-booklet.xml' => [

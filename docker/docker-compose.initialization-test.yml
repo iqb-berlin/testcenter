@@ -14,7 +14,7 @@ x-env-mysql: &env-mysql
 services:
 
   testcenter-initialization-test-db:
-    image: iqbberlin/testcenter-db:current
+    image: iqbberlin/testcenter-db
     container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
@@ -29,13 +29,12 @@ services:
       retries: 120
     ports:
       - "9091:3306"
-      - "22:22"
     networks:
       testcenter-initialization-test:
 
   testcenter-initialization-test-backend:
     container_name: testcenter-initialization-test-backend
-    image: iqbberlin/testcenter-backend:current
+    image: iqbberlin/testcenter-backend:dev
     build:
       context: ..
       dockerfile: docker/backend.Dockerfile
