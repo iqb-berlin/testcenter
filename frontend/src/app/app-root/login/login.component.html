@@ -17,14 +17,17 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
-          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" (keyup)="clearWarning()">
+          <input matInput #pw formControlName="pw"
+                 [type]="showPassword ? 'text' : 'password'"
+                 (keyup)="clearWarning(); checkCapsLock($event)">
           <button mat-icon-button matSuffix type="button"
                   [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
                   (click)="showPassword = !showPassword">
             <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
           </button>
         </mat-form-field>
-        <tc-alert [attr.data-cy]="'login-problem:' + problemCode" level="error" *ngIf="problemText" [text]="problemText"></tc-alert>
+        <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
+                  [level]="problemLevel" [text]="problemText"></tc-alert>
       </mat-card-content>
 
       <mat-card-actions [style.justify-content]="'space-between'">

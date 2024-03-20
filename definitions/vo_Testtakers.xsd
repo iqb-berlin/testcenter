@@ -101,6 +101,13 @@
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
+                        <xs:enumeration value="run-simulation">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with all restrictions, but don't save response data.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>

@@ -13,19 +13,6 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:9091/iqb_tba_testcenter</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="local | TEST" uuid="5989e027-0eb1-4de7-a77b-0ff835b4314e">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/TEST_testcenter_monorepo</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="Docker | TEST" uuid="dd60c978-0a23-422e-abc4-dc13b5b6839f">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:9091/TEST_iqb_tba_testcenter</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="Docker | cache-service" uuid="c2ff2f90-a008-43b3-9209-dd20c7b051d2">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>

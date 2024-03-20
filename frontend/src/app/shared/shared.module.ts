@@ -11,6 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
@@ -18,6 +19,7 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
+import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
 
 @NgModule({
   imports: [
@@ -32,7 +34,8 @@ import { BackendService } from './services/backend.service';
     FormsModule,
     MatInputModule,
     HttpClientModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonToggleModule
   ],
   declarations: [
     ConfirmDialogComponent,
@@ -40,7 +43,8 @@ import { BackendService } from './services/backend.service';
     BytesPipe,
     CustomtextPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    PageNavBarComponent
   ],
   exports: [
     ConfirmDialogComponent,
@@ -48,7 +52,8 @@ import { BackendService } from './services/backend.service';
     BytesPipe,
     CustomtextPipe,
     AlertComponent,
-    ErrorComponent
+    ErrorComponent,
+    PageNavBarComponent
   ],
   providers: [
     BackendService

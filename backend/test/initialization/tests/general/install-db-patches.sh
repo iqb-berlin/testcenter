@@ -36,7 +36,7 @@ expect_init_script_failed
 remove_error_lock
 
 
-echo_h1 "Test 4.3: Skip future patch versions"
+echo_h1 "Skip future patch versions"
 
 fake_version 10.0.9999
 fake_patch 1000.0.0 "insert into meta (metaKey, value) VALUES ('i should', 'never be applied');"
