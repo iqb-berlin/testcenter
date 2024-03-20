@@ -11,6 +11,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
@@ -18,9 +19,7 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { customTextDefaults } from './objects/customTextDefaults';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   imports: [
@@ -72,6 +71,7 @@ export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
 export { MainDataService } from './services/maindata/maindata.service';
 export { BugReportService } from './services/bug-report.service';
+export { UserAgentService } from './services/user-agent/user-agent.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
 export { BookletConfig } from './classes/booklet-config.class';
 export { TestMode } from './classes/test-mode.class';
