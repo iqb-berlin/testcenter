@@ -633,9 +633,9 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[15]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
         expect(responses[15]).to.be.match(/\bUNIT.SAMPLE-104\b/);
         // responses unit1-3
-        expect(responses[11]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[12]).to.be.match(/\bradio2"":""true\b/);
-        expect(responses[13]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[12]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[13]).to.be.match(/\bradio2"":""true\b/);
+        expect(responses[14]).to.be.match(/\bradio1"":""true\b/);
       });
   });
 
