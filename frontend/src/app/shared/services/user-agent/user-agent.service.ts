@@ -53,10 +53,17 @@ export class UserAgentService {
   // inspired by resolveUserAgent from browserslist-useragent which is not publicly exported unfortunately
   static resolveUserAgent(UAstring: string = window.navigator.userAgent): ResolvedUserAgent {
     const parsedUA = UAParser(UAstring).browser;
+
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1805967
-    if ((parsedUA.name === 'Firefox') && (UAstring.match(/rv:109/))) {
+    if ((parsedUA.name === 'Firefox') && UAstring.match(/rv:109/)) {
       // eslint-disable-next-line no-param-reassign
       UAstring = UAstring.replace(/rv:109/, `rv:${parsedUA.version}`);
+    }
+
+    // https://news.ycombinator.com/item?id=20030340
+    if ((parsedUA.name === 'Edge') && UAstring.match(/Edg\//)) {
+      // eslint-disable-next-line no-param-reassign
+      UAstring = UAstring.replace(/Edg\//, 'Edge/');
     }
     return resolveUserAgent(UAstring);
   }
