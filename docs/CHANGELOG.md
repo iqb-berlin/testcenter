@@ -13,6 +13,10 @@ layout: default
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
+* Es ist nun möglich, einen anderen Text auf der Impressums-Seite anzuzeigen als auf der Startseite.
+
+:warning: Stellen Sie einen entsprechenden Text über Systemverwaltung->Einstellungen ein, sonst bleibt die
+Impressums-Seite leer!
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
