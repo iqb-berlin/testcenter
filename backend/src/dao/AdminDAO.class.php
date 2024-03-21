@@ -233,7 +233,7 @@ class AdminDAO extends DAO {
           new LoginSession(
             (int) $testSession['login_sessions_id'],
             '',
-            $testSession['group_token'],
+            '',
             new Login(
               $testSession['name'],
               '',
