@@ -13,7 +13,7 @@
   <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
 
   <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')"
-     [style.margin-left]="'auto'">
+     [style.margin-left]="'auto'" data-cy="time-value">
     {{timerValue?.timeLeftString}}
   </p>
 
@@ -105,4 +105,3 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
