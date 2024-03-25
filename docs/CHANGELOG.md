@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.0.1-rc1
 ### Verbesserungen
 * Login: Passwortfeld zeigt Warnung an, wenn die Feststelltaste aktiviert ist. Das verhindert unbemerkte Falscheingaben.
 
@@ -10,6 +10,7 @@ layout: default
 * Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
   dieser beendet und gesperrt. Dies ist behoben. (#447)
 * System-Check: Seitennavigationsleiste repariert
+* Login: Bei fehlgeschlagenem Anmeldeversuch werden nicht mehr Teile des Passworts in der Serverantwort angezeigt
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.

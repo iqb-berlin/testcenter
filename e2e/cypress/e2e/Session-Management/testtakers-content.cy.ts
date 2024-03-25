@@ -48,7 +48,7 @@ describe('Check Testtakers Content', () => {
       .selectFile('cypress/fixtures/Testtaker_DuplicatedLogin.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
-    cy.contains('Duplicate login')
+    cy.contains('Duplicate key-sequence')
       .should('exist');
     cy.contains('Ok')
       .click();

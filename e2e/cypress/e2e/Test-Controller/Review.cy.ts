@@ -178,7 +178,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-title"]')
       .should('exist')
       .contains('Aufgabe1');
-    cy.contains('0:')
+    cy.get('[data-cy="time-value"]')
+      .contains('0:')
       .should('exist');
     cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
       .should('exist');

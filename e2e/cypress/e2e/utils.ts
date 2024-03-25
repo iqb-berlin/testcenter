@@ -276,16 +276,13 @@ export const convertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'log
 
   if (fileType === 'responses') {
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist')
       .then(splitCSVLogin);
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
-      .should('exist')
       .then(splitCSVLogin);
   }
   return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-    .should('exist')
     .then(splitCSVLogin);
 };
 
@@ -329,6 +326,15 @@ export const backwardsTo = (expectedLabel: string): void => {
     .contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
 };
+
+export const readBlockTime = (): Promise <number> => new Promise(resolve => {
+  cy.get('[data-cy="time-value"]')
+    .then(currTime => {
+      const currBlockTimeStr = currTime.text().replace(/0:/, '');
+      const currBlockTimeNumber = +currBlockTimeStr;
+      resolve(currBlockTimeNumber);
+    });
+});
 
 export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
