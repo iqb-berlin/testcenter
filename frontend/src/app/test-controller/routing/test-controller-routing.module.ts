@@ -10,6 +10,10 @@ import { TestControllerErrorPausedActivateGuard } from './test-controller-error-
 
 const routes: Routes = [
   {
+    path: 'status',
+    component: TestStatusComponent
+  },
+  {
     path: ':t',
     component: TestControllerComponent,
     canDeactivate: [TestControllerDeactivateGuard],
