@@ -27,9 +27,9 @@ export class AppConfig {
   appTitle = 'IQB-Testcenter';
   backgroundBody: string = '';
   backgroundBox: string = '';
-  introHtml = 'Einführungstext nicht definiert';
+  introHtml = '';
   trustedIntroHtml: SafeUrl | null = null;
-  legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
+  legalNoticeHtml = '';
   trustedLegalNoticeHtml: SafeUrl | null = null;
   globalWarningText = '';
   globalWarningExpiredDay = '';
@@ -88,9 +88,11 @@ export class AppConfig {
   }
 
   setAppConfig(appConfig: AppSettings): void {
-    this.appTitle = this.cts?.getCustomText('app_title') ?? 'IQB-Testcenter';
-    this.introHtml = this.cts?.getCustomText('app_intro1') ?? 'Einführungstext nicht definiert';
-    this.legalNoticeHtml = this.cts?.getCustomText('app_intro1') ?? 'Impressum/Datenschutz nicht definiert';
+    this.appTitle = 'IQB-Testcenter';
+    this.introHtml = 'Einführungstext nicht definiert';
+    this.legalNoticeHtml = '<p>Anbieter:<br>Max Mustermann<br>Musterstraße 1<br>13088 Berlin<br>' +
+      '<br>Kontakt:<br>Telefon: 030/1234567-8<br>Telefax: 030/1234567-9<br>E-Mail: mail@mustermann.de' +
+      '<br>Website: www.mustermann.de</p>';
     // TODO does this makes sense
     this.mainLogo = DEFAULT_LOGO;
     this.backgroundBody = DEFAULT_BACKGROUND_BODY;

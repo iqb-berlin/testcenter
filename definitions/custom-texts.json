@@ -1,12 +1,4 @@
 {
-  "app_title" : {
-    "label" : "Titel der Hauptanwendung",
-    "defaultvalue" : "IQB-Testcenter"
-  },
-  "app_intro1" : {
-    "label" : "Begrüßungstext auf der Startseite (Text nach IQB-Link)",
-    "defaultvalue" : "betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar."
-  },
   "login_testEndButtonLabel" : {
     "label" : "Schalterbeschriftung für 'Test beenden'",
     "defaultvalue" : "Test beenden"
