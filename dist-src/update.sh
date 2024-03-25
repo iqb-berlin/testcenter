@@ -9,12 +9,12 @@ create_backup() {
 }
 
 apply_patches() {
-  wget -nv -O patch-list.json "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/tree?path=dist-src/patches&ref=upd-test1"
+  wget -nv -O patch-list.json "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/tree?path=dist-src/patches&ref=master"
   grep -oP '"name":".+?"' patch-list.json | cut -d':' -f 2 | tr -d '"' > patch-list.txt
   while read p; do
     echo "$p"
     if dpkg --compare-versions $p gt $VERSION; then
-      wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/dist-src%2Fpatches%2F${p}/raw?ref=upd-test1"
+      wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/dist-src%2Fpatches%2F${p}/raw?ref=master"
       bash ${p}
       rm ${p}
     fi
