@@ -20,11 +20,12 @@ const localStorageAuthDataKey = 'iqb-tc-a';
   providedIn: 'root'
 })
 export class MainDataService {
-  private _appError$ = new ReplaySubject<AppError>(1);
+  private _appError$ = new ReplaySubject<AppError | void>(0);
   get appError$(): Observable<AppError> {
     return this._appError$
       .pipe(
-        distinct(error => (error.stack ?? '') + (error.errorId ?? '')),
+        filter((v: AppError | void): v is AppError => v !== undefined),
+        distinct(error => (error?.stack ?? '') + (error?.errorId ?? '')),
         shareReplay(0)
       );
   }
@@ -155,5 +156,9 @@ export class MainDataService {
       .subscribe(sysStatus => {
         this.sysStatus = sysStatus;
       });
+  }
+
+  clearErrorBuffer(): void {
+    this._appError$.next();
   }
 }

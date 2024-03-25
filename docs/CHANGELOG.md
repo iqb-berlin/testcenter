@@ -9,6 +9,8 @@ layout: default
 ### Bugfixes
 * Wurde man vom Gruppenmonitor in einen Zeitbeschränkten Block verschoben, in dem man sich bereits befand, so wurde
   dieser beendet und gesperrt. Dies ist behoben. (#447)
+* Ist ein Fehler vor dem Starten des Testes aufgetreten, konnte der Test nicht mehr gestartet werden und der Browser hat
+  sich im zum Teil sogar aufgehangen. Behoben! (#459)
 * System-Check: Seitennavigationsleiste repariert
 * Login: Bei fehlgeschlagenem Anmeldeversuch werden nicht mehr Teile des Passworts in der Serverantwort angezeigt
 

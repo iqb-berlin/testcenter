@@ -73,6 +73,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mainDataService.clearErrorBuffer();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
@@ -96,13 +97,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.routing = this.route.params
         .subscribe(async params => {
-          if (!parseInt(params.t, 10)) {
-            // There is a mysterious bug, that soemtimes occures where the URL contains the word "status" instead
-            // of a test-id and keeps it. This might not solve the bug, but avoid failing out. Maybe.
-            // eslint-disable-next-line no-console
-            console.warn(`Wrong Test-id in URL: ${params.t}`);
-            return;
-          }
           this.tcs.testId = params.t;
           try {
             await this.tls.loadTest();
