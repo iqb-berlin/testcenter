@@ -48,10 +48,6 @@ class SessionDAO extends DAO {
       [':token' => $tokenString]
     );
 
-    if (!$_SERVER['HTTP_TESTMODE']) {
-      error_log("[no testmode] [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['REQUEST_URI']}");
-    }
-
     if ($tokenInfo == null) {
       throw new HttpError("Invalid token: `$tokenString`", 403);
     }
