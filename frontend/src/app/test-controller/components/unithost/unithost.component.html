@@ -98,32 +98,18 @@
     </ng-container>
   </ng-container>
 
-  <div *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' &&
-              knownPages && knownPages.length && (knownPages.length > 1)"
-       class="page-navigation">
+  <div
+    *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' && pageList && pageList.length && (pageList.length > 1)"
+    class="page-navigation"
+  >
     <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
-      <span [style.color]="'white'" [style.padding-right.px]="8">
-        {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
-      </span>
-
-      <mat-button-toggle-group>
-        <mat-button-toggle [disabled]="currentPageIndex <= 0"
-                           (click)="gotoPage(knownPages[currentPageIndex - 1].id);">
-          <i class="material-icons">chevron_left</i>
-        </mat-button-toggle>
-        <mat-button-toggle *ngFor="let page of knownPages; let index = index"
-                           [matTooltip]="page.label"
-                           [checked]="currentPageIndex === index"
-                           [attr.data-cy]="'page-navigation-' + index"
-                           (click)="gotoPage(page.id)">
-          {{ index + 1 }}
-        </mat-button-toggle>
-        <mat-button-toggle [disabled]="currentPageIndex >= knownPages.length - 1"
-                           (click)="gotoPage(knownPages[currentPageIndex + 1].id);">
-          <i class="material-icons">chevron_right</i>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
+      <tc-page-nav
+        [pages]="pageList"
+        [currentPageIndex]="currentPageIndex"
+        (navToPage)="gotoPage($event)"
+        (navPrevious)="gotoPreviousPage()"
+        (navNext)="gotoNextPage()">
+      </tc-page-nav>
     </div>
   </div>
-
 </div>

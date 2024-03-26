@@ -20,6 +20,7 @@
     "last 2 Chrome versions",
     "last 2 Firefox versions",
     "last 2 Safari versions",
+    "last 2 Edge versions",
     "last 2 iOS versions",
     "firefox esr"
   ],
@@ -42,6 +43,7 @@
     "material-design-icons": "~3.0.1",
     "qr-scanner": "1.4.1",
     "rxjs": "^7.5.6",
+    "semver": "^7.6.0",
     "tslib": "^2.4.0",
     "ua-parser-js": "^1.0.35",
     "web-animations-js": "^2.3.2",

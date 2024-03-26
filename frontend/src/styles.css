@@ -109,25 +109,6 @@ div.logo img {
   z-index: 1000;
 }
 
-/* page navigation */
-/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
-mat-button-toggle-group {
-  flex-wrap: nowrap !important
-}
-
-/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
-.mat-button-toggle-appearance-standard .mat-button-toggle-label-content,
-.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
-  line-height: 36px !important;
-}
-
-/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
-.mat-button-toggle-checked .mat-button-toggle-button,
-.mat-button-toggle-checked .mat-button-toggle-button {
-  background-color: var(--accent);
-}
-
-
 .flex-row {
   display: flex;
   flex-direction: row;

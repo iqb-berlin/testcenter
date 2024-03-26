@@ -47,8 +47,6 @@ replacements:
 
 | Key       | Used for     | Default     |
 | :------------- | :---------- | :----------- |
-|app_intro1|Begrüßungstext auf der Startseite (Text nach IQB-Link)|betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.|
-|app_title|Titel der Hauptanwendung|IQB-Testcenter|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
 |booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|
@@ -137,7 +135,7 @@ Funktioniert auch nicht? Dann...
 |login_pagesNaviPrompt|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
 |login_testEndButtonLabel|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |login_testResumeButtonLabel|Schalterbeschriftung für 'Test fortsetzen'|Test fortsetzen|
-|login_unsupportedBrowser|Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.|Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>|
+|login_unsupportedBrowser|Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.|Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a>, <a href='https://www.microsoft.com/en-us/edge/download' target='_blank'>Microsoft Edge</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>|
 |syscheck_intro|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|
 |syscheck_questionsRequiredMessage|Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden|Bitte prüfen Sie die Eingaben (unvollständig):|
 |syscheck_questionsintro|Aufforderung, die Fragen (Questionnaire) zu beantworten|Bitte bearbeiten Sie die nachfolgenden Fragen.|

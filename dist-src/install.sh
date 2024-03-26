@@ -4,7 +4,7 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-VERSION=15.0.1
+VERSION=15.1.0-rc2
 REQUIRED_PACKAGES=("docker -v" "docker compose version")
 # dpkg to compare versions in the updater
 OPTIONAL_PACKAGES=("make -v" "dpkg --version")
@@ -49,6 +49,7 @@ download_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.yml
+  wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/frontend/config/nginx.conf
   wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/update.sh

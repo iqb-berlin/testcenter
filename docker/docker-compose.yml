@@ -34,6 +34,11 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
       - dbdata:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+      interval: 5m
+      start_period: 30s
+      start_interval: 10s
     networks:
       testcenter:
 
@@ -56,15 +61,22 @@ services:
     logging:
       options:
         <<: *env-logging-conf
+    depends_on:
+      testcenter-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      interval: 5m
+      start_period: 30s
+      start_interval: 10s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend"
-    volumes:
-      - testcenter_backend_vo_data:/var/www/data
     networks:
       testcenter:
 
@@ -79,6 +91,7 @@ services:
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
       - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
@@ -106,7 +119,10 @@ services:
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
       - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend"
+      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, stripwww-fe"
     networks:
       testcenter:
 
@@ -122,6 +138,7 @@ services:
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
       - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
     networks:
       testcenter:

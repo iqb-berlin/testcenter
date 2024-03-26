@@ -11,7 +11,7 @@
       <fieldset>
         <legend>Startseite: Fieldset1</legend>
         <div style="flex: 50%; padding: 2px">
-          <p><b>Testung Controller: Startseite</b></p>
+          <p data-cy= "TestController-TextStartseite"><b>Testung Controller: Startseite</b></p>
         </div>
       </fieldset>
    ]]>

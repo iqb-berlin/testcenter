@@ -9,6 +9,10 @@ import { TestControllerDeactivateGuard } from './test-controller-deactivate.guar
 import { TestControllerErrorPausedActivateGuard } from './test-controller-error-paused-activate.guard';
 
 const routes: Routes = [
+  { // under some circumstances we get to the status page without having a test-Id
+    path: 'status',
+    component: TestStatusComponent
+  },
   {
     path: ':t',
     component: TestControllerComponent,

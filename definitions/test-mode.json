@@ -90,17 +90,32 @@
     }
   },
   "RUN-TRIAL": {
-    "label": "Prüfdurchgang mit Speichern",
+    "label": "Prüfdurchgang mit Speichern und Reviewfunktionalität",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": true,
+      "canReview": true,
+      "saveResponses": true,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false
+    }
+  },
+  "RUN-SIMULATION": {
+    "label": "Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen",
     "config": {
       "alwaysNewSession": false,
       "monitorable": false,
       "canReview": false,
-      "saveResponses": true,
+      "saveResponses": false,
       "forceTimeRestrictions": true,
       "forceNaviRestrictions": true,
-      "presetCode": true,
+      "presetCode": false,
       "showTimeLeft": false,
-      "showUnitMenu": false,
+      "showUnitMenu": true,
       "receiveRemoteCommands": false
     }
   }

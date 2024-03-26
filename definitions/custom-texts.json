@@ -1,12 +1,4 @@
 {
-  "app_title" : {
-    "label" : "Titel der Hauptanwendung",
-    "defaultvalue" : "IQB-Testcenter"
-  },
-  "app_intro1" : {
-    "label" : "Begrüßungstext auf der Startseite (Text nach IQB-Link)",
-    "defaultvalue" : "betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar."
-  },
   "login_testEndButtonLabel" : {
     "label" : "Schalterbeschriftung für 'Test beenden'",
     "defaultvalue" : "Test beenden"
@@ -61,7 +53,7 @@
   },
   "login_unsupportedBrowser" : {
     "label": "Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
-    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
+    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a>, <a href='https://www.microsoft.com/en-us/edge/download' target='_blank'>Microsoft Edge</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>"
   },
   "booklet_msgNavigationDeniedTitle" : {
     "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",

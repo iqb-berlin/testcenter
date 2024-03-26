@@ -2,12 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { matchesUA } from 'browserslist-useragent';
-import UAParser from 'ua-parser-js';
-import { MainDataService } from '../../shared/shared.module';
+import { MainDataService, UserAgentService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
-import browsersJson from '../../../../../definitions/browsers.json';
 
 @Component({
   templateUrl: './login.component.html',
@@ -24,9 +21,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;
   returnTo = '';
   problemText = '';
+  problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
-  unsupportedBrowser: string[] = [];
+  unsupportedBrowser: [string, string] | [] = [];
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -91,29 +89,31 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
+        this.problemLevel = 'error';
         this.loginForm.reset();
       }
     });
   }
 
+  checkCapsLock(event: KeyboardEvent): void {
+    if (event.getModifierState('CapsLock')) {
+      this.problemText = 'Feststelltaste ist aktiviert!';
+      this.problemLevel = 'warning';
+    }
+  }
+
   clearWarning(): void {
     this.problemText = '';
+    this.problemLevel = 'error';
     this.problemCode = 0;
   }
 
   private checkBrowser() {
-    const browser = new UAParser().getBrowser();
-
-    let userAgent: string = window.navigator.userAgent;
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1805967
-    if ((browser.name === 'Firefox') && (userAgent.match(/rv:109/))) {
-      userAgent = userAgent.replace(/rv:109/, `rv:${browser.version}`);
+    this.unsupportedBrowser = [];
+    const ua = UserAgentService.resolveUserAgent();
+    if (!UserAgentService.userAgentMatches(ua)) {
+      this.unsupportedBrowser = [ua.family, ua.version];
     }
-
-    this.unsupportedBrowser =
-      matchesUA(userAgent, { path: 'dont let me empty', browsers: browsersJson.browsers, allowHigherVersions: true }) ?
-        [] :
-        [browser.name ?? '--', browser.version ?? '--'];
   }
 
   ngOnDestroy(): void {

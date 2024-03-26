@@ -14,6 +14,12 @@ services:
     build:
       context: ..
       dockerfile: docker/database.Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-db
+      tags:
+        - iqbberlin/testcenter-db
     ports:
       - "9091:3306"
     command:
@@ -21,10 +27,6 @@ services:
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
-    healthcheck: # solved timing problems on the CI even though the backend uses ConnectWithRetries
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
-      interval: 5s
-      retries: 120
     networks:
       - testcenter
 
@@ -33,6 +35,12 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-backend:dev
+      tags:
+        - iqbberlin/testcenter-backend:dev
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
@@ -54,9 +62,6 @@ services:
 #      TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:
       - 9005:9003
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -67,11 +72,17 @@ services:
       context: ..
       dockerfile: docker/frontend.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-frontend:dev
+      tags:
+        - iqbberlin/testcenter-frontend:dev
     volumes:
       - ../common:/common
       - ../definitions:/definitions
       - ../frontend/src:/app/src
-#      - ./docs/dist:/docs/dist TODO don't we need this for karma test coverage?
+      - ../docs/dist:/docs/dist
     networks:
       - testcenter
 
@@ -80,9 +91,16 @@ services:
       context: ..
       dockerfile: docker/broadcasting-service.Dockerfile
       target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-broadcasting-service:dev
+      tags:
+        - iqbberlin/testcenter-broadcasting-service:dev
     volumes:
       - ../common:/common
       - ../broadcasting-service/src:/app/src
+      - ../docs/dist:/docs/dist
     networks:
       - testcenter
 
@@ -92,6 +110,11 @@ services:
       dockerfile: docker/file-service.Dockerfile
       args:
         ENABLED_MODULES: lua
+        BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - iqbberlin/testcenter-file-service
+      tags:
+        - iqbberlin/testcenter-file-service
     volumes:
       - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM

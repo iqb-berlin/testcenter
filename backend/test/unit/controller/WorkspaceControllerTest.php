@@ -59,8 +59,6 @@ final class WorkspaceControllerTest extends TestCase {
 
     $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
     $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
-
-    define('ROOT_DIR', ROOT_DIR);
   }
 
   function tearDown(): void {
