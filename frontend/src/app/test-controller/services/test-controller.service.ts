@@ -582,8 +582,7 @@ export class TestControllerService {
         (
           // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
           (unit.parent.locked.by !== 'code') ||
-          (unit.localIndex !== 0) ||
-          (unit.parent.id !== unit.parent.locked.through.id)
+          ((unit.localIndex !== 0) || (unit.parent.id === unit.parent.locked.through.id))
         )
     );
   }
