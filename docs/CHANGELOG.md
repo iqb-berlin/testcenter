@@ -26,6 +26,7 @@ layout: default
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
 * referrer-policy Hinzugefügt
+* Backend-Container läuft nicht mehr als root 
 
 ### Administration
 * Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
