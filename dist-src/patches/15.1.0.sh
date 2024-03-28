@@ -1,3 +1,4 @@
+#!/bin/bash
 source .env
 REPO_URL=iqb-berlin/testcenter
 
@@ -15,5 +16,7 @@ wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL
 # Change Makefile for non-tls setup
 wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/Makefile
 
-sed s/MYSQL_SALT=/PASSWORD_SALT=/g
-echo "CACHE_SERVICE_RAM=1073741824" >> .env
+# TLS is optional again
+if [ -z "$TLS_ENABLED" ]; then
+  echo -e "TLS_ENABLED=yes" >> .env
+fi
