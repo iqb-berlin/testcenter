@@ -2,7 +2,9 @@
 layout: default
 ---
 
-## 15.1.0-rc6
+## 15.1.0-rc7
+:warning: Für ein **Update** ist zwingend [die aktuelle update.sh](https://github.com/iqb-berlin/testcenter/releases/download/15.1.0/update.sh) zu nutzen.
+
 ### Verbesserungen
 * Login: Passwortfeld zeigt Warnung an, wenn die Feststelltaste aktiviert ist. Das verhindert unbemerkte Falscheingaben.
 
@@ -30,8 +32,7 @@ layout: default
 
 ### Administration
 * Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
-  Hauptdomain weitergeleitet und das www ignoriert.
-
+  Hauptdomain weitergeleitet und das www ignoriert. 
 
 ## 15.0.1
 ### Bugfixes
