@@ -14,6 +14,7 @@ apply_patches() {
   while read p; do
     echo "$p"
     if dpkg --compare-versions $p gt $VERSION; then
+      # TODO ignore patches which are too new
       wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/dist-src%2Fpatches%2F${p}/raw?ref=master"
       bash ${p}
       rm ${p}

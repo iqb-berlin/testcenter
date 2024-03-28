@@ -1,3 +1,8 @@
+source .env
+REPO_URL=iqb-berlin/testcenter
+
+echo "Applying patch: 15.1.0"
+
 # Change base compose file for 'www-fix'
 wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/docker/docker-compose.yml
 

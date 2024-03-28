@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source .env
 REPO_URL=iqb-berlin/testcenter
 
 echo "Applying patch: 14.11"
