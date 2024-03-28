@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.1.0-rc9
+## 15.1.0
 :warning: Für ein **Update** ist zwingend [die aktuelle update.sh](https://github.com/iqb-berlin/testcenter/releases/download/15.1.0/update.sh) zu nutzen.
 
 ### Verbesserungen
