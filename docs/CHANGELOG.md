@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.1.0-rc5
+## 15.1.0-rc6
 ### Verbesserungen
 * Login: Passwortfeld zeigt Warnung an, wenn die Feststelltaste aktiviert ist. Das verhindert unbemerkte Falscheingaben.
 
