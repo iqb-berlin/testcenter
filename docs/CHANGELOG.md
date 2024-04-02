@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## [next]
+### Bugfixes
+* Das Testcenter lässt sich wieder auf anderen als den Standardports laufen.
+
 ## 15.1.0
 :warning: Für ein **Update** ist zwingend [die aktuelle update.sh](https://github.com/iqb-berlin/testcenter/releases/download/15.1.0/update.sh) zu nutzen.
 
