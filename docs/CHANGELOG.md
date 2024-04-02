@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## 15.1.2
+### Bugfixes
+* `run-simluation` - das unit-menu kann wie im hot-modus ausgeblendet werden.
+
 ## 15.1.1
 ### Bugfixes
 * Das Testcenter lässt sich wieder auf anderen als den Standardports laufen.
