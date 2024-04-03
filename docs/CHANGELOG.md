@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.1.2
+## 15.1.3
 ### Bugfixes
 * kritischer Bug gefixed: Es können wieder Dataien hochgeladen und Workspaces angelegt werden.
 
