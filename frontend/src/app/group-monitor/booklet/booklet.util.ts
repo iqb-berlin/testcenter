@@ -4,22 +4,21 @@ import {
 import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 export class BookletUtil {
-  static getFirstUnit(testletOrUnit: Testlet | UnitDef): UnitDef | null {
-    while (!isUnit(testletOrUnit)) {
-      if (!testletOrUnit.children.length) {
-        return null;
-      }
-      // eslint-disable-next-line no-param-reassign,prefer-destructuring
-      testletOrUnit = testletOrUnit.children[0];
-    }
-    return testletOrUnit;
+  static getFirstUnit(testletOrUnit: Testlet | UnitDef, ignoreTestlets: string[] = []): UnitDef | null {
+    if (isUnit(testletOrUnit)) return testletOrUnit;
+    if (ignoreTestlets.includes(testletOrUnit.id)) return null;
+    return testletOrUnit.children
+      .reduce((firstUnit: UnitDef | null, child: Testlet | UnitDef) => {
+        if (firstUnit) return firstUnit;
+        return (isUnit(child) ? child : BookletUtil.getFirstUnit(child, ignoreTestlets));
+      }, null);
   }
 
-  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): UnitDef | null {
+  static getFirstUnitOfBlock(blockId: string, booklet: Booklet, ignoreTestlets: string[] = []): UnitDef | null {
     for (let i = 0; i < booklet.units.children.length; i++) {
-      const child = booklet.units.children[i] as Testlet;
+      const child = booklet.units.children[i];
       if (!isUnit(child) && (child.blockId === blockId)) {
-        return BookletUtil.getFirstUnit(child);
+        return BookletUtil.getFirstUnit(child, ignoreTestlets);
       }
     }
     return null;

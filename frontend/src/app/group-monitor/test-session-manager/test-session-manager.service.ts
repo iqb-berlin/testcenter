@@ -300,10 +300,11 @@ export class TestSessionManager {
   }
 
   testCommandGoto(selection: Selected): Observable<true> {
-    const gfd = TestSessionManager.groupForGoto(this.checked, selection);
+    const gfg = TestSessionManager.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
     return zip(
-      ...Object.keys(gfd).map(key => this.bs.command('goto', ['id', gfd[key].firstUnitId], gfd[key].testIds))
+      Object.keys(gfg)
+        .map(unitAlias => this.bs.command('goto', ['id', unitAlias], gfg[unitAlias]))
     ).pipe(
       tap(() => {
         this._commandResponses$.next({
@@ -316,28 +317,20 @@ export class TestSessionManager {
   }
 
   private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
-    const groupedByBooklet: GotoCommandData = {};
+    const groupedByTargetUnitAlias: GotoCommandData = {};
     sessionsSet.forEach(session => {
-      if (
-        session.data.bookletName &&
-        !Object.keys(groupedByBooklet).includes(session.data.bookletName) &&
-        isBooklet(session.booklet)
-      ) {
-        const firstUnit = selection.element?.blockId ?
-          BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet) :
-          null;
-        if (firstUnit) {
-          groupedByBooklet[session.data.bookletName] = {
-            testIds: [],
-            firstUnitId: firstUnit.alias
-          };
-        }
-      }
-      if (session.data.bookletName && Object.keys(groupedByBooklet).includes(session.data.bookletName)) {
-        groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
+      if (!session.data.bookletName || !isBooklet(session.booklet)) return;
+      const firstUnit = selection.element?.blockId ?
+        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, session.lockedByCondition || []) :
+        null;
+      if (!firstUnit) return;
+      if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {
+        groupedByTargetUnitAlias[firstUnit.alias] = [session.data.testId];
+      } else {
+        groupedByTargetUnitAlias[firstUnit.alias].push(session.data.testId);
       }
     });
-    return groupedByBooklet;
+    return groupedByTargetUnitAlias;
   }
 
   testCommandUnlock(): void {

@@ -14,6 +14,7 @@ export interface TestSession {
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: string[] | null;
   readonly timeLeft: Record<string, number> | null;
+  readonly lockedByCondition: string[] | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -83,10 +84,7 @@ export interface CommandResponse {
 }
 
 export interface GotoCommandData {
-  [bookletName: string]: {
-    testIds: number[],
-    firstUnitId: string
-  }
+  [firstUnitId: string]: number[];
 }
 
 export type Unit = UnitDef;

@@ -663,6 +663,21 @@ export class TestControllerService {
         this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
     this.updateLocks();
+    this.storeConditions();
+  }
+
+  private storeConditions(): void {
+    if (!this.testMode.saveResponses) return;
+    const lockedByCondition = Object.values(this.testlets)
+      .filter(testlet => testlet.restrictions.if.length && testlet.locks.condition)
+      .map(testlet => testlet.id);
+    this.bs.updateTestState(this.testId, [
+      {
+        key: TestStateKey.TESTLETS_LOCKED_BY_CONDITION,
+        timeStamp: Date.now(),
+        content: JSON.stringify(lockedByCondition)
+      }
+    ]);
   }
 
   private isConditionSatisfied(condition: BlockCondition): boolean {

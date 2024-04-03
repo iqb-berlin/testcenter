@@ -27,13 +27,15 @@ import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
 import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
+import { DescendantsPipe } from './test-session/descendants.pipe';
 
 @NgModule({
   declarations: [
     GroupMonitorComponent,
     TestSessionComponent,
     IsCodeClearPipe,
-    TimeLeftPipe
+    TimeLeftPipe,
+    DescendantsPipe
   ],
   imports: [
     CommonModule,

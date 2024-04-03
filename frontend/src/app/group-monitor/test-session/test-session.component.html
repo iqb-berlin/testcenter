@@ -108,8 +108,6 @@
 
   <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testlet }"></ng-container>
 
-
-
     <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
       <span
         *ngIf="!isTestlet(testletOrUnit)"
@@ -124,11 +122,9 @@
       </span>
 
       <ng-container
-        *ngIf="isTestlet(testletOrUnit)"
+        *ngIf="isTestlet(testletOrUnit) && !testSession.lockedByCondition?.includes(testletOrUnit.id)"
       >
         <span
-          *ngIf="!testletOrUnit.restrictions.if.length || (testSession.current && (testSession.current.parent.id === testletOrUnit.id));
-            else: conditionedTestlet"
           [class]="{
             testlet: true,
             selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
@@ -141,24 +137,13 @@
           <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
         </span>
       </ng-container>
-      <ng-template #conditionedTestlet>
-        <span class="testlet">
-          <span class="unit aggregated">?</span>
-        </span>
-      </ng-template>
-
   </ng-container>
-
-
 </ng-template>
-
-
 
 <ng-template #bookletMedium let-testlet [appTemplateContext]="testletContext">
   <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {$implicit: testlet}">
   </ng-container>
 </ng-template>
-
 
 <ng-template #testletTemplateMedium let-testlet [appTemplateContext]="testletContext">
 
@@ -200,26 +185,21 @@
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
         >
-          {{testSession.current.indexAncestor + 1}} / {{testSession.current.ancestor.descendantCount}}
+          {{testSession.current.indexAncestor + 1}} / {{testSession | descendants : testletOrUnit}}
         </span>
       </ng-container>
 
       <ng-template #unFeaturedTestlet>
-        <ng-container *ngIf="!testletOrUnit.restrictions.if.length; else: conditionedTestlet">
-          <span
-            [class]="{
-              unit: true,
-              aggregated: true,
-              selected: isSelected(testletOrUnit) && checked,
-              marked: isMarked(testletOrUnit)
-            }"
-            (mouseenter)="mark(testletOrUnit)"
-            (click)="select($event, testletOrUnit)"
-          >{{testletOrUnit.descendantCount}}</span>
-        </ng-container>
-        <ng-template #conditionedTestlet>
-          <span class="unit aggregated">?</span>
-        </ng-template>
+        <span
+          [class]="{
+            unit: true,
+            aggregated: true,
+            selected: isSelected(testletOrUnit) && checked,
+            marked: isMarked(testletOrUnit)
+          }"
+          (mouseenter)="mark(testletOrUnit)"
+          (click)="select($event, testletOrUnit)"
+        >{{testSession | descendants : testletOrUnit}}</span>
       </ng-template>
     </span>
   </ng-container>
@@ -237,13 +217,13 @@
       matTooltip="{{testSession.current.unit?.label}}"
       matTooltipPosition="above"
     >
-      {{testSession.current.indexGlobal + 1}} / {{testSession.booklet.units.descendantCount}}
+      {{testSession.current.indexGlobal + 1}} / {{testSession | descendants : testlet}}
     </span>
   </span>
 
   <ng-template #unFeaturedTestlet>
     <span class="testlet" >
-      <span class="unit aggregated">{{testlet.descendantCount}}</span>
+      <span class="unit aggregated">{{testSession | descendants : testlet}}</span>
     </span>
   </ng-template>
 </ng-template>
