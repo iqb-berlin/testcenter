@@ -285,7 +285,7 @@ Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.e
 
 ### :warning: Hinweis für Administratoren
 
-Die folgende Hinweise sind nur relevant, falls nicht das Standardsetup samt Update-Mechanismus verwendet wird.
+Die folgenden Hinweise sind nur relevant, falls nicht das Standardsetup samt Update-Mechanismus verwendet wird.
 
 * Die Konfigurationsdatei für die Datenbank muss zur Verfügung stehen.
 Beispielkommando mit wget:
