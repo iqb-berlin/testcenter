@@ -37,8 +37,6 @@ services:
 
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:${VERSION}
-    volumes:
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
       - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsSeconds=31536000"

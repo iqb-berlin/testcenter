@@ -17,7 +17,7 @@ services:
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:${VERSION}
     volumes:
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./config/nginx.conf:/etc/nginx/templates/default.conf.template
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:${VERSION}

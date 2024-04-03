@@ -64,8 +64,6 @@ RUN mkdir /var/www/backend/config
 
 RUN chown -R www-data:www-data /var/www
 
-USER www-data
-
 EXPOSE 80
 
 #===============================
@@ -93,5 +91,3 @@ COPY backend/test test
 # some initialization tests need this
 # jq - JSON parser for bash
 RUN apt-get update && apt-get install -y jq
-
-USER www-data

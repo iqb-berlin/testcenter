@@ -89,7 +89,7 @@ class SystemConfig {
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['fileService']['external'] = self::stringEnv('HOSTNAME') . '/fs/';
+      $config['fileService']['external'] = self::stringEnv('HOSTNAME') . ":$port/fs/";
       $config['fileService']['internal'] = 'testcenter-file-service';
       $config['cacheService']['host'] = 'testcenter-cache-service';
     }
