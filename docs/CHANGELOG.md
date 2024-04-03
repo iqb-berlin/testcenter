@@ -4,6 +4,10 @@ layout: default
 
 ## 15.1.2
 ### Bugfixes
+* kritischer Bug gefixed: Es können wieder Dataien hochgeladen und Workspaces angelegt werden.
+
+## 15.1.2
+### Bugfixes
 * `run-simluation` - das unit-menu kann wie im hot-modus ausgeblendet werden.
 
 ## 15.1.1
