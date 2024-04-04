@@ -2,6 +2,12 @@
 layout: default
 ---
 
+## [next]
+### Bugfixes
+* Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
+  Passwort in der Login-Maske klickte, und es waren bereits im Browser Zugangsdaten gespeichert,
+  kam eine Fehlermeldung (#479, #481).
+
 ## 15.1.3
 ### Bugfixes
 * kritischer Bug gefixed: Es können wieder Dataien hochgeladen und Workspaces angelegt werden.

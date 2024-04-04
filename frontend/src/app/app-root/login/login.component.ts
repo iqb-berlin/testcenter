@@ -96,6 +96,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   checkCapsLock(event: KeyboardEvent): void {
+    // some newer edge versions does fire a keyup event when clicking into the textfield, which does not
+    // have getModifierState TODO find the route cause of this instead of workaround
+    if (typeof event.getModifierState !== 'function') return;
     if (event.getModifierState('CapsLock')) {
       this.problemText = 'Feststelltaste ist aktiviert!';
       this.problemLevel = 'warning';
