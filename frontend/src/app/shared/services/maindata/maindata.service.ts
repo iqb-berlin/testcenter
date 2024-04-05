@@ -114,6 +114,9 @@ export class MainDataService {
 
   setAuthData(authData: AuthData): void {
     this._authData$.next(authData);
+    if (this.appConfig?.customTexts) {
+      this.cts.addCustomTexts(this.appConfig.customTexts);
+    }
     if (authData.customTexts) {
       this.cts.addCustomTexts(authData.customTexts);
     }
