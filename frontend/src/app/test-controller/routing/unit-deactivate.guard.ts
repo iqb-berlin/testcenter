@@ -145,7 +145,7 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
+    const currentUnit = this.tcs.getUnitWithContextSilent(this.tcs.currentUnitSequenceId);
     if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
@@ -154,7 +154,7 @@ export class UnitDeactivateGuard {
     const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
     if (match) {
       const targetUnitSequenceId = Number(match[2]);
-      newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
+      newUnit = this.tcs.getUnitWithContextSilent(targetUnitSequenceId);
     }
 
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;

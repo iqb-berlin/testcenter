@@ -439,14 +439,21 @@ export class TestControllerService {
     return unit;
   }
 
+  // the duplication of getUnitWithContext is a temporary fix and is already solved better in testcenter 15.2
+  getUnitWithContextSilent(unitSequenceId: number): UnitWithContext | null {
+    if (!this.rootTestlet) { // when loading process was aborted
+      throw new MissingBookletError();
+    }
+    return this.rootTestlet.getUnitAt(unitSequenceId);
+  }
+
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId + step;
-    let nextUnit: UnitWithContext = this.getUnitWithContext(nextUnitSequenceId);
-
+    let nextUnit: UnitWithContext | null = this.getUnitWithContextSilent(nextUnitSequenceId);
     while (nextUnit !== null && this.getUnitIsLocked(nextUnit)) {
       nextUnitSequenceId += step;
-      nextUnit = this.getUnitWithContext(nextUnitSequenceId);
+      nextUnit = this.getUnitWithContextSilent(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
   }
@@ -548,12 +555,15 @@ export class TestControllerService {
           break;
         case UnitNavigationTarget.NEXT:
           // eslint-disable-next-line no-case-declarations
-          const nextUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
+          const nextUnlockedUnitSequenceId =
+            this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId) ?? this.allUnitIds.length;
+          if (!nextUnlockedUnitSequenceId) break;
           this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
           break;
         case UnitNavigationTarget.PREVIOUS:
           // eslint-disable-next-line no-case-declarations
-          const previousUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true);
+          const previousUnlockedUnitSequenceId =
+            this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true) ?? 1;
           this.router.navigate([`/t/${this.testId}/u/${previousUnlockedUnitSequenceId}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
@@ -571,8 +581,12 @@ export class TestControllerService {
           break;
 
         default:
+          // eslint-disable-next-line no-case-declarations
+          let navNr = parseInt(navString, 10);
+          navNr = (navNr <= 1) ? 1 : navNr;
+          navNr = (navNr > this.allUnitIds.length) ? this.allUnitIds.length : navNr;
           this.router.navigate(
-            [`/t/${this.testId}/u/${navString}`],
+            [`/t/${this.testId}/u/${navNr}`],
             {
               state: { force },
               // eslint-disable-next-line no-bitwise
