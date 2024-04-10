@@ -1,0 +1,51 @@
+{
+  "frontend": {
+    "nginx": {
+      "stage": "prod",
+      "command": "nginx -v"
+    },
+    "angular": {
+      "command": "npx ng version"
+    }
+  },
+  "backend": {
+    "php": {
+      "command": "php -v"
+    },
+    "apache": {
+      "command": "apachectl -v"
+    },
+    "slim": {
+      "stage": "backend-composer",
+      "command": "???"
+    }
+  },
+  "broadcasting-service": {
+    "node": {
+      "command": "node -v"
+    },
+    "nestjs": {
+      "command": "npm view @nestjs/core version"
+    }
+  },
+  "file-service": {
+    "nginx": {
+      "command": "nginx -v"
+    }
+  },
+  "cache-service": {
+    "redis": {
+      "command": "redis-server -v"
+    }
+  },
+  "database": {
+    "mysql": {
+      "command": "mysql --version"
+    }
+  },
+  "traefik": {
+    "traefik": {
+      "command": "traefik version"
+    }
+  }
+}

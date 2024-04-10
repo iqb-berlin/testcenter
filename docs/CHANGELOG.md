@@ -2,6 +2,18 @@
 layout: default
 ---
 
+## 15.1.4
+### Bugfixes
+* Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
+  Passwort in der Login-Maske klickte, und es waren bereits im Browser Zugangsdaten gespeichert,
+  kam eine Fehlermeldung (#479, #481).
+* Bestimmte Bookletstrukturen führten zu Navigationsproblemen: Wurde die Intro- oder Outro-Units weggelassen (d. h. 
+  Units am Anfang bzw. Ende des Booklets die nicht Teil eines Testlets sind), und zeitgesteuerte Blöcke verwendet,
+  konnte nach Sperrung der Blöcke zu keiner einzigen Unit mehr navigiert werden, was zu einem verwirrenden Zustand und 
+  Fehlermeldungen führte, wenn man den test neu öffnete. Dies ist nun behoben.
+* Globale (d.h. in der Systemverwaltung gesetzte CustomTexts) werden jetzt (wieder) direkt übernommen, ohne, dass die
+  Seite neugeladen werden muss (#482)
+
 ## 15.1.3
 ### Bugfixes
 * kritischer Bug gefixed: Es können wieder Dataien hochgeladen und Workspaces angelegt werden.

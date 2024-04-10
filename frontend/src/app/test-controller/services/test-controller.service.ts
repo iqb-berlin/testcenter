@@ -389,17 +389,25 @@ export class TestControllerService {
     return unit;
   }
 
+  // TODO the duplication of getUnitWithContext is a temporary fix, get rid of it
+  getUnitSilent(unitSequenceId: number): Unit | null {
+    if (!this._booklet) { // when loading process was aborted
+      throw new MissingBookletError();
+    }
+    return this.units[unitSequenceId] || null;
+  }
+
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId;
-    let nextUnit: Unit;
+    let nextUnit: Unit | null;
     do {
       nextUnitSequenceId += step;
       if ((nextUnitSequenceId > this.sequenceLength) || (nextUnitSequenceId < 1)) {
         return null;
       }
-      nextUnit = this.getUnit(nextUnitSequenceId);
-    } while (TestControllerService.unitIsInaccessible(nextUnit));
+      nextUnit = this.getUnitSilent(nextUnitSequenceId);
+    } while (nextUnit && TestControllerService.unitIsInaccessible(nextUnit));
     return nextUnit ? nextUnitSequenceId : null;
   }
 
@@ -526,8 +534,12 @@ export class TestControllerService {
           break;
 
         default:
+          // eslint-disable-next-line no-case-declarations
+          let navNr = parseInt(navString, 10);
+          navNr = (navNr <= 1) ? 1 : navNr;
+          navNr = (navNr > this.sequenceLength) ? this.sequenceLength : navNr;
           this.router.navigate(
-            [`/t/${this.testId}/u/${navString}`],
+            [`/t/${this.testId}/u/${navNr}`],
             {
               state: { force },
               // eslint-disable-next-line no-bitwise

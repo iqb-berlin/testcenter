@@ -226,7 +226,7 @@ export class UnitDeactivateGuard {
     const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
     if (match) {
       const targetUnitSequenceId = Number(match[2]);
-      newUnit = this.tcs.getUnit(targetUnitSequenceId);
+      newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
     }
 
     // TODO maybe move all of this into testControllerService
