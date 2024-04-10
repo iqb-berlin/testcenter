@@ -42,6 +42,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pageList: string[] = [];
   currentPageIndex: number = -1;
+  pageIndexOffset: number = 0; // used to handle different players, counting pages either starting with 0 or 1
 
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
@@ -136,9 +137,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
         if (msgPlayerId === this.itemplayerSessionId) {
           if (msgData.playerState) {
             const { playerState } = msgData;
-
             this.pageList = Object.values(playerState.validPages);
-            this.currentPageIndex = playerState.currentPage - 1;
+
+            /* used to handle different players, counting pages either starting with 0 or 1.
+             Internally pages start at 0. */
+            if (Object.keys(playerState.validPages)[0] === '1') {
+              this.pageIndexOffset = 1;
+            }
+            this.currentPageIndex = Number(playerState.currentPage) - this.pageIndexOffset;
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
@@ -451,7 +457,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
       sessionId: this.itemplayerSessionId,
-      target: targetPageIndex + 1
+      target: targetPageIndex + this.pageIndexOffset
     }, '*');
   }
 
