@@ -669,11 +669,11 @@ export class TestControllerService {
   private storeConditions(): void {
     if (!this.testMode.saveResponses) return;
     const lockedByCondition = Object.values(this.testlets)
-      .filter(testlet => testlet.restrictions.if.length && testlet.locks.condition)
+      .filter(testlet => testlet.restrictions.if.length && !testlet.locks.condition)
       .map(testlet => testlet.id);
     this.bs.updateTestState(this.testId, [
       {
-        key: TestStateKey.TESTLETS_LOCKED_BY_CONDITION,
+        key: TestStateKey.TESTLETS_SATISFIED_CONDITION,
         timeStamp: Date.now(),
         content: JSON.stringify(lockedByCondition)
       }

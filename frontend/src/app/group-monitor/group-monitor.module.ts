@@ -27,7 +27,7 @@ import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
 import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
-import { DescendantsPipe } from './test-session/descendants.pipe';
+import { PositionPipe } from './test-session/position.pipe';
 
 @NgModule({
   declarations: [
@@ -35,7 +35,7 @@ import { DescendantsPipe } from './test-session/descendants.pipe';
     TestSessionComponent,
     IsCodeClearPipe,
     TimeLeftPipe,
-    DescendantsPipe
+    PositionPipe
   ],
   imports: [
     CommonModule,

@@ -122,7 +122,7 @@
       </span>
 
       <ng-container
-        *ngIf="isTestlet(testletOrUnit) && !testSession.lockedByCondition?.includes(testletOrUnit.id)"
+        *ngIf="isTestlet(testletOrUnit) && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id))"
       >
         <span
           [class]="{
@@ -185,7 +185,7 @@
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
         >
-          {{testSession.current.indexAncestor + 1}} / {{testSession | descendants : testletOrUnit}}
+          {{testSession | position : testletOrUnit}}
         </span>
       </ng-container>
 
@@ -199,7 +199,7 @@
           }"
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
-        >{{testSession | descendants : testletOrUnit}}</span>
+        >{{testSession | position : testletOrUnit}}</span>
       </ng-template>
     </span>
   </ng-container>
@@ -217,13 +217,13 @@
       matTooltip="{{testSession.current.unit?.label}}"
       matTooltipPosition="above"
     >
-      {{testSession.current.indexGlobal + 1}} / {{testSession | descendants : testlet}}
+      {{testSession | position : testlet}}
     </span>
   </span>
 
   <ng-template #unFeaturedTestlet>
     <span class="testlet" >
-      <span class="unit aggregated">{{testSession | descendants : testlet}}</span>
+      <span class="unit aggregated">{{testSession | position : testlet}}</span>
     </span>
   </ng-template>
 </ng-template>

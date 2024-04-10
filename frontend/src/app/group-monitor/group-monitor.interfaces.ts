@@ -14,7 +14,7 @@ export interface TestSession {
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: string[] | null;
   readonly timeLeft: Record<string, number> | null;
-  readonly lockedByCondition: string[] | null;
+  readonly conditionsSatisfied: string[] | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -94,7 +94,7 @@ export interface Booklet extends BookletDef<Testlet> {
 }
 
 export interface Testlet extends TestletDef<Testlet, Unit> {
-  descendantCount: number | string;
+  descendantCount: number;
   blockId?: string;
   nextBlockId?: string;
 }

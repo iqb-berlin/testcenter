@@ -14,7 +14,7 @@ import {
   Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig
+  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig, Testlet
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -320,8 +320,10 @@ export class TestSessionManager {
     const groupedByTargetUnitAlias: GotoCommandData = {};
     sessionsSet.forEach(session => {
       if (!session.data.bookletName || !isBooklet(session.booklet)) return;
+      const ignoreTestlet =
+        (testlet: Testlet) => !!testlet.restrictions.if.length && !session.conditionsSatisfied?.includes(testlet.id);
       const firstUnit = selection.element?.blockId ?
-        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, session.lockedByCondition || []) :
+        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
         null;
       if (!firstUnit) return;
       if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {

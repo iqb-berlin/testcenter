@@ -10,11 +10,12 @@
       <sourceFolder url="file://$MODULE_DIR$/e2e/cypress" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/frontend/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <sourceFolder url="file://$MODULE_DIR$/backend/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/data-main" />
       <excludeFolder url="file://$MODULE_DIR$/data-master" />
       <excludeFolder url="file://$MODULE_DIR$/dist-src" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/data-master" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

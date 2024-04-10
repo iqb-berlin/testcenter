@@ -4,21 +4,28 @@ import {
 import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 export class BookletUtil {
-  static getFirstUnit(testletOrUnit: Testlet | UnitDef, ignoreTestlets: string[] = []): UnitDef | null {
+  static getFirstUnit(
+    testletOrUnit: Testlet | UnitDef,
+    ignoreTestlet: (tetslet: Testlet) => boolean = () => false
+  ): UnitDef | null {
     if (isUnit(testletOrUnit)) return testletOrUnit;
-    if (ignoreTestlets.includes(testletOrUnit.id)) return null;
+    if (ignoreTestlet(testletOrUnit)) return null;
     return testletOrUnit.children
       .reduce((firstUnit: UnitDef | null, child: Testlet | UnitDef) => {
         if (firstUnit) return firstUnit;
-        return (isUnit(child) ? child : BookletUtil.getFirstUnit(child, ignoreTestlets));
+        return (isUnit(child) ? child : BookletUtil.getFirstUnit(child, ignoreTestlet));
       }, null);
   }
 
-  static getFirstUnitOfBlock(blockId: string, booklet: Booklet, ignoreTestlets: string[] = []): UnitDef | null {
+  static getFirstUnitOfBlock(
+    blockId: string,
+    booklet: Booklet,
+    ignoreTestlet: (tetslet: Testlet) => boolean = () => false
+  ): UnitDef | null {
     for (let i = 0; i < booklet.units.children.length; i++) {
       const child = booklet.units.children[i];
       if (!isUnit(child) && (child.blockId === blockId)) {
-        return BookletUtil.getFirstUnit(child, ignoreTestlets);
+        return BookletUtil.getFirstUnit(child, ignoreTestlet);
       }
     }
     return null;
