@@ -13,7 +13,7 @@
       <mat-card-content *ngIf="mainDataService.appConfig">
         <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
-          <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
+          <input matInput formControlName="name">
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
