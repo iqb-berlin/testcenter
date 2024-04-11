@@ -14,7 +14,7 @@ x-env-logging-conf: &env-logging-conf
 services:
   traefik:
     container_name: testcenter-traefik
-    image: ${DOCKERHUB_PROXY}traefik:v2.10
+    image: traefik:v2.10
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -27,7 +27,7 @@ services:
 
   testcenter-db:
     container_name: testcenter-db
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-db:current
+    image: iqbberlin/testcenter-db:current
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -44,7 +44,7 @@ services:
 
   testcenter-backend:
     container_name: testcenter-backend
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:current
+    image: iqbberlin/testcenter-backend:current
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-db
@@ -82,7 +82,7 @@ services:
 
   testcenter-file-service:
     container_name: testcenter-file-service
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:current
+    image: iqbberlin/testcenter-file-service:current
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
     labels:
@@ -100,7 +100,7 @@ services:
 
   testcenter-cache-service:
     container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    image: redis:7.0-bullseye
     command:
       - "bash"
       - "-c"
@@ -110,7 +110,7 @@ services:
 
   testcenter-frontend:
     container_name: testcenter-frontend
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:current
+    image: iqbberlin/testcenter-frontend:current
     logging:
       options:
         <<: *env-logging-conf
@@ -128,7 +128,7 @@ services:
 
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:current
+    image: iqbberlin/testcenter-broadcasting-service:current
     logging:
       options:
         <<: *env-logging-conf
