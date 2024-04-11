@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## Next
+### Neue Features
+* Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen Proxy geladen werden. Der Standardwert ist ein leerer String.
+
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
