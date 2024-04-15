@@ -2,6 +2,9 @@
 layout: default
 ---
 
+## 15.2.0-alpha
+Erste experimentelle Probierversion mit der Verzweigung.
+
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
