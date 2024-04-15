@@ -9,6 +9,10 @@
 </div>
 
 <div class="tab tab-main" *ngIf="activeTabs.includes('main')" cdkDrag>
+  <h1>
+    Main
+    <mat-icon class="close" (click)="closeWindow('main')">close</mat-icon>
+  </h1>
   <div><b>STATUS:</b> {{tcs.state$ | async}}</div>
   <div>
     <b>TIMER:</b>
@@ -25,17 +29,26 @@
 </div>
 
 <div class="tab tab-config" *ngIf="activeTabs.includes('config')" cdkDrag>
-  <h1>Booklet-Config</h1>
+  <h1>
+    Booklet-Config
+    <mat-icon class="close" (click)="closeWindow('config')">close</mat-icon>
+  </h1>
   <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
 <div class="tab tab-testmode" *ngIf="activeTabs.includes('testmode')" cdkDrag>
-  <h1>Test-Mode</h1>
+  <h1>
+    Test-Mode
+    <mat-icon class="close" (click)="closeWindow('testmode')">close</mat-icon>
+  </h1>
   <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
 <div class="tab tab-booklet" *ngIf="activeTabs.includes('booklet')" cdkDrag>
-  <h1>Booklet</h1>
+  <h1>
+    Booklet
+    <mat-icon class="close" (click)="closeWindow('booklet')">close</mat-icon>
+  </h1>
   <ng-container *ngIf="tcs.booklet as booklet">
     <ng-container *ngIf="tcs.booklet.units as units">
       <ng-container  [ngTemplateOutlet]="testletTemplate" [ngTemplateOutletContext]="{item: units}"></ng-container>
@@ -45,13 +58,19 @@
 </div>
 
 <div class="tab tab-unit" *ngIf="activeTabs.includes('unit')" cdkDrag>
-  <h1>Current Unit</h1>
+  <h1>
+    Current Unit
+    <mat-icon class="close" (click)="closeWindow('unit')">close</mat-icon>
+  </h1>
   <ng-container [ngTemplateOutlet]="unitTemplate" [ngTemplateOutletContext]="{item: tcs.currentUnit, single: true}">
   </ng-container>
 </div>
 
 <div class="tab tab-customtexts" *ngIf="activeTabs.includes('customtexts')" cdkDrag>
-  <h1>Customtexts</h1>
+  <h1>
+    Customtexts
+    <mat-icon class="close" (click)="closeWindow('customtexts')">close</mat-icon>
+  </h1>
   <input type="text" matInput [(ngModel)]="searchCustomText" placeholder="insert custom text token" [matAutocomplete]="auto">
   <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
 
@@ -64,7 +83,10 @@
 </div>
 
 <div class="tab tab-variables" *ngIf="activeTabs.includes('variables')" cdkDrag (click)="res()">
-  <h1>Tracked Variables</h1>
+  <h1>
+    Tracked Variables
+    <mat-icon class="close" (click)="closeWindow('variables')">close</mat-icon>
+  </h1>
   <table>
     <thead>
       <tr>
@@ -91,7 +113,10 @@
 </div>
 
 <div class="tab tab-system" *ngIf="activeTabs.includes('system')" cdkDrag>
-  <h1>System-Status</h1>
+  <h1>
+    System-Status
+    <mat-icon class="close" (click)="closeWindow('system')">close</mat-icon>
+  </h1>
   <div><b>broadcastingService: </b>{{mds.sysStatus.broadcastingService}}</div>
   <div><b>cacheService: </b>{{mds.sysStatus.cacheService}}</div>
   <div><b>fileService: </b>{{mds.sysStatus.fileService}}</div>

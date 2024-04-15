@@ -50,6 +50,10 @@ export class DebugPaneComponent implements OnInit {
         this.cdr.detectChanges();
         this.getData();
       });
+    const storedState = localStorage.getItem('tc-debug');
+    if (storedState) {
+      this.activeTabs = JSON.parse(storedState);
+    }
   }
 
   toggleTab(tab: typeof this.tabs[number]): void {
@@ -58,6 +62,7 @@ export class DebugPaneComponent implements OnInit {
     } else {
       this.activeTabs.push(tab);
     }
+    localStorage.setItem('tc-debug', JSON.stringify(this.activeTabs));
   }
 
   res(): void {
@@ -75,4 +80,11 @@ export class DebugPaneComponent implements OnInit {
   }
 
   protected readonly isTestlet = isTestlet;
+
+  closeWindow(id: string): void {
+    const tabId = this.activeTabs.indexOf(id);
+    if (tabId !== -1) {
+      this.activeTabs.splice(tabId, 1);
+    }
+  }
 }

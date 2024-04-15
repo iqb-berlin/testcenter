@@ -95,6 +95,15 @@
   text-transform: uppercase;
   margin: 0;
   padding-left: 3px;
+  position: relative;
+}
+
+.tab h1 .close {
+  right: 0;
+  position: absolute;
+  margin-right: 0.2em;
+  bottom: 0;
+  cursor: pointer;
 }
 
 .tab-customtexts input {

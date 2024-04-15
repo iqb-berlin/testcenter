@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
@@ -135,6 +135,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
+
+      if (!this.isProductionMode) {
+        this.debugPane = !!localStorage.getItem('tc-debug');
+      }
     });
   }
 
@@ -226,7 +230,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
         if (this.debugPane) {
           // eslint-disable-next-line no-console
-          console.log('select (focus) app window to see the debugPane');
+          localStorage.setItem('tc-debug', '["main"]');
+        } else {
+          localStorage.removeItem('tc-debug');
         }
         break;
       case 'pause':
@@ -239,6 +245,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           (this.tcs.resumeTargetUnitSequenceId > 0) ?
             this.tcs.resumeTargetUnitSequenceId.toString() :
             UnitNavigationTarget.FIRST;
+        this.tcs.state$.next(TestControllerState.RUNNING);
         this.tcs.state$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
