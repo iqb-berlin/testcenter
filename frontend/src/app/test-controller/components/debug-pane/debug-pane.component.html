@@ -80,7 +80,7 @@
         <td colspan="5">{{unit.value.alias}}</td>
       </tr>
       <tr *ngFor="let uvar of unit.value.variables | keyvalue">
-        <td>{{uvar.value.id}}</td>
+        <td>{{uvar.value.id}}{{!unit.value.baseVariableIds.includes(uvar.value.id) ? ' *' : ''}}</td>
         <td>{{uvar.value.status}}</td>
         <td>{{uvar.value.value}}</td>
         <td>{{uvar.value.code}}</td>

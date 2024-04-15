@@ -25,7 +25,7 @@ export class DebugPaneComponent implements OnInit {
   }
 
   tabs = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system'];
-  activeTabs : typeof this.tabs[number][] = ['main', 'booklet'];
+  activeTabs : typeof this.tabs[number][] = ['variables'];
 
   bookletConfig: Array<[string, string]> = [];
   testMode: Array<[string, string]> = [];

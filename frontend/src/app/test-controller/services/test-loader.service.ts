@@ -6,7 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CodingScheme, Response as IQBVariable } from '@iqb/responses';
+import { CodingScheme } from '@iqb/responses';
 import {
   CustomtextService,
   TestMode,
@@ -38,6 +38,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
+import { IQBVariable } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -305,6 +306,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
                     this.tcs.units[queueEntry.sequenceId].definition = loadingFile.content;
                   } else if (queueEntry.type === 'scheme') {
                     this.tcs.units[queueEntry.sequenceId].scheme = this.getCodingScheme(loadingFile.content);
+                    this.registerIndirectlyTrackedVariables(queueEntry.sequenceId);
                   }
                   return { progress: 100 };
                 }),
@@ -401,7 +403,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return booklet;
   }
 
-  registerTrackedVariables() {
+  registerTrackedVariables(): void {
     const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
     const registerVariablesFromSource = (source: BlockConditionSource): void => {
       this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]].variables[source.variable] =
@@ -422,6 +424,18 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     Object.values(this.tcs.testlets)
       .flatMap(testlet => testlet.restrictions.if)
       .forEach(registerVariablesFromCondition);
+  }
+
+  registerIndirectlyTrackedVariables(sequenceId: number): void {
+    // this happens when the coding-scheme is available, not when the base variables themselves are registered
+    this.tcs.units[sequenceId].baseVariableIds = this.tcs.units[sequenceId].scheme
+      .getBaseVarsList(Object.keys(this.tcs.units[sequenceId].variables));
+    this.tcs.units[sequenceId].baseVariableIds
+      .forEach(baseVariableId => {
+        if (!Object.keys(this.tcs.units[sequenceId].variables).includes(baseVariableId)) {
+          this.tcs.units[sequenceId].variables[baseVariableId] = { id: baseVariableId, status: 'UNSET', value: null };
+        }
+      });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -471,6 +485,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       playerId: elem.getAttribute('type') || elem.getAttribute('player') || '',
       localIndex: context.localUnitIndex,
       variables: { },
+      baseVariableIds: [],
       responseType: undefined,
       state: { },
       definition: '',

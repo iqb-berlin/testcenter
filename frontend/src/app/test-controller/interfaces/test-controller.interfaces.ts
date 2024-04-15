@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
-import { CodingScheme, Response as IQBVariable } from '@iqb/responses';
+import { CodingScheme, Response } from '@iqb/responses';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import { IQBVariable } from './iqb.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -219,6 +220,7 @@ export interface Unit extends UnitDef {
   readonly localIndex: number;
   readonly playerId: string;
   variables: { [variableId: string]: IQBVariable };
+  baseVariableIds: string[];
   playerFileName: string;
   scheme: CodingScheme;
   responseType: string | undefined;

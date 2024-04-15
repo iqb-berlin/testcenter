@@ -117,6 +117,21 @@ table {
   width: 100%;
 }
 
+.tab-variables td {
+  border-right: 1px solid orange;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
+.tab-variables td:first-child {
+  padding-left: 0;
+}
+
+.tab-variables td:last-child {
+  border: none;
+  padding-right: 0;
+}
+
 .tab-booklet .current .title,
 tbody tr:first-child td {
   background: orange;

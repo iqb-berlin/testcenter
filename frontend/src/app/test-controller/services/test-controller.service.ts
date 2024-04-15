@@ -31,12 +31,10 @@ import { isVeronaProgress, VeronaNavigationDeniedReason } from '../interfaces/ve
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
-import {
-  IQBVariableStatusList,
-  isIQBVariable
-} from '../interfaces/iqb.interfaces';
+
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
+import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -656,8 +654,11 @@ export class TestControllerService {
           });
       });
     if (somethingChanged) {
-      const codedVariables = this.units[sequenceId].scheme.code(Object.values(this.units[sequenceId].variables));
-      codedVariables
+      // const allVarIds = Object.keys(this.units[sequenceId].variables);
+      // const baseVarIds = this.units[sequenceId].scheme.getBaseVarsList(allVarIds);
+      const baseVars = Object.values(this.units[sequenceId].variables)
+        .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
+      this.units[sequenceId].scheme.code(baseVars)
         .forEach(variable => {
           this.units[sequenceId].variables[variable.id] = variable;
         });
