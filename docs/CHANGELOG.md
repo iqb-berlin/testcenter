@@ -39,6 +39,7 @@ layout: default
   sich im zum Teil sogar aufgehangen. Behoben! (#459)
 * System-Check: Seitennavigationsleiste repariert
 * Login: Bei fehlgeschlagenem Anmeldeversuch werden nicht mehr Teile des Passworts in der Serverantwort angezeigt
+* Browserwarning auf der Startseite: Fehlfunktionen behoben.
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
@@ -48,6 +49,9 @@ layout: default
 ### Verbesserungen
 * Im run-trial Modus werden nun sowohl Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben,
   ein Review durchzuführen.
+* Browserwarning auf der Startseite: Bei Browser-Versionen, die neuer sind als dem System bekannt, wird nicht mehr 
+  gewarnt. Dies ist zwar fragwürdig, aber der Tatsache zuschulden, dass aktuell nicht regelmäßig genug neue 
+  Testcenterversionen herausgebracht werden können.
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
