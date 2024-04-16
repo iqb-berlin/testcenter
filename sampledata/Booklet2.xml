@@ -121,7 +121,7 @@
 
       <Testlet id="optional-sub-testlet" label="optional sub testlet">
         <Restrictions>
-          <If><Value of="var6" from="decision2"/><Is equal="x"/></If>
+          <If><Value of="var6" from="decision_zone_2"/><Is equal="x"/></If>
         </Restrictions>
 
         <Unit id="UNIT.SAMPLE-2" label="unit optional_zone_1_2" labelshort="2.2.1" alias="optional_zone_1_2" />
