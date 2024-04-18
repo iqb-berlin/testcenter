@@ -1,6 +1,9 @@
 ---
 layout: default
 ---
+## Next
+### Deployment
+* Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann. Der Default-Wert ist 'no'. Erlaubte Werte sind: ['no','on-failure','always','unless-stopped'].
 
 ## 15.1.4
 ### Bugfixes
