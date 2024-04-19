@@ -1,15 +1,18 @@
 ---
 layout: default
 ---
+##next
+### Bugfixes
+- Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
 
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
   Passwort in der Login-Maske klickte, und es waren bereits im Browser Zugangsdaten gespeichert,
   kam eine Fehlermeldung (#479, #481).
-* Bestimmte Bookletstrukturen führten zu Navigationsproblemen: Wurde die Intro- oder Outro-Units weggelassen (d. h. 
+* Bestimmte Bookletstrukturen führten zu Navigationsproblemen: Wurde die Intro- oder Outro-Units weggelassen (d. h.
   Units am Anfang bzw. Ende des Booklets die nicht Teil eines Testlets sind), und zeitgesteuerte Blöcke verwendet,
-  konnte nach Sperrung der Blöcke zu keiner einzigen Unit mehr navigiert werden, was zu einem verwirrenden Zustand und 
+  konnte nach Sperrung der Blöcke zu keiner einzigen Unit mehr navigiert werden, was zu einem verwirrenden Zustand und
   Fehlermeldungen führte, wenn man den test neu öffnete. Dies ist nun behoben.
 * Globale (d.h. in der Systemverwaltung gesetzte CustomTexts) werden jetzt (wieder) direkt übernommen, ohne, dass die
   Seite neugeladen werden muss (#482)
@@ -49,18 +52,18 @@ layout: default
 ### Verbesserungen
 * Im run-trial Modus werden nun sowohl Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben,
   ein Review durchzuführen.
-* Browserwarning auf der Startseite: Bei Browser-Versionen, die neuer sind als dem System bekannt, wird nicht mehr 
-  gewarnt. Dies ist zwar fragwürdig, aber der Tatsache zuschulden, dass aktuell nicht regelmäßig genug neue 
+* Browserwarning auf der Startseite: Bei Browser-Versionen, die neuer sind als dem System bekannt, wird nicht mehr
+  gewarnt. Dies ist zwar fragwürdig, aber der Tatsache zuschulden, dass aktuell nicht regelmäßig genug neue
   Testcenterversionen herausgebracht werden können.
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
 * referrer-policy Hinzugefügt
-* Backend-Container läuft nicht mehr als root 
+* Backend-Container läuft nicht mehr als root
 
 ### Administration
 * Sollte der HOSTNAME auf dem das System betrieben wird mit einer www-Subdomain beginnen, so wird automatisch auf die
-  Hauptdomain weitergeleitet und das www ignoriert. 
+  Hauptdomain weitergeleitet und das www ignoriert.
 
 ## 15.0.1
 ### Bugfixes
@@ -73,7 +76,7 @@ layout: default
 * Zusätzlich können auszuliefernde Dateien im Arbeitsspeicher des Servers gecached werden.
 * Es wurde ein Puffer für wegzuspeichernde Unit-States eingeführt. Damit kann ein Testcenter-Server während der
   Durchführung entlastet werden.
-* Das Backend allgemein wurde performanter und ressourcen-sparender gemacht, indem der selbst implementierte 
+* Das Backend allgemein wurde performanter und ressourcen-sparender gemacht, indem der selbst implementierte
   Autoloader entfernt und mit dem deutlich effizienteren Autoloader von composer ersetzt wurde.
 * Beim ersten Start eines Tests werden keine bisher gespeicherten Antwortdaten abgefragt, da keine existieren können
   und somit Calls ans Backend gespart.
@@ -83,8 +86,8 @@ layout: default
   die Verwaltung zu erleichtern.
 * Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
   im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
-* [Experimentell] Testdurchführung optional im Vollbild, steuerbar mit den Booklet-Parametern `ask_for_fullscreen` 
-  und `show_fullscreen_button`. 
+* [Experimentell] Testdurchführung optional im Vollbild, steuerbar mit den Booklet-Parametern `ask_for_fullscreen`
+  und `show_fullscreen_button`.
 
 ### Sicherheit
 * Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript.
@@ -94,8 +97,8 @@ layout: default
 * Das Verhalten im Fehlerfall wurde komplett überarbeitet, um sinnvollere Nachrichten und Optionen anzubieten.
 * In der Übersicht "Ergebnisse/Antworten" stehen nun die Labels der Gruppen anstatt der internen IDs.
 * Wird ein nicht unterstützter Browser verwendet, so wird dies direkt auf der Startseite angezeigt.
-* Es können keine Dateien gelöscht oder hochgeladen werden, wenn auf demselben Arbeitsbereich bereits ein Lösch- oder 
-  Uploadvorgang läuft. Damit wird verhindert, dass konkurrierende Aktionen sich gegenseitig stören. 
+* Es können keine Dateien gelöscht oder hochgeladen werden, wenn auf demselben Arbeitsbereich bereits ein Lösch- oder
+  Uploadvorgang läuft. Damit wird verhindert, dass konkurrierende Aktionen sich gegenseitig stören.
 
 ### Bugfixes
 * Log-Daten: Seitenwechel bei mehrseitigen Aufgaben werden wieder gelogt.
@@ -127,28 +130,28 @@ layout: default
 
 ## 14.11.0
 ### Bugfixes
-* Das Verhalten von Version 14.1.0 und vorher der Navigationsleiste wurde wieder hergestellt: 
-  Sie wird nun wieder mehrzeilig angezeigt, wenn zu viele Units darin sind. 
-  Dies kann bei sehr vielen Units oder auf einem schmalen Screen dazu führen, dass das die Navigationsleiste über 
-  die Unit ragt. Es wird empfohlen, bei Testheften mit vielen Aufgaben auf die Navigationsleiste zu verzichten und 
-  nur die Vorwärts-/Rückwärts-Pfeile anzuzeigen (`unit_navibuttons` auf `ARROWS_ONLY`). 
+* Das Verhalten von Version 14.1.0 und vorher der Navigationsleiste wurde wieder hergestellt:
+  Sie wird nun wieder mehrzeilig angezeigt, wenn zu viele Units darin sind.
+  Dies kann bei sehr vielen Units oder auf einem schmalen Screen dazu führen, dass das die Navigationsleiste über
+  die Unit ragt. Es wird empfohlen, bei Testheften mit vielen Aufgaben auf die Navigationsleiste zu verzichten und
+  nur die Vorwärts-/Rückwärts-Pfeile anzuzeigen (`unit_navibuttons` auf `ARROWS_ONLY`).
   Stattdessen sollte das Navigationsmenü in der Sidebar angeboten werden (`unit_menu` auf `FULL`).
 * Kritischer Fehler der Update-Routine von 14.3.0 zu 14.4.0 behoben.
 * Startkommando `make run` repariert.
-* Sicherheitsrelevante Header von Backend und Broadcasting-Service werden nun korrekt ausgeliefert* 
+* Sicherheitsrelevante Header von Backend und Broadcasting-Service werden nun korrekt ausgeliefert*
 
 ### Für Administratoren
-* die Konfigurationsdatei hieß mal ssl-config.yml, mal tls-config.yml. Nun muss sie immer tls-config.yml heißen. 
+* die Konfigurationsdatei hieß mal ssl-config.yml, mal tls-config.yml. Nun muss sie immer tls-config.yml heißen.
 
 
 ## 14.10.0
 ### XML-Austausch-Formate
-* In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für 
-  die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich 
+* In der Definition der Unit-XMLs gibt es eine Variablenliste. Bei den Variablen wurde die Restriktionen für
+  die Variablen-ID gelockert, das Attribut `page` hinzugefügt. Die XML-basierte Variablenliste wird vermutlich
   mittelfristig zugunsten einer JSON-basierten aufgegeben. d
 
 ### Bugfixes
-* Ein kritischer Bug sorgte dafür, dass das Hochladen von Dateien sowie das Hochfahren des Systems *extrem* lange 
+* Ein kritischer Bug sorgte dafür, dass das Hochladen von Dateien sowie das Hochfahren des Systems *extrem* lange
   dauern konnte, wenn viele Dateien in den Arbeitsbereichen lagen. Dieser ist behoben.
 * Für das Einlesen der Workspaces beim Hochfahren des Testcenters wurde mehr Speicher freigegeben.
 * Ein kritischer Fehler im Netzwerkgeschwindigkeitstest wurde behoben.
@@ -157,29 +160,29 @@ layout: default
 ### XML-Austausch-Formate
 * Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
   Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
-  standards wieder entfernt werden. 
+  standards wieder entfernt werden.
 
 ## 14.8.0
 ### Bugfixes
 * Wiederherstellen gelöschter Logins auf anderem Workspace wird verhindert: Hatte man einen Login gelöscht, die damit
   erhobenen Daten jedoch nicht, und hatte man anschließend einen gleichlautenden login auf einem anderen workspace
-  erstellt, so wurde dieser mit den Daten und Booklets des alten verbunden. Dies ist nun behoben. 
-* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt 
+  erstellt, so wurde dieser mit den Daten und Booklets des alten verbunden. Dies ist nun behoben.
+* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt
   dazu, dass man z. B. eine Unit-xml und die dazugehörige voud-Datei gleichzeitig hochladen kann.
-* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. 
+* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt.
   Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
 
 ### Änderungen
-* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur 
+* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur
   Testheft-Übersicht weitergeleitet. Stattdessen wird das Testheft direkt gestartet.
 
 ## 14.7.0
 ### Neue Features
-* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
-  Gruppen-Monitor. Weitere Funktionen sind geplant. 
+* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per
+  Gruppen-Monitor. Weitere Funktionen sind geplant.
 
 ### Verbesserungen
-* Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert. 
+* Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert.
 * Teilnehmer können auch mit dem Gruppen-Monitor ("Testleitungskonsole") nicht in zeitgesteuerte Blöcke verschoben
   werden, wenn deren Zeit abgelaufen ist. Dies wird im Gruppen-Monitor nun auch visuell dargestellt.
 
@@ -190,14 +193,14 @@ layout: default
 
 ## 14.6.0
 ### Änderungen
-* Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
+* Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr
   mitgesteuert. Wenn vor dieser Änderung beispielsweise alle Teilnehmer in den zweiten Block geschoben worden sind,
   starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
   hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
   werden aber nicht automatisch mitselektiert, damit man sie anwählen und wieder entsperren kann.
 
 ### Neue Features
-* Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
+* Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen.
   Der Standard ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
   Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
 
@@ -213,8 +216,8 @@ layout: default
 
 ## 14.5.1
 ### Bugfixes
-* Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt, 
-  wenn es reviews gibt. 
+* Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt,
+  wenn es reviews gibt.
 
 ## 14.5.0
 ### Sicherheit
@@ -226,10 +229,10 @@ layout: default
 ### Bugfixes
 * *Schwerer Fehler behoben*: Mehr als 15-20 Anmeldungen gleichzeitig mit einem Login im Modus `hot-run-restart` führten
   in der Version 14.4.0 zu Fehlern.
-* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Antworten" mehr durch Testdurchgänge im Demomode erzeugt. 
+* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Antworten" mehr durch Testdurchgänge im Demomode erzeugt.
 
 ### Verbesserungen
-* Personen die sich mit ein und selben Login im Modus `hot-run-restart` angemeldet haben, erhalten nun keine 
+* Personen die sich mit ein und selben Login im Modus `hot-run-restart` angemeldet haben, erhalten nun keine
   fortlaufende Nummer mehr als Bezeichner (in den Ergebnisdaten), sondern einen Code. Ein Fortlaufender bezeichner hat
   sich als technisch nicht verlässlich möglich erweisen, wenn Anmeldungen gleichzeitig vorn statten gehen.
 
@@ -241,7 +244,7 @@ layout: default
 * Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
 
 ### Bugfixes
-* "Leerzeilen-Problem" gelöst: Unter bestimmten Umständen konnten, wenn z. B. mehrere Sessions eines logins im 
+* "Leerzeilen-Problem" gelöst: Unter bestimmten Umständen konnten, wenn z. B. mehrere Sessions eines logins im
   `hot-run-restart`-Modus gleichzeitig gestartet werden, doppelte Sessions erzeugt werden. Der Effekt waren zusätzliche
   "Leerzeilen" in den Ergebnisdaten.   
 * Startvorgang bricht nicht mehr ab, wenn fehlerhafte XMLs im Workspace liegen.
@@ -276,14 +279,14 @@ layout: default
 ### :warning: Hinweis für Administratoren
 Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.env) entsprechend angepasst werden:
 - `TLS=off` / `TLS=on` muss gegen TLS_ENABLED=no/TLS_ENABLED=yes ersetzt werden.
-- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der 
+- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der
   Parameter `BROADCAST_SERVICE_ENABLED=true` (=false) verwendet, um zu bestimmen, ob Websocket-Verbdinungen versucht werden sollen.
 
 
 ## 14.2.0
 ### Bugfixes
-* Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
-  neues Booklet geladen wird. 
+* Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein
+  neues Booklet geladen wird.
 * Die Zeitbeschränkung kann nicht mehr durch Click auf das IQB-Logo umgangen werden
 
 ### Sicherheit
@@ -329,7 +332,7 @@ einem aktuellen IQB-Studio exportiert worden sind, sollte es jedoch kein Problem
 Dateinamen immer identisch sind.**
 
 Die Logik der Playerauswahl hat sich geändert.
-In den Unit-Definitions Dateien gibt es im `<Defintion>`- bzw. `<DefintionRef>`-Element 
+In den Unit-Definitions Dateien gibt es im `<Defintion>`- bzw. `<DefintionRef>`-Element
 das Attribut `player`. Dessen Wert wird nun anders interpretiert, nämlich nicht mehr als Dateiname,
 sondern als Kennung des Players, wie sie in dessen Metadaten hinterlegt ist.
 
@@ -338,21 +341,21 @@ Zulässig sind folgende Schreibweisen:
 oder
 `<Defintion player="verona-player-absurd-1.0>`
 
-In diesem Beispiel benötigt die Unit einen Player, der die ID `verona-player-absurd` hat und in der 
+In diesem Beispiel benötigt die Unit einen Player, der die ID `verona-player-absurd` hat und in der
 Version 1.0 vorliegt, vollkommen unabhängig davon, ob die Datei dazu `verona-player-absurd@1.0.0.html`,
 `absurd-playerV1.0html`, oder ganz anders heißt.
 
-Vorher wäre dazu ein Player aus einer Datei `verona-player-absurd@1.0.html` bzw. 
-`verona-player-absurd-1.0.html`, gesucht worden, egal, was tatsächlich in dieser Datei enthalten gewesen 
-wäre. Dabei gab es gewisse Spielräume bei der Schreibweise der Dateinamen, so konnte 
-`verona-player-absurd@1.0.html` z. B. eine Datei `verona-player-absurd@1.0.1.HTML` auswählen. 
+Vorher wäre dazu ein Player aus einer Datei `verona-player-absurd@1.0.html` bzw.
+`verona-player-absurd-1.0.html`, gesucht worden, egal, was tatsächlich in dieser Datei enthalten gewesen
+wäre. Dabei gab es gewisse Spielräume bei der Schreibweise der Dateinamen, so konnte
+`verona-player-absurd@1.0.html` z. B. eine Datei `verona-player-absurd@1.0.1.HTML` auswählen.
 Die Dateiendung `.html` war optional, daher sehen die ehemaligen Dateiverweise in oft genau aus wie
 die jetzigen Kennungen.
 
-Eine genaue Spezifikation einer Patch-Version ist nicht mehr möglich. Alles, was nach der Kennung kommt, 
+Eine genaue Spezifikation einer Patch-Version ist nicht mehr möglich. Alles, was nach der Kennung kommt,
 also zum Beispiel eine dritte Versions-nr wird ignoriert.
 
-Ein Arbeitsbereich kann nun, analog zum IQB-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
+Ein Arbeitsbereich kann nun, analog zum IQB-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine
 Version 1.2.3 und 1.2.4 desselben players.
 
 ### :warning: Wichtige Änderungen für Administratoren
@@ -397,7 +400,7 @@ Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.
 
 ## 13.2.0
 ### Performance
-Diese Version enthält eine starke Optimierung der Test-/Arbeitsbereich-Auswahl, die nun sehr viel schneller läd und 
+Diese Version enthält eine starke Optimierung der Test-/Arbeitsbereich-Auswahl, die nun sehr viel schneller läd und
 Serverzugriffe spart.
 
 ### Bug Fixes
@@ -405,22 +408,22 @@ Das update-script wurde repariert!
 
 ### Information for developers
 #### API
-* The Session endpoints `[GET] /session`, `[PUT] /session/person`, `[PUT] /session/login` and `[PUT] /session/admin` 
-  return a new format containing not only the IDs, but also the labels and other useful stuff. 
-  
+* The Session endpoints `[GET] /session`, `[PUT] /session/person`, `[PUT] /session/login` and `[PUT] /session/admin`
+  return a new format containing not only the IDs, but also the labels and other useful stuff.
+
   See: https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html#tag/session-management/paths/~1session/get
 
-  The old format is still delivered as well, but will be removed at some point in the future. 
+  The old format is still delivered as well, but will be removed at some point in the future.
 
 * Some endpoints are no longer necessary and therefore got deprecated:
   - `[GET] /monitor/group/{group_id}`
   - `[GET] /workspace/{workspace_id}`
- 
+
 
 ## 13.1.0
 In dieser Version wurde der experimentelle Bereich "Anhang-Verwaltung" hinzugefügt. Da dieses Feature noch im
 experimentellen Status ist, ist es zunächst versteckt und undokumentiert. Ein Update ist nur erforderlich, wenn es
-genutzt werden soll; weitere nennenswerte Änderungen gibt es nicht. 
+genutzt werden soll; weitere nennenswerte Änderungen gibt es nicht.
 
 ## 13.0.0
 Für diese Testcenter-Version wurde die gesamte Grundarchitektur der Anwendung überarbeitet, um von jetzt an schneller
@@ -434,7 +437,7 @@ Daneben gibt es große Verbesserungen in folgenden Punkten
 - Kompatibilität: Das Testcenter akzeptiert nun die erweitere Unit-Definition wie sie aktuelle Versionen des IQB-Studios
   produzieren. Alle älteren Units und Player funktionieren weiterhin.
 
-Das Release wird durch zahlreiche kleinere Verbesserungen und Bugfixes abgerundet, z. B.: 
+Das Release wird durch zahlreiche kleinere Verbesserungen und Bugfixes abgerundet, z. B.:
 - Zeitgesteuerte Blöcke: Zeit wird durch Pausierung nicht mehr zurückgesetzt, Weiterleitung nach Zeitablauf repariert.
 - Verbesserungen in der UI, z. B. im Review-Dialog.
 - Bestimmte, gelegentlich bem (Neu-)laden von Testungen auftretende Fehler beseitigt.
@@ -444,8 +447,8 @@ Das Release wird durch zahlreiche kleinere Verbesserungen und Bugfixes abgerunde
 ### Information for Administrators
 #### Migration from old version
 
-1. Although update from previous version *should* be possible seamlessly this update contains a major architectural 
-redesign and making a backup before the update __is strongly recommended__. 
+1. Although update from previous version *should* be possible seamlessly this update contains a major architectural
+redesign and making a backup before the update __is strongly recommended__.
 
 2. Rename or remove old installation-dir. (eg `mv testcenter testcenter-backup`).
 
@@ -463,7 +466,7 @@ __important__ use "t" for the salt settings, because older versions did not acce
 
 ## API Changes
 ### XML Exchange Formats
-* The unit.XML is vastly extended. No breaking changes. 
+* The unit.XML is vastly extended. No breaking changes.
 
 
 
@@ -472,10 +475,10 @@ __important__ use "t" for the salt settings, because older versions did not acce
 * radically speed up initialization and tests and fix workspace loading issues
 
 ## Backend 12.4.1
-* Update PHP from 7.4.22 to 7.4.29 (patch) and Apache to 2.4.53 
+* Update PHP from 7.4.22 to 7.4.29 (patch) and Apache to 2.4.53
 
 ## Backend 12.4.0
-### New Feature: so-called resource-packages. 
+### New Feature: so-called resource-packages.
 Uploaded zip files with the extension .itcr.zip - resource-packages - now get a special treatment:
   1. All files they contain are regarded as resources (Testtakers.xml and such would be handled as resources to).
   2. These files do NOT appear in the file list, not do the get validated
@@ -483,7 +486,7 @@ Uploaded zip files with the extension .itcr.zip - resource-packages - now get a 
 This can be used for special resources which shall be loaded by the player via *directDowlaodURL*. But pay attention:
 Those get neither preloaded like the rest of the booklet nor do they count into the size of the calculation of the test!
 Example applications: GeoeGebra (needs to fetch 70+ files), or large videos which shall be streamed.
-  
+
 You can declare now dependencies of Units to some resource-files or -packages in the unit.xml to make the validator
 aware of it:
 ```
@@ -505,9 +508,9 @@ aware of it:
 ### Bugfixes
 * (#366) Fix: In live-mode the group-monitor didn't update when Testtakers.XMLs get updated or deleted.
 
-### Result-Data / Group-Monitor 
-* (#231) Logins of the same name (created with `hot-run-restart`-mode) get now a number into there display-name to be 
- distinguishable. In result/log-data export, this number is stored in the field `code`. 
+### Result-Data / Group-Monitor
+* (#231) Logins of the same name (created with `hot-run-restart`-mode) get now a number into there display-name to be
+ distinguishable. In result/log-data export, this number is stored in the field `code`.
 
 ## Backend 12.2.3
 ### Bugfixes
@@ -572,17 +575,17 @@ Minor Changes
 ### Bugfixes:
 * Wrong numbers in Results overview
 * Handle bogus Player-Metadata
- 
+
 
 ## 12.0.0
 This update makes the Tescenter Verona3- and 4 compatible.
 
 ### Endpoints
-* the responses-output from `/workspace/{ws_id}/responses` and `/workspace/{ws_id}/report/response` 
+* the responses-output from `/workspace/{ws_id}/responses` and `/workspace/{ws_id}/report/response`
   now contains the chunk names. eg: `{"all":"{\"key\": \"value\"}"` instead of `{\"key\": \"value\"}`
 * new Endpoint `/{auth_token}/resource/{resource_name}` is an alternative way for fetching resources. It can be used as
   `directDownloadUrl`-parameter (see [here](https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand))
-  in Verona4-players. 
+  in Verona4-players.
 * Those deprecated endpoints are removed
   * `[GET] /workspace/{ws_id}/logs`
   * `[GET] /workspace/{ws_id}/reviews`
@@ -591,7 +594,7 @@ This update makes the Tescenter Verona3- and 4 compatible.
 
 ### XSD
 * in the `Booklet.xml`-format a new restriction is allowed: `<DenyNavigationOnIncomplete>`. It forbids the leaving of  
-  units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes 
+  units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes
   `presentation` and `response` may have the values `OFF`, `ON` and `ALWAYS`. Always tells the testcenter, to check
   the completeness and response-progress everytime the unit shall be left regardless of teh direction. `ON` only checks
   if the testee want to proceed forwards.
@@ -599,18 +602,18 @@ This update makes the Tescenter Verona3- and 4 compatible.
   alias must be unique.  
 
 ### Database
-* The unit-data now gets stored in an additional table `test_data`, not in `tests` anymore to allow chunkwise updates. 
-  There will be a data-migration, but depending on the specific format of the player it can be possible, that 
-  previously edited units will not be restored correctly. 
+* The unit-data now gets stored in an additional table `test_data`, not in `tests` anymore to allow chunkwise updates.
+  There will be a data-migration, but depending on the specific format of the player it can be possible, that
+  previously edited units will not be restored correctly.
 * See `scripts/sql-schema/patches.mysql.d/12.0.0`.
 
 ## 11.6.0
-This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports. 
-The CSVs can now all be generated in the backend and retrieved via analogous endpoints. The data is also available 
-as JSON. All CSVs contain BOMs now. 
+This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports.
+The CSVs can now all be generated in the backend and retrieved via analogous endpoints. The data is also available
+as JSON. All CSVs contain BOMs now.
 
 ### Endpoints
-* The four new endpoints for retrieving reports: 
+* The four new endpoints for retrieving reports:
   * `[GET] /workspace/{ws_id}/report/log`
   * `[GET] /workspace/{ws_id}/report/review`
   * `[GET] /workspace/{ws_id}/report/response`
@@ -682,12 +685,12 @@ with unit-tests galore.
   and `[GET] /workspace/{id}/files` where changed **significantly** to contain the
   file's validation information as well as some metadata to display in the frontend.
 ### XML
-* XML-files without a reference to a XSD-Schema generate a warning now. Currently, 
-  the reference can only be done with the `noNamespaceSchemaLocation`-tag! 
+* XML-files without a reference to a XSD-Schema generate a warning now. Currently,
+  the reference can only be done with the `noNamespaceSchemaLocation`-tag!
 * Player-Metadata as defined in [verona2](https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md)
   is supported now.
 ### Config
-* `config/system.json` contains a new (optional) value: `allowExternalXMLSchema` 
+* `config/system.json` contains a new (optional) value: `allowExternalXMLSchema`
   (boolean, defaults to true) . It defines wether the program is allowed to fetch
   XSD schemas from external URLs.
 
@@ -766,6 +769,3 @@ Introduced the group-monitor for the frist time.
 #### Unit
 - in `<Metadata>`-element, the elements `<ID>` and `<Label>` are mandatory,
   and `<Description>` is optional, the rest does not exist anymore.
-
-
-

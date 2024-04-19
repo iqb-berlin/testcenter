@@ -40,7 +40,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = window;
   private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
 
-  pageList: string[] = [];
+  pages: { [id: string]: string } = {};
+  pageLabels: string[] = [];
   currentPageIndex: number = -1;
 
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
@@ -137,14 +138,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
           if (msgData.playerState) {
             const { playerState } = msgData;
 
-            this.pageList = Object.values(playerState.validPages);
-            this.currentPageIndex = playerState.currentPage - 1;
+            this.pages = playerState.validPages;
+            this.pageLabels = Object.values(this.pages);
+            // page index starts with 0 and gets mapped from and to the dictionary from the API
+            this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
               const pageNr = playerState.currentPage + 1;
-              const pageCount = this.pageList.length;
-              if (this.pageList.length > 1 && playerState.validPages[playerState.currentPage]) {
+              const pageCount = Object.keys(this.pages).length;
+              if (Object.keys(this.pages).length > 1 && playerState.validPages[playerState.currentPage]) {
                 this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
                   {
@@ -235,7 +238,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.currentPageIndex = -1;
-    this.pageList = [];
 
     this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
 
@@ -451,7 +453,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
       sessionId: this.itemplayerSessionId,
-      target: targetPageIndex + 1
+      target: Object.keys(this.pages)[targetPageIndex]
     }, '*');
   }
 
