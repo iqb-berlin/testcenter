@@ -159,29 +159,38 @@ try {
 
     if (!$args['skip_read_workspace_files']) {
       $t1 = microtime(true);
-      $stats = $workspace->storeAllFiles();
 
-      CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+      $currentHashOfFiles = hash('XXH3', serialize($workspace::getHashOfAllFiles(DATA_DIR)));
+      if ($workspace->hasFilesChanged($currentHashOfFiles)) {
+        $stats = $workspace->storeAllFiles();
+        $workspace->setWorkspaceHash($currentHashOfFiles);
+        CLI::p("Change in files detected. {$stats['valid']} files were stored.");
 
-      $statsString = implode(
-        ", ",
-        array_filter(
-          array_map(
-            function($key, $value) {
-              return $value ? "$key: $value" : null;
-            },
-            array_keys($stats['valid']),
-            array_values($stats['valid']),
+        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+
+        $statsString = implode(
+          ", ",
+          array_filter(
+            array_map(
+              function($key, $value) {
+                return $value ? "$key: $value" : null;
+              },
+              array_keys($stats['valid']),
+              array_values($stats['valid']),
+            )
           )
-        )
-      );
-      $t2 = microtime(true);
-      $duration = $t2 - $t1;
-      CLI::p("Files found: " . $statsString);
-      CLI::p("Processing time: $duration sec.");
+        );
+        $t2 = microtime(true);
+        $duration = $t2 - $t1;
+        CLI::p("Files found: " . $statsString);
+        CLI::p("Processing time: $duration sec.");
 
-      if ($stats['invalid']) {
-        CLI::warning("Invalid files found: {$stats['invalid']}");
+        if ($stats['invalid']) {
+          CLI::warning("Invalid files found: {$stats['invalid']}");
+        }
+
+      } else {
+        CLI::p("No changes in files detected. No files stored.");
       }
     }
   }
@@ -196,6 +205,10 @@ try {
 
     if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
+
+      $currentHashOfFiles = hash('XXH3',serialize($sampleWorkspace::getHashOfAllFiles(DATA_DIR)));
+      $sampleWorkspace->setWorkspaceHash($currentHashOfFiles);
+      CLI::p("{$stats['valid']} files were stored.");
     }
 
     CLI::success("Sample content files created.");

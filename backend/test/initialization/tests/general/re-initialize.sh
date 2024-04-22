@@ -2,9 +2,6 @@
 
 source backend/test/initialization/functions/functions.sh
 
-echo_h1 "New installation of current Version";
-
-take_current_version
 
 php backend/initialize.php
 
@@ -22,3 +19,22 @@ php backend/initialize.php
 expect_init_script_ok
 expect_table_to_have_rows files 9
 expect_table_to_have_rows logins 0
+
+echo "test mein script"
+expect_sql_to_return "select * from workspaces" '[[1,"Sample Workspace","984b2490"]]'
+out=$(php backend/initialize.php)
+if "$out" | grep -q "Change in files detected. Stored"; then
+    echo "is right"
+else
+  echo "is wrong"
+fi
+
+echo "UPDATE workspaces SET workspace_hash = '1234' WHERE id = 1" | run sql
+expect_sql_to_return "select * from workspaces" '[[1,"Sample Workspace","1234"]]'
+out=$(php backend/initialize.php)
+if "$out" | grep -q "Change in files detected. Stored"; then
+    echo "is right"
+else
+  echo "is wrong"
+fi
+

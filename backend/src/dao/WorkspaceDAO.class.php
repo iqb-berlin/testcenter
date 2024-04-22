@@ -549,4 +549,20 @@ class WorkspaceDAO extends DAO {
           true
         );
     }
+
+  public function getWorkspaceHash(): string
+  {
+    return $this->_(
+      "select workspace_hash from workspaces where id = :ws_id",
+      [':ws_id' => $this->workspaceId]
+    )['workspace_hash'];
+  }
+
+  public function setWorkspaceHash(string $hash): void
+  {
+    $this->_(
+      "update workspaces set workspace_hash = :hash where id = :ws_id",
+      [':hash' => $hash, ':ws_id' => $this->workspaceId]
+    );
+  }
 }

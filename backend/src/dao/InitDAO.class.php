@@ -371,4 +371,5 @@ class InitDAO extends SessionDAO {
     $d = $this->_("select 'a' || 'b' as merged")['merged'];
     return $d === 'ab';
   }
+
 }

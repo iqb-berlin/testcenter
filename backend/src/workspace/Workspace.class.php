@@ -26,6 +26,34 @@ class Workspace {
     return $workspaces;
   }
 
+  public function hasFilesChanged(string $currentHash): bool {
+    $originalHash = $this->workspaceDAO->getWorkspaceHash();
+    return $currentHash !== $originalHash;
+  }
+
+  public static function getHashOfAllFiles(string $dir): array {
+    $result = [];
+
+    $files = scandir($dir);
+
+    foreach($files as $file) {
+      if ($file != '.' && $file != '..') {
+        $path = $dir . '/' . $file;
+        if (is_dir($path)) {
+          $result = array_merge($result, self::getHashOfAllFiles($path));
+        } else {
+          $result[] = [
+            'filename' => $file,
+            'filemtime' => filemtime($path),
+            'filesize' => filesize($path)
+          ];
+        }
+      }
+    }
+
+    return $result;
+  }
+
   function __construct(int $workspaceId) {
     $this->workspaceId = $workspaceId;
     $this->workspacePath = $this->getOrCreateWorkspacePath();
@@ -476,5 +504,9 @@ class Workspace {
       CacheService::storeFile($path);
     }
     return $resourceListStructured;
+  }
+
+  public function setWorkspaceHash(string $hash): void {
+    $this->workspaceDAO->setWorkspaceHash($hash);
   }
 }
