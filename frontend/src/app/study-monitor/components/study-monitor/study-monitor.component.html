@@ -1,0 +1,65 @@
+<div class="page-header">
+  <p>{{ mainDataService.appTitle$ | async }} Studienmonitor</p>
+</div>
+
+<div class="page-body">
+  <div class="adminbackground">
+
+
+    <div class="columnhost flex-column">
+
+      <mat-progress-bar mode="indeterminate" *ngIf="!resultDataSource"></mat-progress-bar>
+      <mat-table [dataSource]="resultDataSource" matSort>
+
+        <ng-container matColumnDef="groupName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Login-Gruppe</mat-header-cell>
+          <mat-cell *matCellDef="let element">{{ element.groupLabel }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="bookletsStarted">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                           [style.justify-content]="'center'">Testhefte gestartet
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" [style.justify-content]="'center'"> {{ element.bookletsStarted }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="numUnitsMin">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                           [style.justify-content]="'center'">Aufgaben min
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{ element.numUnitsMin }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="numUnitsMax">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                           [style.justify-content]="'center'">Aufgaben max
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{ element.numUnitsMax }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="numUnitsAvg">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                           [style.justify-content]="'center'">Aufgaben Mittelwert
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element"
+                    [style.justify-content]="'center'">{{ element.numUnitsAvg | number:'1.1-1' }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lastChange">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                           [style.justify-content]="'center'">Letzte Änderung
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" [style.justify-content]="'center'">
+            <span *ngIf="element.lastChange !== '0'">{{ element.lastChange * 1000 | date:'dd.MM.yyyy HH:mm' }}</span>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </div>
+
+  </div>
+</div>
