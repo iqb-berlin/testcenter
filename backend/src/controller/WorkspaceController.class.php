@@ -117,7 +117,7 @@ class WorkspaceController extends Controller {
   }
 
   public static function postFile(Request $request, Response $response): Response {
-    set_time_limit(180); // because password hashing may take a lot of time if many testtakers are provided
+    set_time_limit(600); // because password hashing may take a lot of time if many testtakers are provided
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 
