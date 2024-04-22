@@ -117,8 +117,9 @@
     fixedInViewport="true"
     fixedTopGap="55"
     position="end"
+    opened="true"
   >
-    <tc-unit-menu [menu]="unitNavigationList"></tc-unit-menu>
+    <tc-unit-menu [booklet]="tcs.booklet"></tc-unit-menu>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

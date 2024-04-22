@@ -1,21 +1,46 @@
-<div class="sidebar-main">
+<div class="sidebar-main" *ngIf="booklet?.units">
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
-  <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">
-    <h4 *ngIf="blockLabelOrUnit.headline != null" class='testlet-label'>
-      {{blockLabelOrUnit.headline}}
-    </h4>
-    <a mat-raised-button
-      [class]="{'current': blockLabelOrUnit.isCurrent}"
-      (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
-      [disabled]="blockLabelOrUnit.disabled"
-    >
-      <mat-icon *ngIf="!tcs.units[blockLabelOrUnit.sequenceId].definition" matTooltip="wird geladen">
-        hourglass_empty
-      </mat-icon>
-      {{blockLabelOrUnit.longLabel}}
-    </a>
-  </ng-container>
+<!--  <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">-->
+<!--    <h4 *ngIf="blockLabelOrUnit.headline != null" class='testlet-label'>-->
+<!--      {{blockLabelOrUnit.headline}}-->
+<!--    </h4>-->
+<!--    <a mat-raised-button-->
+<!--      [class]="{'current': blockLabelOrUnit.isCurrent}"-->
+<!--      (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"-->
+<!--      [disabled]="blockLabelOrUnit.disabled"-->
+<!--    >-->
+<!--      <mat-icon *ngIf="!tcs.units[blockLabelOrUnit.sequenceId].definition" matTooltip="wird geladen">-->
+<!--        hourglass_empty-->
+<!--      </mat-icon>-->
+<!--      {{blockLabelOrUnit.longLabel}}-->
+<!--    </a>-->
+<!--  </ng-container>-->
+  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}"></ng-container>
+
+  <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
+    <div class="testlet" [class.contains-conditional]="testlet.containsConditionalTestlets">
+      <ng-container *ngFor="let testletOrUnit of testlet.children">
+        <a
+          mat-raised-button
+          *ngIf="!isTestlet(testletOrUnit); else: subTestlet"
+          (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
+          [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
+          [disabled]="testletOrUnit | unitaccessible"
+        >
+          {{testletOrUnit.label || "&nbsp;"}}
+        </a>
+
+        <ng-template #subTestlet>
+          <div>
+            <h4 class="headline-level-{{level}}">{{level}}) {{testletOrUnit.label}}</h4>
+            <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}"></ng-container>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </ng-template>
 </div>
+
 
 <div class="sidebar-bottom">
   <a mat-raised-button data-cy="endTest" color="primary" (click)="terminateTest()">

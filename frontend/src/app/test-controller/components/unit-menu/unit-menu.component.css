@@ -14,15 +14,31 @@
   padding: 15px;
 }
 
+h3 {
+  text-align: center;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+/*
 .testlet-label {
   text-align: center;
   margin-bottom: 4px;
   width: 100%;
 }
 
-h3 {
+
+ */
+
+.headline-level-0,
+.headline-level-1,
+.headline-level-2,
+.headline-level-3,
+.headline-level-4,
+.headline-level-5,
+.headline-level-6 {
   text-align: center;
-  margin-bottom: 1em;
+  margin-bottom: 4px;
   width: 100%;
 }
 
@@ -50,3 +66,15 @@ a:last-of-type {
   text-align: center;
   padding: 0.3em;
 }
+
+.testlet {
+  border: 1px solid red;
+  margin-bottom: 2em;
+}
+
+.testlet.contains-conditional {
+  border: yellow;
+  display: grid;
+  grid-template-columns: auto repeat(auto-fill, 1fr);
+}
+
