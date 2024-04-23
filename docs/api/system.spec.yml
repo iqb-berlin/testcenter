@@ -88,6 +88,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
       requestBody:
         content:
           application/json:
@@ -125,6 +126,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
       requestBody:
         content:
           application/json:
@@ -168,7 +170,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       responses:
         "200":
           description: List of Workspaces
@@ -198,7 +200,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       requestBody:
         content:
           application/json:
@@ -235,7 +237,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       responses:
         "200":
           description: List of users
@@ -268,7 +270,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       requestBody:
         content:
           application/json:
