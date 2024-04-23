@@ -6,7 +6,7 @@
 <div #iFrameHost id="iFrameHost" *ngIf="!errorText"></div>
 
 <tc-page-nav class="pageNav"
-             [pages]="pageList" [currentPageIndex]="currentPageIndex"
+             [pageLabels]="pageLabels" [currentPageIndex]="currentPageIndex"
              (navToPage)="gotoPage($event)"
              (navPrevious)="gotoPreviousPage()"
              (navNext)="gotoNextPage()">

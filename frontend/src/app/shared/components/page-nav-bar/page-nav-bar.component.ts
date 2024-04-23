@@ -15,9 +15,9 @@ import {
     </button>
 
     <mat-button-toggle-group [value]="currentPageIndex">
-      <mat-button-toggle *ngFor="let page of pages; let index = index"
-                         [class.selectedValue]="currentPageIndex == index"
-                         [matTooltip]="page"
+      <mat-button-toggle *ngFor="let pageLabel of pageLabels; let index = index"
+                         [class.selected-value]="currentPageIndex === index"
+                         [matTooltip]="pageLabel"
                          [attr.data-cy]="'page-navigation-' + index"
                          [value]="index"
                          (click)="navToPage.emit(index)">
@@ -25,19 +25,19 @@ import {
       </mat-button-toggle>
     </mat-button-toggle-group>
 
-    <button mat-stroked-button [disabled]="currentPageIndex == pages.length - 1"
-                       (click)="navNext.emit()">
+    <button mat-stroked-button [disabled]="currentPageIndex == pageLabels.length - 1"
+            (click)="navNext.emit()">
       <i class="material-icons">chevron_right</i>
     </button>
   `,
   styles: [`
-    .selectedValue {background-color: var(--mat-standard-button-toggle-selected-state-background-color);}
+    .selected-value {background-color: var(--accent) !important;}
     button { height: 34px !important; margin-bottom: 2px;}
     mat-button-toggle-group {height: 34px; align-items: center;}
   `]
 })
 export class PageNavBarComponent {
-  @Input() pages: string[] = [];
+  @Input() pageLabels: string[] = [];
   @Input() currentPageIndex!: number;
   @Output() navPrevious = new EventEmitter();
   @Output() navNext = new EventEmitter();
