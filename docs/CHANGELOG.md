@@ -2,6 +2,13 @@
 layout: default
 ---
 
+## [next]
+### Verbesserungen
+* Limits für Arbeitsspeicher und Ausführungszeit beim Datei-Upload wurden vorübergehend sehr hoch angesetzt, da Aufgrund
+  eines Programmierfehlers sehr viel benötigt wird. Dies ist ein vorübergehender Fix um den Upload gewaltiger
+  Datei-Mengen auf einmal zu ermöglichen (eine aktuelle Studie verwendet 3500 verschiedene Testhefte). Eine tatsächliche
+  Behebung des enormen Speicherbedarfs beim Uplaod wird folgen. 
+
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
