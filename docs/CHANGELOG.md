@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-##next
+## [next]
 ### Bugfixes
 - Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
 
