@@ -2,6 +2,13 @@
 layout: default
 ---
 
+## [next]
+### Verbesserungen
+* Limits für Arbeitsspeicher und Ausführungszeit beim Datei-Upload wurden vorübergehend sehr hoch angesetzt, da Aufgrund
+  eines Programmierfehlers sehr viel benötigt wird. Dies ist ein vorübergehender Fix um den Upload gewaltiger
+  Datei-Mengen auf einmal zu ermöglichen (eine aktuelle Studie verwendet 3500 verschiedene Testhefte). Eine tatsächliche
+  Behebung des enormen Speicherbedarfs beim Uplaod wird folgen. 
+
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
@@ -39,6 +46,7 @@ layout: default
   sich im zum Teil sogar aufgehangen. Behoben! (#459)
 * System-Check: Seitennavigationsleiste repariert
 * Login: Bei fehlgeschlagenem Anmeldeversuch werden nicht mehr Teile des Passworts in der Serverantwort angezeigt
+* Browserwarning auf der Startseite: Fehlfunktionen behoben.
 
 ### Neue Features
 * Auf besonderen Wunsch wurden die Restriktionen für Login-Namen gelockert. Es sind nun beliebige Zeichenketten erlaubt.
@@ -48,6 +56,9 @@ layout: default
 ### Verbesserungen
 * Im run-trial Modus werden nun sowohl Responses und Logs aufgezeichnet als auch die Möglichkeit gegeben,
   ein Review durchzuführen.
+* Browserwarning auf der Startseite: Bei Browser-Versionen, die neuer sind als dem System bekannt, wird nicht mehr 
+  gewarnt. Dies ist zwar fragwürdig, aber der Tatsache zuschulden, dass aktuell nicht regelmäßig genug neue 
+  Testcenterversionen herausgebracht werden können.
 
 ### Sicherheit
 * Upgrade auf neuste PHP-Version 8.3.0
