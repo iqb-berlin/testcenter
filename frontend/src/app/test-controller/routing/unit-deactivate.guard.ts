@@ -82,7 +82,6 @@ export class UnitDeactivateGuard {
     };
     if (
       (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
-      this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
     ) {
       reasons.push('presentationIncomplete');

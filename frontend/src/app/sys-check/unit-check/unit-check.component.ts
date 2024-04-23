@@ -12,8 +12,10 @@ import { SysCheckDataService } from '../sys-check-data.service';
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  pageList: string[] = [];
+  pages: { [id: string]: string } = {};
+  pageLabels: string[] = [];
   currentPageIndex: number = -1;
+
   errorText = '';
   @ViewChild('iFrameHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
@@ -69,8 +71,10 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               case 'vopStateChangedNotification':
                 if (msgData.playerState) {
                   const { playerState } = msgData;
-                  this.pageList = Object.values(playerState.validPages);
-                  this.currentPageIndex = playerState.currentPage - 1;
+                  this.pages = playerState.validPages;
+                  this.pageLabels = Object.values(this.pages);
+                  // page index starts with 0 and gets mapped from and to the dictionary from the API
+                  this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
                 }
                 break;
 
@@ -116,7 +120,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
       sessionId: this.itemplayerSessionId,
-      target: targetPageIndex + 1
+      target: Object.keys(this.pages)[targetPageIndex]
     }, '*');
   }
 

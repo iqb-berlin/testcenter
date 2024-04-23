@@ -18,6 +18,7 @@ paths:
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example: "a:user000000000.ro00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -65,6 +66,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -112,6 +114,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -184,6 +187,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -249,6 +253,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -402,6 +407,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -465,7 +471,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       requestBody:
         content:
           application/json:
@@ -501,6 +507,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -537,6 +544,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -581,6 +589,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -634,6 +643,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -674,6 +684,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -724,6 +735,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -790,6 +802,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -840,6 +853,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -891,6 +905,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -943,6 +958,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
