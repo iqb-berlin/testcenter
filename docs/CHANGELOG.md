@@ -2,20 +2,21 @@
 layout: default
 ---
 ## [next]
-### Bugfixes
-- Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
 
-## [next]
+### Bugfixes
+* Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
+  korrekt. Dies betrifft z. B. den Aspect-Player.
+* Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
+
 ### Verbesserungen
 * Limits für Arbeitsspeicher und Ausführungszeit beim Datei-Upload wurden vorübergehend sehr hoch angesetzt, da Aufgrund
   eines Programmierfehlers sehr viel benötigt wird. Dies ist ein vorübergehender Fix um den Upload gewaltiger
   Datei-Mengen auf einmal zu ermöglichen (eine aktuelle Studie verwendet 3500 verschiedene Testhefte). Eine tatsächliche
-  Behebung des enormen Speicherbedarfs beim Uplaod wird folgen. 
+  Behebung des enormen Speicherbedarfs beim Uplaod wird folgen.
 
-## [next]
-### Bugfixes
-* Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
-  korrekt. Dies betrifft z. B. den Aspect-Player.
+### Deployment
+* Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann. 
+  Der Default-Wert ist 'no'. Erlaubte Werte sind: ['no','on-failure','always','unless-stopped'].
 
 ## 15.1.4
 ### Bugfixes
