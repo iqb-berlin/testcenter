@@ -16,7 +16,7 @@ import {
 
     <mat-button-toggle-group [value]="currentPageIndex">
       <mat-button-toggle *ngFor="let pageLabel of pageLabels; let index = index"
-                         [class.selectedValue]="currentPageIndex == index"
+                         [class.selected-value]="currentPageIndex === index"
                          [matTooltip]="pageLabel"
                          [attr.data-cy]="'page-navigation-' + index"
                          [value]="index"
@@ -31,7 +31,7 @@ import {
     </button>
   `,
   styles: [`
-    .selectedValue {background-color: var(--mat-standard-button-toggle-selected-state-background-color);}
+    .selected-value {background-color: var(--accent) !important;}
     button { height: 34px !important; margin-bottom: 2px;}
     mat-button-toggle-group {height: 34px; align-items: center;}
   `]
