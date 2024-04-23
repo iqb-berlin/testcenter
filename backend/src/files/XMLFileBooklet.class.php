@@ -3,29 +3,54 @@
 declare(strict_types=1);
 
 class XMLFileBooklet extends XMLFile {
-  const type = 'Booklet';
-  const canBeRelationSubject = true;
-  const canBeRelationObject = true;
+  const string type = 'Booklet';
+  const bool canBeRelationSubject = true;
+  const bool canBeRelationObject = true;
 
   public function crossValidate(WorkspaceCache $workspaceCache): void {
     parent::crossValidate($workspaceCache);
+    $this->checkUnitIds($workspaceCache);
+  }
 
+  public function getUnitIds(): array {
+    if (!$this->isValid()) {
+      return [];
+    }
+
+    if ($this->relations == null) {
+      return $this->readUnitIds($this->getXml()->Units[0]);
+    } else {
+      $unitIds = [];
+      foreach ($this->relations as $relation) {
+        /* @var $relation FileRelation */
+        if ($relation->getRelationshipType() == FileRelationshipType::containsUnit) {
+          $unitIds[] = $relation->getTargetId();
+        }
+      }
+      return $unitIds;
+    }
+  }
+
+  private function checkUnitIds(WorkspaceCache $cache): void {
     $bookletPlayers = [];
     $this->contextData['totalSize'] = $this->getSize();
 
-    foreach ($this->getUnitIds() as $unitId) {
-      $unit = $workspaceCache->getUnit($unitId);
+    $unitIds = $this->getUnitIds();
+    $this->relations = [];
+
+    foreach ($unitIds as $unitId) {
+      $unit = $cache->getUnit($unitId);
 
       if ($unit == null) {
         $this->report('error', "Unit `$unitId` not found");
         continue;
       }
 
-      $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
+      $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), FileRelationshipType::containsUnit, $unitId));
 
       $this->contextData['totalSize'] += $unit->getTotalSize();
 
-      $playerFile = $unit->getPlayerIfExists($workspaceCache);
+      $playerFile = $unit->getPlayerIfExists($cache);
 
       if (!$playerFile) {
         $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
@@ -38,25 +63,15 @@ class XMLFileBooklet extends XMLFile {
     }
   }
 
-  // TODO unit-test $useAlias
-  public function getUnitIds(bool $useAlias = false): array {
-    if (!$this->isValid()) {
-      return [];
-    }
-
-    return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
-  }
-
-  private function getUnitIdFromNode(SimpleXMLElement $node, bool $useAlias = false): array {
+  private function readUnitIds(SimpleXMLElement $node): array {
     $unitIds = [];
     foreach ($node->children() as $element) {
       if ($element->getName() == 'Unit') {
         $id = strtoupper((string) $element['id']);
-        $alias = (string) $element['alias'];
-        $unitIds[] = ($useAlias and $alias) ? $alias : $id;
+        $unitIds[] = $id;
 
       } else {
-        foreach ($this->getUnitIdFromNode($element, $useAlias) as $id) {
+        foreach ($this->readUnitIds($element) as $id) {
           $unitIds[] = $id;
         }
       }

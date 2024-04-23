@@ -296,7 +296,6 @@ class WorkspaceDAO extends DAO {
           $r['object_type'],
           $r['object_name'],
           constant("FileRelationshipType::{$r['relationship_type']}"),
-          null,
           $r['object_id']
         );
       },
@@ -350,8 +349,8 @@ class WorkspaceDAO extends DAO {
     $files = [];
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
-      // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
-      $files[$row['type']][$row['name']] = $this->resultRow2File($row, []);
+      $relations = $this->getFileRelations($row['name'], $row['type']);
+      $files[$row['type']][$row['name']] = $this->resultRow2File($row, $relations);
     }
     return $files;
   }
@@ -428,7 +427,8 @@ class WorkspaceDAO extends DAO {
                 from affected_files
                 where
                     not ($selectedFilesConditions)";
-
+paf_log($sql);
+paf_log(print_r($replacements, true));
     $result = $this->_($sql, $replacements, true);
 
     return array_reduce(
@@ -448,11 +448,11 @@ class WorkspaceDAO extends DAO {
     foreach ($file->getRelations() as $relation) {
       /* @var $relation FileRelation */
 
-      $relatedFile = $relation->getTarget();
-
-      if (!$relatedFile) {
-        $unresolvedRelations++;
-      }
+//      $relatedFile = $relation->getTarget();
+//
+//      if (!$relatedFile) {
+//        $unresolvedRelations[] = $relation;
+//      }
 
       $this->_(
         "replace into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
@@ -463,7 +463,7 @@ class WorkspaceDAO extends DAO {
           $file->getType(),
           $relation->getRelationshipType()->name,
           $relation->getTargetType(),
-          $relatedFile->getName()
+          $relation->getTargetName()
         ]
       );
 

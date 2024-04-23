@@ -14,7 +14,7 @@ class XMLFileSysCheck extends XMLFile {
     $unit = $workspaceCache->getUnit($unitId);
 
     if ($unit != null) {
-      $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
+      $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), FileRelationshipType::containsUnit, $unit->getId()));
     }
   }
 

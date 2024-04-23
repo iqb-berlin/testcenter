@@ -26,8 +26,8 @@ class IsWorkspaceBlocked {
     if (file_exists($workspace->getWorkspacePath() . '/.lock')) {
       throw new HttpException($request, 'Workspace blocked by another upload or deletion action.', 409);
     }
-
-    file_put_contents($workspace->getWorkspacePath() . '/.lock', '.');
+// TODO X
+//    file_put_contents($workspace->getWorkspacePath() . '/.lock', '.');
     register_shutdown_function(function() use ($workspace) {
       unlink($workspace->getWorkspacePath() . '/.lock');
     });

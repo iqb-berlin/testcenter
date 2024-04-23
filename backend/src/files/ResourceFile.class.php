@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 class ResourceFile extends File {
-  const type = 'Resource';
-  const canBeRelationSubject = false;
-  const canBeRelationObject = true;
+  const string type = 'Resource';
+  const bool canBeRelationSubject = false;
+  const bool canBeRelationObject = true;
 
   protected function validate(): void {
     parent::validate();
+    paf_log('VALIDATE_RES: ' . $this->name);
 
     $this->id = strtoupper($this->name);
 

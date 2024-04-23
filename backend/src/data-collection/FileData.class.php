@@ -7,7 +7,7 @@ class FileData extends DataCollectionTypeSafe {
   protected string $id = '';
   protected string $label = '';
   protected string $description = '';
-  protected array $relations = [];
+  protected ?array $relations = [];
   private bool $isValid;
   protected array $validationReport = ['warning' => [], 'error' => [], 'info' => []];
   protected int $modificationTime = 0;
@@ -29,7 +29,7 @@ class FileData extends DataCollectionTypeSafe {
     string $description = '',
     bool   $isValid = true,
     array  $validationReport = [],
-    array  $relations = [],
+    ?array  $relations = null,
     int    $modificationTime = 1,
     int    $size = 0,
     array  $contextData = [],

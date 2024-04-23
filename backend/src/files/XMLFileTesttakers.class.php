@@ -6,35 +6,45 @@ class XMLFileTesttakers extends XMLFile {
   const string type = 'Testtakers';
   const bool canBeRelationSubject = true;
   const bool canBeRelationObject = false;
-  protected LoginArray $logins;
+  protected ?LoginArray $logins = null;
 
   public function crossValidate(WorkspaceCache $workspaceCache): void {
     parent::crossValidate($workspaceCache);
-
-    $this->logins = $this->getAllLogins();
-    $this->contextData['testtakers'] = count($this->logins->asArray());
-
-//    $this->checkForDuplicateLogins();
-
-    foreach ($this->logins as $login) {
-      /* @var Login $login */
-      $this->checkIfBookletsArePresent($login, $workspaceCache);
-    }
-
+    $this->checkIfBookletsExist($workspaceCache);
     $this->checkIfIdsAreUsedInOtherFiles($workspaceCache);
   }
 
-  private function checkIfBookletsArePresent(Login $testtaker, WorkspaceCache $validator): void {
-    foreach ($testtaker->getBooklets() as $code => $booklets) {
+
+  private function checkIfBookletsExist(WorkspaceCache $workspaceCache): void {
+    if ($this->logins == null) {
+      $this->readAllLogins();
+      foreach ($this->logins as $login) {
+        /* @var Login $login */
+        $this->checkIfBookletsArePresent($login, $workspaceCache);
+      }
+      return;
+    }
+
+    foreach ($this->relations as $relation) {
+      /* @var $relation FileRelation */
+      if ($relation->getRelationshipType() != FileRelationshipType::hasBooklet) continue;
+      if (!$workspaceCache->getFile('Booklet', $relation->getTargetId())) {
+        $this->report('error', "Booklet `{$relation->getTargetId()}` not found`");
+      }
+    }
+  }
+
+  private function checkIfBookletsArePresent(Login $login, WorkspaceCache $cache): void {
+    foreach ($login->getBooklets() as $code => $booklets) {
       foreach ($booklets as $bookletId) {
-        $booklet = $validator->getBooklet($bookletId);
+        $booklet = $cache->getBooklet($bookletId);
 
         if ($booklet != null) {
-          $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
+          $this->addRelation(new FileRelation($booklet->getType(), $booklet->getName(), FileRelationshipType::hasBooklet, $booklet->getId()));
         }
 
         if (!$booklet or !$booklet->isValid()) {
-          $this->report('error', "Booklet `$bookletId` not found for login `{$testtaker->getName()}`");
+          $this->report('error', "Booklet `$bookletId` not found for login `{$login->getName()}`");
         }
       }
     }
@@ -91,13 +101,8 @@ class XMLFileTesttakers extends XMLFile {
     }
   }
 
-  public function getAllLogins(): LoginArray {
-    if (!$this->isValid()) {
-      return new LoginArray();
-    }
-
+  public function readAllLogins(): void {
     $testTakers = [];
-
     foreach ($this->getXml()->xpath('Group') as $groupElement) {
       foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
         $login = $this->getLogin($groupElement, $loginElement, -1);
@@ -105,7 +110,19 @@ class XMLFileTesttakers extends XMLFile {
       }
     }
 
-    return new LoginArray(...$testTakers);
+    $this->contextData['testtakers'] = count($testTakers);
+    $this->logins = new LoginArray(...$testTakers);
+  }
+
+
+  public function getAllLogins(): LoginArray {
+    if (!$this->isValid()) {
+      return new LoginArray();
+    }
+    if (!$this->logins) {
+      $this->readAllLogins();
+    }
+    return $this->logins;
   }
 
   public function getAllLoginNames(): array {

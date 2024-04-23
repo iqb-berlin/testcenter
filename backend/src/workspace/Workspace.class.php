@@ -8,7 +8,7 @@ class Workspace {
   public WorkspaceDAO $workspaceDAO;
 
   // dont' change order, it's the order of possible dependencies
-  const subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
+  const array subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
 
   static function getAll(): array {
     $workspaces = [];
@@ -167,40 +167,78 @@ class Workspace {
   }
 
   protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
+    paf_log('before crossValidateUnsortedFiles');
+
     $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
+
     $filesAfterSorting = [];
 
-    foreach ($files as $filesOfAType) {
+    foreach ($files['new'] as $filesOfAType) {
       foreach ($filesOfAType as $localFilePath => $file) {
+        paf_log('sort: ' . $file->getName());
         if ($file->isValid()) {
+          paf_log('isValid: ' . $file->getName());
           $this->sortUnsortedFile($localFilePath, $file);
           $this->workspaceDAO->storeFile($file);
           $this->storeFileMeta($file);
-          $this->updateRelatedFiles($file);
         }
 
         $filesAfterSorting[$localFilePath] = $file;
       }
     }
+    paf_log('after crossValidateUnsortedFiles');
+
+    foreach ($files['affected'] as $affectedFile) {
+      /* @var $affectedFile File */
+      paf_log('update affected: ' . $affectedFile->getName());
+      $this->storeFileMeta($affectedFile);
+    }
+
 
     return $filesAfterSorting;
   }
 
-  protected function crossValidateUnsortedFiles(array $localFilePaths): array {
-    $files = array_fill_keys(Workspace::subFolders, []);
-
-    $workspaceCache = new WorkspaceCache($this);
-    $workspaceCache->loadAllFiles(); // TODO! read from DB instead, and only affected files
-
-    foreach ($localFilePaths as $localFilePath) {
+  protected function crossValidateUnsortedFiles(array $newFileTempPaths): array {
+    $oldFiles = $this->workspaceDAO->getAllFiles();
+    $newFiles = array_fill_keys(Workspace::subFolders, []);
+    $newFilesFlat = [];
+    foreach ($newFileTempPaths as $localFilePath) {
       $file = File::get($this->workspacePath . '/' . $localFilePath);
-      $workspaceCache->addFile($file->getType(), $file, true);
-      $files[$file->getType()][$localFilePath] = $file;
+      $newFiles[$file->getType()][$localFilePath] = $file;
+      $newFilesFlat[] = $file;
     }
 
-    $workspaceCache->validate();
+    $workspaceCache = new WorkspaceCache($this);
+    foreach ($oldFiles as $type) {
+      foreach ($type as $file) {
+        /* @var File $file */
+        $workspaceCache->addFile($file->getType(), $file);
+      }
+    }
 
-    return $files;
+    foreach ($newFilesFlat as $newFile) {
+      /* @var File $newFile */
+      $workspaceCache->addFile($newFile->getType(), $newFile, true);
+    }
+
+    foreach ($newFilesFlat as $newFile) {
+      $newFile->crossValidate($workspaceCache);
+    }
+
+    $affectedLocalPaths = $this->workspaceDAO->getBlockedFiles($newFilesFlat);
+    // TODO X vertausche object und subject (oder kann man das anders bekommen, die Dateien sind ja alle geladen)
+    // TODO X what if it was affected before and isnt anymore
+    paf_log('affected' . var_export($affectedLocalPaths, true));
+    $affected = [];
+    foreach($affectedLocalPaths as $affectedLocalPath) {
+      list ($type, $name) = explode($affectedLocalPath, '/', 2);
+      $affected[] = $workspaceCache->getFile($type, $name);
+    }
+
+    return [
+      'new' => $newFiles,
+      'affected' => $affected
+    ];
   }
 
   protected function sortUnsortedFile(string $localFilePath, File $file): bool {
@@ -430,6 +468,7 @@ class Workspace {
 
     if (is_a($file, XMLFileBooklet::class)) {
       $requestedAttachments = $this->getRequestedAttachments($file);
+      paf_log("\n storeFileMeta (XMLFileBooklet): {$file->getId()}");
       $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
       $stats['attachments_noted'] = count($requestedAttachments);
     }
@@ -455,17 +494,17 @@ class Workspace {
     return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
   }
 
-  private function updateRelatedFiles(File $file): void {
-    $relatingFiles = $this->workspaceDAO->getRelatingFiles($file);
-
-    foreach ($relatingFiles as $fileSet) {
-      foreach ($fileSet as $relatingFile) {
-        /* @var File $relatingFile */
-
-        $this->storeFileMeta($relatingFile);
-      }
-    }
-  }
+//  private function updateRelatedFiles(File $file): void {
+////    $relatingFiles = $this->workspaceDAO->getRelatingFiles($file);
+//
+//    foreach ($file->getRelations() as $fileSet) {
+//      foreach ($fileSet as $relatingFile) {
+//        /* @var File $relatingFile */
+//        paf_log('updateRelatedFile: ' . var_export($relatingFile, true));
+//        $this->storeFileMeta($relatingFile);
+//      }
+//    }
+//  }
 
   public function getBookletResourcePaths(string $bookletId): array {
     $resourceList = $this->workspaceDAO->getBookletResourcePaths($bookletId);

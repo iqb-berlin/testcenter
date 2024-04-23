@@ -117,6 +117,7 @@ class WorkspaceController extends Controller {
   }
 
   public static function postFile(Request $request, Response $response): Response {
+    unlink('/var/www/data/paf.log');
     set_time_limit(600); // because password hashing may take a lot of time if many testtakers are provided
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);

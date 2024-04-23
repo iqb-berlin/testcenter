@@ -23,6 +23,19 @@ const DATA_DIR = ROOT_DIR . '/data';
 
 require_once "vendor/autoload.php";
 
+$start = microtime(true);
+$max_mem = 0;
+function paf_log(string $entry): void {
+  global $start, $max_mem;
+  $bt = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS,7);
+  array_shift($bt);
+  $s = array_map(function($entry) { return "[{$entry['class']}→{$entry['function']}]"; }, $bt);
+  $bts = implode(' ← ', $s);
+  $t = microtime(true) - $start;
+  $m = max($max_mem, memory_get_usage());
+  file_put_contents('/var/www/data/paf.log', "[$t] [$m] $entry\t\t\t\t← $bts\n",  FILE_APPEND );
+}
+
 try {
   SystemConfig::readVersion();
   $systemVersion = SystemConfig::$system_version;

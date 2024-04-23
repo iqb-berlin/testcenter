@@ -26,6 +26,7 @@ class File extends FileData {
 
   static function fromString(string $fileContent, string $fileName = 'virtual_file'): File {
     $file = new static(new FileData($fileName));
+    paf_log("W ($fileName) (" . substr($fileContent, 1, 8) . ")");
     $file->content = $fileContent;
     $file->validate();
     return $file;
@@ -46,6 +47,7 @@ class File extends FileData {
 
   public function __construct(string|FileData $init) {
     if (is_a($init, FileData::class)) {
+      paf_log('CONSTRUCT DATA (rc: ' . count($init->relations) . ')');
       $this->path = $init->path;
       $this->type = $init->type;
       $this->id = $init->id;
@@ -71,7 +73,7 @@ class File extends FileData {
 
     $this->readFileMeta($init);
     $this->id = strtoupper($this->getName());
-
+    paf_log('CONSTRUCT PATH');
     $this->load();
   }
 
@@ -93,13 +95,17 @@ class File extends FileData {
   }
 
   protected function load(): void {
+    $c = is_null($this->content) ? '<NULL>' : substr($this->content, 0, 8);
+    paf_log('LOAD: ' . $this->name . " (c: $c)");
     if (($this->content === null) and $this->path and file_exists($this->path)) {
+      paf_log('OPEN: ' . $this->name);
       $this->content = file_get_contents($this->path);
       $this->validate();
     }
   }
 
   protected function validate(): void {
+    paf_log('VALIDATE_BASE: ' . $this->name);
     if (strlen($this->name) > 120) {
       $this->report('error', "Filename too long!");
     }

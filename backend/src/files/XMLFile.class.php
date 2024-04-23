@@ -21,6 +21,8 @@ class XMLFile extends File {
       return;
     }
 
+    paf_log('VALIDATE_XML: ' . $this->name);
+
     libxml_use_internal_errors(true);
     libxml_clear_errors();
 
@@ -53,6 +55,7 @@ class XMLFile extends File {
   }
 
   protected function getXML(): SimpleXMLElement {
+    error_log('GETXML:' . $this->name);
     parent::load();
     return $this->xml;
   }

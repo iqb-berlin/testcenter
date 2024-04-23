@@ -412,7 +412,7 @@ END;
       )
     );
 
-    $result = $xmlFile->getAllLogins();
+    $result = $xmlFile->readAllLogins();
 
     $this->assertEquals($expected, $result);
   }
