@@ -12,6 +12,11 @@ layout: default
   Datei-Mengen auf einmal zu ermöglichen (eine aktuelle Studie verwendet 3500 verschiedene Testhefte). Eine tatsächliche
   Behebung des enormen Speicherbedarfs beim Uplaod wird folgen. 
 
+## [next]
+### Bugfixes
+* Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
+  korrekt. Dies betrifft z. B. den Aspect-Player.
+
 ## 15.1.4
 ### Bugfixes
 * Fehler der in ganz neuen (123+) Chrome-based Browsern auftritt behoben: Wenn man in das Eingabefeld für Namen oder
