@@ -29,6 +29,10 @@ layout: default
   Fehlermeldungen führte, wenn man den test neu öffnete. Dies ist nun behoben.
 * Globale (d.h. in der Systemverwaltung gesetzte CustomTexts) werden jetzt (wieder) direkt übernommen, ohne, dass die
   Seite neugeladen werden muss (#482)
+* Um gleichzeitige Uploads auf den selben Arbeitsbereich zu verhindern, wird ein Workspace für die Dauer des Uplaods
+  für Upload (und löschen) gesperrt. In bestimmten Fehlersituationen wird diese Sperre nicht korrekt aufgehoben und der
+  Arbeitsbereich bleibt gesperrt. Sperren, die älter als zwölf Minuten sind, werden in Zukunft ignoriert. 
+  
 
 ## 15.1.3
 ### Bugfixes

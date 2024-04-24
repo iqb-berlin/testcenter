@@ -23,7 +23,11 @@ class IsWorkspaceBlocked {
 
     $workspace = new Workspace((int) $params['ws_id']);
 
-    if (file_exists($workspace->getWorkspacePath() . '/.lock')) {
+    error_log('time: ' . time() - filemtime($workspace->getWorkspacePath() . '/.lock'));
+    if (
+      file_exists($workspace->getWorkspacePath() . '/.lock')
+      and (time() - filemtime($workspace->getWorkspacePath() . '/.lock') < 60 * 12)
+    ) {
       throw new HttpException($request, 'Workspace blocked by another upload or deletion action.', 409);
     }
 
