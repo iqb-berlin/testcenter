@@ -23,7 +23,6 @@ class IsWorkspaceBlocked {
 
     $workspace = new Workspace((int) $params['ws_id']);
 
-    error_log('time: ' . time() - filemtime($workspace->getWorkspacePath() . '/.lock'));
     if (
       file_exists($workspace->getWorkspacePath() . '/.lock')
       and (time() - filemtime($workspace->getWorkspacePath() . '/.lock') < 60 * 12)
