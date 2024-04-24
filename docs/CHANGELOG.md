@@ -2,11 +2,11 @@
 layout: default
 ---
 ## [next]
-
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
   korrekt. Dies betrifft z. B. den Aspect-Player.
 * Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
+* Kann keine Websocket-Verbindung etabliert werden, wird wieder korrekt auf Polling umgeschlatet.
 
 ### Verbesserungen
 * Limits für Arbeitsspeicher und Ausführungszeit beim Datei-Upload wurden vorübergehend sehr hoch angesetzt, da Aufgrund
