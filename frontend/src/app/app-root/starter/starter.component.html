@@ -30,7 +30,7 @@
           *ngFor="let accessObject of accessObjects.studyMonitor"
           mat-raised-button color="primary"
           class="starter"
-          [attr.data-cy]="'GM-' + accessObject.id"
+          [attr.data-cy]="'SM-' + accessObject.id"
           (click)="buttonGotoStudyMonitor(accessObject)"
         >
           <div class="starter-title">{{accessObject.label}}</div>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -17,6 +18,15 @@ class IsGroupMonitor {
     $routeContext = RouteContext::fromRequest($request);
     $route = $routeContext->getRoute();
     $params = $route->getArguments();
+
+    if (isset($params['ws_id'])) {
+      if ($authToken->getWorkspaceId() !== (int) $params['ws_id']) {
+        throw new HttpNotFoundException($request, "Workspace `{$params['ws_id']}` not found.");
+      }
+      if ((int) $params['ws_id'] < 1) {
+        throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
+      }
+    }
 
     switch ($authToken->getMode()) {
       default:
