@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Deployment
+* Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
+
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
