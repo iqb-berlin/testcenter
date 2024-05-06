@@ -317,6 +317,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';
     }
 
+    // if (this.tcs.testMode.canChoosePathManually) {
+    //   this.tsc.unlock
+    // }
+
     this.runUnit();
   }
 

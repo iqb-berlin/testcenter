@@ -10,6 +10,7 @@ export class TestModeData {
   showTimeLeft: boolean = false;
   showUnitMenu: boolean = false;
   receiveRemoteCommands: boolean = false;
+  canChoosePathManually: boolean = true;
 
   static modes = {
     'RUN-DEMO': {
@@ -22,7 +23,8 @@ export class TestModeData {
       presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: true
     },
     'MONITOR-GROUP': {
       alwaysNewSession: false,
@@ -34,7 +36,8 @@ export class TestModeData {
       presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: true
     },
     'MONITOR-STUDY': {
       alwaysNewSession: false,
@@ -46,7 +49,8 @@ export class TestModeData {
       presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: true
     },
     'RUN-HOT-RETURN': {
       alwaysNewSession: false,
@@ -58,7 +62,8 @@ export class TestModeData {
       presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: true
+      receiveRemoteCommands: true,
+      canChoosePathManually: false
     },
     'RUN-HOT-RESTART': {
       alwaysNewSession: true,
@@ -70,7 +75,8 @@ export class TestModeData {
       presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: true
+      receiveRemoteCommands: true,
+      canChoosePathManually: false
     },
     'RUN-REVIEW': {
       alwaysNewSession: false,
@@ -82,7 +88,8 @@ export class TestModeData {
       presetCode: true,
       showTimeLeft: true,
       showUnitMenu: true,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: true
     },
     'RUN-TRIAL': {
       alwaysNewSession: false,
@@ -94,7 +101,8 @@ export class TestModeData {
       presetCode: true,
       showTimeLeft: true,
       showUnitMenu: true,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: true
     },
     'RUN-SIMULATION': {
       alwaysNewSession: false,
@@ -106,7 +114,8 @@ export class TestModeData {
       presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      canChoosePathManually: false
     }
   };
 

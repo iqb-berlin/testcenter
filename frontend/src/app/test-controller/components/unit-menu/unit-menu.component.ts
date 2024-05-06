@@ -10,6 +10,7 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
 })
 export class UnitMenuComponent {
   @Input() booklet: Booklet | null = null;
+  @Input() freeNavigation: boolean = false;
 
   testletContext?: { testlet: Testlet, level: number };
 

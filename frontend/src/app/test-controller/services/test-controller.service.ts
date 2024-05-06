@@ -405,7 +405,7 @@ export class TestControllerService {
         return null;
       }
       nextUnit = this.getUnitSilent(nextUnitSequenceId);
-    } while (nextUnit && TestControllerService.unitIsInaccessible(nextUnit));
+    } while (nextUnit && this.unitIsInaccessible(nextUnit));
     return nextUnit ? nextUnitSequenceId : null;
   }
 
@@ -568,10 +568,17 @@ export class TestControllerService {
   }
 
   updateLocks(): void {
+    const activatedLockTypes = [
+      ...TestletLockTypes
+        .filter(lockType => lockType !== 'condition' || !this.testMode.canChoosePathManually)
+    ];
+
     const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
       testlet.locked = [parent, testlet]
         .filter((item): item is Testlet => !!item)
-        .flatMap(item => TestletLockTypes.map(lockType => ({ through: item, by: lockType })))
+        .flatMap(item => activatedLockTypes
+          .map(lockType => ({ through: item, by: lockType }))
+        )
         .find(isLocked => isLocked.through.locks[isLocked.by]) || null;
       testlet.children
         .filter(isTestlet)
@@ -586,15 +593,12 @@ export class TestControllerService {
     this.testStructureChanges$.next();
   }
 
-  static unitIsInaccessible(unit: Unit): boolean {
-    return unit.lockedAfterLeaving || (
-      !!unit.parent.locked &&
-        (
-          // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
-          (unit.parent.locked.by !== 'code') ||
-          ((unit.localIndex !== 0) || (unit.parent.id === unit.parent.locked.through.id))
-        )
-    );
+  unitIsInaccessible(unit: Unit): boolean {
+    if (unit.lockedAfterLeaving) return true;
+    if (!unit.parent.locked) return false;
+    if ((unit.parent.locked.by === 'condition') && this.testMode.canChoosePathManually) return false;
+    if ((unit.parent.locked.by === 'code') && (unit.localIndex === 0)) return false;
+    return true;
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): boolean {
@@ -762,12 +766,12 @@ export class TestControllerService {
 
   getSequenceBounds(): [number, number] {
     const first = Object.values(this.units)
-      .find(unit => !TestControllerService.unitIsInaccessible(unit))
+      .find(unit => !this.unitIsInaccessible(unit))
       ?.sequenceId || NaN;
     const last = Object.values(this.units)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-      .findLast(unit => !TestControllerService.unitIsInaccessible(unit))
+      .findLast(unit => !this.unitIsInaccessible(unit))
       ?.sequenceId || NaN;
     return [first, last];
   }

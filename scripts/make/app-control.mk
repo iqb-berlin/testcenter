@@ -20,6 +20,9 @@ build:
 run:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
 
+run-fast:
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
+
 # Build all images of the project or a specified one as prod-images.
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 build-prod-local:

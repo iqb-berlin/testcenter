@@ -382,7 +382,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         sequenceId,
         shortLabel: unit.labelShort,
         longLabel: unit.label,
-        disabled: TestControllerService.unitIsInaccessible(unit),
+        disabled: this.tcs.unitIsInaccessible(unit),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId,
         headline
       });

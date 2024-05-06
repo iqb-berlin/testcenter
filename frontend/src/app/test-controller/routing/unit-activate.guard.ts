@@ -32,7 +32,7 @@ export class UnitActivateGuard {
       this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       return false;
     }
-    if (TestControllerService.unitIsInaccessible(newUnit)) {
+    if (this.tcs.unitIsInaccessible(newUnit)) {
       // a unitId of a locked unit was inserted
       const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.sequenceId, true);
       if (!previousUnlockedUnit) {
