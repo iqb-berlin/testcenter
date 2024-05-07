@@ -9,6 +9,10 @@ layout: default
     heraus navigiert werden kann.
   * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
     `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
+
+## XML-Austauschformate
+* Element `<ValuePositionLabels>` wird in der akzeptiert, so wie es die aktuellen Versionen vom IQB-Studio liefern. 
+
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
