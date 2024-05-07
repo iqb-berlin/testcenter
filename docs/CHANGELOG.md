@@ -1,6 +1,14 @@
 ---
 layout: default
 ---
+
+## [next]
+## neue Features
+* Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
+  * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
+    heraus navigiert werden kann.
+  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
+    `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
