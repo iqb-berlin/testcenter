@@ -9,6 +9,10 @@ layout: default
     heraus navigiert werden kann.
   * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
     `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
+
+### Verbesserungen
+*  Customtext hinzugefügt für das Label für den Weiter-Button, bei gesperrten units
+
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
