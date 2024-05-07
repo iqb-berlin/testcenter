@@ -1,10 +1,20 @@
 ---
 layout: default
 ---
+
 ## [next]
+### neue Features
+* Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
+  * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
+    heraus navigiert werden kann.
+  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
+    `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
+
+### XML-Austauschformate
+* Element `<ValuePositionLabels>` wird in der akzeptiert, so wie es die aktuellen Versionen vom IQB-Studio liefern. 
+
 ### Verbesserungen
 * Die verfügbaren Booklets im Starter werden nun in der Reihenfolge angezeigt, in der sie in der Testtakers-XML stehen,
-  und nicht nach dem Alphabet sortiert.
 
 ## 15.1.5
 ### Bugfixes
