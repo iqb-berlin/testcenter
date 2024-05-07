@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* Die verfügbaren Booklets im Starter werden nun in der Reihenfolge angezeigt, in der sie in der Testtakers-XML stehen,
+  und nicht nach dem Alphabet sortiert.
+
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
