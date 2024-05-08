@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
   * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
@@ -15,7 +15,8 @@ layout: default
 * Die verfügbaren Booklets im Starter werden nun in der Reihenfolge angezeigt, in der sie in der Testtakers-XML stehen.
 
 ### XML-Austauschformate
-* Element `<ValuePositionLabels>` wird in der akzeptiert, so wie es die aktuellen Versionen vom IQB-Studio liefern. 
+* Unit-XML: Element `<ValuePositionLabels>` wird in der Varaiblenliste akzeptiert, so wie es die aktuellen Versionen
+  vom IQB-Studio liefern. 
 
 
 ## 15.1.5
