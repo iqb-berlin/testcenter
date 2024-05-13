@@ -42,7 +42,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pages: { [id: string]: string } = {};
   pageLabels: string[] = [];
-  currentPageIndex: number = -1;
 
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
@@ -141,7 +140,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
             this.pages = playerState.validPages;
             this.pageLabels = Object.values(this.pages);
             // page index starts with 0 and gets mapped from and to the dictionary from the API
-            this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
+            this.tcs.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
+            this.tcs.currentPageLabel = this.pageLabels[this.tcs.currentPageIndex];
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
@@ -237,7 +237,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
 
-    this.currentPageIndex = -1;
+    this.tcs.currentPageIndex = -1;
 
     this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
 
@@ -443,11 +443,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   gotoNextPage(): void {
-    this.gotoPage(this.currentPageIndex + 1);
+    this.gotoPage(this.tcs.currentPageIndex + 1);
   }
 
   gotoPreviousPage(): void {
-    this.gotoPage(this.currentPageIndex - 1);
+    this.gotoPage(this.tcs.currentPageIndex - 1);
   }
 
   gotoPage(targetPageIndex: number): void {
