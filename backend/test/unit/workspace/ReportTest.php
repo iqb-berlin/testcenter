@@ -313,8 +313,8 @@ final class ReportTest extends TestCase {
   private ReportType $reportType;
   private ReportFormat $reportFormat;
 
-  private AdminDAO | MockInterface $adminDaoMock;
-  private SysChecksFolder | MockInterface $sysChecksFolderMock;
+  private AdminDAO|MockInterface $adminDaoMock;
+  private SysChecksFolder|MockInterface $sysChecksFolderMock;
 
   public function setUp(): void {
     $this->workspaceId = 1;
