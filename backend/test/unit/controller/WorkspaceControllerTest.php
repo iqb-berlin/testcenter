@@ -8,8 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 /**
  * @runTestsInSeparateProcesses
