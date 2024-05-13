@@ -1,6 +1,16 @@
 ---
 layout: default
 ---
+
+## [next]
+### Verbesserungen
+* Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
+  haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
+  haben, so wird kein Datein-Import durchgeführt. Dies beschleunigt die Arbeit in der Entwicklung und auch beim Pflegen
+  von Testdaten.
+* Während Initialization Tests werden fake patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests 
+  wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
+
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
