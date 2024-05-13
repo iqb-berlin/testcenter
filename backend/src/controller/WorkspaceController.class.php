@@ -179,6 +179,10 @@ class WorkspaceController extends Controller {
   }
 
   public static function getReport(Request $request, Response $response): ?Response {
+    if ($request->getParam('newFeature') === 'true') {
+      die();
+    }
+
     $workspaceId = (int) $request->getAttribute('ws_id');
 
     $dataIds = $request->getParam('dataIds', '') === ''
