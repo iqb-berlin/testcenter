@@ -24,7 +24,9 @@ describe('ReviewDialogComponent', () => {
     loginname: 'loginname',
     bookletname: 'bookletname',
     unitDbKey: 'unitDbKey',
-    unitTitle: 'unitTitle'
+    unitTitle: 'unitTitle',
+    currentPageIndex: 1,
+    currentPageLabel: 'first page label'
   };
 
   beforeEach(waitForAsync(() => {

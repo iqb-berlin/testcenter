@@ -59,6 +59,9 @@ export class TestControllerService {
   currentUnitDbKey = '';
   currentUnitTitle = '';
 
+  currentPageIndex: number = -1;
+  currentPageLabel: string = '';
+
   allUnitIds: string[] = [];
 
   windowFocusState$ = new Subject<WindowFocusState>();

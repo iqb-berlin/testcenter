@@ -1,6 +1,6 @@
-import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
@@ -10,9 +10,10 @@ import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
     'ul {list-style-type: none; padding: 0;}'
   ]
 })
-export class ReviewDialogComponent {
+export class ReviewDialogComponent implements OnInit {
   reviewForm = new FormGroup({
     target: new FormControl('u', Validators.required),
+    targetLabel: new FormControl(this.data.currentPageLabel),
     priority: new FormControl(''),
     tech: new FormControl(),
     content: new FormControl(),
@@ -22,8 +23,15 @@ export class ReviewDialogComponent {
   });
 
   static savedName = '';
+  showInputField: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ReviewDialogData) { }
+
+  ngOnInit(): void {
+    this.reviewForm.get('target')?.valueChanges.subscribe(value => {
+      this.showInputField = value === 'p';
+    });
+  }
 
   getSelectedCategories(): string { // TODO wtf is this a string
     let selectedCategories = '';

@@ -1,11 +1,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Component, HostListener, Inject, OnDestroy, OnInit
-} from '@angular/core';
-import { Subscription, combineLatest } from 'rxjs';
-import {
-  debounceTime, distinctUntilChanged, filter, map
-} from 'rxjs/operators';
+import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
+import { combineLatest, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -16,11 +12,13 @@ import {
 } from '../../../shared/shared.module';
 import {
   AppFocusState,
-  Command, MaxTimerDataType,
+  Command,
+  MaxTimerDataType,
   ReviewDialogData,
   StateReportEntry,
   TestControllerState,
-  TestStateKey, UnitNaviButtonData,
+  TestStateKey,
+  UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
@@ -32,6 +30,7 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
+import { resolveLiteral } from '@angular/compiler-cli/src/ngtsc/annotations/common';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -188,7 +187,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           loginname: authData.displayName,
           bookletname: this.tcs.rootTestlet.title,
           unitTitle: this.tcs.currentUnitTitle,
-          unitDbKey: this.tcs.currentUnitDbKey
+          unitDbKey: this.tcs.currentUnitDbKey,
+          currentPageIndex: this.tcs.currentPageIndex,
+          currentPageLabel: this.tcs.currentPageLabel
         }
       });
 
@@ -200,9 +201,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.bs.saveReview(
           this.tcs.testId,
           (result.target === 'u') ? this.tcs.currentUnitDbKey : null,
+          this.tcs.currentPageIndex,
+          result.targetLabel,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });
