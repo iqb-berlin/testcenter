@@ -36,6 +36,7 @@ class WorkspaceController extends Controller {
 
     self::superAdminDAO()->createWorkspace($requestBody->name);
 
+    $response->getBody()->write(htmlspecialchars($requestBody->name));
     return $response->withStatus(201);
   }
 
