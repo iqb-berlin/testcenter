@@ -44,3 +44,7 @@ else
   echo "files were not re-imported "
 fi
 
+
+remove_patch 7.0.0
+remove_patch 10.0.9998
+remove_patch 10.0.9999

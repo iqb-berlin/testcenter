@@ -294,17 +294,17 @@ class InitDAO extends SessionDAO {
       $patches[] = array_shift($patches);
     }
 
-    $isFutureVersion = true;
+    $patchIsFutureVersion = true;
 
     foreach ($patches as $patch) {
-      $lastWasFutureVersion = $isFutureVersion;
-      $isFutureVersion = Version::compare($patch) > 0;
+      $lastWasFutureVersion = $patchIsFutureVersion;
+      $patchIsFutureVersion = Version::compare($patch) > 0;
       $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
       $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
 
       if (
         (!$forcePatch) &&
-        ($isFutureVersion or $shouldBeInstalled)
+        ($patchIsFutureVersion or $shouldBeInstalled)
       ) {
         continue;
       }
@@ -371,5 +371,4 @@ class InitDAO extends SessionDAO {
     $d = $this->_("select 'a' || 'b' as merged")['merged'];
     return $d === 'ab';
   }
-
 }
