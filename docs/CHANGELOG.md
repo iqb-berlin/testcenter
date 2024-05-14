@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.2.0-alpha
+## 15.2.0-alpha2
 Erste experimentelle Probierversion mit der Verzweigung.
 
 ## 15.1.4
