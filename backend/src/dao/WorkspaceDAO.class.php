@@ -449,7 +449,7 @@ paf_log(print_r($replacements, true));
       /* @var $relation FileRelation */
 
 //      $relatedFile = $relation->getTarget();
-//
+// TODO X
 //      if (!$relatedFile) {
 //        $unresolvedRelations[] = $relation;
 //      }
@@ -476,7 +476,7 @@ paf_log(print_r($replacements, true));
   }
 
   public function getRelatingFiles(File $file): array {
-    // TODO make recursive: a player may affect a unit, that a booklet, and that a testtakers file
+    // TODO X make recursive: a player may affect a unit, that a booklet, and that a testtakers file
 
     $sql = "select
       files.name,

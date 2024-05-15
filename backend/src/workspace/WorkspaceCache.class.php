@@ -5,7 +5,6 @@ declare(strict_types=1);
 class WorkspaceCache {
   protected array $cachedFiles = [];
   protected array $duplicates = [];
-  protected array $used = [];
   protected Workspace $workspace;
   protected array $globalIds = []; // type => [id => fileName]
 
@@ -142,5 +141,28 @@ class WorkspaceCache {
 
   public function addGlobalIdSource(string $fileName, string $type, array $idList): void {
     $this->globalIds[$this->getId()][$fileName][$type] = $idList;
+  }
+
+  public function getRelatingFiles(File ...$files): array {
+    $fileLocalPaths = array_map(
+      function(File $file): string {
+        return $file->getType() . '/' . $file->getName();
+      },
+      $files
+    );
+    $relatingFiles = [];
+    foreach (Workspace::subFolders as $type) {
+      foreach ($this->cachedFiles[$type] as $file) {
+        /* @var $file File */
+        foreach ($file->getRelations() as $relation) {
+          $targetLocalPath = $relation->getTargetType() . '/' . $relation->getTargetName();
+          /* @var FileRelation $relation */
+          if (in_array($targetLocalPath, $fileLocalPaths)) {
+            $relatingFiles[$file->getType() . '/' . $file->getName()] = $file;
+          }
+        }
+      }
+    }
+    return $relatingFiles;
   }
 }

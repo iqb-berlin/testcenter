@@ -216,6 +216,8 @@ class Workspace {
       }
     }
 
+    $relatingFilesBefore = $workspaceCache->getRelatingFiles(...$newFilesFlat);
+
     foreach ($newFilesFlat as $newFile) {
       /* @var File $newFile */
       $workspaceCache->addFile($newFile->getType(), $newFile, true);
@@ -225,19 +227,25 @@ class Workspace {
       $newFile->crossValidate($workspaceCache);
     }
 
-    $affectedLocalPaths = $this->workspaceDAO->getBlockedFiles($newFilesFlat);
-    // TODO X vertausche object und subject (oder kann man das anders bekommen, die Dateien sind ja alle geladen)
+    $relatingFilesAfter = $workspaceCache->getRelatingFiles(...$newFilesFlat);
+
+    $relatingFiles = $relatingFilesBefore + $relatingFilesAfter;
+
+
     // TODO X what if it was affected before and isnt anymore
-    paf_log('affected' . var_export($affectedLocalPaths, true));
-    $affected = [];
-    foreach($affectedLocalPaths as $affectedLocalPath) {
-      list ($type, $name) = explode($affectedLocalPath, '/', 2);
-      $affected[] = $workspaceCache->getFile($type, $name);
-    }
+    $flubby = array_map(
+      function(File $file): string {
+        return $file->getType() . '/' . $file->getName();
+      },
+      $relatingFiles
+    );
+
+    paf_log('affected: ' . var_export($flubby, true));
+
 
     return [
       'new' => $newFiles,
-      'affected' => $affected
+      'affected' => $relatingFiles
     ];
   }
 

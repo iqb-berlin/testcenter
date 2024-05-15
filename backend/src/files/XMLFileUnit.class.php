@@ -69,8 +69,8 @@ class XMLFileUnit extends XMLFile {
     if ($playerId) {
       $resources['player'] = $playerId;
     }
-    foreach ($resources as $key => $resourceName) {
-      $resourceId = strtoupper($resourceName);
+    foreach ($resources as $key => $resourceQuery) {
+      $resourceId = strtoupper($resourceQuery);
       $resource = $cache->getResource($resourceId);
       if ($resource != null) {
         $relationshipType = match($key) {
@@ -78,10 +78,10 @@ class XMLFileUnit extends XMLFile {
           'player' => FileRelationshipType::usesPlayer,
           default => FileRelationshipType::usesPlayerResource
         };
-        $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource->getId()));
+        $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), $relationshipType, $resource->getId()));
         $this->contextData['totalSize'] += $resource->getSize();
       } else {
-        $this->report('error', "Resource `$resourceName` not found");
+        $this->report('error', "Resource `$resourceQuery` not found");
       }
     }
   }
