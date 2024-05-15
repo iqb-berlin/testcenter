@@ -2,6 +2,12 @@
 layout: default
 ---
 
+## [next]
+### Sicherheit
+* Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
+  Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
+
+
 ## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
