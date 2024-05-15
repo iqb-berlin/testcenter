@@ -2,6 +2,11 @@
 layout: default
 ---
 
+## [next]
+### Verbesserungen
+* PUT/workspace gibt bei einem StatusCode 200 auch die angelegte Workspaceid zurück. PUT/user gibt analog dazu die 
+  userId zurück.
+
 ## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.

@@ -122,6 +122,9 @@ paths:
       responses:
         "201":
           description: OK, user has been added
+          content:
+            text/html;charset=utf-8:
+              example: "thirdUser"
         "401":
           description: Not authenticated
         "403":
