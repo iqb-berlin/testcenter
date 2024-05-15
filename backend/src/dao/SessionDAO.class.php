@@ -553,12 +553,13 @@ class SessionDAO extends DAO {
               and files.type = 'Booklet'
               and files.id in ($placeHolder)
             order by
-              files.label";
+              field(files.id, $placeHolder)";
     $tests = $this->_(
       $sql,
       [
         $personSession->getPerson()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
+        ...$bookletIds,
         ...$bookletIds
       ],
       true

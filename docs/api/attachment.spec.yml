@@ -16,6 +16,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
           schema:
             type: string
         - in: path
@@ -64,6 +65,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
         - in: path
           name: attachment_id
           description: id of the attachment_id
@@ -104,6 +106,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
         - in: path
           name: attachment_id
           description: id of the attachment_id
@@ -140,6 +143,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
       responses:
         "200":
           description: a list of all (requested) attachments in this group.
@@ -192,6 +196,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
         - in: path
           name: attachment_id
           description: id of the attachment_id
@@ -238,6 +243,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
         - in: path
           name: attachment_id
           description: id of the attachment_id
@@ -288,6 +294,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+          required: true
         - in: query
           name: labelTemplate
           schema:

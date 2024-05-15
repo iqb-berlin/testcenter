@@ -139,6 +139,10 @@
     "label" : "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
     "defaultvalue" : "Bitte prüfen Sie die Eingaben (unvollständig):"
   },
+  "booketlet_continueButtonLockedUnit" : {
+    "label": "Label für den Button um bei gesperrten Units weiter zuklicken",
+    "defaultvalue": "Weiter"
+  },
   "syscheck_unitPrompt" : {
     "label" : "Titelzeile über der Aufgabe",
     "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"

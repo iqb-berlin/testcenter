@@ -140,7 +140,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
         type:
           type: string
           description: workspaceAdmin, superAdmin, test, testGroupMonitor, attachmentManager or studyMonitor
@@ -168,8 +168,8 @@ components:
       type: object
       properties:
         id:
-          type: string
-          example: "1"
+          type: integer
+          example: 1
         name:
           type: string
           example: "example_workspace"
@@ -203,8 +203,8 @@ components:
           type: string
           example: super
         id:
-          type: string
-          example: "1"
+          type: integer
+          example: 1
         email:
           type: string
           nullable: true
@@ -287,7 +287,7 @@ components:
           $ref: '#/components/schemas/speed_params'
         workspaceId:
           description: on which workspace is this SysCheck?
-          type: number
+          type: integer
 
     speed_params:
       type: object
@@ -329,7 +329,7 @@ components:
       description: definition of a SysCheck-questionaire
       properties:
         id:
-          type: number
+          type: integer
           description: identifier of the question
           example: 1
         type:

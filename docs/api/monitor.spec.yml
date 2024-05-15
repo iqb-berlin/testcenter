@@ -19,6 +19,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "g:user000000000.0000000000"
+          required: true
         - in: path
           name: group_name
           description: name (id) of a group
@@ -60,7 +61,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor or study-monitor
           example: "g:user000000000.0000000000"
-
+          required: true
       responses:
         "200":
           description: return group data
@@ -126,6 +127,7 @@ paths:
               value: "g:user000000000.0000000000"
             study-monitor:
               value: "s:user000000000.0000000000"
+          required: true
         - in: path
           name: group_name
           description: name (id) of a group
@@ -193,6 +195,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "g:user000000000.0000000000"
+          required: true
       requestBody:
         content:
           application/json:
@@ -240,6 +243,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "g:user000000000.0000000000"
+          required: true
         - in: path
           name: group_name
           description: name (id) of a group
@@ -279,6 +283,7 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "g:user000000000.0000000000"
+          required: true
         - in: path
           name: group_name
           description: name (id) of a group
