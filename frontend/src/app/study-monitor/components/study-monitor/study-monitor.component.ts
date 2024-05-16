@@ -21,17 +21,23 @@ export class StudyMonitorComponent {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   private wsIdSubscription: Subscription | null = null;
+  private intervalId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private backendService: BackendService,
     public mainDataService: MainDataService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.wsIdSubscription = this.route.params.subscribe(params => {
         this.updateTable(params.ws);
+
+        this.intervalId = setInterval(() => {
+          this.updateTable(params.ws);
+        }, 10000);
       });
     });
   }
@@ -40,6 +46,11 @@ export class StudyMonitorComponent {
     if (this.wsIdSubscription) {
       this.wsIdSubscription.unsubscribe();
       this.wsIdSubscription = null;
+
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
     }
   }
 
