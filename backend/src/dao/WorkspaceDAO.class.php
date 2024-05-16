@@ -12,6 +12,11 @@ class WorkspaceDAO extends DAO {
     $this->workspacePath = $workspacePath;
   }
 
+  public function getWorkspaceId(): int
+  {
+    return $this->workspaceId;
+  }
+
   public function getWorkspaceName(): string {
     $workspace = $this->_(
       'select workspaces.name 

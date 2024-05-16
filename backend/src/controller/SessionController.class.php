@@ -55,7 +55,7 @@ class SessionController extends Controller {
 
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, null, ...$testsOfPerson, ...$groupMonitors);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
 
       self::registerDependantSessions($loginSession);
       CacheService::storeAuthentication($personSession);
@@ -79,7 +79,7 @@ class SessionController extends Controller {
     CacheService::removeAuthentication($personSession); // TODO X correct?!
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
     CacheService::storeAuthentication($personSession);
-    return $response->withJson(AccessSet::createFromPersonSession($personSession,null , ...$testsOfPerson));
+    return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
   }
 
   private static function registerDependantSessions(LoginSession $login): void {
@@ -147,9 +147,14 @@ class SessionController extends Controller {
     if ($authToken->getType() == "person") {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $workspaceName = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId())->getWorkspaceName();
+      $workspace = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+      $workspaceData = new WorkspaceData(
+        $workspace->getWorkspaceId(),
+        $workspace->getWorkspaceName(),
+        'R'
+      );
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceName, ...$testsOfPerson, ...$groupMonitors);
+      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors);
       return $response->withJson($accessSet);
     }
 

@@ -23,8 +23,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   static function createFromPersonSession(
     PersonSession $loginWithPerson,
-    ?string $workspaceName = null,
-    TestData | Group ...$accessItems
+    WorkspaceData | TestData | Group ...$accessItems
   ): AccessSet {
     $login = $loginWithPerson->getLoginSession()->getLogin();
 
@@ -43,19 +42,13 @@ class AccessSet extends DataCollectionTypeSafe {
 
     $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
 
-    if ($login->getMode() == 'monitor-study') {
-      $accessSet->addAccessObjects(
-        'studyMonitor',
-        new AccessObject(
-          (string)$login->getWorkspaceId(),
-          'studyMonitor',
-          $workspaceName ?? 'no workspace name',
-        )
-      );
-    }
-
     foreach ($accessItems as $accessItem) {
       switch (get_class($accessItem)) {
+        case 'WorkspaceData':
+          if ($login->getMode() == 'monitor-study') {
+            $accessSet->addStudyMonitor($accessItem);
+          }
+          break;
         case 'Group':
           $accessSet->addGroupMonitors($accessItem);
           break;
@@ -201,5 +194,18 @@ class AccessSet extends DataCollectionTypeSafe {
       $groups
     );
     $this->addAccessObjects('testGroupMonitor', ...$groupMonitors);
+  }
+
+  private function addStudyMonitor(WorkspaceData $accessItem): void
+  {
+    $this->addAccessObjects(
+      'studyMonitor',
+      new AccessObject(
+        (string) $accessItem->getId(),
+        'studyMonitor',
+        $accessItem->getName()
+      )
+    );
+
   }
 }
