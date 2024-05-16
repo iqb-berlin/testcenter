@@ -173,7 +173,7 @@ class Workspace {
 
     $filesAfterSorting = [];
 
-    foreach ($files['new'] as $filesOfAType) {
+    foreach ($files as $filesOfAType) {
       foreach ($filesOfAType as $localFilePath => $file) {
         paf_log('sort: ' . $file->getName());
         if ($file->isValid()) {
@@ -187,13 +187,6 @@ class Workspace {
       }
     }
     paf_log('after crossValidateUnsortedFiles');
-
-    foreach ($files['affected'] as $affectedFile) {
-      /* @var $affectedFile File */
-      paf_log('update affected: ' . $affectedFile->getName());
-      $this->storeFileMeta($affectedFile);
-    }
-
 
     return $filesAfterSorting;
   }
@@ -216,8 +209,6 @@ class Workspace {
       }
     }
 
-    $relatingFilesBefore = $workspaceCache->getRelatingFiles(...$newFilesFlat);
-
     foreach ($newFilesFlat as $newFile) {
       /* @var File $newFile */
       $workspaceCache->addFile($newFile->getType(), $newFile, true);
@@ -227,26 +218,7 @@ class Workspace {
       $newFile->crossValidate($workspaceCache);
     }
 
-    $relatingFilesAfter = $workspaceCache->getRelatingFiles(...$newFilesFlat);
-
-    $relatingFiles = $relatingFilesBefore + $relatingFilesAfter;
-
-
-    // TODO X what if it was affected before and isnt anymore
-    $flubby = array_map(
-      function(File $file): string {
-        return $file->getType() . '/' . $file->getName();
-      },
-      $relatingFiles
-    );
-
-    paf_log('affected: ' . var_export($flubby, true));
-
-
-    return [
-      'new' => $newFiles,
-      'affected' => $relatingFiles
-    ];
+    return $newFiles;
   }
 
   protected function sortUnsortedFile(string $localFilePath, File $file): bool {

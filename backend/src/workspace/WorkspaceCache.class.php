@@ -142,33 +142,4 @@ class WorkspaceCache {
   public function addGlobalIdSource(string $fileName, string $type, array $idList): void {
     $this->globalIds[$this->getId()][$fileName][$type] = $idList;
   }
-
-  public function getRelatingFiles(File ...$files): array {
-    $fileLocalPaths = array_map(
-      function(File $file): string {
-        return $file->getType() . '/' . $file->getName();
-      },
-      $files
-    );
-    if (!count($fileLocalPaths)) {
-      return [];
-    }
-    $relatingFiles = [];
-    foreach (Workspace::subFolders as $type) {
-      foreach ($this->cachedFiles[$type] as $file) {
-        $relatingFilesOfFile = [];
-        /* @var $file File */
-        foreach ($file->getRelations() ?? [] as $relation) {
-          $targetLocalPath = $relation->getTargetType() . '/' . $relation->getTargetName();
-          /* @var FileRelation $relation */
-          if (in_array($targetLocalPath, $fileLocalPaths)) {
-            $relatingFiles[$file->getType() . '/' . $file->getName()] = $file;
-            $relatingFilesOfFile[$file->getType() . '/' . $file->getName()] = $file;
-          }
-        }
-        $relatingFiles += $this->getRelatingFiles(...$relatingFilesOfFile);
-      }
-    }
-    return $relatingFiles;
-  }
 }
