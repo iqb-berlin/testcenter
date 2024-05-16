@@ -568,10 +568,17 @@ export class TestControllerService {
   }
 
   updateLocks(): void {
+    const activatedLockTypes = [
+      ...TestletLockTypes
+        .filter(lockType => lockType !== 'condition')
+    ];
+
     const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
       testlet.locked = [parent, testlet]
         .filter((item): item is Testlet => !!item)
-        .flatMap(item => TestletLockTypes.map(lockType => ({ through: item, by: lockType })))
+        .flatMap(item => activatedLockTypes
+          .map(lockType => ({ through: item, by: lockType }))
+        )
         .find(isLocked => isLocked.through.locks[isLocked.by]) || null;
       testlet.children
         .filter(isTestlet)
@@ -587,14 +594,10 @@ export class TestControllerService {
   }
 
   static unitIsInaccessible(unit: Unit): boolean {
-    return unit.lockedAfterLeaving || (
-      !!unit.parent.locked &&
-        (
-          // the first unit of a code-locked block is accessible, bc somewhere you have to enter the code
-          (unit.parent.locked.by !== 'code') ||
-          ((unit.localIndex !== 0) || (unit.parent.id === unit.parent.locked.through.id))
-        )
-    );
+    if (unit.lockedAfterLeaving) return true;
+    if (!unit.parent.locked) return false;
+    if ((unit.parent.locked.by === 'code') && (unit.localIndex === 0)) return false;
+    return true;
   }
 
   updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): boolean {
