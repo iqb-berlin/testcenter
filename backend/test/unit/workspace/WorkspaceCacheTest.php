@@ -159,17 +159,17 @@ class WorkspaceCacheTest extends TestCase {
   }
 
   function test_getRelatingFiles_booklet(): void {
-    $booklet = new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $file = new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
     $this->workspaceCache->validate();
-    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $result = $this->workspaceCache->getRelatingFiles($file);
     $expectation = ['Testtakers/SAMPLE_TESTTAKERS.XML' ];
     $this->assertEquals($expectation, array_keys($result));
   }
 
   function test_getRelatingFiles_unit(): void {
-    $booklet = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    $file = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
     $this->workspaceCache->validate();
-    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $result = $this->workspaceCache->getRelatingFiles($file);
     $expectation = [
       'Booklet/booklet-duplicate-id-2.xml',
       'Booklet/SAMPLE_BOOKLET3.XML',
@@ -182,9 +182,9 @@ class WorkspaceCacheTest extends TestCase {
   }
 
   function test_getRelatingFiles_resource(): void {
-    $booklet = new ResourceFile(DATA_DIR . '/ws_1/Resource/sample_resource_package.itcr.zip');
+    $file = new ResourceFile(DATA_DIR . '/ws_1/Resource/sample_resource_package.itcr.zip');
     $this->workspaceCache->validate();
-    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $result = $this->workspaceCache->getRelatingFiles($file);
     $expectation = [
       'Unit/SAMPLE_UNIT2.XML',
       'Booklet/SAMPLE_BOOKLET3.XML',
@@ -213,24 +213,31 @@ class WorkspaceCacheTest extends TestCase {
   }
 
   function test_getRelatingFiles_FilesFromDB(): void {
-    $unit = new XMLFileUnit(new FileData(
+    $file = new XMLFileUnit(new FileData(
       DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML',
-      'unit',
-      'UNIT.SAMPLE1',
-      '',
-      '',
+      'Unit',
+      'UNIT.SAMPLE',
+      'A sample unit',
+      'This is a sample unit showing the possibilities of the sample player.',
       true,
       [],
       [
-        // TODO X STAND
-      ],
-      0,
-      5,
-
-
+        new FileRelation(
+          'Resource',
+          'verona-player-simple-4.0.0.html',
+          FileRelationshipType::isDefinedBy,
+          'SAMPLE_UNITCONTENTS.HTM'
+        ),
+        new FileRelation(
+          'Resource',
+          'SAMPLE_UNITCONTENTS.HTM',
+          FileRelationshipType::usesPlayer,
+          'VERONA-PLAYER-SIMPLE-4.0'
+        ),
+      ]
     ));
     $this->workspaceCache->validate();
-    $result = $this->workspaceCache->getRelatingFiles($unit);
+    $result = $this->workspaceCache->getRelatingFiles($file);
     $expectation = [
       'Booklet/booklet-duplicate-id-2.xml',
       'Booklet/SAMPLE_BOOKLET3.XML',
