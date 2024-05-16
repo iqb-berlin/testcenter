@@ -7,6 +7,8 @@ declare(strict_types=1);
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
+function paf_log($x) {}
+
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
@@ -91,14 +93,17 @@ class WorkspaceCacheTest extends TestCase {
           "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
           'Unit is never used'
         ],
-        'error' => ['Player not found `MISSING-P-0.0`.'],
+        'error' => ['Player `MISSING-P-0.0` not found'],
       ],
       'Unit/unit-unused-and-missing-ref.xml' => [
         'warning' => [
           "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
           'Unit is never used'
         ],
-        'error' => ['Resource `not-existing.voud` not found']
+        'error' => [
+          'Unit-Definition `not-existing.voud` not found',
+          'Player `SAMPLE_P-0.0` not found'
+        ]
       ],
       'Unit/SAMPLE_UNIT.XML' => [
         'info' => ["`1` attachment(s) requested."]
@@ -142,7 +147,7 @@ class WorkspaceCacheTest extends TestCase {
     $this->assertEquals($expected, $allReports);
   }
 
-  function test_getResource() {
+  function test_getResource(): void  {
     $result = $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-4.0');
     $expectation = "verona-player-simple-4.0.0.html";
     $this->assertEquals($expectation, $result->getName());
@@ -151,5 +156,89 @@ class WorkspaceCacheTest extends TestCase {
     $this->assertNull($result);
 
     // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
+  }
+
+  function test_getRelatingFiles_booklet(): void {
+    $booklet = new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $this->workspaceCache->validate();
+    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $expectation = ['Testtakers/SAMPLE_TESTTAKERS.XML' ];
+    $this->assertEquals($expectation, array_keys($result));
+  }
+
+  function test_getRelatingFiles_unit(): void {
+    $booklet = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    $this->workspaceCache->validate();
+    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $expectation = [
+      'Booklet/booklet-duplicate-id-2.xml',
+      'Booklet/SAMPLE_BOOKLET3.XML',
+      'Testtakers/SAMPLE_TESTTAKERS.XML',
+      'Booklet/SAMPLE_BOOKLET2.XML',
+      'Booklet/SAMPLE_BOOKLET.XML',
+      'SysCheck/SAMPLE_SYSCHECK.XML'
+    ];
+    $this->assertEquals($expectation, array_keys($result));
+  }
+
+  function test_getRelatingFiles_resource(): void {
+    $booklet = new ResourceFile(DATA_DIR . '/ws_1/Resource/sample_resource_package.itcr.zip');
+    $this->workspaceCache->validate();
+    $result = $this->workspaceCache->getRelatingFiles($booklet);
+    $expectation = [
+      'Unit/SAMPLE_UNIT2.XML',
+      'Booklet/SAMPLE_BOOKLET3.XML',
+      'Testtakers/SAMPLE_TESTTAKERS.XML',
+      'Booklet/SAMPLE_BOOKLET2.XML',
+      'Booklet/SAMPLE_BOOKLET.XML'
+    ];
+    $this->assertEquals($expectation, array_keys($result));
+  }
+
+
+  function test_getRelatingFiles_twoFiles(): void {
+    $booklet = new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
+    $unit = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+    $this->workspaceCache->validate();
+    $result = $this->workspaceCache->getRelatingFiles($booklet, $unit);
+    $expectation = [
+      'Booklet/booklet-duplicate-id-2.xml',
+      'Booklet/SAMPLE_BOOKLET3.XML',
+      'Testtakers/SAMPLE_TESTTAKERS.XML',
+      'Booklet/SAMPLE_BOOKLET2.XML',
+      'Booklet/SAMPLE_BOOKLET.XML',
+      'SysCheck/SAMPLE_SYSCHECK.XML'
+    ];
+    $this->assertEquals($expectation, array_keys($result));
+  }
+
+  function test_getRelatingFiles_FilesFromDB(): void {
+    $unit = new XMLFileUnit(new FileData(
+      DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML',
+      'unit',
+      'UNIT.SAMPLE1',
+      '',
+      '',
+      true,
+      [],
+      [
+        // TODO X STAND
+      ],
+      0,
+      5,
+
+
+    ));
+    $this->workspaceCache->validate();
+    $result = $this->workspaceCache->getRelatingFiles($unit);
+    $expectation = [
+      'Booklet/booklet-duplicate-id-2.xml',
+      'Booklet/SAMPLE_BOOKLET3.XML',
+      'Testtakers/SAMPLE_TESTTAKERS.XML',
+      'Booklet/SAMPLE_BOOKLET2.XML',
+      'Booklet/SAMPLE_BOOKLET.XML',
+      'SysCheck/SAMPLE_SYSCHECK.XML'
+    ];
+    $this->assertEquals($expectation, array_keys($result));
   }
 }

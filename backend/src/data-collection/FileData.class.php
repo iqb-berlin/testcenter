@@ -89,7 +89,7 @@ class FileData extends DataCollectionTypeSafe {
     return $this->description;
   }
 
-  public function getRelations(): array {
+  public function getRelations(): ?array {
     return $this->relations;
   }
 

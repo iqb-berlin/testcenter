@@ -46,7 +46,7 @@ class XMLFileUnit extends XMLFile {
       $this->readRelations($cache);
     } else {
       foreach ($this->relations as $relation) {
-        if (!$relation->getTargetId()) {
+        if (!$relation->getTargetId()) { // TODO X
           var_dump($this->relations);
           die();
         }
@@ -63,25 +63,25 @@ class XMLFileUnit extends XMLFile {
     $resources = $this->readPlayerDependencies();
     $definitionRef = $this->getDefinitionRef();
     if ($definitionRef) {
-      $resources['definition'] = $definitionRef;
+      $resources['Unit-Definition'] = $definitionRef;
     }
     $playerId = $this->readPlayerId();
     if ($playerId) {
-      $resources['player'] = $playerId;
+      $resources['Player'] = $playerId;
     }
     foreach ($resources as $key => $resourceQuery) {
       $resourceId = strtoupper($resourceQuery);
       $resource = $cache->getResource($resourceId);
       if ($resource != null) {
         $relationshipType = match($key) {
-          'definition' => FileRelationshipType::isDefinedBy,
-          'player' => FileRelationshipType::usesPlayer,
+          'Unit-Definition' => FileRelationshipType::isDefinedBy,
+          'Player' => FileRelationshipType::usesPlayer,
           default => FileRelationshipType::usesPlayerResource
         };
         $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), $relationshipType, $resource->getId()));
         $this->contextData['totalSize'] += $resource->getSize();
       } else {
-        $this->report('error', "Resource `$resourceQuery` not found");
+        $this->report('error', "$key `$resourceQuery` not found");
       }
     }
   }

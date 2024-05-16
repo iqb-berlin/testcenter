@@ -105,10 +105,10 @@ class WorkspaceCache {
       foreach ($this->cachedFiles[$type] as $file) {
         /* @var $file File */
         if ($file::canBeRelationSubject) {
-          $relations = $file->getRelations();
+          $relations = $file->getRelations() ?? [];
           foreach ($relations as $relation) {
             /* @var FileRelation $relation */
-            $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetName())] = $file->getName();
+            $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetId())] = $file->getName();
           }
         }
       }
@@ -150,17 +150,23 @@ class WorkspaceCache {
       },
       $files
     );
+    if (!count($fileLocalPaths)) {
+      return [];
+    }
     $relatingFiles = [];
     foreach (Workspace::subFolders as $type) {
       foreach ($this->cachedFiles[$type] as $file) {
+        $relatingFilesOfFile = [];
         /* @var $file File */
-        foreach ($file->getRelations() as $relation) {
+        foreach ($file->getRelations() ?? [] as $relation) {
           $targetLocalPath = $relation->getTargetType() . '/' . $relation->getTargetName();
           /* @var FileRelation $relation */
           if (in_array($targetLocalPath, $fileLocalPaths)) {
             $relatingFiles[$file->getType() . '/' . $file->getName()] = $file;
+            $relatingFilesOfFile[$file->getType() . '/' . $file->getName()] = $file;
           }
         }
+        $relatingFiles += $this->getRelatingFiles(...$relatingFilesOfFile);
       }
     }
     return $relatingFiles;

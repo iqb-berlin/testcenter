@@ -201,7 +201,7 @@ class XMLFileTesttakers extends XMLFile {
   // TODO write unit test
   // TODO make private
   public function collectBookletsOfGroup(int $workspaceId, string $loginName): array {
-    $members = $this->getLoginsInSameGroup($loginName, $workspaceId);
+    $members = $this->getLoginsInSameGroup($loginName, $workspaceId) ?? [];
     $booklets = [];
 
     foreach ($members as $member) {
