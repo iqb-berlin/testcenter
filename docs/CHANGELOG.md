@@ -7,7 +7,7 @@ layout: default
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
   alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
   Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eine Super Admins, ohne jedoch die Rechte zu haben, die 
-  Ergebnisse zu downloaden oder zu löschen.
+  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.
 
 
 ## 15.1.6
