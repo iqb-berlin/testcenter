@@ -405,6 +405,7 @@ final class SessionControllerTest extends TestCase {
     ]);
 
     $this->mockWorkspaceDAO([
+      'getWorkspaceId' => 1,
       'getWorkspaceName' => 'example_workspace'
     ]);
 

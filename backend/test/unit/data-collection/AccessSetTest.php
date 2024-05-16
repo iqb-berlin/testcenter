@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class AccessSetTest extends TestCase
-{
-  function test__createFromPersonSession(): void
-  {
+class AccessSetTest extends TestCase {
+  function test__createFromPersonSession(): void {
     // Arrange
     $personSession = new PersonSession(
       new LoginSession(
@@ -38,7 +36,8 @@ class AccessSetTest extends TestCase
     );
 
     // Act
-    $accessSet = AccessSet::createFromPersonSession($personSession);
+    $workspaceData = new WorkspaceData(1, 'ws_name', 'R');
+    $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData);
 
     // Assert
     parent::assertTrue($accessSet->hasAccessType('studyMonitor'));
