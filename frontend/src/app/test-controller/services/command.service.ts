@@ -48,9 +48,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   ) {
     super(serverUrl, http);
 
-    if (!this.isProductionMode) {
-      this.setUpGlobalCommandsForDebug();
-    }
+    this.setUpGlobalCommandsForDebug();
 
     // as services don't have a OnInit Hook (see: https://v9.angular.io/api/core/OnInit) we subscribe here
     this.subscribeReceivedCommands();
@@ -133,9 +131,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private commandFromTerminal(keyword: string, args: string[]): void {
-    if (this.isProductionMode) {
-      return;
-    }
     const newArgs = (typeof args === 'undefined') ? [] : args;
     const id = Math.round(Math.random() * -10000000);
     const command = {
