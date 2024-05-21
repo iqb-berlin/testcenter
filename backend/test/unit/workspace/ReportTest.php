@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -312,14 +313,14 @@ final class ReportTest extends TestCase {
   private ReportType $reportType;
   private ReportFormat $reportFormat;
 
-  private AdminDAO $adminDaoMock;
-  private SysChecksFolder $sysChecksFolderMock;
+  private AdminDAO | MockInterface $adminDaoMock;
+  private SysChecksFolder | MockInterface $sysChecksFolderMock;
 
   public function setUp(): void {
     $this->workspaceId = 1;
     $this->dataIds = ["sample_group", "sample_group"];
-    $this->adminDaoMock = $this->createMock(AdminDAO::class);
-    $this->sysChecksFolderMock = $this->createMock(SysChecksFolder::class);
+    $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
+    $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
   }
 
   function test__construct(): void {
@@ -342,7 +343,7 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::LOG;
     $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
+    $this->adminDaoMock->allows('getLogReportData')->andReturn(self::LOGS);
 
     $expectedLogsCSVReportData = self::BOM .
       "groupname;loginname;code;bookletname;unitname;timestamp;logentry\n" .
@@ -363,7 +364,7 @@ final class ReportTest extends TestCase {
     // Arrange
     $this->reportType = ReportType::LOG;
     $this->reportFormat = ReportFormat::CSV;
-    $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
+    $this->adminDaoMock->allows('getLogReportData')->andReturn(self::LOGS);
 
     $expectedLogsJsonReportData = self::LOGS;
 
@@ -383,7 +384,7 @@ final class ReportTest extends TestCase {
 
   private function testGenerateLogsReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getLogReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getLogReportData')->andReturn([]);
 
     // Act
     $report = new Report(
@@ -408,7 +409,7 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::RESPONSE;
     $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn(self::RESPONSES);
 
     $expectedResponsesCSVReportData = self::BOM .
       "groupname;loginname;code;bookletname;unitname;responses;laststate\n" .
@@ -429,7 +430,7 @@ final class ReportTest extends TestCase {
     // Arrange
     $this->reportType = ReportType::RESPONSE;
     $this->reportFormat = ReportFormat::JSON;
-    $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn(self::RESPONSES);
 
     $expectedResponsesJsonReportData = self::RESPONSES;
 
@@ -449,7 +450,7 @@ final class ReportTest extends TestCase {
 
   private function testGenerateResponsesReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getResponseReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn([]);
 
     // Act
     $report = new Report(
@@ -474,7 +475,7 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
     $expectedReviewsCSVReportData = self::BOM .
       "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
@@ -496,7 +497,7 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
     $expectedReviewsCSVReportData = self::BOM .
       "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
@@ -517,7 +518,7 @@ final class ReportTest extends TestCase {
     // Arrange
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
     $expectedReviewsJsonReportData = array_map(
 
@@ -543,7 +544,7 @@ final class ReportTest extends TestCase {
     // Arrange
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
     $expectedReviewsJsonReportData = [
       [
@@ -589,7 +590,7 @@ final class ReportTest extends TestCase {
 
   private function testGenerateReviewsReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getReviewReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn([]);
 
     // Act
     $report = new Report(
@@ -614,8 +615,8 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::SYSCHECK;
     $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksCSVReportData = self::BOM .
       "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
@@ -636,8 +637,8 @@ final class ReportTest extends TestCase {
     $this->reportType = ReportType::SYSCHECK;
     $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksJsonReportData = self::SYS_CHECKS;
     $expectedSysChecksJsonReportData[0]["fileData"] = [
@@ -673,8 +674,8 @@ final class ReportTest extends TestCase {
   private function testGenerateSysChecksReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([]);
 
     // Act
     $report = new Report(
