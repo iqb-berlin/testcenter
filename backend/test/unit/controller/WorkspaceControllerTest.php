@@ -133,7 +133,8 @@ final class WorkspaceControllerTest extends TestCase {
     $this->dataIds = "";
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
+    $this->reportMock->expects('generate')->andReturn(false);
+    $this->reportMock->expects('asString')->andReturn('');
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -181,8 +182,8 @@ final class WorkspaceControllerTest extends TestCase {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
     $this->reportMock->expects('generate')->andReturn(false);
+    $this->reportMock->expects('asString')->andReturn('');
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -231,9 +232,8 @@ final class WorkspaceControllerTest extends TestCase {
     $mediaType = 'text/csv';
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
     $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('getCsvReportData')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
+    $this->reportMock->expects('asString')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -252,9 +252,8 @@ final class WorkspaceControllerTest extends TestCase {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
     $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('getReportData')->andReturn(self::JSON_REPORT_DATA_SAMPLE);
+    $this->reportMock->expects('asString')->andReturn(json_encode(self::JSON_REPORT_DATA_SAMPLE));
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
