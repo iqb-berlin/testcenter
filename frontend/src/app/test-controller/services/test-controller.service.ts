@@ -661,9 +661,12 @@ export class TestControllerService {
       // const baseVarIds = this.units[sequenceId].scheme.getBaseVarsList(allVarIds);
       const baseVars = Object.values(this.units[sequenceId].variables)
         .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
-      this.units[sequenceId].scheme.code(baseVars)
+      const codeResult = this.units[sequenceId].scheme.code(baseVars);
+      codeResult
         .forEach(variable => {
-          this.units[sequenceId].variables[variable.id] = variable;
+          if (variable.id in this.units[sequenceId].variables) {
+            this.units[sequenceId].variables[variable.id] = variable;
+          }
         });
     }
 
