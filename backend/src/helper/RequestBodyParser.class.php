@@ -24,12 +24,15 @@ class RequestBodyParser {
     return isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
   }
 
-  static function getElements(Request $request, array $elements2defaults = []): array {
+  static function getElements(Request $request, array $requiredElements2defaults = [], array $optionalElements = []): array {
     $requestBody = JSON::decode($request->getBody()->getContents());
-    return self::applyDefaults($requestBody, $elements2defaults);
+    return array_merge(
+      self::applyDefaultsToRequiredElements($requestBody, $requiredElements2defaults),
+      self::setOptionalElements($requestBody, $optionalElements)
+    );
   }
 
-  static private function applyDefaults($element, array $elements2defaults) {
+  static private function applyDefaultsToRequiredElements($element, array $elements2defaults): array {
     $elements = [];
 
     foreach ($elements2defaults as $elementName => $default) {
@@ -54,9 +57,19 @@ class RequestBodyParser {
     $result = [];
 
     foreach ($requestBody as $row) {
-      $result[] = self::applyDefaults($row, $elements2defaults);
+      $result[] = self::applyDefaultsToRequiredElements($row, $elements2defaults);
     }
 
     return $result;
+  }
+
+  private static function setOptionalElements($requestBody, array $optionalElements): array {
+    $elements = [];
+
+    foreach ($optionalElements as $element) {
+      $elements[$element] = $requestBody->$element ?? null;
+    }
+
+    return $elements;
   }
 }

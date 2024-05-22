@@ -89,16 +89,18 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry): void {
+  public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry, ?int $page = null, ?string $pageLabel = null): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry) values(:u, :t, :p, :c, :e)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel) values(:u, :t, :p, :c, :e, :pa, :pl)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
         ':p' => $priority,
         ':c' => $categories,
-        ':e' => $entry
+        ':e' => $entry,
+        ':pa' => $page,
+        ':pl' => $pageLabel
       ]
     );
   }

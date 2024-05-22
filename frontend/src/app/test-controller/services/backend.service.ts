@@ -21,8 +21,8 @@ export class BackendService {
   saveReview(
     testId: string,
     unitName: string | null,
-    page: number,
-    pageLabel: string,
+    page: number | null,
+    pageLabel: string | null,
     priority: number,
     categories: string,
     entry: string

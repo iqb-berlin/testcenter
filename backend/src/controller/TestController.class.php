@@ -8,8 +8,8 @@ use Slim\Exception\HttpException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 use Slim\Psr7\Stream;
 
 class TestController extends Controller {
@@ -78,7 +78,7 @@ class TestController extends Controller {
       'xml' => $bookletFile->getContent(),
       'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()),
       'firstStart' => !$test->running,
-      'workspaceId' =>  $workspace->getId()
+      'workspaceId' => $workspace->getId()
     ]);
   }
 
@@ -144,16 +144,19 @@ class TestController extends Controller {
     die();
   }
 
-
   public static function putUnitReview(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $review = RequestBodyParser::getElements($request, [
+    $review = RequestBodyParser::getElements(
+      $request,
+      [
       'priority' => 0, // was: p
       'categories' => 0, // was: c
-      'entry' => null // was: e
-    ]);
+      'entry' => null, // was: e
+      ],
+      ['page', 'pageLabel']
+    );
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
@@ -161,7 +164,7 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
-    self::testDAO()->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry']);
+    self::testDAO()->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry'], $review['page'] ?? null, $review['pageLabel'] ?? null);
 
     return $response->withStatus(201);
   }
