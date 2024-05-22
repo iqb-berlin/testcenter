@@ -436,6 +436,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.units[sequenceId].variables[baseVariableId] = { id: baseVariableId, status: 'UNSET', value: null };
         }
       });
+    this.tcs.codeVariables(sequenceId);
   }
 
   // temporary until fix is in @iqb/responses - this logic relies on the scheme-format and should NOT be part of TC!

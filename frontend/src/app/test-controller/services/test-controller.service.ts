@@ -656,21 +656,22 @@ export class TestControllerService {
             somethingChanged = true;
           });
       });
-    if (somethingChanged) {
-      // const allVarIds = Object.keys(this.units[sequenceId].variables);
-      // const baseVarIds = this.units[sequenceId].scheme.getBaseVarsList(allVarIds);
-      const baseVars = Object.values(this.units[sequenceId].variables)
-        .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
-      const codeResult = this.units[sequenceId].scheme.code(baseVars);
-      codeResult
-        .forEach(variable => {
-          if (variable.id in this.units[sequenceId].variables) {
-            this.units[sequenceId].variables[variable.id] = variable;
-          }
-        });
+    if (somethingChanged && this.units[sequenceId].scheme.variableCodings.length) {
+      this.codeVariables(sequenceId);
     }
 
     return somethingChanged;
+  }
+
+  codeVariables(sequenceId: number): void {
+    const baseVars = Object.values(this.units[sequenceId].variables)
+      .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
+    this.units[sequenceId].scheme.code(baseVars)
+      .forEach(variable => {
+        if (variable.id in this.units[sequenceId].variables) {
+          this.units[sequenceId].variables[variable.id] = variable;
+        }
+      });
   }
 
   evaluateConditions(): void {
