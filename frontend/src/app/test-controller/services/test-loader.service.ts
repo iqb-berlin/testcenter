@@ -31,7 +31,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  Testlet, Booklet, Unit, isUnit, TestletLockTypes, MaxTimeLeaveValue
+  Testlet, Booklet, Unit, isUnit, TestletLockTypes
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -159,8 +159,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       .forEach((unitSequenceId: string | number) => {
         this.tcs.units[Number(unitSequenceId)].lockedAfterLeaving = true;
       });
-
-    this.tcs.evaluateConditions();
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
@@ -437,6 +435,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
         }
       });
     this.tcs.codeVariables(sequenceId);
+    this.tcs.evaluateConditions();
   }
 
   // temporary until fix is in @iqb/responses - this logic relies on the scheme-format and should NOT be part of TC!

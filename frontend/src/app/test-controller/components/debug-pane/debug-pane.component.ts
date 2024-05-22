@@ -1,12 +1,14 @@
 import {
   ChangeDetectorRef, Component, Inject, OnInit
 } from '@angular/core';
+import { ResponseValueType as IQBVariableValueType } from '@iqb/responses/coding-interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CommandService } from '../../services/command.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { AuthData } from '../../../app.interfaces';
+import { IqbVariableUtil } from '../../util/iqb-variable.util';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -86,5 +88,11 @@ export class DebugPaneComponent implements OnInit {
     if (tabId !== -1) {
       this.activeTabs.splice(tabId, 1);
     }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  stringValue(value: IQBVariableValueType, shorten: boolean = false) {
+    const vStr = IqbVariableUtil.variableValueAsString(value);
+    return shorten ? vStr.substring(0, 12) + (vStr.length > 13 ? '...' : '') : vStr;
   }
 }

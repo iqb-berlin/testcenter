@@ -29,4 +29,23 @@ export class IqbVariableUtil {
     }
     return value;
   }
+
+  static variableValueAsString(value: IQBVariableValueType | undefined): string {
+    if (value == null) {
+      return 'null';
+    }
+    if (typeof value === 'undefined') {
+      return 'undefined';
+    }
+    if (Array.isArray(value)) {
+      return value.map(IqbVariableUtil.variableValueAsString).join(', ');
+    }
+    if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    }
+    if (typeof value === 'string') {
+      return `"${value}"`;
+    }
+    return String(value);
+  }
 }

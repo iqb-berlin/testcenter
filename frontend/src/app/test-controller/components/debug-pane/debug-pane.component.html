@@ -104,7 +104,7 @@
       <tr *ngFor="let uvar of unit.value.variables | keyvalue">
         <td>{{uvar.value.id}}{{!unit.value.baseVariableIds.includes(uvar.value.id) ? ' *' : ''}}</td>
         <td>{{uvar.value.status}}</td>
-        <td>{{uvar.value.value}}</td>
+        <td [matTooltip]="stringValue(uvar.value.value)">{{stringValue(uvar.value.value, true)}}</td>
         <td>{{uvar.value.code}}</td>
         <td>{{uvar.value.score}}</td>
       </tr>
