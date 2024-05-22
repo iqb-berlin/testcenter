@@ -38,7 +38,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   resourcesToLoadLabels: string[] = [];
 
-  pageList: string[] = [];
+  pages: { [id: string]: string } = {};
+  pageLabels: string[] = [];
   currentPageIndex: number = -1;
 
   clearCode: string = '';
@@ -160,14 +161,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (msgData.playerState) {
       const { playerState } = msgData;
 
-      this.pageList = Object.values(playerState.validPages);
-      this.currentPageIndex = playerState.currentPage - 1;
+      this.pages = playerState.validPages;
+      this.pageLabels = Object.values(this.pages);
+      // page index starts with 0 and gets mapped from and to the dictionary from the API
+      this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
 
       if (typeof playerState.currentPage !== 'undefined') {
         const pageId = playerState.currentPage;
         const pageNr = playerState.currentPage + 1;
-        const pageCount = this.pageList.length;
-        if (this.pageList.length > 1 && playerState.validPages[playerState.currentPage]) {
+        const pageCount = this.pageLabels.length;
+        if (Object.keys(this.pages).length > 1 && playerState.validPages[playerState.currentPage]) {
           this.tcs.updateUnitState(
             this.tcs.currentUnitSequenceId,
             {
@@ -244,9 +247,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.currentPageIndex = -1;
-    this.pageList = [];
-
-    // this.tcs.currentUnit = this.tcs.getUnit(this.currentUnitSequenceId);
+    this.pages = {};
+    this.pageLabels = [];
 
     this.mds.appSubTitle$.next(this.tcs.currentUnit.label);
 
@@ -397,6 +399,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitNumber: this.tcs.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnit.label,
       unitId: this.tcs.currentUnit.alias,
+      stateReportPolicy: 'eager', // for pre-verona-4-players which does not report by default
       directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
     };
     if (
@@ -448,7 +451,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
       sessionId: this.playerSessionId,
-      target: targetPageIndex + 1
+      target: Object.keys(this.pages)[targetPageIndex]
     }, '*');
   }
 

@@ -200,6 +200,10 @@ export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLea
   return ['ON', 'OFF', 'ALWAYS'].includes(s);
 }
 
+
+export const maxTimeLeaveValues = ['confirm', 'forbidden'];
+export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
+
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }
@@ -245,6 +249,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
+  maxTimeLeave: MaxTimeLeaveValue;
 }
 
 export type Booklet = BookletDef<Testlet>;

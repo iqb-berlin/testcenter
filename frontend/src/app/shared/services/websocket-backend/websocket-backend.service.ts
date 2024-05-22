@@ -2,10 +2,10 @@ import {
   Inject, Injectable, OnDestroy, SkipSelf
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, skipWhile, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebsocketService } from '../websocket/websocket.service';
-import { ConnectionStatus } from '../../interfaces/websocket-backend.interfaces';
+import { ConnectionStatus, ConnectionStatusWs } from '../../interfaces/websocket-backend.interfaces';
 
 @Injectable()
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {
@@ -97,26 +97,31 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   private unsubscribeFromWebsocket() {
     if (this.wsConnectionStatusSubscription) {
       this.wsConnectionStatusSubscription.unsubscribe();
+      this.wsConnectionStatusSubscription = null;
     }
 
     if (this.wsDataSubscription) {
       this.wsDataSubscription.unsubscribe();
+      this.wsDataSubscription = null;
     }
   }
 
   private subScribeToWsChannel() {
+    if (this.wsDataSubscription) {
+      return;
+    }
+
     this.wsDataSubscription = this.getChannel<T>(this.wsChannelName)
       .subscribe((dataObject: T) => this.data$?.next(dataObject)); // subscribe only next, not complete!
 
     this.wsConnectionStatusSubscription = this.wsConnected$
       .pipe(
-        skipWhile((item: boolean) => item === null), // skip pre-init-state
-        tap((wsConnected: boolean) => {
-          if (!wsConnected) {
+        tap((wsConnected: ConnectionStatusWs) => {
+          if (wsConnected === 'disconnected') {
             this.scheduleNextPoll();
           }
         }),
-        map((wsConnected: boolean): ConnectionStatus => (wsConnected ? 'ws-online' : 'ws-offline'))
+        map((wsc: ConnectionStatusWs): ConnectionStatus => (wsc === 'connected' ? 'ws-online' : 'ws-offline'))
       )
       .subscribe(this.connectionStatus$);
   }

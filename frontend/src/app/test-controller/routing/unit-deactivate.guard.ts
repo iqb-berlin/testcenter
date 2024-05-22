@@ -33,6 +33,14 @@ export class UnitDeactivateGuard {
     ) {
       return of(true);
     }
+    if (this.tcs.testlets[this.tcs.currentTimerId].maxTimeLeave === 'forbidden') {
+      this.snackBar.open(
+        'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.',
+        'OK',
+        { duration: 3000 }
+      );
+      return of(false);
+    }
     if (!this.tcs.testMode.forceTimeRestrictions) {
       this.tcs.interruptTimer();
       return of(true);
