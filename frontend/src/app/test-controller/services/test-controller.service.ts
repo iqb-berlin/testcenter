@@ -568,10 +568,7 @@ export class TestControllerService {
   }
 
   updateLocks(): void {
-    const activatedLockTypes = [
-      ...TestletLockTypes
-        .filter(lockType => lockType !== 'condition')
-    ];
+    const activatedLockTypes = TestletLockTypes;
 
     const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
       testlet.locked = [parent, testlet]
