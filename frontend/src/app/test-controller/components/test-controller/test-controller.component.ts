@@ -200,12 +200,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u') ? this.tcs.currentUnitDbKey : null,
-          this.tcs.currentPageIndex,
-          result.targetLabel,
+          (result.target === 'u' || result.target === 'p') ? this.tcs.currentUnitDbKey : null,
+          (result.target === 'p') ? this.tcs.currentPageIndex : null,
+          (result.target === 'p') ? this.tcs.currentPageLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });
