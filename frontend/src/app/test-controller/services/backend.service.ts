@@ -25,12 +25,13 @@ export class BackendService {
     pageLabel: string | null,
     priority: number,
     categories: string,
-    entry: string
+    entry: string,
+    userAgent: string
   ) : Observable<void> {
     return this.http.put<void>(
       `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
       {
-        priority, categories, entry, page, pageLabel
+        priority, categories, entry, page, pageLabel, userAgent
       }
     );
   }

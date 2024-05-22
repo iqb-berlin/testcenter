@@ -75,24 +75,25 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function addTestReview(int $testId, int $priority, string $categories, string $entry): void {
+  public function addTestReview(int $testId, int $priority, string $categories, string $entry, string $userAgent): void {
     $this->_(
-      'insert into test_reviews (booklet_id, reviewtime, priority, categories, entry) values(:b, :t, :p, :c, :e)',
+      'insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent) values(:b, :t, :p, :c, :e, :u)',
       [
         ':b' => $testId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
         ':p' => $priority,
         ':c' => $categories,
-        ':e' => $entry
+        ':e' => $entry,
+        ':u' => $userAgent
       ]
     );
   }
 
   // TODO unit test
-  public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry, ?int $page = null, ?string $pageLabel = null): void {
+  public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry, ?int $page = null, ?string $pageLabel = null, string $userAgent): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel) values(:u, :t, :p, :c, :e, :pa, :pl)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel, user_agent) values(:u, :t, :p, :c, :e, :pa, :pl, :ua)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
@@ -100,7 +101,8 @@ class TestDAO extends DAO {
         ':c' => $categories,
         ':e' => $entry,
         ':pa' => $page,
-        ':pl' => $pageLabel
+        ':pl' => $pageLabel,
+        ':ua' => $userAgent
       ]
     );
   }

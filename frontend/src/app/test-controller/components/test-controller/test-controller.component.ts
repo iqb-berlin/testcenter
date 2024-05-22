@@ -1,9 +1,14 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, HostListener, Inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, HostListener, Inject, OnDestroy, OnInit
+} from '@angular/core';
 import { combineLatest, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
+import {
+  debounceTime, distinctUntilChanged, filter, map
+} from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import UAParser from 'ua-parser-js';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -30,7 +35,6 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
-import { resolveLiteral } from '@angular/compiler-cli/src/ngtsc/annotations/common';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -53,6 +57,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationList: Array<UnitNaviButtonData | string> = [];
   debugPane = false;
   unitScreenHeader: string = '';
+  uaParser: UAParser = new UAParser();
 
   constructor(
     public mainDataService: MainDataService,
@@ -205,7 +210,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           (result.target === 'p') ? this.tcs.currentPageLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+          this.uaParser.getUA()
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });
