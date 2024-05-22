@@ -151,9 +151,10 @@ class TestController extends Controller {
     $review = RequestBodyParser::getElements(
       $request,
       [
-      'priority' => 0, // was: p
-      'categories' => 0, // was: c
-      'entry' => null, // was: e
+        'priority' => 0, // was: p
+        'categories' => 0, // was: c
+        'entry' => null,// was: e
+        'userAgent' => ''
       ],
       ['page', 'pageLabel']
     );
@@ -164,7 +165,7 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
-    self::testDAO()->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry'], $review['page'] ?? null, $review['pageLabel'] ?? null);
+    self::testDAO()->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry'], $review['page'] ?? null, $review['pageLabel'] ?? null, $review['userAgent']);
 
     return $response->withStatus(201);
   }
@@ -175,14 +176,15 @@ class TestController extends Controller {
     $review = RequestBodyParser::getElements($request, [
       'priority' => 0, // was: p
       'categories' => 0, // was: c
-      'entry' => null // was: e
+      'entry' => null, // was: e
+      'userAgent' => ''
     ]);
 
     $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
       ? (int) $review['priority']
       : 0;
 
-    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry']);
+    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent']);
 
     return $response->withStatus(201);
   }
