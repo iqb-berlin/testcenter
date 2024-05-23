@@ -8,8 +8,12 @@ if [ "$1" == '' ]; then
 fi
 
 if [ "$(git symbolic-ref --short HEAD)" != "master" ]; then
-  echo "Not on master!";
-  exit 1;
+  echo "Not on Master!"
+  echo "Current Branch: $(git branch --show-current)"
+  read -n1 -p "Continue? (y/N) " confirm
+  if echo "$confirm" | grep '^[Nn]\?$'; then
+    exit 1;
+  fi
 fi
 
 make docs-user
@@ -41,12 +45,13 @@ fi
 
 git commit -m "Update to version $VERSION"
 git tag $VERSION
-git push origin master
+git push "$(git branch --show-current)"
 git push origin $VERSION
 
 
 read -n1 -p "Push Images Version $VERSION manually? (y/N) " confirm
 if echo "$confirm" | grep '^[Nn]\?$'; then
+  echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
   exit 0
 fi
 
