@@ -179,10 +179,6 @@ class WorkspaceController extends Controller {
   }
 
   public static function getReport(Request $request, Response $response): ?Response {
-    if ($request->getParam('useNewVersion') === 'true') {
-      die();
-    }
-
     $workspaceId = (int) $request->getAttribute('ws_id');
 
     $dataIds = $request->getParam('dataIds', '') === ''
@@ -198,7 +194,7 @@ class WorkspaceController extends Controller {
     $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
     $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
-    $report->generate();
+    $report->generate($request->getParam('useNewVersion') === 'true');
 
     $response->getBody()->write($report->asString());
     $response = $reportFormat === ReportFormat::CSV

@@ -19,6 +19,7 @@ class Report {
 
   private string $csvReportData;
   private array $reportData;
+  private bool $useNewVersion = false;
 
   /**
    * Report constructor.
@@ -95,7 +96,8 @@ class Report {
     return $this->reportData;
   }
 
-  public function generate(): bool {
+  public function generate(bool $useNewVersion = false): bool {
+    $this->useNewVersion = $useNewVersion;
     switch ($this->type) {
       case ReportType::LOG:
         $adminDAO = new AdminDAO();
@@ -256,10 +258,13 @@ class Report {
 
     foreach ($reviewData as $review) {
       $offset = array_search('categories', array_keys($review));
-      $transformedReviewData[] =
+      $transformedReview =
         array_slice($review, 0, $offset) +
         $this->fillCategories($categoryKeys, explode(" ", $review['categories'] ?? '')) +
         array_slice($review, $offset + 1, null);
+      $transformedReviewData[] = $this->useNewVersion
+        ? $this->returnArrayWithSeperateEntry($transformedReview)
+        : $transformedReview;
     }
 
     return $transformedReviewData;
@@ -305,7 +310,11 @@ class Report {
           break;
         }
       }
-      $categories["category: " . $categoryKey] = $isMatch ? 'X' : null;
+      if ($this->useNewVersion) {
+        $categories["category_" . $categoryKey] = $isMatch ? 'TRUE' : 'FALSE';
+      } else {
+        $categories["category: " . $categoryKey] = $isMatch ? 'X' : null;
+      }
     }
 
     return $categories;
@@ -333,6 +342,21 @@ class Report {
     $csv = implode(self::LINE_ENDING, $csv);
 
     return self::BOM . $csv;
+  }
+
+  private function returnArrayWithSeperateEntry(array $reviewData): array {
+    [$reviewer, $entry] = explode(': ', $reviewData['entry'], 2);
+    unset($reviewData['entry']);
+    // if delimiter is not found, because of empty reviewer, the exploded string will be saved in $reviewer only
+    if ($entry) {
+      $reviewData['reviewer'] = $reviewer;
+      $reviewData['entry'] = $entry;
+    } else {
+      $reviewData['reviewer'] = null;
+      $reviewData['entry'] = $reviewer;
+    }
+
+    return $reviewData;
   }
 
 }
