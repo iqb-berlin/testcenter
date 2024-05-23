@@ -179,7 +179,7 @@ class WorkspaceController extends Controller {
   }
 
   public static function getReport(Request $request, Response $response): ?Response {
-    if ($request->getParam('newFeature') === 'true') {
+    if ($request->getParam('useNewVersion') === 'true') {
       die();
     }
 
