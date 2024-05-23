@@ -470,44 +470,70 @@ final class ReportTest extends TestCase {
     $this->testGenerateresponsesReportWithFailure(ReportFormat::JSON);
   }
 
-  function testGenerateReviewsCSVReportWithSuccess(): void {
+  function testGenerateReviewCSV_newVersion(): void {
+    $this->generateReviewsCSVReportWithSuccess(true);
+  }
+
+  function testGenerateReviewCSV_oldVersion(): void {
+    $this->generateReviewsCSVReportWithSuccess(false);
+  }
+
+  function generateReviewsCSVReportWithSuccess(bool $useNewVersion): void {
     // Arrange
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
-    $expectedReviewsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
+    $expectedReviewsCSVReportData = $useNewVersion
+      ? self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;reviewer;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+      : self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
     parent::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
   }
 
-  function testGenerateDynamicReviewsCSVReportWithSuccess(): void {
+  function testGenerateDynamicReviewCSV_newVersion(): void {
+    $this->generateDynamicReviewsCSVReportWithSuccess(true);
+  }
+
+  function testGenerateDynamicReviewCSV_oldVersion(): void {
+    $this->generateDynamicReviewsCSVReportWithSuccess(false);
+  }
+
+  function generateDynamicReviewsCSVReportWithSuccess(bool $useNewVersion): void {
     // Arrange
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
 
     $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
-    $expectedReviewsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
+    $expectedReviewsCSVReportData = $useNewVersion
+      ? self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;category_content;category_design;category_tech;reviewtime;reviewer;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"FALSE\";\"FALSE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"TRUE\";\"TRUE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+      : self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
@@ -521,10 +547,8 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
     $expectedReviewsJsonReportData = array_map(
-
       function($review) {
         array_splice($review, array_search('categories', array_keys($review)), 1);
-
         return $review;
       },
       self::REVIEWS
@@ -540,44 +564,84 @@ final class ReportTest extends TestCase {
     parent::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
   }
 
-  function testGenerateDynamicReviewsJsonReportWithSuccess(): void {
+  function testGenerateDynamicReviewJson_newVersion(): void {
+    $this->generateDynamicReviewsJsonReportWithSuccess(true);
+  }
+
+  function testGenerateDynamicReviewJson_oldVersion(): void {
+    $this->generateDynamicReviewsJsonReportWithSuccess(false);
+  }
+
+  function generateDynamicReviewsJsonReportWithSuccess(bool $useNewVersion): void {
     // Arrange
     $this->reportType = ReportType::REVIEW;
     $this->reportFormat = ReportFormat::CSV;
     $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
-    $expectedReviewsJsonReportData = [
-      [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
-        'unitname' => 'UNIT.SAMPLE',
-        'priority' => '1',
-        'category: content' => null,
-        'category: design' => null,
-        'category: tech' => 'X',
-        'reviewtime' => '2021-07-29 10:00:00',
-        'entry' => 'this is a sample unit review'
-      ], [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
-        'unitname' => '',
-        'priority' => '1',
-        'category: content' => 'X',
-        'category: design' => 'X',
-        'category: tech' => 'X',
-        'reviewtime' => '2021-07-29 10:00:00',
-        'entry' => 'sample booklet review'
-      ]
-    ];
+    if ($useNewVersion) {
+      $expectedReviewsJsonReportData = [
+        [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => 'UNIT.SAMPLE',
+          'priority' => '1',
+          'category_content' => 'FALSE',
+          'category_design' => 'FALSE',
+          'category_tech' => 'TRUE',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'reviewer' => null,
+          'entry' => 'this is a sample unit review'
+        ], [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => '',
+          'priority' => '1',
+          'category_content' => 'TRUE',
+          'category_design' => 'TRUE',
+          'category_tech' => 'TRUE',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'reviewer' => null,
+          'entry' => 'sample booklet review'
+        ]
+      ];
+    } else {
+      $expectedReviewsJsonReportData = [
+        [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => 'UNIT.SAMPLE',
+          'priority' => '1',
+          'category: content' => null,
+          'category: design' => null,
+          'category: tech' => 'X',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'entry' => 'this is a sample unit review'
+        ], [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => '',
+          'priority' => '1',
+          'category: content' => 'X',
+          'category: design' => 'X',
+          'category: tech' => 'X',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'entry' => 'sample booklet review'
+        ]
+      ];
+    }
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
