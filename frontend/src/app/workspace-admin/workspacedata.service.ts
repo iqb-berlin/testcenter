@@ -30,8 +30,8 @@ export class WorkspaceDataService {
     this.workspaceId$ = new BehaviorSubject<number>(-1);
   }
 
-  downloadReport(dataIds: string[], reportType: ReportType, filename: string, newFeature: boolean = false): void {
-    this.backendService.getReport(this.workspaceId, reportType, dataIds, newFeature)
+  downloadReport(dataIds: string[], reportType: ReportType, filename: string, useNewVersion: boolean = false): void {
+    this.backendService.getReport(this.workspaceId, reportType, dataIds, useNewVersion)
       .subscribe((response: Blob) => {
         if (response.size > 0) {
           FileService.saveBlobToFile(response, filename);

@@ -59,14 +59,14 @@ export class BackendService {
     );
   }
 
-  getReport(workspaceId: number, reportType: ReportType, dataIds: string[], newFeature: boolean) : Observable<Blob> {
+  getReport(workspaceId: number, reportType: ReportType, dataIds: string[], useNewVersion: boolean) : Observable<Blob> {
     return this.http
       .get(
         `${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
         {
           params: {
             dataIds: dataIds.join(','),
-            newFeature: newFeature
+            useNewVersion: useNewVersion
           },
           headers: {
             Accept: 'text/csv'
