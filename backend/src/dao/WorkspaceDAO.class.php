@@ -316,7 +316,9 @@ class WorkspaceDAO extends DAO {
       }
     }
 
-    $placeholder = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = $filePathCondition ? "and ($filePathCondition)" : '';
+
     $andIsValid = $includeInvalid ? '' : ' and files.is_valid';
 
     $sql = "select distinct
@@ -341,13 +343,16 @@ class WorkspaceDAO extends DAO {
                 where
                     files.workspace_id = ?
                     $andIsValid
-                    and ($placeholder)";
+                    $filePathCondition";
 
     return $this->fetchFiles($sql, $replacements);
   }
 
   private function fetchFiles($sql, $replacements): array {
     $files = [];
+    // here muss man die foreach von der query trennen. foreach(rows as row)
+    // dann jede row einzeln die $this->_ ausführen in einem try catch block
+    // wenn diese _() failed, dann im catch block das zu befüllende array an der stelle did not exist füllen (siehe ticket)
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
       // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
