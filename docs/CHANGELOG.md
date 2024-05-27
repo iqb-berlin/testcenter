@@ -2,10 +2,13 @@
 layout: default
 ---
 
+## 15.2.0-alpha5
+* Bugfix bezüglich Zeit/Passwort-gesteurten Blöcken
+
 ## 15.2.0-alpha4
 * Schließt alle Änderungen von 15.1.0 bis 15.1.6 ein
 * Mehrere Bugfixes in der Verzweigung
-* Autocoder 
+* Autocoder 2.1.5
 
 ## 15.1.6
 ### neue Features
