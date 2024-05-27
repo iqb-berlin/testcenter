@@ -45,7 +45,7 @@ fi
 
 git commit -m "Update to version $VERSION"
 git tag $VERSION
-git push "$(git branch --show-current)"
+git push origin "$(git branch --show-current)"
 git push origin $VERSION
 
 
