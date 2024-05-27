@@ -233,6 +233,16 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist');
   });
 
+  it('should be there no review file', () => {
+    cy.get('[data-cy="results-checkbox1"]')
+      .click();
+    cy.get('[data-cy="download-comments"]')
+      .should('exist')
+      .click();
+    cy.contains('Keine Daten verfügbar')
+      .should('exist');
+  });
+
   it('should be there a comment file with given comment', () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
