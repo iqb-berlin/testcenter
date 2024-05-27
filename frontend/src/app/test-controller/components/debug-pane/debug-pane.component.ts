@@ -9,6 +9,8 @@ import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.inter
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { AuthData } from '../../../app.interfaces';
 import { IqbVariableUtil } from '../../util/iqb-variable.util';
+import { BookletParserService } from '../../../shared/services/booklet-parser.service';
+import { TestLoaderService } from '../../services/test-loader.service';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -22,11 +24,12 @@ export class DebugPaneComponent implements OnInit {
     private cts: CustomtextService,
     public cmd: CommandService,
     private cdr: ChangeDetectorRef,
+    private tls: TestLoaderService,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
   }
 
-  tabs = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system'];
+  tabs = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system', 'tools'];
   activeTabs : typeof this.tabs[number][] = ['variables'];
 
   bookletConfig: Array<[string, string]> = [];
@@ -38,6 +41,9 @@ export class DebugPaneComponent implements OnInit {
 
   unitContext?: { item: Unit; unit: Unit; single: boolean };
   TestletContext?: { item: Testlet };
+
+  testingCondition: string = '';
+  testingConditionResults: string[] = [];
 
   private getData(): void {
     this.bookletConfig = Object.entries(this.tcs.bookletConfig);
@@ -87,6 +93,31 @@ export class DebugPaneComponent implements OnInit {
     const tabId = this.activeTabs.indexOf(id);
     if (tabId !== -1) {
       this.activeTabs.splice(tabId, 1);
+    }
+  }
+
+  evaluateTestingCondition(): void {
+    const domParser = new DOMParser();
+    const condStr = this.testingCondition.replace(/^\uFEFF/gm, '');
+    try {
+      const ifElement = domParser.parseFromString(condStr, 'text/xml').documentElement;
+      if (ifElement.nodeName === 'parsererror') {
+        console.log(ifElement);
+        throw new Error(ifElement.innerHTML);
+      }
+      if (ifElement.nodeName !== 'If') {
+        throw new Error(`Wrong root tag: '${ifElement.nodeName}'. Should be <If>.`);
+      }
+      const cond = this.tls.parseIf(ifElement);
+      this.testingConditionResults = cond
+        .map(c => this.tcs.isConditionSatisfied(c))
+        .map(s => (s ? 'Satisfied' : 'Not Satisfied'));
+    } catch (e) {
+      if (e) {
+        this.testingConditionResults = [`${e}`];
+      } else {
+        this.testingConditionResults = ['Error: unknown'];
+      }
     }
   }
 
