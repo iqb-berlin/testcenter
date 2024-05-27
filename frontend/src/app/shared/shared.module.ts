@@ -22,6 +22,7 @@ import { BackendService } from './services/backend.service';
 import { BlockConditionPipe } from './pipes/block-condition.pipe';
 import { TemplateContextDirective } from './directives/template-context.directive';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
+import { TrustPipe } from './pipes/trust.pipe';
 
 @NgModule({
   imports: [
@@ -48,7 +49,8 @@ import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.comp
     AlertComponent,
     ErrorComponent,
     TemplateContextDirective,
-    PageNavBarComponent
+    PageNavBarComponent,
+    TrustPipe
   ],
   exports: [
     ConfirmDialogComponent,
@@ -59,7 +61,8 @@ import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.comp
     AlertComponent,
     ErrorComponent,
     TemplateContextDirective,
-    PageNavBarComponent
+    PageNavBarComponent,
+    TrustPipe
   ],
   providers: [
     BackendService

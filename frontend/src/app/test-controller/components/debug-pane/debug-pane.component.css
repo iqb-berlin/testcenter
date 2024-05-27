@@ -200,3 +200,9 @@ mat-icon {
   background: orange;
   color: black;
 }
+
+sourcetext {
+  color: white;
+  font-family: monospace;
+  white-space: pre;
+}

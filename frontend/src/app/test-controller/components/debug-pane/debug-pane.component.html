@@ -123,6 +123,20 @@
   <div class='btn' (click)="mds.refreshSysStatus()">Refresh</div>
 </div>
 
+<div class="tab tab-system" *ngIf="activeTabs.includes('tools')" cdkDrag>
+  <h1>
+    Tools
+    <mat-icon class="close" (click)="closeWindow('tools')">close</mat-icon>
+  </h1>
+  <h2>Test Condition</h2>
+  <p>Insert condition like '&lt;If&gt;&lt;Score of="03" from=&lt;D22S013&gt;/>&lt;Is lowerThan="627.5"/&gt;&lt;/If&gt;'</p>
+  <textarea [(ngModel)]="testingCondition" (ngModelChange)="evaluateTestingCondition()" style="min-width: 400px; width:100%; height: 300px">
+  </textarea>
+  <ul>
+    <li *ngFor="let result of testingConditionResults"><pre [innerHTML]="result | trust"></pre></li>
+  </ul>
+</div>
+
 <ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
   {{testlet.id || '&lt;units&gt;'}}
 

@@ -697,7 +697,7 @@ export class TestControllerService {
     ]);
   }
 
-  private isConditionSatisfied(condition: BlockCondition): boolean {
+  isConditionSatisfied(condition: BlockCondition): boolean {
     const getSourceValue = (source: BlockConditionSource): string | number | undefined => {
       const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
       // eslint-disable-next-line default-case
