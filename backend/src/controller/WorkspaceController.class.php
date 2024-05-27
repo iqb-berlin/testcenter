@@ -194,9 +194,10 @@ class WorkspaceController extends Controller {
     $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
     $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
-    $report->generate($request->getParam('useNewVersion') === 'true');
 
-    $response->getBody()->write($report->asString());
+    if ($report->generate($request->getParam('useNewVersion') === 'true')) {
+      $response->getBody()->write($report->asString());
+    };
     $response = $reportFormat === ReportFormat::CSV
       ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
       : $response->withHeader('Content-Type', 'application/json');
