@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.2.0-alpha5
+## 15.2.0-alpha6
 * Bugfix bezüglich Zeit/Passwort-gesteurten Blöcken
 
 ## 15.2.0-alpha4

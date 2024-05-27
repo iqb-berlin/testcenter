@@ -4,7 +4,7 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-VERSION=15.2.0-alpha5
+VERSION=15.2.0-alpha6
 REQUIRED_PACKAGES=("docker -v" "docker compose version")
 # dpkg to compare versions in the updater
 OPTIONAL_PACKAGES=("make -v" "dpkg --version")
