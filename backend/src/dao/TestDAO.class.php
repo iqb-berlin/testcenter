@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class TestDAO extends DAO {
   // TODO unit test
-  public function getTestByPerson(int $personId, string $bookletName): TestData | null {
+  public function getTestByPerson(int $personId, string $bookletName): TestData|null {
     $test = $this->_(
       'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests
             where tests.person_id=:personId and tests.name=:bookletname',
@@ -51,7 +51,7 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function getTestById(int $testId): TestData | null {
+  public function getTestById(int $testId): TestData|null {
     $test = $this->_(
       'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests where id = :id',
       [
@@ -75,7 +75,13 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function addTestReview(int $testId, int $priority, string $categories, string $entry, string $userAgent): void {
+  public function addTestReview(
+    int $testId,
+    int $priority,
+    string $categories,
+    string $entry,
+    string $userAgent
+  ): void {
     $this->_(
       'insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent) values(:b, :t, :p, :c, :e, :u)',
       [
@@ -90,10 +96,20 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry, ?int $page = null, ?string $pageLabel = null, string $userAgent): void {
+  public function addUnitReview(
+    int $testId,
+    string $unit,
+    int $priority,
+    string $categories,
+    string $entry,
+    ?int $page = null,
+    ?string $pageLabel = null,
+    string $userAgent,
+    string $originalUnitId
+  ): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel, user_agent) values(:u, :t, :p, :c, :e, :pa, :pl, :ua)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel, user_agent, original_unit_id) values(:u, :t, :p, :c, :e, :pa, :pl, :ua, :ou)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
@@ -102,7 +118,8 @@ class TestDAO extends DAO {
         ':e' => $entry,
         ':pa' => $page,
         ':pl' => $pageLabel,
-        ':ua' => $userAgent
+        ':ua' => $userAgent,
+        ':ou' => $originalUnitId
       ]
     );
   }
@@ -120,7 +137,7 @@ class TestDAO extends DAO {
 
   public function getTestSession(int $testId): array {
     $testSession = $this->_(
-    'select
+      'select
         login_sessions.id as login_id,
         logins.mode,
         login_sessions.workspace_id,
@@ -223,7 +240,8 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function lockTest(int $testId): void {
-    $this->_('update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
+    $this->_(
+      'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
         ':locked' => '1',
         ':id' => $testId,
@@ -234,7 +252,8 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function changeTestLockStatus(int $testId, bool $unlock = true): void {
-    $this->_('update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
+    $this->_(
+      'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
         ':locked' => $unlock ? '0' : '1',
         ':id' => $testId,
@@ -286,7 +305,8 @@ class TestDAO extends DAO {
       [
         ':unitname' => $unitName,
         ':testId' => $testId
-      ], true
+      ],
+      true
     );
 
     $unitData = [];
@@ -303,7 +323,8 @@ class TestDAO extends DAO {
   public function updateDataParts(int $testId, string $unitName, array $dataParts, string $type, int $timestamp): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
     foreach ($dataParts as $partId => $content) {
-      $this->_('replace into unit_data(unit_id, part_id, content, ts, response_type)
+      $this->_(
+        'replace into unit_data(unit_id, part_id, content, ts, response_type)
                           values (:unit_id, :part_id, :content, :ts, :response_type)',
         [
           ':part_id' => $partId,
@@ -326,7 +347,13 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function addUnitLog(int $testId, string $unitName, string $logKey, int $timestamp, string $logContent = ""): void {
+  public function addUnitLog(
+    int $testId,
+    string $unitName,
+    string $logKey,
+    int $timestamp,
+    string $logContent = ""
+  ): void {
     $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
     $this->_(
@@ -341,10 +368,12 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
-    $this->_('insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
+    $this->_(
+      'insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
       [
         ':bookletId' => $testId,
-        ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''), // TODO add value-column to log-tables instead of this shit
+        ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''),
+        // TODO add value-column to log-tables instead of this shit
         ':timestamp' => $timestamp
       ]
     );
@@ -352,7 +381,8 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function setTestRunning(int $testId): void {
-    $this->_('update tests set running = :running , timestamp_server = :timestamp where id = :id',
+    $this->_(
+      'update tests set running = :running , timestamp_server = :timestamp where id = :id',
       [
         ':running' => '1',
         ':id' => $testId,
@@ -366,7 +396,11 @@ class TestDAO extends DAO {
     $replacements = [':test_id' => $testId];
     if ($lastCommandId) {
       $replacements[':last_id'] = $lastCommandId;
-      $sql = str_replace('where', 'where timestamp > (select timestamp from test_commands where id = :last_id) and ', $sql);
+      $sql = str_replace(
+        'where',
+        'where timestamp > (select timestamp from test_commands where id = :last_id) and ',
+        $sql
+      );
     }
 
     $commands = [];

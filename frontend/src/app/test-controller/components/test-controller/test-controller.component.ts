@@ -211,7 +211,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry,
-          this.uaParser.getUA()
+          this.uaParser.getUA(),
+          this.tcs.rootTestlet?.getUnitAt(this.tcs.currentUnitSequenceId)?.unitDef.id ?? ''
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });
