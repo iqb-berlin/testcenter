@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -156,7 +157,7 @@ class TestController extends Controller {
         'entry' => null,// was: e
         'userAgent' => ''
       ],
-      ['page', 'pageLabel']
+      ['page', 'pageLabel', 'originalUnitId']
     );
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
@@ -165,7 +166,17 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
-    self::testDAO()->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry'], $review['page'] ?? null, $review['pageLabel'] ?? null, $review['userAgent']);
+    self::testDAO()->addUnitReview(
+      $testId,
+      $unitName,
+      $priority,
+      $review['categories'],
+      $review['entry'],
+      $review['page'] ?? null,
+      $review['pageLabel'] ?? null,
+      $review['userAgent'],
+      $review['originalUnitId'] ?? null
+    );
 
     return $response->withStatus(201);
   }
@@ -278,13 +289,15 @@ class TestController extends Controller {
       self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content']);
     }
 
-    BroadcastService::sessionChange(SessionChangeMessage::unitState(
-      $authToken->getGroup(),
-      $authToken->getId(),
-      $testId,
-      $unitName,
-      $newState
-    ));
+    BroadcastService::sessionChange(
+      SessionChangeMessage::unitState(
+        $authToken->getGroup(),
+        $authToken->getId(),
+        $testId,
+        $unitName,
+        $newState
+      )
+    );
 
     return $response->withStatus(200);
   }
@@ -302,7 +315,13 @@ class TestController extends Controller {
     ]);
 
     foreach ($logData as $entry) {
-      self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
+      self::testDAO()->addUnitLog(
+        $testId,
+        $unitName,
+        $entry['key'],
+        $entry['timeStamp'],
+        json_encode($entry['content'])
+      );
     }
 
     return $response->withStatus(201);
