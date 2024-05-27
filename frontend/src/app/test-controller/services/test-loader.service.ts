@@ -159,6 +159,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       .forEach((unitSequenceId: string | number) => {
         this.tcs.units[Number(unitSequenceId)].lockedAfterLeaving = true;
       });
+
+    this.tcs.updateLocks();
   }
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
