@@ -23,12 +23,12 @@ class TestEnvironment {
 
       if ($testMode == 'integration') {
         // this is called every single call from integration tests
-        self::setUpTestDataDir(false);
+        self::defineTestDataDir(false);
       }
 
       if ($testMode == 'prepare-integration') {
         // this is called one time before each integration test (cypress)
-        self::setUpTestDataDir(true);
+        self::defineTestDataDir(true);
         self::createTestFiles(true);
         self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
@@ -144,7 +144,7 @@ class TestEnvironment {
 
     $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
-      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
+      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] . ";";
       $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
     }
     file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
@@ -164,9 +164,9 @@ class TestEnvironment {
     throw new RuntimeException("Could not create environment: " . $exception->getMessage());
   }
 
-  private static function setUpTestDataDir(bool $reset): void {
+  private static function defineTestDataDir(bool $shouldReset): void {
     define('DATA_DIR', ROOT_DIR . '/data-TEST');
-    if (!$reset) {
+    if (!$shouldReset) {
       return;
     }
     Folder::createPath(DATA_DIR);
@@ -174,7 +174,7 @@ class TestEnvironment {
   }
 
   private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
-    touch($dir,TestEnvironment::staticDate);
+    touch($dir, TestEnvironment::staticDate);
     foreach (new DirectoryIterator($dir) as $child) {
       if ($child->isDot() or $child->isLink()) {
         continue;
