@@ -17,6 +17,8 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionAdmin(Request $request, Response $response): Response {
+    usleep(500000); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
+
     $body = RequestBodyParser::getElements($request, [
       "name" => null,
       "password" => null

@@ -550,6 +550,9 @@ paths:
       responses:
         "201":
           description: OK, workspace has been added
+          content:
+            text/html;charset=utf-8:
+              example: "3"
         "401":
           description: Not authenticated
         "410":

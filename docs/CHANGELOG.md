@@ -10,6 +10,21 @@ layout: default
   Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.
 
 
+### Sicherheit
+* Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
+  Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
+* Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen brute force 
+  Attacken. Es folgen später weitere Maßnahmen, um auch DOS von verteilten Netzwerken zu verhindern.
+* Unsichere TLS-Cipher-Suites entfernt
+
+### API
+* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspaceid zurück. `[PUT] /user` gibt analog dazu die 
+  userId zurück.
+
+### Anderes
+* .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
+
+
 ## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
