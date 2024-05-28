@@ -3,6 +3,12 @@ layout: default
 ---
 
 ## [next]
+### neue Features
+* Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
+  alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
+  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eine Super Admins, ohne jedoch die Rechte zu haben, die 
+  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.
+
 
 ### Sicherheit
 * Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
@@ -55,6 +61,7 @@ layout: default
 ### Deployment
 * Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann. 
   Der Default-Wert ist 'no'. Erlaubte Werte sind: ['no','on-failure','always','unless-stopped'].
+
 
 ## 15.1.4
 ### Bugfixes

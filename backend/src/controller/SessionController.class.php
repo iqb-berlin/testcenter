@@ -69,21 +69,20 @@ class SessionController extends Controller {
     return $response->withJson($accessSet);
   }
 
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function putSessionPerson(Request $request, Response $response): Response {
-      $body = RequestBodyParser::getElements($request, [
-        'code' => ''
-      ]);
-      $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-      $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
-      CacheService::removeAuthentication($personSession); // TODO X correct?!
-      $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      CacheService::storeAuthentication($personSession);
-      return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
-    }
+  /**
+   * @codeCoverageIgnore
+   */
+  public static function putSessionPerson(Request $request, Response $response): Response {
+    $body = RequestBodyParser::getElements($request, [
+      'code' => ''
+    ]);
+    $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
+    CacheService::removeAuthentication($personSession); // TODO X correct?!
+    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    CacheService::storeAuthentication($personSession);
+    return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
+  }
 
   private static function registerDependantSessions(LoginSession $login): void {
     $members = self::sessionDAO()->getDependantSessions($login);
@@ -150,8 +149,14 @@ class SessionController extends Controller {
     if ($authToken->getType() == "person") {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+      $workspace = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+      $workspaceData = new WorkspaceData(
+        $workspace->getWorkspaceId(),
+        $workspace->getWorkspaceName(),
+        'R'
+      );
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
+      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors);
       return $response->withJson($accessSet);
     }
 

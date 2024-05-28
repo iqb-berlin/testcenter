@@ -9,6 +9,7 @@ class AccessSet extends DataCollectionTypeSafe {
     'test',
     'superAdmin',
     'workspaceAdmin',
+    'studyMonitor',
     'testGroupMonitor',
     'attachmentManager'
   ];
@@ -20,7 +21,10 @@ class AccessSet extends DataCollectionTypeSafe {
   protected object $claims;
   protected ?string $groupToken;
 
-  static function createFromPersonSession(PersonSession $loginWithPerson, TestData | Group ...$accessItems): AccessSet {
+  static function createFromPersonSession(
+    PersonSession $loginWithPerson,
+    WorkspaceData | TestData | Group ...$accessItems
+  ): AccessSet {
     $login = $loginWithPerson->getLoginSession()->getLogin();
 
     $displayName = self::getDisplayName(
@@ -40,6 +44,11 @@ class AccessSet extends DataCollectionTypeSafe {
 
     foreach ($accessItems as $accessItem) {
       switch (get_class($accessItem)) {
+        case 'WorkspaceData':
+          if ($login->getMode() == 'monitor-study') {
+            $accessSet->addStudyMonitor($accessItem);
+          }
+          break;
         case 'Group':
           $accessSet->addGroupMonitors($accessItem);
           break;
@@ -185,5 +194,18 @@ class AccessSet extends DataCollectionTypeSafe {
       $groups
     );
     $this->addAccessObjects('testGroupMonitor', ...$groupMonitors);
+  }
+
+  private function addStudyMonitor(WorkspaceData $accessItem): void
+  {
+    $this->addAccessObjects(
+      'studyMonitor',
+      new AccessObject(
+        (string) $accessItem->getId(),
+        'studyMonitor',
+        $accessItem->getName()
+      )
+    );
+
   }
 }

@@ -101,6 +101,11 @@ components:
               items:
                 $ref: '#/components/schemas/accessObject'
               description: Elements are available groups.
+            studyMonitor:
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: Elements are available groups.
         access:
           deprecated: true
           description: old format of claims, kept for backwards compatibility
@@ -126,6 +131,10 @@ components:
               type: array
               items:
                 type: string
+            studyMonitor:
+              type: array
+              items:
+                type: string
 
     accessObject:
       type: object
@@ -134,7 +143,7 @@ components:
           type: integer
         type:
           type: string
-          description: workspaceAdmin, superAdmin, test, testGroupMonitor or attachmentManager
+          description: workspaceAdmin, superAdmin, test, testGroupMonitor, attachmentManager or studyMonitor
         label:
           type: string
         flags:
