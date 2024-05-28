@@ -3,9 +3,10 @@
 REPO_URL=iqb-berlin/testcenter
 
 create_backup() {
-  mkdir -p backup/$(date +"%m-%d-%Y")
-  rsync -a . backup/$(date +"%m-%d-%Y")/ --exclude backup
-  echo "Backup created. Files have been moved to: backup/$(date +"%m-%d-%Y")"
+  local backup_dir="backup/$(date '+%Y-%m-%d')"
+  mkdir -p $backup_dir
+  tar -cf - --exclude='./backup' . | tar -xf - -C $backup_dir
+  printf "Backup created. Files have been moved to: %s\n" $backup_dir
 }
 
 apply_patches() {
