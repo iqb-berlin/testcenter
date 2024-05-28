@@ -69,7 +69,7 @@ customize_settings() {
 set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[nN]$ ]]; then
-    sed -i 's/TLS_ENABLED=on/TLS_ENABLED=no/' .env
+    sed -i 's/TLS_ENABLED=on/TLS_ENABLED=off/' .env
   fi
 }
 
