@@ -8,7 +8,10 @@ layout: default
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
 * Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen brute force 
   Attacken. Es folgen später weitere Maßnahmen, um auch DOS von verteilten Netzwerken zu verhindern.
+* Unsichere TLS-Cipher-Suites entfernt
 
+### Anderes
+* .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
 
 ## 15.1.6
 ### neue Features
