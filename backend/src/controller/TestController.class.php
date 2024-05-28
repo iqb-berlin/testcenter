@@ -17,8 +17,8 @@ class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
-    $body = RequestBodyParser::getElements($request, [
-      'bookletName' => null
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      'bookletName' => 'REQUIRED'
     ]);
 
     $test = self::testDAO()->getTestByPerson($authToken->getId(), $body['bookletName']);
@@ -149,15 +149,17 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $review = RequestBodyParser::getElements(
+    $review = RequestBodyParser::getElementsFromRequest(
       $request,
       [
         'priority' => 0, // was: p
         'categories' => 0, // was: c
-        'entry' => null,// was: e
-        'userAgent' => ''
+        'entry' => 'REQUIRED',// was: e
+        'userAgent' => '',
+        'page' => null,
+        'pageLabel' => null,
+        'originalUnitId' => null
       ],
-      ['page', 'pageLabel', 'originalUnitId']
     );
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
@@ -172,10 +174,10 @@ class TestController extends Controller {
       $priority,
       $review['categories'],
       $review['entry'],
+      $review['userAgent'],
+      $review['originalUnitId'] ?? null,
       $review['page'] ?? null,
       $review['pageLabel'] ?? null,
-      $review['userAgent'],
-      $review['originalUnitId'] ?? null
     );
 
     return $response->withStatus(201);
@@ -184,10 +186,10 @@ class TestController extends Controller {
   public static function putReview(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $review = RequestBodyParser::getElements($request, [
+    $review = RequestBodyParser::getElementsFromRequest($request, [
       'priority' => 0, // was: p
       'categories' => 0, // was: c
-      'entry' => null, // was: e
+      'entry' => 'REQUIRED', // was: e
       'userAgent' => ''
     ]);
 
@@ -204,8 +206,8 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $unitResponse = RequestBodyParser::getElements($request, [
-      'timeStamp' => null,
+    $unitResponse = RequestBodyParser::getElementsFromRequest($request, [
+      'timeStamp' => 'REQUIRED',
       'dataParts' => [],
       'responseType' => 'unknown'
     ]);
@@ -229,10 +231,10 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $stateData = RequestBodyParser::getElementsArray($request, [
-      'key' => null,
-      'content' => null,
-      'timeStamp' => null
+    $stateData = RequestBodyParser::getElementsFromArray($request, [
+      'key' => 'REQUIRED',
+      'content' => 'REQUIRED',
+      'timeStamp' => 'REQUIRED'
     ]);
 
     $statePatch = TestController::stateArray2KeyValue($stateData);
@@ -253,10 +255,10 @@ class TestController extends Controller {
   public static function putLog(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $logData = RequestBodyParser::getElementsArray($request, [
-      'key' => null,
+    $logData = RequestBodyParser::getElementsFromArray($request, [
+      'key' => 'REQUIRED',
       'content' => '',
-      'timeStamp' => null
+      'timeStamp' => 'REQUIRED'
     ]);
 
     foreach ($logData as $entry) {
@@ -275,10 +277,10 @@ class TestController extends Controller {
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-    $stateData = RequestBodyParser::getElementsArray($request, [
-      'key' => null,
-      'content' => null,
-      'timeStamp' => null
+    $stateData = RequestBodyParser::getElementsFromArray($request, [
+      'key' => 'REQUIRED',
+      'content' => 'REQUIRED',
+      'timeStamp' => 'REQUIRED'
     ]);
 
     $statePatch = TestController::stateArray2KeyValue($stateData);
@@ -308,10 +310,10 @@ class TestController extends Controller {
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-    $logData = RequestBodyParser::getElementsArray($request, [
-      'key' => null,
+    $logData = RequestBodyParser::getElementsFromArray($request, [
+      'key' => 'REQUIRED',
       'content' => '',
-      'timeStamp' => null
+      'timeStamp' => 'REQUIRED'
     ]);
 
     foreach ($logData as $entry) {
@@ -333,8 +335,8 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $lockEvent = RequestBodyParser::getElements($request, [
-      'timeStamp' => null,
+    $lockEvent = RequestBodyParser::getElementsFromRequest($request, [
+      'timeStamp' => 'REQUIRED',
       'message' => ''
     ]);
 

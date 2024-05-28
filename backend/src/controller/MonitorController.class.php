@@ -60,10 +60,10 @@ class MonitorController extends Controller {
     $authToken = $request->getAttribute('AuthToken');
     $personId = $authToken->getId();
 
-    $body = RequestBodyParser::getElements($request, [
-      'keyword' => null,
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      'keyword' => 'REQUIRED',
       'arguments' => [],
-      'timestamp' => null,
+      'timestamp' => 'REQUIRED',
       'testIds' => []
     ]);
 

@@ -20,8 +20,8 @@ class SessionController extends Controller {
     usleep(500000); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
 
     $body = RequestBodyParser::getElements($request, [
-      "name" => null,
-      "password" => null
+      "name" => 'REQUIRED',
+      "password" => 'REQUIRED'
     ]);
 
     $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
@@ -38,8 +38,8 @@ class SessionController extends Controller {
   }
 
   public static function putSessionLogin(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
-      "name" => null,
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      "name" => 'REQUIRED',
       "password" => ''
     ]);
 
@@ -73,7 +73,7 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionPerson(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
+    $body = RequestBodyParser::getElementsFromRequest($request, [
       'code' => ''
     ]);
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
