@@ -22,7 +22,7 @@ class SessionController extends Controller {
       500000
     ); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
 
-    $body = RequestBodyParser::getElements($request, [
+    $body = RequestBodyParser::getElementsFromRequest($request, [
       "name" => 'REQUIRED',
       "password" => 'REQUIRED'
     ]);

@@ -1,6 +1,16 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Review Dateien -> es gibt die Möglichkeit neben dem alten Format auch das neue Format zu nutzen mit diesen Änderungen:
+  * Alle Review Dateien (Ansicht aller Kommentare) beinhalten zusätzlich eine Spalte mit dem ursprünglichen Unitnamen, für
+    den Fall, dass dieser in der Spalte UnitName durch dessen Alias ersetzt wurde.
+  * Beim Erstellen eines Kommentars kann man jetzt auch die Teilaufgabe angeben, auf die sich der Kommentar bezieht.
+    Damit eine weitere Stufe granularer als die Unitebene.
+  * Die Werte in den Spalten sind R-lesbarer: : gegen _ erstezt, X gegen TRUE ersetzt.
+  * Der Autor und der Kommentareintrag sind nun zwei verschiedene Spalten.
+  * Die Datei beinhaltet auch Informationen zum User-Agent, sprich Browserinformationen, des Autors von Kommentaren.
 
 ## 15.1.7
 ### neue Features
