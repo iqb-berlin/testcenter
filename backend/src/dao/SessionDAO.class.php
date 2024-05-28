@@ -553,12 +553,13 @@ class SessionDAO extends DAO {
               and files.type = 'Booklet'
               and files.id in ($placeHolder)
             order by
-              files.label";
+              field(files.id, $placeHolder)";
     $tests = $this->_(
       $sql,
       [
         $personSession->getPerson()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
+        ...$bookletIds,
         ...$bookletIds
       ],
       true
@@ -584,6 +585,9 @@ class SessionDAO extends DAO {
     $this->_("update person_sessions set token=null where token = :token", [':token' => $authToken->getToken()]);
   }
 
+  /**
+   * @return Group[]
+   */
   public function getGroupMonitors(PersonSession $personSession): array {
     switch ($personSession->getLoginSession()->getLogin()->getMode()) {
       default: return [];
@@ -599,6 +603,9 @@ class SessionDAO extends DAO {
     }
   }
 
+  /**
+   * @return Group[]
+   */
   public function getGroups(int $workspaceId): array {
     $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability('monitorable')) . "')";
     $sql =

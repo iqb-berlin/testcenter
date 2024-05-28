@@ -37,6 +37,7 @@ class UserController extends Controller {
 
     self::superAdminDAO()->createUser($requestBody->n, $requestBody->p);
 
+    $response->getBody()->write(htmlspecialchars($requestBody->n));
     return $response->withStatus(201);
   }
 

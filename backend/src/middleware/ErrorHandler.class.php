@@ -75,7 +75,7 @@ class ErrorHandler {
       ->withStatus($throwable->getCode(), $throwable->getTitle())
       ->withHeader('Content-Type', 'text/html')
       ->withHeader('Error-ID', $errorUniqueId)
-      ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
+      ->write(htmlspecialchars($throwable->getMessage() ?: $throwable->getDescription()));
   }
 
   public static function fatal(): void {

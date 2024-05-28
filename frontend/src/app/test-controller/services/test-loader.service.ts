@@ -20,7 +20,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  UnitStateKey
+  UnitStateKey, MaxTimeLeaveValue, maxTimeLeaveValues
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData, NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -378,6 +378,8 @@ export class TestLoaderService {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
+
+      let maxTimeLeave: MaxTimeLeaveValue = 'confirm';
       let forcePresentationComplete = navigationLeaveRestrictions.presentationComplete;
       let forceResponseComplete = navigationLeaveRestrictions.responseComplete;
 
@@ -406,6 +408,13 @@ export class TestLoaderService {
                 maxTime = -1;
               }
             }
+            const leaveParameter = restrictionElements[childIndex].getAttribute('leave');
+            console.log(1, {leaveParameter,maxTimeLeaveValues});
+            if (leaveParameter && maxTimeLeaveValues.includes(leaveParameter)) {
+
+              maxTimeLeave = leaveParameter;
+              console.log(2, {maxTimeLeave});
+            }
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigationOnIncomplete') {
             const presentationComplete = restrictionElements[childIndex].getAttribute('presentation');
@@ -424,7 +433,9 @@ export class TestLoaderService {
         targetTestlet.codeToEnter = codeToEnter;
         targetTestlet.codePrompt = codePrompt;
       }
+      console.log(targetTestlet.title, maxTime, maxTimeLeave);
       targetTestlet.maxTimeLeft = maxTime;
+      targetTestlet.maxTimeLeave = maxTimeLeave;
       if (this.tcs.maxTimeTimers) {
         if (targetTestlet.id in this.tcs.maxTimeTimers) {
           targetTestlet.maxTimeLeft = this.tcs.maxTimeTimers[targetTestlet.id];
