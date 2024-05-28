@@ -1,7 +1,16 @@
 import {
-  loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
-  useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder,
-  convertResultsSeperatedArrays, getFromIframe, forwardTo, backwardsTo
+  backwardsTo,
+  convertResultsSeperatedArrays,
+  credentialsControllerTest,
+  deleteDownloadsFolder,
+  forwardTo,
+  getFromIframe,
+  loginSuperAdmin,
+  loginTestTaker,
+  openSampleWorkspace1,
+  resetBackendData,
+  useTestDB,
+  visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
