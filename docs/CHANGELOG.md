@@ -8,6 +8,8 @@ layout: default
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
 * Unsichere TLS-Cipher-Suites entfernt
 
+### Anderes
+* .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
 
 ## 15.1.6
 ### neue Features
