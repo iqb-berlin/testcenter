@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use DI\Container;
@@ -26,7 +27,8 @@ final class WorkspaceControllerTest extends TestCase {
     [
       'key1' => "value1",
       'key2' => "value2"
-    ], [
+    ],
+    [
       'key1' => "value3",
       'key2' => "value4"
     ]
@@ -87,7 +89,13 @@ final class WorkspaceControllerTest extends TestCase {
     $app = AppFactory::create();
     $app->get($path, $this->callable);
 
-    $request = $this->createReportRequest($this->requestMethod, $mediaType, $this->workspaceId, $reportType, $this->dataIds);
+    $request = $this->createReportRequest(
+      $this->requestMethod,
+      $mediaType,
+      $this->workspaceId,
+      $reportType,
+      $this->dataIds
+    );
     $response = $app->handle($request);
     $response->getBody()->rewind();
 
@@ -95,10 +103,10 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   private function createReportRequest(
-    string  $requestMethod,
-    string  $mediaType,
-    int     $workspaceId,
-    string  $reportType,
+    string $requestMethod,
+    string $mediaType,
+    int $workspaceId,
+    string $reportType,
     ?string $dataIds
   ): Request {
     $request = RequestCreator::create(
@@ -128,7 +136,11 @@ final class WorkspaceControllerTest extends TestCase {
     $this->testGetReportWithEmptyDataIds(ReportType::LOG->value, 'text/csv');
   }
 
-  private function testGetReportWithEmptyDataIds(string $reportType, string $mediaType, ?string $expectedMethod = null): void {
+  private function testGetReportWithEmptyDataIds(
+    string $reportType,
+    string $mediaType,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $this->dataIds = "";
     $path = "/$this->workspaceId/report/$reportType";
@@ -180,7 +192,11 @@ final class WorkspaceControllerTest extends TestCase {
     $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'text/csv');
   }
 
-  private function testGetReportWithoutReportGeneration(string $reportType, string $mediaType, ?string $expectedMethod = null): void {
+  private function testGetReportWithoutReportGeneration(
+    string $reportType,
+    string $mediaType,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
@@ -255,7 +271,12 @@ final class WorkspaceControllerTest extends TestCase {
     $this->testGetJSONReport(ReportType::LOG->value, 'application/json', ['application/json']);
   }
 
-  private function testGetJSONReport(string $reportType, string $mediaType, array $expectedContentTypes, ?string $expectedMethod = null): void {
+  private function testGetJSONReport(
+    string $reportType,
+    string $mediaType,
+    array $expectedContentTypes,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
@@ -365,7 +386,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     $filesContents = array_reduce(
       array_keys($files),
-      function($agg, $fileName) use ($files) {
+      function ($agg, $fileName) use ($files) {
         $agg[$fileName] = $files[$fileName]->getContent();
         return $agg;
       },

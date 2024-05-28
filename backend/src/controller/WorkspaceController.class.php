@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -131,7 +132,13 @@ class WorkspaceController extends Controller {
     $containsErrors = false;
     foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
       $reports[$localPath] = $file->getValidationReport();
-      $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
+      $containsErrors = (
+        $containsErrors
+        or (isset($reports[$localPath]['error'])
+          and count(
+            $reports[$localPath]['error']
+          ))
+      );
       $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
     }
 
@@ -197,7 +204,7 @@ class WorkspaceController extends Controller {
 
     if ($report->generate($request->getParam('useNewVersion') === 'true')) {
       $response->getBody()->write($report->asString());
-    };
+    }
     $response = $reportFormat === ReportFormat::CSV
       ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
       : $response->withHeader('Content-Type', 'application/json');
