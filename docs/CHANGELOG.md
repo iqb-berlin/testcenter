@@ -6,10 +6,15 @@ layout: default
 ### Sicherheit
 * Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
+* Unsichere TLS-Cipher-Suites entfernt
 
 ### Bugfix
 * SQL error beim Angabe eines falschen Dateipfades beim löschen von Dateien wurde behoben. Es wird nun richtigerweise 
   auf den falschen Pfad innerhalb eines 207 response hingewiesen.
+
+### Anderes
+* .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
+
 
 ## 15.1.6
 ### neue Features
