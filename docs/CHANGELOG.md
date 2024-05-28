@@ -6,6 +6,7 @@ layout: default
 ### Sicherheit
 * Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
+* Unsichere TLS-Cipher-Suites entfernt
 
 
 ## 15.1.6
