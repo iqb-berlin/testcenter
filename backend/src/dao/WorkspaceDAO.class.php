@@ -350,9 +350,6 @@ class WorkspaceDAO extends DAO {
 
   private function fetchFiles($sql, $replacements): array {
     $files = [];
-    // here muss man die foreach von der query trennen. foreach(rows as row)
-    // dann jede row einzeln die $this->_ ausführen in einem try catch block
-    // wenn diese _() failed, dann im catch block das zu befüllende array an der stelle did not exist füllen (siehe ticket)
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
       // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
