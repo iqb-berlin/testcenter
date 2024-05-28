@@ -102,10 +102,10 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
+    string $userAgent,
+    string $originalUnitId,
     ?int $page = null,
     ?string $pageLabel = null,
-    string $userAgent,
-    string $originalUnitId
   ): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
