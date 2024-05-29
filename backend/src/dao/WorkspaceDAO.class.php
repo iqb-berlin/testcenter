@@ -321,7 +321,9 @@ class WorkspaceDAO extends DAO {
       }
     }
 
-    $placeholder = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = $filePathCondition ? "and ($filePathCondition)" : '';
+
     $andIsValid = $includeInvalid ? '' : ' and files.is_valid';
 
     $sql = "select distinct
@@ -346,7 +348,7 @@ class WorkspaceDAO extends DAO {
                 where
                     files.workspace_id = ?
                     $andIsValid
-                    and ($placeholder)";
+                    $filePathCondition";
 
     return $this->fetchFiles($sql, $replacements);
   }
