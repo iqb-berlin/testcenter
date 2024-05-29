@@ -2,6 +2,9 @@
 # For concrete images check the environment specific override files.
 version: '3.9'
 
+x-restart-policy: &restart-policy
+  restart: "${RESTART_POLICY:-no}"
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -13,6 +16,7 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
+    <<: *restart-policy
     container_name: testcenter-traefik
     image: traefik:v2.10
     command:
@@ -26,6 +30,7 @@ services:
       testcenter:
 
   testcenter-db:
+    <<: *restart-policy
     container_name: testcenter-db
     image: iqbberlin/testcenter-db:current
     environment:
@@ -43,6 +48,7 @@ services:
       testcenter:
 
   testcenter-backend:
+    <<: *restart-policy
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     environment:
@@ -81,6 +87,7 @@ services:
       testcenter:
 
   testcenter-file-service:
+    <<: *restart-policy
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     environment:
@@ -99,6 +106,7 @@ services:
       testcenter:
 
   testcenter-cache-service:
+    <<: *restart-policy
     container_name: testcenter-cache-service
     image: redis:7.0-bullseye
     command:
@@ -109,6 +117,7 @@ services:
       testcenter:
 
   testcenter-frontend:
+    <<: *restart-policy
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
     logging:
@@ -127,6 +136,7 @@ services:
       testcenter:
 
   testcenter-broadcasting-service:
+    <<: *restart-policy
     container_name: testcenter-broadcasting-service
     image: iqbberlin/testcenter-broadcasting-service:current
     logging:

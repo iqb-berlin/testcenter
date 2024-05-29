@@ -1,7 +1,11 @@
 /* eslint-disable max-classes-per-file */
 
 import UAParser from 'ua-parser-js';
-import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
+import {
+  MaxTimeLeaveValue,
+  MaxTimerDataType,
+  NavigationLeaveRestrictionValue
+} from '../interfaces/test-controller.interfaces';
 
 export class TestletContentElement {
   readonly sequenceId: number;
@@ -75,6 +79,7 @@ export class Testlet extends TestletContentElement {
   codeToEnter = '';
   codePrompt = '';
   maxTimeLeft = -1;
+  maxTimeLeave: MaxTimeLeaveValue = 'confirm';
 
   addTestlet(id: string, title: string): Testlet {
     const newChild = new Testlet(0, id, title);

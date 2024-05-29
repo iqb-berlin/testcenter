@@ -34,6 +34,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: id of a executed test
@@ -72,6 +73,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: id of a executed test
@@ -128,6 +130,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -184,6 +187,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -234,6 +238,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -300,6 +305,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -355,6 +361,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -398,6 +405,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -446,6 +454,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -484,6 +493,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -530,6 +540,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
       requestBody:
         content:
           application/json:
@@ -571,6 +582,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -610,6 +622,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+          required: true
         - in: path
           name: test_id
           description: test-id - id of a test execution.

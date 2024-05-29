@@ -17,6 +17,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user containing a personToken
           example: "p:user000000000.test0000000"
+          required: true
         - in: path
           name: booklet_name
           description: id of a executed test
@@ -53,6 +54,7 @@ paths:
           name: AuthToken
           description: auth-token for test-user containing a personToken
           example: "p:user000000000.test0000000"
+          required: true
         - in: path
           name: booklet_name
           description: id of a executed test

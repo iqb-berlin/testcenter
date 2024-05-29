@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import {
+  BehaviorSubject, Observable, of, Subscription
+} from 'rxjs';
 import { catchError, map, share } from 'rxjs/operators';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
+import { ConnectionStatusWs } from '../../interfaces/websocket-backend.interfaces';
 
 interface WsMessage {
   event: string;
@@ -12,11 +15,12 @@ interface WsMessage {
 export class WebsocketService {
   protected wsUrl = '';
   private wsSubject$: WebSocketSubject<any> | null = null;
-  wsConnected$ = new BehaviorSubject<boolean>(false);
+  wsConnected$ = new BehaviorSubject<ConnectionStatusWs>('connecting');
   private wsSubscription: Subscription | null = null;
 
   connect(): void {
     if (!this.wsSubject$) {
+      this.wsConnected$.next('connecting');
       this.wsSubject$ = webSocket({
         deserializer(event: MessageEvent): any {
           return JSON.parse(event.data);
@@ -26,7 +30,7 @@ export class WebsocketService {
         },
         openObserver: {
           next: () => {
-            this.wsConnected$.next(true);
+            this.wsConnected$.next('connected');
           }
         },
         url: this.wsUrl
@@ -37,7 +41,7 @@ export class WebsocketService {
           next: () => {
           },
           error: () => {
-            this.closeConnection();
+            this.wsConnected$.next('disconnected');
           },
           complete: () => {
             this.closeConnection();
@@ -47,7 +51,7 @@ export class WebsocketService {
   }
 
   protected closeConnection(): void {
-    this.wsConnected$.next(false);
+    this.wsConnected$.next('disconnected');
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
     }
@@ -70,10 +74,10 @@ export class WebsocketService {
       this.connect();
     }
     if (!this.wsSubject$) {
+      // should never happen, but typescript wants it
       throw new Error('Websocket connection failed and fallback as well.');
     }
-
-    return this.wsSubject$?.multiplex(
+    return this.wsSubject$.multiplex(
       () => ({ event: `subscribe:${channelName}` }),
       () => ({ event: `unsubscribe:${channelName}` }),
       message => (message.event === channelName)

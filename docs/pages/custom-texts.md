@@ -47,6 +47,7 @@ replacements:
 
 | Key       | Used for     | Default     |
 | :------------- | :---------- | :----------- |
+|booketlet_continueButtonLockedUnit|Label für den Button um bei gesperrten Units weiter zuklicken|Weiter|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
 |booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|

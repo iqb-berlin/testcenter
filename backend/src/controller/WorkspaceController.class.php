@@ -34,8 +34,9 @@ class WorkspaceController extends Controller {
       throw new HttpBadRequestException($request, "New workspace name missing");
     }
 
-    self::superAdminDAO()->createWorkspace($requestBody->name);
+    $workspaceCreated = self::superAdminDAO()->createWorkspace($requestBody->name);
 
+    $response->getBody()->write(htmlspecialchars($workspaceCreated['id']));
     return $response->withStatus(201);
   }
 
@@ -117,7 +118,7 @@ class WorkspaceController extends Controller {
   }
 
   public static function postFile(Request $request, Response $response): Response {
-    set_time_limit(180); // because password hashing may take a lot of time if many testtakers are provided
+    set_time_limit(600); // because password hashing may take a lot of time if many testtakers are provided
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 

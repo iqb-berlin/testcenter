@@ -210,6 +210,10 @@ export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLea
   return ['ON', 'OFF', 'ALWAYS'].indexOf(s) > -1;
 }
 
+
+export const maxTimeLeaveValues = ['confirm', 'forbidden'];
+export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
+
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }

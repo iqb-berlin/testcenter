@@ -32,6 +32,14 @@ export class UnitDeactivateGuard {
     ) {
       return of(true);
     }
+    if (this.tcs.rootTestlet?.getTestlet(this.tcs.currentMaxTimerTestletId)?.maxTimeLeave === 'forbidden') {
+      this.snackBar.open(
+        `Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.`,
+        'OK',
+        { duration: 3000 }
+      );
+      return of(false);
+    }
     if (!this.tcs.testMode.forceTimeRestrictions) {
       this.tcs.interruptMaxTimer();
       return of(true);
@@ -82,7 +90,6 @@ export class UnitDeactivateGuard {
     };
     if (
       (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
-      this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
     ) {
       reasons.push('presentationIncomplete');

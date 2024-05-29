@@ -5,6 +5,68 @@ info:
   version: "%%%VERSION%%%"
 
 paths:
+  /workspace/{ws_id}/studyresults:
+    get:
+      summary: get study results without admin rights
+      description: retrieves a list of unit- and booklet results for a given workspace
+      tags:
+        - study monitor results
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for studyMonitor user containing a personToken
+          example: "s:user000000000.0000000000"
+        - in: path
+          name: ws_id
+          description: id of a workspace
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK, list of results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupName:
+                      type: string
+                    bookletsStarted:
+                      type: integer
+                    numUnitsMin:
+                      type: integer
+                    numUnitsMax:
+                      type: integer
+                    numUnitsTotal:
+                      type: integer
+                    numUnitsAvg:
+                      type: integer
+                    lastChange:
+                      type: integer
+                      description: timestamp
+              example:
+                - groupName: sample_group
+                  bookletsStarted: 2
+                  numUnitsMin: 0
+                  numUnitsMax: 1
+                  numUnitsTotal: 1
+                  numUnitsAvg: 0.5
+                  lastChange: 2021
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
   /workspace/{ws_id}/file/{type}/{filename}:
     get:
       summary: get file
@@ -18,6 +80,7 @@ paths:
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example: "a:user000000000.ro00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -65,6 +128,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -112,6 +176,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -184,6 +249,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -249,6 +315,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -402,6 +469,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -465,7 +533,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
-
+          required: true
       requestBody:
         content:
           application/json:
@@ -482,6 +550,9 @@ paths:
       responses:
         "201":
           description: OK, workspace has been added
+          content:
+            text/html;charset=utf-8:
+              example: "3"
         "401":
           description: Not authenticated
         "410":
@@ -501,6 +572,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -537,6 +609,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -581,6 +654,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -634,6 +708,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -674,6 +749,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -724,6 +800,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -790,6 +867,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -840,6 +918,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -891,6 +970,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
           example: "a:user000000000.rw00000000"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
@@ -943,6 +1023,7 @@ paths:
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
+          required: true
         - in: path
           name: ws_id
           description: workspace-id
