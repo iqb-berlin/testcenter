@@ -10,9 +10,9 @@ layout: default
   Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.  
 
 ### Sicherheit
-* Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
+* Im Response-Body aller Fehlermeldungen werden HTML-Zeichen maskiert. Damit sollten alle Reflected Cross-Site 
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
-* Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen brute force 
+* Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen Brute-Force-
   Attacken. Es folgen später weitere Maßnahmen, um auch DOS von verteilten Netzwerken zu verhindern.
 * Unsichere TLS-Cipher-Suites entfernt
 
@@ -27,6 +27,7 @@ layout: default
 ### Administration
 * Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen 
   Proxy geladen werden. Der Standardwert ist ein leerer String.
+* Der automatische Neustart abgestürzter Container lässt sich nun mitteln .env-Vriable einstellen (Restart Policy). 
 
 ## 15.1.6
 ### neue Features
