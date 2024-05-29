@@ -6,7 +6,7 @@ layout: default
 ### neue Features
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
   alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
-  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eine Super Admins, ohne jedoch die Rechte zu haben, die 
+  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eines Super-Admins, ohne jedoch die Rechte zu haben, die 
   Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.  
 
 ### Sicherheit
@@ -17,15 +17,12 @@ layout: default
 * Unsichere TLS-Cipher-Suites entfernt
 
 ### Bugfix
-* SQL error beim Angabe eines falschen Dateipfades beim löschen von Dateien wurde behoben. Es wird nun richtigerweise 
+* SQL error beim Angabe eines falschen Dateipfades beim Löschen von Dateien wurde behoben. Es wird nun richtigerweise 
   auf den falschen Pfad innerhalb eines 207 response hingewiesen.
 
 ### API
-* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspaceid zurück. `[PUT] /user` gibt analog dazu die 
+* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspace-Id zurück. `[PUT] /user` gibt analog dazu die 
   userId zurück.
-
-### Anderes
-* .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
 
 ### Administration
 * Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen 
@@ -36,7 +33,7 @@ layout: default
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
   * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
     heraus navigiert werden kann.
-  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
+  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem gleichen Verhalten wie vorher, wie auch 
     `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
 
 ### Verbesserungen
@@ -54,7 +51,7 @@ layout: default
   korrekt. Dies betrifft z. B. den Aspect-Player.
 * Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
 * Kann keine Websocket-Verbindung etabliert werden, wird wieder korrekt auf Polling umgeschaltet.
-* Um gleichzeitige Uploads auf den selben Arbeitsbereich zu verhindern, wird ein Workspace für die Dauer des Uplaods
+* Um gleichzeitige Uploads auf den gleichen Arbeitsbereich zu verhindern, wird ein Workspace für die Dauer des Uplaods
   für Upload (und löschen) gesperrt. In bestimmten Fehlersituationen wird diese Sperre nicht korrekt aufgehoben und der
   Arbeitsbereich bleibt gesperrt. Sperren, die älter als zwölf Minuten sind, werden in Zukunft ignoriert.
 
