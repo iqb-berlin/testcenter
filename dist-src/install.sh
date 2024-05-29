@@ -66,6 +66,13 @@ customize_settings() {
     done
 }
 
+set_tls() {
+  read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
+  if [[ $TLS =~ ^[nN]$ ]]; then
+    sed -i 's/TLS_ENABLED=on/TLS_ENABLED=off/' .env
+  fi
+}
+
 ### Main logic starts here #########################
 
 check_prerequisites
@@ -89,5 +96,7 @@ cd $TARGET_DIR
 download_files
 
 customize_settings
+
+set_tls
 
 echo "Installation complete. Use 'make run' from the install directory."

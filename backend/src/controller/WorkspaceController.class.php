@@ -34,8 +34,9 @@ class WorkspaceController extends Controller {
       throw new HttpBadRequestException($request, "New workspace name missing");
     }
 
-    self::superAdminDAO()->createWorkspace($requestBody->name);
+    $workspaceCreated = self::superAdminDAO()->createWorkspace($requestBody->name);
 
+    $response->getBody()->write(htmlspecialchars($workspaceCreated['id']));
     return $response->withStatus(201);
   }
 

@@ -25,6 +25,21 @@
         >
         </tc-alert>
 
+        <h4 *ngIf="accessObjects.studyMonitor">Gesamte Studie überwachen</h4>
+        <a
+          *ngFor="let accessObject of accessObjects.studyMonitor"
+          mat-raised-button color="primary"
+          class="starter"
+          [attr.data-cy]="'SM-' + accessObject.id"
+          (click)="buttonGotoStudyMonitor(accessObject)"
+        >
+          <div class="starter-title">{{accessObject.label}}</div>
+          <div class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
+            {{'Studien-Monitor Starten' | customtext: 'gm_selection_text' | async}}
+          </div>
+        </a>
+
+
         <h4 *ngIf="accessObjects.testGroupMonitor">Test-Gruppen Überwachung</h4>
         <a
           *ngFor="let accessObject of accessObjects.testGroupMonitor"
