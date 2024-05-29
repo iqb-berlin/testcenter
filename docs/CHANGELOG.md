@@ -2,6 +2,9 @@
 layout: default
 ---
 
+## 15.2.0-alpha7
+* Bugfix navigation wenn Zeit abgelaufen 
+
 ## 15.2.0-alpha6
 * Bugfix bezüglich Zeit/Passwort-gesteurten Blöcken
 
