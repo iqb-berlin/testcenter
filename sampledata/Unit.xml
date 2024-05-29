@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.2.0-alpha6/definitions/vo_Unit.xsd">
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.2.0-alpha7/definitions/vo_Unit.xsd">
   <Metadata lastChange="2022-10-11T09:30:00+00:00">
     <Id>UNIT.SAMPLE</Id>
     <Label>A sample unit</Label>
