@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.1.7
 ### neue Features
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
   alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
