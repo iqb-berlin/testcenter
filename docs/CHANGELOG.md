@@ -7,7 +7,7 @@ layout: default
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
   alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
   Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eine Super Admins, ohne jedoch die Rechte zu haben, die 
-  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.
+  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.  
 
 ### Sicherheit
 * Der response body aller Fehlermeldungen wird auf html characters escaped. Damit sollten alle Reflected Cross-Site 
@@ -27,6 +27,9 @@ layout: default
 ### Anderes
 * .editorconfig angepasst, sodass code style näher am PSR-12 Standard ist
 
+### Administration
+* Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen 
+  Proxy geladen werden. Der Standardwert ist ein leerer String.
 
 ## 15.1.6
 ### neue Features
