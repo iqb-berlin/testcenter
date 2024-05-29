@@ -21,7 +21,7 @@ export class StudyMonitorComponent {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   private wsIdSubscription: Subscription | null = null;
-  private intervalId: number | null = null;
+  private intervalId: ReturnType<typeof setTimeout> | null = null; // https://stackoverflow.com/a/56239226
 
   constructor(
     private route: ActivatedRoute,
