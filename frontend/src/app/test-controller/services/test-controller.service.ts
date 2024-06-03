@@ -714,10 +714,14 @@ export class TestControllerService {
       const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
       // eslint-disable-next-line default-case
       switch (source.type) {
-        case 'Code': return var1.code ?? NaN;
-        case 'Value': return IqbVariableUtil.variableValueAsNumber(var1.value);
-        case 'Status': return IQBVariableStatusList.indexOf(var1.status);
-        case 'Score': return var1.score ?? NaN;
+        case 'Code':
+          return var1.code ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
+        case 'Value':
+          return IqbVariableUtil.variableValueAsNumber(var1.value); // TODO default?
+        case 'Status':
+          return IQBVariableStatusList.indexOf(var1.status); // TODO default to UNSET ?
+        case 'Score':
+          return var1.score ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
       }
       return NaN;
     };

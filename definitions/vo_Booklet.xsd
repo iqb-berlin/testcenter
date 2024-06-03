@@ -127,8 +127,9 @@
   <xs:complexType name="ScoreType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="of"/>
-        <xs:attribute type="xs:string" name="from"/>
+        <xs:attribute type="xs:string" name="of" use="required" />
+        <xs:attribute type="xs:string" name="from" use="required" />
+        <xs:attribute type="xs:float" name="or" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>

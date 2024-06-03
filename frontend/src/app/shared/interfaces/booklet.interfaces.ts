@@ -44,6 +44,7 @@ export interface BlockConditionSource {
   readonly type: BlockConditionSourceType;
   readonly variable: string;
   readonly unitAlias: string;
+  readonly default: string;
 }
 
 export const BlockConditionAggregationTypes = ['Count'];

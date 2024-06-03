@@ -1,6 +1,8 @@
 ---
 layout: default
 ---
+## 15.2.0-alpha8
+* 0 wird als default für Scores angenommen. In <Score of... kann jetzt das Attribut or hinzugefügt werden, um diesen default zu ändern. 
 
 ## 15.2.0-alpha7
 * Bugfix navigation wenn Zeit abgelaufen 

@@ -239,7 +239,8 @@ export abstract class BookletParserService<
     const parseSourceElement = (expressionElement: Element): BlockConditionSource => ({
       type: expressionElement.tagName,
       variable: expressionElement.getAttribute('of') || '',
-      unitAlias: expressionElement.getAttribute('from') || ''
+      unitAlias: expressionElement.getAttribute('from') || '',
+      default: expressionElement.getAttribute('or') || '0'
     });
 
     let source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation;
