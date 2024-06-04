@@ -1,8 +1,8 @@
 import {
-  bufferTime, concatMap, filter, map, takeUntil
+  bufferTime, bufferWhen, concatMap, distinctUntilChanged, filter, map, takeUntil, tap
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, interval, Observable, Subject, Subscription, timer
+  BehaviorSubject, interval, merge, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -40,7 +40,7 @@ import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfac
   providedIn: 'root'
 })
 export class TestControllerService {
-  static readonly unitDataBufferMs = 1000;
+  static readonly unitDataBufferMs = 10000;
   static readonly unitStateBufferMs = 2500;
 
   testId = '';
@@ -109,11 +109,13 @@ export class TestControllerService {
   }
 
   testStructureChanges$ = new BehaviorSubject<void>(undefined);
+  closeBuffers$ = new Subject<void>();
 
   private players: { [filename: string]: string } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
+  unitDataPartsBuffer$ = new Subject<void>();
 
   private unitStateToSave$ = new Subject<UnitStateUpdate>();
   private unitStateToSaveSubscription: Subscription | null = null;
@@ -131,11 +133,17 @@ export class TestControllerService {
   setupUnitDataPartsBuffer(): void {
     this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
     this.destroyUnitStateBuffer();
-    // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
-    this.unitDataPartsToSaveSubscription = this.unitDataPartsToSave$
+
+    this.unitDataPartsToSave$
       .pipe(
-        bufferTime(TestControllerService.unitDataBufferMs),
+        tap(data => console.log({ data })),
+        bufferWhen(
+          () => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)
+        ),
+        tap(buffer => console.log({ buffer })),
         filter(dataPartsBuffer => !!dataPartsBuffer.length),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+        tap(applyBuffer => console.log({ applyBuffer })),
         concatMap(dataPartsBuffer => {
           const sortedByUnit = dataPartsBuffer
             .reduce(
@@ -164,6 +172,8 @@ export class TestControllerService {
         if (trackedVariablesChanged && this.booklet?.config.evaluate_testlet_conditions === 'LIVE') {
           this.evaluateConditions();
         }
+        console.log('changedDataParts');
+        this.unitDataPartsBuffer$.next();
         if (this.testMode.saveResponses) {
           this.bs.updateDataParts(
             this.testId,
@@ -672,6 +682,8 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
+    console.log('evaluateConditions!');
+    console.trace();
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =

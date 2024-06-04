@@ -29,8 +29,8 @@ export class DebugPaneComponent implements OnInit {
   ) {
   }
 
-  tabs = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system', 'tools'];
-  activeTabs : typeof this.tabs[number][] = ['variables'];
+  windows = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system', 'tools'];
+  activeWindows : typeof this.windows[number][] = ['variables'];
 
   bookletConfig: Array<[string, string]> = [];
   testMode: Array<[string, string]> = [];
@@ -60,17 +60,17 @@ export class DebugPaneComponent implements OnInit {
       });
     const storedState = localStorage.getItem('tc-debug');
     if (storedState) {
-      this.activeTabs = JSON.parse(storedState);
+      this.activeWindows = JSON.parse(storedState);
     }
   }
 
-  toggleTab(tab: typeof this.tabs[number]): void {
-    if (this.activeTabs.includes(tab)) {
-      this.activeTabs.splice(this.activeTabs.indexOf(tab), 1);
+  toggleWindow(tab: typeof this.windows[number]): void {
+    if (this.activeWindows.includes(tab)) {
+      this.activeWindows.splice(this.activeWindows.indexOf(tab), 1);
     } else {
-      this.activeTabs.push(tab);
+      this.activeWindows.push(tab);
     }
-    localStorage.setItem('tc-debug', JSON.stringify(this.activeTabs));
+    localStorage.setItem('tc-debug', JSON.stringify(this.activeWindows));
   }
 
   res(): void {
@@ -90,10 +90,11 @@ export class DebugPaneComponent implements OnInit {
   protected readonly isTestlet = isTestlet;
 
   closeWindow(id: string): void {
-    const tabId = this.activeTabs.indexOf(id);
+    const tabId = this.activeWindows.indexOf(id);
     if (tabId !== -1) {
-      this.activeTabs.splice(tabId, 1);
+      this.activeWindows.splice(tabId, 1);
     }
+    localStorage.setItem('tc-debug', JSON.stringify(this.activeWindows));
   }
 
   evaluateTestingCondition(): void {

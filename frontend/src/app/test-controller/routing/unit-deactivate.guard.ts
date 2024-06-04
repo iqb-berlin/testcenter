@@ -1,9 +1,9 @@
 import {
-  concatMap, last, map, takeWhile
+  concatMap, last, map, switchMap, takeWhile
 } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { from, Observable, of } from 'rxjs';
+import { from, lastValueFrom, Observable, of, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -198,7 +198,7 @@ export class UnitDeactivateGuard {
     return of(true);
   }
 
-  private evaluateConditionsIfNecessary(newUnit: Unit | null): Observable<boolean> {
+  private evaluateConditionsIfNecessary(newUnit: Unit | null): void {
     if (
       (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_UNIT') ||
       (
@@ -209,7 +209,6 @@ export class UnitDeactivateGuard {
     ) {
       this.tcs.evaluateConditions();
     }
-    return of(true);
   }
 
   canDeactivate(
@@ -221,40 +220,49 @@ export class UnitDeactivateGuard {
     if (nextState.url === '/r/route-dispatcher') {
       return true;
     }
+    this.tcs.closeBuffers$.next();
 
-    if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
-      return true;
-    }
-
-    if (this.tcs.currentUnit.parent.locked) {
-      return true;
-    }
-
-    let newUnit: Unit | null = null;
-    const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
-    if (match) {
-      const targetUnitSequenceId = Number(match[2]);
-      newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
-    }
-
-    // TODO maybe move all of this into testControllerService
-
-    const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
-    if (forceNavigation) {
-      this.tcs.interruptTimer();
-      return true;
-    }
-
-    return from([
-      this.checkAndSolveCompleteness.bind(this),
-      this.checkAndSolveTimer.bind(this),
-      this.checkAndSolveLeaveLocks.bind(this),
-      this.evaluateConditionsIfNecessary.bind(this)
-    ])
+    return this.tcs.unitDataPartsBuffer$
       .pipe(
-        concatMap(check => check(newUnit)),
-        takeWhile(checkResult => checkResult, true),
-        last()
+        switchMap(() => {
+          console.log('switchMap');
+
+          if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
+            return of(true);
+          }
+
+          if (this.tcs.currentUnit.parent.locked) {
+            return of(true);
+          }
+
+          let newUnit: Unit | null = null;
+          const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
+          if (match) {
+            const targetUnitSequenceId = Number(match[2]);
+            newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
+          }
+
+          // TODO maybe move all of this into testControllerService
+
+          const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
+          if (forceNavigation) {
+            this.tcs.interruptTimer();
+            return of(true);
+          }
+
+          this.evaluateConditionsIfNecessary(newUnit);
+
+          return from([
+            this.checkAndSolveCompleteness.bind(this),
+            this.checkAndSolveTimer.bind(this),
+            this.checkAndSolveLeaveLocks.bind(this)
+          ])
+            .pipe(
+              concatMap(check => check(newUnit)),
+              takeWhile(checkResult => checkResult, true),
+              last()
+            );
+        })
       );
   }
 }

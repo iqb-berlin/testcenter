@@ -78,9 +78,8 @@
 }
 
 .tab-variables {
-  bottom: 0;
-  left: 50%;
-  top: unset;
+  left: 0;
+  top: 65px;
 }
 
 .tab-unit .more-btn {
