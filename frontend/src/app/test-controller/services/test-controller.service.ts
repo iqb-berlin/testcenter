@@ -1,5 +1,5 @@
 import {
-  bufferTime, bufferWhen, concatMap, distinctUntilChanged, filter, map, takeUntil, tap
+  bufferTime, bufferWhen, concatMap, filter, map, takeUntil, tap
 } from 'rxjs/operators';
 import {
   BehaviorSubject, interval, merge, Observable, Subject, Subscription, timer
@@ -115,7 +115,7 @@ export class TestControllerService {
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
-  unitDataPartsBuffer$ = new Subject<void>();
+  unitDataPartsBufferClosed$ = new Subject<void>();
 
   private unitStateToSave$ = new Subject<UnitStateUpdate>();
   private unitStateToSaveSubscription: Subscription | null = null;
@@ -134,57 +134,75 @@ export class TestControllerService {
     this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
     this.destroyUnitStateBuffer();
 
+    const sortDataPartsByUnit = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] => {
+      const sortedByUnit = dataPartsBuffer
+        .reduce(
+          (agg, dataParts) => {
+            if (!agg[dataParts.unitAlias]) agg[dataParts.unitAlias] = [];
+            agg[dataParts.unitAlias].push(dataParts);
+            return agg;
+          },
+          <{ [unitAlias: string]: UnitDataParts[] }>{}
+        );
+      // if (!Object.keys(sortedByUnit).length) {
+      //   console.log('i wont obey you');
+      //   this.unitDataPartsBufferClosed$.next();
+      // }
+      return Object.keys(sortedByUnit)
+        .map(unitAlias => ({
+          unitAlias,
+          dataParts: Object.assign({}, ...sortedByUnit[unitAlias].map(entry => entry.dataParts)),
+          // verona4 does not support different dataTypes for different Chunks
+          unitStateDataType: sortedByUnit[unitAlias][0].unitStateDataType
+        }));
+    };
+
+    this.unitDataPartsBufferClosed$
+      .subscribe(() => {
+        console.log('buffer closed');
+      });
+
     this.unitDataPartsToSave$
       .pipe(
         tap(data => console.log({ data })),
-        bufferWhen(
-          () => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)
-        ),
+        bufferWhen(() => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)),
         tap(buffer => console.log({ buffer })),
-        filter(dataPartsBuffer => !!dataPartsBuffer.length),
-        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap(applyBuffer => console.log({ applyBuffer })),
-        concatMap(dataPartsBuffer => {
-          const sortedByUnit = dataPartsBuffer
-            .reduce(
-              (agg, dataParts) => {
-                if (!agg[dataParts.unitAlias]) agg[dataParts.unitAlias] = [];
-                agg[dataParts.unitAlias].push(dataParts);
-                return agg;
-              },
-              <{ [unitAlias: string]: UnitDataParts[] }>{}
-            );
-          return Object.keys(sortedByUnit)
-            .map(unitAlias => ({
-              unitAlias,
-              dataParts: Object.assign({}, ...sortedByUnit[unitAlias].map(entry => entry.dataParts)),
-              // verona4 does not support different dataTypes for different Chunks
-              unitStateDataType: sortedByUnit[unitAlias][0].unitStateDataType
-            }));
-        })
+        map(sortDataPartsByUnit)
       )
       .subscribe(changedDataParts => {
-        const trackedVariablesChanged = this.updateVariables(
-          this.unitAliasMap[changedDataParts.unitAlias],
-          changedDataParts.unitStateDataType,
-          changedDataParts.dataParts
-        );
+        let trackedVariablesChanged = false;
+        changedDataParts
+          .forEach(changedDataPartsPerUnit => {
+            trackedVariablesChanged = this.updateVariables(
+              this.unitAliasMap[changedDataPartsPerUnit.unitAlias],
+              changedDataPartsPerUnit.unitStateDataType,
+              changedDataPartsPerUnit.dataParts
+            );
+          });
+
         if (trackedVariablesChanged && this.booklet?.config.evaluate_testlet_conditions === 'LIVE') {
           this.evaluateConditions();
         }
-        console.log('changedDataParts');
-        this.unitDataPartsBuffer$.next();
+
+        console.log('buffer ready', changedDataParts.length);
+        this.unitDataPartsBufferClosed$.next();
+
         if (this.testMode.saveResponses) {
-          this.bs.updateDataParts(
-            this.testId,
-            changedDataParts.unitAlias,
-            changedDataParts.dataParts,
-            changedDataParts.unitStateDataType
-          );
+          changedDataParts
+            .forEach(changedDataPartsPerUnit => {
+              this.bs.updateDataParts(
+                this.testId,
+                changedDataPartsPerUnit.unitAlias,
+                changedDataPartsPerUnit.dataParts,
+                changedDataPartsPerUnit.unitStateDataType
+              );
+            });
         }
       });
   }
 
+  // todo react to closeBuffers as well!
   setupUnitStateBuffer(): void {
     this.unitStateToSaveSubscription = this.unitStateToSave$
       .pipe(
@@ -683,7 +701,6 @@ export class TestControllerService {
 
   evaluateConditions(): void {
     console.log('evaluateConditions!');
-    console.trace();
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
