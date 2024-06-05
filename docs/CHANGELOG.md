@@ -2,7 +2,9 @@
 layout: default
 ---
 ## 15.2.0-alpha8
-* 0 wird als default für Scores angenommen. In <Score of... kann jetzt das Attribut or hinzugefügt werden, um diesen default zu ändern. 
+* `0` wird als default für Scores angenommen. In `<Score of...` kann jetzt das Attribut `or` hinzugefügt werden, um diesen default zu ändern. 
+* Super hacky fix: Die Navigation nach NEXT über in-unit-buttons wird so verzögert, dass auf jeden Fall der letzte Datenbuffer
+ geschlossen ist und die richtige Verzweigung gewählt.
 
 ## 15.2.0-alpha7
 * Bugfix navigation wenn Zeit abgelaufen 

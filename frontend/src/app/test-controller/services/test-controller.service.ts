@@ -497,7 +497,10 @@ export class TestControllerService {
     }
   }
 
-  setUnitNavigationRequest(navString: string, force = false): void {
+  private iAmNavigating = false;
+
+  async setUnitNavigationRequest(navString: string, force = false): Promise<void> {
+
     const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
     if (!this._booklet) {
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
@@ -508,6 +511,25 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
           break;
         case UnitNavigationTarget.NEXT:
+          if (this.iAmNavigating) {
+            console.log('navigation bereits');
+            return;
+          }
+          console.log('wait');
+          this.iAmNavigating = true;
+          await new Promise<void>(
+            resolve => {
+              setTimeout(
+                () => {
+                  this.iAmNavigating = false;
+                  resolve();
+                  console.log('resume');
+                },
+                TestControllerService.unitDataBufferMs + 10
+              );
+            }
+          );
+          console.log('waiting done');
           // eslint-disable-next-line no-case-declarations
           const nextUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
           this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
