@@ -91,7 +91,7 @@
             (click)="verifyCodes()"
             data-cy="unit-block-dialog-submit"
           >
-            OK
+            {{'Weiter' | customtext:'booklet_continueButtonLockedUnit' | async}}
           </button>
           <button
             *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"

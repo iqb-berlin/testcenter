@@ -167,6 +167,7 @@ export const TestBooklet = testlet({
   codeToEnter: '',
   codePrompt: '',
   maxTimeLeft: 10,
+  maxTimeLeave: 'confirm',
   children: [
     unit({
       sequenceId: 1,
@@ -186,6 +187,7 @@ export const TestBooklet = testlet({
       codeToEnter: 'D',
       codePrompt: '',
       maxTimeLeft: 5,
+      maxTimeLeave: 'confirm',
       children: [
         unit({
           sequenceId: 2,
@@ -205,6 +207,7 @@ export const TestBooklet = testlet({
           codeToEnter: 'D',
           codePrompt: '',
           maxTimeLeft: 3,
+          maxTimeLeave: 'confirm',
           children: [
             unit({
               sequenceId: 3,
@@ -499,6 +502,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
   codeToEnter: '',
   id: '',
   maxTimeLeft: 0,
+  maxTimeLeave: 'confirm',
   sequenceId: 0,
   title: 'root',
   children: [
@@ -518,6 +522,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       codeToEnter: 'i_am_locked',
       id: 'first_block',
       maxTimeLeft: 5,
+      maxTimeLeave: 'confirm',
       sequenceId: 0,
       title: 'label of first block',
       children: [
@@ -537,6 +542,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           codeToEnter: '',
           id: 'sub_testlet_of_first_block',
           maxTimeLeft: 0,
+          maxTimeLeave: 'confirm',
           sequenceId: 0,
           title: '',
           children: [
@@ -560,6 +566,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       codeToEnter: '',
       id: 'second_block',
       maxTimeLeft: 0,
+      maxTimeLeave: 'confirm',
       sequenceId: 0,
       title: '',
       children: [
