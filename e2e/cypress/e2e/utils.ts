@@ -166,6 +166,16 @@ export const loginTestTaker =
     }
   };
 
+export const loginStudyMonitor =
+  (name: string, password: string): void => {
+    insertCredentials(name, password);
+
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+  };
+
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .should('exist')

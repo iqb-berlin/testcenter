@@ -138,6 +138,10 @@ $app->group('/attachments', function(RouteCollectorProxy $group) {
   ->add(new MayModifyAttachments())
   ->add(new RequireToken('person', 'admin'));
 
+$app->get('/workspace/{ws_id}/studyresults', [WorkspaceController::class, 'getResults'])
+  ->add(new IsGroupMonitor())
+  ->add(new RequireToken('person'));
+
 $app->group('/workspace', function(RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/{ws_id}', [WorkspaceController::class, 'get'])

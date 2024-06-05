@@ -1,0 +1,8 @@
+.adminbackground {
+  flex: 10 0 900px;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  min-height: 85%;
+  margin: 15px;
+  padding: 25px;
+}

@@ -71,6 +71,10 @@ export class StarterComponent implements OnInit, OnDestroy {
     });
   }
 
+  buttonGotoStudyMonitor(accessObject: AccessObject): void {
+    this.router.navigateByUrl(`/sm/${accessObject.id.toString()}`);
+  }
+
   buttonGotoMonitor(accessObject: AccessObject): void {
     this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
   }

@@ -81,6 +81,7 @@
       <Booklet>SM_BKL</Booklet>
     </Login>
     <Login mode="monitor-group" name="group-monitor" pw="301"/>
+    <Login mode="monitor-study" name="tsm" pw="401"/>
   </Group>
 
   <Group id="SM_ValidFromLogin" validFrom="1/6/2023 10:00" label="SessionManagement valid from login">

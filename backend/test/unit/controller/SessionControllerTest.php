@@ -19,6 +19,10 @@ class SessionControllerInjector extends SessionController {
     SessionController::$_adminDAO = $adminDAO;
   }
 
+  public static function injectWorkspaceDAO(WorkspaceDAO $workspaceDAO): void {
+    SessionController::$_workspaceDAO = $workspaceDAO;
+  }
+
   public static function injectWorkspace(Workspace $bookletsFolder, int $workspaceId): void {
     self::$_workspaces[$workspaceId] = $bookletsFolder;
   }
@@ -67,6 +71,12 @@ final class SessionControllerTest extends TestCase {
     $daoStub = $this->createMock('AdminDAO');
     $this->addMockFunctions($daoStub, $functionsAndResults, $expectFunctionCalls);
     SessionControllerInjector::injectAdminDAO($daoStub);
+  }
+
+  private function mockWorkspaceDAO(array $functionsAndResults, array $expectFunctionCalls = []): void {
+    $daoStub = $this->createMock('WorkspaceDAO');
+    $this->addMockFunctions($daoStub, $functionsAndResults, $expectFunctionCalls);
+    SessionControllerInjector::injectWorkspaceDAO($daoStub);
   }
 
   private function addMockFunctions(MockObject $mockObject, array $functionsAndResults, array $expectFunctionCalls = []): void {
@@ -394,6 +404,11 @@ final class SessionControllerTest extends TestCase {
       ]
     ]);
 
+    $this->mockWorkspaceDAO([
+      'getWorkspaceId' => 1,
+      'getWorkspaceName' => 'example_workspace'
+    ]);
+
     $response = SessionController::getSession(
       RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $personToken),
       ResponseCreator::createEmpty()
@@ -449,6 +464,10 @@ final class SessionControllerTest extends TestCase {
       'getGroupMonitors' => [
         new Group('sample_group', 'Sample Group')
       ]
+    ]);
+
+    $this->mockWorkspaceDAO([
+      'getWorkspaceName' => 'example_workspace'
     ]);
 
     $response = SessionController::getSession(
