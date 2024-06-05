@@ -73,7 +73,7 @@ class File extends FileData {
 
     $this->readFileMeta($init);
     $this->id = strtoupper($this->getName());
-    paf_log('CONSTRUCT PATH');
+    paf_log('CONSTRUCT: ' . $this->getPath());
     $this->load();
   }
 

@@ -234,7 +234,7 @@ class Workspace {
     $targetFilePath = $targetFolder . '/' . basename($localFilePath);
 
     if (file_exists($targetFilePath)) {
-      $oldFile = File::get($targetFilePath, $file->getType());
+      $oldFile = $this->workspaceDAO->getFileById($file->getId(), $file->getType()); // TODO X STAND! diese Datei wurde bereits einmal geladen, und zwar beim laden des validators
 
       if ($oldFile->getId() !== $file->getId()) {
         $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
@@ -448,7 +448,7 @@ class Workspace {
 
     if (is_a($file, XMLFileBooklet::class)) {
       $requestedAttachments = $this->getRequestedAttachments($file);
-      paf_log("\n storeFileMeta (XMLFileBooklet): {$file->getId()}");
+      paf_log("storeFileMeta (XMLFileBooklet): {$file->getId()}");
       $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
       $stats['attachments_noted'] = count($requestedAttachments);
     }

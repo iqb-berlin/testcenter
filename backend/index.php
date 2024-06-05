@@ -43,7 +43,8 @@ function paf_log(string|object|array $entry): void {
   } else {
     $e = str_pad($entry, 36);
   }
-  file_put_contents('/var/www/data/paf.log', "[$t]\t[$m]\t$e\t← $bts\n",  FILE_APPEND );
+  $u = $_SERVER['REQUEST_URI'];
+  file_put_contents('/var/www/data/paf.log', "[$u]\t\t[$t]\t[$m]\t$e\t← $bts\n",  FILE_APPEND );
 }
 
 try {
