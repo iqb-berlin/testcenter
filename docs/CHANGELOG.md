@@ -12,6 +12,10 @@ layout: default
   * Der Autor und der Kommentareintrag sind nun zwei verschiedene Spalten.
   * Die Datei beinhaltet auch Informationen zum User-Agent, sprich Browserinformationen, des Autors von Kommentaren.
 
+## 15.1.8
+### Bugfix
+* Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen) 
+
 ## 15.1.7
 ### neue Features
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
