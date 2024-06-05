@@ -2,7 +2,7 @@ import {
   bufferTime, bufferWhen, concatMap, filter, map, takeUntil, tap
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, interval, merge, Observable, Subject, Subscription, timer
+  BehaviorSubject, interval, merge, Observable, Subject, Subscription, take, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -40,7 +40,7 @@ import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfac
   providedIn: 'root'
 })
 export class TestControllerService {
-  static readonly unitDataBufferMs = 10000;
+  static readonly unitDataBufferMs = 60000;
   static readonly unitStateBufferMs = 2500;
 
   testId = '';
@@ -526,61 +526,70 @@ export class TestControllerService {
   }
 
   setUnitNavigationRequest(navString: string, force = false): void {
-    const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
-    if (!this._booklet) {
-      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
-    } else {
-      switch (navString) {
-        case UnitNavigationTarget.ERROR:
-        case UnitNavigationTarget.PAUSE:
+    this.unitDataPartsBufferClosed$
+      .pipe(take(1))
+      .subscribe(() => {
+        const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
+        if (!this._booklet) {
           this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
-          break;
-        case UnitNavigationTarget.NEXT:
-          // eslint-disable-next-line no-case-declarations
-          const nextUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
-          this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
-          break;
-        case UnitNavigationTarget.PREVIOUS:
-          // eslint-disable-next-line no-case-declarations
-          const previousUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true);
-          this.router.navigate([`/t/${this.testId}/u/${previousUnlockedUnitSequenceId}`], { state: { force } });
-          break;
-        case UnitNavigationTarget.FIRST:
-          this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
-          break;
-        case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.sequenceLength}`], { state: { force } });
-          break;
-        case UnitNavigationTarget.END:
-          this.terminateTest(
-            force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
-            force,
-            this.bookletConfig.lock_test_on_termination === 'ON'
-          );
-          break;
+          return;
+        }
+        switch (navString) {
+          case UnitNavigationTarget.ERROR:
+          case UnitNavigationTarget.PAUSE:
+            this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
+            break;
+          case UnitNavigationTarget.NEXT:
+            console.log('next', { from: this.currentUnitSequenceId });
+            // eslint-disable-next-line no-case-declarations
+            const nextUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
+            console.log('next', { from: this.currentUnitSequenceId, to: nextUnlockedUnitSequenceId });
+            this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
+            break;
+          case UnitNavigationTarget.PREVIOUS:
+            // eslint-disable-next-line no-case-declarations
+            const previousUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true);
+            this.router.navigate([`/t/${this.testId}/u/${previousUnlockedUnitSequenceId}`], { state: { force } });
+            break;
+          case UnitNavigationTarget.FIRST:
+            // TODO X should be the first *available*
+            this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
+            break;
+          case UnitNavigationTarget.LAST:
+            // TODO X should be the last *available*
+            this.router.navigate([`/t/${this.testId}/u/${this.sequenceLength}`], { state: { force } });
+            break;
+          case UnitNavigationTarget.END:
+            this.terminateTest(
+              force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
+              force,
+              this.bookletConfig.lock_test_on_termination === 'ON'
+            );
+            break;
 
-        default:
-          // eslint-disable-next-line no-case-declarations
-          let navNr = parseInt(navString, 10);
-          navNr = (navNr <= 1) ? 1 : navNr;
-          navNr = (navNr > this.sequenceLength) ? this.sequenceLength : navNr;
-          this.router.navigate(
-            [`/t/${this.testId}/u/${navNr}`],
-            {
-              state: { force },
-              // eslint-disable-next-line no-bitwise
-              queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
-              //  unit shall be reloaded even if we are there already there
-            }
-          )
-            .then(navOk => {
-              if (!navOk && !targetIsCurrent) {
-                this.messageService.showError(`Navigation zu ${navString} nicht möglich!`);
+          default:
+            // eslint-disable-next-line no-case-declarations
+            let navNr = parseInt(navString, 10);
+            navNr = (navNr <= 1) ? 1 : navNr;
+            navNr = (navNr > this.sequenceLength) ? this.sequenceLength : navNr;
+            this.router.navigate(
+              [`/t/${this.testId}/u/${navNr}`],
+              {
+                state: { force },
+                // eslint-disable-next-line no-bitwise
+                queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
+                //  unit shall be reloaded even if we are there already there
               }
-            });
-          break;
-      }
-    }
+            )
+              .then(navOk => {
+                if (!navOk && !targetIsCurrent) {
+                  this.messageService.showError(`Navigation zu ${navString} nicht möglich!`);
+                }
+              });
+            break;
+        }
+      });
+    this.closeBuffers$.next();
   }
 
   errorOut(): void {

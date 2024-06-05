@@ -13,6 +13,7 @@ export class UnitActivateGuard {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+    console.log('canActivate', route.params.u);
     const targetUnitSequenceId: number = Number(route.params.u);
     const booklet = this.tcs.booklet;
     if (!booklet) {
