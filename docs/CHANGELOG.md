@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.1.8
 ### Bugfix
 * Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen) 
 
