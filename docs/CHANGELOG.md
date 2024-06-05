@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## [next]
+### Bugfix
+* Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen) 
+
 ## 15.1.7
 ### neue Features
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
