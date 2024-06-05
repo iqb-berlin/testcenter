@@ -164,8 +164,6 @@ try {
       if ($workspace->hasFilesChanged($currentHashOfFiles)) {
         $stats = $workspace->storeAllFiles();
         $workspace->setWorkspaceHash($currentHashOfFiles);
-        CLI::p("Change in files detected. {$stats['valid']} files were stored.");
-
         CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
         $statsString = implode(
@@ -190,7 +188,7 @@ try {
         }
 
       } else {
-        CLI::p("No changes in files detected. No files stored.");
+        CLI::p("No changes in files detected.");
       }
     }
   }
