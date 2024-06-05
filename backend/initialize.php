@@ -160,10 +160,10 @@ try {
     if (!$args['skip_read_workspace_files']) {
       $t1 = microtime(true);
 
-      $currentHashOfFiles = hash('XXH3', serialize($workspace::getHashOfAllFiles(DATA_DIR)));
+      $currentHashOfFiles = $workspace->getWorkspaceHash();
       if ($workspace->hasFilesChanged($currentHashOfFiles)) {
         $stats = $workspace->storeAllFiles();
-        $workspace->setWorkspaceHash($currentHashOfFiles);
+        $workspace->setWorkspaceHash();
         CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
         $statsString = implode(
@@ -203,9 +203,7 @@ try {
 
     if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
-
-      $currentHashOfFiles = hash('XXH3',serialize($sampleWorkspace::getHashOfAllFiles(DATA_DIR)));
-      $sampleWorkspace->setWorkspaceHash($currentHashOfFiles);
+      $sampleWorkspace->setWorkspaceHash();
       CLI::p("{$stats['valid']} files were stored.");
     }
 

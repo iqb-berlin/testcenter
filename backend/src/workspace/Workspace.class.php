@@ -31,7 +31,7 @@ class Workspace {
     return $currentHash !== $originalHash;
   }
 
-  public static function getHashOfAllFiles(string $dir): array {
+  private static function getHashOfAllFiles(string $dir): array {
     $result = [];
 
     $files = scandir($dir);
@@ -506,7 +506,11 @@ class Workspace {
     return $resourceListStructured;
   }
 
-  public function setWorkspaceHash(string $hash): void {
-    $this->workspaceDAO->setWorkspaceHash($hash);
+  public function getWorkspaceHash(): string {
+    return hash('XXH3', serialize(self::getHashOfAllFiles($this->getWorkspacePath())));
+  }
+
+  public function setWorkspaceHash(): void {
+    $this->workspaceDAO->setWorkspaceHash($this->getWorkspaceHash());
   }
 }
