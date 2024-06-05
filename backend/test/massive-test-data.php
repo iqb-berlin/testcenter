@@ -1,7 +1,12 @@
 <?php
 define('ROOT_DIR', realpath(__DIR__ . '/../..'));
 const DATA_DIR = ROOT_DIR . '/data';
-require_once(ROOT_DIR . '/backend/autoload.php');
+require_once ROOT_DIR . "/backend/vendor/autoload.php";
+SystemConfig::read();
+
+function paf_log() {
+
+}
 
 $args = CLI::getOpt();
 
@@ -196,7 +201,7 @@ try {
   foreach ($personSessions as $personSession) {
     /* @var $personSession PersonSession */
     foreach (BOOKLETS_PER_PERSON as $bookletId) {
-      $tests[] = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), $bookletId, "Label: $bookletId");
+      $tests[] = $testDAO->createTest($personSession->getPerson()->getId(), $bookletId, "Label: $bookletId");
     }
     echo progressBar(count($tests), count($personSessions) * count(BOOKLETS_PER_PERSON));
   }
@@ -209,12 +214,13 @@ try {
     $statsTestsLocked = 0;
     $statsTestsTouched = 0;
     foreach ($tests as $test) {
+      /* @var TestData $test */
       if (rand(0, 100) <= START_TEST_PROBABILITY * 100) {
-        $testDAO->setTestRunning($test['id']);
+        $testDAO->setTestRunning($test->id);
         $statsTestsRunning++;
       }
       if (rand(0, 100) <= LOCK_TEST_PROBABILITY * 100) {
-        $testDAO->lockTest($test['id']);
+        $testDAO->lockTest($test->id);
         $statsTestsLocked++;
       }
       $statsTestsTouched++;
