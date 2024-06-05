@@ -11,7 +11,14 @@
           <xs:attribute name="complete" type="xs:boolean" />
         </xs:complexType>
       </xs:element>
-    </xs:sequence>
+      <xs:element name="ValuePositionLabels" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ValuePositionLabel" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      </xs:sequence>
     <xs:attribute name="id" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:string" >

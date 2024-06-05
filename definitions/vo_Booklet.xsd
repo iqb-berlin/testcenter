@@ -57,7 +57,15 @@
 
   <xs:complexType name="TimeMaxRestrictionType">
     <xs:attribute name="minutes" type="xs:positiveInteger"/>
+    <xs:attribute name="leave" type="TimeMaxRestrictionLeaveType" default="confirm"/>
   </xs:complexType>
+
+  <xs:simpleType name="TimeMaxRestrictionLeaveType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="forbidden" />
+      <xs:enumeration value="confirm" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="CodeToEnterRestrictionType">
     <xs:simpleContent>
