@@ -125,6 +125,7 @@ class WorkspaceController extends Controller {
     $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
     $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
+    $workspace->setWorkspaceHash();
 
     $reports = [];
     $loginsAffected = false;
@@ -174,6 +175,8 @@ class WorkspaceController extends Controller {
         break;
       }
     }
+
+    $workspace->setWorkspaceHash();
 
     return $response->withJson($deletionReport)->withStatus(207);
   }
