@@ -3,6 +3,9 @@ layout: default
 ---
 
 ## [next]
+### Bugfix
+* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
+
 ### Verbesserungen
 * Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
   haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
