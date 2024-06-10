@@ -85,3 +85,5 @@ test-system:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up &
 	bash e2e/run-e2e.sh
 
+test-install-and-update-scripts:
+	docker compose -f docker/docker-compose.install-and-update-script.yml up --force-recreate

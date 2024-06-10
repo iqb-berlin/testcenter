@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  tester:
+    build:
+      context: ..
+      dockerfile: docker/installation-tester.Dockerfile
+    command: ['bash', '/test/run.sh']
+    volumes:
+      - ../test/install-and-update-script:/test
+      - ../dist-src:/dist-src
+      - ../backend/test/initialization/functions/functions.sh:/test/lib/functions.sh
