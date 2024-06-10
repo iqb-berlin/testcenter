@@ -6,8 +6,7 @@ APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
 VERSION=15.1.8
 REQUIRED_PACKAGES=("docker -v" "docker compose version")
-# dpkg to compare versions in the updater
-OPTIONAL_PACKAGES=("make -v" "dpkg --version")
+OPTIONAL_PACKAGES=("make -v")
 
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost

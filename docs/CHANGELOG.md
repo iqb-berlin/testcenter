@@ -15,6 +15,7 @@ layout: default
   wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
 
 ### Deployment
+* dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
 * Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". 
   Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren 
   des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
@@ -22,7 +23,7 @@ layout: default
 
 ## 15.1.8
 ### Bugfix
-* Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen) 
+* Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen)
 
 ## 15.1.7
 ### neue Features
