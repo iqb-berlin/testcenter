@@ -35,9 +35,9 @@ class UserController extends Controller {
       throw new HttpBadRequestException($request, "Username or Password missing");
     }
 
-    self::superAdminDAO()->createUser($requestBody->n, $requestBody->p);
+    $user = self::superAdminDAO()->createUser($requestBody->n, $requestBody->p);
 
-    $response->getBody()->write(htmlspecialchars($requestBody->n));
+    $response->getBody()->write(htmlspecialchars($user['id']));
     return $response->withStatus(201);
   }
 
