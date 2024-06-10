@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## [next]
+### Deployment
+* dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
+
 ## 15.1.7
 ### neue Features
 * Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
