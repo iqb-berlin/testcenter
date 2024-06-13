@@ -1,9 +1,9 @@
 import {
   deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace1,
   deleteFilesSampleWorkspace, resetBackendData, logoutAdmin, visitLoginPage
-} from './utils';
+} from '../utils';
 
-describe('Workspace-Admin', () => {
+describe('Workspace-Admin-files', () => {
   beforeEach(deleteDownloadsFolder);
   beforeEach(resetBackendData);
   beforeEach(useTestDB);
@@ -469,56 +469,5 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.contains('Duplicate Booklet-Id')
       .should('exist');
-  });
-
-  it('should be possible to download a systemcheck summary (csv)', () => {
-    cy.get('[data-cy="System-Check Berichte"]')
-      .click();
-    cy.get('[data-cy="systemcheck-checkbox"]')
-      .click();
-    cy.get('[data-cy="download-button"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-syscheckreports.csv')
-      .should('exist');
-  });
-
-  it('should download the responses of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="download-responses"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist');
-  });
-
-  it('should download the logs of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="download-logs"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-      .should('exist');
-  });
-
-  it('should delete the results of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="delete-files"]')
-      .click();
-    cy.get('[data-cy="dialog-title"]')
-      .should('exist')
-      .contains('Löschen von Gruppendaten');
-    cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
-      .contains('Gruppendaten löschen')
-      .click();
-    cy.get('[data-cy="results-checkbox"]')
-      .should('not.exist');
   });
 });
