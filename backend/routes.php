@@ -157,15 +157,15 @@ $app->group('/workspace', function(RouteCollectorProxy $group) {
     ->add(new IsWorkspacePermitted('RO'));
 
   $group->post('/{ws_id}/file', [WorkspaceController::class, 'postFile'])
-    ->add(new IsWorkspaceBlocked())
-    ->add(new IsWorkspacePermitted('RW'));
+    ->add(new IsWorkspacePermitted('RW'))
+    ->add(new IsWorkspaceBlocked());
 
   $group->get('/{ws_id}/files', [WorkspaceController::class, 'getFiles'])
     ->add(new IsWorkspacePermitted('RO'));
 
   $group->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
-    ->add(new IsWorkspaceBlocked())
-    ->add(new IsWorkspacePermitted('RW'));
+    ->add(new IsWorkspacePermitted('RW'))
+    ->add(new IsWorkspaceBlocked());
 
   $group->get('/{ws_id}/report/{type}', [WorkspaceController::class, 'getReport'])
     ->add(new IsWorkspacePermitted('RO'));
