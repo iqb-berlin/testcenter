@@ -16,7 +16,7 @@ interface Verona2PlayerConfig {
 
 interface Verona3PlayerConfig extends Verona2PlayerConfig {
   enabledNavigationTargets: Verona2NavigationTarget[];
-  startPage?: string;
+  startPage?: string | number;
   stateReportPolicy: Verona2StateReportPolicy; // removed in Verona4, but we still need it to support older players
 }
 
@@ -32,3 +32,14 @@ export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
 export { Verona3Progress as VeronaProgress };
+
+export interface Verona5ValidPages {
+  [id: string]: string
+}
+
+export interface Verona6ValidPage {
+  id: string;
+  label?: string;
+}
+
+export type Verona6ValidPages = Array<Verona6ValidPage>;

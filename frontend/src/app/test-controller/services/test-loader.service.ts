@@ -433,7 +433,7 @@ export class TestLoaderService {
         targetTestlet.codeToEnter = codeToEnter;
         targetTestlet.codePrompt = codePrompt;
       }
-      console.log(targetTestlet.title, maxTime, maxTimeLeave);
+
       targetTestlet.maxTimeLeft = maxTime;
       targetTestlet.maxTimeLeave = maxTimeLeave;
       if (this.tcs.maxTimeTimers) {
