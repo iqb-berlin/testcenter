@@ -552,12 +552,12 @@ export class TestControllerService {
             this.router.navigate([`/t/${this.testId}/u/${previousUnlockedUnitSequenceId}`], { state: { force } });
             break;
           case UnitNavigationTarget.FIRST:
-            // TODO X should be the first *available*
-            this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
+            const first = this.getSequenceBounds()[0];
+            this.router.navigate([`/t/${this.testId}/u/${first}`], { state: { force } });
             break;
           case UnitNavigationTarget.LAST:
-            // TODO X should be the last *available*
-            this.router.navigate([`/t/${this.testId}/u/${this.sequenceLength}`], { state: { force } });
+            const last = this.getSequenceBounds()[1];
+            this.router.navigate([`/t/${this.testId}/u/${last}`], { state: { force } });
             break;
           case UnitNavigationTarget.END:
             this.terminateTest(

@@ -37,7 +37,7 @@ export class UnitActivateGuard {
       // a unitId of a locked unit was inserted
       const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.sequenceId, true);
       if (!previousUnlockedUnit) {
-        return true; // there is no alterntaive where to navigate, so we navigate on the locked one
+        return true; // there is no alternative where to navigate, so we navigate on the locked one
       }
       if (previousUnlockedUnit !== targetUnitSequenceId) {
         this.router.navigate([`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`]);
