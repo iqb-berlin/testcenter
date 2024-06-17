@@ -6,7 +6,7 @@
     <Description>This is a sample unit showing the possibilities of the sample player.</Description>
   </Metadata>
 
-  <DefinitionRef player="verona-player-simple-4.0" editor="verona-editor-plaintext-1" lastChange="2022-10-11T09:30:00+00:00">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
+  <DefinitionRef player="verona-player-simple-6.0" editor="verona-editor-plaintext-1" lastChange="2022-10-11T09:30:00+00:00">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
 
   <CodingSchemeRef schemer="default-schemer-1" lastChange="2022-10-11T09:30:00+00:00" />
 

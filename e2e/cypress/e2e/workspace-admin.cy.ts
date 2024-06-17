@@ -137,10 +137,10 @@ describe('Workspace-Admin', () => {
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('not.exist');
     cy.get('[data-cy="uplaod-file-select"]')
-      .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+      .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
-    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-6.0"]')
       .should('exist');
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
@@ -159,14 +159,14 @@ describe('Workspace-Admin', () => {
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile([
         '../sampledata/Unit.xml',
-        '../sampledata/verona-player-simple-4.0.0.html',
+        '../sampledata/verona-player-simple-6.0.html',
         '../sampledata/SAMPLE_UNITCONTENTS.HTM'
       ],
       { force: true }
       );
     cy.get('[data-cy="close-upload-report"]')
       .click();
-    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-6.0"]')
       .should('exist');
     cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
       .should('exist');
@@ -177,10 +177,10 @@ describe('Workspace-Admin', () => {
   it('should only be possible to upload a booklet file, if the declared unit files already exist', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="uplaod-file-select"]')
-      .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+      .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
-    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-6.0"]')
       .should('exist');
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
@@ -225,10 +225,10 @@ describe('Workspace-Admin', () => {
   it('should only be possible to upload a testtaker file, if the declared booklet files already exist', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="uplaod-file-select"]')
-      .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+      .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
-    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-6.0"]')
       .should('exist');
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });

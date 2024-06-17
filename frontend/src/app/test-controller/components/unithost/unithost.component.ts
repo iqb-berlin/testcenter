@@ -18,7 +18,13 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
-  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
+  Verona5ValidPages,
+  Verona6ValidPages,
+  VeronaNavigationDeniedReason,
+  VeronaNavigationTarget,
+  VeronaPlayerConfig,
+  VeronaPlayerRuntimeErrorCodes,
+  VeronaProgress
 } from '../../interfaces/verona.interfaces';
 import { Testlet, UnitWithContext } from '../../classes/test-controller.classes';
 import { AppError } from '../../../app.interfaces';
@@ -40,7 +46,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = window;
   private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
 
-  pages: { [id: string]: string } = {};
+  pages: Verona5ValidPages = {};
   pageLabels: string[] = [];
   currentPageIndex: number = -1;
 
@@ -138,16 +144,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
           if (msgData.playerState) {
             const { playerState } = msgData;
 
-            this.pages = playerState.validPages;
-            this.pageLabels = Object.values(this.pages);
-            // page index starts with 0 and gets mapped from and to the dictionary from the API
-            this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
+            this.readPages(playerState.validPages);
+            this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
-              const pageNr = playerState.currentPage + 1;
+              const pageNr = Object.keys(this.pages)[pageId] + 1; // only for humans to read in the logs
               const pageCount = Object.keys(this.pages).length;
-              if (Object.keys(this.pages).length > 1 && playerState.validPages[playerState.currentPage]) {
+              if (Object.keys(this.pages).length > 1 && this.pages[playerState.currentPage]) {
                 this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
                   {
@@ -219,11 +223,73 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
         break;
 
+      case 'vopRuntimeErrorNotification':
+        this.handleRuntimeError(msgData.code, msgData.message);
+        if (this.tcs.testMode.saveResponses) {
+          this.bs.addUnitLog(
+            this.tcs.testId,
+            this.currentUnit.unitDef.alias,
+            [
+              {
+                key: `Runtime Error: ${msgData.code}`,
+                content: msgData.message || '',
+                timeStamp: Date.now()
+              }
+            ]
+          );
+        }
+        break;
+
       default:
         // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
         break;
     }
+  }
+
+  private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
+    this.pages = { };
+    if (!Array.isArray(validPages)) {
+      // Verona 2-5
+      this.pages = validPages;
+    } else {
+      // Verona > 6
+      // covers also some versions of aspect who send a corrupted format
+      validPages
+        .forEach((page, index) => {
+          this.pages[String(page.id ?? index)] = page.label ?? String(index + 1);
+        });
+    }
+    this.pageLabels = Object.values(this.pages);
+  }
+
+  private handleRuntimeError(code?: string, message?: string): void {
+    // possible reactions on runtimeErrors
+    const reactions: { [key: string]: (code: string, message: string) => void } = {
+      raiseError: (errorCode, errorMessage) => {
+        throw new AppError({
+          label: 'Fehler beim Abspielen der Aufgabe',
+          description: errorMessage,
+          type: 'verona_player_runtime_error',
+          code: VeronaPlayerRuntimeErrorCodes.indexOf(errorCode)
+        });
+      },
+      removeTryLeaveRestrictions: () => {
+        // this might be the correct reaction on unloadable audio or what
+        this.tcs.setUnitResponseProgress(this.currentUnitSequenceId, 'complete');
+        this.tcs.setUnitPresentationProgress(this.currentUnitSequenceId, 'complete');
+      }
+    };
+    const runTimeErrorReactionMap:
+    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]] : keyof typeof reactions } = {
+      'session-id-missing': 'raiseError',
+      'unit-definition-missing': 'raiseError',
+      'wrong-session-id': 'raiseError',
+      'unit-definition-type-unsupported': 'raiseError',
+      'unit-state-type-unsupported': 'raiseError',
+      'runtime-error': 'raiseError'
+    };
+    reactions[runTimeErrorReactionMap[code || 'runtime-error'] || 'raiseError'](code || '', message || '');
   }
 
   private open(currentUnitSequenceId: number): void {
@@ -238,6 +304,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.currentPageIndex = -1;
+    this.pages = { };
+    this.pageLabels = [];
 
     this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
 
@@ -324,7 +392,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       playerId: this.itemplayerSessionId,
       unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
       currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId),
-      unitDefinitionType: this.tcs.getUnitDefinitionType(this.currentUnitSequenceId),
+      unitDefinitionType: this.fileNameToId(this.tcs.getUnitDefinitionType(this.currentUnitSequenceId)),
       unitState: {
         dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
         unitStateDataType: this.tcs.getUnitResponseType(this.currentUnitSequenceId),
@@ -335,6 +403,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.leaveWarning = false;
 
     this.prepareIframe();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private fileNameToId(fileName: string): string {
+    // TODO get a secured ID info from the backend instead
+    return (fileName?.split('/').pop() ?? '').replace(/\.[Hh][Tt][Mm][Ll]/, '');
   }
 
   private startTimerIfNecessary(): void {

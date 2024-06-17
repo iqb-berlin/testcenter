@@ -95,17 +95,17 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html')
+          'verona-player-simple-6.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-6.0.html')
         ]
       ]);
     $this->workspaceDaoMock
       ->expects('getBlockedFiles')
-      ->andReturn(['Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
+      ->andReturn(['Resource/verona-player-simple-6.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
 
     $workspace = new Workspace(1);
 
     $result = $workspace->deleteFiles([
-      'Resource/verona-player-simple-4.0.0.html',
+      'Resource/verona-player-simple-6.0.html',
       'Resource/somePlayer.HTML',
       'SysCheck/SAMPLE_SYSCHECK.XML',
       'i_dont/even.exist',
@@ -118,7 +118,7 @@ class WorkspaceTest extends TestCase {
       ],
       'did_not_exist' => ['i_dont/even.exist'],
       'not_allowed' => ['SysCheck/SAMPLE_SYSCHECK.XML'],
-      'was_used' => ['Resource/verona-player-simple-4.0.0.html']
+      'was_used' => ['Resource/verona-player-simple-6.0.html']
     ];
     $this->assertEquals($expectation, $result);
 
@@ -128,7 +128,7 @@ class WorkspaceTest extends TestCase {
       '..',
       'SAMPLE_UNITCONTENTS.HTM',
       'sample_resource_package.itcr.zip',
-      'verona-player-simple-4.0.0.html'
+      'verona-player-simple-6.0.html'
     ];
     $this->assertEquals($resourcesLeftExpected, $resourcesLeft);
   }
@@ -138,23 +138,23 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html')
+          'verona-player-simple-6.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-6.0.html')
         ]
       ]);
     $this->workspaceDaoMock
       ->expects('getBlockedFiles')
-      ->andReturn(['Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
+      ->andReturn(['Resource/verona-player-simple-6.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
 
     $workspace = new Workspace(1);
 
     $result = $workspace->deleteFiles([
-      'Resource/verona-player-simple-4.0.0.html',
+      'Resource/verona-player-simple-6.0.html',
     ]);
     $expectation = [
       'deleted' => [],
       'did_not_exist' => [],
       'not_allowed' => [],
-      'was_used' => ['Resource/verona-player-simple-4.0.0.html']
+      'was_used' => ['Resource/verona-player-simple-6.0.html']
     ];
     $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
@@ -164,7 +164,7 @@ class WorkspaceTest extends TestCase {
       ->expects('getFiles')
       ->andReturn([
         'Resource' => [
-          'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html'),
+          'verona-player-simple-6.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-6.0.html'),
           'SAMPLE_UNITCONTENTS.HTM' => new ResourceFile(DATA_DIR . 'Resource/SAMPLE_UNITCONTENTS.HTM')
         ],
         'SysCheck' => [
@@ -177,7 +177,7 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('getBlockedFiles')
       ->andReturn([
-        'Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML',
+        'Resource/verona-player-simple-6.0.html' => 'Unit/SAMPLE_UNIT2.XML',
         'Resource/SAMPLE_UNITCONTENTS.HTM' => 'Unit/SAMPLE_UNIT.XML'
       ]);
     $this->workspaceDaoMock
@@ -192,7 +192,7 @@ class WorkspaceTest extends TestCase {
 
     $result = $workspace->deleteFiles([
       'Resource/SAMPLE_UNITCONTENTS.HTM',
-      'Resource/verona-player-simple-4.0.0.html',
+      'Resource/verona-player-simple-6.0.html',
       'Testtakers/SAMPLE_TESTTAKERS.XML',
       'SysCheck/SAMPLE_SYSCHECK.XML'
     ]);
@@ -205,7 +205,7 @@ class WorkspaceTest extends TestCase {
       'not_allowed' => [],
       'was_used' => [
         'Resource/SAMPLE_UNITCONTENTS.HTM',
-        'Resource/verona-player-simple-4.0.0.html',
+        'Resource/verona-player-simple-6.0.html',
       ]
     ];
     $this->assertEquals($expectation, $result, 'reject deleting, if file was used');

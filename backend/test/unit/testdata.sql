@@ -129,7 +129,7 @@ insert into files(workspace_id, name, id, label, description, type, modification
 values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet', '2023-01-16 09:00:00', 0, 195);
 
 insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
-values(1, 'verona-player-simple-4.0.0.html', 'verona-player-simple-4.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);
+values(1, 'verona-player-simple-6.0.html', 'verona-player-simple-4.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);
 
 insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
 values(1, 'missnamed-player-simple-4.1.5.html', 'missnamed-player-simple-4.1', 4, 1, 5, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);

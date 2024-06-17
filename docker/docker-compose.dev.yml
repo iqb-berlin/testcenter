@@ -118,7 +118,7 @@ services:
     volumes:
       - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
-      - ../sampledata/verona-player-simple-4.0.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-4.0.0.html
+      - ../sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
       - ../data:/var/www/html/
       - ../scripts/file-service/nginx.conf:/etc/nginx/nginx.conf
       - ../scripts/file-service/auth/:/usr/share/nginx/auth

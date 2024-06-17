@@ -124,9 +124,8 @@ class WorkspaceCacheTest extends TestCase {
         ],
         'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
-      'Resource/verona-player-simple-4.0.0.html' => [
-        'info' => ['Verona-Version: 4.0'],
-        'warning' => ['Non-Standard-Filename: `verona-player-simple-4.0.html` expected.']
+      'Resource/verona-player-simple-6.0.html' => [
+        'info' => ['Verona-Version: 6.0']
       ],
       'Resource/sample_resource_package.itcr.zip' => [
         'info' => ['Contains 0 files.']
@@ -143,8 +142,8 @@ class WorkspaceCacheTest extends TestCase {
   }
 
   function test_getResource() {
-    $result = $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-4.0');
-    $expectation = "verona-player-simple-4.0.0.html";
+    $result = $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-6.0');
+    $expectation = "verona-player-simple-6.0.html";
     $this->assertEquals($expectation, $result->getName());
 
     $result = $this->workspaceCache->getResource('missing_player.html');
