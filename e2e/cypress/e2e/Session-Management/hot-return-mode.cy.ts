@@ -153,10 +153,10 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhret1\b/);
         expect(responses[1]).to.be.match(/\bUNIT.SAMPLE-101\b/);
-        expect(responses[1]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[1]).to.be.match(/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/);
         expect(responses[2]).to.be.match(/\bhret1\b/);
         expect(responses[2]).to.be.match(/\bUNIT.SAMPLE-102\b/);
-        expect(responses[2]).to.be.match(/\bradio2"":""true\b/);
+        expect(responses[2]).to.be.match(/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/);
       });
 
     logoutAdmin();
@@ -167,10 +167,10 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
       .then(responses => {
         expect(responses[3]).to.be.match(/\bhret2\b/);
         expect(responses[3]).to.be.match(/\bUNIT.SAMPLE-101\b/);
-        expect(responses[3]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[1]).to.be.match(/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/);
         expect(responses[4]).to.be.match(/\bhret2\b/);
         expect(responses[4]).to.be.match(/\bUNIT.SAMPLE-102\b/);
-        expect(responses[4]).to.be.match(/\bradio2"":""true\b/);
+        expect(responses[4]).to.be.match(/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/);
       });
 
     logoutAdmin();
