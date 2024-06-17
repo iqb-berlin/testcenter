@@ -2,7 +2,7 @@ insert into `users` values (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb'
 insert into `users` values (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
 insert into admin_sessions (token, user_id, valid_until) values('admin_token', 1, '2032-01-01 00:00:00');
 insert into admin_sessions (token, user_id, valid_until) values('other_admin_token', 2, '2032-01-01 00:00:00');
-insert into `workspaces` values (1,'example_workspace');
+insert into `workspaces` values (1,'example_workspace', '');
 insert into `workspace_users` values (1, 1, 'RW');
 
 
@@ -129,7 +129,7 @@ insert into files(workspace_id, name, id, label, description, type, modification
 values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet', '2023-01-16 09:00:00', 0, 195);
 
 insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
-values(1, 'verona-player-simple-4.0.0.html', 'verona-player-simple-4.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);
+values(1, 'verona-player-simple-6.0.html', 'verona-player-simple-4.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);
 
 insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
 values(1, 'missnamed-player-simple-4.1.5.html', 'missnamed-player-simple-4.1', 4, 1, 5, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);

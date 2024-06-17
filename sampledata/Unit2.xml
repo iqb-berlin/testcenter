@@ -6,7 +6,7 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-player-simple-4.0" type="this-should-trigger-a-deprecation-warning">
+  <Definition player="verona-player-simple-6.0" type="this-should-trigger-a-deprecation-warning">
     <![CDATA[
       <div class="container">
         <h1>Sample Unit calling external File</h1>

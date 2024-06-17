@@ -115,14 +115,17 @@
   </ng-container>
 
 
-  <div *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' &&
-              pageLabels && pageLabels.length && (pageLabels.length > 1)"
-       class="page-navigation">
+  <div
+    *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'
+      && pageLabels && pageLabels.length && (pageLabels.length > 1)"
+    class="page-navigation">
     <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
-      <tc-page-nav [pageLabels]="pageLabels" [currentPageIndex]="this.tcs.currentPageIndex"
-                   (navToPage)="gotoPage($event)"
-                   (navPrevious)="gotoPreviousPage()"
-                   (navNext)="gotoNextPage()">
+      <tc-page-nav
+        [pageLabels]="pageLabels"
+        [currentPageIndex]="this.tcs.currentPageIndex"
+        (navToPage)="gotoPage($event)"
+        (navPrevious)="gotoPreviousPage()"
+        (navNext)="gotoNextPage()">
       </tc-page-nav>
     </div>
   </div>

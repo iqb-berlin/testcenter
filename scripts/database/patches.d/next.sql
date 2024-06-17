@@ -11,3 +11,7 @@ alter table
 alter table
   unit_reviews
   add column original_unit_id varchar(255) not null;
+
+alter table workspaces
+  add column workspace_hash varchar(255) not null default '';
+

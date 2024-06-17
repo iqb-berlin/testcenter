@@ -64,6 +64,10 @@ services:
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       PORT: ${PORT:-80}
       TLS_PORT: ${TLS_PORT:-443}
+      SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
+      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
+      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
+      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
     logging:
       options:
         <<: *env-logging-conf

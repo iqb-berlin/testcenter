@@ -159,29 +159,36 @@ try {
 
     if (!$args['skip_read_workspace_files']) {
       $t1 = microtime(true);
-      $stats = $workspace->storeAllFiles();
 
-      CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+      $currentHashOfFiles = $workspace->getWorkspaceHash();
+      if ($workspace->hasFilesChanged($currentHashOfFiles)) {
+        $stats = $workspace->storeAllFiles();
+        $workspace->setWorkspaceHash();
+        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
-      $statsString = implode(
-        ", ",
-        array_filter(
-          array_map(
-            function($key, $value) {
-              return $value ? "$key: $value" : null;
-            },
-            array_keys($stats['valid']),
-            array_values($stats['valid']),
+        $statsString = implode(
+          ", ",
+          array_filter(
+            array_map(
+              function($key, $value) {
+                return $value ? "$key: $value" : null;
+              },
+              array_keys($stats['valid']),
+              array_values($stats['valid']),
+            )
           )
-        )
-      );
-      $t2 = microtime(true);
-      $duration = $t2 - $t1;
-      CLI::p("Files found: " . $statsString);
-      CLI::p("Processing time: $duration sec.");
+        );
+        $t2 = microtime(true);
+        $duration = $t2 - $t1;
+        CLI::p("Files found: " . $statsString);
+        CLI::p("Processing time: $duration sec.");
 
-      if ($stats['invalid']) {
-        CLI::warning("Invalid files found: {$stats['invalid']}");
+        if ($stats['invalid']) {
+          CLI::warning("Invalid files found: {$stats['invalid']}");
+        }
+
+      } else {
+        CLI::p("No changes in files detected.");
       }
     }
   }
@@ -196,6 +203,8 @@ try {
 
     if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
+      $sampleWorkspace->setWorkspaceHash();
+      CLI::p("{$stats['valid']} files were stored.");
     }
 
     CLI::success("Sample content files created.");

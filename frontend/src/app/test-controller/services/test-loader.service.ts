@@ -409,11 +409,8 @@ export class TestLoaderService {
               }
             }
             const leaveParameter = restrictionElements[childIndex].getAttribute('leave');
-            console.log(1, {leaveParameter,maxTimeLeaveValues});
             if (leaveParameter && maxTimeLeaveValues.includes(leaveParameter)) {
-
               maxTimeLeave = leaveParameter;
-              console.log(2, {maxTimeLeave});
             }
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigationOnIncomplete') {
@@ -433,7 +430,7 @@ export class TestLoaderService {
         targetTestlet.codeToEnter = codeToEnter;
         targetTestlet.codePrompt = codePrompt;
       }
-      console.log(targetTestlet.title, maxTime, maxTimeLeave);
+
       targetTestlet.maxTimeLeft = maxTime;
       targetTestlet.maxTimeLeave = maxTimeLeave;
       if (this.tcs.maxTimeTimers) {
