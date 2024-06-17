@@ -1,8 +1,7 @@
 import {
   loginTestTaker, resetBackendData, logoutTestTaker,
   useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder, getFromIframe, forwardTo,
-  backwardsTo, readBlockTime, loginSuperAdmin, openSampleWorkspace1, logoutAdmin, convertResultsSeperatedArrays,
-  convertResultsLoginRows
+  backwardsTo, readBlockTime, loginSuperAdmin, openSampleWorkspace1, logoutAdmin, convertResultsLoginRows
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret
@@ -60,7 +59,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .should('contain', '')
       .type('Hund');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.contains(/Freigabewort.+stimmt nicht/)
       .should('exist');
@@ -75,7 +73,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .type('Hase');
     cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response101-1-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.wait('@response101-1-1');
     cy.get('[data-cy="unit-title"]')
@@ -95,8 +92,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .should('exist')
       .contains(/abgespielt.+gescrollt.+bearbeitet/);
     cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
-      .contains('OK')
       .click();
     cy.get('[data-cy="unit-title"]')
       .should('exist')
@@ -119,8 +114,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .contains('Es müssen erst alle Teilaufgaben bearbeitet werden.')
       .should('exist');
     cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
-      .contains('OK')
       .click();
   });
 
@@ -313,7 +306,6 @@ describe('Login2: Resp/Pres complete, leave the block with unit-navigation forwa
       .type('Hase');
     cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response101-2-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.wait('@response101-2-1');
     cy.get('[data-cy="unit-title"]')
@@ -403,7 +395,6 @@ describe('Login3: Resp/Pres complete, leave the block with unit-navigation backw
       .type('Hase');
     cy.intercept(`${Cypress.env('urls').backend}/test/5/unit/UNIT.SAMPLE-101/response`).as('response101-2-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.wait('@response101-2-1');
     cy.get('[data-cy="unit-title"]')
@@ -495,7 +486,6 @@ describe('Login4: Resp/Pres complete, leave the block & end the test with unit-m
       .type('Hase');
     cy.intercept(`${Cypress.env('urls').backend}/test/6/unit/UNIT.SAMPLE-101/response`).as('response101-3-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.wait('@response101-3-1');
     cy.get('[data-cy="unit-title"]')
@@ -593,7 +583,6 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
       .type('Hase');
     cy.intercept(`${Cypress.env('urls').backend}/test/7/unit/UNIT.SAMPLE-101/response`).as('response101-4-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .click();
     cy.wait('@response101-4-1')
       .then(() => {
@@ -706,9 +695,9 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[5]).to.be.match(/\bh5ki-bd\b/);
         expect(responses[5]).to.be.match(/\bUNIT.SAMPLE-104\b/);
         // responses unit1-3
-        expect(responses[2]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[3]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[4]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[2]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[3]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[4]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
       });
   });
 
@@ -737,9 +726,9 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[10]).to.be.match(/\bva4dg-jc\b/);
         expect(responses[10]).to.be.match(/\bUNIT.SAMPLE-104\b/);
         // responses unit1-3
-        expect(responses[7]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[8]).to.be.match(/\bradio2"":""true\b/);
-        expect(responses[9]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[7]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[8]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[9]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
       });
   });
 
@@ -769,9 +758,9 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[15]).to.be.match(/\bh5ki-bd\b/);
         expect(responses[15]).to.be.match(/\bUNIT.SAMPLE-104\b/);
         // responses unit1-3
-        expect(responses[12]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[13]).to.be.match(/\bradio2"":""true\b/);
-        expect(responses[14]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[12]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[13]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[14]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
       });
   });
 
@@ -801,9 +790,9 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[20]).to.be.match(/\bh5ki-bd\b/);
         expect(responses[20]).to.be.match(/\bUNIT.SAMPLE-104\b/);
         // responses unit1-3
-        expect(responses[17]).to.be.match(/\bradio1"":""true\b/);
-        expect(responses[18]).to.be.match(/\bradio2"":""true\b/);
-        expect(responses[19]).to.be.match(/\bradio1"":""true\b/);
+        expect(responses[17]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[18]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
+        expect(responses[19]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
       });
   });
 });
