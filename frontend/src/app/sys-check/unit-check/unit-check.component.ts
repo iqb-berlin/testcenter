@@ -3,8 +3,10 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../../shared/shared.module';
-import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
+import { Verona5ValidPages, Verona6ValidPages } from '../../test-controller/interfaces/verona.interfaces';
+
+// TODO merge this with the test-controller/unithost component. both could inherit from a parent class
 
 @Component({
   selector: 'tc-unit-check',
@@ -27,7 +29,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   constructor(
     private ds: SysCheckDataService,
-    private bs: BackendService,
     private mds: MainDataService
   ) {
   }
@@ -71,10 +72,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               case 'vopStateChangedNotification':
                 if (msgData.playerState) {
                   const { playerState } = msgData;
-                  this.pages = playerState.validPages;
-                  this.pageLabels = Object.values(this.pages);
-                  // page index starts with 0 and gets mapped from and to the dictionary from the API
-                  this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
+                  this.readPages(playerState.validPages);
+                  this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
                 }
                 break;
 
@@ -106,6 +105,22 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         this.iFrameItemplayer.setAttribute('srcdoc', this.ds.unitAndPlayerContainer.player);
       }
     });
+  }
+
+  private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
+    this.pages = { };
+    if (!Array.isArray(validPages)) {
+      // Verona 2-5
+      this.pages = validPages;
+    } else {
+      // Verona > 6
+      // covers also some versions of aspect who send a corrupted format
+      validPages
+        .forEach((page, index) => {
+          this.pages[String(page.id ?? index)] = page.label ?? String(index + 1);
+        });
+    }
+    this.pageLabels = Object.values(this.pages);
   }
 
   gotoNextPage(): void {

@@ -232,9 +232,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.pages = validPages;
     } else {
       // Verona > 6
+      // covers also some versions of aspect who send a corrupted format
       validPages
         .forEach((page, index) => {
-          // there are some versions of aspect who send a corrupted format without page.id
           this.pages[String(page.id ?? index)] = page.label ?? String(index + 1);
         });
     }
