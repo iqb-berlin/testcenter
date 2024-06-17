@@ -326,3 +326,22 @@
     <tbody id="log-display"></tbody>
   </table>
 </fieldset>
+
+<fieldset>
+  <script>
+    const raiseError = () => {
+      throw new VspRuntimeError(document.getElementById('error-type').value, 'manually thrown error');
+    };
+  </script>
+  <legend data-cy="legend-errors">Errors</legend>
+  <p><b>You can try out the error mechanism here.</b></p>
+  <select id="error-type">
+    <option name="session-id-missing">session-id-missing</option>,
+    <option name="unit-definition-missing">unit-definition-missing</option>,
+    <option name="wrong-session-id">wrong-session-id</option>,
+    <option name="unit-definition-type-unsupported">unit-definition-type-unsupported</option>,
+    <option name="unit-state-type-unsupported">unit-state-type-unsupported</option>,
+    <option name="runtime-error">runtime-error</option>
+  </select>
+  <button onclick="raiseError(); return false">Raise runtime error</button>
+</fieldset>

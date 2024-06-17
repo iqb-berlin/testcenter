@@ -43,3 +43,13 @@ export interface Verona6ValidPage {
 }
 
 export type Verona6ValidPages = Array<Verona6ValidPage>;
+
+// those are just a proposal and not in any Verona-Standard right now
+export const VeronaPlayerRuntimeErrorCodes = [
+  'session-id-missing',
+  'unit-definition-missing',
+  'wrong-session-id',
+  'unit-definition-type-unsupported',
+  'unit-state-type-unsupported',
+  'runtime-error'
+];

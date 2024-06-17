@@ -77,6 +77,10 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
                 }
                 break;
 
+              case 'vopRuntimeErrorNotification':
+                this.errorText = `Beim Abspielen der Unit ist folgender Laufzeitfehler aufgetreten: ${msgData.message}`;
+                break;
+
               default:
                 // eslint-disable-next-line no-console
                 console.log(`processMessagePost ignored message: ${msgType}`);

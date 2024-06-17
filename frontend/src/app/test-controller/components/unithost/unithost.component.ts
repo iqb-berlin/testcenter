@@ -18,8 +18,13 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
-  Verona5ValidPages, Verona6ValidPages,
-  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
+  Verona5ValidPages,
+  Verona6ValidPages,
+  VeronaNavigationDeniedReason,
+  VeronaNavigationTarget,
+  VeronaPlayerConfig,
+  VeronaPlayerRuntimeErrorCodes,
+  VeronaProgress
 } from '../../interfaces/verona.interfaces';
 import { Testlet, UnitWithContext } from '../../classes/test-controller.classes';
 import { AppError } from '../../../app.interfaces';
@@ -218,6 +223,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
         break;
 
+      case 'vopRuntimeErrorNotification':
+        this.handleRuntimeError(msgData.code, msgData.message);
+        if (this.tcs.testMode.saveResponses) {
+          this.bs.addUnitLog(
+            this.tcs.testId,
+            this.currentUnit.unitDef.alias,
+            [
+              {
+                key: `Runtime Error: ${msgData.code}`,
+                content: msgData.message || '',
+                timeStamp: Date.now()
+              }
+            ]
+          );
+        }
+        break;
+
       default:
         // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
@@ -239,6 +261,35 @@ export class UnithostComponent implements OnInit, OnDestroy {
         });
     }
     this.pageLabels = Object.values(this.pages);
+  }
+
+  private handleRuntimeError(code?: string, message?: string): void {
+    // possible reactions on runtimeErrors
+    const reactions: { [key: string]: (code: string, message: string) => void } = {
+      raiseError: (errorCode, errorMessage) => {
+        throw new AppError({
+          label: 'Fehler beim Abspielen der Aufgabe',
+          description: errorMessage,
+          type: 'verona_player_runtime_error',
+          code: VeronaPlayerRuntimeErrorCodes.indexOf(errorCode)
+        });
+      },
+      removeTryLeaveRestrictions: () => {
+        // this might be the correct reaction on unloadable audio or what
+        this.tcs.setUnitResponseProgress(this.currentUnitSequenceId, 'complete');
+        this.tcs.setUnitPresentationProgress(this.currentUnitSequenceId, 'complete');
+      }
+    };
+    const runTimeErrorReactionMap:
+    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]] : keyof typeof reactions } = {
+      'session-id-missing': 'raiseError',
+      'unit-definition-missing': 'raiseError',
+      'wrong-session-id': 'raiseError',
+      'unit-definition-type-unsupported': 'raiseError',
+      'unit-state-type-unsupported': 'raiseError',
+      'runtime-error': 'raiseError'
+    };
+    reactions[runTimeErrorReactionMap[code || 'runtime-error'] || 'raiseError'](code || '', message || '');
   }
 
   private open(currentUnitSequenceId: number): void {
