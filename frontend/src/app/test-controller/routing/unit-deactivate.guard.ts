@@ -1,5 +1,5 @@
 import {
-  concatMap, last, map, startWith, switchMap, takeWhile
+  concatMap, last, map, takeWhile
 } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
@@ -213,9 +213,15 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
   }
 
-  private checkCanDeactivate(nextState: RouterStateSnapshot) {
-    console.log('switchMap');
-
+  canDeactivate(
+    component: UnithostComponent,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState: RouterStateSnapshot
+  ): Observable<boolean> | boolean {
+    if (nextState.url === '/r/route-dispatcher') {
+      return true;
+    }
     if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
       return of(true);
     }
@@ -251,21 +257,5 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
         takeWhile(checkResult => checkResult, true),
         last()
       );
-  }
-
-  canDeactivate(
-    component: UnithostComponent,
-    currentRoute: ActivatedRouteSnapshot,
-    currentState: RouterStateSnapshot,
-    nextState: RouterStateSnapshot
-  ): Observable<boolean> | boolean {
-    if (nextState.url === '/r/route-dispatcher') {
-      return true;
-    }
-    this.tcs.closeBuffers$.next();
-    return this.tcs.unitDataPartsBufferClosed$.pipe(
-      startWith(null), // important! why? ask chatGPT!
-      switchMap(() => this.checkCanDeactivate(nextState))
-    );
   }
 }

@@ -278,7 +278,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private handleTimer(timer: TimerData): void {
+  private async handleTimer(timer: TimerData): Promise<boolean> {
     const minute = timer.timeLeftSeconds / 60;
     switch (timer.type) {
       case MaxTimerEvent.STARTED:
@@ -286,7 +286,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           timer.timeLeftMinString, '', { duration: 5000 });
         this.timerValue = timer;
         this.tcs.updateLocks();
-        break;
+        return true;
       case MaxTimerEvent.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
         this.tcs.timers[timer.id] = 0;
@@ -304,10 +304,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.currentUnit.parent.locks.time = true;
         this.tcs.updateLocks();
         if (this.tcs.testMode.forceTimeRestrictions) {
-          const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
+          const nextUnlockedUSId = await this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+          return this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
         }
-        break;
+        return true;
       case MaxTimerEvent.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
         // this.tcs.setTimeLeft(timer.testletId, 0);
@@ -325,11 +325,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         this.tcs.currentUnit.parent.locks.time = true;
         this.tcs.updateLocks();
-        break;
+        return true;
       case MaxTimerEvent.INTERRUPTED:
         this.timerValue = null;
         this.tcs.updateLocks();
-        break;
+        return true;
       case MaxTimerEvent.STEP:
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
@@ -350,14 +350,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
           this.snackBar.open(text, '', { duration: 5000 });
         }
-        break;
+        return true;
       default:
+        return true;
     }
   }
 
-  private refreshUnitMenu(): void {
+  private async refreshUnitMenu(): Promise<void> {
     this.unitNavigationList = [];
-    [this.firstAccessibleUnit, this.lastAccessibleUnit] = this.tcs.getSequenceBounds();
+    [this.firstAccessibleUnit, this.lastAccessibleUnit] = await this.tcs.getSequenceBounds();
 
     let previousBlockLabel: string | null = null;
     for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {

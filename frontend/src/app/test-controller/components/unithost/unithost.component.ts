@@ -69,7 +69,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
-  private handleIncomingMessage(messageEvent: MessageEvent): void {
+  private async handleIncomingMessage(messageEvent: MessageEvent): Promise<void> {
     if (!this.tcs.currentUnit) {
       return;
     }
@@ -82,7 +82,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget = messageEvent.source as Window;
     if (msgData.sessionId && (msgSessionId !== this.playerSessionId)) {
       // eslint-disable-next-line no-console
-      console.warn('wrong player session id: ', msgData.sessionId);
+      console.warn('wrong player session id: ', msgData.sessionId, msgData);
       return;
     }
 
@@ -111,7 +111,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleReadyNotification(msgData: any): void {
+  private async handleReadyNotification(msgData: any): Promise<void> {
     // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
     // eslint-disable-next-line no-case-declarations
@@ -152,7 +152,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
       },
-      playerConfig: this.getPlayerConfig()
+      playerConfig: await this.getPlayerConfig()
     }, '*');
   }
 
@@ -382,7 +382,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getPlayerConfig(): VeronaPlayerConfig {
+  private async getPlayerConfig(): Promise<VeronaPlayerConfig> {
     if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
@@ -391,7 +391,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.tcs.currentUnitSequenceId,
-        this.tcs.getSequenceBounds(),
+        await this.tcs.getSequenceBounds(),
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
