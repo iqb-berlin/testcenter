@@ -72,9 +72,7 @@ describe('BookletService', () => {
       const testXml = '<root><a>x<b>x</b><b /><b></b></a><b><!-- ! --><c>x</c>x</b><a><b></b></a>x</root>';
       const testContent = domParser.parseFromString(testXml, 'text/xml').documentElement;
 
-      // access to private function
-      // eslint-disable-next-line @typescript-eslint/dot-notation, prefer-destructuring
-      const xmlCountChildrenOfTagNames = BookletService['xmlCountChildrenOfTagNames'];
+      const xmlCountChildrenOfTagNames = service.xmlCountChildrenOfTagNames;
 
       let result = xmlCountChildrenOfTagNames(testContent, ['a']);
       expect(result).withContext('a').toEqual(2);
