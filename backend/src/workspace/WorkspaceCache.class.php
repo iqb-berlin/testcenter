@@ -15,12 +15,28 @@ class WorkspaceCache {
     $this->initializeFilesArray();
   }
 
-  public function loadAllFiles(): void {
+  public function loadFiles(): void {
     foreach (Workspace::subFolders as $type) {
       $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-      $files = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
+      $filePaths = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
 
-      foreach ($files as $filePath) {
+      foreach ($filePaths as $filePath) {
+        $file = File::get($filePath, $type);
+        $this->addFile($type, $file);
+      }
+    }
+  }
+  public function loadAllFromDb(): void {
+    // wie weiß man an dieser Stelle welche Dateien die relevanten sind? nur diese per SQL holen
+
+    // danach diese Files direkt mit $this->addFile() in den Cache aufnehmen
+
+
+    foreach (Workspace::subFolders as $type) {
+      $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+      $filePaths = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
+
+      foreach ($filePaths as $filePath) {
         $file = File::get($filePath, $type);
         $this->addFile($type, $file);
       }
