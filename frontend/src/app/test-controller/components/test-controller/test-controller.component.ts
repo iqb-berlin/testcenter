@@ -49,6 +49,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     connectionStatus: null
   };
 
+  wakeLock : WakeLockSentinel | null = null;
   timerValue: MaxTimerData | null = null;
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: Array<UnitNaviButtonData | string> = [];
@@ -73,6 +74,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.requestScreenLock();
+      document.addEventListener('visibilitychange', this.handleVisibilityChange);
       this.mainDataService.clearErrorBuffer();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
@@ -398,6 +401,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionKey] = null;
       });
     this.tls.reset();
+    if (this.wakeLock) {
+      this.releaseWakeLock();
+    }
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }
@@ -464,4 +470,25 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       await this.setFullScreen();
     });
   }
+
+  private async requestScreenLock(): Promise<void> {
+    if ('wakeLock' in navigator) {
+      this.wakeLock = await navigator.wakeLock.request('screen');
+    } else {
+      console.warn('wakeLock not supported');
+    }
+  }
+
+  private async releaseWakeLock(): Promise<void> {
+    if (this.wakeLock !== null) {
+      await this.wakeLock.release();
+      this.wakeLock = null;
+    }
+  }
+
+  private handleVisibilityChange = async () => {
+    if (document.visibilityState === 'visible' && this.wakeLock?.released === true) {
+      await this.requestScreenLock();
+    }
+  };
 }
