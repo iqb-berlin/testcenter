@@ -122,9 +122,9 @@ class WorkspaceController extends Controller {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 
-    $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
+    $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
-    $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
+    $importedFiles = $workspace->importUncategorizedFiles($filesToImport);
     $workspace->setWorkspaceHash();
 
     $reports = [];

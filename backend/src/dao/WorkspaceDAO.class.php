@@ -482,7 +482,7 @@ class WorkspaceDAO extends DAO {
     return [$unresolvedRelations, $updatedRelations];
   }
 
-  public function getRelatingFiles(File $file): array {
+  public function getDependentFiles(File $file): array {
     // TODO make recursive: a player may affect a unit, that a booklet, and that a testtakers file
 
     $sql = "select
