@@ -5,8 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { map, mergeMap, reduce } from 'rxjs/operators';
+import { Subscription, from } from 'rxjs';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MainDataService
@@ -164,15 +164,47 @@ export class FilesComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateFileList(empty = false): void {
-    if (empty) {
+  updateFileList(shouldEmpty = false): void {
+    if (shouldEmpty) {
       IQBFileTypes
         .forEach(type => {
           this.files[type] = new MatTableDataSource();
         });
     } else {
       this.bs.getFiles(this.wds.workspaceId)
-        .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
+        .pipe(
+          mergeMap(fileList => {
+            const filteredTypes = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
+            return from(filteredTypes).pipe(
+              map(type => {
+                fileList[type]?.forEach(file => {
+                  if (file.dependencies.length !== 0) {
+                    file.info.totalSize = file.size;
+                    file.dependencies.forEach(dep => {
+                      if (
+                        dep.relationship_type !== 'usesPlayer' ||
+                        (dep.relationship_type === 'usesPlayer' && file.type === 'Booklet') // booklet's size is dependent on player
+                      ) {
+                        const innerFilteredTypes = IQBFileTypes.filter(innertype => innertype !== 'Testtakers' && innertype !== 'SysCheck' && innertype !== 'Booklet');
+                        innerFilteredTypes.forEach(innertype => {
+                          fileList[innertype].forEach(checkedDependency => {
+                            if (checkedDependency.name === dep.object_name) {
+                              file.info.totalSize! += checkedDependency.size;
+                            }
+                          });
+                        });
+                      }
+                    });
+                  } else {
+                    file.info.totalSize = undefined;
+                  }
+                });
+                return fileList;
+              })
+            );
+          }),
+          map(fileList => this.addFrontendChecksToFiles(fileList))
+        )
         .subscribe(fileList => {
           IQBFileTypes
             .forEach(type => {

@@ -167,6 +167,7 @@ class File extends FileData {
       'type' => $this->type,
       'id' => $this->id,
       'report' => $this->validationReport,
+      'dependencies' => $this->relations,
       'info' => array_merge($info, $this->getContextData()
       ),
     ];

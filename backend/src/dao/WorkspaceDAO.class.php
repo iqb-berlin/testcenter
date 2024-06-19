@@ -271,7 +271,7 @@ class WorkspaceDAO extends DAO {
                 where workspace_id = ?";
     $replacements = [$this->workspaceId];
 
-    return $this->fetchFiles($sql, $replacements);
+    return $this->fetchFiles($sql, $replacements, true);
   }
 
   public function getFileRelations(string $name, string $type): array {
@@ -353,12 +353,15 @@ class WorkspaceDAO extends DAO {
     return $this->fetchFiles($sql, $replacements);
   }
 
-  private function fetchFiles($sql, $replacements): array {
+  private function fetchFiles($sql, $replacements, bool $getDependencies = false): array {
     $files = [];
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
       // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
-      $files[$row['type']][$row['name']] = $this->resultRow2File($row, []);
+      if ($getDependencies) {
+        $dependencies = $this->fetchDependenciesForFile($row['name']);
+      }
+      $files[$row['type']][$row['name']] = $this->resultRow2File($row, $dependencies ?? []);
     }
     return $files;
   }
@@ -409,6 +412,7 @@ class WorkspaceDAO extends DAO {
     $selectedFilesConditions = implode(' or ', $conditions);
 
     $sql = "with recursive affected_files as (
+                    -- base/first case that initializes the recursion
                     select
                         subject_type as object_type,
                         subject_name as object_name,
@@ -419,6 +423,7 @@ class WorkspaceDAO extends DAO {
                 
                     union all
                 
+                    --recursive case
                     select
                         file_relations.subject_type as object_type,
                         file_relations.subject_name as object_name,
@@ -570,6 +575,32 @@ class WorkspaceDAO extends DAO {
     $this->_(
       "update workspaces set workspace_hash = :hash where id = :ws_id",
       [':hash' => $hash, ':ws_id' => $this->workspaceId]
+    );
+  }
+
+  public function fetchDependenciesForFile(string $name): ?array {
+    return $this->_(
+      "
+        -- base case that starts the recursion
+          with recursive dependencies as (
+            select subject_name, object_name, relationship_type
+            from file_relations
+            where subject_name = :name
+              
+            union all 
+            
+            -- recursive case
+            select fr.subject_name, fr.object_name, fr.relationship_type
+            from file_relations fr
+            inner join dependencies dep
+              on fr.subject_name = dep.object_name 
+          )
+          select distinct object_name, relationship_type
+          from dependencies;",
+      [
+        ':name' => $name,
+      ],
+      true
     );
   }
 }

@@ -11,7 +11,6 @@ class XMLFileBooklet extends XMLFile {
     parent::crossValidate($workspaceCache);
 
     $bookletPlayers = [];
-    $this->contextData['totalSize'] = $this->getSize();
 
     foreach ($this->getUnitIds() as $unitId) {
       $unit = $workspaceCache->getUnit($unitId);
@@ -23,8 +22,6 @@ class XMLFileBooklet extends XMLFile {
 
       $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
-      $this->contextData['totalSize'] += $unit->getTotalSize();
-
       $playerFile = $unit->getPlayerIfExists($workspaceCache);
 
       if (!$playerFile) {
@@ -32,7 +29,6 @@ class XMLFileBooklet extends XMLFile {
       }
 
       if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
-        $this->contextData['totalSize'] += $playerFile->getSize();
         $bookletPlayers[] = $playerFile->getId();
       }
     }
