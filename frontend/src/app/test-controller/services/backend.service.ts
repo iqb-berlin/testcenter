@@ -39,7 +39,9 @@ export class BackendService {
     return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
-  updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
+  patchTestState(testId: string, newState: StateReportEntry[]): Subscription {
+    console.log('updateTestState', testId, newState.map(entry => ([entry.key, entry.content])));
+
     return this.http.patch(`${this.backendUrl}test/${testId}/state`, newState).subscribe();
   }
 
@@ -48,6 +50,11 @@ export class BackendService {
   }
 
   updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
+    console.log(
+      'updateUnitState',
+      newState.map(entry => ([entry.key, entry.content]))
+    );
+
     return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
   }
 

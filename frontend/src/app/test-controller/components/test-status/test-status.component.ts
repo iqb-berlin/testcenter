@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CustomtextService, MainDataService } from '../../../shared/shared.module';
 import { AppError } from '../../../app.interfaces';
+import { TestControllerState } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -10,6 +11,7 @@ import { AppError } from '../../../app.interfaces';
 
 export class TestStatusComponent implements OnInit {
   loginName = '??';
+  testControllerStateEnum = TestControllerState;
 
   constructor(
     public tcs: TestControllerService,

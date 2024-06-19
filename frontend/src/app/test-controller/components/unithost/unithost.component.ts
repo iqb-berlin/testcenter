@@ -302,10 +302,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.resourcesLoading$.next([]);
 
+    this.tcs.setTestState(TestStateKey.CURRENT_UNIT_ID, this.tcs.currentUnit.alias);
     if (this.tcs.testMode.saveResponses) {
-      this.bs.updateTestState(this.tcs.testId, [{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.tcs.currentUnit.alias
-      }]);
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {

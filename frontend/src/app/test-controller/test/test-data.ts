@@ -1,10 +1,11 @@
-import { NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
-import { TestDataResourcesMap, TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
+import { CodingScheme } from '@iqb/responses';
+import {
+  TestDataResourcesMap, Testlet, TestStateKey, Unit, UnitData
+} from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../shared/shared.module';
 import { WatcherLogEntry } from './watcher.util';
 import { perSequenceId } from './unit-test.util';
-import { testlet, unit } from './test-data-constructors';
 
 export const TestBookletXML = `<Booklet>
   <Metadata>
@@ -160,94 +161,203 @@ export const TestTestState: { [k in TestStateKey]?: string } = {
   CURRENT_UNIT_ID: 'u3'
 };
 
-export const TestBooklet = testlet({
-  sequenceId: 0,
-  id: 'BookletId',
-  title: 'Label',
-  codeToEnter: '',
-  codePrompt: '',
-  maxTimeLeft: 10,
-  maxTimeLeave: 'confirm',
-  children: [
-    unit({
-      sequenceId: 1,
-      id: 'u1',
-      title: 'l',
-      children: [],
-      lockedByTime: false,
-      alias: 'u1',
-      naviButtonLabel: '',
-      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'Resource/A-PLAYER.HTML'
-    }),
-    testlet({
-      sequenceId: 0,
-      id: 't1',
-      title: '',
-      codeToEnter: 'D',
-      codePrompt: '',
-      maxTimeLeft: 5,
-      maxTimeLeave: 'confirm',
-      children: [
-        unit({
-          sequenceId: 2,
-          id: 'u2',
-          title: 'l',
-          children: [],
-          lockedByTime: false,
-          alias: 'u2',
-          naviButtonLabel: '',
-          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'Resource/ANOTHER-PLAYER.HTML'
-        }),
-        testlet({
-          sequenceId: 0,
-          id: 't2',
-          title: '',
-          codeToEnter: 'D',
-          codePrompt: '',
-          maxTimeLeft: 3,
-          maxTimeLeave: 'confirm',
-          children: [
-            unit({
-              sequenceId: 3,
-              id: 'u3',
-              title: 'l',
-              children: [],
-              lockedByTime: false,
-              alias: 'u3',
-              naviButtonLabel: '',
-              navigationLeaveRestrictions: new NavigationLeaveRestrictions('ON', 'OFF'),
-              playerFileName: 'Resource/A-PLAYER-2.HTML'
-            })
-          ]
-        }),
-        unit({
-          sequenceId: 4,
-          id: 'u4',
-          title: 'l',
-          children: [],
-          lockedByTime: false,
-          alias: 'u4',
-          naviButtonLabel: '',
-          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'Resource/A-PLAYER.HTML'
-        })
-      ]
-    }),
-    unit({
-      sequenceId: 5,
-      id: 'u5',
-      title: 'l',
-      children: [],
-      lockedByTime: false,
-      alias: 'u5',
-      naviButtonLabel: '',
-      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'Resource/A-PLAYER.HTML'
-    })
-  ]
-});
+const testlets: { [ key: string]: Testlet } = {
+  root: {
+    id: 'BookletId',
+    label: 'Label',
+    locks: {
+      condition: false,
+      time: false,
+      code: false,
+      afterLeave: false
+    },
+    locked: null,
+    timerId: 'timer-1',
+    firstUnsatisfiedCondition: -1,
+    maxTimeLeave: 'confirm',
+    restrictions: {
+      denyNavigationOnIncomplete: {
+        presentation: 'OFF',
+        response: 'ON'
+      },
+      if: []
+    },
+    blockLabel: '',
+    children: []
+  },
+  t1: {
+    id: 't1',
+    label: 'Label 1',
+    locks: {
+      condition: false,
+      time: false,
+      code: false,
+      afterLeave: false
+    },
+    locked: null,
+    timerId: 'timer-1',
+    firstUnsatisfiedCondition: -1,
+    maxTimeLeave: 'confirm',
+    restrictions: {
+      denyNavigationOnIncomplete: {
+        presentation: 'OFF',
+        response: 'ON'
+      },
+      if: [],
+      codeToEnter: {
+        code: 'D',
+        message: ''
+      },
+      timeMax: {
+        minutes: 5,
+        leave: 'confirm'
+      }
+    },
+    blockLabel: '',
+    children: []
+  },
+  t2: {
+    id: 't2',
+    label: 'Label 2',
+    locks: {
+      condition: false,
+      time: false,
+      code: false,
+      afterLeave: false
+    },
+    locked: null,
+    timerId: 'timer-2',
+    firstUnsatisfiedCondition: -1,
+    maxTimeLeave: 'confirm',
+    restrictions: {
+      denyNavigationOnIncomplete: {
+        presentation: 'OFF',
+        response: 'ON'
+      },
+      if: [],
+      codeToEnter: {
+        code: 'D',
+        message: ''
+      },
+      timeMax: {
+        minutes: 3,
+        leave: 'confirm'
+      }
+    },
+    blockLabel: '',
+    children: []
+  }
+};
+
+const units: { [key: string]: Unit } = {
+  u1: {
+    id: 'u1',
+    alias: 'u1',
+    label: 'Unit-1',
+    labelShort: 'U1',
+    sequenceId: 1,
+    parent: testlets.root,
+    localIndex: 1,
+    playerId: 'A-PLAYER',
+    variables: {},
+    baseVariableIds: [],
+    playerFileName: 'Resource/A-PLAYER.HTML',
+    scheme: new CodingScheme([]),
+    responseType: '',
+    definition: '',
+    state: {},
+    dataParts: {},
+    loadingProgress: {},
+    lockedAfterLeaving: false
+  },
+  u2: {
+    id: 'u2',
+    alias: 'u2',
+    label: 'Unit-2',
+    labelShort: 'U2',
+    sequenceId: 2,
+    parent: testlets.t1,
+    localIndex: 1,
+    playerId: 'ANOTHER-PLAYER',
+    variables: {},
+    baseVariableIds: [],
+    playerFileName: 'Resource/ANOTHER-PLAYER.HTML',
+    scheme: new CodingScheme([]),
+    responseType: '',
+    definition: '',
+    state: {},
+    dataParts: {},
+    loadingProgress: {},
+    lockedAfterLeaving: false
+  },
+  u3: {
+    id: 'u3',
+    alias: 'u3',
+    label: 'Unit-3',
+    labelShort: 'U3',
+    sequenceId: 3,
+    parent: testlets.t2,
+    localIndex: 1,
+    playerId: 'A-PLAYER-2',
+    variables: {},
+    baseVariableIds: [],
+    playerFileName: 'Resource/A-PLAYER-2.HTML',
+    scheme: new CodingScheme([]),
+    responseType: '',
+    definition: '',
+    state: {},
+    dataParts: {},
+    loadingProgress: {},
+    lockedAfterLeaving: false
+  },
+  u4: {
+    id: 'u4',
+    alias: 'u4',
+    label: 'Unit-4',
+    labelShort: 'U4',
+    sequenceId: 4,
+    parent: testlets.t2,
+    localIndex: 1,
+    playerId: 'A-PLAYER',
+    variables: {},
+    baseVariableIds: [],
+    playerFileName: 'Resource/A-PLAYER.HTML',
+    scheme: new CodingScheme([]),
+    responseType: '',
+    definition: '',
+    state: {},
+    dataParts: {},
+    loadingProgress: {},
+    lockedAfterLeaving: false
+  },
+  u5: {
+    id: 'u5',
+    alias: 'u5',
+    label: 'Unit-5',
+    labelShort: 'U5',
+    sequenceId: 5,
+    parent: testlets.root,
+    localIndex: 1,
+    playerId: 'A-PLAYER',
+    variables: {},
+    baseVariableIds: [],
+    playerFileName: 'Resource/A-PLAYER.HTML',
+    scheme: new CodingScheme([]),
+    responseType: '',
+    definition: '',
+    state: {},
+    dataParts: {},
+    loadingProgress: {},
+    lockedAfterLeaving: false
+  }
+
+};
+
+testlets.root.children.push(units.u1, testlets.t1, units.u5);
+testlets.t1.children.push(units.u2, testlets.t2);
+testlets.t2.children.push(units.u3, units.u4);
+
+export const TestBooklet = testlets.root;
 
 export const TestBookletConfig = new BookletConfig();
 TestBookletConfig.force_presentation_complete = 'ON';
@@ -496,103 +606,3 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } }
   ]
 };
-
-export const getBookletWithTwoBlocks = (): Testlet => testlet({
-  codePrompt: 'a',
-  codeToEnter: '',
-  id: '',
-  maxTimeLeft: 0,
-  maxTimeLeave: 'confirm',
-  sequenceId: 0,
-  title: 'root',
-  children: [
-    unit({
-      sequenceId: 1,
-      id: 'u1',
-      title: 'l',
-      children: [],
-      lockedByTime: false,
-      alias: 'u1',
-      naviButtonLabel: '',
-      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'Resource/A-PLAYER.HTML'
-    }),
-    testlet({
-      codePrompt: 'please enter something',
-      codeToEnter: 'i_am_locked',
-      id: 'first_block',
-      maxTimeLeft: 5,
-      maxTimeLeave: 'confirm',
-      sequenceId: 0,
-      title: 'label of first block',
-      children: [
-        unit({
-          sequenceId: 2,
-          id: 'u2',
-          title: 'l',
-          children: [],
-          lockedByTime: false,
-          alias: 'u2',
-          naviButtonLabel: '',
-          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'Resource/A-PLAYER.HTML'
-        }),
-        testlet({
-          codePrompt: '',
-          codeToEnter: '',
-          id: 'sub_testlet_of_first_block',
-          maxTimeLeft: 0,
-          maxTimeLeave: 'confirm',
-          sequenceId: 0,
-          title: '',
-          children: [
-            unit({
-              sequenceId: 3,
-              id: 'u3',
-              title: 'l',
-              children: [],
-              lockedByTime: false,
-              alias: 'u3',
-              naviButtonLabel: '',
-              navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-              playerFileName: 'Resource/A-PLAYER.HTML'
-            })
-          ]
-        })
-      ]
-    }),
-    testlet({
-      codePrompt: '',
-      codeToEnter: '',
-      id: 'second_block',
-      maxTimeLeft: 0,
-      maxTimeLeave: 'confirm',
-      sequenceId: 0,
-      title: '',
-      children: [
-        unit({
-          sequenceId: 4,
-          id: 'u4',
-          title: 'l',
-          children: [],
-          lockedByTime: false,
-          alias: 'u4',
-          naviButtonLabel: '',
-          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerFileName: 'Resource/A-PLAYER.HTML'
-        })
-      ]
-    }),
-    unit({
-      sequenceId: 5,
-      id: 'u5',
-      title: 'l',
-      children: [],
-      lockedByTime: false,
-      alias: 'u5',
-      naviButtonLabel: '',
-      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerFileName: 'Resource/A-PLAYER.HTML'
-    })
-  ]
-});

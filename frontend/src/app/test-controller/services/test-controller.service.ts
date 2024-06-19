@@ -14,7 +14,7 @@ import {
   MaxTimerEvent,
   StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
-  TestStateKey, Unit,
+  TestStateKey, TestStateUpdate, Unit,
   UnitDataParts,
   UnitNavigationTarget,
   UnitStateUpdate,
@@ -35,17 +35,17 @@ import { AppError } from '../../app.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
 import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfaces';
+import { TestDataUtil } from '../util/test-data.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
   static readonly unitDataBufferMs = 60000;
-  static readonly unitStateBufferMs = 2500;
+  static readonly unitStateBufferMs = 10000;
 
   testId = '';
   state$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
-  testControllerStateEnum = TestControllerState;
 
   workspaceId = 0;
 
@@ -75,7 +75,7 @@ export class TestControllerService {
     this._booklet = booklet;
   }
 
-  get sequenceLength(): number {
+  get sequenceLength(): number { // TODO X can/must this be replaced with sequenceBounds?
     return Object.keys(this.units).length;
   }
 
@@ -118,6 +118,9 @@ export class TestControllerService {
 
   private unitStateToSave$ = new Subject<UnitStateUpdate>();
   private unitStateToSaveSubscription: Subscription | null = null;
+  private testStateToSave$ = new Subject<TestStateUpdate>();
+  private testStateToSaveSubscription: Subscription | null = null;
+  private testState: { [key in TestStateKey]?: string } = {};
 
   constructor(
     private router: Router,
@@ -127,11 +130,11 @@ export class TestControllerService {
   ) {
     this.setupUnitDataPartsBuffer();
     this.setupUnitStateBuffer();
+    this.setupTestStateBuffer();
   }
 
   setupUnitDataPartsBuffer(): void {
     this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
-    this.destroyUnitStateBuffer();
 
     const sortDataPartsByUnit = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] => {
       // TODO what if test changed?
@@ -201,6 +204,7 @@ export class TestControllerService {
 
   // todo react to closeBuffers as well!
   setupUnitStateBuffer(): void {
+    this.destroyUnitStateBuffer();
     this.unitStateToSaveSubscription = this.unitStateToSave$
       .pipe(
         bufferTime(TestControllerService.unitStateBufferMs),
@@ -220,22 +224,58 @@ export class TestControllerService {
         ))
       )
       .subscribe(aggregatedStateUpdate => {
-        if (this.testMode.saveResponses) {
-          this.bs.updateUnitState(
-            this.testId,
-            aggregatedStateUpdate.alias,
-            aggregatedStateUpdate.state
-          );
-        }
+        if (!this.testMode.saveResponses) return;
+        this.bs.updateUnitState(
+          this.testId,
+          aggregatedStateUpdate.alias,
+          aggregatedStateUpdate.state
+        );
       });
+  }
+
+  // TODO stand testen und implementieren
+  setupTestStateBuffer(): void {
+    this.destroyTestStateBuffer();
+    this.testStateToSaveSubscription = this.testStateToSave$
+      .pipe(
+        bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
+        map(TestDataUtil.sortByTestId)
+      )
+      .subscribe(updates => {
+        if (!this.testMode.saveResponses) return;
+        console.log('TTT:S', updates);
+        updates
+          .filter(update => !!update.testId)
+          .forEach(update => {
+            this.bs.patchTestState(update.testId, update.state);
+          });
+      });
+  }
+
+  setTestState(key: TestStateKey, content: string): void {
+    console.log('TTT:I', { key, content });
+    if (this.testState[key] === content) return;
+    console.log('TTT:A', { key, content });
+    this.testState[key] = content;
+    this.testStateToSave$.next(<TestStateUpdate>{
+      testId: this.testId,
+      state: [{ key, content, timeStamp: Date.now() }]
+    });
   }
 
   destroyUnitDataPartsBuffer(): void {
     if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
+    this.unitDataPartsToSaveSubscription = null;
   }
 
   destroyUnitStateBuffer(): void {
     if (this.unitStateToSaveSubscription) this.unitStateToSaveSubscription.unsubscribe();
+    this.unitStateToSaveSubscription = null;
+  }
+
+  destroyTestStateBuffer(): void {
+    if (this.testStateToSaveSubscription) this.testStateToSaveSubscription.unsubscribe();
+    this.testStateToSaveSubscription = null;
   }
 
   private async closeBuffer(): Promise<null | void> {
@@ -312,10 +352,12 @@ export class TestControllerService {
     }
   }
 
+  // TODO X rename?
   private getUnitState(unitSequenceId: number, stateKey: string): string | undefined {
     return isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
   }
 
+  // TODO X rename?
   setUnitState(unitSequenceId: number, stateKey: string, value: string | undefined): void {
     if ((stateKey === 'RESPONSE_PROGRESS') && ((typeof value === 'undefined') || isVeronaProgress(value))) {
       this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
@@ -348,54 +390,27 @@ export class TestControllerService {
     }
     this.testlets[testletId].locks.code = false;
     this.updateLocks();
-    if (this.testMode.saveResponses) {
-      const unlockedTestlets = Object.values(this.testlets)
-        .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
-        .map(t => t.id);
-      this.bs.updateTestState(
-        this.testId,
-        [<StateReportEntry>{
-          key: TestStateKey.TESTLETS_CLEARED_CODE,
-          timeStamp: Date.now(),
-          content: JSON.stringify(unlockedTestlets)
-        }]
-      );
-    }
+    const unlockedTestlets = Object.values(this.testlets)
+      .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
+      .map(t => t.id);
+    this.setTestState(TestStateKey.TESTLETS_CLEARED_CODE, JSON.stringify(unlockedTestlets));
   }
 
   leaveLockTestlet(testletId: string): void {
     this.testlets[testletId].locks.afterLeave = true;
     this.updateLocks();
-    if (this.testMode.saveResponses) {
-      const lockedTestlets = Object.values(this.testlets)
-        .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
-        .map(t => t.id);
-      this.bs.updateTestState(
-        this.testId,
-        [{
-          key: TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE,
-          timeStamp: Date.now(),
-          content: JSON.stringify(lockedTestlets)
-        }]
-      );
-    }
+    const lockedTestlets = Object.values(this.testlets)
+      .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
+      .map(t => t.id);
+    this.setTestState(TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE, JSON.stringify(lockedTestlets));
   }
 
   leaveLockUnit(unitSequenceId: number): void {
     this.units[unitSequenceId].lockedAfterLeaving = true;
-    if (this.testMode.saveResponses) {
-      const lockedUnits = Object.values(this.units)
-        .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
-        .map(u => u.sequenceId);
-      this.bs.updateTestState(
-        this.testId,
-        [{
-          key: TestStateKey.UNITS_LOCKED_AFTER_LEAVE,
-          timeStamp: Date.now(),
-          content: JSON.stringify(lockedUnits)
-        }]
-      );
-    }
+    const lockedUnits = Object.values(this.units)
+      .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
+      .map(u => u.sequenceId);
+    this.setTestState(TestStateKey.UNITS_LOCKED_AFTER_LEAVE, JSON.stringify(lockedUnits));
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -713,21 +728,15 @@ export class TestControllerService {
         this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
     this.updateLocks();
-    this.storeConditions();
+    this.updateConditionsInTestState();
   }
 
-  private storeConditions(): void {
-    if (!this.testMode.saveResponses) return;
+  private updateConditionsInTestState(): void {
+    // this is a summary of the state of the conditions for navigation-UI, Group-monitor and the like
     const lockedByCondition = Object.values(this.testlets)
       .filter(testlet => testlet.restrictions.if.length && !testlet.locks.condition)
       .map(testlet => testlet.id);
-    this.bs.updateTestState(this.testId, [
-      {
-        key: TestStateKey.TESTLETS_SATISFIED_CONDITION,
-        timeStamp: Date.now(),
-        content: JSON.stringify(lockedByCondition)
-      }
-    ]);
+    this.setTestState(TestStateKey.TESTLETS_SATISFIED_CONDITION, JSON.stringify(lockedByCondition));
   }
 
   isConditionSatisfied(condition: BlockCondition): boolean {

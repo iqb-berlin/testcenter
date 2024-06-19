@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { CodingScheme, Response } from '@iqb/responses';
-import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import { BookletDef, MaxTimeLeaveValue, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
@@ -128,6 +128,11 @@ export interface UnitStateUpdate {
   state: StateReportEntry[]
 }
 
+export interface TestStateUpdate {
+  testId: string,
+  state: StateReportEntry[]
+}
+
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
 export enum MaxTimerEvent {
@@ -200,10 +205,6 @@ export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLea
   return ['ON', 'OFF', 'ALWAYS'].includes(s);
 }
 
-
-export const maxTimeLeaveValues = ['confirm', 'forbidden'];
-export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
-
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }
@@ -249,7 +250,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
-  maxTimeLeave: MaxTimeLeaveValue;
+  maxTimeLeave: MaxTimeLeaveValue; // TODO X get rid of this, and put it into Restrictions
 }
 
 export type Booklet = BookletDef<Testlet>;

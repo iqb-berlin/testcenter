@@ -16,7 +16,7 @@
   </p>
 
   <div
-    *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === tcs.testControllerStateEnum.RUNNING)"
+    *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === testControllerStateEnum.RUNNING)"
     class="flex-row"
     [style.align-items]="'safe center'"
     [style.max-height.%]="100"
