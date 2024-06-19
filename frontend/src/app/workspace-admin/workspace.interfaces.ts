@@ -1,4 +1,4 @@
-export const IQBFileTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Resource', 'Unit'] as const;
+export const IQBFileTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit', 'Resource'] as const;
 export type IQBFileType = (typeof IQBFileTypes)[number];
 
 export interface IQBFile {
@@ -7,6 +7,10 @@ export interface IQBFile {
   modificationTime: string;
   type: IQBFileType;
   isChecked: boolean;
+  dependencies: {
+    object_name: string;
+    relationship_type: string;
+  }[];
   report: {
     error: string[];
     warning: string[];
