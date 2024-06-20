@@ -1,9 +1,9 @@
-import { TestDataUtil } from './test-data.util';
+import { TestStateUtil } from './test-state.util';
 import { TestStateKey } from '../interfaces/test-controller.interfaces';
 
 fdescribe('The TestDataUtil', () => {
   it('should merge incoming testState changes by key and date and sort by TestId', () => {
-    const result = TestDataUtil.sortByTestId([
+    const result = TestStateUtil.sortByTestId([
       {
         testId: 'current',
         state: [

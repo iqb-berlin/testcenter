@@ -322,7 +322,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           complete: () => {
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
-              this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
+              this.bs.addTestLog(this.tcs.testId, [{
                 key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
               }]);
             }

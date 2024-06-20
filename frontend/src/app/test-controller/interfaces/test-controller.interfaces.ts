@@ -1,6 +1,8 @@
 import { Observable } from 'rxjs';
-import { CodingScheme, Response } from '@iqb/responses';
-import { BookletDef, MaxTimeLeaveValue, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import { CodingScheme } from '@iqb/responses';
+import {
+  BookletDef, MaxTimeLeaveValue, TestletDef, UnitDef
+} from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
@@ -45,22 +47,6 @@ export interface TestData {
   workspaceId: number;
 }
 
-export enum TestStateKey {
-  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-  TESTLETS_LOCKED_AFTER_LEAVE = 'TESTLETS_LOCKED_AFTER_LEAVE',
-  TESTLETS_SATISFIED_CONDITION = 'TESTLETS_SATISFIED_CONDITION',
-  UNITS_LOCKED_AFTER_LEAVE = 'UNITS_LOCKED_AFTER_LEAVE',
-  FOCUS = 'FOCUS',
-  CONTROLLER = 'CONTROLLER',
-  CONNECTION = 'CONNECTION'
-}
-
-/**
- * TestState.state
- * In what state is the whole controller?
- */
 export enum TestControllerState {
   INIT = 'INIT',
   LOADING = 'LOADING',
@@ -72,20 +58,11 @@ export enum TestControllerState {
   ERROR = 'ERROR'
 }
 
-/**
- * TestState.FOCUS
- * Do the application-window has focus or not (because another window or tab has it)?
- */
 export enum AppFocusState {
   HAS = 'HAS',
   HAS_NOT = 'HAS_NOT'
 }
 
-/**
- * TestState.CONNECTION
- * What kind of connection to the server do we have to receive possible commands from a group-monitor?
- * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
- */
 export enum TestStateConnectionValue {
   WEBSOCKET = 'WEBSOCKET',
   POLLING = 'POLLING'
@@ -93,12 +70,6 @@ export enum TestStateConnectionValue {
 
 export enum TestLogEntryKey {
   LOADCOMPLETE = 'LOADCOMPLETE'
-}
-
-export interface StateReportEntry {
-  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
-  timeStamp: number;
-  content: string;
 }
 
 export interface UnitDataParts {
@@ -112,6 +83,18 @@ export enum UnitPlayerState {
   RUNNING = 'RUNNING'
 }
 
+export enum TestStateKey {
+  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
+  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
+  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
+  TESTLETS_LOCKED_AFTER_LEAVE = 'TESTLETS_LOCKED_AFTER_LEAVE',
+  TESTLETS_SATISFIED_CONDITION = 'TESTLETS_SATISFIED_CONDITION',
+  UNITS_LOCKED_AFTER_LEAVE = 'UNITS_LOCKED_AFTER_LEAVE',
+  FOCUS = 'FOCUS',
+  CONTROLLER = 'CONTROLLER',
+  CONNECTION = 'CONNECTION'
+}
+
 export enum UnitStateKey {
   PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
   RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
@@ -121,17 +104,20 @@ export enum UnitStateKey {
   PLAYER = 'PLAYER'
 }
 
-export const isUnitStateKey = (key: string): key is UnitStateKey => Object.keys(UnitStateKey).includes(key);
-
-export interface UnitStateUpdate {
-  alias: string;
-  state: StateReportEntry[]
+export interface StateReportEntry<StateType extends string> {
+  key: StateType
+  timeStamp: number;
+  content: string;
 }
 
-export interface TestStateUpdate {
-  testId: string,
-  state: StateReportEntry[]
+export interface StateUpdate<StateType extends string> {
+  state: StateReportEntry<StateType>[];
+  testId: string;
+  unitAlias: string;
 }
+
+export type UnitStateUpdate = StateUpdate<UnitStateKey>;
+export type TestStateUpdate = StateUpdate<TestStateKey>;
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 

@@ -134,8 +134,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.updateUnitState(
       this.tcs.currentUnitSequenceId,
       {
-        alias: this.tcs.currentUnit.alias,
-        state: [<StateReportEntry>{
+        testId: this.tcs.testId,
+        unitAlias: this.tcs.currentUnit.alias,
+        state: [{
           key: UnitStateKey.PLAYER,
           timeStamp: Date.now(),
           content: UnitPlayerState.RUNNING
@@ -174,7 +175,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.tcs.updateUnitState(
             this.tcs.currentUnitSequenceId,
             {
-              alias: this.tcs.currentUnit.alias,
+              testId: this.tcs.testId,
+              unitAlias: this.tcs.currentUnit.alias,
               state: [
                 { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
                 { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
@@ -192,7 +194,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {
-          alias: this.tcs.currentUnit.alias,
+          testId: this.tcs.testId,
+          unitAlias: this.tcs.currentUnit.alias,
           state: [
             { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
             { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
@@ -307,7 +310,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {
-          alias: this.tcs.currentUnit.alias,
+          testId: this.tcs.testId,
+          unitAlias: this.tcs.currentUnit.alias,
           state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
         }
       );

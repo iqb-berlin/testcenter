@@ -3,7 +3,7 @@ import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
-  UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
+  UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
@@ -39,26 +39,27 @@ export class BackendService {
     return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
-  patchTestState(testId: string, newState: StateReportEntry[]): Subscription {
-    console.log('updateTestState', testId, newState.map(entry => ([entry.key, entry.content])));
+  patchTestState(patch: TestStateUpdate): Subscription {
+    console.log('updateTestState', patch.testId, patch.state.map(entry => ([entry.key, entry.content])));
 
-    return this.http.patch(`${this.backendUrl}test/${testId}/state`, newState).subscribe();
+    return this.http.patch(`${this.backendUrl}test/${patch.testId}/state`, patch.state).subscribe();
   }
 
-  addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
+  addTestLog(testId: string, logEntries: StateReportEntry<string>[]): Subscription {
     return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
-  updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
+  patchUnitState(patch: UnitStateUpdate): Subscription {
     console.log(
       'updateUnitState',
-      newState.map(entry => ([entry.key, entry.content]))
+      patch.state.map(entry => ([entry.key, entry.content]))
     );
 
-    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
+    return this.http.patch(`${this.backendUrl}test/${patch.testId}/unit/${patch.unitAlias}/state`, patch.state)
+      .subscribe();
   }
 
-  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
+  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry<string>[]): Subscription {
     return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
   }
 

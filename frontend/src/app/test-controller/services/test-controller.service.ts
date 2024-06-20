@@ -1,5 +1,5 @@
 import {
-  bufferTime, bufferWhen, concatMap, filter, map, startWith, takeUntil, tap
+  bufferWhen, map, startWith, takeUntil, tap
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
@@ -9,10 +9,9 @@ import { Router } from '@angular/router';
 import { ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet, isTestlet, isUnitStateKey, KeyValuePairNumber,
+  Booklet, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
   MaxTimerEvent,
-  StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, TestStateUpdate, Unit,
   UnitDataParts,
@@ -35,7 +34,7 @@ import { AppError } from '../../app.interfaces';
 import { IqbVariableUtil } from '../util/iqb-variable.util';
 import { AggregatorsUtil } from '../util/aggregators.util';
 import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfaces';
-import { TestDataUtil } from '../util/test-data.util';
+import { TestStateUtil } from '../util/test-state.util';
 
 @Injectable({
   providedIn: 'root'
@@ -202,53 +201,33 @@ export class TestControllerService {
       });
   }
 
-  // todo react to closeBuffers as well!
   setupUnitStateBuffer(): void {
     this.destroyUnitStateBuffer();
     this.unitStateToSaveSubscription = this.unitStateToSave$
       .pipe(
-        bufferTime(TestControllerService.unitStateBufferMs),
-        filter(stateBuffer => !!stateBuffer.length),
-        concatMap(stateBuffer => Object.values(
-          stateBuffer
-            .reduce(
-              (agg, stateUpdate) => {
-                if (!agg[stateUpdate.alias]) {
-                  agg[stateUpdate.alias] = <UnitStateUpdate>{ alias: stateUpdate.alias, state: [] };
-                }
-                agg[stateUpdate.alias].state.push(...stateUpdate.state);
-                return agg;
-              },
-              <{ [unitId: string]: UnitStateUpdate }>{}
-            )
-        ))
+        bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
+        map(TestStateUtil.sort)
       )
-      .subscribe(aggregatedStateUpdate => {
+      .subscribe(updates => {
         if (!this.testMode.saveResponses) return;
-        this.bs.updateUnitState(
-          this.testId,
-          aggregatedStateUpdate.alias,
-          aggregatedStateUpdate.state
-        );
+        updates
+          .forEach(patch => this.bs.patchUnitState(patch));
       });
   }
 
-  // TODO stand testen und implementieren
   setupTestStateBuffer(): void {
     this.destroyTestStateBuffer();
     this.testStateToSaveSubscription = this.testStateToSave$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
-        map(TestDataUtil.sortByTestId)
+        map(TestStateUtil.sort)
       )
       .subscribe(updates => {
         if (!this.testMode.saveResponses) return;
         console.log('TTT:S', updates);
         updates
-          .filter(update => !!update.testId)
-          .forEach(update => {
-            this.bs.patchTestState(update.testId, update.state);
-          });
+          .filter(patch => !!patch.testId)
+          .forEach(patch => this.bs.patchTestState(patch));
       });
   }
 
@@ -354,7 +333,7 @@ export class TestControllerService {
 
   // TODO X rename?
   private getUnitState(unitSequenceId: number, stateKey: string): string | undefined {
-    return isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
+    return TestStateUtil.isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
   }
 
   // TODO X rename?
