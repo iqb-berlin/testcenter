@@ -88,3 +88,5 @@ export interface SysCheckStatistics {
   count: number;
   details: string[];
 }
+
+export type FileResponseDataRelationshipType = 'containsUnit' | 'hasBooklet' | 'isDefinedBy' | 'usesPlayer';

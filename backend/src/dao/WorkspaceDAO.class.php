@@ -581,6 +581,7 @@ class WorkspaceDAO extends DAO {
   public function fetchDependenciesForFile(string $name): ?array {
     return $this->_(
       "
+        -- base case that starts the recursion
           with recursive dependencies as (
             select subject_name, object_name, relationship_type
             from file_relations
@@ -588,6 +589,7 @@ class WorkspaceDAO extends DAO {
               
             union all 
             
+            -- recursive case
             select fr.subject_name, fr.object_name, fr.relationship_type
             from file_relations fr
             inner join dependencies dep
