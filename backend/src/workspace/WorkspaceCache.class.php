@@ -26,13 +26,9 @@ class WorkspaceCache {
       }
     }
   }
-  public function loadAllFromDb(): void {
-    // wie weiß man an dieser Stelle welche Dateien die relevanten sind? nur diese per SQL holen
+  public function loadFilesPerTypeFromDb(FileType $fileType): void {
 
-    // danach diese Files direkt mit $this->addFile() in den Cache aufnehmen
-
-
-    foreach (Workspace::subFolders as $type) {
+    foreach (FileType::getDependantTypes($fileType) as $type) {
       $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
       $filePaths = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
 

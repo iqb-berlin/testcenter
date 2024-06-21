@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -36,7 +37,7 @@ class Workspace {
 
     $files = scandir($dir);
 
-    foreach($files as $file) {
+    foreach ($files as $file) {
       if ($file != '.' && $file != '..') {
         $path = $dir . '/' . $file;
         if (is_dir($path)) {
@@ -215,22 +216,30 @@ class Workspace {
   }
 
   protected function validateUncategorizedFiles(array $localFilePaths): array {
-    $files = array_fill_keys(Workspace::subFolders, []);
+    require_once '/var/www/backend/src/data-collection/FileType.enum.php'; // todo how to integrate into autoloader
+    $filesPerType = array_fill_keys(Workspace::subFolders, []);
+
+    $localFiles = [];
+    foreach ($localFilePaths as $localFilePath) {
+      $localFiles[$localFilePath] = File::get($this->workspacePath . '/' . $localFilePath);
+    }
+    $highestType = FileType::getTopRootDependentType(
+      array_map(
+        fn(File $file) => $file->getType(),
+        $localFiles
+      )
+    );
 
     $workspaceCache = new WorkspaceCache($this);
-    $workspaceCache->loadAllFromDb();
+    $this->loadFilesIntoCache($workspaceCache, $highestType);
 
-    // $localFilePaths are the new files that need to be inserted into existing folders
-    foreach ($localFilePaths as $localFilePath) {
-      $file = File::get($this->workspacePath . '/' . $localFilePath);
+    foreach ($localFiles as $filePath => $file) {
       $workspaceCache->addFile($file->getType(), $file, true);
-      $files[$file->getType()][$localFilePath] = $file;
+      $filesPerType[$file->getType()][$filePath] = $file;
     }
-
-    // validate all files -> are the dependencies of each file given? (lateral and downstream dependencies)
     $workspaceCache->validate();
 
-    return $files;
+    return $filesPerType;
   }
 
   protected function categorizeFile(string $localFilePath, File $file): bool {
@@ -249,14 +258,18 @@ class Workspace {
       $oldFile = File::get($targetFilePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since new file's ID (`{$file->getId()}`) differs from old one (`{$oldFile->getId()}`)."
         );
         return false;
       }
 
       if ($oldFile->getVeronaModuleId() !== $file->getVeronaModuleId()) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since new file's Verona-Module-ID (`{$file->getVeronaModuleId()}`) differs from old one (`{$oldFile->getVeronaModuleId()}`)."
           . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
         );
@@ -264,7 +277,9 @@ class Workspace {
       }
 
       if (!Version::isCompatible($oldFile->getVersion(), $file->getVersion())) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()}) and new ({$file->getVersion()}) file."
           . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
         );
@@ -485,16 +500,17 @@ class Workspace {
     return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
   }
 
-  /** checks dependent files upstream of current file */
+  /** checks files that are depending on the current file, upstream */
   private function updateDependentFiles(File $file): void {
-    $relatingFiles = $this->workspaceDAO->getDependentFiles($file);
+    $relatingFiles = $this->workspaceDAO->getDependentFilesByTypes($file, ['Booklet']);
 
-    foreach ($relatingFiles as $fileSet) {
-      foreach ($fileSet as $relatingFile) {
-        /* @var File $relatingFile */
-        $this->storeFileMeta($relatingFile);  //TODO only applicable case, when is_a($relatingFile, XMLFileTesttakers::class), either copy that part or else
+    foreach ($relatingFiles as $fileset) {
+      foreach ($fileset as $file) {
+        $requestedAttachments = $this->getRequestedAttachments($file);
+        $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
       }
     }
+
   }
 
   public function getBookletResourcePaths(string $bookletId): array {
@@ -514,5 +530,16 @@ class Workspace {
 
   public function setWorkspaceHash(): void {
     $this->workspaceDAO->setWorkspaceHash($this->getWorkspaceHash());
+  }
+
+  private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $highestType): void {
+//    $workspaceCache->loadFilesPerTypeFromDb($highestType);
+
+    foreach (FileType::getDependantTypes($highestType) as $type) {
+      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type])[$type];
+      foreach ($files as $file) {
+        $workspaceCache->addFile($type, $file);
+      }
+    }
   }
 }
