@@ -238,6 +238,9 @@ class WorkspaceTest extends TestCase {
       ->expects('getDependentFiles')
       ->andReturn([]) // TODO add realistic return!
       ->times(2);
+    $this->workspaceDaoMock
+      ->expects('getallFilesWhere');
+
     $workspace = new Workspace(1);
 
     file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
