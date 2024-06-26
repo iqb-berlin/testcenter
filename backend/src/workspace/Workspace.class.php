@@ -500,19 +500,9 @@ class Workspace {
     return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
   }
 
-  /** checks dependent files upstream of current file */
+  /** checks files that are depending on the current file, upstream */
   private function updateDependentFiles(File $file): void {
-    // todo use this part when, a more generic version is needed and delete the other part
-//    $relatingFiles = $this->workspaceDAO->getDependentFiles($file);
-//
-//    foreach ($relatingFiles as $fileSet) {
-//      foreach ($fileSet as $relatingFile) {
-//        /* @var File $relatingFile */
-//        $this->storeFileMeta($relatingFile);  //TODO only applicable case, when is_a($relatingFile, XMLFileTesttakers::class), either copy that part or else
-//      }
-//    }
-
-    $relatingFiles = $this->workspaceDAO->getDependentFilesOnlyBooklet($file);
+    $relatingFiles = $this->workspaceDAO->getDependentFilesByTypes($file, ['Booklet']);
 
     foreach ($relatingFiles as $fileset) {
       foreach ($fileset as $file) {
@@ -543,14 +533,13 @@ class Workspace {
   }
 
   private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $highestType): void {
-    $workspaceCache->loadFilesPerTypeFromDb($highestType);
+//    $workspaceCache->loadFilesPerTypeFromDb($highestType);
 
-    // todo not working yet
-//    foreach (FileType::getDependantTypes($highestType) as $type) {
-//      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type])[$type];
-//      foreach ($files as $file) {
-//        $workspaceCache->addFile($type, $file);
-//      }
-//    }
+    foreach (FileType::getDependantTypes($highestType) as $type) {
+      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type])[$type];
+      foreach ($files as $file) {
+        $workspaceCache->addFile($type, $file);
+      }
+    }
   }
 }
