@@ -512,6 +512,5 @@ class Workspace {
 
   public function setWorkspaceHash(): void {
     $this->workspaceDAO->setWorkspaceHash($this->getWorkspaceHash());
-    $e =23;
   }
 }
