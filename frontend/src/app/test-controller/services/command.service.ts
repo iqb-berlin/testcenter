@@ -60,10 +60,10 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private static testStartedOrStopped(testStatus: TestControllerState): TestStartedOrStopped {
-    if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED')) {
+    if (['RUNNING', 'PAUSED'].includes(testStatus)) {
       return 'started';
     }
-    if ((testStatus === 'FINISHED') || (testStatus === 'ERROR')) {
+    if (['TERMINATED_PAUSED', 'TERMINATED', 'ERROR'].includes(testStatus)) {
       return 'terminated';
     }
     return '';

@@ -491,21 +491,16 @@ export class TestControllerService {
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
-    await this.closeBuffer();
-    if (
-      (this.state$.getValue() === 'TERMINATED') ||
-      (this.state$.getValue() === 'FINISHED')
-    ) {
+    if (this.state$.getValue() === 'TERMINATED') {
       // sometimes terminateTest get called two times from player
       return true;
     }
 
     const oldTestStatus = this.state$.getValue();
-    this.state$.next(
-      (oldTestStatus === 'PAUSED') ?
-        'TERMINATED_PAUSED' :
-        'TERMINATED'
-    ); // last state that will and can be logged
+    // last state that will and can be logged
+    this.state$.next((oldTestStatus === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
+
+    await this.closeBuffer();
 
     const navigationSuccessful = await this.router.navigate(['/r/starter'], { state: { force } });
     if (!(navigationSuccessful || force)) {
@@ -519,7 +514,7 @@ export class TestControllerService {
     if (lockTest) {
       return this.bs.lockTest(this.testId, Date.now(), logEntryKey).add();
     }
-    return this.state$.next('FINISHED'); // will not be logged, test is already locked maybe
+    return Promise.resolve();
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {

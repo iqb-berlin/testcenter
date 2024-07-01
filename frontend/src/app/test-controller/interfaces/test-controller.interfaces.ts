@@ -52,7 +52,6 @@ export type TestControllerState =
   | 'RUNNING'
   | 'TERMINATED'
   | 'TERMINATED_PAUSED'
-  | 'FINISHED'
   | 'PAUSED'
   | 'ERROR';
 
