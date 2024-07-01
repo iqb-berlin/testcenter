@@ -155,21 +155,12 @@ export class TestControllerService {
         }));
     };
 
-    this.unitDataPartsBufferClosed$
-      .subscribe(() => {
-        console.log('buffer closed');
-      });
-
     this.unitDataPartsToSave$
       .pipe(
-        tap(data => console.log({ data })),
         bufferWhen(() => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)),
-        tap(buffer => console.log({ buffer })),
-        map(sortDataPartsByUnit),
-        tap(applyBuffer => console.log({ applyBuffer })),
-        map(buffer => ({ buffer, id: Math.random() }))
+        map(sortDataPartsByUnit)
       )
-      .subscribe(({ buffer, id }) => {
+      .subscribe((buffer) => {
         let trackedVariablesChanged = false;
         buffer
           .forEach(changedDataPartsPerUnit => {
@@ -184,7 +175,6 @@ export class TestControllerService {
           this.evaluateConditions();
         }
 
-        console.log('buffer ready', id, buffer.length);
         this.closeBuffer();
 
         if (this.testMode.saveResponses) {
@@ -224,7 +214,6 @@ export class TestControllerService {
       )
       .subscribe(updates => {
         if (!this.testMode.saveResponses) return;
-        console.log('TTT:S', updates);
         updates
           .filter(patch => !!patch.testId)
           .forEach(patch => this.bs.patchTestState(patch));
@@ -232,9 +221,7 @@ export class TestControllerService {
   }
 
   setTestState(key: TestStateKey, content: string): void {
-    console.log('TTT:I', { key, content });
     if (this.testState[key] === content) return;
-    console.log('TTT:A', { key, content });
     this.testState[key] = content;
     this.testStateToSave$.next(<TestStateUpdate>{
       testId: this.testId,
@@ -397,6 +384,7 @@ export class TestControllerService {
     if (!unit) {
       // eslint-disable-next-line no-console
       console.trace();
+      // eslint-disable-next-line no-console
       console.log(`Unit not found:${unitSequenceId}`, this.units);
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
@@ -518,7 +506,6 @@ export class TestControllerService {
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
-    console.log({ navString });
     const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
     if (!this._booklet) {
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
@@ -689,7 +676,6 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
-    console.log('evaluateConditions!');
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
@@ -778,7 +764,7 @@ export class TestControllerService {
 
   async getSequenceBounds(): Promise<[number, number]> {
     const first = Object.values(this.units)
-      .find(async unit => !(await TestControllerService.unitIsInaccessible(unit)))
+      .find(async unit => !(TestControllerService.unitIsInaccessible(unit)))
       ?.sequenceId || NaN;
     const last = Object.values(this.units)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

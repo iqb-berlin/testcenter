@@ -6,10 +6,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import {
-  KeyValuePairString, StateReportEntry,
-  UnitDataParts,
-  UnitStateKey,
-  UnitStateUpdate
+  KeyValuePairString, StateReportEntry, UnitDataParts, UnitStateKey, UnitStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { TestMode } from '../../shared/shared.module';
 import { MessageService } from '../../shared/services/message.service';
@@ -27,8 +24,8 @@ class MockBackendService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  updateUnitState(testId: string, unitDbKey: string, state: StateReportEntry[]): Subscription {
-    uploadedStates.push({ objectId: unitDbKey, state });
+  updateUnitState(testId: string, unitDbKey: string, state: UnitStateUpdate): Subscription {
+    uploadedStates.push(state);
     return of(true).subscribe();
   }
 }
@@ -147,8 +144,8 @@ describe('TestControllerService', () => {
 
     const expectedUploadedStates: UnitStateUpdate[] = [];
 
-    const state1 = {
-      alias: 'unit1', state: [{ key: UnitStateKey.PRESENTATION_PROGRESS, content: 'some', timeStamp: Date.now() }]
+    const state1: UnitStateUpdate = {
+      testId: '1', unitAlias: 'unit1', state: [{ key: 'PRESENTATION_PROGRESS', content: 'some', timeStamp: Date.now() }]
     };
     service.updateUnitState(1, state1);
     tick(u * 0.1);
@@ -158,33 +155,33 @@ describe('TestControllerService', () => {
     expectedUploadedStates.push(state1);
     expect(uploadedStates).withContext('Debounce DataParts forwarding ii').toEqual(expectedUploadedStates);
 
-    const state2 = {
-      alias: 'unit1', state: [{ key: UnitStateKey.PRESENTATION_PROGRESS, content: 'some', timeStamp: Date.now() }]
+    const state2: UnitStateUpdate = {
+      testId: '1', unitAlias: 'unit1', state: [{ key: 'PRESENTATION_PROGRESS', content: 'some', timeStamp: Date.now() }]
     };
     service.updateUnitState(1, state2);
     tick(u * 1.5);
     expect(uploadedStates).withContext('Skip when nothing changes').toEqual(expectedUploadedStates);
 
-    const stateEntry1 = { key: UnitStateKey.PRESENTATION_PROGRESS, content: 'complete', timeStamp: Date.now() };
-    const stateEntry2 = { key: UnitStateKey.PLAYER, content: 'some player state', timeStamp: Date.now() };
-    const stateEntry3 = { key: UnitStateKey.RESPONSE_PROGRESS, content: 'complete', timeStamp: Date.now() };
-    service.updateUnitState(1, { objectId: 'unit1', state: [stateEntry1, stateEntry2] });
+    const stateEntry1: StateReportEntry<UnitStateKey> = { key: 'PRESENTATION_PROGRESS', content: 'complete', timeStamp: Date.now() };
+    const stateEntry2: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'some player state', timeStamp: Date.now() };
+    const stateEntry3: StateReportEntry<UnitStateKey> = { key: 'RESPONSE_PROGRESS', content: 'complete', timeStamp: Date.now() };
+    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry1, stateEntry2] });
     tick(u * 0.1);
-    service.updateUnitState(1, { objectId: 'unit1', state: [stateEntry3] });
+    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry3] });
     tick(u * 1.5);
-    expectedUploadedStates.push({ objectId: 'unit1', state: [stateEntry1, stateEntry2, stateEntry3] });
+    expectedUploadedStates.push({ testId: '1', unitAlias: 'unit1', state: [stateEntry1, stateEntry2, stateEntry3] });
     expect(uploadedStates).withContext('Merge debounced changes').toEqual(expectedUploadedStates);
 
-    const unit1stateEntry = { key: UnitStateKey.PLAYER, content: 'u1/s1', timeStamp: Date.now() };
+    const unit1stateEntry: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'u1/s1', timeStamp: Date.now() };
     tick(u * 1.5);
-    service.updateUnitState(1, { objectId: 'unit1', state: [unit1stateEntry] });
+    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [unit1stateEntry] });
     tick(u * 0.1);
-    const unit2stateEntry = { key: UnitStateKey.PLAYER, content: 'u2/s1', timeStamp: Date.now() };
-    service.updateUnitState(2, { objectId: 'unit2', state: [unit2stateEntry] });
+    const unit2stateEntry: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'u2/s1', timeStamp: Date.now() };
+    service.updateUnitState(2, { testId: '1', unitAlias: 'unit2', state: [unit2stateEntry] });
     tick(u * 1.5);
     expectedUploadedStates.push(
-      { objectId: 'unit1', state: [unit1stateEntry] },
-      { objectId: 'unit2', state: [unit2stateEntry] }
+      { testId: '1', unitAlias: 'unit1', state: [unit1stateEntry] },
+      { testId: '1', unitAlias: 'unit2', state: [unit2stateEntry] }
     );
     expect(uploadedStates)
       .withContext('when unitId changes debounce timer should be killed')

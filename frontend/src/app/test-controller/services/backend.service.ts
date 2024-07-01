@@ -40,8 +40,6 @@ export class BackendService {
   }
 
   patchTestState(patch: TestStateUpdate): Subscription {
-    console.log('updateTestState', patch.testId, patch.state);
-
     return this.http.patch(`${this.backendUrl}test/${patch.testId}/state`, patch.state).subscribe();
   }
 
@@ -50,11 +48,6 @@ export class BackendService {
   }
 
   patchUnitState(patch: UnitStateUpdate): Subscription {
-    console.log(
-      'updateUnitState',
-      patch.state.map(entry => ([entry.key, entry.content]))
-    );
-
     return this.http.patch(`${this.backendUrl}test/${patch.testId}/unit/${patch.unitAlias}/state`, patch.state)
       .subscribe();
   }

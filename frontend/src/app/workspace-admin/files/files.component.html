@@ -53,7 +53,7 @@
                     <mat-card-content>
                       <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
-                        <div *ngFor="let message of element.report[level]">
+                        <div *ngFor="let message of element.report?.[level]">
                           <tc-alert [level]="level" [text]="message"></tc-alert>
                         </div>
                       </ng-container>

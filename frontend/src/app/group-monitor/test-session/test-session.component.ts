@@ -3,8 +3,7 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  Testlet as Testlet, TestViewDisplayOptions,
-  isUnit, Selected, TestSession, TestSessionSuperState, isBooklet, BookletError, isTestlet
+  Testlet, TestViewDisplayOptions, Selected, TestSession, TestSessionSuperState, isBooklet, isTestlet
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

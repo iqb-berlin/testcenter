@@ -70,7 +70,7 @@ export type UnitPlayerState =
   | 'LOADING'
   | 'RUNNING';
 
-type TestState = {
+export type TestState = {
   CURRENT_UNIT_ID: string;
   TESTLETS_TIMELEFT: string;
   TESTLETS_CLEARED_CODE: string;
@@ -111,11 +111,7 @@ export interface StateUpdate<StateType extends string> {
 }
 
 export type UnitStateUpdate = StateUpdate<UnitStateKey>;
-export interface TestStateUpdate {
-  testId: string;
-  unitAlias: string;
-  state: Partial<TestState>
-}
+export type TestStateUpdate = StateUpdate<TestStateKey>;
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
@@ -137,13 +133,6 @@ export interface UnitNaviButtonData {
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export interface PageData {
-  index: number;
-  id: string;
-  type: '#next' | '#previous' | '#goto';
-  disabled: boolean;
-}
-
 export interface ReviewDialogData {
   loginname: string;
   bookletname: string;

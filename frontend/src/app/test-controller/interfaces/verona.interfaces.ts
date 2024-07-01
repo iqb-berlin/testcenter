@@ -39,6 +39,4 @@ export const isVeronaProgress = (value: string): value is Verona3Progress => Ver
 export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
-export { Verona3Progress as VeronaProgress };
-export { Verona2ProgressCompleteValues as VeronaProgressCompleteValues };
 export { Verona2ProgressIncompleteValues as VeronaProgressInCompleteValues };

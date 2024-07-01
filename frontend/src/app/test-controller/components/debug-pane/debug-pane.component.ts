@@ -9,7 +9,6 @@ import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.inter
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { AuthData } from '../../../app.interfaces';
 import { IqbVariableUtil } from '../../util/iqb-variable.util';
-import { BookletParserService } from '../../../shared/services/booklet-parser.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 
 @Component({

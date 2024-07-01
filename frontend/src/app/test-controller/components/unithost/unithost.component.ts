@@ -82,7 +82,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     switch (msgType) {
       case 'vopReadyNotification':
-        this.handleReadyNotification(msgData);
+        await this.handleReadyNotification(msgData);
         break;
 
       case 'vopStateChangedNotification':
