@@ -6,13 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  TestStateKey,
-  WindowFocusState,
-  StateReportEntry,
-  UnitStateKey, Testlet,
-  UnitPlayerState, LoadingProgress, isUnit
-} from '../../interfaces/test-controller.interfaces';
+import { Testlet, LoadingProgress, isUnit } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';

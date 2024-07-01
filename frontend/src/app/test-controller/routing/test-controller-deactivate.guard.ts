@@ -7,8 +7,7 @@ import { TestControllerComponent } from '../components/test-controller/test-cont
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
   constructor(
-    private tcs: TestControllerService,
-    private router: Router
+    private tcs: TestControllerService
   ) {
   }
 
@@ -16,7 +15,6 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.state$.getValue();
       if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED')) {
-        console.log('i am your father, luke');
         this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
         return false;
       }

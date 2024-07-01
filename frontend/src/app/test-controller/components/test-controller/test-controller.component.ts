@@ -15,11 +15,9 @@ import {
   MainDataService
 } from '../../../shared/shared.module';
 import {
-  AppFocusState,
   Command, MaxTimerEvent,
   ReviewDialogData,
-  TestControllerState,
-  TestStateKey, UnitNaviButtonData,
+  UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
