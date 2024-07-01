@@ -44,7 +44,7 @@ export class TestControllerService {
   static readonly unitStateBufferMs = 10000;
 
   testId = '';
-  state$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
+  state$ = new BehaviorSubject<TestControllerState>('INIT');
 
   workspaceId = 0;
 
@@ -238,6 +238,7 @@ export class TestControllerService {
     this.testState[key] = content;
     this.testStateToSave$.next(<TestStateUpdate>{
       testId: this.testId,
+      unitAlias: '',
       state: [{ key, content, timeStamp: Date.now() }]
     });
   }
@@ -318,7 +319,7 @@ export class TestControllerService {
     unitStateUpdate.state = unitStateUpdate.state
       .filter(state => !!state.content)
       .filter(changedState => {
-        const oldState = this.getUnitState(unitSequenceId, changedState.key);
+        const oldState = this.units[unitSequenceId].state[changedState.key];
         if (oldState) {
           return oldState !== changedState.content;
         }
@@ -329,11 +330,6 @@ export class TestControllerService {
     if (unitStateUpdate.state.length) {
       this.unitStateToSave$.next(unitStateUpdate);
     }
-  }
-
-  // TODO X rename?
-  private getUnitState(unitSequenceId: number, stateKey: string): string | undefined {
-    return TestStateUtil.isUnitStateKey(stateKey) ? this.units[unitSequenceId].state[stateKey] : undefined;
   }
 
   // TODO X rename?
@@ -372,7 +368,7 @@ export class TestControllerService {
     const unlockedTestlets = Object.values(this.testlets)
       .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
       .map(t => t.id);
-    this.setTestState(TestStateKey.TESTLETS_CLEARED_CODE, JSON.stringify(unlockedTestlets));
+    this.setTestState('TESTLETS_CLEARED_CODE', JSON.stringify(unlockedTestlets));
   }
 
   leaveLockTestlet(testletId: string): void {
@@ -381,7 +377,7 @@ export class TestControllerService {
     const lockedTestlets = Object.values(this.testlets)
       .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
       .map(t => t.id);
-    this.setTestState(TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE, JSON.stringify(lockedTestlets));
+    this.setTestState('TESTLETS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedTestlets));
   }
 
   leaveLockUnit(unitSequenceId: number): void {
@@ -389,7 +385,7 @@ export class TestControllerService {
     const lockedUnits = Object.values(this.units)
       .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
       .map(u => u.sequenceId);
-    this.setTestState(TestStateKey.UNITS_LOCKED_AFTER_LEAVE, JSON.stringify(lockedUnits));
+    this.setTestState('UNITS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedUnits));
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -497,8 +493,8 @@ export class TestControllerService {
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
     await this.closeBuffer();
     if (
-      (this.state$.getValue() === TestControllerState.TERMINATED) ||
-      (this.state$.getValue() === TestControllerState.FINISHED)
+      (this.state$.getValue() === 'TERMINATED') ||
+      (this.state$.getValue() === 'FINISHED')
     ) {
       // sometimes terminateTest get called two times from player
       return true;
@@ -506,9 +502,9 @@ export class TestControllerService {
 
     const oldTestStatus = this.state$.getValue();
     this.state$.next(
-      (oldTestStatus === TestControllerState.PAUSED) ?
-        TestControllerState.TERMINATED_PAUSED :
-        TestControllerState.TERMINATED
+      (oldTestStatus === 'PAUSED') ?
+        'TERMINATED_PAUSED' :
+        'TERMINATED'
     ); // last state that will and can be logged
 
     const navigationSuccessful = await this.router.navigate(['/r/starter'], { state: { force } });
@@ -523,7 +519,7 @@ export class TestControllerService {
     if (lockTest) {
       return this.bs.lockTest(this.testId, Date.now(), logEntryKey).add();
     }
-    return this.state$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
+    return this.state$.next('FINISHED'); // will not be logged, test is already locked maybe
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
@@ -583,13 +579,13 @@ export class TestControllerService {
 
   errorOut(): void {
     this.totalLoadingProgress = 0;
-    this.state$.next(TestControllerState.ERROR);
+    this.state$.next('ERROR');
     this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
   }
 
   pause(): void {
     this.interruptTimer();
-    this.state$.next(TestControllerState.PAUSED);
+    this.state$.next('PAUSED');
     this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
   }
 
@@ -715,7 +711,7 @@ export class TestControllerService {
     const lockedByCondition = Object.values(this.testlets)
       .filter(testlet => testlet.restrictions.if.length && !testlet.locks.condition)
       .map(testlet => testlet.id);
-    this.setTestState(TestStateKey.TESTLETS_SATISFIED_CONDITION, JSON.stringify(lockedByCondition));
+    this.setTestState('TESTLETS_SATISFIED_CONDITION', JSON.stringify(lockedByCondition));
   }
 
   isConditionSatisfied(condition: BlockCondition): boolean {

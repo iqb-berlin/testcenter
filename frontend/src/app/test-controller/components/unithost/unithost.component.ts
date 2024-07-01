@@ -137,9 +137,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
         testId: this.tcs.testId,
         unitAlias: this.tcs.currentUnit.alias,
         state: [{
-          key: UnitStateKey.PLAYER,
+          key: 'PLAYER',
           timeStamp: Date.now(),
-          content: UnitPlayerState.RUNNING
+          content: 'RUNNING'
         }]
       }
     );
@@ -178,9 +178,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
               testId: this.tcs.testId,
               unitAlias: this.tcs.currentUnit.alias,
               state: [
-                { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
-                { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
-                { key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString() }
+                { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: pageNr.toString() },
+                { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: pageId },
+                { key: 'PAGE_COUNT', timeStamp: Date.now(), content: pageCount.toString() }
               ]
             }
           );
@@ -197,8 +197,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
           testId: this.tcs.testId,
           unitAlias: this.tcs.currentUnit.alias,
           state: [
-            { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
-            { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
+            { key: 'PRESENTATION_PROGRESS', timeStamp, content: unitState.presentationProgress },
+            { key: 'RESPONSE_PROGRESS', timeStamp, content: unitState.responseProgress }
           ]
         }
       );
@@ -234,11 +234,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleWindowFocusChangedNotification(msgData: any): void {
     if (msgData.hasFocus) {
-      this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
+      this.tcs.windowFocusState$.next('PLAYER');
     } else if (document.hasFocus()) {
-      this.tcs.windowFocusState$.next(WindowFocusState.HOST);
+      this.tcs.windowFocusState$.next('HOST');
     } else {
-      this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
+      this.tcs.windowFocusState$.next('UNKNOWN');
     }
   }
 
@@ -305,14 +305,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.resourcesLoading$.next([]);
 
-    this.tcs.setTestState(TestStateKey.CURRENT_UNIT_ID, this.tcs.currentUnit.alias);
+    this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
     if (this.tcs.testMode.saveResponses) {
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {
           testId: this.tcs.testId,
           unitAlias: this.tcs.currentUnit.alias,
-          state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
+          state: [{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]
         }
       );
     }

@@ -63,7 +63,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.reset();
     const ts = Date.now();
 
-    this.tcs.state$.next(TestControllerState.LOADING);
+    this.tcs.state$.next('LOADING');
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
     if (!testData) {
@@ -115,30 +115,30 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.restoreRestrictions(lastState);
 
-    const currentUnitId = lastState[TestStateKey.CURRENT_UNIT_ID];
+    const currentUnitId = lastState.CURRENT_UNIT_ID;
     this.tcs.resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
 
     if (
-      (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
-      (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
+      (lastState.CONTROLLER === 'TERMINATED_PAUSED') ||
+      (lastState.CONTROLLER === 'PAUSED')
     ) {
-      this.tcs.state$.next(TestControllerState.PAUSED);
+      this.tcs.state$.next('PAUSED');
       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
       return;
     }
-    this.tcs.state$.next(TestControllerState.RUNNING);
+    this.tcs.state$.next('RUNNING');
     this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
   }
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
-    this.tcs.timers = lastState[TestStateKey.TESTLETS_TIMELEFT] ?
-      JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]) :
+    this.tcs.timers = lastState.TESTLETS_TIMELEFT ?
+      JSON.parse(lastState.TESTLETS_TIMELEFT) :
       {};
-    const clearedTestlets = lastState[TestStateKey.TESTLETS_CLEARED_CODE] ?
-      JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]) :
+    const clearedTestlets = lastState.TESTLETS_CLEARED_CODE ?
+      JSON.parse(lastState.TESTLETS_CLEARED_CODE) :
       [];
-    const afterLeaveLocked = lastState[TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE] ?
-      JSON.parse(lastState[TestStateKey.TESTLETS_LOCKED_AFTER_LEAVE]) :
+    const afterLeaveLocked = lastState.TESTLETS_LOCKED_AFTER_LEAVE ?
+      JSON.parse(lastState.TESTLETS_LOCKED_AFTER_LEAVE) :
       [];
 
     Object.keys(this.tcs.testlets)
@@ -152,8 +152,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           !!this.tcs.testlets[testletId].restrictions.lockAfterLeaving && afterLeaveLocked.includes(testletId);
       });
 
-    const afterLeaveLockedUnits = lastState[TestStateKey.UNITS_LOCKED_AFTER_LEAVE] ?
-      JSON.parse(lastState[TestStateKey.UNITS_LOCKED_AFTER_LEAVE]) :
+    const afterLeaveLockedUnits = lastState.UNITS_LOCKED_AFTER_LEAVE ?
+      JSON.parse(lastState.UNITS_LOCKED_AFTER_LEAVE) :
       [];
     afterLeaveLockedUnits
       .forEach((unitSequenceId: string | number) => {
@@ -323,7 +323,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
               this.bs.addTestLog(this.tcs.testId, [{
-                key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
+                key: 'LOADCOMPLETE', timeStamp: Date.now(), content: JSON.stringify(this.environment)
               }]);
             }
             this.tcs.totalLoadingProgress = 100;

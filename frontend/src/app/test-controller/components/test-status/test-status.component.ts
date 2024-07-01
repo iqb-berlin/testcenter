@@ -11,7 +11,6 @@ import { TestControllerState } from '../../interfaces/test-controller.interfaces
 
 export class TestStatusComponent implements OnInit {
   loginName = '??';
-  testControllerStateEnum = TestControllerState;
 
   constructor(
     public tcs: TestControllerService,

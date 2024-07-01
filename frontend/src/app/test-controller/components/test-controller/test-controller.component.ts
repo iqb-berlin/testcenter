@@ -67,8 +67,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   firstAccessibleUnit: number = 1;
   lastAccessibleUnit: number = Infinity;
 
-  testControllerStateEnum = TestControllerState;
-
   constructor(
     public mainDataService: MainDataService,
     public tcs: TestControllerService,
@@ -93,11 +91,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())
-        .subscribe(status => this.tcs.setTestState(TestStateKey.CONTROLLER, status));
+        .subscribe(status => this.tcs.setTestState('CONTROLLER', status));
 
       this.subscriptions.appWindowHasFocus = this.mainDataService.appWindowHasFocus$
         .subscribe(hasFocus => {
-          this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
+          this.tcs.windowFocusState$.next(hasFocus ? 'HOST' : 'UNKNOWN');
         });
 
       this.subscriptions.command = this.cmd.command$
@@ -153,13 +151,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.subscriptions.appFocus = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
-      if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
+      if (this.tcs.state$.getValue() === 'ERROR') {
         return;
       }
-      if (newState === WindowFocusState.UNKNOWN) {
-        this.tcs.setTestState(TestStateKey.FOCUS, AppFocusState.HAS_NOT);
+      if (newState === 'UNKNOWN') {
+        this.tcs.setTestState('FOCUS', 'HAS_NOT');
       } else {
-        this.tcs.setTestState(TestStateKey.FOCUS, AppFocusState.HAS);
+        this.tcs.setTestState('FOCUS', 'HAS');
       }
     });
   }
@@ -171,7 +169,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
-        this.tcs.setTestState(TestStateKey.CONNECTION, isWsConnected ? 'WEBSOCKET' : 'POLLING');
+        this.tcs.setTestState('CONNECTION', isWsConnected ? 'WEBSOCKET' : 'POLLING');
       });
   }
 
@@ -228,15 +226,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           (this.tcs.resumeTargetUnitSequenceId > 0) ?
             this.tcs.resumeTargetUnitSequenceId.toString() :
             UnitNavigationTarget.FIRST;
-        this.tcs.state$.next(TestControllerState.RUNNING);
-        this.tcs.state$.next(TestControllerState.RUNNING);
+        this.tcs.state$.next('RUNNING');
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
         this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
         break;
       case 'goto':
-        this.tcs.state$.next(TestControllerState.RUNNING);
+        this.tcs.state$.next('RUNNING');
         // eslint-disable-next-line no-case-declarations
         let gotoTarget: string = '';
         if ((params.length === 2) && (params[0] === 'id')) {
@@ -274,7 +271,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
         this.tcs.timers[timer.id] = 0;
         // attention: TODO X store timer as well in localStorage to prevent F5-cheating
-        this.tcs.setTestState(TestStateKey.TESTLETS_TIMELEFT, JSON.stringify(this.tcs.timers));
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         this.tcs.currentUnit.parent.locks.time = true;
         this.tcs.updateLocks();
@@ -287,7 +284,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
         this.tcs.timers[timer.id] = 0;
         // attention: TODO X store timer as well in localStorage to prevent F5-cheating
-        this.tcs.setTestState(TestStateKey.TESTLETS_TIMELEFT, JSON.stringify(this.tcs.timers));
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         this.tcs.currentUnit.parent.locks.time = true;
         this.tcs.updateLocks();
@@ -302,7 +299,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if ((timer.timeLeftSeconds % 15) === 0) {
           this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
           // attention: TODO X store timer as well in localStorage to prevent F5-cheating
-          this.tcs.setTestState(TestStateKey.TESTLETS_TIMELEFT, JSON.stringify(this.tcs.timers));
+          this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }
         if (this.tcs.timerWarningPoints.includes(minute)) {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));

@@ -40,7 +40,7 @@ export class BackendService {
   }
 
   patchTestState(patch: TestStateUpdate): Subscription {
-    console.log('updateTestState', patch.testId, patch.state.map(entry => ([entry.key, entry.content])));
+    console.log('updateTestState', patch.testId, patch.state);
 
     return this.http.patch(`${this.backendUrl}test/${patch.testId}/state`, patch.state).subscribe();
   }

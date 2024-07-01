@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
-import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
+import { NavigationLeaveRestrictionValue, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason, VeronaProgressInCompleteValues } from '../interfaces/verona.interfaces';
@@ -222,7 +222,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (nextState.url === '/r/route-dispatcher') {
       return true;
     }
-    if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
+    if (this.tcs.state$.getValue() === 'ERROR') {
       return of(true);
     }
 

@@ -17,11 +17,10 @@ export interface KeyValuePairString {
   [K: string]: string;
 }
 
-export enum WindowFocusState {
-  PLAYER = 'PLAYER',
-  HOST = 'HOST',
-  UNKNOWN = 'UNKNOWN'
-}
+export type WindowFocusState =
+  | 'PLAYER'
+  | 'HOST'
+  | 'UNKNOWN';
 
 export type UnitData = {
   dataParts: KeyValuePairString;
@@ -47,61 +46,57 @@ export interface TestData {
   workspaceId: number;
 }
 
-export enum TestControllerState {
-  INIT = 'INIT',
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING',
-  TERMINATED = 'TERMINATED',
-  TERMINATED_PAUSED = 'TERMINATED_PAUSED',
-  FINISHED = 'FINISHED',
-  PAUSED = 'PAUSED',
-  ERROR = 'ERROR'
-}
+export type TestControllerState =
+  | 'INIT'
+  | 'LOADING'
+  | 'RUNNING'
+  | 'TERMINATED'
+  | 'TERMINATED_PAUSED'
+  | 'FINISHED'
+  | 'PAUSED'
+  | 'ERROR';
 
-export enum AppFocusState {
-  HAS = 'HAS',
-  HAS_NOT = 'HAS_NOT'
-}
+export type AppFocusState =
+  | 'HAS'
+  | 'HAS_NOT';
 
-export enum TestStateConnectionValue {
-  WEBSOCKET = 'WEBSOCKET',
-  POLLING = 'POLLING'
-}
+export type TestStateConnectionValue =
+  | 'WEBSOCKET'
+  | 'POLLING';
 
-export enum TestLogEntryKey {
-  LOADCOMPLETE = 'LOADCOMPLETE'
-}
+export type TestLogEntryKey =
+  | 'LOADCOMPLETE';
+
+export type UnitPlayerState =
+  | 'LOADING'
+  | 'RUNNING';
+
+type TestState = {
+  CURRENT_UNIT_ID: string;
+  TESTLETS_TIMELEFT: string;
+  TESTLETS_CLEARED_CODE: string;
+  TESTLETS_LOCKED_AFTER_LEAVE: string;
+  TESTLETS_SATISFIED_CONDITION: string;
+  UNITS_LOCKED_AFTER_LEAVE: string;
+  FOCUS: AppFocusState;
+  CONTROLLER: UnitPlayerState;
+  CONNECTION: TestStateConnectionValue;
+};
+
+export type TestStateKey = keyof TestState;
+
+export type UnitStateKey =
+  | 'PRESENTATION_PROGRESS'
+  | 'RESPONSE_PROGRESS'
+  | 'CURRENT_PAGE_ID'
+  | 'CURRENT_PAGE_NR'
+  | 'PAGE_COUNT'
+  | 'PLAYER';
 
 export interface UnitDataParts {
   unitAlias: string;
   dataParts: KeyValuePairString;
   unitStateDataType: string;
-}
-
-export enum UnitPlayerState {
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING'
-}
-
-export enum TestStateKey {
-  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-  TESTLETS_LOCKED_AFTER_LEAVE = 'TESTLETS_LOCKED_AFTER_LEAVE',
-  TESTLETS_SATISFIED_CONDITION = 'TESTLETS_SATISFIED_CONDITION',
-  UNITS_LOCKED_AFTER_LEAVE = 'UNITS_LOCKED_AFTER_LEAVE',
-  FOCUS = 'FOCUS',
-  CONTROLLER = 'CONTROLLER',
-  CONNECTION = 'CONNECTION'
-}
-
-export enum UnitStateKey {
-  PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
-  RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
-  CURRENT_PAGE_ID = 'CURRENT_PAGE_ID',
-  CURRENT_PAGE_NR = 'CURRENT_PAGE_NR',
-  PAGE_COUNT = 'PAGE_COUNT',
-  PLAYER = 'PLAYER'
 }
 
 export interface StateReportEntry<StateType extends string> {
@@ -117,7 +112,11 @@ export interface StateUpdate<StateType extends string> {
 }
 
 export type UnitStateUpdate = StateUpdate<UnitStateKey>;
-export type TestStateUpdate = StateUpdate<TestStateKey>;
+export interface TestStateUpdate {
+  testId: string;
+  unitAlias: string;
+  state: Partial<TestState>
+}
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 

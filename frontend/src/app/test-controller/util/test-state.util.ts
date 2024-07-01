@@ -1,8 +1,6 @@
-import { UnitStateKey, UnitStateUpdate, TestStateUpdate } from '../interfaces/test-controller.interfaces';
+import { UnitStateUpdate, TestStateUpdate } from '../interfaces/test-controller.interfaces';
 
 export class TestStateUtil {
-  static isUnitStateKey = (key: string): key is UnitStateKey => Object.keys(UnitStateKey).includes(key);
-
   static sort<T extends UnitStateUpdate | TestStateUpdate>(stateBuffer: T[]): T[] {
     return Object.values(
       stateBuffer
