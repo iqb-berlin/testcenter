@@ -35,7 +35,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     ) {
       return of(true);
     }
-    if (this.tcs.testlets[this.tcs.currentTimerId].maxTimeLeave === 'forbidden') {
+    if (this.tcs.testlets[this.tcs.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       this.snackBar.open(
         'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.',
         'OK',

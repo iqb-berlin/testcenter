@@ -1,8 +1,6 @@
 import { Observable } from 'rxjs';
 import { CodingScheme } from '@iqb/responses';
-import {
-  BookletDef, MaxTimeLeaveValue, TestletDef, UnitDef
-} from '../../shared/interfaces/booklet.interfaces';
+import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
@@ -223,7 +221,6 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
-  maxTimeLeave: MaxTimeLeaveValue; // TODO X get rid of this, and put it into Restrictions
 }
 
 export type Booklet = BookletDef<Testlet>;

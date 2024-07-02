@@ -174,7 +174,6 @@ const testlets: { [ key: string]: Testlet } = {
     locked: null,
     timerId: 'timer-1',
     firstUnsatisfiedCondition: -1,
-    maxTimeLeave: 'confirm',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',
@@ -197,7 +196,6 @@ const testlets: { [ key: string]: Testlet } = {
     locked: null,
     timerId: 'timer-1',
     firstUnsatisfiedCondition: -1,
-    maxTimeLeave: 'confirm',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',
@@ -228,7 +226,6 @@ const testlets: { [ key: string]: Testlet } = {
     locked: null,
     timerId: 'timer-2',
     firstUnsatisfiedCondition: -1,
-    maxTimeLeave: 'confirm',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',

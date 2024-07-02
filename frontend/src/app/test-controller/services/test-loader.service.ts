@@ -485,8 +485,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       },
       firstUnsatisfiedCondition: NaN,
       locked: null,
-      timerId,
-      maxTimeLeave: 'confirm'
+      timerId
     });
     const lockedBy = TestletLockTypes
       .find(lockType => testlet.locks[lockType]);
