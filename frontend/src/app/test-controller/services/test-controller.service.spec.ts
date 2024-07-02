@@ -64,17 +64,6 @@ describe('TestControllerService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should normaliseIds correctly', () => {
-    expect(TestControllerService.normaliseId('file-Name-1.html')).toEqual('FILE-NAME-1.HTML');
-    expect(TestControllerService.normaliseId('file-Name-2.1.1.html')).toEqual('FILE-NAME-2.1.1.HTML');
-    expect(TestControllerService.normaliseId('file-Name3.html')).toEqual('FILE-NAME3.HTML');
-    expect(TestControllerService.normaliseId('file-Name4.0.html')).toEqual('FILE-NAME4.0.HTML');
-    expect(TestControllerService.normaliseId('file-Name5.0', 'html')).toEqual('FILE-NAME5.0.HTML');
-    expect(TestControllerService.normaliseId('file-Name_6.gif', 'html')).toEqual('FILE-NAME_6.GIF.HTML');
-    expect(TestControllerService.normaliseId('µðöþ7', 'html')).toEqual('ΜÐÖÞ7.HTML');
-    expect(TestControllerService.normaliseId(' whatever  8.html')).toEqual('WHATEVER  8.HTML');
-  });
-
   it('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
     // service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync TODO X TEST
     service.testMode = new TestMode('run-hot-return');

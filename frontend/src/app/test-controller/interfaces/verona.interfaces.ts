@@ -30,11 +30,10 @@ type Verona3NavigationDeniedReason = 'presentationIncomplete' | 'responsesIncomp
 const Verona2ProgressCompleteValues = ['complete', 'complete-and-valid'];
 const Verona2ProgressIncompleteValues = ['none', 'some'];
 
-const Verona2ProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2ProgressCompleteValues];
+const VeronaProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2ProgressCompleteValues];
 
-type Verona3Progress = typeof Verona2ProgressValues[number];
-
-export const isVeronaProgress = (value: string): value is Verona3Progress => Verona2ProgressValues.includes(value);
+export type VeronaProgress = typeof VeronaProgressValues[number];
+export const isVeronaProgress = (value: string): value is VeronaProgress => VeronaProgressValues.includes(value);
 
 export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };

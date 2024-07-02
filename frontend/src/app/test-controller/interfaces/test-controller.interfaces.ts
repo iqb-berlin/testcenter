@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import { CodingScheme } from '@iqb/responses';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
+import { VeronaProgress } from './verona.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -23,7 +24,7 @@ export type WindowFocusState =
 export type UnitData = {
   dataParts: KeyValuePairString;
   unitResponseType: string;
-  state: { [k in UnitStateKey]?: string };
+  state: UnitState;
   definition : string;
 };
 
@@ -78,6 +79,15 @@ export type TestState = {
   FOCUS: AppFocusState;
   CONTROLLER: UnitPlayerState;
   CONNECTION: TestStateConnectionValue;
+};
+
+export type UnitState = {
+  PRESENTATION_PROGRESS?: VeronaProgress;
+  RESPONSE_PROGRESS?: VeronaProgress;
+  CURRENT_PAGE_ID?: string;
+  CURRENT_PAGE_NR?: number;
+  PAGE_COUNT?: number;
+  PLAYER?: string;
 };
 
 export type TestStateKey = keyof TestState;
@@ -201,7 +211,7 @@ export interface Unit extends UnitDef {
   scheme: CodingScheme;
   responseType: string | undefined;
   definition: string;
-  state: { [k in UnitStateKey]?: string };
+  state: UnitState;
   dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };

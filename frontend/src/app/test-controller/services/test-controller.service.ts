@@ -1,5 +1,5 @@
 import {
-  bufferWhen, map, startWith, takeUntil, tap
+  bufferWhen, map, startWith, takeUntil
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
@@ -109,16 +109,18 @@ export class TestControllerService {
 
   private players: { [filename: string]: string } = {};
 
+  // TODO X maybe only one of these is needed:
   testStructureChanges$ = new BehaviorSubject<void>(undefined);
-  private closeBuffers$ = new Subject<void>();
-  private unitDataPartsToSave$ = new Subject<UnitDataParts>();
-  private unitDataPartsToSaveSubscription: Subscription | null = null;
   private unitDataPartsBufferClosed$ = new Subject<void>();
 
-  private unitStateToSave$ = new Subject<UnitStateUpdate>();
-  private unitStateToSaveSubscription: Subscription | null = null;
-  private testStateToSave$ = new Subject<TestStateUpdate>();
-  private testStateToSaveSubscription: Subscription | null = null;
+  private closeBuffers$ = new Subject<void>();
+  private unitDataPartsBuffer$ = new Subject<UnitDataParts>();
+  private unitDataPartsBufferSubscription: Subscription | null = null;
+  private unitStateBuffer$ = new Subject<UnitStateUpdate>();
+  private unitStateBufferSubscription: Subscription | null = null;
+  private testStateBuffer$ = new Subject<TestStateUpdate>();
+  private testStateBufferSubscription: Subscription | null = null;
+
   private testState: { [key in TestStateKey]?: string } = {};
 
   constructor(
@@ -136,7 +138,7 @@ export class TestControllerService {
     this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
 
     const sortDataPartsByUnit = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] => {
-      // TODO what if test changed?
+      // TODO X what if test changed?
       const sortedByUnit = dataPartsBuffer
         .reduce(
           (agg, dataParts) => {
@@ -155,12 +157,12 @@ export class TestControllerService {
         }));
     };
 
-    this.unitDataPartsToSave$
+    this.unitDataPartsBuffer$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)),
         map(sortDataPartsByUnit)
       )
-      .subscribe((buffer) => {
+      .subscribe(buffer => {
         let trackedVariablesChanged = false;
         buffer
           .forEach(changedDataPartsPerUnit => {
@@ -175,7 +177,7 @@ export class TestControllerService {
           this.evaluateConditions();
         }
 
-        this.closeBuffer();
+        this.unitDataPartsBufferClosed$.next();
 
         if (this.testMode.saveResponses) {
           buffer
@@ -193,7 +195,7 @@ export class TestControllerService {
 
   setupUnitStateBuffer(): void {
     this.destroyUnitStateBuffer();
-    this.unitStateToSaveSubscription = this.unitStateToSave$
+    this.unitStateBufferSubscription = this.unitStateBuffer$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
         map(TestStateUtil.sort)
@@ -207,7 +209,7 @@ export class TestControllerService {
 
   setupTestStateBuffer(): void {
     this.destroyTestStateBuffer();
-    this.testStateToSaveSubscription = this.testStateToSave$
+    this.testStateBufferSubscription = this.testStateBuffer$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
         map(TestStateUtil.sort)
@@ -223,7 +225,7 @@ export class TestControllerService {
   setTestState(key: TestStateKey, content: string): void {
     if (this.testState[key] === content) return;
     this.testState[key] = content;
-    this.testStateToSave$.next(<TestStateUpdate>{
+    this.testStateBuffer$.next(<TestStateUpdate>{
       testId: this.testId,
       unitAlias: '',
       state: [{ key, content, timeStamp: Date.now() }]
@@ -231,18 +233,18 @@ export class TestControllerService {
   }
 
   destroyUnitDataPartsBuffer(): void {
-    if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
-    this.unitDataPartsToSaveSubscription = null;
+    if (this.unitDataPartsBufferSubscription) this.unitDataPartsBufferSubscription.unsubscribe();
+    this.unitDataPartsBufferSubscription = null;
   }
 
   destroyUnitStateBuffer(): void {
-    if (this.unitStateToSaveSubscription) this.unitStateToSaveSubscription.unsubscribe();
-    this.unitStateToSaveSubscription = null;
+    if (this.unitStateBufferSubscription) this.unitStateBufferSubscription.unsubscribe();
+    this.unitStateBufferSubscription = null;
   }
 
   destroyTestStateBuffer(): void {
-    if (this.testStateToSaveSubscription) this.testStateToSaveSubscription.unsubscribe();
-    this.testStateToSaveSubscription = null;
+    if (this.testStateBufferSubscription) this.testStateBufferSubscription.unsubscribe();
+    this.testStateBufferSubscription = null;
   }
 
   private async closeBuffer(): Promise<null | void> {
@@ -270,16 +272,6 @@ export class TestControllerService {
     this.currentTimerId = '';
   }
 
-  // uppercase and add extension if not part
-  static normaliseId(id: string, expectedExtension = ''): string {
-    let normalisedId = id.trim().toUpperCase();
-    const normalisedExtension = expectedExtension.toUpperCase();
-    if (normalisedExtension && (normalisedId.split('.').pop() !== normalisedExtension)) {
-      normalisedId += `.${normalisedExtension}`;
-    }
-    return normalisedId;
-  }
-
   updateUnitStateDataParts(
     unitAlias: string,
     dataParts: KeyValuePairString,
@@ -298,11 +290,24 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length) {
-      this.unitDataPartsToSave$.next({ unitAlias: unitAlias, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsBuffer$.next({ unitAlias: unitAlias, dataParts: changedParts, unitStateDataType });
     }
   }
 
   updateUnitState(unitSequenceId: number, unitStateUpdate: UnitStateUpdate): void {
+    const setUnitState = (stateKey: string, value: string): void => {
+      if (isVeronaProgress(value)) {
+        this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
+      }
+
+      if (isVeronaProgress(value)) {
+        this.units[unitSequenceId].state.PRESENTATION_PROGRESS = value;
+      }
+
+      if (stateKey === 'CURRENT_PAGE_ID') {
+        this.units[unitSequenceId].state.CURRENT_PAGE_ID = value;
+      }
+    };
     unitStateUpdate.state = unitStateUpdate.state
       .filter(state => !!state.content)
       .filter(changedState => {
@@ -313,24 +318,9 @@ export class TestControllerService {
         return true;
       });
     unitStateUpdate.state
-      .forEach(changedState => this.setUnitState(unitSequenceId, changedState.key, changedState.content));
+      .forEach(changedState => setUnitState(changedState.key, changedState.content));
     if (unitStateUpdate.state.length) {
-      this.unitStateToSave$.next(unitStateUpdate);
-    }
-  }
-
-  // TODO X rename?
-  setUnitState(unitSequenceId: number, stateKey: string, value: string | undefined): void {
-    if ((stateKey === 'RESPONSE_PROGRESS') && ((typeof value === 'undefined') || isVeronaProgress(value))) {
-      this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
-    }
-
-    if ((stateKey === 'PRESENTATION_PROGRESS') && ((typeof value === 'undefined') || isVeronaProgress(value))) {
-      this.units[unitSequenceId].state.PRESENTATION_PROGRESS = value;
-    }
-
-    if (stateKey === 'CURRENT_PAGE_ID') {
-      this.units[unitSequenceId].state.CURRENT_PAGE_ID = value;
+      this.unitStateBuffer$.next(unitStateUpdate);
     }
   }
 
