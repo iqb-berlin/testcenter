@@ -489,7 +489,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       containsConditionalTestlets: false // will be set by child
     });
     if (context.parents.length && testlet.restrictions.if.length) {
-      console.log(testletDef.id, context.parents.map(p => p.id));
       context.parents[0].containsConditionalTestlets = true;
     }
     const lockedBy = TestletLockTypes
