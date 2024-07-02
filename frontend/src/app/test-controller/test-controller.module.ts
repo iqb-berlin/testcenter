@@ -33,6 +33,7 @@ import { TestControllerErrorPausedActivateGuard } from './routing/test-controlle
 import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
 import { DebugPaneComponent } from './components/debug-pane/debug-pane.component';
 import { PogressBarModePipe } from './pipes/progress-bar-mode.pipe';
+import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -70,7 +71,8 @@ export { TestControllerService } from './services/test-controller.service';
     TestStatusComponent,
     UnitMenuComponent,
     DebugPaneComponent,
-    PogressBarModePipe
+    PogressBarModePipe,
+    UnitInaccessiblePipe
   ],
   providers: [
     UnitActivateGuard,

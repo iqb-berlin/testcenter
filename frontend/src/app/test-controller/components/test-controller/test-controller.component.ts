@@ -48,7 +48,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   timerValue: TimerData | null = null;
   unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: Array<UnitNaviButtonData> = [];
+  unitNavigationList: Array<UnitNaviButtonData> = []; // TODO Xdo we need this?
   nextUnitButton = {
     visible: true,
     enabled: false

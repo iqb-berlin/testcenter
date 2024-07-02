@@ -28,7 +28,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  Testlet, Booklet, Unit, isUnit, TestletLockTypes
+  Testlet, Booklet, Unit, isUnit, TestletLockTypes, isTestlet
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -485,8 +485,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       },
       firstUnsatisfiedCondition: NaN,
       locked: null,
-      timerId
+      timerId,
+      containsConditionalTestlets: false // will be set by child
     });
+    if (context.parents.length && testlet.restrictions.if.length) {
+      console.log(testletDef.id, context.parents.map(p => p.id));
+      context.parents[0].containsConditionalTestlets = true;
+    }
     const lockedBy = TestletLockTypes
       .find(lockType => testlet.locks[lockType]);
     if (lockedBy) {

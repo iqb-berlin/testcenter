@@ -763,7 +763,7 @@ export class TestControllerService {
     const last = Object.values(this.units)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-      .findLast(unit => !TestControllerService.unitIsInaccessible(unit))
+      .findLast(async unit => !TestControllerService.unitIsInaccessible(unit))
       ?.sequenceId || NaN;
     return [first, last];
   }

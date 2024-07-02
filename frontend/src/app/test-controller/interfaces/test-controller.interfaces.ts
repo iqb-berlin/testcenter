@@ -231,6 +231,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
+  containsConditionalTestlets: boolean;
 }
 
 export type Booklet = BookletDef<Testlet>;

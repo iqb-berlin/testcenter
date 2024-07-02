@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
-import { UnitNaviButtonData } from '../../interfaces/test-controller.interfaces';
+import { Booklet, Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
@@ -9,7 +9,10 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   styleUrls: ['./unit-menu.component.css']
 })
 export class UnitMenuComponent {
-  @Input() menu: Array<UnitNaviButtonData> = [];
+  @Input() booklet: Booklet | null = null;
+  @Input() freeNavigation: boolean = false;
+
+  testletContext?: { testlet: Testlet, level: number };
 
   constructor(
     public tcs: TestControllerService,
@@ -20,4 +23,6 @@ export class UnitMenuComponent {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
+
+  protected readonly isTestlet = isTestlet;
 }
