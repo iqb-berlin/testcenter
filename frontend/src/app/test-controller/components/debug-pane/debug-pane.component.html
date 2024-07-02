@@ -1,14 +1,14 @@
 <div class="tabs" cdkDrag>
   <div
-    *ngFor="let tab of tabs"
-    (click)="toggleTab(tab)"
-    [class]="{'active': activeTabs.includes(tab)}"
+    *ngFor="let tab of windows"
+    (click)="toggleWindow(tab)"
+    [class]="{'active': activeWindows.includes(tab)}"
   >
     {{ tab }}
   </div>
 </div>
 
-<div class="tab tab-main" *ngIf="activeTabs.includes('main')" cdkDrag>
+<div class="tab tab-main" *ngIf="activeWindows.includes('main')" cdkDrag>
   <h1>
     Main
     <mat-icon class="close" (click)="closeWindow('main')">close</mat-icon>
@@ -28,7 +28,7 @@
   <div *ngIf="auth"><b>USER:</b>{{auth.displayName}}</div>
 </div>
 
-<div class="tab tab-config" *ngIf="activeTabs.includes('config')" cdkDrag>
+<div class="tab tab-config" *ngIf="activeWindows.includes('config')" cdkDrag>
   <h1>
     Booklet-Config
     <mat-icon class="close" (click)="closeWindow('config')">close</mat-icon>
@@ -36,7 +36,7 @@
   <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
-<div class="tab tab-testmode" *ngIf="activeTabs.includes('testmode')" cdkDrag>
+<div class="tab tab-testmode" *ngIf="activeWindows.includes('testmode')" cdkDrag>
   <h1>
     Test-Mode
     <mat-icon class="close" (click)="closeWindow('testmode')">close</mat-icon>
@@ -44,7 +44,7 @@
   <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
 
-<div class="tab tab-booklet" *ngIf="activeTabs.includes('booklet')" cdkDrag>
+<div class="tab tab-booklet" *ngIf="activeWindows.includes('booklet')" cdkDrag>
   <h1>
     Booklet
     <mat-icon class="close" (click)="closeWindow('booklet')">close</mat-icon>
@@ -57,7 +57,7 @@
 
 </div>
 
-<div class="tab tab-unit" *ngIf="activeTabs.includes('unit')" cdkDrag>
+<div class="tab tab-unit" *ngIf="activeWindows.includes('unit')" cdkDrag>
   <h1>
     Current Unit
     <mat-icon class="close" (click)="closeWindow('unit')">close</mat-icon>
@@ -66,7 +66,7 @@
   </ng-container>
 </div>
 
-<div class="tab tab-customtexts" *ngIf="activeTabs.includes('customtexts')" cdkDrag>
+<div class="tab tab-customtexts" *ngIf="activeWindows.includes('customtexts')" cdkDrag>
   <h1>
     Customtexts
     <mat-icon class="close" (click)="closeWindow('customtexts')">close</mat-icon>
@@ -82,7 +82,7 @@
 
 </div>
 
-<div class="tab tab-variables" *ngIf="activeTabs.includes('variables')" cdkDrag (click)="res()">
+<div class="tab tab-variables" *ngIf="activeWindows.includes('variables')" cdkDrag (click)="res()">
   <h1>
     Tracked Variables
     <mat-icon class="close" (click)="closeWindow('variables')">close</mat-icon>
@@ -112,7 +112,7 @@
   </table>
 </div>
 
-<div class="tab tab-system" *ngIf="activeTabs.includes('system')" cdkDrag>
+<div class="tab tab-system" *ngIf="activeWindows.includes('system')" cdkDrag>
   <h1>
     System-Status
     <mat-icon class="close" (click)="closeWindow('system')">close</mat-icon>
@@ -123,7 +123,7 @@
   <div class='btn' (click)="mds.refreshSysStatus()">Refresh</div>
 </div>
 
-<div class="tab tab-system" *ngIf="activeTabs.includes('tools')" cdkDrag>
+<div class="tab tab-system" *ngIf="activeWindows.includes('tools')" cdkDrag>
   <h1>
     Tools
     <mat-icon class="close" (click)="closeWindow('tools')">close</mat-icon>

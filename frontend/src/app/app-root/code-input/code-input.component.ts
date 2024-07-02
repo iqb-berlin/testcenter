@@ -22,7 +22,6 @@ export class CodeInputComponent implements OnInit {
 
   constructor(
     private router: Router,
-    public messageDialog: MatDialog,
     public cts: CustomtextService,
     public bs: BackendService,
     public mds: MainDataService

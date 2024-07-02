@@ -80,13 +80,17 @@ export const sourceIsConditionAggregation =
   (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
   source is BlockConditionAggregation => ('conditions' in source);
 
+export const maxTimeLeaveValues = ['confirm', 'forbidden'];
+export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
+
 export interface Restrictions {
   readonly codeToEnter?: {
     readonly code: string;
     readonly message: string;
   };
   readonly timeMax?: {
-    readonly minutes: number
+    readonly minutes: number;
+    readonly leave: MaxTimeLeaveValue // TODO X THIS instead of maxTimeLeave
   };
   readonly denyNavigationOnIncomplete?: {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';

@@ -6,7 +6,7 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-player-simple-4.0">
+  <Definition player="verona-player-simple-5.1">
     <![CDATA[
       <fieldset>
         <legend>Aufgabe1: Fieldset1: response complete forward</legend>
@@ -20,7 +20,7 @@
         <div style="flex: 50%; padding: 2px">
           <p data-cy= "TestController-Text-Aufg1-S2"><b>Presentation complete</b></p>
         </div>
-      </fieldset>     
+      </fieldset>
    ]]>
   </Definition>
 </Unit>

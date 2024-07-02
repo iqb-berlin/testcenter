@@ -2,20 +2,22 @@ import {
   concatMap, last, map, takeWhile
 } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import {
+  ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot
+} from '@angular/router';
 import { from, Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
-import { NavigationLeaveRestrictionValue, TestControllerState, Unit } from '../interfaces/test-controller.interfaces';
+import { NavigationLeaveRestrictionValue, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason, VeronaProgressInCompleteValues } from '../interfaces/verona.interfaces';
 
 @Injectable()
-export class UnitDeactivateGuard {
+export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
     private tcs: TestControllerService,
     private cts: CustomtextService,
@@ -33,7 +35,7 @@ export class UnitDeactivateGuard {
     ) {
       return of(true);
     }
-    if (this.tcs.testlets[this.tcs.currentTimerId].maxTimeLeave === 'forbidden') {
+    if (this.tcs.testlets[this.tcs.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       this.snackBar.open(
         'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.',
         'OK',
@@ -198,7 +200,7 @@ export class UnitDeactivateGuard {
     return of(true);
   }
 
-  private evaluateConditionsIfNecessary(newUnit: Unit | null): Observable<boolean> {
+  private evaluateConditionsIfNecessary(newUnit: Unit | null): void {
     if (
       (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_UNIT') ||
       (
@@ -209,7 +211,6 @@ export class UnitDeactivateGuard {
     ) {
       this.tcs.evaluateConditions();
     }
-    return of(true);
   }
 
   canDeactivate(
@@ -221,13 +222,12 @@ export class UnitDeactivateGuard {
     if (nextState.url === '/r/route-dispatcher') {
       return true;
     }
-
-    if (this.tcs.state$.getValue() === TestControllerState.ERROR) {
-      return true;
+    if (this.tcs.state$.getValue() === 'ERROR') {
+      return of(true);
     }
 
     if (this.tcs.currentUnit.parent.locked) {
-      return true;
+      return of(true);
     }
 
     let newUnit: Unit | null = null;
@@ -242,14 +242,15 @@ export class UnitDeactivateGuard {
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
     if (forceNavigation) {
       this.tcs.interruptTimer();
-      return true;
+      return of(true);
     }
+
+    this.evaluateConditionsIfNecessary(newUnit);
 
     return from([
       this.checkAndSolveCompleteness.bind(this),
       this.checkAndSolveTimer.bind(this),
-      this.checkAndSolveLeaveLocks.bind(this),
-      this.evaluateConditionsIfNecessary.bind(this)
+      this.checkAndSolveLeaveLocks.bind(this)
     ])
       .pipe(
         concatMap(check => check(newUnit)),

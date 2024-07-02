@@ -4,8 +4,9 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
-  BookletDef, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, TestletDef, TestSessionData, TestSessionFilter, TestSessionSetStats
+  Booklet,
+  BookletError, CommandResponse, GroupMonitorConfig,
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -242,8 +243,8 @@ describe('TestSessionManager', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['groupForGoto'](sessions, selection);
       expect(result).toEqual({
-        example_booklet_1: { testIds: [1, 33], firstUnitId: 'unit-3' },
-        example_booklet_3: { testIds: [34], firstUnitId: 'unit-1' }
+        example_booklet_1: [1, 33],
+        example_booklet_3: [34]
       });
       // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
       // where it is emtpy , so there is no place to go. Session 34 with example_booklet_3 has the block,

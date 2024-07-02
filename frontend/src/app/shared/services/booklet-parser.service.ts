@@ -169,7 +169,8 @@ export abstract class BookletParserService<
       const timeMaxElement = this.xmlGetChildIfExists(restrictionsElement, 'TimeMax', true);
       if (timeMaxElement) {
         timeMax = {
-          minutes: parseFloat(timeMaxElement.getAttribute('minutes') || '')
+          minutes: parseFloat(timeMaxElement.getAttribute('minutes') || ''),
+          leave: timeMaxElement.getAttribute('leave') || 'confirm' // TODO X test
         };
       }
 

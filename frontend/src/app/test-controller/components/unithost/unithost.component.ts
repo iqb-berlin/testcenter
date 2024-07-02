@@ -6,13 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  TestStateKey,
-  WindowFocusState,
-  StateReportEntry,
-  UnitStateKey, Testlet,
-  UnitPlayerState, LoadingProgress, isUnit
-} from '../../interfaces/test-controller.interfaces';
+import { Testlet, LoadingProgress, isUnit } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
@@ -69,7 +63,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
-  private handleIncomingMessage(messageEvent: MessageEvent): void {
+  private async handleIncomingMessage(messageEvent: MessageEvent): Promise<void> {
     if (!this.tcs.currentUnit) {
       return;
     }
@@ -82,13 +76,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget = messageEvent.source as Window;
     if (msgData.sessionId && (msgSessionId !== this.playerSessionId)) {
       // eslint-disable-next-line no-console
-      console.warn('wrong player session id: ', msgData.sessionId);
+      console.warn('wrong player session id: ', msgData.sessionId, msgData);
       return;
     }
 
     switch (msgType) {
       case 'vopReadyNotification':
-        this.handleReadyNotification(msgData);
+        await this.handleReadyNotification(msgData);
         break;
 
       case 'vopStateChangedNotification':
@@ -111,7 +105,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleReadyNotification(msgData: any): void {
+  private async handleReadyNotification(msgData: any): Promise<void> {
     // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
     // eslint-disable-next-line no-case-declarations
@@ -134,11 +128,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.updateUnitState(
       this.tcs.currentUnitSequenceId,
       {
-        alias: this.tcs.currentUnit.alias,
-        state: [<StateReportEntry>{
-          key: UnitStateKey.PLAYER,
+        testId: this.tcs.testId,
+        unitAlias: this.tcs.currentUnit.alias,
+        state: [{
+          key: 'PLAYER',
           timeStamp: Date.now(),
-          content: UnitPlayerState.RUNNING
+          content: 'RUNNING'
         }]
       }
     );
@@ -152,7 +147,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
       },
-      playerConfig: this.getPlayerConfig()
+      playerConfig: await this.getPlayerConfig()
     }, '*');
   }
 
@@ -174,11 +169,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.tcs.updateUnitState(
             this.tcs.currentUnitSequenceId,
             {
-              alias: this.tcs.currentUnit.alias,
+              testId: this.tcs.testId,
+              unitAlias: this.tcs.currentUnit.alias,
               state: [
-                { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
-                { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
-                { key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString() }
+                { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: pageNr.toString() },
+                { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: pageId },
+                { key: 'PAGE_COUNT', timeStamp: Date.now(), content: pageCount.toString() }
               ]
             }
           );
@@ -192,10 +188,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {
-          alias: this.tcs.currentUnit.alias,
+          testId: this.tcs.testId,
+          unitAlias: this.tcs.currentUnit.alias,
           state: [
-            { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
-            { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
+            { key: 'PRESENTATION_PROGRESS', timeStamp, content: unitState.presentationProgress },
+            { key: 'RESPONSE_PROGRESS', timeStamp, content: unitState.responseProgress }
           ]
         }
       );
@@ -231,11 +228,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleWindowFocusChangedNotification(msgData: any): void {
     if (msgData.hasFocus) {
-      this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
+      this.tcs.windowFocusState$.next('PLAYER');
     } else if (document.hasFocus()) {
-      this.tcs.windowFocusState$.next(WindowFocusState.HOST);
+      this.tcs.windowFocusState$.next('HOST');
     } else {
-      this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
+      this.tcs.windowFocusState$.next('UNKNOWN');
     }
   }
 
@@ -302,15 +299,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.resourcesLoading$.next([]);
 
+    this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
     if (this.tcs.testMode.saveResponses) {
-      this.bs.updateTestState(this.tcs.testId, [{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.tcs.currentUnit.alias
-      }]);
       this.tcs.updateUnitState(
         this.tcs.currentUnitSequenceId,
         {
-          alias: this.tcs.currentUnit.alias,
-          state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
+          testId: this.tcs.testId,
+          unitAlias: this.tcs.currentUnit.alias,
+          state: [{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]
         }
       );
     }
@@ -382,7 +378,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getPlayerConfig(): VeronaPlayerConfig {
+  private async getPlayerConfig(): Promise<VeronaPlayerConfig> {
     if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
@@ -391,7 +387,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.tcs.currentUnitSequenceId,
-        this.tcs.getSequenceBounds(),
+        await this.tcs.getSequenceBounds(),
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,

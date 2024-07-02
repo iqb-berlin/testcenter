@@ -1,7 +1,8 @@
 import { Observable } from 'rxjs';
-import { CodingScheme, Response } from '@iqb/responses';
+import { CodingScheme } from '@iqb/responses';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
+import { VeronaProgress } from './verona.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -15,16 +16,15 @@ export interface KeyValuePairString {
   [K: string]: string;
 }
 
-export enum WindowFocusState {
-  PLAYER = 'PLAYER',
-  HOST = 'HOST',
-  UNKNOWN = 'UNKNOWN'
-}
+export type WindowFocusState =
+  | 'PLAYER'
+  | 'HOST'
+  | 'UNKNOWN';
 
 export type UnitData = {
   dataParts: KeyValuePairString;
   unitResponseType: string;
-  state: { [k in UnitStateKey]?: string };
+  state: UnitState;
   definition : string;
 };
 
@@ -45,61 +45,60 @@ export interface TestData {
   workspaceId: number;
 }
 
-export enum TestStateKey {
-  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-  TESTLETS_LOCKED_AFTER_LEAVE = 'TESTLETS_LOCKED_AFTER_LEAVE',
-  TESTLETS_SATISFIED_CONDITION = 'TESTLETS_SATISFIED_CONDITION',
-  UNITS_LOCKED_AFTER_LEAVE = 'UNITS_LOCKED_AFTER_LEAVE',
-  FOCUS = 'FOCUS',
-  CONTROLLER = 'CONTROLLER',
-  CONNECTION = 'CONNECTION'
-}
+export type TestControllerState =
+  | 'INIT'
+  | 'LOADING'
+  | 'RUNNING'
+  | 'TERMINATED'
+  | 'TERMINATED_PAUSED'
+  | 'PAUSED'
+  | 'ERROR';
 
-/**
- * TestState.state
- * In what state is the whole controller?
- */
-export enum TestControllerState {
-  INIT = 'INIT',
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING',
-  TERMINATED = 'TERMINATED',
-  TERMINATED_PAUSED = 'TERMINATED_PAUSED',
-  FINISHED = 'FINISHED',
-  PAUSED = 'PAUSED',
-  ERROR = 'ERROR'
-}
+export type AppFocusState =
+  | 'HAS'
+  | 'HAS_NOT';
 
-/**
- * TestState.FOCUS
- * Do the application-window has focus or not (because another window or tab has it)?
- */
-export enum AppFocusState {
-  HAS = 'HAS',
-  HAS_NOT = 'HAS_NOT'
-}
+export type TestStateConnectionValue =
+  | 'WEBSOCKET'
+  | 'POLLING';
 
-/**
- * TestState.CONNECTION
- * What kind of connection to the server do we have to receive possible commands from a group-monitor?
- * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
- */
-export enum TestStateConnectionValue {
-  WEBSOCKET = 'WEBSOCKET',
-  POLLING = 'POLLING'
-}
+export type TestLogEntryKey =
+  | 'LOADCOMPLETE';
 
-export enum TestLogEntryKey {
-  LOADCOMPLETE = 'LOADCOMPLETE'
-}
+export type UnitPlayerState =
+  | 'LOADING'
+  | 'RUNNING';
 
-export interface StateReportEntry {
-  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
-  timeStamp: number;
-  content: string;
-}
+export type TestState = {
+  CURRENT_UNIT_ID: string;
+  TESTLETS_TIMELEFT: string;
+  TESTLETS_CLEARED_CODE: string;
+  TESTLETS_LOCKED_AFTER_LEAVE: string;
+  TESTLETS_SATISFIED_CONDITION: string;
+  UNITS_LOCKED_AFTER_LEAVE: string;
+  FOCUS: AppFocusState;
+  CONTROLLER: UnitPlayerState;
+  CONNECTION: TestStateConnectionValue;
+};
+
+export type UnitState = {
+  PRESENTATION_PROGRESS?: VeronaProgress;
+  RESPONSE_PROGRESS?: VeronaProgress;
+  CURRENT_PAGE_ID?: string;
+  CURRENT_PAGE_NR?: number;
+  PAGE_COUNT?: number;
+  PLAYER?: string;
+};
+
+export type TestStateKey = keyof TestState;
+
+export type UnitStateKey =
+  | 'PRESENTATION_PROGRESS'
+  | 'RESPONSE_PROGRESS'
+  | 'CURRENT_PAGE_ID'
+  | 'CURRENT_PAGE_NR'
+  | 'PAGE_COUNT'
+  | 'PLAYER';
 
 export interface UnitDataParts {
   unitAlias: string;
@@ -107,26 +106,20 @@ export interface UnitDataParts {
   unitStateDataType: string;
 }
 
-export enum UnitPlayerState {
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING'
+export interface StateReportEntry<StateType extends string> {
+  key: StateType
+  timeStamp: number;
+  content: string;
 }
 
-export enum UnitStateKey {
-  PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
-  RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
-  CURRENT_PAGE_ID = 'CURRENT_PAGE_ID',
-  CURRENT_PAGE_NR = 'CURRENT_PAGE_NR',
-  PAGE_COUNT = 'PAGE_COUNT',
-  PLAYER = 'PLAYER'
+export interface StateUpdate<StateType extends string> {
+  state: StateReportEntry<StateType>[];
+  testId: string;
+  unitAlias: string;
 }
 
-export const isUnitStateKey = (key: string): key is UnitStateKey => Object.keys(UnitStateKey).includes(key);
-
-export interface UnitStateUpdate {
-  alias: string;
-  state: StateReportEntry[]
-}
+export type UnitStateUpdate = StateUpdate<UnitStateKey>;
+export type TestStateUpdate = StateUpdate<TestStateKey>;
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
@@ -148,13 +141,6 @@ export interface UnitNaviButtonData {
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export interface PageData {
-  index: number;
-  id: string;
-  type: '#next' | '#previous' | '#goto';
-  disabled: boolean;
-}
-
 export interface ReviewDialogData {
   loginname: string;
   bookletname: string;
@@ -200,10 +186,6 @@ export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLea
   return ['ON', 'OFF', 'ALWAYS'].includes(s);
 }
 
-
-export const maxTimeLeaveValues = ['confirm', 'forbidden'];
-export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
-
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }
@@ -229,7 +211,7 @@ export interface Unit extends UnitDef {
   scheme: CodingScheme;
   responseType: string | undefined;
   definition: string;
-  state: { [k in UnitStateKey]?: string };
+  state: UnitState;
   dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };
@@ -249,7 +231,6 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   } | null;
   timerId: string | null;
   firstUnsatisfiedCondition: number;
-  maxTimeLeave: MaxTimeLeaveValue;
 }
 
 export type Booklet = BookletDef<Testlet>;

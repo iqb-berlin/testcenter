@@ -6,9 +6,6 @@ import { MaxTimerEvent } from '../interfaces/test-controller.interfaces';
 export class EnvironmentData {
   browserVersion = '';
   browserName = '';
-  get browserTxt(): string {
-    return `${this.browserName} Version ${this.browserVersion}`;
-  }
 
   osName = '';
   device = '';
@@ -16,9 +13,6 @@ export class EnvironmentData {
   screenSizeWidth = 0;
   screenSizeHeight = 0;
   loadTime: number = 0;
-  get screenSizeTxt(): string {
-    return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
-  }
 
   constructor() {
     const UserAgentParser = new UAParser();

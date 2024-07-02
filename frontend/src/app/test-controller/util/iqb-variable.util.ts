@@ -1,4 +1,4 @@
-import { ResponseValueType as IQBVariableValueType, } from '@iqb/responses';
+import { ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 
 export class IqbVariableUtil {
   static variableValueAsComparable(value: IQBVariableValueType): number | string | undefined {
