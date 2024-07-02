@@ -5,10 +5,16 @@ import { LoginComponent } from './app-root/login/login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import {
-  AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
+  AdminComponentActivateGuard,
+  AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
-  DirectLoginActivateGuard, GroupMonitorActivateGuard,
-  RouteDispatcherActivateGuard, StarterActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
+  DirectLoginActivateGuard,
+  GroupMonitorActivateGuard,
+  RouteDispatcherActivateGuard,
+  StarterActivateGuard,
+  StudyMonitorActivateGuard,
+  SuperAdminComponentActivateGuard,
+  TestComponentActivateGuard
 } from './app-route-guards';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
@@ -82,6 +88,11 @@ const routes: Routes = [
     path: 'gm',
     loadChildren: () => import('./group-monitor/group-monitor.module').then(module => module.GroupMonitorModule),
     canActivate: [GroupMonitorActivateGuard]
+  },
+  {
+    path: 'sm',
+    loadChildren: () => import('./study-monitor/study-monitor.module').then(module => module.StudyMonitorModule),
+    canActivate: [StudyMonitorActivateGuard]
   },
   {
     path: 'am',

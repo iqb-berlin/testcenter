@@ -12,6 +12,11 @@ class WorkspaceDAO extends DAO {
     $this->workspacePath = $workspacePath;
   }
 
+  public function getWorkspaceId(): int
+  {
+    return $this->workspaceId;
+  }
+
   public function getWorkspaceName(): string {
     $workspace = $this->_(
       'select workspaces.name 
@@ -316,7 +321,9 @@ class WorkspaceDAO extends DAO {
       }
     }
 
-    $placeholder = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+    $filePathCondition = $filePathCondition ? "and ($filePathCondition)" : '';
+
     $andIsValid = $includeInvalid ? '' : ' and files.is_valid';
 
     $sql = "select distinct
@@ -341,7 +348,7 @@ class WorkspaceDAO extends DAO {
                 where
                     files.workspace_id = ?
                     $andIsValid
-                    and ($placeholder)";
+                    $filePathCondition";
 
     return $this->fetchFiles($sql, $replacements);
   }
@@ -549,4 +556,20 @@ class WorkspaceDAO extends DAO {
           true
         );
     }
+
+  public function getWorkspaceHash(): string
+  {
+    return $this->_(
+      "select workspace_hash from workspaces where id = :ws_id",
+      [':ws_id' => $this->workspaceId]
+    )['workspace_hash'];
+  }
+
+  public function setWorkspaceHash(string $hash): void
+  {
+    $this->_(
+      "update workspaces set workspace_hash = :hash where id = :ws_id",
+      [':hash' => $hash, ':ws_id' => $this->workspaceId]
+    );
+  }
 }

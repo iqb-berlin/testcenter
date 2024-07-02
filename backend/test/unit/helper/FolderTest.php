@@ -60,8 +60,7 @@ class FolderTest extends TestCase {
         "Resource" => [
           "SAMPLE_UNITCONTENTS.HTM",
           "sample_resource_package.itcr.zip",
-          "verona-player-simple-5.1.html",
-          "scheme.vocs.json"
+          "verona-player-simple-6.0.html"
         ]
       ]
     ];
@@ -83,8 +82,7 @@ class FolderTest extends TestCase {
       "ws_1/Unit/SAMPLE_UNIT2.XML",
       "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM",
       "ws_1/Resource/sample_resource_package.itcr.zip",
-      "ws_1/Resource/verona-player-simple-5.1.html",
-      "ws_1/Resource/scheme.vocs.json"
+      "ws_1/Resource/verona-player-simple-6.0.html"
     ];
     $this->assertEquals($expected, $result);
   }
@@ -103,8 +101,7 @@ class FolderTest extends TestCase {
       "ws_1/Unit/SAMPLE_UNIT2.XML",
       "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM",
       "ws_1/Resource/sample_resource_package.itcr.zip",
-      "ws_1/Resource/verona-player-simple-5.1.html",
-      "ws_1/Resource/scheme.vocs.json"
+      "ws_1/Resource/verona-player-simple-6.0.html"
     ];
     $this->assertEquals($expected, $result);
   }

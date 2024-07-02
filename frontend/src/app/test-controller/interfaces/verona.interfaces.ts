@@ -16,7 +16,7 @@ interface Verona2PlayerConfig {
 
 interface Verona3PlayerConfig extends Verona2PlayerConfig {
   enabledNavigationTargets: Verona2NavigationTarget[];
-  startPage?: string;
+  startPage?: string | number;
   stateReportPolicy: Verona2StateReportPolicy; // removed in Verona4, but we still need it to support older players
 }
 
@@ -34,8 +34,31 @@ const VeronaProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2Prog
 
 export type VeronaProgress = typeof VeronaProgressValues[number];
 export const isVeronaProgress = (value: string): value is VeronaProgress => VeronaProgressValues.includes(value);
+export { Verona2ProgressIncompleteValues as VeronaProgressIncompleteValues };
+export { Verona2ProgressCompleteValues as VeronaProgressCompleteValues };
 
 export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
-export { Verona2ProgressIncompleteValues as VeronaProgressInCompleteValues };
+
+
+export interface Verona5ValidPages {
+  [id: string]: string
+}
+
+export interface Verona6ValidPage {
+  id: string;
+  label?: string;
+}
+
+export type Verona6ValidPages = Array<Verona6ValidPage>;
+
+// those are just a proposal and not in any Verona-Standard right now
+export const VeronaPlayerRuntimeErrorCodes = [
+  'session-id-missing',
+  'unit-definition-missing',
+  'wrong-session-id',
+  'unit-definition-type-unsupported',
+  'unit-state-type-unsupported',
+  'runtime-error'
+];

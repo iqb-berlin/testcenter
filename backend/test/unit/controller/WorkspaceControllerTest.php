@@ -328,6 +328,10 @@ final class WorkspaceControllerTest extends TestCase {
       ->andReturn($deletionReport)
       ->once();
 
+    $this->workspaceMock
+      ->expects('setWorkspaceHash')
+      ->once();
+
     $this->broadcastingServiceMock
       ->expects('send')
       ->times(1)
@@ -368,6 +372,10 @@ final class WorkspaceControllerTest extends TestCase {
       ->expects('importUnsortedFiles')
       ->times(1)
       ->andReturn($files);
+
+    $this->workspaceMock
+      ->expects('setWorkspaceHash')
+      ->once();
 
     $this->workspaceMock
       ->expects('getWorkspacePath')

@@ -14,7 +14,7 @@ import {
 import { NavigationLeaveRestrictionValue, Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
-import { VeronaNavigationDeniedReason, VeronaProgressInCompleteValues } from '../interfaces/verona.interfaces';
+import { VeronaNavigationDeniedReason, VeronaProgressIncompleteValues } from '../interfaces/verona.interfaces';
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
@@ -107,7 +107,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (
       (checkOnValue[direction].includes(responseCompleteRequired)) &&
       currentUnitResponseProgress &&
-      (VeronaProgressInCompleteValues.includes(currentUnitResponseProgress))
+      (VeronaProgressIncompleteValues.includes(currentUnitResponseProgress))
     ) {
       reasons.push('responsesIncomplete');
     }

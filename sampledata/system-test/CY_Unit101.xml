@@ -6,7 +6,7 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-player-simple-5.1">
+  <Definition player="verona-player-simple-6.0">
     <![CDATA[
       <fieldset>
         <legend>Aufgabe1: Fieldset1: response complete forward</legend>

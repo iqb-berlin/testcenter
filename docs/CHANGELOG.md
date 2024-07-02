@@ -15,12 +15,62 @@ layout: default
 * Mehrere Bugfixes in der Verzweigung
 * Autocoder 2.1.5
 
+## [next]
+### Bugfix
+* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
+
+### Verbesserungen
+* Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
+  haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
+  haben, so wird kein Datein-Import durchgeführt. Dies beschleunigt die Arbeit in der Entwicklung und auch beim Pflegen
+  von Testdaten.
+* Während Initialization Tests werden fake patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests 
+  wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
+
+### Deployment
+* dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
+* Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". 
+  Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren 
+  des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
+
+
+## 15.1.8
+### Bugfix
+* Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen)
+
+## 15.1.7
+### neue Features
+* Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
+  alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
+  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eines Super-Admins, ohne jedoch die Rechte zu haben, die 
+  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.  
+
+### Sicherheit
+* Im Response-Body aller Fehlermeldungen werden HTML-Zeichen maskiert. Damit sollten alle Reflected Cross-Site 
+  Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
+* Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen Brute-Force-
+  Attacken. Es folgen später weitere Maßnahmen, um auch DOS von verteilten Netzwerken zu verhindern.
+* Unsichere TLS-Cipher-Suites entfernt
+
+### Bugfix
+* SQL error beim Angabe eines falschen Dateipfades beim Löschen von Dateien wurde behoben. Es wird nun richtigerweise 
+  auf den falschen Pfad innerhalb eines 207 response hingewiesen.
+
+### API
+* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspace-Id zurück. `[PUT] /user` gibt analog dazu die 
+  userId zurück.
+
+### Administration
+* Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen 
+  Proxy geladen werden. Der Standardwert ist ein leerer String.
+* Der automatische Neustart abgestürzter Container lässt sich nun mitteln .env-Vriable einstellen (Restart Policy). 
+
 ## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
   * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
     heraus navigiert werden kann.
-  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem selben Verhalten wie vorher, wie auch 
+  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem gleichen Verhalten wie vorher, wie auch 
     `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
 
 ### Verbesserungen
@@ -31,14 +81,13 @@ layout: default
 * Unit-XML: Element `<ValuePositionLabels>` wird in der Varaiblenliste akzeptiert, so wie es die aktuellen Versionen
   vom IQB-Studio liefern. 
 
-
 ## 15.1.5
 ### Bugfixes
 * Alte Verona3-Player, die nicht standardmäßig `StateReportPolicy` auf `eager` gesetzt haben, funktionieren nun wieder
   korrekt. Dies betrifft z. B. den Aspect-Player.
 * Seitennavigation repariert. Es wird der korrekte Index verwendet und Unterstützung für alle Player hergestellt.
 * Kann keine Websocket-Verbindung etabliert werden, wird wieder korrekt auf Polling umgeschaltet.
-* Um gleichzeitige Uploads auf den selben Arbeitsbereich zu verhindern, wird ein Workspace für die Dauer des Uplaods
+* Um gleichzeitige Uploads auf den gleichen Arbeitsbereich zu verhindern, wird ein Workspace für die Dauer des Uplaods
   für Upload (und löschen) gesperrt. In bestimmten Fehlersituationen wird diese Sperre nicht korrekt aufgehoben und der
   Arbeitsbereich bleibt gesperrt. Sperren, die älter als zwölf Minuten sind, werden in Zukunft ignoriert.
 
@@ -51,6 +100,7 @@ layout: default
 ### Deployment
 * Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann. 
   Der Default-Wert ist 'no'. Erlaubte Werte sind: ['no','on-failure','always','unless-stopped'].
+
 
 ## 15.1.4
 ### Bugfixes

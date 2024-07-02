@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
   <title>Simple Verona Player 5</title>
+========
+  <title>Simple Verona Player 6.0</title>
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
   <script type="application/ld+json">
     {
@@ -15,8 +19,13 @@
           "lang": "en"
         }
       ],
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
       "version": "5.1.0",
       "specVersion": "5.1",
+========
+      "version": "6.0.0",
+      "specVersion": "6.0",
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
       "description": [
         {
           "value": "This is a simple, dependency-less, vanilla-js-written, but full-featured unit player, mainly as showcase for developers and for software-testing. It does implement the Verona 4.0.0-Standard and can be used for units containing simple any content in HTML-format. Unit Description ist the <code>form</code>-content as HTML. Just give some names to the form element, and the player does the rest. Use some special Ids for some special buttons.",
@@ -57,6 +66,10 @@
       margin: 0 9em;
     }
 
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
+========
+    #unit.paged.buttons,
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
     #unit.paged.separate {
       overflow-y: auto;
       height: 100vh;
@@ -66,6 +79,10 @@
       display: block
     }
 
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
+========
+    #unit.paged.buttons fieldset,
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
     #unit.paged.separate fieldset {
       overflow-y: auto;
       height: calc(100% - 100px);
@@ -142,6 +159,7 @@
       color: grey;
     }
 
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
     vsp-pointer {
       position: absolute;
       height: 30px;
@@ -196,6 +214,66 @@
       min-width: 250px;
     }
 
+========
+    vsp-message.error {
+      background: rgba(150, 0, 0, 0.75);
+    }
+
+    vsp-pointer {
+      position: absolute;
+      height: 30px;
+      width: 30px;
+    }
+
+    vsp-pointer:after {
+      position: relative;
+      line-height: 25px;
+      text-shadow: 0 0 5px rgba(0,0,0,0.75);
+      display: inline-block;
+      filter: blur(4px);
+      opacity: 0;
+      transform: scale(2);
+      transform-origin: center;
+      animation: flyin 0.5s ease forwards;
+      font-size: 30px;
+      content: "►";
+    }
+
+    vsp-message-close {
+      position: absolute;
+      right: 5px;
+      top: 2px;
+      cursor: pointer;
+    }
+
+    .vsp-navigation-tier button:hover,
+    vsp-message-close:hover {
+      color: grey
+    }
+
+    .vsp-navigation-tier button:disabled {
+      box-shadow: 0 0 5px 0 rgba(100, 100, 100, 0.75);
+      background: rgba(0, 0, 0, 0.75);
+      color: grey;
+      cursor: auto;
+    }
+
+    #vsp-meta dl dd {
+      display: inline;
+      margin: 0;
+    }
+
+    #vsp-meta dl dd:after {
+      display: block;
+      content: '';
+    }
+
+    #vsp-meta dl dt {
+      display: inline-block;
+      min-width: 250px;
+    }
+
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
     @keyframes flyin {
       to {
         filter: blur(0);
@@ -209,7 +287,11 @@
       size: A4 landscape;
       margin: 15pt;
     }
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
     html, body, #unit.paged.separate, #unit {
+========
+    html, body, #unit.paged.separate, #unit.paged.buttons, #unit {
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
       height: auto;
     }
     vsp-message,
@@ -270,8 +352,13 @@
 </form>
 
 <script>
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
   const unitStateDataType = "iqb-standard@1.0";
   const unitDefinitionType = "verona-player-simple-5.1";
+========
+  const unitStateDataType = "iqb-standard@1.3";
+  const unitDefinitionType = "verona-player-simple-6.0";
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
   // some polyfills
   (function polyfillReactionToProgrammaticallyChangedInputValue() {
@@ -313,13 +400,19 @@
 
   const playerMetaData = JSON.parse(document.querySelector('script[type="application/ld+json"]').innerText)
 
+  const pagingModes = ["separate", "concat-scroll", "concat-scroll-snap", "buttons"];
+
   let playerConfig = {
     logPolicy: 'eager', // "disabled" | "lean" | "rich" | "debug"
     unitNumber: 0,
     unitTitle: 'Unit',
     unitId: 'unit',
     enabledNavigationTargets: [], // can contain  "next" "previous" "first" "last" "end"
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
     pagingMode: "separate", // "separate" | "concat-scroll" | "concat-scroll-snap",
+========
+    pagingMode: "buttons", // "separate" | "concat-scroll" | "concat-scroll-snap" | "buttons"
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
     printMode: "off",
     startPage: null,
     directDownloadUrl: null
@@ -332,6 +425,26 @@
     // noinspection LoopStatementThatDoesntLoopJS
     for(let property in object) return false;
     return true;
+  }
+
+  const Format = new class {
+    parse = format => {
+      const parts = format.match(/(^.+)[-@](\d+)(.(\d+))?(.(\d+))?(-(.+))?$/);
+      return parts ? {
+        format: parts[1] || format,
+        major: parseInt(parts[2] || 0),
+        minor: parseInt(parts[4] || 0),
+        patch: parseInt(parts[6] || 0),
+        label: parts[8] || ''
+      } : format;
+    }
+    isSupportedBy = (format1, format2) => {
+      const v1 = Format.parse(format1);
+      const v2 = Format.parse(format2);
+      if (v1.format !== v2.format) return false;
+      if (v1.major !== v2.major) return false;
+      return (v1.minor <= v2.minor);
+    };
   }
 
   const Time = new class {
@@ -394,17 +507,26 @@
       vopUnitNavigationRequestedNotification = target => {
         this._send({
           type: 'vopUnitNavigationRequestedNotification',
-          sessionId: sessionId,
-          target: target,
+          sessionId,
+          target,
         });
       };
 
       vopWindowFocusChangedNotification = hasFocus => {
         this._send({
           type: 'vopWindowFocusChangedNotification',
-          sessionId: sessionId,
-          hasFocus: hasFocus
+          sessionId,
+          hasFocus
         });
+      }
+
+      vopRuntimeErrorNotification = (code, message) => {
+        this._send({
+          type: 'vopRuntimeErrorNotification',
+          sessionId,
+          code,
+          message
+        })
       }
 
       _send = msg => {
@@ -443,7 +565,7 @@
       _getPlayerState = () => {
         const playerState = {};
         if (Pages.hasPages) {
-          playerState.validPages = Pages.validPages;
+          playerState.validPages = Object.keys(Pages.validPages).map(id => ({id, label: Pages.validPages[id]}))
           playerState.currentPage = Pages.currentPage.toString()
         }
         return playerState;
@@ -461,7 +583,11 @@
       if (type === "vopStartCommand") {
         Unit.start(data);
       } else if (sessionId && (data.sessionId !== sessionId)) {
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
         throw new Error("Wrong sessionId " + type);
+========
+        throw new VspRuntimeError('wrong-session-id', `Wrong Session-Id: '${sessionId}' (was: '${sessionId}').`);
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
       }
       document.dispatchEvent(new CustomEvent(type, {detail: data}));
     };
@@ -480,26 +606,45 @@
     };
 
     start = data => {
-      sessionId = data.sessionId || new Error("session ID missing");
+      if (!data.sessionId) {
+        throw new VspRuntimeError("session-id-missing", "Session-Id is missing.");
+      }
+      sessionId = data.sessionId;
+      if (!data.unitDefinition) {
+        throw new VspRuntimeError("unit-definition-missing", "Unit-Definition is missing.")
+      }
 
-      if (data.unitDefinitionType && (data.unitDefinitionType !== unitDefinitionType)) {
-        Log.debug(`Unit definition type does not match: ${data.unitDefinitionType} and ${unitDefinitionType}`);
+
+      if (data.unitDefinitionType &&
+        !Format.isSupportedBy(data.unitDefinitionType, unitDefinitionType)
+      ) {
+        throw new VspRuntimeError(
+          'unit-definition-type-unsupported',
+          `Format of unit definition '${data.unitDefinitionType}' is not compatible with '${unitDefinitionType}'.`
+        );
       }
       if (
         data.unitState && data.unitState.unitStateDataType &&
-        (data.unitState.unitStateDataType !== unitStateDataType)
+        !Format.isSupportedBy(data.unitState.unitStateDataType, unitStateDataType)
       ) {
-        Log.debug(`Unit state type does not match: ${data.unitState.unitStateDataType} & ${unitStateDataType}`);
+        throw new VspRuntimeError(
+          'unit-state-type-unsupported',
+          `Format of UnitState '${data.unitState.unitStateDataType}' is not compatible with '${unitStateDataType}'.`
+        );
       }
 
-      this._setUnit(data.unitDefinition || new Error("unitDefinition missing"));
+
+      this._setUnit(data.unitDefinition);
       this._setPlayerConfig(data.playerConfig || {});
 
       Answers.prepare();
       this._setUnitData(data.unitState || {});
 
       PlayerUI.togglePrintMode();
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
 
+========
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
       PlayerUI.toggleUnitNavButtons();
       PlayerUI.togglePageNavButtons();
     };
@@ -523,6 +668,14 @@
             return 'none'
           }
         }, 'complete');
+
+    updatePlayerConfig = newConfig => {
+      Object.assign(playerConfig, newConfig);
+      Pages.applyPagingMode();
+      PlayerUI.togglePrintMode();
+      PlayerUI.toggleUnitNavButtons();
+      PlayerUI.togglePageNavButtons();
+    }
 
     // TODO make extensible like PresentationProgress
     getResponseProgress = () => {
@@ -585,6 +738,10 @@
 
   const Answers = new class {
     status = {};
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
+========
+    _observers = [];
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
     get = () => {
       const formData = new FormData(document.querySelector("form"));
@@ -668,6 +825,10 @@
     }
 
     prepare = () => {
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
+========
+      this._cleanObservers();
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
       document.querySelectorAll(PlayerUI.itemElements)
         .forEach(elem => {
           Answers.status[elem.getAttribute('name') || ''] = 'NOT_REACHED';
@@ -676,7 +837,11 @@
     }
 
     _newObserver = elem => {
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
       new IntersectionObserver(
+========
+      const observer = new IntersectionObserver(
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
         entries => {
           if (entries[0].isIntersecting) {
             const id = elem.getAttribute('name') || '';
@@ -684,16 +849,31 @@
             Message.send.vopStateChangedNotification();
           }
         }
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
       ).observe(elem);
+========
+      );
+      observer.observe(elem);
+      this._observers.push(observer);
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
     }
 
     setStatusChanged = event => {
       Answers.status[event.target.getAttribute('name') || ''] = 'VALUE_CHANGED';
     }
+<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
+========
+
+    _cleanObservers = () => {
+      this._observers.forEach(observer => observer.disconnect());
+      this._observers.length = 0;
+    }
+>>>>>>>> master:sampledata/verona-player-simple-6.0.html
   }
 
   const Pages = new class {
     _currentPage = 0;
+    _observers = [];
     pageCount = 0;
     hasPages = false;
     validPages = {};
@@ -714,7 +894,8 @@
     }
 
     get currentPage() {
-      if (playerConfig.pagingMode !== "separate") {
+      if (!['separate', 'buttons'].includes(playerConfig.pagingMode)) {
+        // TODO get first visible page in a better way, ids are not numeric, use find
         const currentPage = Math.min(...Object.keys(this.visiblePages).filter(i => this.visiblePages[i]));
         if (currentPage === Infinity) {
           return 0;
@@ -744,7 +925,7 @@
 
       const pageElem = document.querySelector(`fieldset:nth-of-type(${this._currentPage})`);
 
-      if (playerConfig.pagingMode === "separate") {
+      if (['separate', 'buttons'].includes(playerConfig.pagingMode)) {
         this._openPage(pageElem);
         PlayerUI.togglePageNavButtons();
         PlayerUI.removeAllPointers();
@@ -756,7 +937,9 @@
     }
 
     applyPagingMode = () => {
+      document.querySelector('#unit').classList.remove(...pagingModes);
       document.querySelector('#unit').classList.add(playerConfig.pagingMode);
+      this._cleanObservers();
       this._setScrollObserver();
     }
 
@@ -792,19 +975,21 @@
     }
 
     _newObserver = (callback, elem) => {
-      new IntersectionObserver(
+      const observer = new IntersectionObserver(
         entries => entries.forEach(callback),
         {
           root: document.querySelector('#unit'),
           threshold: 0.01,
           rootMargin: '0%'
         }
-      ).observe(elem);
+      );
+      observer.observe(elem);
+      this._observers.push(observer);
     }
 
     _pageIntersection = intersectionEntry => {
       const pageId = parseInt(intersectionEntry.target.dataset.pagenr, 10);
-      if (playerConfig.pagingMode !== "separate") {
+      if (!['separate', 'buttons'].includes(playerConfig.pagingMode)) {
         this.visiblePages[pageId] = intersectionEntry.isIntersecting;
       }
       this.seenPages[pageId].enter = this.seenPages[pageId].enter || intersectionEntry.isIntersecting;
@@ -818,6 +1003,11 @@
       const pageId = parseInt(intersectionEntry.target.parentElement.dataset.pagenr, 10);
       this.seenPages[pageId].bottom = true;
       Message.send.vopStateChangedNotification();
+    }
+
+    _cleanObservers = () => {
+      this._observers.forEach(observer => observer.disconnect());
+      this._observers.length = 0;
     }
   }
 
@@ -891,11 +1081,11 @@
       document.querySelector('#unit').classList[Pages.hasPages ? 'add' : 'remove']('paged');
       this.toggleButton('next-page',
         Pages.pageCount > 1 && Pages.currentPage < Pages.pageCount,
-        Pages.pageCount > 1 && playerConfig.pagingMode === 'separate'
+        Pages.pageCount > 1 && playerConfig.pagingMode === 'buttons'
       );
       this.toggleButton('prev-page',
         Pages.pageCount > 1 && Pages.currentPage > 1,
-        Pages.pageCount > 1 && playerConfig.pagingMode === 'separate'
+        Pages.pageCount > 1 && playerConfig.pagingMode === 'buttons'
       );
     }
 
@@ -1054,7 +1244,7 @@
       });
     }
 
-    toggleMessage = content => {
+    toggleMessage = (content, isError) => {
       const dialog = document.querySelector('vsp-message');
       const dialogContent = document.querySelector('vsp-message-content');
       if (!content) {
@@ -1063,16 +1253,39 @@
       } else {
         dialogContent.innerHTML = content;
         dialog.style.display = 'block';
+        dialog.classList[isError ? 'add' : 'remove']('error');
       }
+    }
+  }
+
+  class VspRuntimeError extends Error {
+    name = 'VspRuntimeError';
+    constructor(code, message) {
+      super(message);
+      this.code = code;
     }
   }
 
   window.addEventListener('message', event => {Message.receive(event.data.type, event.data)}, false);
 
+  window.addEventListener('error', event => {
+    if (event.error.name === VspRuntimeError.name) {
+      Message.send.vopRuntimeErrorNotification(event.error.code, event.error.message);
+      PlayerUI.toggleMessage('Error: ' + event.error.message, true);
+    } else {
+      Message.send.vopRuntimeErrorNotification('runtime-error', event.error.message);
+      PlayerUI.toggleMessage('Error: Runtime Error', true);
+    }
+  }, false);
+
   document.addEventListener("DOMContentLoaded", Message.send.vopReadyNotification);
 
   document.addEventListener("vopPageNavigationCommand", event => Pages.goto(event.detail.target));
   document.addEventListener("vopNavigationDeniedNotification", event => PlayerUI.navigationDeniedMessage(event.detail.reason));
+
+  document.addEventListener("vopPlayerConfigChangedNotification", event => {
+    Unit.updatePlayerConfig(event.detail.playerConfig);
+  });
 
   window.addEventListener('blur', () => {
     Message.send.vopWindowFocusChangedNotification(document.hasFocus());

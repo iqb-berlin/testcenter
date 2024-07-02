@@ -8,16 +8,11 @@ import {
 } from 'rxjs/operators';
 import { CodingScheme, VariableCodingData } from '@iqb/responses';
 import {
-  CustomtextService,
-  TestMode,
-  UnitDef,
-  TestletDef,
-  BookletDef,
-  ContextInBooklet,
   BlockCondition,
-  BlockConditionSource,
-  sourceIsConditionAggregation,
-  sourceIsSourceAggregation, sourceIsSingleSource
+  BlockConditionSource, BookletDef, ContextInBooklet,
+  CustomtextService, sourceIsConditionAggregation,
+  sourceIsSingleSource, sourceIsSourceAggregation, TestletDef,
+  TestMode, UnitDef
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
@@ -28,7 +23,7 @@ import {
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  Testlet, Booklet, Unit, isUnit, TestletLockTypes, isTestlet
+  Booklet, Unit, isUnit, TestletLockTypes, Testlet
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -380,7 +375,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     const registerChildren = (testlet: Testlet): void => {
       testlet.children
         .forEach(child => {
-          // eslint-disable-next-line no-plusplus
           if (isUnit(child)) {
             this.tcs.unitAliasMap[child.alias] = child.sequenceId;
             this.tcs.units[child.sequenceId] = child;

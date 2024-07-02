@@ -20,7 +20,7 @@
 <div id="sample-unit-badge">Sample Unit</div>
 
 <fieldset>
-  <legend>About</legend>
+  <legend data-cy="legend-about">About</legend>
   <div id="player-info"></div>
   <script>
     document.addEventListener('vopStartCommand', _ => {
@@ -30,7 +30,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Long Content and Form Elements</legend>
+  <legend data-cy="legend-longContent">Long Content and Form Elements</legend>
   <div style="display: flex;">
     <div style="flex: 50%; padding: 2px">
       <p id="long-content"><b>This is random content to have an example with a lot of content: </b>Lorem ipsum </p>
@@ -99,7 +99,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Extensibility</legend>
+  <legend data-cy="legend-extensibility">Extensibility</legend>
   <div style="display: flex;">
     <div style="flex: 50%; padding: 2px">
       <p><b>The player is easily extensible, </b> in this example with an audio-element.</p>
@@ -247,6 +247,12 @@
           SoundModule.stop();
         });
 
+        document.addEventListener('vopGetStateRequest', data => {
+          if (data.stop) {
+            PlayerUI.togglePlayerRunning(false);
+          }
+        });
+
         PlayerUI.addEventListener('click', '#melody-play', e => {
           e.preventDefault();
           SoundModule.play();
@@ -294,7 +300,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Logging</legend>
+  <legend data-cy="legend-logging">Logging</legend>
   <p><b>You can try out the logging mechanism here.</b></p>
   <p>Your <code>playerConfig.logPolicy</code> is <code id="log-policy"></code>.</p>
   <button onclick="Log.rich('sample-log', 'log entry, if mode is rich'); return false"> Write log, if mode is 'rich'</button>
@@ -307,7 +313,7 @@
       document.querySelector('#log-display').innerHTML = '';
       Log.getAll().forEach(entry => {
         document.querySelector('#log-display').innerHTML += `<tr><td>${entry.timeStamp}</td>`
-          + `<td>${entry.key}</td><td>${entry.content}</td><td>${entry.sent ? '✓' : ''}</td></td>`;
+                + `<td>${entry.key}</td><td>${entry.content}</td><td>${entry.sent ? '✓' : ''}</td></td>`;
       });
     }
     document.addEventListener('sent:vopStateChangedNotification', updateLogView);
@@ -319,6 +325,25 @@
     </thead>
     <tbody id="log-display"></tbody>
   </table>
+</fieldset>
+
+<fieldset>
+  <script>
+    const raiseError = () => {
+      throw new VspRuntimeError(document.getElementById('error-type').value, 'manually thrown error');
+    };
+  </script>
+  <legend data-cy="legend-errors">Errors</legend>
+  <p><b>You can try out the error mechanism here.</b></p>
+  <select id="error-type">
+    <option name="session-id-missing">session-id-missing</option>,
+    <option name="unit-definition-missing">unit-definition-missing</option>,
+    <option name="wrong-session-id">wrong-session-id</option>,
+    <option name="unit-definition-type-unsupported">unit-definition-type-unsupported</option>,
+    <option name="unit-state-type-unsupported">unit-state-type-unsupported</option>,
+    <option name="runtime-error">runtime-error</option>
+  </select>
+  <button onclick="raiseError(); return false">Raise runtime error</button>
 </fieldset>
 
 <fieldset>

@@ -248,3 +248,25 @@ export class StarterActivateGuard {
     return false;
   }
 }
+
+@Injectable({
+  providedIn: 'root'
+})
+export class StudyMonitorActivateGuard {
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) {
+  }
+
+  canActivate(): boolean {
+    const authData = this.mainDataService.getAuthData();
+
+    if (authData && authData.claims && authData.claims.studyMonitor) {
+      return true;
+    }
+
+    this.router.navigate(['/r']);
+    return false;
+  }
+}

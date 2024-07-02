@@ -1,10 +1,10 @@
 {
   "name": "iqb-testcenter",
-  "version": "15.2.0-alpha8",
+  "version": "15.1.8",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
-      "max": 5
+      "max": 6
     },
     "iqb-standard-response-type": {
       "min": 1,

@@ -7,6 +7,7 @@ use Slim\Factory\AppFactory;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
+// local function to react correctly even if autoloader is broken
 function fatalErrorHandler(Throwable $e): void {
   // this can only happen if slim itself or slim error handler fails or some class fails in constructor
   http_response_code(500);
@@ -16,7 +17,6 @@ function fatalErrorHandler(Throwable $e): void {
   error_log($e->getMessage());
   $path = explode('/', $e->getFile());
   echo "Fatal error (500) at {$path[count($path)-2]}/{$path[count($path)-1]}:{$e->getLine()} : {$e->getMessage()}";
-  exit(1);
 }
 
 

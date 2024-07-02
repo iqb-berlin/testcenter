@@ -53,7 +53,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('have.value', 'HASE');
     // Time restricted area has been entered. Start the timer
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .contains('OK')
       .then(() => {
         startTime = new Date().getTime();
       })
@@ -173,7 +172,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]');
-    cy.contains('OK')
+    cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .should('exist')

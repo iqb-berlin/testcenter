@@ -11,7 +11,13 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
-  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig
+  Verona5ValidPages,
+  Verona6ValidPages,
+  VeronaNavigationDeniedReason,
+  VeronaNavigationTarget,
+  VeronaPlayerConfig,
+  VeronaPlayerRuntimeErrorCodes,
+  VeronaProgress
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
 
@@ -97,6 +103,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.handleWindowFocusChangedNotification(msgData);
         break;
 
+      case 'vopRuntimeErrorNotification':
+        this.handleRuntimeError(msgData.code, msgData.message);
+        if (this.tcs.testMode.saveResponses) {
+          this.bs.addUnitLog(
+            this.tcs.testId,
+            this.tcs.currentUnit.alias,
+            [
+              {
+                key: `Runtime Error: ${msgData.code}`,
+                content: msgData.message || '',
+                timeStamp: Date.now()
+              }
+            ]
+          );
+        }
+        break;
+
       default:
         // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
@@ -121,7 +144,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         description: `Player uses Verona ${playerApiVersion}, but this testcenter only support 
               ${this.mds.appConfig.veronaPlayerApiVersionMin} to ${this.mds.appConfig.veronaPlayerApiVersionMax}`,
         label: 'Unpassende Verona-Version',
-        type: 'player'
+        type: 'verona_player_runtime_error'
       });
     }
 
@@ -142,7 +165,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       type: 'vopStartCommand',
       sessionId: this.playerSessionId,
       unitDefinition: this.tcs.currentUnit.definition,
-      unitDefinitionType: this.tcs.currentUnit.playerId,
+      unitDefinitionType: this.fileNameToId(this.tcs.currentUnit.playerId),
       unitState: {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
@@ -156,16 +179,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (msgData.playerState) {
       const { playerState } = msgData;
 
-      this.pages = playerState.validPages;
-      this.pageLabels = Object.values(this.pages);
-      // page index starts with 0 and gets mapped from and to the dictionary from the API
-      this.currentPageIndex = Object.keys(playerState.validPages).indexOf(playerState.currentPage);
+      this.readPages(playerState.validPages);
+      this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
 
       if (typeof playerState.currentPage !== 'undefined') {
         const pageId = playerState.currentPage;
-        const pageNr = playerState.currentPage + 1;
-        const pageCount = this.pageLabels.length;
-        if (Object.keys(this.pages).length > 1 && playerState.validPages[playerState.currentPage]) {
+        const pageNr = Object.keys(this.pages)[pageId] + 1; // only for humans to read in the logs
+        const pageCount = Object.keys(this.pages).length;
+        if (Object.keys(this.pages).length > 1 && this.pages[playerState.currentPage]) {
           this.tcs.updateUnitState(
             this.tcs.currentUnitSequenceId,
             {
@@ -234,6 +255,51 @@ export class UnithostComponent implements OnInit, OnDestroy {
     } else {
       this.tcs.windowFocusState$.next('UNKNOWN');
     }
+  }
+
+  private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
+    this.pages = { };
+    if (!Array.isArray(validPages)) {
+      // Verona 2-5
+      this.pages = validPages;
+    } else {
+      // Verona > 6
+      // covers also some versions of aspect who send a corrupted format
+      validPages
+        .forEach((page, index) => {
+          this.pages[String(page.id ?? index)] = page.label ?? String(index + 1);
+        });
+    }
+    this.pageLabels = Object.values(this.pages);
+  }
+
+  private handleRuntimeError(code?: string, message?: string): void {
+    // possible reactions on runtimeErrors
+    const reactions: { [key: string]: (code: string, message: string) => void } = {
+      raiseError: (errorCode, errorMessage) => {
+        throw new AppError({
+          label: 'Fehler beim Abspielen der Aufgabe',
+          description: errorMessage,
+          type: 'verona_player_runtime_error',
+          code: VeronaPlayerRuntimeErrorCodes.indexOf(errorCode)
+        });
+      },
+      removeTryLeaveRestrictions: () => {
+        // this might be the correct reaction on unloadable audio or what
+        this.tcs.currentUnit.state.RESPONSE_PROGRESS = 'complete';
+        this.tcs.currentUnit.state.PRESENTATION_PROGRESS = 'complete';
+      }
+    };
+    const runTimeErrorReactionMap:
+    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]] : keyof typeof reactions } = {
+      'session-id-missing': 'raiseError',
+      'unit-definition-missing': 'raiseError',
+      'wrong-session-id': 'raiseError',
+      'unit-definition-type-unsupported': 'raiseError',
+      'unit-state-type-unsupported': 'raiseError',
+      'runtime-error': 'raiseError'
+    };
+    reactions[runTimeErrorReactionMap[code || 'runtime-error'] || 'raiseError'](code || '', message || '');
   }
 
   private open(unitSequenceId: number): void {
@@ -331,6 +397,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.leaveWarning = false;
     this.prepareIframe();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private fileNameToId(fileName: string): string {
+    // TODO get a secured ID info from the backend instead
+    return (fileName?.split('/').pop() ?? '').replace(/\.[Hh][Tt][Mm][Ll]/, '');
   }
 
   private startTimerIfNecessary(): void {

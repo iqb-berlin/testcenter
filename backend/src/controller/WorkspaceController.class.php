@@ -34,8 +34,9 @@ class WorkspaceController extends Controller {
       throw new HttpBadRequestException($request, "New workspace name missing");
     }
 
-    self::superAdminDAO()->createWorkspace($requestBody->name);
+    $workspaceCreated = self::superAdminDAO()->createWorkspace($requestBody->name);
 
+    $response->getBody()->write(htmlspecialchars($workspaceCreated['id']));
     return $response->withStatus(201);
   }
 
@@ -124,6 +125,7 @@ class WorkspaceController extends Controller {
     $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
     $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
+    $workspace->setWorkspaceHash();
 
     $reports = [];
     $loginsAffected = false;
@@ -173,6 +175,8 @@ class WorkspaceController extends Controller {
         break;
       }
     }
+
+    $workspace->setWorkspaceHash();
 
     return $response->withJson($deletionReport)->withStatus(207);
   }

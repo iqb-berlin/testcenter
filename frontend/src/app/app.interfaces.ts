@@ -7,7 +7,8 @@ export type AuthAccessType =
   | 'test'
   | 'workspaceMonitor'
   | 'testGroupMonitor'
-  | 'attachmentManager';
+  | 'attachmentManager'
+  | 'studyMonitor';
 
 export interface AccessObject {
   label: string;
@@ -36,16 +37,16 @@ export interface KeyValuePairs {
 }
 
 export type AppErrorType =
-  | 'session'
-  | 'general'
-  | 'backend'
-  | 'network'
-  | 'script'
-  | 'warning'
-  | 'fatal'
-  | 'network_temporally'
-  | 'xml'
-  | 'player';
+    'session'
+    | 'general'
+    | 'backend'
+    | 'network'
+    | 'script'
+    | 'warning'
+    | 'fatal'
+    | 'network_temporally'
+    | 'xml'
+    | 'verona_player_runtime_error';
 
 export interface AppErrorInterface {
   label: string;
