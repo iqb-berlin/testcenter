@@ -48,7 +48,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pages: Verona5ValidPages = {};
   pageLabels: string[] = [];
-  currentPageIndex: number = -1;
 
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[] = [];
@@ -145,7 +144,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
             const { playerState } = msgData;
 
             this.readPages(playerState.validPages);
-            this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
+            this.tcs.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
+            this.tcs.currentPageLabel = this.pageLabels[this.tcs.currentPageIndex];
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
@@ -303,7 +303,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
 
-    this.currentPageIndex = -1;
+
+    this.tcs.currentPageIndex = -1;
+    this.tcs.currentPageLabel = '';
     this.pages = { };
     this.pageLabels = [];
 
@@ -517,11 +519,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   gotoNextPage(): void {
-    this.gotoPage(this.currentPageIndex + 1);
+    this.gotoPage(this.tcs.currentPageIndex + 1);
   }
 
   gotoPreviousPage(): void {
-    this.gotoPage(this.currentPageIndex - 1);
+    this.gotoPage(this.tcs.currentPageIndex - 1);
   }
 
   gotoPage(targetPageIndex: number): void {

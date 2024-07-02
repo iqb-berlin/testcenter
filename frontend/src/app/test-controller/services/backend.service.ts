@@ -1,9 +1,13 @@
-import { Injectable, Inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
-  UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
+  KeyValuePairString,
+  LoadingFile,
+  StateReportEntry,
+  TestData,
+  UnitData
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
@@ -21,13 +25,19 @@ export class BackendService {
   saveReview(
     testId: string,
     unitName: string | null,
+    page: number | null,
+    pageLabel: string | null,
     priority: number,
     categories: string,
-    entry: string
-  ) : Observable<void> {
+    entry: string,
+    userAgent: string,
+    originalUnitId: string
+  ): Observable<void> {
     return this.http.put<void>(
       `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
-      { priority, categories, entry }
+      {
+        priority, categories, entry, page, pageLabel, userAgent, originalUnitId
+      }
     );
   }
 

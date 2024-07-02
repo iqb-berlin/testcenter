@@ -1,3 +1,5 @@
+unitfolder=.
+
 test-backend-unit:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 	--rm --entrypoint "" \
@@ -5,7 +7,7 @@ test-backend-unit:
 		php -dxdebug.mode='debug' /var/www/backend/vendor/phpunit/phpunit/phpunit \
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
-				/var/www/backend/test/unit/. \
+				/var/www/backend/test/unit/${unitfolder} \
 
 
 test-backend-unit-coverage:
@@ -16,7 +18,7 @@ test-backend-unit-coverage:
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
 			--coverage-html /docs/dist/test-coverage-backend-unit \
-				/var/www/backend/test/unit/. \
+				/var/www/backend/test/unit/${unitfolder} \
 			--testdox
 
 test-backend-api:
