@@ -26,6 +26,7 @@ export type UnitData = {
   unitResponseType: string;
   state: UnitState;
   definition : string;
+  definitionType: string;
 };
 
 export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer' | 'usesScheme';
@@ -192,7 +193,7 @@ export interface Unit extends UnitDef {
   readonly sequenceId: number;
   readonly parent: Testlet;
   readonly localIndex: number;
-  readonly playerId: string; // TODO X is this needed anymore?
+  unitDefinitionType: string;
   variables: { [variableId: string]: IQBVariable };
   baseVariableIds: string[];
   playerFileName: string;

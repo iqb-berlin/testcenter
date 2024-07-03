@@ -210,6 +210,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.units[sequenceId].state = unitData.state;
           this.tcs.units[sequenceId].responseType = unitData.unitResponseType;
           this.tcs.units[sequenceId].dataParts = unitData.dataParts;
+          this.tcs.units[sequenceId].unitDefinitionType = unitData.definitionType;
 
           if (definitionFile) {
             this.loadingQueue.push({ sequenceId, file: definitionFile, type: 'definition' });
@@ -502,8 +503,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       sequenceId: context.global.unitIndex,
       parent: context.parents[0],
       playerFileName: '',
-      // type is deprecated but support everything
-      playerId: elem.getAttribute('type') || elem.getAttribute('player') || '',
+      unitDefinitionType: '',
       localIndex: context.localUnitIndex,
       variables: { },
       baseVariableIds: [],

@@ -107,7 +107,8 @@ class TestController extends Controller {
       'state' => $unitState,
       'dataParts' => (object) $unitData['dataParts'],
       'unitResponseType' => $unitData['dataType'],
-      'definition' => $unitFile->getDefinition()
+      'definition' => $unitFile->getDefinition(),
+      'definitionType' => $unitFile->getDefinitionType()
     ]);
   }
 

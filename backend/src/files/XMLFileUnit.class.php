@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 class XMLFileUnit extends XMLFile {
-  const type = 'Unit';
-  const canBeRelationSubject = true;
-  const canBeRelationObject = true;
+  const string type = 'Unit';
+  const true canBeRelationSubject = true;
+  const true canBeRelationObject = true;
 
-  const deprecatedElements = [
+  const array deprecatedElements = [
     '/Unit/Definition/@type',
     '/Unit/Metadata/Lastchange',
     '/Unit/Dependencies/file'
@@ -31,7 +31,7 @@ class XMLFileUnit extends XMLFile {
     $resource = $workspaceCache->getResource($playerId);
 
     if ($resource != null) {
-      $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
+      $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), FileRelationshipType::usesPlayer, $resource, $playerId));
     } else {
       $this->report('error', "Player not found `$playerId`.");
     }
@@ -48,7 +48,7 @@ class XMLFileUnit extends XMLFile {
 
     $schemeIdRaw = count($reference) ? (string) $reference[0] : '';
 
-    // TODO XZ check if schemer & scheme type is supported
+    // TODO X check if schemer & scheme type is supported
 
     return $schemeIdRaw;
   }
@@ -96,7 +96,11 @@ class XMLFileUnit extends XMLFile {
 
     $definition = $this->getXml()->xpath('/Unit/Definition | /Unit/DefinitionRef');
 
-    $playerIdRaw = count($definition) ? (string) $definition[0]['player'] : null;
+    $playerIdRaw = null;
+
+    if (count($definition)) {
+      $playerIdRaw = (string) $definition[0]['player'] ?? (string) $definition[0]['type'];
+    }
 
     if (!$playerIdRaw) {
       return '';
@@ -154,5 +158,20 @@ class XMLFileUnit extends XMLFile {
     }
 
     return $requestedAttachments;
+  }
+
+  public function getDefinitionType(): string {
+    // at one point we decided to deprecated the type-attribute in <DefinitionRef> or <Definition>, and said, that the
+    // type is always indicated by the player. This might change again in the future.
+    if (count($this->relations)) {
+      foreach ($this->relations as $relation) {
+        /* @var FileRelation $relation */
+        if ($relation->getRelationshipType() === FileRelationshipType::usesPlayer) {
+          return strtolower(FileID::normalize($relation->getTargetName()));
+        }
+      }
+      return '';
+    }
+    return strtolower($this->readPlayerId());
   }
 }

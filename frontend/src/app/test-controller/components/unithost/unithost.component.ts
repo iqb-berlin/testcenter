@@ -16,8 +16,7 @@ import {
   VeronaNavigationDeniedReason,
   VeronaNavigationTarget,
   VeronaPlayerConfig,
-  VeronaPlayerRuntimeErrorCodes,
-  VeronaProgress
+  VeronaPlayerRuntimeErrorCodes
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
 
@@ -165,7 +164,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       type: 'vopStartCommand',
       sessionId: this.playerSessionId,
       unitDefinition: this.tcs.currentUnit.definition,
-      unitDefinitionType: this.fileNameToId(this.tcs.currentUnit.playerId),
+      unitDefinitionType: this.tcs.currentUnit.unitDefinitionType,
       unitState: {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
@@ -397,12 +396,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.leaveWarning = false;
     this.prepareIframe();
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private fileNameToId(fileName: string): string {
-    // TODO get a secured ID info from the backend instead
-    return (fileName?.split('/').pop() ?? '').replace(/\.[Hh][Tt][Mm][Ll]/, '');
   }
 
   private startTimerIfNecessary(): void {
