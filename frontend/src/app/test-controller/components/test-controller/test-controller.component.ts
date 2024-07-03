@@ -17,7 +17,6 @@ import {
 import {
   Command, MaxTimerEvent,
   ReviewDialogData,
-  UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
@@ -47,17 +46,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   };
 
   timerValue: TimerData | null = null;
-  unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: Array<UnitNaviButtonData> = []; // TODO Xdo we need this?
-  nextUnitButton = {
-    visible: true,
-    enabled: false
-  };
-
-  previousUnitButton = {
-    visible: true,
-    enabled: false
-  };
 
   debugPane = false;
   unitScreenHeader: string = '';
@@ -128,8 +116,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(maxTimerEvent => this.handleTimer(maxTimerEvent));
 
       this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
-        .subscribe(() => {
-          this.refreshUnitMenu();
+        .subscribe(async () => {
+          [this.firstAccessibleUnit, this.lastAccessibleUnit] = await this.tcs.getSequenceBounds();
           this.setUnitScreenHeader();
         });
 
@@ -307,49 +295,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       default:
         return true;
     }
-  }
-
-  private async refreshUnitMenu(): Promise<void> {
-    this.unitNavigationList = [];
-    [this.firstAccessibleUnit, this.lastAccessibleUnit] = await this.tcs.getSequenceBounds();
-
-    let previousBlockLabel: string | null = null;
-    for (let sequenceId = 1; sequenceId <= this.tcs.sequenceLength; sequenceId++) {
-      const unit = this.tcs.getUnit(sequenceId);
-
-      if (unit.parent.locked?.by === 'condition') {
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-
-      const blockLabel = unit.parent.blockLabel;
-
-      const isOnRoot = unit.parent.id === this.tcs.testlets[this.tcs.booklet?.units.id || ''].id;
-
-      let headline: string | null = null;
-      if (blockLabel !== previousBlockLabel) {
-        headline = isOnRoot ? '' : blockLabel;
-      }
-      previousBlockLabel = blockLabel;
-
-      this.unitNavigationList.push({
-        sequenceId,
-        shortLabel: unit.labelShort,
-        longLabel: unit.label,
-        disabled: TestControllerService.unitIsInaccessible(unit),
-        isCurrent: sequenceId === this.tcs.currentUnitSequenceId,
-        headline
-      });
-    }
-    this.refreshNavigationButtons();
-  }
-
-  private refreshNavigationButtons(): void {
-    this.previousUnitButton.visible = this.tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY';
-    this.previousUnitButton.enabled = this.tcs.currentUnitSequenceId > this.firstAccessibleUnit;
-
-    this.nextUnitButton.visible = true;
-    this.nextUnitButton.enabled = this.tcs.currentUnitSequenceId < this.lastAccessibleUnit;
   }
 
   private setUnitScreenHeader(): void {

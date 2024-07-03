@@ -121,8 +121,6 @@ export interface StateUpdate<StateType extends string> {
 export type UnitStateUpdate = StateUpdate<UnitStateKey>;
 export type TestStateUpdate = StateUpdate<TestStateKey>;
 
-// for testcontroller service ++++++++++++++++++++++++++++++++++++++++
-
 export enum MaxTimerEvent {
   STARTED = 'STARTED',
   STEP = 'STEP',
@@ -131,16 +129,6 @@ export enum MaxTimerEvent {
   ENDED = 'ENDED'
 }
 
-export interface UnitNaviButtonData {
-  sequenceId: number;
-  disabled: boolean;
-  shortLabel: string;
-  longLabel: string;
-  isCurrent: boolean;
-  headline: string | null;
-}
-
-// for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export interface ReviewDialogData {
   loginname: string;
   bookletname: string;
@@ -204,7 +192,7 @@ export interface Unit extends UnitDef {
   readonly sequenceId: number;
   readonly parent: Testlet;
   readonly localIndex: number;
-  readonly playerId: string;
+  readonly playerId: string; // TODO X is this needed anymore?
   variables: { [variableId: string]: IQBVariable };
   baseVariableIds: string[];
   playerFileName: string;

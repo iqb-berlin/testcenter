@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode
 } from '../../../shared/shared.module';
@@ -17,7 +17,7 @@ import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
 import { TestControllerComponent } from './test-controller.component';
 import {
-  Command, TestControllerState, TestData, UnitNaviButtonData, WindowFocusState
+  Command, TestControllerState, TestData, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
@@ -38,7 +38,7 @@ const currentUnitSequenceId$ = new Subject<number>();
   selector: 'tc-unit-menu'
 })
 class MockUnitMenuComponent {
-  @Input() menu: Array<UnitNaviButtonData | string> = [];
+  // @Input() menu: Array<UnitNaviButtonData | string> = [];
 }
 
 const MockBackendService = {

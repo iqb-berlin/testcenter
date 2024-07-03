@@ -1,0 +1,74 @@
+<div
+  class="flex-row unit-nav"
+
+>
+  <a
+    *ngIf="prevButtonVisible && retardedDesign"
+    mat-fab
+    matTooltip="Zurück"
+    data-cy="unit-navigation-backward"
+    [disabled]="!prevButtonEnabled"
+    (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+  >
+    <i class="material-icons">chevron_left</i>
+  </a>
+  <a
+    *ngIf="prevButtonVisible && !retardedDesign"
+    mat-flat-button
+    matTooltip="Zurück"
+    data-cy="unit-navigation-backward"
+    [style.border-radius]="0"
+    [disabled]="!prevButtonEnabled"
+    (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+  >
+    <i class="material-icons">chevron_left</i>
+  </a>
+
+  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}" />
+
+  <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
+    <ng-container *ngFor="let testletOrUnit of testlet.children">
+      <ng-container *ngIf="!isTestlet(testletOrUnit); else: subTestlet">
+        <a
+          mat-flat-button
+          class="unit-nav-item"
+          [class.unit-nav-item-selected]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
+          [attr.aria-label]="testletOrUnit.label"
+          [attr.data-cy]="testletOrUnit.labelShort"
+          [disabled]="testletOrUnit | unit_inaccessible"
+          (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
+        >
+          {{testletOrUnit.labelShort || "&nbsp;"}}
+        </a>
+      </ng-container>
+
+      <ng-template #subTestlet>
+        <ng-container *ngIf="isTestlet(testletOrUnit) && (testletOrUnit.firstUnsatisfiedCondition < 0)">
+          <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}" />
+        </ng-container>
+      </ng-template>
+    </ng-container>
+  </ng-template>
+
+  <a
+    *ngIf="nextButtonVisible && retardedDesign"
+    mat-fab
+    matTooltip="Weiter"
+    data-cy="unit-navigation-forward"
+    [disabled]="!nextButtonEnabled"
+    (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+  >
+    <i class="material-icons">chevron_right</i>
+  </a>
+  <a
+    *ngIf="nextButtonVisible && !retardedDesign"
+    mat-flat-button
+    matTooltip="Weiter"
+    data-cy="unit-navigation-forward"
+    [style.border-radius]="0"
+    [disabled]="!nextButtonEnabled"
+    (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+  >
+    <i class="material-icons">chevron_right</i>
+  </a>
+</div>

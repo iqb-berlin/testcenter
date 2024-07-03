@@ -12,7 +12,7 @@
             [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
             [disabled]="testletOrUnit | unit_inaccessible"
             [matTooltip]="testletOrUnit.label"
-          >{{testletOrUnit.label || "&nbsp;"}} {{testletOrUnit.parent.locked?.by}}
+          >{{testletOrUnit.label || "&nbsp;"}}
           </a>
         </div>
 

@@ -34,6 +34,9 @@ import { TestControllerDeactivateGuard } from './routing/test-controller-deactiv
 import { DebugPaneComponent } from './components/debug-pane/debug-pane.component';
 import { PogressBarModePipe } from './pipes/progress-bar-mode.pipe';
 import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
+import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
+import { PropertiesPipe } from './pipes/properties.pipe';
+import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -72,7 +75,10 @@ export { TestControllerService } from './services/test-controller.service';
     UnitMenuComponent,
     DebugPaneComponent,
     PogressBarModePipe,
-    UnitInaccessiblePipe
+    UnitInaccessiblePipe,
+    UnitNavBarComponent,
+    PropertiesPipe,
+    SchemeAsTextPipe
   ],
   providers: [
     UnitActivateGuard,

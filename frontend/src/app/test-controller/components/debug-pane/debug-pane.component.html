@@ -201,41 +201,32 @@
   </mat-icon>
 
   <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
+    <ng-container *ngFor="let prop of testlet | properties">
+      <tr *ngIf="!['id', 'children', 'locks', 'restrictions', 'locked'].includes(prop.key)">
+        <td>{{prop.key}}</td>
+        <td>{{prop.value}}</td>
+      </tr>
+    </ng-container>
+
+    <tr *ngFor="let lock of testlet.locks | properties">
+      <td>locks.{{lock.key}}</td>
+      <td>{{lock.value}}</td>
     <tr>
-      <td>label</td>
-      <td>{{testlet.label}}</td>
+
+    <tr *ngFor="let restriction of testlet.restrictions | properties">
+      <td>restrictions.{{restriction.key}}</td>
+      <td *ngIf="restriction.key !== 'if'">{{restriction.value | json}}</td>
+      <td *ngIf="restriction.key === 'if'">
+        <div *ngFor="let ifcond of testlet.restrictions.if">
+          {{ifcond | blockcondition}}
+        </div>
+      </td>
     </tr>
+
     <tr>
-      <td>blockLabel</td>
-      <td>{{testlet.blockLabel}}</td>
-    </tr>
-    <tr>
-      <td>timerId</td>
-      <td>{{testlet.timerId}}</td>
-    </tr>
-    <tr>
-      <td>firstUnsatisfiedCondition</td>
-      <td>{{testlet.firstUnsatisfiedCondition}}</td>
-    </tr>
-    <tr>
-      <td>locks.time</td>
-      <td>{{testlet.locks.time ? 'y' : 'n'}}</td>
-    </tr>
-    <tr>
-      <td>locks.code</td>
-      <td>{{testlet.locks.code ? 'y' : 'n'}}</td>
-    </tr>
-    <tr>
-      <td>locks.condition</td>
-      <td>{{testlet.locks.condition ? 'y' : 'n'}}</td>
-    </tr>
-    <tr>
-      <td>locks.afterLeave</td>
-      <td>{{testlet.locks.afterLeave ? 'y' : 'n'}}</td>
-    </tr>
-    <tr *ngIf="testlet.locked">
       <td>locked</td>
-      <td>BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
+      <td *ngIf="testlet.locked">BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
+      <td *ngIf="!testlet.locked">NO</td>
     </tr>
   </table>
 
@@ -255,34 +246,39 @@
       </mat-icon>
     </span>
     <table *ngIf="openPanes.includes(unit.alias) || single">
+
+      <ng-container *ngFor="let prop of unit | properties">
+        <tr *ngIf="!['parent', 'definition', 'state', 'variables', 'dataParts', 'loadingProgress', 'scheme'].includes(prop.key)">
+          <td>{{prop.key}}</td>
+          <td>{{prop.value}}</td>
+        </tr>
+      </ng-container>
+
       <tr>
         <td>parent</td>
         <td>{{unit.parent.id}}</td>
       </tr>
-      <tr>
-        <td>localIndex</td>
-        <td>{{unit.localIndex}}</td>
-      </tr>
-      <tr>
-        <td>playerFileName</td>
-        <td>{{unit.playerFileName}}</td>
-      </tr>
-      <tr>
-        <td>playerId</td>
-        <td>{{unit.playerId}}</td>
-      </tr>
-      <tr>
-        <td>responseType</td>
-        <td>{{unit.responseType}}</td>
-      </tr>
+
       <tr>
         <td>definition</td>
-        <td>{{unit.definition | slice:0:20 }}</td>
+        <td>{{unit.definition | slice:0:20 }} ...</td>
       </tr>
+
       <tr *ngFor="let stateEntry of unit.state | keyvalue">
         <td>state.{{stateEntry.key}}</td>
         <td>{{stateEntry.value}}</td>
       </tr>
+
+      <tr *ngFor="let lp of unit.loadingProgress | keyvalue">
+        <td>loadingProgress: {{lp.key}}</td>
+        <td>{{(lp.value | async)?.progress}}</td>
+      </tr>
+
+      <tr>
+        <td>scheme</td>
+        <td>{{unit.scheme | schemeastext}}</td>
+      </tr>
     </table>
+
   </div>
 </ng-template>
