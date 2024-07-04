@@ -228,15 +228,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           gotoTarget = params[0];
         }
         if (gotoTarget && gotoTarget !== '0') {
-          this.tcs.resumeTargetUnitSequenceId = 0;
-          const targetUnit = this.tcs.getUnit(parseInt(gotoTarget, 10));
+          this.tcs.resumeTargetUnitSequenceId = 0; // TODO x why?
+          const targetUnit = this.tcs.getUnitSilent(parseInt(gotoTarget, 10));
           if (targetUnit) {
             if (targetUnit.parent.timerId !== this.tcs.currentUnit.parent.timerId) {
               this.tcs.cancelTimer();
             }
             this.tcs.clearTestlet(targetUnit.parent.id);
           }
-
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }
         break;

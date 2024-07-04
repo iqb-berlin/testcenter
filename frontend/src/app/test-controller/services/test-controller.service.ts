@@ -40,7 +40,7 @@ import { TestStateUtil } from '../util/test-state.util';
   providedIn: 'root'
 })
 export class TestControllerService {
-  static readonly unitDataBufferMs = 60000;
+  static readonly unitDataBufferMs = 1000;
   static readonly unitStateBufferMs = 10000;
 
   testId = '';
@@ -375,7 +375,7 @@ export class TestControllerService {
       // eslint-disable-next-line no-console
       console.trace();
       // eslint-disable-next-line no-console
-      console.log(`Unit not found:${unitSequenceId}`, this.units);
+      console.log(`Unit not found:${unitSequenceId}`);
       throw new AppError({
         label: `Unit not found:${unitSequenceId}`,
         description: '',
@@ -496,7 +496,6 @@ export class TestControllerService {
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
-    const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
     if (!this._booklet) {
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     }
@@ -528,11 +527,9 @@ export class TestControllerService {
         );
       default:
         // eslint-disable-next-line no-case-declarations
-        let navNr = parseInt(navString, 10);
-        navNr = (navNr <= 1) ? 1 : navNr;
-        navNr = (navNr > this.sequenceLength) ? this.sequenceLength : navNr;
+        const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
         return this.router.navigate(
-          [`/t/${this.testId}/u/${navNr}`],
+          [`/t/${this.testId}/u/${navString}`],
           {
             state: { force },
             // eslint-disable-next-line no-bitwise
@@ -542,7 +539,8 @@ export class TestControllerService {
         )
           .then(navOk => {
             if (!navOk && !targetIsCurrent) {
-              this.messageService.showError(`Navigation zu ${navString} nicht möglich!`);
+              // happens when a goto goes to a unit which does exist, but is not accessible
+              this.messageService.showError(`Navigation zu ${navString} nicht erlaubt.`);
             }
             return navOk;
           });
@@ -757,13 +755,14 @@ export class TestControllerService {
   }
 
   async getSequenceBounds(): Promise<[number, number]> {
+    await this.closeBuffer();
     const first = Object.values(this.units)
-      .find(async unit => !(TestControllerService.unitIsInaccessible(unit)))
+      .find(unit => !(TestControllerService.unitIsInaccessible(unit)))
       ?.sequenceId || NaN;
     const last = Object.values(this.units)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-      .findLast(async unit => !TestControllerService.unitIsInaccessible(unit))
+      .findLast(unit => !TestControllerService.unitIsInaccessible(unit))
       ?.sequenceId || NaN;
     return [first, last];
   }

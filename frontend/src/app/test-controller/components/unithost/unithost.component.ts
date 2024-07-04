@@ -61,6 +61,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
+      this.subscriptions.testStructureChanges = this.tcs.testStructureChanges$
+        .subscribe(() => this.updatePlayerConfig());
     });
   }
 
@@ -500,7 +502,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if ((terminationAllowed === 'LAST_UNIT') && (nr === bounds[1])) {
       navigationTargets.push('end');
     }
-
     return navigationTargets;
   }
 
@@ -560,5 +561,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if ($event.key === 'Enter') {
       this.verifyCodes();
     }
+  }
+
+  private async updatePlayerConfig() {
+    this.postMessageTarget.postMessage({
+      type: 'vopPlayerConfigChangedNotification',
+      sessionId: this.playerSessionId,
+      playerConfig: await this.getPlayerConfig()
+    }, '*');
   }
 }
