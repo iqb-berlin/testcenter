@@ -216,7 +216,6 @@ class Workspace {
   }
 
   protected function validateUncategorizedFiles(array $localFilePaths): array {
-    require_once '/var/www/backend/src/data-collection/FileType.enum.php'; // todo how to integrate into autoloader
     $filesPerType = array_fill_keys(Workspace::subFolders, []);
 
     $localFiles = [];
