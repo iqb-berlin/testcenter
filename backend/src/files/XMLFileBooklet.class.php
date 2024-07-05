@@ -10,7 +10,6 @@ class XMLFileBooklet extends XMLFile {
   public function crossValidate(WorkspaceCache $workspaceCache): void {
     parent::crossValidate($workspaceCache);
 
-    $bookletPlayers = [];
 
     foreach ($this->getUnitIds() as $unitId) {
       $unit = $workspaceCache->getUnit($unitId);
@@ -20,17 +19,13 @@ class XMLFileBooklet extends XMLFile {
         continue;
       }
 
+      if (!$unit->isValid()) {
+        $this->report('error', "Unit `$unitId` has an error");
+        continue;
+      }
+
       $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
-      $playerFile = $unit->getPlayerIfExists($workspaceCache);
-
-      if (!$playerFile) {
-        $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
-      }
-
-      if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
-        $bookletPlayers[] = $playerFile->getId();
-      }
     }
   }
 

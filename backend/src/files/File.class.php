@@ -33,7 +33,7 @@ class File extends FileData {
   }
 
   // TODO unit-test
-  private static function determineType(string $path): string {
+  public static function determineType(string $path): string {
     if (strtoupper(substr($path, -4)) == '.XML') {
       $asGenericXmlFile = new XMLFile($path);
       if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {

@@ -6,29 +6,29 @@ enum FileType: string
 {
   case TESTTAKERS = 'Testtakers';
   case BOOKLET = 'Booklet';
-  //case SYSTEMCHECK = 'Syscheck';
+  case SYSTEMCHECK = 'SysCheck';
   case UNIT = 'Unit';
   case RESOURCE = 'Resource';
 
   /** @return string[] */
-  public static function getDependantTypes(self $type): array {
-    $rightDepOnLeft = ['Testtakers', 'Booklet', 'Unit', 'Resource'];
-    $dependantTypes = [];
+  public static function getDependenciesOfType(self $dependantType): array {
+    $leftDepOnRight = ['Testtakers', 'Booklet', 'Unit', 'Resource'];
+    $dependencies = [];
 
-    $isDependent = false;
-    foreach ($rightDepOnLeft as $dependant) {
-      if ($isDependent) {
-        $dependantTypes[] = $dependant;
-        continue;
+    $dependencyStartsHere = false;
+    foreach ($leftDepOnRight as $dependency) {
+      if ($dependencyStartsHere) {
+        $dependencies[] = $dependency;
+        break;
       }
 
-      if ($dependant == $type->value) {
-        $isDependent = true;
-        $dependantTypes[] = $dependant;
+      if ($dependency == $dependantType->value) {
+        $dependencyStartsHere = true;
+        $dependencies[] = $dependency;
       }
     }
 
-    return $dependantTypes;
+    return $dependencies;
   }
 
   /**
@@ -36,7 +36,7 @@ enum FileType: string
    * @return self|null
    */
   public static function getTopRootDependentType(array $types): ?self {
-    $rightDepOnLeft = ['Testtakers', 'Booklet', 'Unit', 'Resource'];
+    $rightDepOnLeft = array_map(fn(self $type) => $type->value, self::cases());
 
     foreach ($rightDepOnLeft as $topRoot) {
       foreach ($types as $type) {

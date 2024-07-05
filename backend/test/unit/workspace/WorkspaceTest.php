@@ -230,55 +230,43 @@ class WorkspaceTest extends TestCase {
 
   function test_importUncategorizedFiles_singleFile_first_success() {
     file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
-    file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(DATA_DIR . '/ws_1/P.HTML', "this would be a player");
+
     $this->workspaceDaoMock
-      ->expects('storeFile');
+      ->expects('storeFile')
+      ->twice();
     $this->workspaceDaoMock
       ->expects('storeRelations')
       ->andReturn([[], []]);
     $this->workspaceDaoMock
-      ->expects('getDependentFilesByTypes');
+      ->expects('getDependentFilesByTypes')
+      ->twice();
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
-      ->andReturn(
-        null,
-        [
-          'Resource' => [
-            'P-0.0.HTML' => new ResourceFile(DATA_DIR . '/ws_1/Resource/P.HTML')
-          ]
-        ],
-      )->twice();
+      ->andReturn([], [])
+      ->twice();
 
     $workspace = new Workspace(1);
+    $result = $workspace->importUncategorizedFiles(['valid.xml', 'P.HTML']);
 
-    $result = $workspace->importUncategorizedFiles(['valid.xml']);
     $this->assertArrayNotHasKey('error', $result["valid.xml"]->getValidationReport(), 'valid file has no errors');
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
-
   }
 
   function test_importUncategorizedFiles_singleFile_second_fail_invalidfile() {
-    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
+    file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
+
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
       ->andReturn(
-        [
-          'Unit' => [
-            'VALID-0.0.XML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid.xml'),
-          ]
-        ],
-        [
-          'Resource' => [
-            'P-0.0.HTML' => new ResourceFile(DATA_DIR . '/ws_1/Resource/P.HTML')
-          ]
-        ],
+        [],
+        []
       )->twice();
 
     $workspace = new Workspace(1);
-
-    file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
     $result = $workspace->importUncategorizedFiles(['invalid.xml']);
+
     $this->assertGreaterThan(
       0,
       count($result["invalid.xml"]->getValidationReport()['error']),
@@ -286,13 +274,13 @@ class WorkspaceTest extends TestCase {
     );
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
-
   }
 
   function test_importUncategorizedFiles_singleFile_third_fail_duplicate() {
     file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
     file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
     file_put_contents(DATA_DIR . '/ws_1/valid3.xml', self::validFile2);
+
     $this->workspaceDaoMock
       ->expects('getAllFilesWhere')
       ->andReturn(
@@ -329,8 +317,10 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_singleFile_second_success() {
-    file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
+    file_put_contents(DATA_DIR . '/ws_1/Unit/valid.xml', self::validFile);
     file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
+    file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
+
     $this->workspaceDaoMock
       ->expects('storeFile');
     $this->workspaceDaoMock
@@ -343,7 +333,7 @@ class WorkspaceTest extends TestCase {
       ->andReturn(
         [
           'Unit' => [
-            'P-0.0.HTML' => new ResourceFile(DATA_DIR . '/ws_1/Resource/P.HTML')
+            'P-0.0.HTML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid.xml')
           ]
         ],
         [
@@ -354,9 +344,8 @@ class WorkspaceTest extends TestCase {
       )->twice();
 
     $workspace = new Workspace(1);
-
-    file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
     $result = $workspace->importUncategorizedFiles(['valid.xml']);
+
     $this->assertStringContainsString(
       '2nd valid file',
       file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
@@ -368,10 +357,14 @@ class WorkspaceTest extends TestCase {
       'return warning if filename and id is the same'
     );
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
-
   }
 
   function test_importUncategorizedFiles_multipleFilesWithDependencies() {
+    file_put_contents(DATA_DIR . '/ws_1/valid_testtakers.xml', self::validTesttakers);
+    file_put_contents(DATA_DIR . '/ws_1/valid_booklet.xml', self::validBooklet);
+    file_put_contents(DATA_DIR . '/ws_1/P.html', 'this would be a player');
+    file_put_contents(DATA_DIR . '/ws_1/valid_unit.xml', self::validUnit);
+
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->times(4);
@@ -392,25 +385,38 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
       ->times(4);
+    $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
-      ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
-      ->times(4);
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Unit
+          1 => [], // Resource
+          2 => [], // Booklet
+          3 => [ // Unit 2nd time
+            'Unit' => [
+              'Unit.HTML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid_unit.xml')
+            ]
+          ],
+          4 => [], // Testtakers
+          5 => [ // Booklet 2nd time
+            'Booklet' => [
+              'BOOKLET.HTML' => new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml')
+            ]
+          ]
+        };
+      })
+      ->times(6);
 
 
     $workspace = new Workspace(1);
-
-    ZIP::$mockArchive = [
-      'valid_testtakers.xml' => self::validTesttakers,
-      'valid_booklet.xml' => self::validBooklet,
-      'P.html' => 'this would be a player',
-      'valid_unit.xml' => self::validUnit
-    ];
-
-    $result = $workspace->importUncategorizedFiles(["archive.zip"]);
+    $result = $workspace->importUncategorizedFiles(
+      ["valid_testtakers.xml", "valid_booklet.xml", "P.html", "valid_unit.xml"]
+    );
     $errors = $this->getErrorsFromValidationResult($result);
 
-    $this->assertCount(0, $errors);
+    $this->assertCount(0, $errors); // todo wie ruft man mock archive dateien auf, um Files daraus zu bauen
 
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
@@ -424,6 +430,10 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_multipleFilesWithMissingDependencies() {
+    file_put_contents(DATA_DIR . '/ws_1/valid_testtakers.xml', self::validTesttakers);
+    file_put_contents(DATA_DIR . '/ws_1/valid_booklet.xml', self::validBooklet);
+    file_put_contents(DATA_DIR . '/ws_1/valid_unit.xml', self::validUnit);
+
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->never();
@@ -439,20 +449,33 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('updateLoginSource')
       ->never();
+    $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
-      ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
-      ->times(4);
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Unit
+          1 => [], // Resource
+          2 => [], // Booklet
+          3 => [ // Unit 2nd time
+            'Unit' => [
+              'Unit.HTML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid_unit.xml')
+            ]
+          ],
+          4 => [], // Testtakers
+          5 => [ // Booklet 2nd time
+            'Booklet' => [
+              'BOOKLET.HTML' => new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml')
+            ]
+          ]
+        };
+      })
+      ->times(6);
+
 
     $workspace = new Workspace(1);
-
-    ZIP::$mockArchive = [
-      'valid_testtakers.xml' => self::validTesttakers,
-      'valid_booklet.xml' => self::validBooklet,
-      'valid_unit.xml' => self::validUnit
-    ];
-
-    $result = $workspace->importUncategorizedFiles(["archive.zip"]);
+    $result = $workspace->importUncategorizedFiles(["valid_testtakers.xml", "valid_booklet.xml", "valid_unit.xml"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
     $this->assertCount(3, $errors);
@@ -467,6 +490,13 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_zipWithValidFilesWithDependencies() {
+    ZIP::$mockArchive = [
+      'valid_testtakers.xml' => self::validTesttakers,
+      'valid_booklet.xml' => self::validBooklet,
+      'P.html' => 'this would be a player',
+      'valid_unit.xml' => self::validUnit
+    ];
+
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->times(4);
@@ -487,20 +517,31 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
       ->times(4);
+    $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
-      ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
-      ->times(4);
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Unit
+          1 => [], // Resource
+          2 => [], // Booklet
+          3 => [ // Unit 2nd time
+            'Unit' => [
+              'Unit.HTML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid_unit.xml')
+            ]
+          ],
+          4 => [], // Testtakers
+          5 => [ // Booklet 2nd time
+            'Booklet' => [
+              'BOOKLET.HTML' => new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml')
+            ]
+          ]
+        };
+      })
+      ->times(6);
 
     $workspace = new Workspace(1);
-
-    ZIP::$mockArchive = [
-      'valid_testtakers.xml' => self::validTesttakers,
-      'valid_booklet.xml' => self::validBooklet,
-      'P.html' => 'this would be a player',
-      'valid_unit.xml' => self::validUnit
-    ];
-
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
@@ -516,6 +557,13 @@ class WorkspaceTest extends TestCase {
   }
 
   function test_importUncategorizedFiles_zip_rejectInvalidUnitAndDependantFiles() {
+    ZIP::$mockArchive = [
+      'valid_testtakers.xml' => self::validTesttakers,
+      'valid_booklet.xml' => self::validBooklet,
+      'P.html' => 'this would be a player',
+      'invalid_unit.xml' => 'INVALID'
+    ];
+
     $this->workspaceDaoMock
       ->shouldReceive('storeFile')
       ->once();
@@ -525,20 +573,22 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
       ->once();
+    $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
-      ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
-      ->times(4);
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(function () use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Resource
+          1 => [], // Booklet
+          2 => [], // Unit 2nd time
+          3 => [], // Testtakers
+          4 => [], // Booklet 2nd time
+        };
+      })
+      ->times(5);
 
     $workspace = new Workspace(1);
-
-    ZIP::$mockArchive = [
-      'valid_testtakers.xml' => self::validTesttakers,
-      'valid_booklet.xml' => self::validBooklet,
-      'P.html' => 'this would be a player',
-      'invalid_unit.xml' => 'INVALID'
-    ];
-
     $result = $workspace->importUncategorizedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
@@ -665,10 +715,29 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
       ->times(4);
+    $getAllFilesWhereCalled = -1;
     $this->workspaceDaoMock
-      ->expects('getAllFilesWhere')
-      ->andReturn(null, null, null, null)
-      ->times(4);
+      ->shouldReceive('getAllFilesWhere')
+      ->andReturnUsing(function() use (&$getAllFilesWhereCalled) {
+        $getAllFilesWhereCalled++;
+        return match ($getAllFilesWhereCalled) {
+          0 => [], // Unit
+          1 => [], // Resource
+          2 => [], // Booklet
+          3 => [ // Unit 2nd time
+            'Unit' => [
+              'Unit.HTML' => new XMLFileUnit(DATA_DIR . '/ws_1/Unit/valid_unit.xml')
+            ]
+          ],
+          4 => [], // Testtakers
+          5 => [ // Booklet 2nd time
+            'Booklet' => [
+              'BOOKLET.HTML' => new XMLFileBooklet(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml')
+            ]
+          ]
+        };
+      })
+      ->times(6);
 
     $workspace = new Workspace(1);
 
@@ -736,9 +805,10 @@ class WorkspaceTest extends TestCase {
           'Testtakers' => [
             'TESTTAKERS.XML' => new XMLFileTesttakers(DATA_DIR . '/ws_1/testtakers.xml'),
           ]
-        ],
-        null, null, null)
-      ->times(4);
+        ], // Testtakers
+        [] // Booklet,
+      )
+      ->times(2);
 
     $workspace = new Workspace(1);
     file_put_contents(DATA_DIR . '/ws_1/testtakers.xml', self::dangerousTesttakers);

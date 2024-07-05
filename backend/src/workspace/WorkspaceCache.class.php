@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -26,24 +27,24 @@ class WorkspaceCache {
       }
     }
   }
-  public function loadFilesPerTypeFromDb(FileType $fileType): void {
 
-    foreach (FileType::getDependantTypes($fileType) as $type) {
-      $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-      $filePaths = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
+  public function validate(?string $onlyValidateThisType = null): void {
+    foreach ($this->cachedFiles as $type => $fileSet) {
+      if ($onlyValidateThisType) {
+        if ($type === $onlyValidateThisType) {
 
-      foreach ($filePaths as $filePath) {
-        $file = File::get($filePath, $type);
-        $this->addFile($type, $file);
-      }
-    }
-  }
+          foreach ($fileSet as $file) {
+            /* @var $file File */
+            $file->crossValidate($this);
+          }
+        }
 
-  public function validate(): void {
-    foreach ($this->cachedFiles as $fileSet) {
-      foreach ($fileSet as $file) {
-        /* @var $file File */
-        $file->crossValidate($this);
+      } else {
+        foreach ($fileSet as $file) {
+          /* @var $file File */
+          $file->crossValidate($this);
+        }
+
       }
     }
 

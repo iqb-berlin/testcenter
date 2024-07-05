@@ -177,38 +177,60 @@ class Workspace {
 
   // takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
   public function importUncategorizedFiles(array $fileNames): array {
-    $toDelete = [];
-    $relativeFilePaths = [];
+    $toDeleteFilePaths = [];
+    $toSortInFilePaths = [];
     foreach ($fileNames as $fileName) {
       if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
-        array_push($relativeFilePaths, ...$this->unpackRootlevelZipArchive($fileName));
-        array_push($toDelete, $fileName, $this->getExtractionDirName($fileName));
+        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($fileName));
+        array_push($toDeleteFilePaths, $fileName, $this->getExtractionDirName($fileName));
       } else {
-        $relativeFilePaths[] = $fileName;
-        $toDelete[] = $fileName;
+        $toSortInFilePaths[] = $fileName;
+        $toDeleteFilePaths[] = $fileName;
       }
     }
 
-    $importedFiles = $this->categorizeAndValidateRootlevelFiles($relativeFilePaths);
-    $this->deleteRootlevelFiles($toDelete);
+    $importedFiles = $this->categorizeAndValidateRootlevelFiles($toSortInFilePaths);
+    $this->deleteRootlevelFiles($toDeleteFilePaths);
 
     return $importedFiles;
   }
 
   private function categorizeAndValidateRootlevelFiles(array $relativeFilePaths): array {
-    $files = $this->validateUncategorizedFiles($relativeFilePaths);
     $filesAfterSorting = [];
+    $filesPerType = array_fill_keys(Workspace::subFolders, []);
 
-    foreach ($files as $filesOfAType) {
-      foreach ($filesOfAType as $localFilePath => $file) {
-        if ($file->isValid()) {
-          $this->categorizeFile($localFilePath, $file);
-          $this->workspaceDAO->storeFile($file);
-          $this->storeFileMeta($file);
-          $this->updateDependentFiles($file);
+    foreach ($relativeFilePaths as $relativeFilePath) {
+      $filesPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
+    }
+
+    $filesPerType = [
+      'merged' => array_merge($filesPerType['Resource'], $filesPerType['Unit']),
+      'Booklet' => $filesPerType['Booklet'],
+      'Testtakers' => $filesPerType['Testtakers'],
+      'SysCheck' => $filesPerType['SysCheck'],
+      'xml' => $filesPerType['xml']
+    ];
+
+    foreach ($filesPerType as $type => $relativeFiles) {
+      if (!empty($relativeFiles)) {
+        if ($type === 'xml') {
+          foreach ($relativeFiles as $file) {
+            $filesAfterSorting[$file] = File::get($file);
+          }
+          continue;
+        }
+        $files = $this->validateUncategorizedFiles($relativeFiles);
+        foreach ($files as $localFilePath => $file) {
+          if ($file->isValid()) {
+            $this->categorizeFile($localFilePath, $file);
+            $this->workspaceDAO->storeFile($file);
+            $this->storeFileMeta($file);
+            $this->updateDependentFiles($file);
+          }
+
+          $filesAfterSorting[$localFilePath] = $file;
         }
 
-        $filesAfterSorting[$localFilePath] = $file;
       }
     }
 
@@ -216,9 +238,9 @@ class Workspace {
   }
 
   protected function validateUncategorizedFiles(array $localFilePaths): array {
-    $filesPerType = array_fill_keys(Workspace::subFolders, []);
 
     $localFiles = [];
+    $filesPerType = [];
     foreach ($localFilePaths as $localFilePath) {
       $localFiles[$localFilePath] = File::get($this->workspacePath . '/' . $localFilePath);
     }
@@ -234,9 +256,9 @@ class Workspace {
 
     foreach ($localFiles as $filePath => $file) {
       $workspaceCache->addFile($file->getType(), $file, true);
-      $filesPerType[$file->getType()][$filePath] = $file;
+      $filesPerType[$filePath] = $file;
     }
-    $workspaceCache->validate();
+    $workspaceCache->validate($highestType->value);
 
     return $filesPerType;
   }
@@ -532,11 +554,9 @@ class Workspace {
   }
 
   private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $highestType): void {
-//    $workspaceCache->loadFilesPerTypeFromDb($highestType);
-
-    foreach (FileType::getDependantTypes($highestType) as $type) {
-      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type])[$type];
-      foreach ($files as $file) {
+    foreach (FileType::getDependenciesOfType($highestType) as $type) {
+      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type]);
+      foreach ($files[$type] as $file) {
         $workspaceCache->addFile($type, $file);
       }
     }
