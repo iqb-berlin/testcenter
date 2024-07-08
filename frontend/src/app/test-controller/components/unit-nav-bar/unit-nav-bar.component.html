@@ -35,11 +35,10 @@
           [class.unit-nav-item-selected]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
           [attr.aria-label]="testletOrUnit.label"
           [attr.data-cy]="'unit-nav-item:' + testletOrUnit.id"
-          [disabled]="testletOrUnit  | unit_inaccessible"
+          [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by"
           (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
         >
           {{testletOrUnit.labelShort || "&nbsp;"}}
-          <span *ngIf="testletOrUnit | unit_inaccessible">!!</span>
         </a>
       </ng-container>
 

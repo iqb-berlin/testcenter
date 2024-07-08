@@ -10,7 +10,7 @@
             mat-raised-button
             (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
             [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
-            [disabled]="testletOrUnit | unit_inaccessible"
+            [disabled]="testletOrUnit | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by"
             [matTooltip]="testletOrUnit.label"
           >{{testletOrUnit.label || "&nbsp;"}}
           </a>
