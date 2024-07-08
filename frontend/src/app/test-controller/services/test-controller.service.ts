@@ -1,5 +1,5 @@
 import {
-  bufferWhen, map, startWith, takeUntil
+  bufferWhen, filter, map, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
@@ -11,7 +11,7 @@ import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
-  MaxTimerEvent,
+  MaxTimerEvent, NavigationTargets,
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, TestStateUpdate, Unit,
   UnitDataParts,
@@ -40,7 +40,7 @@ import { TestStateUtil } from '../util/test-state.util';
   providedIn: 'root'
 })
 export class TestControllerService {
-  static readonly unitDataBufferMs = 1000;
+  static readonly unitDataBufferMs = 60000;
   static readonly unitStateBufferMs = 10000;
 
   testId = '';
@@ -57,6 +57,7 @@ export class TestControllerService {
   testlets: { [testletId: string] : Testlet } = {};
   unitAliasMap: { [unitId: string] : number } = {};
 
+  currentUnitSequenceId: number = -Infinity;
   get currentUnit(): Unit {
     return this.units[this.currentUnitSequenceId];
   }
@@ -74,19 +75,15 @@ export class TestControllerService {
     this._booklet = booklet;
   }
 
-  get sequenceLength(): number { // TODO X can/must this be replaced with sequenceBounds?
-    return Object.keys(this.units).length;
-  }
-
   timers$ = new Subject<TimerData>();
   timers: KeyValuePairNumber = {}; // TODO remove the redundancy with timers$
   currentTimerId = '';
   private timerIntervalSubscription: Subscription | null = null;
   timerWarningPoints: number[] = [];
 
-  resumeTargetUnitSequenceId = 0;
+  resumeTargetUnitSequenceId = 0; // TODO X needed?
 
-  windowFocusState$ = new Subject<WindowFocusState>();
+  readonly windowFocusState$ = new Subject<WindowFocusState>(); // TODO why observable?
 
   private _navigationDenial$ = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
 
@@ -94,34 +91,24 @@ export class TestControllerService {
     return this._navigationDenial$;
   }
 
-  private _currentUnitSequenceId$: BehaviorSubject<number> = new BehaviorSubject<number>(-Infinity);
-  get currentUnitSequenceId(): number {
-    return this._currentUnitSequenceId$.getValue();
-  }
-
-  set currentUnitSequenceId(v: number) {
-    this._currentUnitSequenceId$.next(v);
-  }
-
-  get currentUnitSequenceId$(): Observable<number> {
-    return this._currentUnitSequenceId$.asObservable();
-  }
-
   private players: { [filename: string]: string } = {};
-
-  // TODO X maybe only one of these is needed:
-  testStructureChanges$ = new BehaviorSubject<void>(undefined);
-  private unitDataPartsBufferClosed$ = new Subject<void>();
-
-  private closeBuffers$ = new Subject<void>();
-  private unitDataPartsBuffer$ = new Subject<UnitDataParts>();
-  private unitDataPartsBufferSubscription: Subscription | null = null;
-  private unitStateBuffer$ = new Subject<UnitStateUpdate>();
-  private unitStateBufferSubscription: Subscription | null = null;
-  private testStateBuffer$ = new Subject<TestStateUpdate>();
-  private testStateBufferSubscription: Subscription | null = null;
-
   private testState: { [key in TestStateKey]?: string } = {};
+
+  navigationTargets: NavigationTargets = {
+    next: null,
+    previous: null,
+    first: null,
+    last: null,
+    end: null
+  };
+
+  readonly conditionsEvaluated$ = new Subject<void>();
+  private readonly unitDataPartsBufferClosed$ = new Subject<string>();
+  private readonly closeBuffers$ = new Subject<string>();
+  private readonly unitDataPartsBuffer$ = new Subject<UnitDataParts>();
+  private readonly unitStateBuffer$ = new Subject<UnitStateUpdate>();
+  private readonly testStateBuffer$ = new Subject<TestStateUpdate>();
+  private readonly subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
     private router: Router,
@@ -135,7 +122,7 @@ export class TestControllerService {
   }
 
   setupUnitDataPartsBuffer(): void {
-    this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
+    this.destroySubscription('unitDataPartsBuffer'); // important when called from unit-test with fakeAsync
 
     const sortDataPartsByUnit = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] => {
       // TODO X what if test changed?
@@ -157,12 +144,15 @@ export class TestControllerService {
         }));
     };
 
-    this.unitDataPartsBuffer$
+    const closingSignal$ = merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$);
+
+    this.subscriptions.unitDataPartsBuffer = this.unitDataPartsBuffer$
       .pipe(
-        bufferWhen(() => merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$)),
-        map(sortDataPartsByUnit)
+        bufferWhen(() => closingSignal$),
+        map(sortDataPartsByUnit),
+        withLatestFrom(closingSignal$)
       )
-      .subscribe(buffer => {
+      .subscribe(([buffer, closer]) => {
         let trackedVariablesChanged = false;
         buffer
           .forEach(changedDataPartsPerUnit => {
@@ -173,11 +163,11 @@ export class TestControllerService {
             );
           });
 
-        if (trackedVariablesChanged && this.booklet?.config.evaluate_testlet_conditions === 'LIVE') {
+        if (trackedVariablesChanged) {
           this.evaluateConditions();
         }
 
-        this.unitDataPartsBufferClosed$.next();
+        this.unitDataPartsBufferClosed$.next(String(closer));
 
         if (this.testMode.saveResponses) {
           buffer
@@ -194,8 +184,8 @@ export class TestControllerService {
   }
 
   setupUnitStateBuffer(): void {
-    this.destroyUnitStateBuffer();
-    this.unitStateBufferSubscription = this.unitStateBuffer$
+    this.destroySubscription('unitStateBuffer');
+    this.subscriptions.unitStateBuffer = this.unitStateBuffer$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
         map(TestStateUtil.sort)
@@ -208,8 +198,8 @@ export class TestControllerService {
   }
 
   setupTestStateBuffer(): void {
-    this.destroyTestStateBuffer();
-    this.testStateBufferSubscription = this.testStateBuffer$
+    this.destroySubscription('testStateBuffer');
+    this.subscriptions.testStateBuffer = this.testStateBuffer$
       .pipe(
         bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
         map(TestStateUtil.sort)
@@ -232,24 +222,18 @@ export class TestControllerService {
     });
   }
 
-  destroyUnitDataPartsBuffer(): void {
-    if (this.unitDataPartsBufferSubscription) this.unitDataPartsBufferSubscription.unsubscribe();
-    this.unitDataPartsBufferSubscription = null;
+  destroySubscription(name: string): void {
+    if (this.subscriptions[name]) this.subscriptions[name].unsubscribe();
+    delete this.subscriptions[name];
   }
 
-  destroyUnitStateBuffer(): void {
-    if (this.unitStateBufferSubscription) this.unitStateBufferSubscription.unsubscribe();
-    this.unitStateBufferSubscription = null;
-  }
-
-  destroyTestStateBuffer(): void {
-    if (this.testStateBufferSubscription) this.testStateBufferSubscription.unsubscribe();
-    this.testStateBufferSubscription = null;
-  }
-
-  private async closeBuffer(): Promise<null | void> {
-    this.closeBuffers$.next();
-    return firstValueFrom(this.unitDataPartsBufferClosed$.pipe(startWith(null)));
+  async closeBuffer(reasonType: string): Promise<void> {
+    const reason = `${reasonType}:${Math.random()}`;
+    setTimeout(() => this.closeBuffers$.next(reason));
+    return firstValueFrom(
+      this.unitDataPartsBufferClosed$
+        .pipe(filter(closingSignal => closingSignal === reason))
+    ).then(() => undefined);
   }
 
   reset(): void {
@@ -393,27 +377,6 @@ export class TestControllerService {
     return this.units[unitSequenceId] || null;
   }
 
-  async getNextUnlockedUnitSequenceId(
-    unitSId: number,
-    reverse: boolean = false,
-    includeSelf: boolean = false
-  ): Promise<number | null> {
-    return this.closeBuffer()
-      .then(() => {
-        const step = reverse ? -1 : 1;
-        let nextUnitSId = unitSId - (includeSelf ? step : 0);
-        let nextUnit: Unit | null;
-        do {
-          nextUnitSId += step;
-          if ((nextUnitSId > this.sequenceLength) || (nextUnitSId < 1)) {
-            return null;
-          }
-          nextUnit = this.getUnitSilent(nextUnitSId);
-        } while (nextUnit && TestControllerService.unitIsInaccessible(nextUnit));
-        return nextUnit ? nextUnitSId : null;
-      });
-  }
-
   startTimer(testlet: Testlet): void {
     if (!testlet.restrictions?.timeMax) {
       return;
@@ -478,7 +441,7 @@ export class TestControllerService {
     // last state that will and can be logged
     this.state$.next((oldTestStatus === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
 
-    await this.closeBuffer();
+    await this.closeBuffer('terminateTest');
 
     const navigationSuccessful = await this.router.navigate(['/r/starter'], { state: { force } });
     if (!(navigationSuccessful || force)) {
@@ -504,21 +467,17 @@ export class TestControllerService {
       case UnitNavigationTarget.PAUSE:
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
-        // eslint-disable-next-line no-case-declarations
-        const nextUnlockedUnitSequenceId = await this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
-        return this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
+        await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.next}`], { state: { force } });
       case UnitNavigationTarget.PREVIOUS:
-        // eslint-disable-next-line no-case-declarations
-        const prevUnlockedUnitSequenceId = await this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true);
-        return this.router.navigate([`/t/${this.testId}/u/${prevUnlockedUnitSequenceId}`], { state: { force } });
+        await this.closeBuffer(`setUnitNavigationRequest(${navString} PREVIOUS`);
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.previous}`], { state: { force } });
       case UnitNavigationTarget.FIRST:
-        // eslint-disable-next-line no-case-declarations
-        const first = (await this.getSequenceBounds())[0];
-        return this.router.navigate([`/t/${this.testId}/u/${first}`], { state: { force } });
+        await this.closeBuffer(`setUnitNavigationRequest(${navString} FIRST`);
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.first}`], { state: { force } });
       case UnitNavigationTarget.LAST:
-        // eslint-disable-next-line no-case-declarations
-        const last = (await this.getSequenceBounds())[1];
-        return this.router.navigate([`/t/${this.testId}/u/${last}`], { state: { force } });
+        await this.closeBuffer(`setUnitNavigationRequest(${navString} LAST`);
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.last}`], { state: { force } });
       case UnitNavigationTarget.END:
         return this.terminateTest(
           force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
@@ -579,7 +538,39 @@ export class TestControllerService {
     }
 
     updateLocks(this.testlets[this.booklet.units.id]);
-    this.testStructureChanges$.next();
+    this.updateNavigationTargets();
+    this.conditionsEvaluated$.next();
+  }
+
+  updateNavigationTargets(): void {
+    let unit: Unit;
+    let first = null;
+    let last = null;
+    let previous = null;
+    let next = null;
+    for (let sequenceId = 1; sequenceId <= Object.keys(this.units).length; sequenceId++) {
+      unit = this.units[sequenceId];
+      // console.log(sequenceId, unit);
+      if (!TestControllerService.unitIsInaccessible(unit)) {
+        last = unit.sequenceId;
+        if (sequenceId > this.currentUnitSequenceId && next === null) {
+          next = unit.sequenceId;
+        }
+        if (first === null) {
+          first = unit.sequenceId;
+        }
+        if (sequenceId < this.currentUnitSequenceId) {
+          previous = unit.sequenceId;
+        }
+      }
+    }
+    const end = (this.bookletConfig.allow_player_to_terminate_test === 'ON') ||
+      ((this.bookletConfig.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
+      Infinity :
+      null;
+    this.navigationTargets = {
+      next, previous, first, last, end
+    };
   }
 
   static unitIsInaccessible(unit: Unit): boolean {
@@ -703,9 +694,9 @@ export class TestControllerService {
         case 'Code':
           return var1.code ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
         case 'Value':
-          return IqbVariableUtil.variableValueAsNumber(var1.value); // TODO default?
+          return IqbVariableUtil.variableValueAsNumber(var1.value); // TODO X default?
         case 'Status':
-          return IQBVariableStatusList.indexOf(var1.status); // TODO default to UNSET ?
+          return IQBVariableStatusList.indexOf(var1.status); // TODO X default to UNSET ?
         case 'Score':
           return var1.score ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
       }
@@ -752,18 +743,5 @@ export class TestControllerService {
     }
 
     return false;
-  }
-
-  async getSequenceBounds(): Promise<[number, number]> {
-    await this.closeBuffer();
-    const first = Object.values(this.units)
-      .find(unit => !(TestControllerService.unitIsInaccessible(unit)))
-      ?.sequenceId || NaN;
-    const last = Object.values(this.units)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-      .findLast(unit => !TestControllerService.unitIsInaccessible(unit))
-      ?.sequenceId || NaN;
-    return [first, last];
   }
 }

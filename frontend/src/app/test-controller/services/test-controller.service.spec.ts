@@ -119,7 +119,7 @@ describe('TestControllerService', () => {
       .withContext('when unitId changes debounce timer should be killed')
       .toEqual(expectedUploadedData);
 
-    service.destroyUnitDataPartsBuffer();
+    service.destroySubscription('unitDataBuffer');
   }));
 
   it('Incoming unitState should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
@@ -176,6 +176,6 @@ describe('TestControllerService', () => {
       .withContext('when unitId changes debounce timer should be killed')
       .toEqual(expectedUploadedStates);
 
-    service.destroyUnitStateBuffer();
+    service.destroySubscription('unitStateBuffer');
   }));
 });

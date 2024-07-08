@@ -34,11 +34,12 @@
           class="unit-nav-item"
           [class.unit-nav-item-selected]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
           [attr.aria-label]="testletOrUnit.label"
-          [attr.data-cy]="testletOrUnit.labelShort"
-          [disabled]="testletOrUnit | unit_inaccessible"
+          [attr.data-cy]="'unit-nav-item:' + testletOrUnit.id"
+          [disabled]="testletOrUnit  | unit_inaccessible"
           (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
         >
           {{testletOrUnit.labelShort || "&nbsp;"}}
+          <span *ngIf="testletOrUnit | unit_inaccessible">!!</span>
         </a>
       </ng-container>
 

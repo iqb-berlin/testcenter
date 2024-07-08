@@ -2,7 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
-import { Subscription, combineLatest } from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
@@ -49,9 +49,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   debugPane = false;
   unitScreenHeader: string = '';
-
-  firstAccessibleUnit: number = 1;
-  lastAccessibleUnit: number = Infinity;
 
   constructor(
     public mainDataService: MainDataService,
@@ -114,12 +111,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.maxTimer = this.tcs.timers$
         .subscribe(maxTimerEvent => this.handleTimer(maxTimerEvent));
-
-      this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
-        .subscribe(async () => {
-          [this.firstAccessibleUnit, this.lastAccessibleUnit] = await this.tcs.getSequenceBounds();
-          this.setUnitScreenHeader();
-        });
 
       if (!this.isProductionMode) {
         this.debugPane = !!localStorage.getItem('tc-debug');
@@ -196,7 +187,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'debug':
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
         if (this.debugPane) {
-          // eslint-disable-next-line no-console
           localStorage.setItem('tc-debug', '["main"]');
         } else {
           localStorage.removeItem('tc-debug');
@@ -255,20 +245,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerEvent.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
         this.tcs.timers[timer.id] = 0;
-        // attention: TODO X store timer as well in localStorage to prevent F5-cheating
+        // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         this.tcs.currentUnit.parent.locks.time = true;
         this.tcs.updateLocks();
         if (this.tcs.testMode.forceTimeRestrictions) {
-          const nextUnlockedUSId = await this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          return this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
+          return this.tcs.setUnitNavigationRequest(
+            this.tcs.navigationTargets.next?.toString(10) ?? UnitNavigationTarget.END,
+            true
+          );
         }
         return true;
       case MaxTimerEvent.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
         this.tcs.timers[timer.id] = 0;
-        // attention: TODO X store timer as well in localStorage to prevent F5-cheating
+        // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         this.tcs.currentUnit.parent.locks.time = true;
@@ -283,7 +275,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         if ((timer.timeLeftSeconds % 15) === 0) {
           this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
-          // attention: TODO X store timer as well in localStorage to prevent F5-cheating
+          // attention: TODO store timer as well in localStorage to prevent F5-cheating
           this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }
         if (this.tcs.timerWarningPoints.includes(minute)) {

@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { CodingScheme } from '@iqb/responses';
 import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
-import { VeronaProgress } from './verona.interfaces';
+import { VeronaNavigationTarget, VeronaProgress } from './verona.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -232,3 +232,5 @@ export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
 export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
   return !isUnit(testletOrUnit);
 }
+
+export type NavigationTargets = { [key in VeronaNavigationTarget]: number | null };

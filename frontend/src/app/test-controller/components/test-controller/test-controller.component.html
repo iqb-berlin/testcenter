@@ -20,8 +20,8 @@
     [booklet]="tcs.booklet"
     [prevButtonVisible]="tcs.bookletConfig.unit_navibuttons !== 'FORWARD_ONLY'"
     [nextButtonVisible]="true"
-    [prevButtonEnabled]="tcs.currentUnitSequenceId > firstAccessibleUnit"
-    [nextButtonEnabled]="tcs.currentUnitSequenceId < lastAccessibleUnit"
+    [prevButtonEnabled]="!!tcs.navigationTargets.previous"
+    [nextButtonEnabled]="!!tcs.navigationTargets.next"
     [retardedDesign]="tcs.bookletConfig.controller_design === '2018'"
   />
 

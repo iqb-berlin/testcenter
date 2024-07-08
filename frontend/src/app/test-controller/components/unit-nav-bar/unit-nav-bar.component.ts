@@ -22,7 +22,6 @@ export class UnitNavBarComponent {
     public tcs: TestControllerService
   ) { }
 
-  // protected readonly unitNavigationTarget = UnitNavigationTarget;
   protected readonly isTestlet = isTestlet;
   protected readonly unitNavigationTarget = UnitNavigationTarget;
 }

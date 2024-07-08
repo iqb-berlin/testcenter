@@ -157,7 +157,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   private loadUnits(testData: TestData): Promise<number | undefined> {
     const sequence = [];
-    for (let i = 1; i <= this.tcs.sequenceLength; i++) {
+    for (let i = 1; i <= Object.keys(this.tcs.units).length; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
       this.totalLoadingProgressParts[`player-${i}`] = 0;
       this.totalLoadingProgressParts[`definition-${i}`] = 0;

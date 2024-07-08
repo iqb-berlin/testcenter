@@ -25,21 +25,25 @@ export class UnitActivateGuard implements CanActivate {
       // ignore unit-id from route, because test will get last opened unit ID from testStatus.CURRENT_UNIT_ID
       return this.router.parseUrl(`/t/${testId}`);
     }
+
     const newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
     if (!newUnit) {
       // a unit-nr was entered in the URl which does not exist
       this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
-      return false;
+      // looking for alternatives where to go
+      await this.tcs.closeBuffer('canActivate');
+      if (this.tcs.currentUnit && !TestControllerService.unitIsInaccessible(this.tcs.currentUnit)) {
+        // current unit is accessible, so we just stay here
+        return false;
+      }
+      const previousUnlockedUnit = this.tcs.navigationTargets.previous;
+      if (previousUnlockedUnit) {
+        // a previous unit is accessible, so we go there
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`);
+      }
     }
-    const previousUnlockedUnit = await this.tcs.getNextUnlockedUnitSequenceId(newUnit.sequenceId, true, true);
-    if (!previousUnlockedUnit) {
-      // there is no alternative where to navigate, so we navigate on the locked one despite being locked
-      return true;
-    }
-    if (previousUnlockedUnit !== targetUnitSequenceId) {
-      // the unit is not accessible, but a previous one
-      return this.router.parseUrl(`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`);
-    }
+
+    // new unit is accessible, or we didn't have a good alternative where to go
     return true;
   }
 }

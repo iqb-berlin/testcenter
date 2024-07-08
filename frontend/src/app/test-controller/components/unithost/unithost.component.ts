@@ -14,7 +14,6 @@ import {
   Verona5ValidPages,
   Verona6ValidPages,
   VeronaNavigationDeniedReason,
-  VeronaNavigationTarget,
   VeronaPlayerConfig,
   VeronaPlayerRuntimeErrorCodes
 } from '../../interfaces/verona.interfaces';
@@ -61,7 +60,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-      this.subscriptions.testStructureChanges = this.tcs.testStructureChanges$
+      this.subscriptions.conditionsEvaluated = this.tcs.conditionsEvaluated$
         .subscribe(() => this.updatePlayerConfig());
     });
   }
@@ -162,6 +161,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     );
 
+    await this.tcs.closeBuffer('handleReadyNotification');
+    const pc = this.getPlayerConfig();
+    console.log({ pc, t: this.tcs.navigationTargets });
+
     this.postMessageTarget.postMessage({
       type: 'vopStartCommand',
       sessionId: this.playerSessionId,
@@ -171,7 +174,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
       },
-      playerConfig: await this.getPlayerConfig()
+      playerConfig:pc
     }, '*');
   }
 
@@ -398,6 +401,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.leaveWarning = false;
     this.prepareIframe();
+    this.tcs.updateNavigationTargets();
   }
 
   private startTimerIfNecessary(): void {
@@ -449,18 +453,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async getPlayerConfig(): Promise<VeronaPlayerConfig> {
+  private getPlayerConfig(): VeronaPlayerConfig {
     if (!this.tcs.currentUnit) {
       throw new Error('Unit not loaded');
     }
     const groupToken = this.mds.getAuthData()?.groupToken;
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
-      enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
-        this.tcs.currentUnitSequenceId,
-        await this.tcs.getSequenceBounds(),
-        this.tcs.bookletConfig.allow_player_to_terminate_test
-      ),
+      enabledNavigationTargets: Object.keys(this.tcs.navigationTargets)
+        .filter(t => this.tcs.navigationTargets[t] && this.tcs.navigationTargets[t] !== this.tcs.currentUnitSequenceId),
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
       unitNumber: this.tcs.currentUnitSequenceId,
@@ -476,33 +477,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       playerConfig.startPage = this.tcs.currentUnit.state.CURRENT_PAGE_ID;
     }
     return playerConfig;
-  }
-
-  private static getEnabledNavigationTargets(
-    nr: number,
-    bounds: [min: number, max: number],
-    terminationAllowed: 'ON' | 'OFF' | 'LAST_UNIT' = 'ON'
-  ): VeronaNavigationTarget[] {
-    const navigationTargets: VeronaNavigationTarget[] = [];
-    if (nr < bounds[1]) {
-      navigationTargets.push('next');
-    }
-    if (nr > bounds[0]) {
-      navigationTargets.push('previous');
-    }
-    if (nr !== bounds[0]) {
-      navigationTargets.push('first');
-    }
-    if (nr !== bounds[1]) {
-      navigationTargets.push('last');
-    }
-    if (terminationAllowed === 'ON') {
-      navigationTargets.push('end');
-    }
-    if ((terminationAllowed === 'LAST_UNIT') && (nr === bounds[1])) {
-      navigationTargets.push('end');
-    }
-    return navigationTargets;
   }
 
   gotoNextPage(): void {
@@ -563,11 +537,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async updatePlayerConfig() {
+  private updatePlayerConfig() {
+    console.log('updatePlayerConfig');
     this.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.playerSessionId,
-      playerConfig: await this.getPlayerConfig()
+      playerConfig: this.getPlayerConfig()
     }, '*');
   }
 }

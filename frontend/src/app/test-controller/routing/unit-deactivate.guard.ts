@@ -122,16 +122,15 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
         width: '500px',
         data: <ConfirmDialogData>{
           title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
-          content: reasons.map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`)).join(' '),
+          content: reasons
+            .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+            .join(' '),
           confirmbuttonlabel: 'OK',
           confirmbuttonreturn: false,
           showcancel: false
         }
       });
-      return dialogCDRef.afterClosed().pipe(map(() => {
-        this.tcs.testStructureChanges$.next();
-        return false;
-      }));
+      return dialogCDRef.afterClosed().pipe(map(() => false));
     }
     const reasonTexts = {
       presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',

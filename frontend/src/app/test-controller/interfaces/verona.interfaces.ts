@@ -1,4 +1,5 @@
-type Verona2NavigationTarget = 'next' | 'previous' | 'first' | 'last' | 'end';
+const Verona2NavigationTargetValues = ['next', 'previous', 'first', 'last', 'end'];
+type Verona2NavigationTarget = typeof Verona2NavigationTargetValues[number];
 
 type Verona2LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
 
@@ -41,6 +42,7 @@ export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
 
+export const isVeronaNavigationTarget = (value: string): value is VeronaProgress => Verona2NavigationTargetValues.includes(value);
 
 export interface Verona5ValidPages {
   [id: string]: string
