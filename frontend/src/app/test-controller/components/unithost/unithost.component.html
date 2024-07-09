@@ -5,7 +5,7 @@
   'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((resourcesLoading$ | async) || []).length
 }">
   <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
-    <h2 data-cy="unit-title">{{tcs.currentUnit ? tcs.currentUnit.label : 'no unit'}}</h2>
+    <h2 data-cy="unit-title">{{tcs.currentUnit ? tcs.currentUnit.label : ''}}</h2>
     <mat-divider></mat-divider>
   </div>
 

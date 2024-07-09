@@ -4,7 +4,9 @@
   *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'"
   class="header flex-row" [style.align-items]="'center'"
 >
-  <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+  <h1 *ngIf="tcs.bookletConfig.unit_screenheader ==='WITH_UNIT_TITLE'">{{tcs.currentUnit?.label}}</h1>
+  <h1 *ngIf="tcs.bookletConfig.unit_screenheader ==='WITH_BOOKLET_TITLE'">{{tcs.booklet?.metadata?.label || ''}}</h1>
+  <h1 *ngIf="tcs.bookletConfig.unit_screenheader ==='WITH_BLOCK_TITLE'">{{tcs.currentUnit?.parent?.blockLabel || ''}}</h1>
 
   <p
     class="timer"
