@@ -26,7 +26,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private router: Router
   ) {}
 
-  private checkAndSolveTimer(newUnit: Unit | null): Observable<boolean> {
+  private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
     if (!this.tcs.currentTimerId) { // leaving unit is not in a timed block
       return of(true);
     }
@@ -70,17 +70,16 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       );
   }
 
-  private checkAndSolveCompleteness(newUnit: Unit | null): Observable<boolean> {
-    const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.sequenceId) ? 'Next' : 'Prev';
-    const reasons = this.checkCompleteness(direction);
+  private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'Next' : 'Prev';
+    const reasons = this.checkCompleteness(currentUnit, direction);
     if (!reasons.length) {
       return of(true);
     }
-    return this.notifyNavigationDenied(reasons, direction);
+    return this.notifyNavigationDenied(currentUnit, reasons, direction);
   }
 
-  private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
-    const unit = this.tcs.getUnit(this.tcs.currentUnitSequenceId);
+  private checkCompleteness(unit: Unit, direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     if (unit.parent.locked?.by === 'time') {
       return [];
     }
@@ -95,7 +94,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       'OFF';
     if (
       (checkOnValue[direction].includes(presentationCompleteRequired)) &&
-      (this.tcs.currentUnit.state.PRESENTATION_PROGRESS !== 'complete')
+      (unit.state.PRESENTATION_PROGRESS !== 'complete')
     ) {
       reasons.push('presentationIncomplete');
     }
@@ -103,20 +102,23 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       unit.parent?.restrictions?.denyNavigationOnIncomplete?.response ||
       this.tcs.booklet?.config.force_response_complete ||
       'OFF';
-    const currentUnitResponseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     if (
       (checkOnValue[direction].includes(responseCompleteRequired)) &&
-      currentUnitResponseProgress &&
-      (VeronaProgressIncompleteValues.includes(currentUnitResponseProgress))
+      unit.state.RESPONSE_PROGRESS &&
+      (VeronaProgressIncompleteValues.includes(unit.state.RESPONSE_PROGRESS))
     ) {
       reasons.push('responsesIncomplete');
     }
     return reasons;
   }
 
-  private notifyNavigationDenied(reasons: VeronaNavigationDeniedReason[], dir: 'Next' | 'Prev'): Observable<boolean> {
+  private notifyNavigationDenied(
+    currentUnit: Unit,
+    reasons: VeronaNavigationDeniedReason[],
+    dir: 'Next' | 'Prev'
+  ): Observable<boolean> {
     if (this.tcs.testMode.forceNaviRestrictions) {
-      this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasons);
+      this.tcs.notifyNavigationDenied(currentUnit.sequenceId, reasons);
 
       const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '500px',
@@ -145,24 +147,24 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  private checkAndSolveLeaveLocks(newUnit: Unit | null): Observable<boolean> {
-    if (!this.tcs.currentUnit.parent.restrictions.lockAfterLeaving) {
+  private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    if (!currentUnit.parent.restrictions.lockAfterLeaving) {
       return of(true);
     }
 
-    const lockScope = this.tcs.currentUnit.parent.restrictions.lockAfterLeaving.scope;
+    const lockScope = currentUnit.parent.restrictions.lockAfterLeaving.scope;
 
-    if ((lockScope === 'testlet') && (newUnit?.parent.id === this.tcs.currentUnit.parent.id)) {
+    if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
       return of(true);
     }
 
     const leaveLock = () => {
       if (this.tcs.testMode.forceNaviRestrictions) {
         if (lockScope === 'testlet') {
-          this.tcs.leaveLockTestlet(this.tcs.currentUnit.parent.id);
+          this.tcs.leaveLockTestlet(currentUnit.parent.id);
         }
         if (lockScope === 'unit') {
-          this.tcs.leaveLockUnit(this.tcs.currentUnit.sequenceId);
+          this.tcs.leaveLockUnit(currentUnit.sequenceId);
         }
       } else {
         this.snackBar.open(
@@ -173,7 +175,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       }
     };
 
-    if (this.tcs.currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
+    if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
       const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '500px',
         data: <ConfirmDialogData>{
@@ -199,13 +201,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  private evaluateConditionsIfNecessary(newUnit: Unit | null): void {
+  private evaluateConditionsIfNecessary(currentUnit: Unit, newUnit: Unit | null): void {
     if (
       (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_UNIT') ||
       (
         (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_TESTLET') &&
         newUnit &&
-        (newUnit.parent.id !== this.tcs.currentUnit.parent.id)
+        (newUnit.parent.id !== currentUnit.parent.id)
       )
     ) {
       this.tcs.evaluateConditions();
@@ -224,6 +226,12 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (this.tcs.state$.getValue() === 'ERROR') {
       return of(true);
     }
+
+    if (!this.tcs.currentUnit) {
+      return of(true);
+    }
+
+    const currentUnit = this.tcs.currentUnit;
 
     if (this.tcs.currentUnit.parent.locked) {
       return of(true);
@@ -244,7 +252,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return of(true);
     }
 
-    this.evaluateConditionsIfNecessary(newUnit);
+    this.evaluateConditionsIfNecessary(currentUnit, newUnit);
 
     return from([
       this.checkAndSolveCompleteness.bind(this),
@@ -252,7 +260,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       this.checkAndSolveLeaveLocks.bind(this)
     ])
       .pipe(
-        concatMap(check => check(newUnit)),
+        concatMap(check => check(currentUnit, newUnit)),
         takeWhile(checkResult => checkResult, true),
         last()
       );

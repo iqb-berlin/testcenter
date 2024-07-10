@@ -75,6 +75,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
 
+    // TODO X use await
     // eslint-disable-next-line consistent-return
     return this.loadResources(testData)
       .then(() => {

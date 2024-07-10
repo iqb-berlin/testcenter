@@ -11,11 +11,11 @@ import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
-  MaxTimerEvent, NavigationTargets,
+  MaxTimerEvent, NavigationTargets, StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, TestStateUpdate, Unit,
   UnitDataParts,
-  UnitNavigationTarget,
+  UnitNavigationTarget, UnitStateKey,
   UnitStateUpdate,
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
@@ -44,7 +44,7 @@ export class TestControllerService {
   static readonly unitStateBufferMs = 10000;
 
   testId = '';
-  state$ = new BehaviorSubject<TestControllerState>('INIT');
+  readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
 
   workspaceId = 0;
 
@@ -57,9 +57,9 @@ export class TestControllerService {
   testlets: { [testletId: string] : Testlet } = {};
   unitAliasMap: { [unitId: string] : number } = {};
 
-  currentUnitSequenceId: number = -Infinity;
-  get currentUnit(): Unit {
-    return this.units[this.currentUnitSequenceId];
+  currentUnitSequenceId: (keyof typeof this.units) = -Infinity;
+  get currentUnit(): Unit | null {
+    return this.units[this.currentUnitSequenceId] ?? null;
   }
 
   private _booklet: Booklet | null = null;
@@ -256,29 +256,30 @@ export class TestControllerService {
     this.currentTimerId = '';
   }
 
-  updateUnitStateDataParts(
-    unitAlias: string,
-    dataParts: KeyValuePairString,
-    unitStateDataType: string
-  ): void {
-    const changedParts:KeyValuePairString = {};
+  updateUnitStateDataParts(dataParts: KeyValuePairString, unitStateDataType: string): void {
+    if (!this.currentUnit) return;
+    const unitSequenceId = this.currentUnit.sequenceId;
 
+    const changedParts: KeyValuePairString = {};
     Object.keys(dataParts)
       .forEach(dataPartId => {
         if (
-          !this.currentUnit.dataParts[dataPartId] ||
-          (this.currentUnit.dataParts[dataPartId] !== dataParts[dataPartId])
+          !this.units[unitSequenceId].dataParts[dataPartId] ||
+          (this.units[unitSequenceId].dataParts[dataPartId] !== dataParts[dataPartId])
         ) {
-          this.currentUnit.dataParts[dataPartId] = dataParts[dataPartId];
+          this.units[unitSequenceId].dataParts[dataPartId] = dataParts[dataPartId];
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
     if (Object.keys(changedParts).length) {
-      this.unitDataPartsBuffer$.next({ unitAlias: unitAlias, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsBuffer$.next({ unitAlias: this.currentUnit.alias, dataParts: changedParts, unitStateDataType });
     }
   }
 
-  updateUnitState(unitSequenceId: number, unitStateUpdate: UnitStateUpdate): void {
+  updateUnitState(unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
+    if (!this.currentUnit) return;
+    const unitSequenceId = this.currentUnit.sequenceId;
+
     const setUnitState = (stateKey: string, value: string): void => {
       if (isVeronaProgress(value)) {
         this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
@@ -292,7 +293,8 @@ export class TestControllerService {
         this.units[unitSequenceId].state.CURRENT_PAGE_ID = value;
       }
     };
-    unitStateUpdate.state = unitStateUpdate.state
+
+    const changedStates = unitStateUpdate
       .filter(state => !!state.content)
       .filter(changedState => {
         const oldState = this.units[unitSequenceId].state[changedState.key];
@@ -301,10 +303,14 @@ export class TestControllerService {
         }
         return true;
       });
-    unitStateUpdate.state
+    changedStates
       .forEach(changedState => setUnitState(changedState.key, changedState.content));
-    if (unitStateUpdate.state.length) {
-      this.unitStateBuffer$.next(unitStateUpdate);
+    if (changedStates.length) {
+      this.unitStateBuffer$.next({
+        unitAlias: this.currentUnit.alias,
+        testId: this.testId,
+        state: changedStates
+      });
     }
   }
 

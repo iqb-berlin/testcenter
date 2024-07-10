@@ -48,7 +48,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   timerValue: TimerData | null = null;
 
   debugPane = false;
-  unitScreenHeader: string = '';
 
   constructor(
     public mainDataService: MainDataService,
@@ -105,7 +104,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
-          this.setUnitScreenHeader();
           await this.requestFullScreen();
         });
 
@@ -159,8 +157,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         data: <ReviewDialogData>{
           loginname: authData.displayName,
           bookletname: this.tcs.booklet?.metadata.label,
-          unitTitle: this.tcs.currentUnit.label,
-          unitAlias: this.tcs.currentUnit.alias
+          unitTitle: this.tcs.currentUnit?.label,
+          unitAlias: this.tcs.currentUnit?.alias
         }
       });
 
@@ -171,7 +169,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u') ? this.tcs.currentUnit.alias : null,
+          (this.tcs.currentUnit && (result.target === 'u')) ? this.tcs.currentUnit.alias : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry
@@ -221,7 +219,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.resumeTargetUnitSequenceId = 0; // TODO x why?
           const targetUnit = this.tcs.getUnitSilent(parseInt(gotoTarget, 10));
           if (targetUnit) {
-            if (targetUnit.parent.timerId !== this.tcs.currentUnit.parent.timerId) {
+            if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
               this.tcs.cancelTimer();
             }
             this.tcs.clearTestlet(targetUnit.parent.id);
@@ -248,8 +246,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
-        this.tcs.currentUnit.parent.locks.time = true;
-        this.tcs.updateLocks();
+        if (this.tcs.currentUnit) {
+          this.tcs.currentUnit.parent.locks.time = true;
+          this.tcs.updateLocks();
+        }
         if (this.tcs.testMode.forceTimeRestrictions) {
           return this.tcs.setUnitNavigationRequest(
             this.tcs.navigationTargets.next?.toString(10) ?? UnitNavigationTarget.END,
@@ -263,8 +263,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
-        this.tcs.currentUnit.parent.locks.time = true;
-        this.tcs.updateLocks();
+        if (this.tcs.currentUnit) {
+          this.tcs.currentUnit.parent.locks.time = true;
+          this.tcs.updateLocks();
+        }
         return true;
       case MaxTimerEvent.INTERRUPTED:
         this.timerValue = null;
@@ -285,25 +287,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         return true;
       default:
         return true;
-    }
-  }
-
-  private setUnitScreenHeader(): void {
-    if (!this.tcs.currentUnit) {
-      return;
-    }
-    switch (this.tcs.bookletConfig.unit_screenheader) {
-      case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.currentUnit.label;
-        break;
-      case 'WITH_BOOKLET_TITLE':
-        this.unitScreenHeader = this.tcs.booklet?.metadata.label || '';
-        break;
-      case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.currentUnit.parent.blockLabel;
-        break;
-      default:
-        this.unitScreenHeader = '';
     }
   }
 
