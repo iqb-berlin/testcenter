@@ -51,7 +51,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.environment = new EnvironmentData();
   }
 
-  async loadTest(): Promise<void> {
+  async loadTest(): Promise<boolean> {
     this.reset();
     const ts = Date.now();
 
@@ -59,7 +59,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
     if (!testData) {
-      return; // error is already thrown
+      return Promise.reject(); // error is already thrown
     }
 
     this.tcs.workspaceId = testData.workspaceId;
@@ -74,15 +74,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
-
-    // TODO X use await
-    // eslint-disable-next-line consistent-return
-    return this.loadResources(testData)
-      .then(() => {
-        this.updateVariables();
-        console.log({ loaded: (Date.now() - ts) });
-        return this.resumeTest(testData.laststate);
-      });
+    await this.loadResources(testData);
+    this.updateVariables();
+    console.log({ loaded: (Date.now() - ts) });
+    return this.resumeTest(testData.laststate);
   }
 
   reset(): void {
@@ -101,7 +96,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.loadingQueue = [];
   }
 
-  private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
+  private resumeTest(lastState: { [k in TestStateKey]?: string }): Promise<boolean> {
     if (!this.tcs.booklet) {
       throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
     }
@@ -109,18 +104,17 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.restoreRestrictions(lastState);
 
     const currentUnitId = lastState.CURRENT_UNIT_ID;
-    this.tcs.resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
+    const resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
 
     if (
       (lastState.CONTROLLER === 'TERMINATED_PAUSED') ||
       (lastState.CONTROLLER === 'PAUSED')
     ) {
       this.tcs.state$.next('PAUSED');
-      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
-      return;
+      return this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
     }
     this.tcs.state$.next('RUNNING');
-    this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
+    return this.tcs.setUnitNavigationRequest(resumeTargetUnitSequenceId.toString());
   }
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {

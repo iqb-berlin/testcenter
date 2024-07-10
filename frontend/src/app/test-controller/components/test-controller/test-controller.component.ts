@@ -180,55 +180,53 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCommand(commandName: string, params: string[]): void {
+  handleCommand(commandName: string, params: string[]): Promise<boolean> {
     switch (commandName.toLowerCase()) {
       case 'debug':
-        this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
-        if (this.debugPane) {
-          localStorage.setItem('tc-debug', '["main"]');
-        } else {
-          localStorage.removeItem('tc-debug');
-        }
-        break;
+        return this.toggleDebugPane(params);
       case 'pause':
-        this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
-        this.tcs.pause();
-        break;
+        return this.tcs.pause();
       case 'resume':
-        // eslint-disable-next-line no-case-declarations
-        const navTarget =
-          (this.tcs.resumeTargetUnitSequenceId > 0) ?
-            this.tcs.resumeTargetUnitSequenceId.toString() :
-            UnitNavigationTarget.FIRST;
-        this.tcs.state$.next('RUNNING');
-        this.tcs.setUnitNavigationRequest(navTarget, true);
-        break;
+        return this.tcs.resume();
       case 'terminate':
-        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
-        break;
+        return this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
       case 'goto':
-        this.tcs.state$.next('RUNNING');
-        // eslint-disable-next-line no-case-declarations
-        let gotoTarget: string = '';
-        if ((params.length === 2) && (params[0] === 'id')) {
-          gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
-        } else if (params.length === 1) {
-          gotoTarget = params[0];
-        }
-        if (gotoTarget && gotoTarget !== '0') {
-          this.tcs.resumeTargetUnitSequenceId = 0; // TODO x why?
-          const targetUnit = this.tcs.getUnitSilent(parseInt(gotoTarget, 10));
-          if (targetUnit) {
-            if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
-              this.tcs.cancelTimer();
-            }
-            this.tcs.clearTestlet(targetUnit.parent.id);
-          }
-          this.tcs.setUnitNavigationRequest(gotoTarget, true);
-        }
-        break;
+        return this.goto(params);
       default:
+        return Promise.reject();
     }
+  }
+
+  private goto(params: string[]): Promise<boolean> {
+    this.tcs.state$.next('RUNNING');
+    // eslint-disable-next-line no-case-declarations
+    let gotoTarget: string = '';
+    if ((params.length === 2) && (params[0] === 'id')) {
+      gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
+    } else if (params.length === 1) {
+      gotoTarget = params[0];
+    }
+    if (gotoTarget && gotoTarget !== '0') {
+      const targetUnit = this.tcs.getUnitSilent(parseInt(gotoTarget, 10));
+      if (targetUnit) {
+        if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
+          this.tcs.cancelTimer();
+        }
+        this.tcs.clearTestlet(targetUnit.parent.id);
+      }
+      return this.tcs.setUnitNavigationRequest(gotoTarget, true);
+    }
+    return Promise.reject();
+  }
+
+  private toggleDebugPane(params: string[]): Promise<boolean> {
+    this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
+    if (this.debugPane) {
+      localStorage.setItem('tc-debug', '["main"]');
+    } else {
+      localStorage.removeItem('tc-debug');
+    }
+    return Promise.resolve(true);
   }
 
   private async handleTimer(timer: TimerData): Promise<boolean> {

@@ -78,8 +78,6 @@ export class TestControllerService {
   private timerIntervalSubscription: Subscription | null = null;
   timerWarningPoints: number[] = [];
 
-  resumeTargetUnitSequenceId = 0; // TODO X needed?
-
   readonly windowFocusState$ = new Subject<WindowFocusState>(); // TODO why observable?
 
   private _navigationDenial$ = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
@@ -526,10 +524,16 @@ export class TestControllerService {
     this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
   }
 
-  pause(): void {
+  pause(): Promise<boolean> {
     this.interruptTimer();
     this.state$.next('PAUSED');
-    this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
+    return this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
+  }
+
+  resume(): Promise<boolean> {
+    const target = (this.currentUnitSequenceId > 0) ? String(this.currentUnitSequenceId) : UnitNavigationTarget.FIRST;
+    this.state$.next('RUNNING');
+    return this.setUnitNavigationRequest(target, true);
   }
 
   updateLocks(): void {
