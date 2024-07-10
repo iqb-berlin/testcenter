@@ -40,9 +40,6 @@ import { TestStateUtil } from '../util/test-state.util';
   providedIn: 'root'
 })
 export class TestControllerService {
-  static readonly unitDataBufferMs = 60000;
-  static readonly unitStateBufferMs = 10000;
-
   testId = '';
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
 
@@ -144,7 +141,10 @@ export class TestControllerService {
         }));
     };
 
-    const closingSignal$ = merge(interval(TestControllerService.unitDataBufferMs), this.closeBuffers$);
+    const closingSignal$ = merge(
+      interval(Number(this.bookletConfig.unit_responses_buffer_time)),
+      this.closeBuffers$
+    );
 
     this.subscriptions.unitDataPartsBuffer = this.unitDataPartsBuffer$
       .pipe(
@@ -185,9 +185,13 @@ export class TestControllerService {
 
   setupUnitStateBuffer(): void {
     this.destroySubscription('unitStateBuffer');
+    const closingSignal$ = merge(
+      interval(Number(this.bookletConfig.unit_state_buffer_time)),
+      this.closeBuffers$
+    );
     this.subscriptions.unitStateBuffer = this.unitStateBuffer$
       .pipe(
-        bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
+        bufferWhen(() => closingSignal$),
         map(TestStateUtil.sort)
       )
       .subscribe(updates => {
@@ -199,9 +203,13 @@ export class TestControllerService {
 
   setupTestStateBuffer(): void {
     this.destroySubscription('testStateBuffer');
+    const closingSignal$ = merge(
+      interval(Number(this.bookletConfig.test_state_buffer_time)),
+      this.closeBuffers$
+    );
     this.subscriptions.testStateBuffer = this.testStateBuffer$
       .pipe(
-        bufferWhen(() => merge(interval(TestControllerService.unitStateBufferMs), this.closeBuffers$)),
+        bufferWhen(() => closingSignal$),
         map(TestStateUtil.sort)
       )
       .subscribe(updates => {

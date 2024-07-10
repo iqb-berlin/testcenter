@@ -19,5 +19,7 @@ export class BookletConfigData {
   lock_test_on_termination: 'ON' | 'OFF' = 'OFF';
   ask_for_fullscreen: 'ON' | 'OFF' = 'OFF';
   show_fullscreen_button: 'ON' | 'OFF' = 'OFF';
-  evaluate_testlet_conditions: 'LIVE' | 'ON_LEAVE_TESTLET' | 'ON_LEAVE_UNIT' | 'OFF' = 'LIVE';
+  unit_responses_buffer_time: string = '12000';
+  unit_state_buffer_time: string = '21000';
+  test_state_buffer_time: string = '700';
 }

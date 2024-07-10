@@ -201,19 +201,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  private evaluateConditionsIfNecessary(currentUnit: Unit, newUnit: Unit | null): void {
-    if (
-      (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_UNIT') ||
-      (
-        (this.tcs.booklet?.config.evaluate_testlet_conditions === 'ON_LEAVE_TESTLET') &&
-        newUnit &&
-        (newUnit.parent.id !== currentUnit.parent.id)
-      )
-    ) {
-      this.tcs.evaluateConditions();
-    }
-  }
-
   canDeactivate(
     component: UnithostComponent,
     currentRoute: ActivatedRouteSnapshot,
@@ -251,8 +238,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       this.tcs.interruptTimer();
       return of(true);
     }
-
-    this.evaluateConditionsIfNecessary(currentUnit, newUnit);
 
     return from([
       this.checkAndSolveCompleteness.bind(this),

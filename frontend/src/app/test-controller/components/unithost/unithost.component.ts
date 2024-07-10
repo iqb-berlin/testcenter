@@ -151,8 +151,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]);
 
     await this.tcs.closeBuffer('handleReadyNotification');
-    const pc = this.getPlayerConfig();
-    console.log({ pc, t: this.tcs.navigationTargets });
 
     if (!this.tcs.currentUnit) {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
@@ -167,7 +165,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         ...this.tcs.currentUnit.state,
         dataParts: this.tcs.currentUnit.dataParts
       },
-      playerConfig: pc
+      playerConfig: this.getPlayerConfig()
     }, '*');
   }
 
