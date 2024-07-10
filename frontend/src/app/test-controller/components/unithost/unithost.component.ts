@@ -505,7 +505,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private updatePlayerConfig(): void {
-    console.log('updatePlayerConfig');
+    if (!this.playerSessionId) {
+      return;
+    }
     this.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.playerSessionId,
