@@ -311,6 +311,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitsToLoadIds = [this.tcs.currentUnitSequenceId];
     }
 
+    // STAND: statt getUnit this.tcs.units[sequenceId] - warum geht das überhaupt?
     const resourcesToLoad = unitsToLoadIds
       .flatMap(sequenceId => Object.values(this.tcs.getUnit(sequenceId).loadingProgress));
 

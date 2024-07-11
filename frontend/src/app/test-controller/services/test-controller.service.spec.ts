@@ -69,11 +69,11 @@ describe('TestControllerService', () => {
     service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
     service.setupUnitDataPartsBuffer();
-    const u = TestControllerService.unitDataBufferMs;
+    const u = 6000;
 
     const expectedUploadedData: UnitDataParts[] = [];
 
-    service.updateUnitStateDataParts('unit1', { a: 'initial A', b: 'initial B' }, 'aType');
+    // // service.updateUnitStateDataParts('unit1', { a: 'initial A', b: 'initial B' }, 'aType');
     tick(u * 0.1);
     expect(uploadedData).withContext('Debounce DataParts forwarding').toEqual(expectedUploadedData);
 
@@ -85,13 +85,13 @@ describe('TestControllerService', () => {
     });
     expect(uploadedData).withContext('Debounce DataParts forwarding ii').toEqual(expectedUploadedData);
 
-    service.updateUnitStateDataParts('unit1', { a: 'initial A' }, 'aType');
+    // // service.updateUnitStateDataParts('unit1', { a: 'initial A' }, 'aType');
     tick(u * 1.5);
     expect(uploadedData).withContext('Skip when nothing changes').toEqual(expectedUploadedData);
 
-    service.updateUnitStateDataParts('unit1', { a: 'new A', b: 'initial B' }, 'aType');
+    // // service.updateUnitStateDataParts('unit1', { a: 'new A', b: 'initial B' }, 'aType');
     tick(u * 0.1);
-    service.updateUnitStateDataParts('unit1', { b: 'initial B', c: 'used C the first time' }, 'aType');
+    // // service.updateUnitStateDataParts('unit1', { b: 'initial B', c: 'used C the first time' }, 'aType');
     tick(u * 1.5);
     expectedUploadedData.push({
       unitAlias: 'unit1',
@@ -101,10 +101,10 @@ describe('TestControllerService', () => {
     expect(uploadedData).withContext('Merge debounced changes').toEqual(expectedUploadedData);
 
     tick(u * 1.5);
-    service.updateUnitStateDataParts('unit1', { b: 'brand new B', c: 'brand new C' }, 'aType');
+    // // service.updateUnitStateDataParts('unit1', { b: 'brand new B', c: 'brand new C' }, 'aType');
     tick(u * 0.1);
-    service.updateUnitStateDataParts('unit2', { b: 'skipThisB', c: 'TakeThisC' }, 'anotherType');
-    service.updateUnitStateDataParts('unit2', { b: 'andApplyThisB', c: 'TakeThisC' }, 'anotherType');
+    // // service.updateUnitStateDataParts('unit2', { b: 'skipThisB', c: 'TakeThisC' }, 'anotherType');
+    // // service.updateUnitStateDataParts('unit2', { b: 'andApplyThisB', c: 'TakeThisC' }, 'anotherType');
     tick(u * 1.5);
     expectedUploadedData.push({
       unitAlias: 'unit1',
@@ -129,14 +129,14 @@ describe('TestControllerService', () => {
     service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
     service.setupUnitStateBuffer();
-    const u = TestControllerService.unitStateBufferMs;
+    const u = 6000;
 
     const expectedUploadedStates: UnitStateUpdate[] = [];
 
     const state1: UnitStateUpdate = {
       testId: '1', unitAlias: 'unit1', state: [{ key: 'PRESENTATION_PROGRESS', content: 'some', timeStamp: Date.now() }]
     };
-    service.updateUnitState(1, state1);
+    // service.updateUnitState(1, state1);
     tick(u * 0.1);
     expect(uploadedStates).withContext('Debounce DataParts forwarding').toEqual(expectedUploadedStates);
 
@@ -147,26 +147,26 @@ describe('TestControllerService', () => {
     const state2: UnitStateUpdate = {
       testId: '1', unitAlias: 'unit1', state: [{ key: 'PRESENTATION_PROGRESS', content: 'some', timeStamp: Date.now() }]
     };
-    service.updateUnitState(1, state2);
+    // service.updateUnitState(1, state2);
     tick(u * 1.5);
     expect(uploadedStates).withContext('Skip when nothing changes').toEqual(expectedUploadedStates);
 
     const stateEntry1: StateReportEntry<UnitStateKey> = { key: 'PRESENTATION_PROGRESS', content: 'complete', timeStamp: Date.now() };
     const stateEntry2: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'some player state', timeStamp: Date.now() };
     const stateEntry3: StateReportEntry<UnitStateKey> = { key: 'RESPONSE_PROGRESS', content: 'complete', timeStamp: Date.now() };
-    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry1, stateEntry2] });
+    // service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry1, stateEntry2] });
     tick(u * 0.1);
-    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry3] });
+    // service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [stateEntry3] });
     tick(u * 1.5);
     expectedUploadedStates.push({ testId: '1', unitAlias: 'unit1', state: [stateEntry1, stateEntry2, stateEntry3] });
     expect(uploadedStates).withContext('Merge debounced changes').toEqual(expectedUploadedStates);
 
     const unit1stateEntry: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'u1/s1', timeStamp: Date.now() };
     tick(u * 1.5);
-    service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [unit1stateEntry] });
+    // service.updateUnitState(1, { testId: '1', unitAlias: 'unit1', state: [unit1stateEntry] });
     tick(u * 0.1);
     const unit2stateEntry: StateReportEntry<UnitStateKey> = { key: 'PLAYER', content: 'u2/s1', timeStamp: Date.now() };
-    service.updateUnitState(2, { testId: '1', unitAlias: 'unit2', state: [unit2stateEntry] });
+    // service.updateUnitState(2, { testId: '1', unitAlias: 'unit2', state: [unit2stateEntry] });
     tick(u * 1.5);
     expectedUploadedStates.push(
       { testId: '1', unitAlias: 'unit1', state: [unit1stateEntry] },

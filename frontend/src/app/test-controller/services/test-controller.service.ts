@@ -50,26 +50,15 @@ export class TestControllerService {
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
 
+  // TODO hide those behind functions, this will be way easier with ts 5.5
+  booklet: Booklet | null = null;
   units: { [sequenceId: number]: Unit } = {};
   testlets: { [testletId: string] : Testlet } = {};
   unitAliasMap: { [unitId: string] : number } = {};
 
-  currentUnitSequenceId: (keyof typeof this.units) = -Infinity;
+  currentUnitSequenceId: number = -Infinity;
   get currentUnit(): Unit | null {
-    return this.units[this.currentUnitSequenceId] ?? null;
-  }
-
-  private _booklet: Booklet | null = null;
-  get booklet(): Booklet | null {
-    if (!this._booklet) {
-      // console.trace();
-      // throw new MissingBookletError();
-    }
-    return this._booklet;
-  }
-
-  set booklet(booklet: Booklet) {
-    this._booklet = booklet;
+    return this.units[this.currentUnitSequenceId];
   }
 
   timers$ = new Subject<TimerData>();
@@ -229,7 +218,7 @@ export class TestControllerService {
   }
 
   destroySubscription(name: string): void {
-    if (this.subscriptions[name]) this.subscriptions[name].unsubscribe();
+    this.subscriptions[name]?.unsubscribe();
     delete this.subscriptions[name];
   }
 
@@ -247,7 +236,7 @@ export class TestControllerService {
 
     this.currentUnitSequenceId = 0;
 
-    this._booklet = null;
+    this.booklet = null;
     this.units = {};
     this.testlets = {};
     this.unitAliasMap = {};
@@ -264,16 +253,15 @@ export class TestControllerService {
 
   updateUnitStateDataParts(dataParts: KeyValuePairString, unitStateDataType: string): void {
     if (!this.currentUnit) return;
-    const unitSequenceId = this.currentUnit.sequenceId;
 
     const changedParts: KeyValuePairString = {};
     Object.keys(dataParts)
       .forEach(dataPartId => {
         if (
-          !this.units[unitSequenceId].dataParts[dataPartId] ||
-          (this.units[unitSequenceId].dataParts[dataPartId] !== dataParts[dataPartId])
+          !this.currentUnit!.dataParts[dataPartId] ||
+          (this.currentUnit!.dataParts[dataPartId] !== dataParts[dataPartId])
         ) {
-          this.units[unitSequenceId].dataParts[dataPartId] = dataParts[dataPartId];
+          this.currentUnit!.dataParts[dataPartId] = dataParts[dataPartId];
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
@@ -284,26 +272,25 @@ export class TestControllerService {
 
   updateUnitState(unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
     if (!this.currentUnit) return;
-    const unitSequenceId = this.currentUnit.sequenceId;
 
     const setUnitState = (stateKey: string, value: string): void => {
       if (isVeronaProgress(value)) {
-        this.units[unitSequenceId].state.RESPONSE_PROGRESS = value;
+        this.currentUnit!.state.RESPONSE_PROGRESS = value;
       }
 
       if (isVeronaProgress(value)) {
-        this.units[unitSequenceId].state.PRESENTATION_PROGRESS = value;
+        this.currentUnit!.state.PRESENTATION_PROGRESS = value;
       }
 
       if (stateKey === 'CURRENT_PAGE_ID') {
-        this.units[unitSequenceId].state.CURRENT_PAGE_ID = value;
+        this.currentUnit!.state.CURRENT_PAGE_ID = value;
       }
     };
 
     const changedStates = unitStateUpdate
       .filter(state => !!state.content)
       .filter(changedState => {
-        const oldState = this.units[unitSequenceId].state[changedState.key];
+        const oldState = this.currentUnit!.state[changedState.key];
         if (oldState) {
           return oldState !== changedState.content;
         }
@@ -362,7 +349,7 @@ export class TestControllerService {
   }
 
   getUnit(unitSequenceId: number): Unit {
-    if (!this._booklet) { // when loading process was aborted
+    if (!this.booklet) { // when loading process was aborted
       throw new MissingBookletError();
     }
     const unit = this.units[unitSequenceId];
@@ -381,19 +368,11 @@ export class TestControllerService {
     return unit;
   }
 
-  // TODO X the duplication of getUnit is a temporary fix, get rid of it
-  getUnitSilent(unitSequenceId: number): Unit | null {
-    if (!this._booklet) { // when loading process was aborted
-      throw new MissingBookletError();
-    }
-    return this.units[unitSequenceId] || null;
-  }
-
   startTimer(testlet: Testlet): void {
     if (!testlet.restrictions?.timeMax) {
       return;
     }
-    const timeLeftMinutes = (testlet.id in this.timers) ?
+    const timeLeftMinutes = (this.timers[testlet.id]) ?
       Math.min(this.timers[testlet.id], testlet.restrictions.timeMax.minutes) :
       testlet.restrictions.timeMax.minutes;
     if (this.timerIntervalSubscription !== null) {
@@ -471,7 +450,7 @@ export class TestControllerService {
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
-    if (!this._booklet) {
+    if (!this.booklet) {
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     }
     switch (navString) {

@@ -59,17 +59,19 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     dataParts: { all: 'data from a previous session' },
     state: {},
     definition: 'the unit (1) definition itself',
-    unitResponseType: 'the-data-type'
+    unitResponseType: 'the-data-type',
+    definitionType: 'plaintext'
   },
   u2: {
     dataParts: { all: 'data from a previous session' },
     state: {
       PRESENTATION_PROGRESS: 'some',
       CURRENT_PAGE_ID: '1',
-      CURRENT_PAGE_NR: '1'
+      CURRENT_PAGE_NR: 1
     },
     definition: '',
-    unitResponseType: 'the-data-type'
+    unitResponseType: 'the-data-type',
+    definitionType: ''
   },
   u3: {
     dataParts: { all: 'data from a previous session' },
@@ -77,7 +79,8 @@ export const TestUnits: { [unitId: string]: UnitData } = {
       RESPONSE_PROGRESS: 'complete'
     },
     definition: '',
-    unitResponseType: 'the-data-type'
+    unitResponseType: 'the-data-type',
+    definitionType: ''
   },
   u4: {
     dataParts: { all: 'data from a previous session' },
@@ -85,13 +88,15 @@ export const TestUnits: { [unitId: string]: UnitData } = {
       CURRENT_PAGE_ID: '2'
     },
     definition: 'the unit (4) definition itself',
-    unitResponseType: 'the-data-type'
+    unitResponseType: 'the-data-type',
+    definitionType: ''
   },
   u5: {
     dataParts: { all: 'data from a previous session' },
     state: {},
     definition: 'the unit (5) definition itself',
-    unitResponseType: 'the-data-type'
+    unitResponseType: 'the-data-type',
+    definitionType: ''
   }
 };
 
@@ -182,7 +187,8 @@ const testlets: { [ key: string]: Testlet } = {
       if: []
     },
     blockLabel: '',
-    children: []
+    children: [],
+    containsConditionalTestlets: false
   },
   t1: {
     id: 't1',
@@ -212,7 +218,8 @@ const testlets: { [ key: string]: Testlet } = {
       }
     },
     blockLabel: '',
-    children: []
+    children: [],
+    containsConditionalTestlets: false
   },
   t2: {
     id: 't2',
@@ -242,7 +249,8 @@ const testlets: { [ key: string]: Testlet } = {
       }
     },
     blockLabel: '',
-    children: []
+    children: [],
+    containsConditionalTestlets: false
   }
 };
 

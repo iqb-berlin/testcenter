@@ -26,8 +26,9 @@ export class UnitActivateGuard implements CanActivate {
       return this.router.parseUrl(`/t/${testId}`);
     }
 
-    const newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
-    if (!newUnit) {
+    try {
+      this.tcs.getUnit(targetUnitSequenceId);
+    } catch (e) {
       // a unit-nr was entered in the URl which does not exist
       this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       // looking for alternatives where to go

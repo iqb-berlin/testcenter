@@ -228,7 +228,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
     if (match) {
       const targetUnitSequenceId = Number(match[2]);
-      newUnit = this.tcs.getUnitSilent(targetUnitSequenceId);
+      newUnit = this.tcs.units[targetUnitSequenceId] || null;
     }
 
     // TODO maybe move all of this into testControllerService

@@ -79,17 +79,4 @@ describe('UnithostComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  describe('getEnabledNavigationTargets', () => {
-    it('should return the correct targets', () => {
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-      const getEnabledNavigationTargets = UnithostComponent['getEnabledNavigationTargets'];
-      expect(getEnabledNavigationTargets(2, [2, 5], 'ON')).toEqual(['next', 'last', 'end']);
-      expect(getEnabledNavigationTargets(3, [2, 5], 'ON')).toEqual(['next', 'previous', 'first', 'last', 'end']);
-      expect(getEnabledNavigationTargets(5, [2, 5], 'OFF')).toEqual(['previous', 'first']);
-      expect(getEnabledNavigationTargets(5, [2, 5], 'LAST_UNIT')).toEqual(['previous', 'first', 'end']);
-      expect(getEnabledNavigationTargets(3, [2, 5], 'LAST_UNIT')).toEqual(['previous', 'first', 'end']);
-      expect(getEnabledNavigationTargets(1, [1, 1], 'ON')).toEqual(['end']);
-    });
-  });
 });

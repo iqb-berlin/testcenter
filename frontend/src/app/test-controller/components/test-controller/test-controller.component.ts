@@ -207,7 +207,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       gotoTarget = params[0];
     }
     if (gotoTarget && gotoTarget !== '0') {
-      const targetUnit = this.tcs.getUnitSilent(parseInt(gotoTarget, 10));
+      const targetUnit = this.tcs.units[parseInt(gotoTarget, 10)];
       if (targetUnit) {
         if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
           this.tcs.cancelTimer();

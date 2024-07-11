@@ -44,7 +44,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
     @Inject('BACKEND_URL') serverUrl: string,
-    protected http: HttpClient
+    protected override http: HttpClient
   ) {
     super(serverUrl, http);
 
@@ -72,7 +72,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   // services are normally meant to live forever, so unsubscription *should* be unnecessary
   // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
   // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     if (this.commandSubscription) {
       this.commandSubscription.unsubscribe();
     }
