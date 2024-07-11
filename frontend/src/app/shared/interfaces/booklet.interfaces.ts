@@ -90,7 +90,7 @@ export interface Restrictions {
   };
   readonly timeMax?: {
     readonly minutes: number;
-    readonly leave: MaxTimeLeaveValue // TODO X THIS instead of maxTimeLeave
+    readonly leave: MaxTimeLeaveValue
   };
   readonly denyNavigationOnIncomplete?: {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';

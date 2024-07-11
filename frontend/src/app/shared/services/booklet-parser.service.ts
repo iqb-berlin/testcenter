@@ -170,7 +170,7 @@ export abstract class BookletParserService<
       if (timeMaxElement) {
         timeMax = {
           minutes: parseFloat(timeMaxElement.getAttribute('minutes') || ''),
-          leave: timeMaxElement.getAttribute('leave') || 'confirm' // TODO X test
+          leave: timeMaxElement.getAttribute('leave') || 'confirm'
         };
       }
 
