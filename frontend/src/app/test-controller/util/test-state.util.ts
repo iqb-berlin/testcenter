@@ -1,4 +1,6 @@
-import { UnitStateUpdate, TestStateUpdate } from '../interfaces/test-controller.interfaces';
+import { UnitStateUpdate, TestStateUpdate, UnitDataParts } from '../interfaces/test-controller.interfaces';
+
+// TODO X unit test
 
 export class TestStateUtil {
   static sort<T extends UnitStateUpdate | TestStateUpdate>(stateBuffer: T[]): T[] {
@@ -24,4 +26,22 @@ export class TestStateUtil {
           <{ [objectId: string]: T }>{}
         ));
   }
+
+  static sortDataParts = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] =>
+    Object.values(dataPartsBuffer
+      .reduce(
+        (agg, dataParts) => {
+          const objectId = `${dataParts.testId}@@@${dataParts.unitAlias}`;
+          if (!agg[objectId]) agg[objectId] = {
+            testId: dataParts.testId,
+            unitAlias: dataParts.unitAlias,
+            dataParts: {},
+            // verona < 6 does not support different dataTypes for different Chunks, so we can just use the first one
+            unitStateDataType: dataParts.unitStateDataType,
+          };
+          agg[objectId].dataParts = Object.assign({}, agg[objectId].dataParts, dataParts.dataParts);
+          return agg;
+        },
+        <{ [objectId: string]: UnitDataParts }>{}
+      ));
 }

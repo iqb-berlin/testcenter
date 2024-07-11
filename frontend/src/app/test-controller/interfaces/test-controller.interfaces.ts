@@ -102,6 +102,7 @@ export type UnitStateKey =
   | 'PLAYER';
 
 export interface UnitDataParts {
+  testId: string;
   unitAlias: string;
   dataParts: KeyValuePairString;
   unitStateDataType: string;

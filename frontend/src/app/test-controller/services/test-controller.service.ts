@@ -1,5 +1,5 @@
 import {
-  bufferWhen, filter, map, takeUntil, withLatestFrom
+  bufferWhen, filter, map, takeUntil, tap, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
@@ -108,26 +108,6 @@ export class TestControllerService {
   setupUnitDataPartsBuffer(): void {
     this.destroySubscription('unitDataPartsBuffer'); // important when called from unit-test with fakeAsync
 
-    const sortDataPartsByUnit = (dataPartsBuffer: UnitDataParts[]): UnitDataParts[] => {
-      // TODO X what if test changed?
-      const sortedByUnit = dataPartsBuffer
-        .reduce(
-          (agg, dataParts) => {
-            if (!agg[dataParts.unitAlias]) agg[dataParts.unitAlias] = [];
-            agg[dataParts.unitAlias].push(dataParts);
-            return agg;
-          },
-          <{ [unitAlias: string]: UnitDataParts[] }>{}
-        );
-      return Object.keys(sortedByUnit)
-        .map(unitAlias => ({
-          unitAlias,
-          dataParts: Object.assign({}, ...sortedByUnit[unitAlias].map(entry => entry.dataParts)),
-          // verona4 does not support different dataTypes for different Chunks
-          unitStateDataType: sortedByUnit[unitAlias][0].unitStateDataType
-        }));
-    };
-
     const closingSignal$ = merge(
       interval(Number(this.bookletConfig.unit_responses_buffer_time)),
       this.closeBuffers$
@@ -136,7 +116,7 @@ export class TestControllerService {
     this.subscriptions.unitDataPartsBuffer = this.unitDataPartsBuffer$
       .pipe(
         bufferWhen(() => closingSignal$),
-        map(sortDataPartsByUnit),
+        map(TestStateUtil.sortDataParts),
         withLatestFrom(closingSignal$)
       )
       .subscribe(([buffer, closer]) => {
@@ -266,7 +246,12 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length) {
-      this.unitDataPartsBuffer$.next({ unitAlias: this.currentUnit.alias, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsBuffer$.next({
+        testId: this.testId,
+        unitAlias: this.currentUnit.alias,
+        dataParts: changedParts,
+        unitStateDataType
+      });
     }
   }
 
