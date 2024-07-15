@@ -29,22 +29,17 @@ class WorkspaceCache {
   }
 
   public function validate(?string $onlyValidateThisType = null): void {
-    foreach ($this->cachedFiles as $type => $fileSet) {
-      if ($onlyValidateThisType) {
-        if ($type === $onlyValidateThisType) {
-
-          foreach ($fileSet as $file) {
-            /* @var $file File */
-            $file->crossValidate($this);
-          }
-        }
-
-      } else {
+    if ($onlyValidateThisType) {
+      foreach ($this->cachedFiles[$onlyValidateThisType] as $file) {
+        /* @var $file File */
+        $file->crossValidate($this);
+      }
+    } else {
+      foreach ($this->cachedFiles as $fileSet) {
         foreach ($fileSet as $file) {
           /* @var $file File */
           $file->crossValidate($this);
         }
-
       }
     }
 

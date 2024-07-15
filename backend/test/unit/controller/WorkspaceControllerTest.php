@@ -353,11 +353,23 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_postFile() {
+    $booklet = XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml');
+    $unit = XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml');
+    $testtakers = XMLFileTesttakers::fromString(file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml');
     $files = [
-      'Booklet.xml' => XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml'),
-      'Unit2.xml' => XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml'),
-      'Testtakers.xml' => XMLFileTesttakers::fromString(file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml')
+      'Booklet.xml' => $booklet,
+      'Unit2.xml' => $unit,
+      'Testtakers.xml' => $testtakers
     ];
+
+    $fileReports = array_reduce(
+      array_keys($files),
+      function($agg, $fileName) use ($files) {
+        $agg[$fileName] = ['type' => $files[$fileName]->getType(), ...$files[$fileName]->getValidationReport()];
+        return $agg;
+      },
+      []
+    );
 
     $filesContents = array_reduce(
       array_keys($files),
@@ -371,7 +383,7 @@ final class WorkspaceControllerTest extends TestCase {
     $this->workspaceMock
       ->expects('importUncategorizedFiles')
       ->times(1)
-      ->andReturn($files);
+      ->andReturn($fileReports);
 
     $this->workspaceMock
       ->expects('setWorkspaceHash')

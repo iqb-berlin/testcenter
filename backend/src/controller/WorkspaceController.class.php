@@ -1,14 +1,14 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
-use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 use Slim\Psr7\Stream;
 
 class WorkspaceController extends Controller {
@@ -124,23 +124,22 @@ class WorkspaceController extends Controller {
 
     $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
-    $importedFiles = $workspace->importUncategorizedFiles($filesToImport);
+    $importedFilesReports = $workspace->importUncategorizedFiles($filesToImport);
     $workspace->setWorkspaceHash();
 
-    $reports = [];
     $loginsAffected = false;
     $containsErrors = false;
-    foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
-      $reports[$localPath] = $file->getValidationReport();
-      $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
-      $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
+    foreach ($importedFilesReports as $localPath => $report) {
+        $containsErrors = ($containsErrors or !empty($importedFilesReports[$localPath]['error']));
+        $loginsAffected = ($loginsAffected or ($containsErrors and ($importedFilesReports[$localPath]['type'] == 'Testtakers')));
+        $importedFilesReports[$localPath] = array_splice($report, 1); // revert to current structure for output so not to needlessly change the API
     }
 
     if ($loginsAffected) {
       BroadcastService::send('system/clean');
     }
 
-    return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
+    return $response->withJson($importedFilesReports)->withStatus($containsErrors ? 207 : 201);
   }
 
   public static function getFiles(Request $request, Response $response): Response {

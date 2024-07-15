@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 enum FileType: string
 {
+  case SYSTEMCHECK = 'SysCheck';
   case TESTTAKERS = 'Testtakers';
   case BOOKLET = 'Booklet';
-  case SYSTEMCHECK = 'SysCheck';
   case UNIT = 'Unit';
   case RESOURCE = 'Resource';
 
-  /** @return string[] */
+  /**
+   * Returns the types of the input type and its dependencies in the correct order.
+   * @return string[]
+   */
   public static function getDependenciesOfType(self $dependantType): array {
-    $leftDepOnRight = ['Testtakers', 'Booklet', 'Unit', 'Resource'];
+    $leftDepOnRight = [
+      self::SYSTEMCHECK->value,
+      self::TESTTAKERS->value,
+      self::BOOKLET->value,
+      self::UNIT->value,
+      self::RESOURCE->value,
+    ];
     $dependencies = [];
 
     $dependencyStartsHere = false;
@@ -29,20 +38,5 @@ enum FileType: string
     }
 
     return $dependencies;
-  }
-
-  /**
-   * @param string[] $types
-   * @return self|null
-   */
-  public static function getTopRootDependentType(array $types): ?self {
-    $rightDepOnLeft = array_map(fn(self $type) => $type->value, self::cases());
-
-    foreach ($rightDepOnLeft as $topRoot) {
-      foreach ($types as $type) {
-        if ($type == $topRoot) return self::tryFrom($type);
-      }
-    }
-    return null;
   }
 }

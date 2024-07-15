@@ -249,7 +249,7 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     $result = $workspace->importUncategorizedFiles(['valid.xml', 'P.HTML']);
 
-    $this->assertArrayNotHasKey('error', $result["valid.xml"]->getValidationReport(), 'valid file has no errors');
+    $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
   }
@@ -269,7 +269,7 @@ class WorkspaceTest extends TestCase {
 
     $this->assertGreaterThan(
       0,
-      count($result["invalid.xml"]->getValidationReport()['error']),
+      count($result["invalid.xml"]['error']),
       'invalid file has error report'
     );
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
@@ -310,7 +310,7 @@ class WorkspaceTest extends TestCase {
     );
     $this->assertGreaterThan(
       0,
-      count($result["valid3.xml"]->getValidationReport()['error']),
+      count($result["valid3.xml"]['error']),
       'return warning on duplicate id if file names are not the same'
     );
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
@@ -353,7 +353,7 @@ class WorkspaceTest extends TestCase {
     );
     $this->assertGreaterThan(
       0,
-      count($result["valid.xml"]->getValidationReport()['warning']),
+      count($result["valid.xml"]['warning']),
       'return warning if filename and id is the same'
     );
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
@@ -814,15 +814,15 @@ class WorkspaceTest extends TestCase {
     file_put_contents(DATA_DIR . '/ws_1/testtakers.xml', self::dangerousTesttakers);
 
     $result = $workspace->importUncategorizedFiles(['testtakers.xml']);
-    $this->assertArrayNotHasKey('error', $result["testtakers.xml"]->getValidationReport(), 'valid file has no errors');
+    $this->assertArrayNotHasKey('error', $result["testtakers.xml"], 'valid file has no errors');
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/testtakers.xml'), 'valid file is imported');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/testtakers.xml'), 'cleanup after import');
   }
 
   private function getErrorsFromValidationResult($result): array {
     return array_filter(
-      array_map(function ($file) {
-        return $file->getValidationReport()['error'] ?? null;
+      array_map(function (array $fileReport) {
+        return $fileReport['error'] ?? null;
       }, $result),
       'is_array'
     );

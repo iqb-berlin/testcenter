@@ -175,7 +175,13 @@ class Workspace {
     return substr_count($path, '..') == 0;
   }
 
-  // takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
+  /** takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
+   * @return array{
+   *   type: string,
+   *   warning: array,
+   *   error: array,
+   *   info: array}
+   */
   public function importUncategorizedFiles(array $fileNames): array {
     $toDeleteFilePaths = [];
     $toSortInFilePaths = [];
@@ -189,76 +195,73 @@ class Workspace {
       }
     }
 
-    $importedFiles = $this->categorizeAndValidateRootlevelFiles($toSortInFilePaths);
+    $importedFiles = $this->sortAndValidateToplevelFiles($toSortInFilePaths);
     $this->deleteRootlevelFiles($toDeleteFilePaths);
 
     return $importedFiles;
   }
 
-  private function categorizeAndValidateRootlevelFiles(array $relativeFilePaths): array {
+  private function sortAndValidateToplevelFiles(array $relativeFilePaths): array {
     $filesAfterSorting = [];
-    $filesPerType = array_fill_keys(Workspace::subFolders, []);
+    $pathsPerType = array_fill_keys(Workspace::subFolders, []);
 
     foreach ($relativeFilePaths as $relativeFilePath) {
-      $filesPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
+      $pathsPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
     }
 
-    $filesPerType = [
-      'merged' => array_merge($filesPerType['Resource'], $filesPerType['Unit']),
-      'Booklet' => $filesPerType['Booklet'],
-      'Testtakers' => $filesPerType['Testtakers'],
-      'SysCheck' => $filesPerType['SysCheck'],
-      'xml' => $filesPerType['xml']
+    $pathsPerType = [
+      // Resource and Unit are merged in order to save one call to getFilesWhere(['type' => 'Resource']), as this is the
+      // most expensive call in the following loop (Unit depends on Resource anyway)
+      !empty($pathsPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
+        $pathsPerType['Resource'],
+        $pathsPerType['Unit']
+      ),
+      'Booklet' => $pathsPerType['Booklet'],
+      'Testtakers' => $pathsPerType['Testtakers'],
+      'SysCheck' => $pathsPerType['SysCheck'],
+      'xml' => $pathsPerType['xml']
     ];
 
-    foreach ($filesPerType as $type => $relativeFiles) {
-      if (!empty($relativeFiles)) {
+    foreach ($pathsPerType as $type => $filePaths) {
+      if (!empty($filePaths)) {
+        // these files are all not valid from the start
         if ($type === 'xml') {
-          foreach ($relativeFiles as $file) {
-            $filesAfterSorting[$file] = File::get($file);
+          foreach ($filePaths as $path) {
+            $file = File::get($this->workspacePath . '/' . $path);
+            $filesAfterSorting[$path] = ['type' => $file->getType(), ...$file->getValidationReport()];
           }
           continue;
         }
-        $files = $this->validateUncategorizedFiles($relativeFiles);
-        foreach ($files as $localFilePath => $file) {
+
+        $files = $this->validateFilesForCategory($filePaths, FileType::tryFrom($type));
+        foreach ($files as $filePath => $file) {
           if ($file->isValid()) {
-            $this->categorizeFile($localFilePath, $file);
+            $this->categorizeFile($filePath, $file);
             $this->workspaceDAO->storeFile($file);
             $this->storeFileMeta($file);
             $this->updateDependentFiles($file);
           }
 
-          $filesAfterSorting[$localFilePath] = $file;
+          $filesAfterSorting[$filePath] = ['type' => $file->getType(), ...$file->getValidationReport()];
         }
-
       }
     }
 
     return $filesAfterSorting;
   }
 
-  protected function validateUncategorizedFiles(array $localFilePaths): array {
-
-    $localFiles = [];
+  protected function validateFilesForCategory(array $localFilePaths, FileType $highestTypeAmongFiles): array {
     $filesPerType = [];
-    foreach ($localFilePaths as $localFilePath) {
-      $localFiles[$localFilePath] = File::get($this->workspacePath . '/' . $localFilePath);
-    }
-    $highestType = FileType::getTopRootDependentType(
-      array_map(
-        fn(File $file) => $file->getType(),
-        $localFiles
-      )
-    );
-
     $workspaceCache = new WorkspaceCache($this);
-    $this->loadFilesIntoCache($workspaceCache, $highestType);
+    $this->loadFilesIntoCache($workspaceCache, $highestTypeAmongFiles);
 
-    foreach ($localFiles as $filePath => $file) {
+    foreach ($localFilePaths as $localFilePath) {
+      $file = File::get($this->workspacePath . '/' . $localFilePath);
       $workspaceCache->addFile($file->getType(), $file, true);
-      $filesPerType[$filePath] = $file;
+      $filesPerType[$localFilePath] = $file;
     }
-    $workspaceCache->validate($highestType->value);
+
+    $workspaceCache->validate($highestTypeAmongFiles->value);
 
     return $filesPerType;
   }
@@ -553,11 +556,11 @@ class Workspace {
     $this->workspaceDAO->setWorkspaceHash($this->getWorkspaceHash());
   }
 
-  private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $highestType): void {
-    foreach (FileType::getDependenciesOfType($highestType) as $type) {
-      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $type]);
-      foreach ($files[$type] as $file) {
-        $workspaceCache->addFile($type, $file);
+  private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $type): void {
+    foreach (FileType::getDependenciesOfType($type) as $dependingType) {
+      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $dependingType]);
+      foreach ($files[$dependingType] as $file) {
+        $workspaceCache->addFile($dependingType, $file);
       }
     }
   }
