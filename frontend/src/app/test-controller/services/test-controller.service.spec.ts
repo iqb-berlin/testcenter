@@ -19,7 +19,7 @@ class MockBackendService {
   updateDataParts(
     testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
-    uploadedData.push({ unitAlias: unitDbKey, dataParts, unitStateDataType });
+    uploadedData.push({ testId, unitAlias: unitDbKey, dataParts, unitStateDataType });
     return of(true);
   }
 
@@ -79,6 +79,7 @@ describe('TestControllerService', () => {
 
     tick(u * 1.5);
     expectedUploadedData.push({
+      testId: service.testId,
       unitAlias: 'unit1',
       dataParts: { a: 'initial A', b: 'initial B' },
       unitStateDataType: 'aType'
@@ -94,6 +95,7 @@ describe('TestControllerService', () => {
     // // service.updateUnitStateDataParts('unit1', { b: 'initial B', c: 'used C the first time' }, 'aType');
     tick(u * 1.5);
     expectedUploadedData.push({
+      testId: service.testId,
       unitAlias: 'unit1',
       dataParts: { a: 'new A', c: 'used C the first time' },
       unitStateDataType: 'aType'
@@ -107,10 +109,12 @@ describe('TestControllerService', () => {
     // // service.updateUnitStateDataParts('unit2', { b: 'andApplyThisB', c: 'TakeThisC' }, 'anotherType');
     tick(u * 1.5);
     expectedUploadedData.push({
+      testId: service.testId,
       unitAlias: 'unit1',
       dataParts: { b: 'brand new B', c: 'brand new C' },
       unitStateDataType: 'aType'
     }, {
+      testId: service.testId,
       unitAlias: 'unit2',
       dataParts: { b: 'andApplyThisB', c: 'TakeThisC' },
       unitStateDataType: 'anotherType'

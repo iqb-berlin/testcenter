@@ -10,6 +10,7 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
 import { AuthData } from '../../../app.interfaces';
 import { IqbVariableUtil } from '../../util/iqb-variable.util';
 import { TestLoaderService } from '../../services/test-loader.service';
+import { ConditionUtil } from '../../util/condition.util';
 
 @Component({
   templateUrl: './debug-pane.component.html',
@@ -97,12 +98,12 @@ export class DebugPaneComponent implements OnInit {
   }
 
   evaluateTestingCondition(): void {
+    const getVar = (unitAlias: string, variableId: string) => this.tcs.units[this.tcs.unitAliasMap[unitAlias]].variables[variableId];
     const domParser = new DOMParser();
     const condStr = this.testingCondition.replace(/^\uFEFF/gm, '');
     try {
       const ifElement = domParser.parseFromString(condStr, 'text/xml').documentElement;
       if (ifElement.nodeName === 'parsererror') {
-        console.log(ifElement);
         throw new Error(ifElement.innerHTML);
       }
       if (ifElement.nodeName !== 'If') {
@@ -110,7 +111,7 @@ export class DebugPaneComponent implements OnInit {
       }
       const cond = this.tls.parseIf(ifElement);
       this.testingConditionResults = cond
-        .map(c => this.tcs.isConditionSatisfied(c))
+        .map(c => ConditionUtil.isSatisfied(c, getVar))
         .map(s => (s ? 'Satisfied' : 'Not Satisfied'));
     } catch (e) {
       if (e) {

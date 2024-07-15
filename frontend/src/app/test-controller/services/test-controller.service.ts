@@ -1,12 +1,11 @@
 import {
-  bufferWhen, filter, map, takeUntil, tap, withLatestFrom
+  bufferWhen, filter, map, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ResponseValueType as IQBVariableValueType } from '@iqb/responses';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, KeyValuePairNumber,
@@ -21,20 +20,15 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
-  BlockCondition, BlockConditionSource,
-  BookletConfig, MainDataService, sourceIsConditionAggregation,
-  sourceIsSingleSource, sourceIsSourceAggregation,
-  TestMode
+  BookletConfig, MainDataService, TestMode
 } from '../../shared/shared.module';
 import { isVeronaProgress, VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
-
-import { IqbVariableUtil } from '../util/iqb-variable.util';
-import { AggregatorsUtil } from '../util/aggregators.util';
-import { IQBVariableStatusList, isIQBVariable } from '../interfaces/iqb.interfaces';
+import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
+import { ConditionUtil } from '../util/condition.util';
 
 @Injectable({
   providedIn: 'root'
@@ -637,11 +631,13 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
+    const getVar =
+      (unitAlias: string, variableId: string) => this.units[this.unitAliasMap[unitAlias]].variables[variableId];
     Object.keys(this.testlets)
       .forEach(testletId => {
         this.testlets[testletId].firstUnsatisfiedCondition =
           this.testlets[testletId].restrictions.if
-            .findIndex(condition => !this.isConditionSatisfied(condition));
+            .findIndex(condition => !ConditionUtil.isSatisfied(condition, getVar));
         this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
       });
     this.updateLocks();
@@ -654,76 +650,5 @@ export class TestControllerService {
       .filter(testlet => testlet.restrictions.if.length && !testlet.locks.condition)
       .map(testlet => testlet.id);
     this.setTestState('TESTLETS_SATISFIED_CONDITION', JSON.stringify(lockedByCondition));
-  }
-
-  isConditionSatisfied(condition: BlockCondition): boolean {
-    const getSourceValue = (source: BlockConditionSource): string | number | undefined => {
-      const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
-      // eslint-disable-next-line default-case
-      switch (source.type) {
-        case 'Code': return var1.code;
-        case 'Value': return IqbVariableUtil.variableValueAsComparable(var1.value);
-        case 'Status': return var1.status;
-        case 'Score': return var1.score;
-      }
-      return undefined;
-    };
-
-    const getSourceValueAsNumber = (source: BlockConditionSource): number => {
-      const var1 = this.units[this.unitAliasMap[source.unitAlias]].variables[source.variable];
-      // eslint-disable-next-line default-case
-      switch (source.type) {
-        case 'Code':
-          return var1.code ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
-        case 'Value':
-          return IqbVariableUtil.variableValueAsNumber(var1.value); // TODO X default?
-        case 'Status':
-          return IQBVariableStatusList.indexOf(var1.status); // TODO X default to UNSET ?
-        case 'Score':
-          return var1.score ?? IqbVariableUtil.variableValueAsNumber(source.default) ?? NaN;
-      }
-      return NaN;
-    };
-
-    let value : IQBVariableValueType | undefined;
-    if (sourceIsSingleSource(condition.source)) {
-      value = getSourceValue(condition.source);
-    }
-    if (sourceIsSourceAggregation(condition.source)) {
-      const aggregatorName = condition.source.type.toLowerCase();
-      const values = condition.source.sources.map(getSourceValueAsNumber);
-      if (aggregatorName in AggregatorsUtil && (typeof AggregatorsUtil[aggregatorName] === 'function')) {
-        value = AggregatorsUtil[aggregatorName](values);
-      }
-    }
-    if (sourceIsConditionAggregation(condition.source)) {
-      if (condition.source.type === 'Count') {
-        value = condition.source.conditions
-          .map(this.isConditionSatisfied.bind(this))
-          .filter(Boolean)
-          .length;
-      }
-    }
-
-    if (typeof value === 'undefined') {
-      return false;
-    }
-
-    let value2: number | string = condition.expression.value;
-    value2 = (typeof value === 'number') ? IqbVariableUtil.variableValueAsNumber(value2) : value2;
-
-    // eslint-disable-next-line default-case
-    switch (condition.expression.type) {
-      case 'equal':
-        return value === value2;
-      case 'notEqual':
-        return value !== value2;
-      case 'greaterThan':
-        return IqbVariableUtil.variableValueAsNumber(value) > IqbVariableUtil.variableValueAsNumber(value2);
-      case 'lowerThan':
-        return IqbVariableUtil.variableValueAsNumber(value) < IqbVariableUtil.variableValueAsNumber(value2);
-    }
-
-    return false;
   }
 }
