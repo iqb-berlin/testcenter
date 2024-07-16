@@ -29,6 +29,7 @@
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
                             <xs:attribute name="codes" type="xs:string" />
+                            <xs:attribute name="state" type="StateListType" />
                           </xs:extension>
                         </xs:simpleContent>
                       </xs:complexType>
@@ -189,4 +190,9 @@
     </xs:simpleContent>
   </xs:complexType>
 
+  <xs:simpleType name="StateListType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([a-z\d-]+:[a-z\d-]+,?\W?)+"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
