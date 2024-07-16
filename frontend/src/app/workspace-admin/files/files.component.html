@@ -5,11 +5,11 @@
       <ng-container *ngFor="let type of fileTypes">
         <mat-expansion-panel [expanded]="true" *ngIf="files && files[type].data.length">
           <mat-expansion-panel-header>
-            <mat-panel-title class="table-header">{{typeLabels[type]}}</mat-panel-title>
+            <mat-panel-title class="table-header">{{ typeLabels[type] }}</mat-panel-title>
             <mat-panel-description>
-              <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
-              <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>
-              <span *ngIf="type=='Testtakers'">, {{fileStats.testtakers}} Teilnehmer</span>
+              <span>{{ files[type].data.length }} Datei{{ files[type].data.length === 1 ? '' : 'en' }}</span>
+              <span *ngIf="fileStats.invalid[type]">, davon {{ fileStats.invalid[type] }} Fehlerhaft</span>
+              <span *ngIf="type=='Testtakers'">, {{ fileStats.testtakers }} Teilnehmer</span>
             </mat-panel-description>
           </mat-expansion-panel-header>
 
@@ -41,14 +41,14 @@
                   <mat-card appearance="raised" class="full-file-report">
                     <mat-card-header *ngIf="element.info.label || element.id">
                       <mat-card-title>
-                        {{element.info.label}}
+                        {{ element.info.label }}
                         <span
-                            *ngIf="element.id !== element.name.toUpperCase()"
-                            style="{{element.info.label ? 'color:silver' : ''}}">
-                        #{{element.id}}
+                          *ngIf="element.id !== element.name.toUpperCase()"
+                          style="{{element.info.label ? 'color:silver' : ''}}">
+                        #{{ element.id }}
                       </span>
                       </mat-card-title>
-                      <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
+                      <mat-card-subtitle>{{ element.info.description }}</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
                       <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
@@ -64,21 +64,23 @@
             </ng-container>
 
             <ng-container matColumnDef="modificationTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung</mat-header-cell>
               <mat-cell *matCellDef="let element" class="datecell">
-                {{(element.modificationTime * 1000) | date: 'dd.MM.yy HH:mm'}}
+                {{ (element.modificationTime * 1000) | date: 'dd.MM.yy HH:mm' }}
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="size">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe</mat-header-cell>
               <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-                {{(element.info.totalSize || element.size) | bytes}}
+                {{ (element.info.totalSize || element.size) | bytes }}
               </mat-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow($event, row)"
+              [class.selected-row]="selectedRow === row"
+              [class.isDependency]="dependenciesOfRow.includes(row)"></mat-row>
           </mat-table>
 
         </mat-expansion-panel>
