@@ -31,7 +31,7 @@
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'code'">
               {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
             </mat-card-subtitle>
-            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'condition'">
+            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'show'">
               {{'Aufgabenblock steht nicht zur Verfügung' | customtext:'booklet_blockConditionNotSatisfied' | async}}
             </mat-card-subtitle>
           </mat-card-header>

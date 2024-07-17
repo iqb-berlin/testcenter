@@ -1,7 +1,4 @@
-<div
-  class="flex-row unit-nav"
-
->
+<div class="flex-row unit-nav">
   <a
     *ngIf="prevButtonVisible && retardedDesign"
     mat-fab
@@ -43,7 +40,7 @@
       </ng-container>
 
       <ng-template #subTestlet>
-        <ng-container *ngIf="isTestlet(testletOrUnit) && (testletOrUnit.firstUnsatisfiedCondition < 0)">
+        <ng-container *ngIf="isTestlet(testletOrUnit) && (!testletOrUnit.locks.show)">
           <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}" />
         </ng-container>
       </ng-template>

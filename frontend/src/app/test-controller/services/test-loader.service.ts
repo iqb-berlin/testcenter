@@ -9,21 +9,17 @@ import {
 import { CodingScheme, VariableCodingData } from '@iqb/responses';
 import {
   BlockCondition,
-  BlockConditionSource, BookletDef, ContextInBooklet,
+  BlockConditionSource, BookletDef, BookletStateDef, BookletStateOptionDef, ContextInBooklet,
   CustomtextService, sourceIsConditionAggregation,
   sourceIsSingleSource, sourceIsSourceAggregation, TestletDef,
   TestMode, UnitDef
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
-  LoadedFile,
-  LoadingProgress,
-  LoadingQueueEntry,
-  TestData,
-  TestStateKey,
-  UnitData,
-  UnitNavigationTarget,
-  Booklet, Unit, isUnit, TestletLockTypes, Testlet
+  LoadedFile, LoadingProgress, LoadingQueueEntry,
+  TestData, TestStateKey,
+  UnitData, UnitNavigationTarget,
+  Booklet, Unit, isUnit, TestletLockTypes, Testlet, BookletStateOption, BookletState
 } from '../interfaces/test-controller.interfaces';
 import { EnvironmentData } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
@@ -35,7 +31,7 @@ import { IQBVariable } from '../interfaces/iqb.interfaces';
 @Injectable({
   providedIn: 'root'
 })
-export class TestLoaderService extends BookletParserService<Unit, Testlet, Booklet> {
+export class TestLoaderService extends BookletParserService<Unit, Testlet, BookletStateOption, BookletState, Booklet> {
   private loadStartTimeStamp = 0;
   private resourcesLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
@@ -64,7 +60,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
-    this.tcs.booklet = this.getBookletFromXml(testData.xml);
+    this.getBookletFromXml(testData.xml);
 
     this.tcs.timerWarningPoints =
       this.tcs.bookletConfig.unit_time_left_warnings
@@ -365,7 +361,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return new CodingScheme([]);
   }
 
-  private getBookletFromXml(xmlString: string): Booklet {
+  private getBookletFromXml(xmlString: string): void {
     const booklet = this.parseBookletXml(xmlString);
 
     const registerChildren = (testlet: Testlet): void => {
@@ -383,11 +379,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.tcs.testlets[booklet.units.id] = booklet.units;
     registerChildren(booklet.units);
-
+    this.tcs.booklet = booklet;
     this.registerTrackedVariables();
     this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
-    return booklet;
   }
 
   registerTrackedVariables(): void {
@@ -408,8 +403,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       }
     };
 
-    Object.values(this.tcs.testlets)
-      .flatMap(testlet => testlet.restrictions.if)
+    Object.values(this.tcs.booklet?.states || {})
+      .flatMap(state => Object.values(state.options)
+        .flatMap(option => option.conditions)
+      )
       .forEach(registerVariablesFromCondition);
   }
 
@@ -427,6 +424,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.tcs.evaluateConditions();
   }
 
+  // TODO X can this be removed?
   // temporary until fix is in @iqb/responses - this logic relies on the scheme-format and should NOT be part of TC!
   // eslint-disable-next-line class-methods-use-this
   getBaseVarsList(codingScheme: CodingScheme, derivedVarsIds: string[]): string[] {
@@ -452,12 +450,12 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   // eslint-disable-next-line class-methods-use-this
-  toBooklet(bookletDef: BookletDef<Testlet>): Booklet {
+  override toBooklet(bookletDef: BookletDef<Testlet, BookletState>): Booklet {
     return Object.assign(bookletDef, {});
   }
 
   // eslint-disable-next-line class-methods-use-this
-  toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+  override toTestlet(testletDef: TestletDef<Testlet, Unit>, _: Element, context: ContextInBooklet<Testlet>): Testlet {
     let timerId = null;
     if (context.parents.length && context.parents[0].timerId) {
       timerId = context.parents[0].timerId;
@@ -468,19 +466,14 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     const testlet: Testlet = Object.assign(testletDef, {
       blockLabel: (context.parents.length <= 1) ? testletDef.label : context.parents[context.parents.length - 2].label,
       locks: {
-        condition: !!testletDef.restrictions.if.length,
+        show: !!testletDef.restrictions.show,
         time: !!testletDef.restrictions.timeMax?.minutes,
         code: !!testletDef.restrictions.codeToEnter?.code,
         afterLeave: false
       },
-      firstUnsatisfiedCondition: NaN,
       locked: null,
-      timerId,
-      containsConditionalTestlets: false // will be set by child
+      timerId
     });
-    if (context.parents.length && testlet.restrictions.if.length) {
-      context.parents[0].containsConditionalTestlets = true;
-    }
     const lockedBy = TestletLockTypes
       .find(lockType => testlet.locks[lockType]);
     if (lockedBy) {
@@ -493,7 +486,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   // eslint-disable-next-line class-methods-use-this
-  toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
+  override toUnit(unitDef: UnitDef, elem: Element, context: ContextInBooklet<Testlet>): Unit {
     return Object.assign(unitDef, {
       sequenceId: context.global.unitIndex,
       parent: context.parents[0],
@@ -509,6 +502,25 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       loadingProgress: { },
       lockedAfterLeaving: false,
       scheme: new CodingScheme([])
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  override toBookletStateOption(optionDef: BookletStateOptionDef, optionElement: Element): BookletStateOption {
+    return Object.assign(optionDef, {
+      firstUnsatisfiedCondition: optionDef.conditions.length ? -1 : 0
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  override toBookletState(stateDef: BookletStateDef<BookletStateOption>, stateElement: Element): BookletState {
+    const defaultOption = Object.values(stateDef.options).find(option => !option.conditions.length);
+    if (!defaultOption) {
+      throw new Error(`Invalid booklet: state ${stateDef.id} hat no default option`);
+    }
+    return Object.assign(stateDef, {
+      currentOption: defaultOption.id,
+      defaultOption: defaultOption.id
     });
   }
 }

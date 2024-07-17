@@ -72,7 +72,7 @@
       <xs:field xpath="@if" />
     </xs:keyref>
 
-    <!-- DODO add contraint -->
+    <!-- TODO X add constraint -->
 <!--    <xs:key name="StateOptionIdKey"  >-->
 <!--      <xs:selector xpath="./States/State/Option" />-->
 <!--      <xs:field xpath="@id" />-->

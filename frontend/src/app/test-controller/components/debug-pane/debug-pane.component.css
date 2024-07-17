@@ -82,6 +82,11 @@
   top: 65px;
 }
 
+.tab-states {
+  right: 0;
+  top: 65px;
+}
+
 .tab-unit .more-btn {
   display: none;
 }
@@ -110,7 +115,7 @@
   margin: 3px 0;
 }
 
-table tr td:first-child,
+table tbody tr td:first-child,
 b {
   color: white;
   font-weight: normal;
@@ -125,26 +130,58 @@ table {
   width: 100%;
 }
 
+thead tr:first-child td {
+  border-top: 24px solid black;
+}
+
+thead:first-child tr:first-child td {
+  border-top: 8px solid black;
+}
+
+tbody tr:last-child td {
+  border-bottom: 24px solid black;
+}
+
+tbody:last-child tr:last-child td {
+  border-bottom: none;
+}
+
+
+.tab-variables table,
+.tab-states table {
+  border-collapse: collapse;
+}
+
+.tab-states .current {
+  background: orange;
+  color: black;
+}
+
+.tab-states td,
 .tab-variables td {
   border-right: 1px solid orange;
   padding-right: 0.5em;
   padding-left: 0.5em;
 }
 
+.tab-states td:first-child,
 .tab-variables td:first-child {
   padding-left: 0;
 }
 
+.tab-states td:last-child,
 .tab-variables td:last-child {
-  border: none;
+  border-right: none;
   padding-right: 0;
 }
 
 .tab-booklet .current .title,
-tbody tr:first-child td {
-  background: orange;
+thead td {
+  background: white;
   color: black;
 }
+
+
 
 .tab-booklet .current .title b {
   color: black;
@@ -204,4 +241,13 @@ sourcetext {
   color: white;
   font-family: monospace;
   white-space: pre;
+}
+
+.condition {
+  font-size: x-small;
+  color: white;
+}
+
+.condition.satisfied {
+  color: orange;
 }

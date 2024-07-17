@@ -42,7 +42,7 @@ export class TestControllerService {
   totalLoadingProgress = 0;
 
   testMode = new TestMode();
-  bookletConfig = new BookletConfig();
+  bookletConfig = new BookletConfig(); // TODO X uneeded?, why not booklet.config
 
   // TODO hide those behind functions, this will be way easier with ts 5.5
   booklet: Booklet | null = null;
@@ -631,24 +631,43 @@ export class TestControllerService {
   }
 
   evaluateConditions(): void {
-    const getVar =
-      (unitAlias: string, variableId: string) => this.units[this.unitAliasMap[unitAlias]].variables[variableId];
-    Object.keys(this.testlets)
-      .forEach(testletId => {
-        this.testlets[testletId].firstUnsatisfiedCondition =
-          this.testlets[testletId].restrictions.if
-            .findIndex(condition => !ConditionUtil.isSatisfied(condition, getVar));
-        this.testlets[testletId].locks.condition = this.testlets[testletId].firstUnsatisfiedCondition > -1;
-      });
+    this.updateStates();
     this.updateLocks();
-    this.updateConditionsInTestState();
+    this.updateShowLocks();
+    this.updateConditionsTestState();
   }
 
-  private updateConditionsInTestState(): void {
+  private updateStates(): void {
+    if (!this.booklet?.states) return;
+    const getVar =
+      (unitAlias: string, variableId: string) => this.units[this.unitAliasMap[unitAlias]].variables[variableId];
+    Object.values(this.booklet.states)
+      .forEach(state => {
+        const firstMatchingOption =
+          Object.values(state.options)
+            .find(option => {
+              option.firstUnsatisfiedCondition =
+                option.conditions
+                  .findIndex(condition => !ConditionUtil.isSatisfied(condition, getVar));
+              return option.firstUnsatisfiedCondition === -1;
+            });
+        state.currentOption = firstMatchingOption?.id || state.options[Object.keys(state.options).length - 1].id;
+      });
+  }
+
+  private updateShowLocks(): void {
+    Object.values(this.testlets)
+      .forEach(testlet => {
+        testlet.locks.show = !!testlet.restrictions.show &&
+          (this.booklet!.states[testlet.restrictions.show.if].currentOption !== testlet.restrictions.show.is);
+      });
+  }
+
+  private updateConditionsTestState(): void {
     // this is a summary of the state of the conditions for navigation-UI, Group-monitor and the like
-    const lockedByCondition = Object.values(this.testlets)
-      .filter(testlet => testlet.restrictions.if.length && !testlet.locks.condition)
+    const lockedByShow = Object.values(this.testlets)
+      .filter(testlet => testlet.restrictions.show && !testlet.locks.show)
       .map(testlet => testlet.id);
-    this.setTestState('TESTLETS_SATISFIED_CONDITION', JSON.stringify(lockedByCondition));
+    this.setTestState('OPTIONAL_TESTLETS_DISABLED', JSON.stringify(lockedByShow));
   }
 }

@@ -29,7 +29,7 @@ export class DebugPaneComponent implements OnInit {
   ) {
   }
 
-  windows = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'system', 'tools'];
+  windows = ['main', 'config', 'testmode', 'booklet', 'unit', 'customtexts', 'variables', 'states', 'system', 'tools'];
   activeWindows : typeof this.windows[number][] = ['variables'];
 
   bookletConfig: Array<[string, string]> = [];
@@ -98,7 +98,8 @@ export class DebugPaneComponent implements OnInit {
   }
 
   evaluateTestingCondition(): void {
-    const getVar = (unitAlias: string, variableId: string) => this.tcs.units[this.tcs.unitAliasMap[unitAlias]].variables[variableId];
+    const getVar =
+      (unitAlias: string, variableId: string) => this.tcs.units[this.tcs.unitAliasMap[unitAlias]].variables[variableId];
     const domParser = new DOMParser();
     const condStr = this.testingCondition.replace(/^\uFEFF/gm, '');
     try {

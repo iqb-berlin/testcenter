@@ -3,10 +3,10 @@
 
 import { BookletConfig } from '../classes/booklet-config.class';
 
-export interface BookletDef<TestletType> {
+export interface BookletDef<TestletType, BookletStateType extends BookletStateDef<BookletStateOptionDef>> {
   readonly metadata: BookletMetadata;
   readonly config: BookletConfig;
-  readonly restrictions?: Restrictions;
+  readonly states: { [p: string]: BookletStateType };
   readonly units: TestletType;
   readonly customTexts: { [p: string]: string };
 }
@@ -29,6 +29,18 @@ export interface UnitDef {
   readonly alias: string;
   readonly label: string;
   readonly labelShort: string;
+}
+
+export interface BookletStateDef<BookletStateOption extends BookletStateOptionDef> {
+  readonly id: string;
+  readonly label: string;
+  readonly options: { [id: string]: BookletStateOption };
+}
+
+export interface BookletStateOptionDef {
+  readonly id: string;
+  readonly label: string;
+  readonly conditions: BlockCondition[];
 }
 
 export interface BlockCondition {
@@ -96,7 +108,10 @@ export interface Restrictions {
     readonly presentation: 'ON' | 'OFF' | 'ALWAYS';
     readonly response: 'ON' | 'OFF' | 'ALWAYS';
   };
-  readonly if: BlockCondition[];
+  readonly show?: {
+    if: string;
+    is: string;
+  };
   readonly lockAfterLeaving?: {
     readonly confirm: boolean;
     readonly scope: 'testlet' | 'unit'

@@ -321,7 +321,7 @@ export class TestSessionManager {
     sessionsSet.forEach(session => {
       if (!session.data.bookletName || !isBooklet(session.booklet)) return;
       const ignoreTestlet =
-        (testlet: Testlet) => !!testlet.restrictions.if.length && !session.conditionsSatisfied?.includes(testlet.id);
+        (testlet: Testlet) => !!testlet.restrictions.show && !!session.optionalTestletsHidden?.includes(testlet.id);
       const firstUnit = selection.element?.blockId ?
         BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
         null;

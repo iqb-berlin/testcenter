@@ -3,15 +3,15 @@ import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import {
-  isUnit, Booklet, Testlet, BookletError, Unit
+  isUnit, Booklet, Testlet, BookletError, Unit, BookletState, BookletStateOption
 } from '../group-monitor.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import {
-  BookletDef, ContextInBooklet, TestletDef, UnitDef
+  BookletDef, BookletStateDef, BookletStateOptionDef, ContextInBooklet, TestletDef, UnitDef
 } from '../../shared/shared.module';
 
 @Injectable()
-export class BookletService extends BookletParserService<Unit, Testlet, Booklet> {
+export class BookletService extends BookletParserService<Unit, Testlet, BookletStateOption, BookletState, Booklet> {
   booklets: { [k: string]: Observable<Booklet | BookletError> } = {};
 
   constructor(
@@ -45,27 +45,37 @@ export class BookletService extends BookletParserService<Unit, Testlet, Booklet>
     }
   }
 
-  toBooklet(bookletDef: BookletDef<Testlet>): Booklet {
+  toBooklet(bookletDef: BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>>): Booklet {
     return Object.assign(bookletDef, {
       species: this.getBookletSpecies(bookletDef)
     });
   }
 
-  toTestlet(testletDef: TestletDef<Testlet, Unit>, elem: Element, context: ContextInBooklet<Testlet>): Testlet {
+  override toTestlet(testletDef: TestletDef<Testlet, Unit>, e: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
-      descendantCount: this.xmlCountChildrenOfTagNames(elem, ['Unit']),
+      descendantCount: this.xmlCountChildrenOfTagNames(e, ['Unit']),
       blockId: `block ${context.localTestletIndex + 1}`,
       nextBlockId: `block ${context.localTestletIndex + 2}`
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
-  toUnit(unitDef: UnitDef): Unit {
+  override toUnit(unitDef: UnitDef): Unit {
     return unitDef;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getBookletSpecies(booklet: BookletDef<Testlet>): string {
+  override toBookletState(stateDef: BookletStateDef<BookletStateOption>, unitElement: Element): BookletState {
+    return stateDef;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  override toBookletStateOption(optionDef: BookletStateOptionDef, unitElement: Element): BookletStateOption {
+    return optionDef;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getBookletSpecies(booklet: BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>>): string {
     return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
   }
 }

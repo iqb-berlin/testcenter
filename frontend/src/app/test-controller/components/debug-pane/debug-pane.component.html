@@ -97,18 +97,51 @@
         <td>score</td>
       </tr>
     </thead>
-    <tbody *ngFor="let unit of tcs.units | keyvalue">
-      <tr>
-        <td colspan="5">{{unit.value.alias}}</td>
-      </tr>
-      <tr *ngFor="let uvar of unit.value.variables | keyvalue">
-        <td>{{uvar.value.id}}{{!unit.value.baseVariableIds.includes(uvar.value.id) ? ' *' : ''}}</td>
-        <td>{{uvar.value.status}}</td>
-        <td [matTooltip]="stringValue(uvar.value.value)">{{stringValue(uvar.value.value, true)}}</td>
-        <td>{{uvar.value.code}}</td>
-        <td>{{uvar.value.score}}</td>
-      </tr>
-    </tbody>
+    <ng-container *ngFor="let unit of tcs.units | keyvalue">
+      <thead *ngIf="(unit.value.variables | properties).length">
+        <tr>
+          <td colspan="5">{{unit.value.alias}}</td>
+        </tr>
+      </thead>
+      <tbody *ngIf="(unit.value.variables | properties).length">
+        <tr *ngFor="let uvar of unit.value.variables | keyvalue">
+          <td>{{uvar.value.id}}{{!unit.value.baseVariableIds.includes(uvar.value.id) ? ' *' : ''}}</td>
+          <td>{{uvar.value.status}}</td>
+          <td [matTooltip]="stringValue(uvar.value.value)">{{stringValue(uvar.value.value, true)}}</td>
+          <td>{{uvar.value.code}}</td>
+          <td>{{uvar.value.score}}</td>
+        </tr>
+      </tbody>
+    </ng-container>
+  </table>
+</div>
+
+<div class="tab tab-states" *ngIf="activeWindows.includes('states')" cdkDrag>
+  <h1>
+    Booklet States
+    <mat-icon class="close" (click)="closeWindow('states')">close</mat-icon>
+  </h1>
+  <table *ngIf="tcs.booklet?.states as bookletStates">
+    <ng-container *ngFor="let state of bookletStates | keyvalue">
+      <thead>
+        <tr>
+          <td colspan="2">{{state.value.id}} ({{state.value.label}})</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let option of state.value.options | keyvalue" [class]="{'current': option.value.id === state.value.currentOption}">
+          <td><b>{{option.value.id}}</b> ({{option.value.label}}){{option.value.id === state.value.defaultOption ? ' *' : ''}}</td>
+          <td>
+            <div
+              *ngFor="let cond of option.value.conditions; let conditionIndex = index"
+              [class]="{'condition': true, 'satisfied': conditionIndex < option.value.firstUnsatisfiedCondition}"
+            >
+              {{cond | blockcondition}}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </ng-container>
   </table>
 </div>
 
@@ -191,9 +224,9 @@
 
   <span
     class='badge'
-    [class]="{ active: testlet.firstUnsatisfiedCondition === -1 || i < testlet.firstUnsatisfiedCondition }"
-    *ngFor="let ifRes of testlet.restrictions.if; let i = index"
-    matTooltip="{{ifRes | blockcondition}}'"
+    [class]="{ active: !testlet.locks.show }"
+    *ngIf="testlet.restrictions.show"
+    matTooltip="SHOW IF {{testlet.restrictions.show.if}} IS {{testlet.restrictions.show.is}}"
   >I</span>
 
   <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
@@ -215,12 +248,7 @@
 
     <tr *ngFor="let restriction of testlet.restrictions | properties">
       <td>restrictions.{{restriction.key}}</td>
-      <td *ngIf="restriction.key !== 'if'">{{restriction.value | json}}</td>
-      <td *ngIf="restriction.key === 'if'">
-        <div *ngFor="let ifcond of testlet.restrictions.if">
-          {{ifcond | blockcondition}}
-        </div>
-      </td>
+      <td>{{restriction.value | json}}</td>
     </tr>
 
     <tr>

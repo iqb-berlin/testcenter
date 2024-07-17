@@ -1,5 +1,7 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
-import { BookletDef, TestletDef, UnitDef } from '../shared/shared.module';
+import {
+  BookletDef, BookletStateDef, BookletStateOptionDef, TestletDef, UnitDef
+} from '../shared/shared.module';
 
 export interface GroupMonitorConfig {
   checkForIdleInterval: number;
@@ -14,7 +16,7 @@ export interface TestSession {
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: string[] | null;
   readonly timeLeft: Record<string, number> | null;
-  readonly conditionsSatisfied: string[] | null;
+  readonly optionalTestletsHidden: string[] | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -89,7 +91,7 @@ export interface GotoCommandData {
 
 export type Unit = UnitDef;
 
-export interface Booklet extends BookletDef<Testlet> {
+export interface Booklet extends BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>> {
   species: string;
 }
 
@@ -98,6 +100,9 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
   blockId?: string;
   nextBlockId?: string;
 }
+
+export type BookletStateOption = BookletStateOptionDef;
+export type BookletState = BookletStateDef<BookletStateOption>;
 
 export function isUnit(testletOrUnit: Testlet | UnitDef): testletOrUnit is UnitDef {
   return !('children' in testletOrUnit);

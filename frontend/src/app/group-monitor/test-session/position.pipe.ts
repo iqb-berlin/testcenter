@@ -14,7 +14,7 @@ export class PositionPipe implements PipeTransform {
   transform(testSession: TestSession, theTestlet: Testlet): string {
     const c = {
       hiddenUnits: 0,
-      hasIf: false,
+      hasShow: false,
       found: false,
       position: 0
     };
@@ -32,16 +32,16 @@ export class PositionPipe implements PipeTransform {
           }
           continue;
         }
-        if (child.restrictions.if.length) {
-          c.hasIf = true;
+        if (child.restrictions.show) {
+          c.hasShow = true;
         }
         countHiddenChildren(child);
-        if (!!child.restrictions.if.length && !testSession.conditionsSatisfied?.includes(child.id)) {
+        if (!!child.restrictions.show && !!testSession.optionalTestletsHidden?.includes(child.id)) {
           c.hiddenUnits += child.descendantCount;
         }
       }
     };
     countHiddenChildren(theTestlet);
-    return `${c.position ? `${c.position} / ` : ''}${theTestlet.descendantCount - c.hiddenUnits}${c.hasIf ? '*' : ''}`;
+    return `${c.position ? `${c.position} / ` : ''}${theTestlet.descendantCount - c.hiddenUnits}${c.hasShow ? '*' : ''}`;
   }
 }

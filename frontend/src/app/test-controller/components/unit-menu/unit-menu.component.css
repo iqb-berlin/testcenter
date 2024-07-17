@@ -74,29 +74,3 @@ a:last-of-type {
   margin-bottom: 2em;
   text-align: center;
 }
-
-
-.testlet.contains-conditional {
-  border: 1px solid greenyellow;
-  display: flex;
-  grid-gap: .5em;
-  max-width: 100%;
-  overflow-x: scroll;
-}
-
-.testlet.contains-conditional .testlet {
-  border-right: 2px solid red;
-  padding-right: 1em;
-  margin-right: 1em;
-  height: 100%;
-}
-
-.testlet.contains-conditional div:last-child .testlet {
-  border-right: none;
-  padding-right: 0;
-  margin-right: 0;
-  border-right: 2px solid blue;
-  padding-right: 1em;
-  margin-right: 1em;
-  height: 100%;
-}

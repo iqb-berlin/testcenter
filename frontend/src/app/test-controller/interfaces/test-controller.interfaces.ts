@@ -1,6 +1,12 @@
 import { Observable } from 'rxjs';
 import { CodingScheme } from '@iqb/responses';
-import { BookletDef, TestletDef, UnitDef } from '../../shared/interfaces/booklet.interfaces';
+import {
+  BookletDef,
+  BookletStateDef,
+  BookletStateOptionDef,
+  TestletDef,
+  UnitDef
+} from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
 import { VeronaNavigationTarget, VeronaProgress } from './verona.interfaces';
 
@@ -75,7 +81,7 @@ export type TestState = {
   TESTLETS_TIMELEFT: string;
   TESTLETS_CLEARED_CODE: string;
   TESTLETS_LOCKED_AFTER_LEAVE: string;
-  TESTLETS_SATISFIED_CONDITION: string;
+  OPTIONAL_TESTLETS_DISABLED: string;
   UNITS_LOCKED_AFTER_LEAVE: string;
   FOCUS: AppFocusState;
   CONTROLLER: UnitPlayerState;
@@ -208,7 +214,7 @@ export interface Unit extends UnitDef {
   lockedAfterLeaving: boolean;
 }
 
-export const TestletLockTypes = ['condition', 'time', 'code', 'afterLeave'] as const;
+export const TestletLockTypes = ['show', 'time', 'code', 'afterLeave'] as const;
 
 export type TestletLockType = typeof TestletLockTypes[number];
 
@@ -220,11 +226,19 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
     through: Testlet;
   } | null;
   timerId: string | null;
-  firstUnsatisfiedCondition: number;
-  containsConditionalTestlets: boolean;
+
 }
 
-export type Booklet = BookletDef<Testlet>;
+export interface BookletStateOption extends BookletStateOptionDef {
+  firstUnsatisfiedCondition: number;
+}
+
+export interface BookletState extends BookletStateDef<BookletStateOption> {
+  currentOption: string;
+  defaultOption: string;
+}
+
+export type Booklet = BookletDef<Testlet, BookletState>;
 
 export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
   return !('children' in testletOrUnit);

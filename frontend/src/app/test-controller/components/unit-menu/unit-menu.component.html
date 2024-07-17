@@ -3,7 +3,7 @@
   <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}"></ng-container>
 
   <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
-    <div class="testlet" [class.contains-conditional]="testlet.containsConditionalTestlets && tcs.testMode.canChoosePathManually">
+    <div class="testlet">
       <ng-container *ngFor="let testletOrUnit of testlet.children">
         <div *ngIf="!isTestlet(testletOrUnit); else: subTestlet" class="child">
           <a
@@ -18,11 +18,7 @@
 
         <ng-template #subTestlet>
           <div
-            *ngIf="tcs.testMode.canChoosePathManually ||
-              !isTestlet(testletOrUnit) ||
-              !testletOrUnit.containsConditionalTestlets ||
-              testletOrUnit.firstUnsatisfiedCondition === -1"
-            >
+            *ngIf="!isTestlet(testletOrUnit) || !testletOrUnit.locks.show">
             <h4 *ngIf="testletOrUnit.label" class="headline-level-{{level}}">{{testletOrUnit.label}}</h4>
             <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}"></ng-container>
           </div>

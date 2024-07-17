@@ -10,7 +10,7 @@ import {
   ContextInBooklet,
   Restrictions,
   TestletDef,
-  UnitDef, BlockConditionAggregation, BlockConditionAggregationTypes
+  UnitDef, BlockConditionAggregation, BlockConditionAggregationTypes, BookletStateDef, BookletStateOptionDef
 } from '../interfaces/booklet.interfaces';
 import { AppError } from '../../app.interfaces';
 import { isNavigationLeaveRestrictionValue } from '../../test-controller/interfaces/test-controller.interfaces';
@@ -18,10 +18,12 @@ import { isNavigationLeaveRestrictionValue } from '../../test-controller/interfa
 export abstract class BookletParserService<
   Unit extends UnitDef,
   Testlet extends TestletDef<Testlet, Unit>,
-  Booklet extends BookletDef<Testlet>
+  BookletStateOption extends BookletStateOptionDef,
+  BookletState extends BookletStateDef<BookletStateOption>,
+  Booklet extends BookletDef<Testlet, BookletState>
 > {
   abstract toBooklet(
-    bookletDef: BookletDef<Testlet>,
+    bookletDef: BookletDef<Testlet, BookletState>,
     bookletElement: Element
   ): Booklet;
 
@@ -36,6 +38,16 @@ export abstract class BookletParserService<
     unitElement: Element,
     context: ContextInBooklet<Testlet>
   ): Unit;
+
+  abstract toBookletState(
+    stateDef: BookletStateDef<BookletStateOption>,
+    unitElement: Element
+  ): BookletState;
+
+  abstract toBookletStateOption(
+    optionDef: BookletStateOptionDef,
+    unitElement: Element
+  ): BookletStateOption;
 
   parseBookletXml(xmlString: string): Booklet {
     const domParser = new DOMParser();
@@ -58,6 +70,7 @@ export abstract class BookletParserService<
 
     const config = this.parseBookletConfig(bookletElement);
     const customTexts = this.parseCustomTexts(bookletElement);
+    const states = this.parseStates(bookletElement);
 
     const globalContext = {
       unitIndex: 0,
@@ -69,12 +82,11 @@ export abstract class BookletParserService<
       parents: [],
       global: globalContext
     };
-
     const units = this.parseTestlet(unitsElement, rootContext);
 
     return this.toBooklet(
       {
-        units, metadata, config, customTexts
+        units, metadata, config, customTexts, states
       },
       bookletElement
     );
@@ -99,6 +111,38 @@ export abstract class BookletParserService<
       label: this.xmlGetChildTextIfExists(metadataElement, 'Label'),
       description: this.xmlGetChildTextIfExists(metadataElement, 'Description', true)
     };
+  }
+
+  parseStates(bookletElement: Element): { [key: string]: BookletState } {
+    const statesElement = this.xmlGetChildIfExists(bookletElement, 'States');
+    if (!statesElement) return {};
+    const states: { [key: string]: BookletState } = {};
+    this.xmlGetDirectChildrenByTagName(statesElement, ['State'])
+      .map(stateElem => this.parseState(stateElem))
+      .filter((state: BookletState | null): state is BookletState => !!state)
+      .forEach(state => { states[state.id] = state; });
+    return states;
+  }
+
+  private parseState(stateElement: Element): BookletState | null {
+    const id = stateElement.getAttribute('id');
+    if (!id) return null;
+    const label = stateElement.getAttribute('label') || id;
+    const options: { [key: string]: BookletStateOption } = {};
+    this.xmlGetDirectChildrenByTagName(stateElement, ['Option', 'DefaultOption'])
+      .map(optionElem => this.parseOption(optionElem))
+      .filter((option: BookletStateOption | null): option is BookletStateOption => !!option)
+      .forEach(option => { options[option.id] = option; });
+    return this.toBookletState({ id, label, options }, stateElement);
+  }
+
+  private parseOption(optionElement: Element): BookletStateOption | null {
+    const id = optionElement.getAttribute('id');
+    if (!id) return null;
+    const label = optionElement.getAttribute('label') || id;
+    const conditions = this.xmlGetDirectChildrenByTagName(optionElement, ['If'])
+      .flatMap(ifElem => this.parseIf(ifElem));
+    return this.toBookletStateOption({ id, label, conditions }, optionElement);
   }
 
   private parseTestlet(testletElement: Element, context: ContextInBooklet<Testlet>): Testlet {
@@ -153,7 +197,7 @@ export abstract class BookletParserService<
     let codeToEnter;
     let timeMax;
     let denyNavigationOnIncomplete;
-    let conditions: BlockCondition[] = [];
+    let show;
 
     const restrictionsElement = this.xmlGetChildIfExists(testletElement, 'Restrictions', true);
 
@@ -174,8 +218,13 @@ export abstract class BookletParserService<
         };
       }
 
-      const ifElements = this.xmlGetDirectChildrenByTagName(restrictionsElement, ['If']);
-      conditions = ifElements.flatMap(ifElem => this.parseIf(ifElem));
+      const showElement = this.xmlGetChildIfExists(restrictionsElement, 'Show', true);
+      if (showElement && showElement.getAttribute('if') && showElement.getAttribute('is')) {
+        show = {
+          if: showElement.getAttribute('if') || '',
+          is: showElement.getAttribute('is') || ''
+        };
+      }
     }
 
     const denyNavigationOnIncompleteElement = restrictionsElement ?
@@ -217,7 +266,7 @@ export abstract class BookletParserService<
       codeToEnter,
       timeMax,
       denyNavigationOnIncomplete,
-      if: conditions,
+      show,
       lockAfterLeaving
     };
   }

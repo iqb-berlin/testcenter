@@ -122,8 +122,9 @@
       </span>
 
       <ng-container
-        *ngIf="isTestlet(testletOrUnit) && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id))"
+        *ngIf="isTestlet(testletOrUnit)"
       >
+        <!-- TODO X  && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id)) -->
         <span
           [class]="{
             testlet: true,

@@ -20,7 +20,7 @@ export class BookletUtil {
   static getFirstUnitOfBlock(
     blockId: string,
     booklet: Booklet,
-    ignoreTestlet: (tetslet: Testlet) => boolean = () => false
+    ignoreTestlet: (testlet: Testlet) => boolean = () => false
   ): UnitDef | null {
     for (let i = 0; i < booklet.units.children.length; i++) {
       const child = booklet.units.children[i];
