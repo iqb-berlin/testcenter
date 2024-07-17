@@ -1,6 +1,12 @@
 import {
-  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace1,
-  deleteFilesSampleWorkspace, resetBackendData, logoutAdmin, visitLoginPage
+  deleteDownloadsFolder,
+  deleteFilesSampleWorkspace,
+  loginSuperAdmin,
+  logoutAdmin,
+  openSampleWorkspace1,
+  resetBackendData,
+  useTestDB,
+  visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-files', () => {
@@ -98,6 +104,42 @@ describe('Workspace-Admin-files', () => {
       .should('exist');
     cy.get('[data-cy="SAMPLE_BOOKLET.XML"]')
       .should('not.exist');
+  });
+
+  it('should be possible to upload any file as a resource', () => {
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/AnyResource.txt', { force: true });
+    cy.contains('Erfolgreich hochgeladen')
+      .should('exist');
+    cy.contains('AnyResource.txt')
+      .should('exist');
+  });
+
+  it('should be not possible to upload a Testtaker, Booklet, Unit or SysCheck file with the right root but w', () => {
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Testtakers_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Booklet_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Unit_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/SysCheck_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
   it('should be possible to upload the file SysCheck.xml without any dependencies in other files', () => {
