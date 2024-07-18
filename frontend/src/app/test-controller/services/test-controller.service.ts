@@ -102,16 +102,13 @@ export class TestControllerService {
   setupUnitDataPartsBuffer(): void {
     this.destroySubscription('unitDataPartsBuffer'); // important when called from unit-test with fakeAsync
 
-    const closingSignal$ = merge(
-      interval(Number(this.bookletConfig.unit_responses_buffer_time)),
-      this.closeBuffers$
-    );
+    const closingSignal = this.createClosingSignal('unit_responses_buffer_time');
 
     this.subscriptions.unitDataPartsBuffer = this.unitDataPartsBuffer$
       .pipe(
-        bufferWhen(() => closingSignal$),
+        bufferWhen(closingSignal.factory),
         map(TestStateUtil.sortDataParts),
-        withLatestFrom(closingSignal$)
+        withLatestFrom(closingSignal.tracker$)
       )
       .subscribe(([buffer, closer]) => {
         let trackedVariablesChanged = false;
@@ -144,15 +141,27 @@ export class TestControllerService {
       });
   }
 
+  private createClosingSignal(
+    configSetting: keyof typeof this.bookletConfig
+  ): { tracker$: Observable<string>, factory: () => Observable<string> } {
+    const tracker$ = new Subject<string>();
+    const factory = () => {
+      const closer$ = merge(
+        timer(Number(this.bookletConfig[configSetting])).pipe(map(() => 'timer')),
+        this.closeBuffers$
+      );
+      closer$.subscribe(tracker$);
+      return closer$;
+    };
+    return { tracker$, factory };
+  }
+
   setupUnitStateBuffer(): void {
     this.destroySubscription('unitStateBuffer');
-    const closingSignal$ = merge(
-      interval(Number(this.bookletConfig.unit_state_buffer_time)),
-      this.closeBuffers$
-    );
+    const closingSignal = this.createClosingSignal('unit_state_buffer_time');
     this.subscriptions.unitStateBuffer = this.unitStateBuffer$
       .pipe(
-        bufferWhen(() => closingSignal$),
+        bufferWhen(closingSignal.factory),
         map(TestStateUtil.sort)
       )
       .subscribe(updates => {
@@ -164,13 +173,10 @@ export class TestControllerService {
 
   setupTestStateBuffer(): void {
     this.destroySubscription('testStateBuffer');
-    const closingSignal$ = merge(
-      interval(Number(this.bookletConfig.test_state_buffer_time)),
-      this.closeBuffers$
-    );
+    const closingSignal = this.createClosingSignal('test_state_buffer_time');
     this.subscriptions.testStateBuffer = this.testStateBuffer$
       .pipe(
-        bufferWhen(() => closingSignal$),
+        bufferWhen(closingSignal.factory),
         map(TestStateUtil.sort)
       )
       .subscribe(updates => {
@@ -632,8 +638,8 @@ export class TestControllerService {
 
   evaluateConditions(): void {
     this.updateStates();
-    this.updateLocks();
     this.updateShowLocks();
+    this.updateLocks();
     this.updateConditionsTestState();
   }
 
