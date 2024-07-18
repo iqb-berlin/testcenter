@@ -306,13 +306,20 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   selectRow(event: Event, row: IQBFile) {
-    this.dependenciesOfRow = [];
-    this.selectedRow = this.selectedRow === row ? null : row;
+    if (event.target instanceof HTMLElement && event.target.tagName === 'MAT-CELL') {
+      this.dependenciesOfRow = [];
+      this.selectedRow = this.selectedRow === row ? null : row;
 
-    this.markDependenciesOfRow(row);
+      if (this.selectedRow) {
+        const dependencies = this.getDependenciesOfFile(row);
+        this.dependenciesOfRow = [...dependencies];
+      } else {
+        this.dependenciesOfRow = [];
+      }
+    }
   }
 
-  private markDependenciesOfRow(row: IQBFile) {
+  getDependenciesOfFile(inputFile: IQBFile): IQBFile[] {
     const depTree: { [Type in IQBFileType]: IQBFileType[]; } = {
       Resource: ['Unit', 'Booklet', 'SysCheck', 'Testtakers'],
       Unit: ['Booklet', 'SysCheck', 'Testtakers'],
@@ -320,19 +327,17 @@ export class FilesComponent implements OnInit, OnDestroy {
       SysCheck: [],
       Testtakers: []
     };
+    const result: IQBFile[] = [];
 
-    if (this.selectedRow) {
-      depTree[row.type].forEach(type => {
-        this.files[type].data.forEach(file => {
-          file.dependencies.forEach(dep => {
-            if (dep.object_name === row.name) {
-              this.dependenciesOfRow.push(file);
-            }
-          });
+    depTree[inputFile.type].forEach(type => {
+      this.files[type].data.forEach(file => {
+        file.dependencies.forEach(dep => {
+          if (dep.object_name === inputFile.name) {
+            result.push(file);
+          }
         });
       });
-    } else {
-      this.dependenciesOfRow = [];
-    }
+    });
+    return result;
   }
 }

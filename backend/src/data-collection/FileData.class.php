@@ -101,6 +101,10 @@ class FileData extends DataCollectionTypeSafe {
     return $this->validationReport;
   }
 
+  public function setValidationReport(array $report): void {
+    $this->validationReport = $report;
+  }
+
   public function getModificationTime(): int {
     return $this->modificationTime;
   }
@@ -135,5 +139,25 @@ class FileData extends DataCollectionTypeSafe {
 
   public function getVeronaVersion(): string {
     return $this->veronaVersion;
+  }
+
+  /**
+   * @param self[] $fileDigestList
+   * @return self[]
+   */
+  public static function removeWarningForUnusedFiles(array $fileDigestList): array {
+    foreach ($fileDigestList as $file) {
+      $report = $file->getValidationReport();
+      if (isset($report['warning'])) {
+        $report['warning'] = array_values(
+          array_filter(
+            $report['warning'],
+            fn(string $warning) => !str_contains($warning, 'is never used')
+          )
+        );
+        $file->setValidationReport($report);
+      }
+    }
+    return $fileDigestList;
   }
 }
