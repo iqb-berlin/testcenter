@@ -13,7 +13,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
   CustomtextService,
-  MainDataService
+  MainDataService, UserAgentService
 } from '../../../shared/shared.module';
 import {
   AppFocusState,
@@ -198,6 +198,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       });
 
+      console.log('old', this.uaParser.getUA());
+      console.log('new', UserAgentService.asString(UserAgentService.resolveUserAgent()));
       dialogRef.afterClosed().subscribe(result => {
         if (!result) {
           return;
@@ -211,7 +213,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry,
-          this.uaParser.getUA(),
+          UserAgentService.asString(UserAgentService.resolveUserAgent()),
           this.tcs.rootTestlet?.getUnitAt(this.tcs.currentUnitSequenceId)?.unitDef.id ?? ''
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
