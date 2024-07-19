@@ -411,52 +411,62 @@ class AdminDAO extends DAO {
     $bindParams = array_merge([$workspaceId], $groups, [$workspaceId], $groups);
 
     // TODO: use data class
-    return $this->_("
+    return $this->_(
+      "
       SELECT
         login_sessions.group_name as groupname,
-          login_sessions.name as loginname,
-          person_sessions.name_suffix as code,
-          tests.name as bookletname,
-          units.name as unitname,
-          unit_reviews.priority,
-          unit_reviews.categories,
-          unit_reviews.reviewtime,
-          unit_reviews.entry
+        login_sessions.name as loginname,
+        person_sessions.name_suffix as code,
+        tests.name as bookletname,
+        units.name as unitname,
+        unit_reviews.priority,
+        unit_reviews.categories,
+        unit_reviews.reviewtime,
+        unit_reviews.entry,
+        unit_reviews.page,
+        unit_reviews.pagelabel,
+        unit_reviews.original_unit_id as originalUnitId,
+        unit_reviews.user_agent as userAgent
 			FROM
-			    login_sessions,
-			    person_sessions,
-			    tests,
-			    units,
-			    unit_reviews
+        login_sessions,
+        person_sessions,
+        tests,
+        units,
+        unit_reviews
 			WHERE
-			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_sessions_id AND
-			    person_sessions.id = tests.person_id AND
-			    tests.id = units.booklet_id AND
-			    units.id = unit_reviews.unit_id
+        login_sessions.workspace_id = ? AND
+        login_sessions.group_name IN ($groupsPlaceholders) AND
+        login_sessions.id = person_sessions.login_sessions_id AND
+        person_sessions.id = tests.person_id AND
+        tests.id = units.booklet_id AND
+        units.id = unit_reviews.unit_id
 			UNION ALL
-        SELECT
-          login_sessions.group_name as groupname,
-          login_sessions.name as loginname,
-          person_sessions.name_suffix as code,
-          tests.name as bookletname,
-          '' as unitname,
-          test_reviews.priority,
-          test_reviews.categories,
-          test_reviews.reviewtime,
-          test_reviews.entry
+        
+      SELECT
+        login_sessions.group_name as groupname,
+        login_sessions.name as loginname,
+        person_sessions.name_suffix as code,
+        tests.name as bookletname,
+        '' as unitname,
+        test_reviews.priority,
+        test_reviews.categories,
+        test_reviews.reviewtime,
+        test_reviews.entry,
+        null as page,
+        null as pagelabel,
+        '' as originalUnitId,
+        test_reviews.user_agent as userAgent
 			FROM
-			    login_sessions,
-			    person_sessions,
-			    tests,
-			    test_reviews
+        login_sessions,
+        person_sessions,
+        tests,
+        test_reviews
 			WHERE
-			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_sessions_id AND
-			    person_sessions.id = tests.person_id AND
-			    tests.id = test_reviews.booklet_id
+        login_sessions.workspace_id = ? AND
+        login_sessions.group_name IN ($groupsPlaceholders) AND
+        login_sessions.id = person_sessions.login_sessions_id AND
+        person_sessions.id = tests.person_id AND
+        tests.id = test_reviews.booklet_id
 			",
       $bindParams,
       true

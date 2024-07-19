@@ -110,7 +110,7 @@ class TestDAO extends DAO {
   ): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pageLabel, user_agent, original_unit_id) values(:u, :t, :p, :c, :e, :pa, :pl, :ua, :ou)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent, original_unit_id) values(:u, :t, :p, :c, :e, :pa, :pl, :ua, :ou)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),

@@ -157,7 +157,7 @@ class TestController extends Controller {
         'entry' => 'REQUIRED',// was: e
         'userAgent' => '',
         'page' => null,
-        'pageLabel' => null,
+        'pagelabel' => null,
         'originalUnitId' => null
       ],
     );
@@ -177,7 +177,7 @@ class TestController extends Controller {
       $review['userAgent'],
       $review['originalUnitId'] ?? null,
       $review['page'] ?? null,
-      $review['pageLabel'] ?? null,
+      $review['pagelabel'] ?? null,
     );
 
     return $response->withStatus(201);

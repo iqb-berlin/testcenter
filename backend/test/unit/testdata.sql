@@ -89,11 +89,11 @@ values (2, 'sample unit log', '1597903000');
 insert into test_logs (booklet_id, logentry, timestamp)
 values (1, 'sample log entry', 1597903000);
 
-insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review');
+insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent)
+values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review', '');
 
-insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, original_unit_id)
-values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review', '');
+insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent, original_unit_id)
+values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review', null, null, '', '');
 
 insert into unit_data (unit_id, part_id, content, ts, response_type)
 values (1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');

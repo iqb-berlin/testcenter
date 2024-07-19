@@ -262,8 +262,9 @@ class Report {
         array_slice($review, 0, $offset) +
         $this->fillCategories($categoryKeys, explode(" ", $review['categories'] ?? '')) +
         array_slice($review, $offset + 1, null);
-      $transformedReviewData[] = $this->useNewVersion
-        ? $this->returnArrayWithSeperateEntry($transformedReview)
+
+      $transformedReviewData[] = $this->useNewVersion ?
+        $this->returnArrayWithSeperateEntry($transformedReview)
         : $transformedReview;
     }
 
