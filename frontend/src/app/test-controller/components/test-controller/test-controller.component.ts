@@ -198,8 +198,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       });
 
-      console.log('old', this.uaParser.getUA());
-      console.log('new', UserAgentService.asString(UserAgentService.resolveUserAgent()));
       dialogRef.afterClosed().subscribe(result => {
         if (!result) {
           return;

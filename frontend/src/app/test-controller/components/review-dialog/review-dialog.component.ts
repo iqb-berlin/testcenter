@@ -2,6 +2,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
+import { KbDetectionService } from '../../../shared/services/kb-detection/kb-detection.service';
+import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 @Component({
   templateUrl: './review-dialog.component.html',
@@ -26,7 +28,10 @@ export class ReviewDialogComponent implements OnInit {
   showInputField: boolean = false;
   originalWindowHeight: number = 0;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: ReviewDialogData) {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData,
+    private kbDetectionService: KbDetectionService,
+    private mainDataService: MainDataService) {
   }
 
   ngOnInit(): void {
@@ -54,35 +59,22 @@ export class ReviewDialogComponent implements OnInit {
   // it is assumed that keypresses on a physical keyboard are inherently slower on a virtual keyboard, thus the detection
   heightOuter: string = '';
   heightInner: string = '';
-  isExtendedKbUsed: boolean | null = null;
   keyPressStart: number = 0;
-  keyPressSpeeds: number[] = [];
 
   onKeydown() {
     this.keyPressStart = new Date().getTime();
 
-    if (this.keyPressSpeeds.length === 10) {
-      const sumKeyPressSpeeds = this.keyPressSpeeds.reduce((x: number, y: number) => x + y);
-      const averageKeyPressSpeed = sumKeyPressSpeeds / this.keyPressSpeeds.length;
-
-      if (averageKeyPressSpeed < 50) {
-        this.isExtendedKbUsed = false;
-        this.downsizeTextarea();
-      } else {
-        this.isExtendedKbUsed = true;
-      }
+    if (this.mainDataService.isExtendedKbUsed === false) {
+      this.downsizeTextarea();
     }
   }
 
   onKeyup() {
-    this.keyPressSpeeds.push(new Date().getTime() - this.keyPressStart);
+    this.kbDetectionService.pushKeyPressSpeeds(new Date().getTime() - this.keyPressStart);
   }
 
   onFocus() {
-    if (this.isExtendedKbUsed === true) {
-      return;
-    }
-    if (this.isExtendedKbUsed === false) {
+    if (this.mainDataService.isExtendedKbUsed === false) {
       this.downsizeTextarea();
     }
   }
