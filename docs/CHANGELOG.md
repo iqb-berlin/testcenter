@@ -3,6 +3,12 @@ layout: default
 ---
 
 ## [next]
+
+### neue Features
+* Im Workspace-Admin werden bei Klick auf eine Datei nun auch alle abhängigen Dateien gekennzeichnet. Damit lässt sich 
+  feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei erfolgreich zu löschen - bevor
+  der 'Löschen' Button geklickt werden muss.
+
 ### Bugfix
 * Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
 
@@ -13,13 +19,21 @@ layout: default
   von Testdaten.
 * Während Initialization Tests werden fake patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests 
   wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
+* Die Berechnung der Dateigröße von Dateien innerhalb des Workspace-Admin wurde optimiert. Die Berechnung der Dateigröße 
+  erfolgt nun im Frontend. Dies führt zu einer schnelleren Anzeige des Dashboards und einer Entlastung des Backends.
+* Die Uploadgeschwindigkeit für einzelne Dateien im Workspace-Admin wurde erheblich verbessert.
 
 ### Deployment
 * dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
 * Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". 
   Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren 
   des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
+* Das benötigte PHP memory_limit für den Datei-Upload im Workspace-Admin wurde verringert, da dieser nun effizienter arbeitet.
 
+### Development
+* make Befehle für Unit Tests können nun mit einem 'target' Argument aufgerufen werden, um gezielt nur bestimmte Tests auszuführen.
+* make backend-refresh-autoload baut nun den BE Container neu auf, um sicherzustellen, dass alle Klassen geladen werden können.
+* mixed type könenn als Argumente in CLI print-functions gegeben werden.
 
 ## 15.1.8
 ### Bugfix

@@ -339,30 +339,30 @@ paths:
                     type: Booklet
                     id: BOOKLET.SAMPLE-1
                     report: []
+                    dependencies: [{"object_name": "SAMPLE_UNIT.XML","relationship_type": "containsUnit"},{"object_name": "SAMPLE_UNIT2.XML", "relationship_type": "containsUnit"},{"object_name": "verona-player-simple-6.0.html","relationship_type": "usesPlayer"},{"object_name": "SAMPLE_UNITCONTENTS.HTM","relationship_type": "isDefinedBy"},{"object_name": "sample_resource_package.itcr.zip","relationship_type": "usesPlayerResource"}]
                     info:
                       label: Sample booklet
                       description: This a sample booklet for testing/development/showcase purposes.
-                      totalSize: 69013
                   - name: SAMPLE_BOOKLET2.XML
                     size: 557
                     modificationTime: 1673525827
                     type: Booklet
                     id: BOOKLET.SAMPLE-2
                     report: []
+                    dependencies: [{"object_name":"SAMPLE_UNIT.XML","relationship_type":"containsUnit"},{"object_name":"SAMPLE_UNIT2.XML","relationship_type":"containsUnit"},{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"SAMPLE_UNITCONTENTS.HTM","relationship_type":"isDefinedBy"},{"object_name":"sample_resource_package.itcr.zip","relationship_type":"usesPlayerResource"}]
                     info:
                       label: Reduced Booklet
                       description: ''
-                      totalSize: 52700
                   - name: SAMPLE_BOOKLET3.XML
                     size: 1277
                     modificationTime: 1673525827
                     type: Booklet
                     id: BOOKLET.SAMPLE-3
                     report: []
+                    dependencies: [{"object_name":"SAMPLE_UNIT.XML","relationship_type":"containsUnit"},{"object_name":"SAMPLE_UNIT2.XML","relationship_type":"containsUnit"},{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"SAMPLE_UNITCONTENTS.HTM","relationship_type":"isDefinedBy"},{"object_name":"sample_resource_package.itcr.zip","relationship_type":"usesPlayerResource"}]
                     info:
                       label: Similar Booklet to Sample 1
                       description: some description
-                      totalSize: 68893
                 SysCheck:
                   - name: SAMPLE_SYSCHECK.XML
                     size: 1232
@@ -370,6 +370,7 @@ paths:
                     type: SysCheck
                     id: SYSCHECK.SAMPLE
                     report: []
+                    dependencies: [{"object_name":"SAMPLE_UNIT.XML","relationship_type":"containsUnit"},{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"SAMPLE_UNITCONTENTS.HTM","relationship_type":"isDefinedBy"}]
                     info:
                       label: An example SysCheck definition
                       description: An example SysCheck definition with long description
@@ -380,6 +381,7 @@ paths:
                     type: Testtakers
                     id: SAMPLE_TESTTAKERS.XML
                     report: []
+                    dependencies: [{"object_name":"SAMPLE_BOOKLET.XML","relationship_type":"hasBooklet"},{"object_name":"SAMPLE_BOOKLET2.XML","relationship_type":"hasBooklet"},{"object_name":"SAMPLE_BOOKLET3.XML","relationship_type":"hasBooklet"},{"object_name":"SAMPLE_UNIT.XML","relationship_type":"containsUnit"},{"object_name":"SAMPLE_UNIT2.XML","relationship_type":"containsUnit"},{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"SAMPLE_UNITCONTENTS.HTM","relationship_type":"isDefinedBy"},{"object_name":"sample_resource_package.itcr.zip","relationship_type":"usesPlayerResource"}]
                     info:
                       label: ''
                       description: This file contains some logins for testing and works a a sample for developers.
@@ -393,10 +395,10 @@ paths:
                     report:
                       info:
                         - "`1` attachment(s) requested."
+                    dependencies: [{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"SAMPLE_UNITCONTENTS.HTM","relationship_type":"isDefinedBy"}]
                     info:
                       label: A sample unit
                       description: This is a sample unit showing the possibilities of the sample player.
-                      totalSize: 15473
                   - name: SAMPLE_UNIT2.XML
                     size: 1394
                     modificationTime: 1673525827
@@ -405,10 +407,10 @@ paths:
                     report:
                       warning:
                         - Element `/Unit/Definition/@type` is deprecated.
+                    dependencies: [{"object_name":"verona-player-simple-6.0.html","relationship_type":"usesPlayer"},{"object_name":"sample_resource_package.itcr.zip","relationship_type":"usesPlayerResource"}]
                     info:
                       label: A sample unit
                       description: This is an Unit
-                      totalSize: 1806
                 Resource:
                   - name: SAMPLE_UNITCONTENTS.HTM
                     size: 14195
@@ -416,6 +418,7 @@ paths:
                     type: Resource
                     id: SAMPLE_UNITCONTENTS.HTM
                     report: []
+                    dependencies: []
                     info:
                       label: ''
                       description: ''
@@ -427,6 +430,7 @@ paths:
                     report:
                       info:
                         - Contains 0 files.
+                    dependencies: []
                     info:
                       label: ''
                       description: ''
@@ -438,6 +442,7 @@ paths:
                     report:
                       info:
                         - 'Verona-Version: 4.0'
+                    dependencies: []
                     info:
                       label: Simple HTML Player
                       description: This is a simple, dependency-less, vanilla-js-written, but full-featured
