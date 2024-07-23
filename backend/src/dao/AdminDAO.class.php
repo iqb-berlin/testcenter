@@ -311,7 +311,8 @@ class AdminDAO extends DAO {
         tests.name as bookletname,
         units.name as unitname,
         units.laststate,
-        units.id as unit_id
+        units.id as unit_id,
+        units.original_unit_id as originalUnitId
       from
         login_sessions
           inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
@@ -360,11 +361,12 @@ class AdminDAO extends DAO {
     // TODO: use data class
     return $this->_("
         SELECT
-			login_sessions.group_name as groupname,
+			      login_sessions.group_name as groupname,
             login_sessions.name as loginname,
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             units.name as unitname,
+            units.original_unit_id as originalUnitId,
 				    unit_logs.timestamp,
             unit_logs.logentry
 			  FROM
@@ -380,13 +382,16 @@ class AdminDAO extends DAO {
             person_sessions.id = tests.person_id AND
             tests.id = units.booklet_id AND
             units.id = unit_logs.unit_id
+        
         UNION ALL
+        
         SELECT
 				    login_sessions.group_name as groupname,
             login_sessions.name as loginname,
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             '' as unitname,
+            '' as originalUnitId,
             test_logs.timestamp,
             test_logs.logentry
 			  FROM
@@ -425,7 +430,7 @@ class AdminDAO extends DAO {
         unit_reviews.entry,
         unit_reviews.page,
         unit_reviews.pagelabel,
-        unit_reviews.original_unit_id as originalUnitId,
+        units.original_unit_id as originalUnitId,
         unit_reviews.user_agent as userAgent
 			FROM
         login_sessions,
@@ -440,6 +445,7 @@ class AdminDAO extends DAO {
         person_sessions.id = tests.person_id AND
         tests.id = units.booklet_id AND
         units.id = unit_reviews.unit_id
+			
 			UNION ALL
         
       SELECT

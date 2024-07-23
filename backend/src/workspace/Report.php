@@ -194,7 +194,7 @@ class Report {
    * @return string A raw csv report of Logs
    */
   private function generateLogsCSVReport(array $logData): string {
-    $columns = ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'timestamp', 'logentry']; // TODO: Adjust column headers?
+    $columns = ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'originalUnitId', 'timestamp', 'logentry']; // TODO: Adjust column headers?
     $csv[] = implode(self::DELIMITER, $columns);
 
     foreach ($logData as $log) {
@@ -206,6 +206,7 @@ class Report {
           sprintf(self::CSV_CELL_FORMAT, $log['code']),
           sprintf(self::CSV_CELL_FORMAT, $log['bookletname']),
           sprintf(self::CSV_CELL_FORMAT, $log['unitname']),
+          sprintf(self::CSV_CELL_FORMAT, $log['originalUnitId']),
           sprintf(self::CSV_CELL_FORMAT, $log['timestamp']),
           preg_replace("/\\\\\"/", '""', $log['logentry'])   // TODO: adjust replacement & use cell enclosure ?
         ]
@@ -224,7 +225,7 @@ class Report {
   private function generateResponsesCSVReport(array $responseData): string {
     $csv[] = implode(
       self::DELIMITER,
-      ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'responses', 'laststate']
+      ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'originalUnitId', 'responses', 'laststate']
     );
 
     foreach ($responseData as $row) {
@@ -236,6 +237,7 @@ class Report {
           sprintf(self::CSV_CELL_FORMAT, $row['code']),
           sprintf(self::CSV_CELL_FORMAT, $row['bookletname']),
           sprintf(self::CSV_CELL_FORMAT, $row['unitname']),
+          sprintf(self::CSV_CELL_FORMAT, $row['originalUnitId']),
           sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', json_encode($row['responses']))),
           sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $row['laststate'] ?? ''))
         ]
