@@ -108,9 +108,9 @@ class TestDAO extends DAO {
     ?int $page = null,
     ?string $pageLabel = null,
   ): void {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unit);
+    $unitDbId = $this->getOrCreateUnitId($testId, $unit, $originalUnitId);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent, original_unit_id) values(:u, :t, :p, :c, :e, :pa, :pl, :ua, :ou)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent) values(:u, :t, :p, :c, :e, :pa, :pl, :ua)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
@@ -120,7 +120,6 @@ class TestDAO extends DAO {
         ':pa' => $page,
         ':pl' => $pageLabel,
         ':ua' => $userAgent,
-        ':ou' => $originalUnitId
       ]
     );
   }
@@ -266,7 +265,7 @@ class TestDAO extends DAO {
 
   // TODO unit test
   // todo reduce nr of queries by using replace...into syntax
-  private function getOrCreateUnitId(int $testId, string $unitName): string {
+  private function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
     $unit = $this->_(
       'select units.id from units where units.name = :unitname and units.booklet_id = :testId',
       [
@@ -275,12 +274,23 @@ class TestDAO extends DAO {
       ]
     );
 
+    if ($unit && !empty($originalUnitId)) {
+      $this->_(
+        'update units set original_unit_id = :originalUnitId where id = :unitId',
+        [
+          ':unitId' => $unit['id'],
+          ':originalUnitId' => $originalUnitId
+        ]
+      );
+    }
+
     if (!$unit) {
       $this->_(
-        'insert into units (booklet_id, name) values(:testId, :name)',
+        'insert into units (booklet_id, name, original_unit_id) values(:testId, :name, :originalUnitId)',
         [
           ':testId' => $testId,
-          ':name' => $unitName
+          ':name' => $unitName,
+          ':originalUnitId' => $originalUnitId
         ]
       );
       return $this->pdoDBhandle->lastInsertId();

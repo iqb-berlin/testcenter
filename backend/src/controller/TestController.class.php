@@ -175,7 +175,7 @@ class TestController extends Controller {
       $review['categories'],
       $review['entry'],
       $review['userAgent'],
-      $review['originalUnitId'] ?? null,
+      $review['originalUnitId'] ?? '',
       $review['page'] ?? null,
       $review['pagelabel'] ?? null,
     );
