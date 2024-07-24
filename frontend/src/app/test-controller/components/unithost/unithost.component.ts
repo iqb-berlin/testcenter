@@ -200,7 +200,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             }
           }
           if (msgData.log) {
-            this.bs.addUnitLog(this.tcs.testId, unitDbKey, msgData.log);
+            this.bs.addUnitLog(this.tcs.testId, unitDbKey, this.tcs.originalUnitId, msgData.log);
           }
         }
         break;
@@ -229,6 +229,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.bs.addUnitLog(
             this.tcs.testId,
             this.currentUnit.unitDef.alias,
+            this.tcs.originalUnitId,
             [
               {
                 key: `Runtime Error: ${msgData.code}`,

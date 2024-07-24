@@ -213,8 +213,8 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function updateUnitState(int $testId, string $unitName, array $statePatch): array {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
+  public function updateUnitState(int $testId, string $unitName, array $statePatch, string $originalUnitId = ''): array {
+    $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
 
     $unitData = $this->_(
       'select units.laststate from units where units.id=:unitId',
@@ -294,7 +294,6 @@ class TestDAO extends DAO {
         ]
       );
       return $this->pdoDBhandle->lastInsertId();
-
     }
 
     return (string) $unit['id'];
@@ -363,9 +362,10 @@ class TestDAO extends DAO {
     string $unitName,
     string $logKey,
     int $timestamp,
-    string $logContent = ""
+    string $logContent = "",
+    string $originalUnitId = ''
   ): void {
-    $unitId = $this->getOrCreateUnitId($testId, $unitName);
+    $unitId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
 
     $this->_(
       'insert into unit_logs (unit_id, logentry, timestamp) values (:unitId, :logentry, :ts)',

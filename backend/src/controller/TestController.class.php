@@ -11,7 +11,6 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
-use Slim\Psr7\Stream;
 
 class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
@@ -302,7 +301,14 @@ class TestController extends Controller {
     $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
     foreach ($stateData as $entry) {
-      self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content'], $originalUnitId);
+      self::testDAO()->addUnitLog(
+        $testId,
+        $unitName,
+        $entry['key'],
+        $entry['timeStamp'],
+        $entry['content'],
+        $originalUnitId
+      );
     }
 
     BroadcastService::sessionChange(
@@ -323,12 +329,25 @@ class TestController extends Controller {
     $unitName = $request->getAttribute('unit_name');
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-
-    $logData = RequestBodyParser::getElementsFromArray($request, [
-      'key' => 'REQUIRED',
-      'content' => '',
-      'timeStamp' => 'REQUIRED'
-    ]);
+    if (!is_array(JSON::decode($request->getBody()->getContents()))) { // not an array is the new format
+      $bodyElements = RequestBodyParser::getElementsFromRequest($request, [
+        'logEntries' => [
+          'key' => 'REQUIRED',
+          'content' => '',
+          'timeStamp' => 'REQUIRED'
+        ],
+        'originalUnitId' => 'REQUIRED'
+      ]);
+      $logData = $bodyElements['logEntries'];
+      $originalUnitId = $bodyElements['originalUnitId'];
+    } else {
+      $logData = RequestBodyParser::getElementsFromArray($request, [
+        'key' => 'REQUIRED',
+        'content' => '',
+        'timeStamp' => 'REQUIRED'
+      ]);
+      $originalUnitId = '';
+    }
 
     foreach ($logData as $entry) {
       self::testDAO()->addUnitLog(
@@ -336,7 +355,8 @@ class TestController extends Controller {
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        json_encode($entry['content'])
+        json_encode($entry['content']),
+        $originalUnitId
       );
     }
 

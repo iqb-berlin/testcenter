@@ -68,12 +68,15 @@ export class TestControllerService {
 
   resumeTargetUnitSequenceId = 0;
 
+  originalUnitId = this.rootTestlet?.getUnitAt(this.currentUnitSequenceId)?.unitDef.id ?? '';
+
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
   }
 
   private _currentUnitSequenceId$: BehaviorSubject<number> = new BehaviorSubject<number>(-Infinity);
+
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId$.getValue();
   }
@@ -109,8 +112,6 @@ export class TestControllerService {
 
   private unitStateToSave$ = new Subject<UnitStateUpdate>();
   private unitStateToSaveSubscription: Subscription | null = null;
-
-  private originalUnitId = this.rootTestlet?.getUnitAt(this.currentUnitSequenceId)?.unitDef.id ?? '';
 
   constructor(
     private router: Router,

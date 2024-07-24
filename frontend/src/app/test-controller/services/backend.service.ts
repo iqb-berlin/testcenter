@@ -64,8 +64,11 @@ export class BackendService {
     }).subscribe();
   }
 
-  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
+  addUnitLog(testId: string, unitName: string, originalUnitId:string, logEntries: StateReportEntry[]): Subscription {
+    return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, {
+      logEntries,
+      originalUnitId
+    }).subscribe();
   }
 
   notifyDyingTest(testId: string): void {
