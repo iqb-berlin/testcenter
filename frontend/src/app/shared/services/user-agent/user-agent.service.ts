@@ -110,4 +110,8 @@ export class UserAgentService {
     }
     return satisfies(semverifiedA, referenceVersion);
   }
+
+  static asString(userAgent: ResolvedUserAgent): string {
+    return `${userAgent.family}/${userAgent.version}`;
+  }
 }

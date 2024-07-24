@@ -82,6 +82,7 @@ CREATE TABLE `units` (
   `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
   `booklet_id` bigint unsigned NOT NULL,
   `laststate` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  `original_unit_id` varchar(255) COLLATE utf8mb3_german2_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `index_fk_unit_booklet` (`booklet_id`) USING BTREE,
   CONSTRAINT `fk_unit_booklet` FOREIGN KEY (`booklet_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
@@ -131,6 +132,7 @@ CREATE TABLE `test_reviews` (
   `priority` tinyint(1) NOT NULL DEFAULT '0',
   `categories` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `entry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  `user_agent` varchar(512) COLLATE utf8mb3_german2_ci NOT NULL DEFAULT '',
   KEY `index_fk_review_booklet` (`booklet_id`) USING BTREE,
   CONSTRAINT `fk_review_booklet` FOREIGN KEY (`booklet_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
@@ -170,6 +172,9 @@ CREATE TABLE `unit_reviews` (
   `priority` tinyint(1) NOT NULL DEFAULT '0',
   `categories` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `entry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  `page` bigint DEFAULT NULL,
+  `pagelabel` varchar(255) COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `user_agent` varchar(512) COLLATE utf8mb3_german2_ci NOT NULL DEFAULT '',
   KEY `index_fk_review_unit` (`unit_id`) USING BTREE,
   CONSTRAINT `fk_review_unit` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;

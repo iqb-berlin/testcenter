@@ -122,7 +122,7 @@
     <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
       <tc-page-nav
         [pageLabels]="pageLabels"
-        [currentPageIndex]="currentPageIndex"
+        [currentPageIndex]="this.tcs.currentPageIndex"
         (navToPage)="gotoPage($event)"
         (navPrevious)="gotoPreviousPage()"
         (navNext)="gotoNextPage()">

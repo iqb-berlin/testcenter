@@ -81,11 +81,15 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.downloadCSVReport(ReportType.REVIEW, 'iqb-testcenter-reviews.csv');
   }
 
+  downloadNewReviewsCSV(): void {
+    this.downloadCSVReport(ReportType.REVIEW, 'iqb-testcenter-reviews.csv', true);
+  }
+
   downloadLogsCSV(): void {
     this.downloadCSVReport(ReportType.LOG, 'iqb-testcenter-logs.csv');
   }
 
-  downloadCSVReport(reportType: ReportType, filename: string): void {
+  downloadCSVReport(reportType: ReportType, filename: string, useNewVersion: boolean = false): void {
     if (this.tableSelectionCheckbox.selected.length > 0) {
       const dataIds: string[] = [];
 
@@ -93,7 +97,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         dataIds.push(element.groupName);
       });
 
-      this.workspaceDataService.downloadReport(dataIds, reportType, filename);
+      this.workspaceDataService.downloadReport(dataIds, reportType, filename, useNewVersion);
 
       this.tableSelectionCheckbox.clear();
     }

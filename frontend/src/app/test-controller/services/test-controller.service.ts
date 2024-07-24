@@ -59,11 +59,16 @@ export class TestControllerService {
   currentUnitDbKey = '';
   currentUnitTitle = '';
 
+  currentPageIndex: number = -1;
+  currentPageLabel: string = '';
+
   allUnitIds: string[] = [];
 
   windowFocusState$ = new Subject<WindowFocusState>();
 
   resumeTargetUnitSequenceId = 0;
+
+  originalUnitId = this.rootTestlet?.getUnitAt(this.currentUnitSequenceId)?.unitDef.id ?? '';
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
@@ -71,6 +76,7 @@ export class TestControllerService {
   }
 
   private _currentUnitSequenceId$: BehaviorSubject<number> = new BehaviorSubject<number>(-Infinity);
+
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId$.getValue();
   }
@@ -147,6 +153,7 @@ export class TestControllerService {
         this.bs.updateDataParts(
           this.testId,
           changedDataParts.unitDbKey,
+          this.originalUnitId,
           changedDataParts.dataParts,
           changedDataParts.unitStateDataType
         );
@@ -176,6 +183,7 @@ export class TestControllerService {
         this.bs.updateUnitState(
           this.testId,
           aggregatedStateUpdate.unitDbKey,
+          this.originalUnitId,
           aggregatedStateUpdate.state
         );
       });
@@ -229,7 +237,7 @@ export class TestControllerService {
     dataParts: KeyValuePairString,
     unitStateDataType: string
   ): void {
-    const changedParts:KeyValuePairString = {};
+    const changedParts: KeyValuePairString = {};
 
     Object.keys(dataParts)
       .forEach(dataPartId => {
