@@ -330,8 +330,8 @@ class TestDAO extends DAO {
     ];
   }
 
-  public function updateDataParts(int $testId, string $unitName, array $dataParts, string $type, int $timestamp): void {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
+  public function updateDataParts(int $testId, string $unitName, array $dataParts, string $type, int $timestamp, string $originalUnitId = ''): void {
+    $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
     foreach ($dataParts as $partId => $content) {
       $this->_(
         'replace into unit_data(unit_id, part_id, content, ts, response_type)

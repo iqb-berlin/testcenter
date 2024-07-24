@@ -271,6 +271,9 @@ paths:
                 responseType:
                   description: TODO what is this?
                   type: string
+                originalUnitId:
+                    description: original unit id, in case the unit id in the URL was overwritten by an alias
+                    type: string
               required:
                 - response
                 - timeStamp

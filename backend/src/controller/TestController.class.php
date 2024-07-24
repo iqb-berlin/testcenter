@@ -208,6 +208,7 @@ class TestController extends Controller {
     $unitResponse = RequestBodyParser::getElementsFromRequest($request, [
       'timeStamp' => 'REQUIRED',
       'dataParts' => [],
+      'OriginalUnitId' => '',
       'responseType' => 'unknown'
     ]);
 
@@ -218,7 +219,8 @@ class TestController extends Controller {
       $unitName,
       (array) $unitResponse['dataParts'],
       $unitResponse['responseType'],
-      $unitResponse['timeStamp']
+      $unitResponse['timeStamp'],
+      $unitResponse['OriginalUnitId'],
     );
 
     return $response->withStatus(201);

@@ -153,6 +153,7 @@ export class TestControllerService {
         this.bs.updateDataParts(
           this.testId,
           changedDataParts.unitDbKey,
+          this.originalUnitId,
           changedDataParts.dataParts,
           changedDataParts.unitStateDataType
         );
@@ -236,7 +237,7 @@ export class TestControllerService {
     dataParts: KeyValuePairString,
     unitStateDataType: string
   ): void {
-    const changedParts:KeyValuePairString = {};
+    const changedParts: KeyValuePairString = {};
 
     Object.keys(dataParts)
       .forEach(dataPartId => {
