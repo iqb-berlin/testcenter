@@ -57,8 +57,11 @@ export class BackendService {
     return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
-  updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
+  updateUnitState(testId: string, unitName: string, originalUnitId: string, newState: StateReportEntry[]): Subscription {
+    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, {
+      newState,
+      originalUnitId
+    }).subscribe();
   }
 
   addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {

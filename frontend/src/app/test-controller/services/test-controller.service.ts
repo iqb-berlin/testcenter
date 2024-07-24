@@ -110,6 +110,8 @@ export class TestControllerService {
   private unitStateToSave$ = new Subject<UnitStateUpdate>();
   private unitStateToSaveSubscription: Subscription | null = null;
 
+  private originalUnitId = this.rootTestlet?.getUnitAt(this.currentUnitSequenceId)?.unitDef.id ?? '';
+
   constructor(
     private router: Router,
     private bs: BackendService,
@@ -179,6 +181,7 @@ export class TestControllerService {
         this.bs.updateUnitState(
           this.testId,
           aggregatedStateUpdate.unitDbKey,
+          this.originalUnitId,
           aggregatedStateUpdate.state
         );
       });

@@ -277,18 +277,32 @@ class TestController extends Controller {
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-    $stateData = RequestBodyParser::getElementsFromArray($request, [
-      'key' => 'REQUIRED',
-      'content' => 'REQUIRED',
-      'timeStamp' => 'REQUIRED'
-    ]);
+    if (!is_array(JSON::decode($request->getBody()->getContents()))) { // not an array is the new format
+      $bodyElements = RequestBodyParser::getElementsFromRequest($request, [
+        'newState' => [
+          'key' => 'REQUIRED',
+          'content' => 'REQUIRED',
+          'timeStamp' => 'REQUIRED'
+        ],
+        'originalUnitId' => 'REQUIRED'
+      ]);
+
+      $stateData = $bodyElements['newState'];
+      $originalUnitId = $bodyElements['originalUnitId'];
+    } else {
+      $stateData = RequestBodyParser::getElementsFromArray($request, [
+        'key' => 'REQUIRED',
+        'content' => 'REQUIRED',
+        'timeStamp' => 'REQUIRED'
+      ]);
+      $originalUnitId = '';
+    }
 
     $statePatch = TestController::stateArray2KeyValue($stateData);
-
-    $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch);
+    $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
     foreach ($stateData as $entry) {
-      self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content']);
+      self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content'], $originalUnitId);
     }
 
     BroadcastService::sessionChange(

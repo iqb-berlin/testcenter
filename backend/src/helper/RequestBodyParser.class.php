@@ -47,7 +47,13 @@ class RequestBodyParser {
         throw new HttpError("Required body-parameter is missing: `$element`", 400);
       }
 
-      $elements[$element] = $elementObject->$element ?? $default;
+      if (is_array($elementObject->$element)) {
+          foreach ($elementObject->$element as $value) {
+            $elements[$element][] = self::applyDefaultsIfNotRequired($value, $default);
+          }
+      } else {
+        $elements[$element] = $elementObject->$element ?? $default;
+      }
     }
 
     return $elements;
