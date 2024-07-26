@@ -2,6 +2,10 @@
 layout: default
 ---
 
+## 15.1.9
+### Sicherheit
+* Aktualisierte Base-Images
+
 ## 15.1.8
 ### Bugfix
 * Fehlermeldung nach Anlegen eines neuen Users entfernt (Endpunkt liefert userID zurück nicht Namen) 
