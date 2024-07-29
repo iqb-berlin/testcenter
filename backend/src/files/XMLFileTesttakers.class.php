@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -29,13 +30,18 @@ class XMLFileTesttakers extends XMLFile {
       foreach ($booklets as $bookletId) {
         $booklet = $validator->getBooklet($bookletId);
 
-        if ($booklet != null) {
-          $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
+        if (!$booklet) {
+          $this->report('error', "Booklet `$bookletId` not found for login `{$testtaker->getName()}`");
+          continue;
         }
 
-        if (!$booklet or !$booklet->isValid()) {
-          $this->report('error', "Booklet `$bookletId` not found for login `{$testtaker->getName()}`");
+        if (!$booklet->isValid()) {
+          $this->report('error', "Booklet `$bookletId` has an error for login `{$testtaker->getName()}`");
+          continue;
         }
+
+        $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
+
       }
     }
   }

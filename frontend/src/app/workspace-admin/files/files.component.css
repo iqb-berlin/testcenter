@@ -1,3 +1,11 @@
+.selected-row {
+  background-color: #0080001a;
+}
+
+.isDependency {
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
 .columnhost {
   width: 100%;
   display: flex;
@@ -8,7 +16,7 @@
 }
 
 .filelist {
-  flex:  10 0 400px;
+  flex: 10 0 400px;
   margin-top: 0.7em;
 }
 
@@ -38,7 +46,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 }
 
 .sidebar {
-  flex:  10 0 200px;
+  flex: 10 0 200px;
   padding-left: 1em;
 }
 
@@ -50,7 +58,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
   align-items: center;
 }
 
-.checkerror, .checkwarning, .checkinfo  {
+.checkerror, .checkwarning, .checkinfo {
   margin: 20px;
   font-size: 0.8em;
 }
@@ -82,7 +90,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 
 .file-report:hover .full-file-report {
   display: block;
-  position: absolute ;
+  position: absolute;
   background: white;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   z-index: 1000;

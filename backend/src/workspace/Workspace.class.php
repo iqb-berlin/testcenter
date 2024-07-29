@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -36,7 +37,7 @@ class Workspace {
 
     $files = scandir($dir);
 
-    foreach($files as $file) {
+    foreach ($files as $file) {
       if ($file != '.' && $file != '..') {
         $path = $dir . '/' . $file;
         if (is_dir($path)) {
@@ -174,64 +175,98 @@ class Workspace {
     return substr_count($path, '..') == 0;
   }
 
-  // takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
-  public function importUnsortedFiles(array $fileNames): array {
-    $toDelete = [];
-    $toSortIn = [];
+  /** takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
+   * @return array{
+   *   type: string,
+   *   warning: array,
+   *   error: array,
+   *   info: array}
+   */
+  public function importUncategorizedFiles(array $fileNames): array {
+    $toDeleteFilePaths = [];
+    $toSortInFilePaths = [];
     foreach ($fileNames as $fileName) {
       if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
-        array_push($toSortIn, ...$this->unpackUnsortedZipArchive($fileName));
-        array_push($toDelete, $fileName, $this->getExtractionDirName($fileName));
+        array_push($toSortInFilePaths, ...$this->unpackRootlevelZipArchive($fileName));
+        array_push($toDeleteFilePaths, $fileName, $this->getExtractionDirName($fileName));
       } else {
-        $toSortIn[] = $fileName;
-        $toDelete[] = $fileName;
+        $toSortInFilePaths[] = $fileName;
+        $toDeleteFilePaths[] = $fileName;
       }
     }
 
-    $files = $this->sortValidUnsortedFiles($toSortIn);
-    $this->deleteUnsorted($toDelete);
+    $importedFiles = $this->sortAndValidateToplevelFiles($toSortInFilePaths);
+    $this->deleteRootlevelFiles($toDeleteFilePaths);
 
-    return $files;
+    return $importedFiles;
   }
 
-  protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
-    $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
+  private function sortAndValidateToplevelFiles(array $relativeFilePaths): array {
     $filesAfterSorting = [];
+    $pathsPerType = array_fill_keys(Workspace::subFolders, []);
 
-    foreach ($files as $filesOfAType) {
-      foreach ($filesOfAType as $localFilePath => $file) {
-        if ($file->isValid()) {
-          $this->sortUnsortedFile($localFilePath, $file);
-          $this->workspaceDAO->storeFile($file);
-          $this->storeFileMeta($file);
-          $this->updateRelatedFiles($file);
+    foreach ($relativeFilePaths as $relativeFilePath) {
+      $pathsPerType[File::determineType($this->workspacePath . '/' . $relativeFilePath)][] = $relativeFilePath;
+    }
+
+    $pathsPerType = [
+      // Resource and Unit are merged in order to save one call to getFilesWhere(['type' => 'Resource']), as this is the
+      // most expensive call in the following loop (Unit depends on Resource anyway)
+      !empty($pathsPerType['Unit']) ? 'Unit' : 'Resource' => array_merge(
+        $pathsPerType['Resource'],
+        $pathsPerType['Unit']
+      ),
+      'Booklet' => $pathsPerType['Booklet'],
+      'Testtakers' => $pathsPerType['Testtakers'],
+      'SysCheck' => $pathsPerType['SysCheck'],
+      'xml' => $pathsPerType['xml']
+    ];
+
+    foreach ($pathsPerType as $type => $filePaths) {
+      if (!empty($filePaths)) {
+        // these files are all not valid from the start
+        if ($type === 'xml') {
+          foreach ($filePaths as $path) {
+            $file = File::get($this->workspacePath . '/' . $path);
+            $filesAfterSorting[$path] = ['type' => $file->getType(), ...$file->getValidationReport()];
+          }
+          continue;
         }
 
-        $filesAfterSorting[$localFilePath] = $file;
+        $files = $this->validateFilesForCategory($filePaths, FileType::tryFrom($type));
+        foreach ($files as $filePath => $file) {
+          if ($file->isValid()) {
+            $this->categorizeFile($filePath, $file);
+            $this->workspaceDAO->storeFile($file);
+            $this->storeFileMeta($file);
+            $this->updateDependentFiles($file);
+          }
+
+          $filesAfterSorting[$filePath] = ['type' => $file->getType(), ...$file->getValidationReport()];
+        }
       }
     }
 
     return $filesAfterSorting;
   }
 
-  protected function crossValidateUnsortedFiles(array $localFilePaths): array {
-    $files = array_fill_keys(Workspace::subFolders, []);
-
+  protected function validateFilesForCategory(array $localFilePaths, FileType $highestTypeAmongFiles): array {
+    $filesPerType = [];
     $workspaceCache = new WorkspaceCache($this);
-    $workspaceCache->loadAllFiles(); // TODO! read from DB instead, and only affected files
+    $this->loadFilesIntoCache($workspaceCache, $highestTypeAmongFiles);
 
     foreach ($localFilePaths as $localFilePath) {
       $file = File::get($this->workspacePath . '/' . $localFilePath);
       $workspaceCache->addFile($file->getType(), $file, true);
-      $files[$file->getType()][$localFilePath] = $file;
+      $filesPerType[$localFilePath] = $file;
     }
 
-    $workspaceCache->validate();
+    $workspaceCache->validate($highestTypeAmongFiles->value);
 
-    return $files;
+    return $filesPerType;
   }
 
-  protected function sortUnsortedFile(string $localFilePath, File $file): bool {
+  protected function categorizeFile(string $localFilePath, File $file): bool {
     $targetFolder = $this->workspacePath . '/' . $file->getType();
 
     if (!file_exists($targetFolder)) {
@@ -247,14 +282,18 @@ class Workspace {
       $oldFile = File::get($targetFilePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since new file's ID (`{$file->getId()}`) differs from old one (`{$oldFile->getId()}`)."
         );
         return false;
       }
 
       if ($oldFile->getVeronaModuleId() !== $file->getVeronaModuleId()) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since new file's Verona-Module-ID (`{$file->getVeronaModuleId()}`) differs from old one (`{$oldFile->getVeronaModuleId()}`)."
           . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
         );
@@ -262,7 +301,9 @@ class Workspace {
       }
 
       if (!Version::isCompatible($oldFile->getVersion(), $file->getVersion())) {
-        $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+        $file->report(
+          'error',
+          "File of name `{$oldFile->getName()}` did already exist. "
           . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()}) and new ({$file->getVersion()}) file."
           . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
         );
@@ -287,7 +328,7 @@ class Workspace {
     return true;
   }
 
-  protected function unpackUnsortedZipArchive(string $fileName): array {
+  protected function unpackRootlevelZipArchive(string $fileName): array {
     $filePath = "$this->workspacePath/$fileName";
     $extractionFolder = $this->getExtractionDirName($fileName);
     $extractionPath = "$this->workspacePath/$extractionFolder";
@@ -311,7 +352,7 @@ class Workspace {
     return "{$fileName}_Extract";
   }
 
-  protected function deleteUnsorted(array $relativePaths): void {
+  protected function deleteRootlevelFiles(array $relativePaths): void {
     foreach ($relativePaths as $relativePath) {
       $filePath = "$this->workspacePath/$relativePath";
       if (is_dir($filePath)) {
@@ -367,7 +408,7 @@ class Workspace {
   // TODO unit-test
   public function storeAllFiles(): array {
     $workspaceCache = new WorkspaceCache($this);
-    $workspaceCache->loadAllFiles();
+    $workspaceCache->loadFiles();
 
     $typeStats = array_fill_keys(Workspace::subFolders, 0);
     $loginStats = [
@@ -424,7 +465,7 @@ class Workspace {
   }
 
   // TODO unit-test
-  public function storeFileMeta(File $file): ?array {
+  private function storeFileMeta(File $file): ?array {
     $stats = [
       'logins_deleted' => 0,
       'logins_added' => 0,
@@ -483,16 +524,17 @@ class Workspace {
     return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
   }
 
-  private function updateRelatedFiles(File $file): void {
-    $relatingFiles = $this->workspaceDAO->getRelatingFiles($file);
+  /** checks files that are depending on the current file, upstream */
+  private function updateDependentFiles(File $file): void {
+    $relatingFiles = $this->workspaceDAO->getDependentFilesByTypes($file, ['Booklet']);
 
-    foreach ($relatingFiles as $fileSet) {
-      foreach ($fileSet as $relatingFile) {
-        /* @var File $relatingFile */
-
-        $this->storeFileMeta($relatingFile);
+    foreach ($relatingFiles as $fileset) {
+      foreach ($fileset as $file) {
+        $requestedAttachments = $this->getRequestedAttachments($file);
+        $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
       }
     }
+
   }
 
   public function getBookletResourcePaths(string $bookletId): array {
@@ -512,5 +554,14 @@ class Workspace {
 
   public function setWorkspaceHash(): void {
     $this->workspaceDAO->setWorkspaceHash($this->getWorkspaceHash());
+  }
+
+  private function loadFilesIntoCache(WorkspaceCache $workspaceCache, FileType $type): void {
+    foreach (FileType::getDependenciesOfType($type) as $dependingType) {
+      $files = $this->workspaceDAO->getAllFilesWhere(['type' => $dependingType]);
+      foreach ($files[$dependingType] as $file) {
+        $workspaceCache->addFile($dependingType, $file);
+      }
+    }
   }
 }

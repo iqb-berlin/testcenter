@@ -24,6 +24,7 @@ class File extends FileData {
     };
   }
 
+  /** For use in testing classes */
   static function fromString(string $fileContent, string $fileName = 'virtual_file'): File {
     $file = new static(new FileData($fileName));
     $file->content = $fileContent;
@@ -32,7 +33,7 @@ class File extends FileData {
   }
 
   // TODO unit-test
-  private static function determineType(string $path): string {
+  public static function determineType(string $path): string {
     if (strtoupper(substr($path, -4)) == '.XML') {
       $asGenericXmlFile = new XMLFile($path);
       if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {
@@ -166,6 +167,7 @@ class File extends FileData {
       'type' => $this->type,
       'id' => $this->id,
       'report' => $this->validationReport,
+      'dependencies' => $this->relations,
       'info' => array_merge($info, $this->getContextData()
       ),
     ];

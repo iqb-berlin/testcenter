@@ -77,6 +77,7 @@ backend-refresh-autoload:
 		-v $(CURDIR)/backend/test:/var/www/backend/test \
 		testcenter-backend-composer \
 		composer dump-autoload --working-dir=/var/www/backend
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml build testcenter-backend
 
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \

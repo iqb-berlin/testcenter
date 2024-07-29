@@ -1,19 +1,22 @@
 import {
-  Component, OnInit, Inject, ViewChild, OnDestroy
+  Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
+import { from, Subscription } from 'rxjs';
 import {
-  ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MainDataService
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  MainDataService,
+  MessageDialogComponent,
+  MessageDialogData
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
-  IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
+  GetFileResponseData, IQBFile, IQBFileType, IQBFileTypes
 } from '../workspace.interfaces';
 import { BackendService } from '../backend.service';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
@@ -41,7 +44,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
   fileNameAlias = 'fileforvo';
 
-  lastSort:Sort = {
+  lastSort: Sort = {
     active: 'name',
     direction: 'asc'
   };
@@ -62,6 +65,9 @@ export class FilesComponent implements OnInit, OnDestroy {
     invalid: {},
     testtakers: 0
   };
+
+  selectedRow: IQBFile | null = null;
+  dependenciesOfRow: IQBFile[] = [];
 
   private wsIdSubscription: Subscription | null = null;
 
@@ -164,15 +170,47 @@ export class FilesComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateFileList(empty = false): void {
-    if (empty) {
+  updateFileList(shouldEmpty = false): void {
+    if (shouldEmpty) {
       IQBFileTypes
         .forEach(type => {
           this.files[type] = new MatTableDataSource();
         });
     } else {
       this.bs.getFiles(this.wds.workspaceId)
-        .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
+        .pipe(
+          mergeMap(fileList => {
+            const filteredTypes = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
+            return from(filteredTypes).pipe(
+              map(type => {
+                fileList[type]?.forEach(file => {
+                  if (file.dependencies.length !== 0) {
+                    file.info.totalSize = file.size;
+                    file.dependencies.forEach(dep => {
+                      if (
+                        dep.relationship_type !== 'usesPlayer' ||
+                        (dep.relationship_type === 'usesPlayer' && file.type === 'Booklet') // booklet's size is dependent on player
+                      ) {
+                        const innerFilteredTypes = IQBFileTypes.filter(innertype => innertype !== 'Testtakers' && innertype !== 'SysCheck' && innertype !== 'Booklet');
+                        innerFilteredTypes.forEach(innertype => {
+                          fileList[innertype].forEach(checkedDependency => {
+                            if (checkedDependency.name === dep.object_name) {
+                              file.info.totalSize! += checkedDependency.size;
+                            }
+                          });
+                        });
+                      }
+                    });
+                  } else {
+                    file.info.totalSize = undefined;
+                  }
+                });
+                return fileList;
+              })
+            );
+          }),
+          map(fileList => this.addFrontendChecksToFiles(fileList))
+        )
         .subscribe(fileList => {
           IQBFileTypes
             .forEach(type => {
@@ -249,12 +287,14 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   setTableSorting(sort: Sort): void {
     this.lastSort = sort;
+
     function compare(a: number | string | boolean, b: number | string | boolean, isAsc: boolean) {
       if ((typeof a === 'string') && (typeof b === 'string')) {
         return a.localeCompare(b) * (isAsc ? 1 : -1);
       }
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
+
     IQBFileTypes
       .forEach(type => {
         this.files[type].data = this.files[type].data
@@ -263,5 +303,41 @@ export class FilesComponent implements OnInit, OnDestroy {
             return compare(a[sort.active as IQBFileProperty], b[sort.active as IQBFileProperty], (sort.direction === 'asc'));
           });
       });
+  }
+
+  selectRow(event: Event, row: IQBFile) {
+    if (event.target instanceof HTMLElement && event.target.tagName === 'MAT-CELL') {
+      this.dependenciesOfRow = [];
+      this.selectedRow = this.selectedRow === row ? null : row;
+
+      if (this.selectedRow) {
+        const dependencies = this.getDependenciesOfFile(row);
+        this.dependenciesOfRow = [...dependencies];
+      } else {
+        this.dependenciesOfRow = [];
+      }
+    }
+  }
+
+  getDependenciesOfFile(inputFile: IQBFile): IQBFile[] {
+    const depTree: { [Type in IQBFileType]: IQBFileType[]; } = {
+      Resource: ['Unit', 'Booklet', 'SysCheck', 'Testtakers'],
+      Unit: ['Booklet', 'SysCheck', 'Testtakers'],
+      Booklet: ['Testtakers'],
+      SysCheck: [],
+      Testtakers: []
+    };
+    const result: IQBFile[] = [];
+
+    depTree[inputFile.type].forEach(type => {
+      this.files[type].data.forEach(file => {
+        file.dependencies.forEach(dep => {
+          if (dep.object_name === inputFile.name) {
+            result.push(file);
+          }
+        });
+      });
+    });
+    return result;
   }
 }

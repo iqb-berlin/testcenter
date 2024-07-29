@@ -58,7 +58,7 @@ class UploadedFilesHandler {
       $uploadedFiles = [$uploadedFiles];
     }
 
-    $importedFiles = [];
+    $filesToImport = [];
 
     foreach ($uploadedFiles as $uploadedFile) {
       /** @var UploadedFile $uploadedFile */
@@ -74,9 +74,9 @@ class UploadedFilesHandler {
       }
       $originalFileName = $uploadedFile->getClientFilename();
       $uploadedFile->moveTo($workspacePath . '/' . $originalFileName);
-      $importedFiles[] = $originalFileName;
+      $filesToImport[] = $originalFileName;
     }
 
-    return $importedFiles;
+    return $filesToImport;
   }
 }

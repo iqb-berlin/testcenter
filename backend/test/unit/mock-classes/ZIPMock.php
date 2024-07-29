@@ -14,15 +14,13 @@ class ZIP {
     self::extractFile(self::$mockArchive, $extractionPath);
   }
 
-  static private function extractFile($mockArchiveFolder, $extractionPath) {
+  static private function extractFile(array $mockArchiveFolder, string $extractionPath) {
     foreach ($mockArchiveFolder as $name => $content) {
       if (is_array($content)) {
         mkdir("$extractionPath/$name");
         self::extractFile($content, "$extractionPath/$name");
-
       } else {
         file_put_contents("$extractionPath/$name", $content);
-
       }
     }
   }
