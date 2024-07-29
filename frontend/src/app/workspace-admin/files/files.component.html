@@ -33,24 +33,28 @@
                       <mat-icon class="report-error">error</mat-icon>
                     </ng-container>
                     <ng-template #noError>
-                      <ng-container *ngIf="element.report.warning && element.report.warning?.length">
+                      <ng-container *ngIf="(element.report.warning && element.report.warning?.length) || !getDependenciesOfFile(element).length">
                         <mat-icon class="report-warning">warning</mat-icon>
                       </ng-container>
                     </ng-template>
                   </span>
-                  <mat-card appearance="raised" class="full-file-report">
+                  <mat-card
+                    *ngIf="element.info.label || (element.id && element.id !== element.name.toUpperCase()) ||
+                    element.info.testtakers || element.report.hasOwnProperty('info') || element.report.hasOwnProperty('warning')
+                    || element.report.hasOwnProperty('error') || !getDependenciesOfFile(element).length"
+                    appearance="raised" class="full-file-report">
                     <mat-card-header *ngIf="element.info.label || element.id">
                       <mat-card-title>
                         {{ element.info.label }}
                         <span
                           *ngIf="element.id !== element.name.toUpperCase()"
                           style="{{element.info.label ? 'color:silver' : ''}}">
-                        #{{ element.id }}
-                      </span>
+                          #{{ element.id }}
+                        </span>
                       </mat-card-title>
                       <mat-card-subtitle>{{ element.info.description }}</mat-card-subtitle>
                     </mat-card-header>
-                    <mat-card-content>
+                    <mat-card-content >
                       <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
                       <div *ngIf="!getDependenciesOfFile(element).length">
                         <tc-alert [level]="'warning'" [text]="element.type + ' is never used.'"></tc-alert>
