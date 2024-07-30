@@ -227,7 +227,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     // responses must be empty
     convertResultsSeperatedArrays('responses')
       .then(sepArrays => {
-        expect(sepArrays[1][5]).to.be.equal('[]');
+        expect(sepArrays[1][6]).to.be.equal('[]');
       });
   });
 

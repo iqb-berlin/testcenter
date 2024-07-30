@@ -89,6 +89,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
         'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -105,6 +106,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -141,6 +143,7 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample unit log'
       ],
@@ -150,6 +153,7 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => '',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample log entry'
       ]

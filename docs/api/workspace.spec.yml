@@ -773,9 +773,9 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;timestamp;logentry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1627545600";sample unit log
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1627545600";sample log entry
+                groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"";"1627545600";sample unit log
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600";sample log entry
             application/json:
               schema:
                 $ref: '#/components/schemas/LogReport'
@@ -824,8 +824,8 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;responses;laststate
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"[{""id"":""1:UNIT.SAMPLE:v2"",""content"":""[{\""id\"":\""v2\"",\""value\"":[\""image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\""],\""status\"":\""VALUE_CHANGED\""}]"",""ts"":1627545600000,""responseType"":""iqb-standard@1.0""},{""id"":""all"",""content"":""{\""name\"":\""Sam Sample\"",\""age\"":34}"",""ts"":1627545600,""responseType"":""example-data-format""}]";"{""PRESENTATIONCOMPLETE"":""yes""}"
+                groupname;loginname;code;bookletname;unitname;originalUnitId;responses;laststate
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"";"[{""id"":""1:UNIT.SAMPLE:v2"",""content"":""[{\""id\"":\""v2\"",\""value\"":[\""image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\""],\""status\"":\""VALUE_CHANGED\""}]"",""ts"":1627545600000,""responseType"":""iqb-standard@1.0""},{""id"":""all"",""content"":""{\""name\"":\""Sam Sample\"",\""age\"":34}"",""ts"":1627545600,""responseType"":""example-data-format""}]";"{""PRESENTATIONCOMPLETE"":""yes""}"
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseReport'
@@ -891,9 +891,9 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"2021-07-29 10:00:00";"this is a sample unit review"
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"2021-07-29 10:00:00";"sample booklet review"
+                groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry;page;pagelabel;originalUnitId;userAgent
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"2021-07-29 10:00:00";"this is a sample unit review";;;"";"Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0"
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"2021-07-29 10:00:00";"sample booklet review";;;"";"Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0"
             application/json:
               schema:
                 $ref: '#/components/schemas/ReviewReport'

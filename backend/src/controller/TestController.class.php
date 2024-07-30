@@ -278,18 +278,18 @@ class TestController extends Controller {
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-    if (!is_array(JSON::decode($request->getBody()->getContents()))) { // not an array is the new format
-      $bodyElements = RequestBodyParser::getElementsFromRequest($request, [
-        'newState' => [
+    if (!is_array(JSON::decode($request->getBody()->getContents()))) {
+      // 'not being an array' is the new format
+      $stateData = RequestBodyParser::getElementsFromArray(
+        $request,
+        [
           'key' => 'REQUIRED',
           'content' => 'REQUIRED',
           'timeStamp' => 'REQUIRED'
         ],
-        'originalUnitId' => 'REQUIRED'
-      ]);
+        'newState');
 
-      $stateData = $bodyElements['newState'];
-      $originalUnitId = $bodyElements['originalUnitId'];
+      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       $stateData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
@@ -331,17 +331,17 @@ class TestController extends Controller {
     $unitName = $request->getAttribute('unit_name');
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-    if (!is_array(JSON::decode($request->getBody()->getContents()))) { // not an array is the new format
-      $bodyElements = RequestBodyParser::getElementsFromRequest($request, [
-        'logEntries' => [
+    if (!is_array(JSON::decode($request->getBody()->getContents()))) {
+      // 'not being an array' is the new format
+      $logData = RequestBodyParser::getElementsFromArray(
+        $request,
+        [
           'key' => 'REQUIRED',
           'content' => '',
           'timeStamp' => 'REQUIRED'
         ],
-        'originalUnitId' => 'REQUIRED'
-      ]);
-      $logData = $bodyElements['logEntries'];
-      $originalUnitId = $bodyElements['originalUnitId'];
+        'logEntries');
+      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       $logData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',

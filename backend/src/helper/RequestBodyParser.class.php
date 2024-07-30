@@ -47,21 +47,16 @@ class RequestBodyParser {
         throw new HttpError("Required body-parameter is missing: `$element`", 400);
       }
 
-      if (is_array($elementObject->$element)) {
-          foreach ($elementObject->$element as $value) {
-            $elements[$element][] = self::applyDefaultsIfNotRequired($value, $default);
-          }
-      } else {
-        $elements[$element] = $elementObject->$element ?? $default;
-      }
+      $elements[$element] = $elementObject->$element ?? $default;
     }
 
     return $elements;
   }
 
   // TODO Unit Test
-  static function getElementsFromArray(Request $request, array $elements2defaults = []): array {
+  static function getElementsFromArray(Request $request, array $elements2defaults = [], mixed $getOnlyThisKey = null): array {
     $requestBody = JSON::decode($request->getBody()->getContents());
+    $requestBody = !is_null($getOnlyThisKey) ? $requestBody->$getOnlyThisKey : $requestBody;
 
     if (!is_array($requestBody)) {
       throw new HttpBadRequestException($request, "body has to be an array");
