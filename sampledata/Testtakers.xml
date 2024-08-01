@@ -18,6 +18,7 @@
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+    <Login mode="sys-check-login" name="sys-check" />
   </Group>
 
   <Group id="study_group" label="A group for the study monitor">

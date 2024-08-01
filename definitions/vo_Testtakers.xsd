@@ -93,6 +93,13 @@
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
+                        <xs:enumeration value="sys-check-login">
+                          <xs:annotation>
+                            <xs:documentation>
+                              This role can enable the system check to only be enabled after login.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
                         <xs:enumeration value="run-demo">
                           <xs:annotation>
                             <xs:documentation>
