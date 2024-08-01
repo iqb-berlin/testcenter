@@ -130,23 +130,25 @@ class SystemController extends Controller {
   public static function getSysChecks(Request $request, Response $response): Response {
     $availableSysChecks = [];
 
-    foreach (SysChecksFolder::getAll() as $sysChecksFolder) {
-      /* @var SysChecksFolder $sysChecksFolder */
+    if (!self::sessionDAO()->isSysCheckModeInAnyWorkspace()) {
+      foreach (SysChecksFolder::getAll() as $sysChecksFolder) {
+        /* @var SysChecksFolder $sysChecksFolder */
 
-      $availableSysChecks = array_merge(
-        $availableSysChecks,
-        array_map(
-          function(XMLFileSysCheck $file) use ($sysChecksFolder) {
-            return [
-              'workspaceId' => $sysChecksFolder->getId(),
-              'name' => $file->getId(),
-              'label' => $file->getLabel(),
-              'description' => $file->getDescription()
-            ];
-          },
-          $sysChecksFolder->findAvailableSysChecks()
-        )
-      );
+        $availableSysChecks = array_merge(
+          $availableSysChecks,
+          array_map(
+            function (XMLFileSysCheck $file) use ($sysChecksFolder) {
+              return [
+                'workspaceId' => $sysChecksFolder->getId(),
+                'name' => $file->getId(),
+                'label' => $file->getLabel(),
+                'description' => $file->getDescription()
+              ];
+            },
+            $sysChecksFolder->findAvailableSysChecks()
+          )
+        );
+      }
     }
 
     if (!count($availableSysChecks)) {

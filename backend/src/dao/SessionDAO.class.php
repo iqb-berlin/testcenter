@@ -239,6 +239,16 @@ class SessionDAO extends DAO {
     );
   }
 
+  public function isSysCheckModeInAnyWorkspace() {
+    return $this->_(
+        'select count(*) as count 
+        from logins 
+        where mode = "sys-check-login"',
+        [],
+        false
+      )['count'] > 0;
+  }
+
   public function createOrUpdatePersonSession(
     LoginSession $loginSession,
     string $code,
@@ -590,7 +600,8 @@ class SessionDAO extends DAO {
    */
   public function getGroupMonitors(PersonSession $personSession): array {
     switch ($personSession->getLoginSession()->getLogin()->getMode()) {
-      default: return [];
+      default:
+        return [];
       case 'monitor-group':
         return [
           new Group(
@@ -684,7 +695,7 @@ class SessionDAO extends DAO {
       $filterSQL
     order by id";
 
-    $result = $this->_($sql, $replacements,true);
+    $result = $this->_($sql, $replacements, true);
 
     foreach ($result as $row) {
       $logins[] =
