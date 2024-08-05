@@ -94,6 +94,11 @@
             {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (accessObjects.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
           </div>
         </a>
+
+        <ng-container *ngIf="!mds.sysCheckAvailableForAll">
+          <h4 *ngIf="!this.mds.sysCheckAvailableForAll">System-Check</h4>
+          <a *ngIf="!this.mds.sysCheckAvailableForAll" mat-raised-button color="primary" [routerLink]="['/r/check-starter']"></a>
+        </ng-container>
       </div>
       <tc-alert
         *ngIf="(accessObjects.test && !accessObjects.test.length) || !(accessObjects | keyvalue).length"

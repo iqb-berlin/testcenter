@@ -130,7 +130,7 @@ class SystemController extends Controller {
   public static function getSysChecks(Request $request, Response $response): Response {
     $availableSysChecks = [];
 
-    if (!self::sessionDAO()->isSysCheckModeInAnyWorkspace()) {
+    if (self::adminDAO()->isWSwithNoTestExist()) {
       foreach (SysChecksFolder::getAll() as $sysChecksFolder) {
         /* @var SysChecksFolder $sysChecksFolder */
 

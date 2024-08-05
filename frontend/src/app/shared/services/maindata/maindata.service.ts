@@ -60,7 +60,7 @@ export class MainDataService {
     cacheService: 'unknown'
   };
 
-  sysCheckAvailable = false;
+  sysCheckAvailableForAll = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
   globalWarning = '';

@@ -572,4 +572,5 @@ class WorkspaceDAO extends DAO {
       [':hash' => $hash, ':ws_id' => $this->workspaceId]
     );
   }
+
 }
