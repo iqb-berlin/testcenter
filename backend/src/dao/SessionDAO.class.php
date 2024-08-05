@@ -239,16 +239,6 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function isSysCheckModeInAnyWorkspace() {
-    return $this->_(
-        'select count(*) as count 
-        from logins 
-        where mode = "sys-check-login"',
-        [],
-        false
-      )['count'] > 0;
-  }
-
   public function createOrUpdatePersonSession(
     LoginSession $loginSession,
     string $code,

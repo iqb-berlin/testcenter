@@ -55,7 +55,7 @@
     </mat-card-content>
 
     <mat-card-actions [style.justify-content]="'space-between'">
-      <a *ngIf="this.mainDataService.sysCheckAvailable" mat-raised-button color="primary"
+      <a *ngIf="this.mainDataService.sysCheckAvailableForAll" mat-raised-button color="primary"
          [routerLink]="['/r/check-starter']">
         System-Check
       </a>

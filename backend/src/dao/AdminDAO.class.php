@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -131,7 +132,7 @@ class AdminDAO extends DAO {
       true
     );
     return array_map(
-      function(array $ws): WorkspaceData {
+      function (array $ws): WorkspaceData {
         return new WorkspaceData($ws['id'], $ws['name'], $ws['role']);
       },
       $workspaces
@@ -284,10 +285,10 @@ class AdminDAO extends DAO {
           units.booklet_id = :testId
           and units.name = :unitName",
       [
-          ':testId' => $testId,
-          ':unitName' => $unitName
+        ':testId' => $testId,
+        ':unitName' => $unitName
       ]
-     );
+    );
 
     if (!$unitData) {
       return (object) [];
@@ -670,7 +671,11 @@ class AdminDAO extends DAO {
     return $attachmentData;
   }
 
-    public function deleteAdminSession(AuthToken $authToken): void {
-      $this->_('delete from admin_sessions where token =:token',[':token' => $authToken->getToken()]);
-    }
+  public function deleteAdminSession(AuthToken $authToken): void {
+    $this->_('delete from admin_sessions where token =:token', [':token' => $authToken->getToken()]);
+  }
+
+  public function isWSwithNoTestExist(): bool {
+    return $this->_('select count(*) from workspaces where content_type != "test"') == 'true';
+  }
 }

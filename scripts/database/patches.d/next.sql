@@ -9,7 +9,9 @@ alter table
   add column user_agent varchar(512) not null default '';
 
 alter table workspaces
-  add column workspace_hash varchar(255) not null default '';
+  add column workspace_hash varchar(255) not null default '',
+  add column content_type varchar(255) not null default 'mixed';
 
 alter table units
   add column original_unit_id varchar(255) not null default '';
+
