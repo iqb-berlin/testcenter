@@ -1,6 +1,8 @@
+# syntax=docker/dockerfile:1
+
 ARG NODE_VERSION=20.9.0-bookworm-slim
 
-FROM node:${NODE_VERSION} as dev
+FROM node:${NODE_VERSION} AS dev
 
 ARG NODE_ENV=development
 ENV DEV_MODE="true"
@@ -27,13 +29,12 @@ EXPOSE 3000
 
 CMD ["npx", "nest", "start", "--watch", "--preserveWatchOutput"]
 
-#=============
-FROM dev as build
 
+FROM dev AS build
 RUN npx nest build
 
-#=============
-FROM node:${NODE_VERSION} as prod
+
+FROM node:${NODE_VERSION} AS prod
 
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app
