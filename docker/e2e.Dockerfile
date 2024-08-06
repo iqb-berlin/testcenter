@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM cypress/included:13.11.0
 WORKDIR /app
 

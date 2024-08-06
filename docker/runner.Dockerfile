@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM node:16.19-bullseye
 
 ARG NODE_ENV=development

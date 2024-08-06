@@ -1,7 +1,9 @@
+# syntax=docker/dockerfile:1
+
 ARG NODE_VERSION=20.10.0-bookworm-slim
 
-FROM node:${NODE_VERSION} as dev
 
+FROM node:${NODE_VERSION} AS dev
 ARG NODE_ENV=development
 
 RUN apt update && apt install -y chromium
@@ -28,14 +30,12 @@ CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--
 
 #===================================
 
-FROM dev as builder
+FROM dev AS builder
 
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
-#===================================
 
-FROM nginx:1.25 as prod
-
+FROM nginx:1.25 AS prod
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
 

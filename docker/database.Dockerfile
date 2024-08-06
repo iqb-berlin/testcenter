@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM mysql:8.0
 
 COPY ../scripts/database/my.cnf /etc/mysql/conf.d/my.cnf

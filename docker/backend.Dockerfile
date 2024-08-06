@@ -1,4 +1,7 @@
+# syntax=docker/dockerfile:1
+
 ARG PHP_VERSION=8.3.2
+
 
 FROM php:${PHP_VERSION} AS backend-composer
 
@@ -68,7 +71,7 @@ EXPOSE 80
 
 #===============================
 
-FROM base as prod
+FROM base AS prod
 
 COPY docker/backend-entrypoint.sh /entrypoint.sh
 
@@ -76,7 +79,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 #===============================
 
-FROM prod as dev
+FROM prod AS dev
 
 WORKDIR /var/www/backend
 
