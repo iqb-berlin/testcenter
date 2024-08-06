@@ -17,7 +17,7 @@ php backend/initialize.php \
 expect_init_script_ok
 
 echo_h2 "Create massive data"
-php /var/www/backend/test/massive-test-data.php \
+php backend/test/massive-test-data.php \
 --workspaces=10 \
 --ttfiles_per_workspace=3 \
 --codes_per_login=30 \

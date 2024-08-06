@@ -2,21 +2,21 @@ test-backend-unit:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 	--rm --entrypoint "" \
 	testcenter-backend \
-		php -dxdebug.mode='debug' /var/www/backend/vendor/phpunit/phpunit/phpunit \
-			--bootstrap /var/www/backend/test/unit/bootstrap.php \
-			--configuration /var/www/backend/phpunit.xml \
-				/var/www/backend/test/unit/. \
+		php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit \
+			--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php \
+			--configuration /var/www/testcenter/backend/phpunit.xml \
+				/var/www/testcenter/backend/test/unit/. \
 
 
 test-backend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 	--rm --entrypoint "" \
 	testcenter-backend \
-		php -dxdebug.mode='coverage' /var/www/backend/vendor/phpunit/phpunit/phpunit \
-			--bootstrap /var/www/backend/test/unit/bootstrap.php \
-			--configuration /var/www/backend/phpunit.xml \
+		php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit \
+			--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php \
+			--configuration /var/www/testcenter/backend/phpunit.xml \
 			--coverage-html /docs/dist/test-coverage-backend-unit \
-				/var/www/backend/test/unit/. \
+				/var/www/testcenter/backend/test/unit/. \
 			--testdox
 
 test-backend-api:

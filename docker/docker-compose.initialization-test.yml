@@ -37,7 +37,7 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
-    entrypoint: [ "bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
+    entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
@@ -52,17 +52,17 @@ services:
       PORT: 80
       TLS_PORT: 443
     volumes:
-      - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/index.php:/var/www/backend/index.php
-      - ../backend/initialize.php:/var/www/backend/initialize.php
-      - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/src
-      - ../backend/test:/var/www/backend/test
-      - ../definitions:/var/www/definitions
+      - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
+      - ../backend/index.php:/var/www/testcenter/backend/index.php
+      - ../backend/initialize.php:/var/www/testcenter/backend/initialize.php
+      - ../backend/routes.php:/var/www/testcenter/backend/routes.php
+      - ../backend/src:/var/www/testcenter/backend/src
+      - ../backend/test:/var/www/testcenter/backend/test
+      - ../definitions:/var/www/testcenter/definitions
       - ../docs:/docs
-      - ../package.json:/var/www/package.original.json
-      - ../sampledata:/var/www/sampledata
-      - ../scripts/database:/var/www/scripts/database
+      - ../package.json:/var/www/testcenter/package.original.json
+      - ../sampledata:/var/www/testcenter/sampledata
+      - ../scripts/database:/var/www/testcenter/scripts/database
     depends_on:
       testcenter-initialization-test-db:
         condition: service_healthy
