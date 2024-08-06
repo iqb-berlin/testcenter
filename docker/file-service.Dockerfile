@@ -2,8 +2,10 @@
 
 FROM debian:bookworm-slim
 
-RUN apt-get update  \
-    && apt-get install -y nginx-extras luarocks
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    nginx-extras \
+    luarocks
 
 RUN unlink /etc/nginx/sites-enabled/default
 

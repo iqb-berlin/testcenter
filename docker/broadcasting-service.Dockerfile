@@ -7,7 +7,9 @@ FROM node:${NODE_VERSION} AS dev
 ARG NODE_ENV=development
 ENV DEV_MODE="true"
 
-RUN apt-get update && apt-get -y install procps # needed for webpack not to crash on file change
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    procps # needed for webpack not to crash on file change
 
 WORKDIR /app
 
@@ -17,7 +19,8 @@ RUN chown -R node:node /app
 
 USER node
 
-RUN npm install
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
+    npm install
 
 COPY broadcasting-service/src /app/src
 COPY common /common

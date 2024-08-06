@@ -9,6 +9,7 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm install --only=dev
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
+    npm install --only=dev
 
 RUN mkdir -p /app/tmp

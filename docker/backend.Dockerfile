@@ -6,7 +6,8 @@ ARG PHP_VERSION=8.3.2
 FROM php:${PHP_VERSION} AS backend-composer
 
 # PHP zip extension needs the following packages
-RUN apt-get update && apt-get install -y \
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
   zlib1g-dev \
   libzip-dev \
   unzip
@@ -17,23 +18,25 @@ RUN pecl install redis && docker-php-ext-enable redis
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
+WORKDIR /var/www/backend
+
 # even while this is a side-container, paths have to be the same as they will be in the final container,
 # because composer not only installs stuff but also creates a map of all classes for autoloading
-COPY backend/composer.json /var/www/backend/
-COPY backend/composer.lock /var/www/backend/
-COPY backend/src /var/www/backend/src
-COPY backend/test /var/www/backend/test
+COPY backend/composer.* .
+COPY backend/src ./src
+COPY backend/test ./test
 
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
-RUN cd /var/www/backend/ && COMPOSER_ALLOW_SUPERUSER=1 composer install --ignore-platform-req=ext-apache
+RUN --mount=type=cache,target=/tmp/cache \
+    composer install --ignore-platform-req=ext-apache
 
 VOLUME /vendor
 
-#===============================
 
 FROM php:${PHP_VERSION}-apache-bullseye AS base
-
-RUN apt-get update && apt-get install -y libzip-dev
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    libzip-dev
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
 RUN pecl install igbinary && docker-php-ext-enable igbinary
@@ -69,7 +72,6 @@ RUN chown -R www-data:www-data /var/www
 
 EXPOSE 80
 
-#===============================
 
 FROM base AS prod
 
@@ -77,7 +79,6 @@ COPY docker/backend-entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-#===============================
 
 FROM prod AS dev
 
@@ -93,4 +94,6 @@ COPY backend/test test
 
 # some initialization tests need this
 # jq - JSON parser for bash
-RUN apt-get update && apt-get install -y jq
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    jq
