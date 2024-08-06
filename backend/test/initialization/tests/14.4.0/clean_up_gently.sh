@@ -17,7 +17,7 @@ php backend/initialize.php \
 expect_init_script_ok
 
 echo_h2 "Create some data"
-php /var/www/backend/test/massive-test-data.php \
+php backend/test/massive-test-data.php \
   --workspaces=1 \
   --ttfiles_per_workspace=1 \
   --groups_per_ttfile=1 \

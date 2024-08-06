@@ -14,9 +14,9 @@ init:
 build:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml build $(service)
 
-# Starts the application.
+# Ramps the application up.
 # Hint: Stop local webserver before, to free port 80
-# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
+# Param: (optional) service - Only ramp up a specified service, e.g. `service=testcenter-backend`
 run:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
 
