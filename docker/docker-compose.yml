@@ -1,6 +1,5 @@
 # Base compose file defining services and their settings
 # For concrete images check the environment specific override files.
-version: '3.9'
 
 x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-no}"

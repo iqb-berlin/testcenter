@@ -1,6 +1,5 @@
 # Compose file for local development and testing. Images are built from
 # local directories which need to be cloned from the repository.
-version: '3.9'
 
 services:
   traefik:
