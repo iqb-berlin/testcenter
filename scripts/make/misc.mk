@@ -11,9 +11,9 @@ sync-package-files:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package.json frontend/package.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/node_modules frontend/node_modules
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package.json broadcasting-service/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package-lock.json broadcasting-service/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/node_modules broadcasting-service/node_modules
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/vendor backend
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
 
