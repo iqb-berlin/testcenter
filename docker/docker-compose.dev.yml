@@ -97,8 +97,8 @@ services:
       tags:
         - iqbberlin/testcenter-broadcasting-service:dev
     volumes:
-      - ../common:/common
-      - ../broadcasting-service/src:/app/src
+      - ../common:/usr/src/testcenter/common
+      - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
       - ../docs/dist:/docs/dist
     networks:
       - testcenter
