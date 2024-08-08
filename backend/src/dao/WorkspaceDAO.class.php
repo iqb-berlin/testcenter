@@ -605,6 +605,17 @@ class WorkspaceDAO extends DAO {
     );
   }
 
+  public function getWorkspaceContentType(string $type): bool
+  {
+    return (bool) $this->_(
+      "select count(*) from workspaces where id = :ws_id and workspaces.content_type != :type",
+      [
+        ':ws_id' => $this->workspaceId,
+        ':type' => $type
+      ],
+    );
+  }
+
   public function fetchDependenciesForFile(string $name): ?array {
     return $this->_(
       "

@@ -202,4 +202,23 @@ class SessionController extends Controller {
     // nothing to do for login-sessions; they have constant token as they are only the first step of 2f-auth
     return $response->withStatus(205);
   }
+
+  public static function showSysChecksForSession(Request $request, Response $response): Response {
+    $authToken = self::authToken($request);
+
+    if ($authToken->getType() == "person") {
+      $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+      $workspace = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+
+      $workspaceCanShowSysChecks = $workspace->getWorkspaceContentType('test');
+      if (!$workspaceCanShowSysChecks) {
+        return $response->withStatus(204, "Not allowed to show system checks.");
+      }
+
+      return $response->withJson($workspaceCanShowSysChecks);
+    }
+
+    throw new HttpUnauthorizedException($request);
+  }
+
 }
