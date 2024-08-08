@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:bookworm-slim
+ARG REGISTRY_PATH=""
+FROM ${REGISTRY_PATH}debian:bookworm-slim
 
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
