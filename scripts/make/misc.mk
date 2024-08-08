@@ -8,9 +8,9 @@ run-task-runner:
 # Copies files from the containers to local. This is useful for development in an IDE environment.
 # Container must be run at least once!
 sync-package-files:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package.json frontend/package.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/node_modules frontend/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/package.json frontend/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/package-lock.json frontend/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/node_modules frontend/node_modules
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package.json broadcasting-service/package.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package-lock.json broadcasting-service/package-lock.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/node_modules broadcasting-service/node_modules

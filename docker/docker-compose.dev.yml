@@ -72,9 +72,9 @@ services:
       tags:
         - iqbberlin/testcenter-frontend:dev
     volumes:
-      - ../common:/common
-      - ../definitions:/definitions
-      - ../frontend/src:/app/src
+      - ../common:/usr/src/testcenter/common
+      - ../definitions:/usr/src/testcenter/definitions
+      - ../frontend/src:/usr/src/testcenter/frontend/src
       - ../docs/dist:/docs/dist
     networks:
       - testcenter
