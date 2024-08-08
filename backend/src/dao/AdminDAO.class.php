@@ -660,6 +660,6 @@ class AdminDAO extends DAO {
   }
 
   public function isWSwithNoTestExist(): bool {
-    return $this->_('select count(*) from workspaces where content_type != "test"') == 'true';
+    return $this->_("select count(*) from workspaces where content_type != 'test'") == 'true';
   }
 }

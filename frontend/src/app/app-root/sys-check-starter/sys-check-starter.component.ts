@@ -20,7 +20,7 @@ export class SysCheckStarterComponent implements OnInit {
     setTimeout(() => {
       this.mainDataService.appSubTitle$.next('System-Check Auswahl');
       this.loading = true;
-      this.bs.getSysCheckInfo().subscribe(myConfigs => {
+      this.bs.getSysCheckInfosAcrossWorkspaces().subscribe(myConfigs => {
         this.checkConfigList = myConfigs || [];
         this.loading = false;
       });

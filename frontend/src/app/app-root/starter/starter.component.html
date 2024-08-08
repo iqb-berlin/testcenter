@@ -95,9 +95,16 @@
           </div>
         </a>
 
-        <ng-container *ngIf="!mds.sysCheckAvailableForAll">
-          <h4 *ngIf="!this.mds.sysCheckAvailableForAll">System-Check</h4>
-          <a *ngIf="!this.mds.sysCheckAvailableForAll" mat-raised-button color="primary" [routerLink]="['/r/check-starter']"></a>
+        <ng-container *ngIf="sessionHasSysCheck">
+          <h4>System-Check</h4>
+          <a
+            mat-raised-button
+            class="starter"
+            color="primary"
+            [routerLink]="['/r/check-starter']"
+          >
+            <div class="starter-title">System Check</div>
+          </a>
         </ng-container>
       </div>
       <tc-alert
