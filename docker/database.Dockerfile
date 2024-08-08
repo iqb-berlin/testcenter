@@ -1,9 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM mysql:8.0
+ARG REGISTRY_PATH=""
+FROM ${REGISTRY_PATH}mysql:8.0
 
-COPY ../scripts/database/my.cnf /etc/mysql/conf.d/my.cnf
-
-RUN chmod 444 /etc/mysql/conf.d/my.cnf
+COPY --chmod=444 ../scripts/database/my.cnf /etc/mysql/conf.d/my.cnf
 
 USER mysql
