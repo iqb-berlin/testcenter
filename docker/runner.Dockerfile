@@ -1,15 +1,18 @@
 # syntax=docker/dockerfile:1
 
-FROM node:16.19-bullseye
+ARG REGISTRY_PATH=""
+FROM ${REGISTRY_PATH}node:lts-bookworm
 
-ARG NODE_ENV=development
+WORKDIR /usr/src/testcenter/task-runner
+RUN mkdir tmp
 
-WORKDIR /app
+# Update npm to latest version
+RUN npm --version
+RUN --mount=type=cache,target=~/.npm \
+    npm install -g --no-fund npm
+RUN npm --version
 
-COPY package.json .
-COPY package-lock.json .
-
-RUN --mount=type=cache,sharing=locked,target=~/.npm \
-    npm install --only=dev
-
-RUN mkdir -p /app/tmp
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,sharing=locked,target=~/.npm \
+    npm ci --include=dev --no-fund
