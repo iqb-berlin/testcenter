@@ -22,8 +22,8 @@ services:
       - CYPRESS_baseUrl=http://testcenter-frontend:4200
     entrypoint: sh -c "cypress run --browser chrome"
     volumes:
-      - ../e2e/cypress:/app/cypress
-      - ../e2e/cypress.e2e.config.js:/app/cypress.config.js
-      - ../sampledata:/sampledata
+      - ../e2e/cypress:/usr/src/testcenter/e2e/cypress
+      - ../e2e/cypress.e2e.config.js:/usr/src/testcenter/e2e/cypress.config.js
+      - ../sampledata:/usr/src/testcenter/sampledata
     networks:
       - testcenter
