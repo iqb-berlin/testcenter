@@ -590,7 +590,8 @@ class SessionDAO extends DAO {
    */
   public function getGroupMonitors(PersonSession $personSession): array {
     switch ($personSession->getLoginSession()->getLogin()->getMode()) {
-      default: return [];
+      default:
+        return [];
       case 'monitor-group':
         return [
           new Group(
@@ -684,7 +685,7 @@ class SessionDAO extends DAO {
       $filterSQL
     order by id";
 
-    $result = $this->_($sql, $replacements,true);
+    $result = $this->_($sql, $replacements, true);
 
     foreach ($result as $row) {
       $logins[] =

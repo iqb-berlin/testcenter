@@ -44,8 +44,12 @@ export class BackendService {
       );
   }
 
-  getSysCheckInfo(): Observable<SysCheckInfo[]> {
+  getSysCheckInfosAcrossWorkspaces(): Observable<SysCheckInfo[]> {
     return this.http
       .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`);
+  }
+
+  getSysCheckInfosForSessionWorkspace(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.serverUrl}session-sys-checks`);
   }
 }

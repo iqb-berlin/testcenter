@@ -3,6 +3,14 @@ layout: default
 ---
 
 ## [next]
+### neues Feature
+* Es gibt in der Testtakers.xml einen neuen Modus 'sys-check-login'. Wenn es innerhalb einer Testcenter Instanz mind. 
+  ein Login mit diesem Modus gibt, so wird auf der Login-Seite '/r/login' der Button für die Sys-Checks ausgeblendet. 
+  Die Sys-Checks erscheinen dann nur noch nach dem Login, wenn man sich in demselben Workspace eingeloggt hat, indem 
+  sich auch das Login mit dem Modus 'sys-check-login' befindet. Gibt es innerhalb einer Testcenter Instanz kein Login
+  mit dem Modus 'sys-check-login', bleibt das alte Verhalten bestehen.
+
+
 ### Bugfix
 * Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
 

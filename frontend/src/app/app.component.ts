@@ -68,9 +68,9 @@ export class AppComponent implements OnInit, OnDestroy {
         });
 
       // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
-      this.backendService.getSysCheckInfo()
+      this.backendService.getSysCheckInfosAcrossWorkspaces()
         .subscribe(sysCheckConfigs => {
-          this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
+          this.mainDataService.sysCheckAvailableForAll = !!sysCheckConfigs;
         });
     });
   }

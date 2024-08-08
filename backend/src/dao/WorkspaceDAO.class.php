@@ -572,4 +572,16 @@ class WorkspaceDAO extends DAO {
       [':hash' => $hash, ':ws_id' => $this->workspaceId]
     );
   }
+
+  public function getWorkspaceContentType(string $type): bool
+  {
+    return (bool) $this->_(
+      "select count(*) from workspaces where id = :ws_id and workspaces.content_type != :type",
+      [
+        ':ws_id' => $this->workspaceId,
+        ':type' => $type
+      ],
+    );
+  }
+
 }
