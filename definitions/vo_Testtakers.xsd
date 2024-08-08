@@ -96,7 +96,9 @@
                         <xs:enumeration value="sys-check-login">
                           <xs:annotation>
                             <xs:documentation>
-                              This role can enable the system check to only be enabled after login.
+                              If this role is given once within a testcenter instance, the system check will be removed
+                              from the login-page and can only be accessed after logging into the workspace where this
+                              role exists.
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>

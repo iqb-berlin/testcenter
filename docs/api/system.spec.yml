@@ -298,6 +298,20 @@ paths:
         "500":
           description: Server Error
 
+  /session-sys-checks:
+    get:
+      summary: get info on weather this session can show system checks
+      description: get a boolean, showing weather this session will show a button to execute the sys-check
+      tags:
+        - ask for system check
+      responses:
+        "200":
+          description: boolean if to show or not
+          content:
+            application/json:
+              schema:
+                type: boolean
+
   /sys-checks:
     get:
       summary: get a list of system checks
