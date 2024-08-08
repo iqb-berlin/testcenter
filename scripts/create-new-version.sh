@@ -54,7 +54,6 @@ docker build --target prod -t "iqbberlin/testcenter-backend:$VERSION" -f docker/
 docker build --target prod -t "iqbberlin/testcenter-frontend:$VERSION" -f docker/frontend.Dockerfile .
 docker build --target prod -t "iqbberlin/testcenter-broadcasting-service:$VERSION" -f docker/broadcasting-service.Dockerfile .
 docker build -t "iqbberlin/testcenter-file-service:$VERSION" -f docker/file-service.Dockerfile .
-docker build -t "iqbberlin/testcenter-db:$VERSION" -f docker/database.Dockerfile .
 
 docker login -u "iqbberlin4cicd"
 
@@ -62,6 +61,5 @@ docker push iqbberlin/testcenter-backend:$VERSION
 docker push iqbberlin/testcenter-frontend:$VERSION
 docker push iqbberlin/testcenter-broadcasting-service:$VERSION
 docker push iqbberlin/testcenter-file-service:$VERSION
-docker push iqbberlin/testcenter-db:$VERSION
 
 echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".

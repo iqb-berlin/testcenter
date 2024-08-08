@@ -55,9 +55,3 @@ services:
       dockerfile: docker/file-service.Dockerfile
     labels:
       - "traefik.http.routers.testcenter-file-service.tls=true"
-
-  testcenter-db:
-    image: iqbberlin/testcenter-db:current
-    build:
-      context: ..
-      dockerfile: docker/database.Dockerfile

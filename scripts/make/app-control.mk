@@ -2,8 +2,7 @@
 init:
 	cp docker/default.env docker/.env
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-	chmod 0444 scripts/database/my.cnf # mysql does not accept it with more rights
-	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
+	chmod 0755 scripts/database/000-create-test-db.sh
 	mkdir -p docs/dist
 	chmod 777 docs/dist
 	mkdir -p data

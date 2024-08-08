@@ -10,21 +10,15 @@ services:
       - testcenter
 
   testcenter-db:
-    build:
-      context: ..
-      dockerfile: docker/database.Dockerfile
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-db
-      tags:
-        - iqbberlin/testcenter-db
     ports:
       - "9091:3306"
     command:
-      - --log_error_verbosity=2
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=2"
     volumes:
-      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     networks:
       - testcenter

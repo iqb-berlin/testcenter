@@ -4,9 +4,13 @@
 
 services:
   testcenter-db:
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-db:${VERSION}
+    image: ${DOCKERHUB_PROXY}mysql:8.0
     command:
-      - --log_error_verbosity=1
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"
 
   testcenter-backend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}

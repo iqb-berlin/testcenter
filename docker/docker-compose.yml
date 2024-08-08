@@ -31,7 +31,7 @@ services:
   testcenter-db:
     <<: *restart-policy
     container_name: testcenter-db
-    image: iqbberlin/testcenter-db:current
+    image: ${DOCKERHUB_PROXY}mysql:8.0
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

@@ -12,15 +12,19 @@ x-env-mysql: &env-mysql
 services:
 
   testcenter-initialization-test-db:
-    image: iqbberlin/testcenter-db
+    image: ${DOCKERHUB_PROXY}mysql:8.0
+    command:
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"
     container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     user: root
-    command:
-      - --log_error_verbosity=1
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 1s
