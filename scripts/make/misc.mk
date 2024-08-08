@@ -43,8 +43,8 @@ create-interfaces:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run --name=testcenter-task-runner \
 		testcenter-task-runner npx --yes update-browserslist-db@latest && npm run create-interfaces
 	# can not  use compose here https://github.com/docker/compose/issues/8467
-	docker cp testcenter-task-runner:/app/package.json ./package.json
-	docker cp testcenter-task-runner:/app/package-lock.json ./package-lock.json
+	docker cp testcenter-task-runner:/usr/src/testcenter/task-runner/package.json ./package.json
+	docker cp testcenter-task-runner:/usr/src/testcenter/task-runner/package-lock.json ./package-lock.json
 
 composer-install:
 	docker run --rm --interactive --tty\

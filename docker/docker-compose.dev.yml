@@ -131,19 +131,19 @@ services:
       context: ..
       dockerfile: docker/runner.Dockerfile
     volumes:
-      - ../README.md:/app/README.md
-      - ../broadcasting-service:/app/broadcasting-service
-      - ../common:/app/common
-      - ../definitions:/app/definitions
-      - ../dist-src:/app/dist-src
-      - ../dist:/app/dist
-      - ../docker/docker-compose.yml:/app/docker-compose.yml
-      - ../docs:/app/docs
-      - ../frontend:/app/frontend
-      - ../package.json:/app/package.json
-      - ../sampledata:/app/sampledata
-      - ../scripts:/app/scripts
-      - ../test/api:/app/test/api
-      - ../test/config.docker.json:/app/test/config.json
+      - ../README.md:/usr/src/testcenter/task-runner/README.md
+      - ../broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
+      - ../common:/usr/src/testcenter/task-runner/common
+      - ../definitions:/usr/src/testcenter/task-runner/definitions
+      - ../dist-src:/usr/src/testcenter/task-runner/dist-src
+      - ../dist:/usr/src/testcenter/task-runner/dist
+      - ../docker/docker-compose.yml:/usr/src/testcenter/task-runner/docker-compose.yml
+      - ../docs:/usr/src/testcenter/task-runner/docs
+      - ../frontend:/usr/src/testcenter/task-runner/frontend
+      - ../package.json:/usr/src/testcenter/task-runner/package.json
+      - ../sampledata:/usr/src/testcenter/task-runner/sampledata
+      - ../scripts:/usr/src/testcenter/task-runner/scripts
+      - ../test/api:/usr/src/testcenter/task-runner/test/api
+      - ../test/config.docker.json:/usr/src/testcenter/task-runner/test/config.json
     networks:
       - testcenter
