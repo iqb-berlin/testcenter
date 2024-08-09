@@ -129,7 +129,7 @@ services:
       - task-runner
     build:
       context: ..
-      dockerfile: docker/runner.Dockerfile
+      dockerfile: docker/task-runner.Dockerfile
     volumes:
       - ../README.md:/usr/src/testcenter/task-runner/README.md
       - ../broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service

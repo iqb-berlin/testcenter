@@ -82,7 +82,7 @@ services:
       - dredd_test_against_mysql
     build:
       context: ..
-      dockerfile: docker/runner.Dockerfile
+      dockerfile: docker/task-runner.Dockerfile
     command: "npm run backend:api-test"
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
