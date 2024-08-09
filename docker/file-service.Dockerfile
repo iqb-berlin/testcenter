@@ -1,7 +1,12 @@
-FROM debian:bookworm-slim
+# syntax=docker/dockerfile:1
 
-RUN apt-get update  \
-    && apt-get install -y nginx-extras luarocks
+ARG REGISTRY_PATH=""
+FROM ${REGISTRY_PATH}debian:bookworm-slim
+
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    nginx-extras \
+    luarocks
 
 RUN unlink /etc/nginx/sites-enabled/default
 

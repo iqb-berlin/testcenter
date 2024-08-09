@@ -14,8 +14,8 @@ sync-package-files:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/vendor backend
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/composer.lock backend/composer.lock
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/vendor backend
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
 
 update-docs:
 	make docs-frontend-compodoc
@@ -49,45 +49,45 @@ create-interfaces:
 composer-install:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
+		-v $(CURDIR)/backend/composer.json:/var/www/testcenter/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/testcenter/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/testcenter/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/testcenter/backend/src \
 		testcenter-backend-composer \
 		composer install --no-interaction --no-ansi
 
 composer-update:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
+		-v $(CURDIR)/backend/composer.json:/var/www/testcenter/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/testcenter/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/testcenter/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/testcenter/backend/src \
 		testcenter-backend-composer \
-		composer update --no-interaction --no-ansi --working-dir=/var/www/backend
+		composer update --no-interaction --no-ansi --working-dir=/var/www/testcenter/backend
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.
 backend-refresh-autoload:
 	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
-		-v $(CURDIR)/backend/test:/var/www/backend/test \
+		-v $(CURDIR)/backend/composer.json:/var/www/testcenter/backend/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/var/www/testcenter/backend/composer.lock \
+		-v $(CURDIR)/backend/vendor:/var/www/testcenter/backend/vendor \
+		-v $(CURDIR)/backend/src:/var/www/testcenter/backend/src \
+		-v $(CURDIR)/backend/test:/var/www/testcenter/backend/test \
 		testcenter-backend-composer \
-		composer dump-autoload --working-dir=/var/www/backend
+		composer dump-autoload --working-dir=/var/www/testcenter/backend
 
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
  		--rm --entrypoint="" \
  		testcenter-backend \
- 		php /var/www/backend/test/update-sql-scheme.php
+    php /var/www/testcenter/backend/test/update-sql-scheme.php
 	make run-task-runner task="new-version $(version)"
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/backend/initialize.php
+	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
 
 # Use this param to only show issues which can be solved by updating
 #--ignore-unfixed

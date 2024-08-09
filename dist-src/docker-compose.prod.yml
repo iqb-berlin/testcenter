@@ -1,7 +1,6 @@
 #  Compose file for production environment. Images are NOT locally built but
 #  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
 #  communication.
-version: '3.9'
 
 services:
   testcenter-db:
@@ -12,7 +11,7 @@ services:
   testcenter-backend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
     volumes:
-      - testcenter_backend_vo_data:/var/www/data
+      - testcenter_backend_vo_data:/var/www/testcenter/data
 
   testcenter-frontend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}

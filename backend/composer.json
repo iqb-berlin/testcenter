@@ -28,14 +28,17 @@
     "ext-xmlreader": "*",
     "ext-zip": "*"
   },
-  "autoload": {
-    "classmap": ["src", "test/unit/test-helper"]
-  },
   "require-dev": {
     "amphp/parallel": "2.2.2",
     "mikey179/vfsstream": "1.6.11",
     "phpunit/phpunit":  "10.4.2",
     "mockery/mockery": "1.6.6",
     "ext-pcntl" : "*"
+  },
+  "autoload": {
+    "classmap": ["src"]
+  },
+  "autoload-dev": {
+    "classmap": ["test/unit/test-helper"]
   }
 }

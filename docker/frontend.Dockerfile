@@ -1,42 +1,49 @@
-ARG NODE_VERSION=20.10.0-bookworm-slim
+# syntax=docker/dockerfile:1
 
-FROM node:${NODE_VERSION} as dev
+ARG REGISTRY_PATH=""
+ARG NODE_VERSION=20.10.0-bookworm
 
+
+FROM ${REGISTRY_PATH}node:${NODE_VERSION} AS base
 ARG NODE_ENV=development
 
-RUN apt update && apt install -y chromium
+RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    apt-get update && apt-get install -y --no-install-recommends \
+    chromium
 
-WORKDIR /app
+# Update npm to latest version
+RUN npm --version
+RUN --mount=type=cache,target=~/.npm \
+    npm install -g --no-fund npm
+RUN npm --version
 
-COPY frontend/package*.json ./
+WORKDIR /usr/src/testcenter/frontend
 
-RUN chown -R node:node /app
-
-USER node
-
-RUN npm install
+COPY frontend/package*.json .
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
+    npm ci --no-fund
 
 COPY frontend/angular.json .
 COPY frontend/tsconfig.json .
-COPY frontend/src /app/src
-COPY common /common
-COPY definitions /definitions
+COPY frontend/src src/
+COPY common ../common
+COPY definitions ../definitions
 
+RUN --mount=type=cache,sharing=locked,target=~/.angular/cache \
+    npx ng build \
+      --configuration production \
+      --output-path=dist \
+      --output-hashing all
+
+
+FROM base AS dev
 EXPOSE 4200
 
 CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--host", "0.0.0.0"]
 
-#===================================
 
-FROM dev as builder
-
-RUN npx ng build --configuration production --output-path=dist --output-hashing all
-
-#===================================
-
-FROM nginx:1.25 as prod
-
-COPY --from=builder /app/dist /usr/share/nginx/html
+FROM ${REGISTRY_PATH}nginx:1.25 AS prod
+COPY --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
 COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
