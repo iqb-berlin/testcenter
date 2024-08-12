@@ -75,7 +75,7 @@ class WorkspaceDAO extends DAO {
   public function addLoginSource(string $source, LoginArray $logins): int {
 
     // one source could contain 10ks of logins. For the sake of performance we use one statement to insert them all
-    // and plain foreach and string-concatenation to build teh query.
+    // and plain foreach and string-concatenation to build the query.
 
     $sql = 'insert into logins (
       name,
@@ -120,6 +120,9 @@ class WorkspaceDAO extends DAO {
     $sql = rtrim($sql, ",");
 
     $this->_($sql, [], true);
+
+    $this->checkForSysCheckMode($logins);
+
     return count($logins->asArray());
   }
 
@@ -605,15 +608,28 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  public function getWorkspaceContentType(string $type): bool
+  public function isWorkspaceContentType(string $type): bool
   {
-    return (bool) $this->_(
-      "select count(*) from workspaces where id = :ws_id and workspaces.content_type != :type",
+    return $this->_(
+      "select count(*) as count from workspaces where id = :ws_id and workspaces.content_type = :type",
       [
         ':ws_id' => $this->workspaceId,
         ':type' => $type
       ],
-    );
+    )['count'] > 0;
+  }
+
+  private function checkForSysCheckMode(LoginArray $logins) {
+    /** @var Login $login */
+    foreach ($logins as $login) {
+      if ($login->getMode() == 'sys-check-login') {
+        $this->_(
+          "update workspaces set content_type = 'sysCheck' where id = :ws_id",
+          [':ws_id' => $this->workspaceId],
+          true
+        );
+      }
+    }
   }
 
   public function fetchDependenciesForFile(string $name): ?array {

@@ -44,12 +44,17 @@ export class BackendService {
       );
   }
 
+  checkIfSysCheckModeExists(): Observable<boolean> {
+    return this.http
+      .get<boolean>(`${this.serverUrl}sys-check-mode`);
+  }
+
   getSysCheckInfosAcrossWorkspaces(): Observable<SysCheckInfo[]> {
     return this.http
       .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`);
   }
 
   getSysCheckInfosForSessionWorkspace(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.serverUrl}session-sys-checks`);
+    return this.http.get<boolean>(`${this.serverUrl}session/sys-checks`);
   }
 }

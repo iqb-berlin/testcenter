@@ -590,8 +590,7 @@ class SessionDAO extends DAO {
    */
   public function getGroupMonitors(PersonSession $personSession): array {
     switch ($personSession->getLoginSession()->getLogin()->getMode()) {
-      default:
-        return [];
+      default: return [];
       case 'monitor-group':
         return [
           new Group(

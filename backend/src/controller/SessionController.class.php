@@ -210,7 +210,7 @@ class SessionController extends Controller {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $workspace = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId());
 
-      $workspaceCanShowSysChecks = $workspace->getWorkspaceContentType('test');
+      $workspaceCanShowSysChecks = !$workspace->isWorkspaceContentType('test');
       if (!$workspaceCanShowSysChecks) {
         return $response->withStatus(204, "Not allowed to show system checks.");
       }

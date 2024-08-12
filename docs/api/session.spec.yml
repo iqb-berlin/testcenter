@@ -242,3 +242,24 @@ paths:
           description: Session Expired
         "500":
           description: Server Error
+
+  /session/sys-checks:
+    get:
+      summary: get info on weather this session can show system checks
+      description: get a boolean, showing weather this session will show a button to execute the sys-check
+      tags:
+        - ask for system check
+      parameters:
+        - in: header
+          name: AuthToken
+          examples:
+            personToken:
+              description: auth-token for person
+              value: "p:0000000000000.00000000000"
+      responses:
+        "200":
+          description: boolean if to show or not
+          content:
+            application/json:
+              schema:
+                type: boolean
