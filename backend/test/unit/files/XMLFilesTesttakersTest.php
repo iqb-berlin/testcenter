@@ -267,6 +267,21 @@ END;
         0,
         (object) ["somestr" => "string"],
       ),
+      new Login(
+        'sys-check',
+        '',
+        'sys-check-login',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          '' => []
+        ],
+        -1,
+        0,
+        1583053200,
+        0,
+        (object) ["somestr" => "string"],
+      ),
       new Login (
         'test-study-monitor',
         'user123',
