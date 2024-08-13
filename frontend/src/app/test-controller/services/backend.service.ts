@@ -82,11 +82,11 @@ export class BackendService {
     }
   }
 
-  updateDataParts(testId: string, unitId: string, OriginalUnitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
+  updateDataParts(testId: string, unitId: string, originalUnitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
     const timeStamp = Date.now();
     return this.http
       .put(`${this.backendUrl}test/${testId}/unit/${unitId}/response`, {
-        timeStamp, dataParts, OriginalUnitId, responseType
+        timeStamp, dataParts, originalUnitId, responseType
       })
       .subscribe();
   }

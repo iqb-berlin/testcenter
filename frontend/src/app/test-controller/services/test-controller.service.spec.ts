@@ -20,14 +20,14 @@ const uploadedStates: UnitStateUpdate[] = [];
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
-    testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
+    testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
     uploadedData.push({ unitDbKey, dataParts, unitStateDataType });
     return of(true);
   }
 
   // eslint-disable-next-line class-methods-use-this
-  updateUnitState(testId: string, unitDbKey: string, state: StateReportEntry[]): Subscription {
+  updateUnitState(testId: string, unitDbKey: string, originalUnitId: string, state: StateReportEntry[]): Subscription {
     uploadedStates.push({ unitDbKey, state });
     return of(true).subscribe();
   }
