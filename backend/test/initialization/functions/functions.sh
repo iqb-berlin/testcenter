@@ -136,12 +136,12 @@ function create_sample_folder() {
 
 # param 1: patch-version
 # param 2: patch-content
-function create_fake_patch() {
+function create_patch() {
   echo "$2" > "scripts/database/patches.d/$1.sql"
 }
 
 function remove_patch() {
-  rm "scripts/database/patches.d/$1.sql"
+  rm -f "scripts/database/patches.d/$1.sql"
 }
 
 # param 1: workspace-id
@@ -155,5 +155,5 @@ function run() {
 }
 
 function remove_error_lock() {
-  rm "backend/config/error.lock"
+  rm -f "backend/config/error.lock"
 }
