@@ -44,17 +44,23 @@ class InitDAO extends SessionDAO {
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
     $test = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', 'Sample Booklet 1');
     $testDAO->setTestRunning($test->id);
-    $testDAO->addTestReview($test->id, 1, "", "sample booklet review", 'Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0');
+    $testDAO->addTestReview(
+      $test->id,
+      1,
+      "content",
+      "luigi: sample booklet review",
+      'Firefox/126.0'
+    );
     $testDAO->addUnitReview(
       $test->id,
       "UNIT.SAMPLE",
       1,
-      "",
-      "this is a sample unit review",
-      'Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0',
-      '',
-      null,
-      null,
+      "content",
+      "mario: this is a sample unit review",
+      'Firefox/126.0',
+      "UNIT.SAMPLE",
+      1,
+      'page-1',
     );
     $testDAO->addUnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp);
     $testDAO->addTestLog($test->id, "sample log entry", $timestamp);
