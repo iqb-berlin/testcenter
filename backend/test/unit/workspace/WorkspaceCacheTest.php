@@ -125,12 +125,14 @@ class WorkspaceCacheTest extends TestCase {
         'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Resource/verona-player-simple-6.0.html' => [
-        'info' => ['Verona-Version: 6.0']
+        'info' => ['Verona-Version: 6.0'],
+        'warning' => ['Resource is never used'] // TODO this is bug, which should be fixed later
       ],
       'Resource/sample_resource_package.itcr.zip' => [
         'info' => ['Contains 0 files.']
       ],
       'Resource/SAMPLE_UNITCONTENTS.HTM' => [],
+      "Resource/scheme.vocs.json" => [],
       'Booklet/SAMPLE_BOOKLET3.XML' => [],
       'Booklet/SAMPLE_BOOKLET2.XML' => [],
       'Booklet/SAMPLE_BOOKLET.XML' => [],

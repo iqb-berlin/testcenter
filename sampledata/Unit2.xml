@@ -7,7 +7,7 @@
   </Metadata>
 
   <Definition
-    player="verona-player-simple-5.1"
+    player="verona-player-simple-6-0"
     type="this-should-trigger-a-deprecation-warning"
   ><![CDATA[
     <div style="display: flex; justify-content: center; align-items: center; height: 90%;">
