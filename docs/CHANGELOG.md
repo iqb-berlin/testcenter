@@ -7,6 +7,7 @@ layout: default
 * Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
 
 ### Verbesserungen
+* Nach dem Speichern eines SysCheck-Berichts wird ein deutliches Feedback gegeben, dass der Bericht gespeichert wurde. 
 * Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
   haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
   haben, so wird kein Datein-Import durchgeführt. Dies beschleunigt die Arbeit in der Entwicklung und auch beim Pflegen
