@@ -2,11 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-  <title>Simple Verona Player 5</title>
-========
   <title>Simple Verona Player 6.0</title>
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
   <script type="application/ld+json">
     {
@@ -19,13 +15,8 @@
           "lang": "en"
         }
       ],
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-      "version": "5.1.0",
-      "specVersion": "5.1",
-========
       "version": "6.0.0",
       "specVersion": "6.0",
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
       "description": [
         {
           "value": "This is a simple, dependency-less, vanilla-js-written, but full-featured unit player, mainly as showcase for developers and for software-testing. It does implement the Verona 4.0.0-Standard and can be used for units containing simple any content in HTML-format. Unit Description ist the <code>form</code>-content as HTML. Just give some names to the form element, and the player does the rest. Use some special Ids for some special buttons.",
@@ -66,10 +57,7 @@
       margin: 0 9em;
     }
 
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-========
     #unit.paged.buttons,
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
     #unit.paged.separate {
       overflow-y: auto;
       height: 100vh;
@@ -79,10 +67,7 @@
       display: block
     }
 
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-========
     #unit.paged.buttons fieldset,
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
     #unit.paged.separate fieldset {
       overflow-y: auto;
       height: calc(100% - 100px);
@@ -159,62 +144,6 @@
       color: grey;
     }
 
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-    vsp-pointer {
-      position: absolute;
-      height: 30px;
-      width: 30px;
-    }
-
-    vsp-pointer:after {
-      position: relative;
-      line-height: 25px;
-      text-shadow: 0 0 5px rgba(0,0,0,0.75);
-      display: inline-block;
-      filter: blur(4px);
-      opacity: 0;
-      transform: scale(2);
-      transform-origin: center;
-      animation: flyin 0.5s ease forwards;
-      font-size: 30px;
-      content: "►";
-    }
-
-    vsp-message-close {
-      position: absolute;
-      right: 5px;
-      top: 2px;
-      cursor: pointer;
-    }
-
-    .vsp-navigation-tier button:hover,
-    vsp-message-close:hover {
-      color: grey
-    }
-
-    .vsp-navigation-tier button:disabled {
-      box-shadow: 0 0 5px 0 rgba(100, 100, 100, 0.75);
-      background: rgba(0, 0, 0, 0.75);
-      color: grey;
-      cursor: auto;
-    }
-
-    #vsp-meta dl dd {
-      display: inline;
-      margin: 0;
-    }
-
-    #vsp-meta dl dd:after {
-      display: block;
-      content: '';
-    }
-
-    #vsp-meta dl dt {
-      display: inline-block;
-      min-width: 250px;
-    }
-
-========
     vsp-message.error {
       background: rgba(150, 0, 0, 0.75);
     }
@@ -273,7 +202,6 @@
       min-width: 250px;
     }
 
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
     @keyframes flyin {
       to {
         filter: blur(0);
@@ -287,11 +215,7 @@
       size: A4 landscape;
       margin: 15pt;
     }
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-    html, body, #unit.paged.separate, #unit {
-========
     html, body, #unit.paged.separate, #unit.paged.buttons, #unit {
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
       height: auto;
     }
     vsp-message,
@@ -352,13 +276,8 @@
 </form>
 
 <script>
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-  const unitStateDataType = "iqb-standard@1.0";
-  const unitDefinitionType = "verona-player-simple-5.1";
-========
   const unitStateDataType = "iqb-standard@1.3";
   const unitDefinitionType = "verona-player-simple-6.0";
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
   // some polyfills
   (function polyfillReactionToProgrammaticallyChangedInputValue() {
@@ -408,11 +327,7 @@
     unitTitle: 'Unit',
     unitId: 'unit',
     enabledNavigationTargets: [], // can contain  "next" "previous" "first" "last" "end"
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-    pagingMode: "separate", // "separate" | "concat-scroll" | "concat-scroll-snap",
-========
     pagingMode: "buttons", // "separate" | "concat-scroll" | "concat-scroll-snap" | "buttons"
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
     printMode: "off",
     startPage: null,
     directDownloadUrl: null
@@ -530,6 +445,7 @@
       }
 
       _send = msg => {
+        console.log(msg);
         window.parent.postMessage(msg, '*');
         document.dispatchEvent(new CustomEvent('sent:' + msg.type, {detail: msg}));
       }
@@ -583,11 +499,7 @@
       if (type === "vopStartCommand") {
         Unit.start(data);
       } else if (sessionId && (data.sessionId !== sessionId)) {
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-        throw new Error("Wrong sessionId " + type);
-========
         throw new VspRuntimeError('wrong-session-id', `Wrong Session-Id: '${sessionId}' (was: '${sessionId}').`);
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
       }
       document.dispatchEvent(new CustomEvent(type, {detail: data}));
     };
@@ -641,10 +553,6 @@
       this._setUnitData(data.unitState || {});
 
       PlayerUI.togglePrintMode();
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-
-========
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
       PlayerUI.toggleUnitNavButtons();
       PlayerUI.togglePageNavButtons();
     };
@@ -738,10 +646,7 @@
 
   const Answers = new class {
     status = {};
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-========
     _observers = [];
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
 
     get = () => {
       const formData = new FormData(document.querySelector("form"));
@@ -825,10 +730,7 @@
     }
 
     prepare = () => {
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-========
       this._cleanObservers();
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
       document.querySelectorAll(PlayerUI.itemElements)
         .forEach(elem => {
           Answers.status[elem.getAttribute('name') || ''] = 'NOT_REACHED';
@@ -837,11 +739,7 @@
     }
 
     _newObserver = elem => {
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-      new IntersectionObserver(
-========
       const observer = new IntersectionObserver(
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
         entries => {
           if (entries[0].isIntersecting) {
             const id = elem.getAttribute('name') || '';
@@ -849,26 +747,19 @@
             Message.send.vopStateChangedNotification();
           }
         }
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-      ).observe(elem);
-========
       );
       observer.observe(elem);
       this._observers.push(observer);
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
     }
 
     setStatusChanged = event => {
       Answers.status[event.target.getAttribute('name') || ''] = 'VALUE_CHANGED';
     }
-<<<<<<<< HEAD:sampledata/verona-player-simple-5.1.html
-========
 
     _cleanObservers = () => {
       this._observers.forEach(observer => observer.disconnect());
       this._observers.length = 0;
     }
->>>>>>>> master:sampledata/verona-player-simple-6.0.html
   }
 
   const Pages = new class {
