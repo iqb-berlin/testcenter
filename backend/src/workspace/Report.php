@@ -314,7 +314,11 @@ class Report {
         }
       }
       if ($this->useNewVersion) {
-        $categories["category_" . $categoryKey] = $isMatch ? 'TRUE' : 'FALSE';
+        if ($this->format == ReportFormat::CSV) {
+          $categories["category_" . $categoryKey] = $isMatch ? 'TRUE' : 'FALSE';
+        } else {
+          $categories["category_" . $categoryKey] = $isMatch;
+        }
       } else {
         $categories["category: " . $categoryKey] = $isMatch ? 'X' : null;
       }
