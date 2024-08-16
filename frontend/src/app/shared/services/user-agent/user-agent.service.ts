@@ -111,7 +111,10 @@ export class UserAgentService {
     return satisfies(semverifiedA, referenceVersion);
   }
 
-  static asString(userAgent: ResolvedUserAgent): string {
-    return `${userAgent.family}/${userAgent.version}`;
+  static outputWithOs(UAstring: string = window.navigator.userAgent): string {
+    const browser = this.resolveUserAgent(UAstring);
+    const os = UAParser(UAstring).os;
+
+    return `${os.name}/${os.version} ${browser.family}/${browser.version}`;
   }
 }
