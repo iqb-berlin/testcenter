@@ -80,7 +80,7 @@
             <ng-container matColumnDef="size">
               <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe</mat-header-cell>
               <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-                {{ (element.info.totalSize || element.size) | bytes }}
+                {{ element.info.totalSize | bytes }}
               </mat-cell>
             </ng-container>
 

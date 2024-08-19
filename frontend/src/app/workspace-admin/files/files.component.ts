@@ -5,8 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { map, mergeMap } from 'rxjs/operators';
-import { from, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -179,36 +179,6 @@ export class FilesComponent implements OnInit, OnDestroy {
     } else {
       this.bs.getFiles(this.wds.workspaceId)
         .pipe(
-          mergeMap(fileList => {
-            const filteredTypes = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
-            return from(filteredTypes).pipe(
-              map(type => {
-                fileList[type]?.forEach(file => {
-                  if (file.dependencies.length !== 0) {
-                    file.info.totalSize = file.size;
-                    file.dependencies.forEach(dep => {
-                      if (
-                        dep.relationship_type !== 'usesPlayer' ||
-                        (dep.relationship_type === 'usesPlayer' && file.type === 'Booklet') // booklet's size is dependent on player
-                      ) {
-                        const innerFilteredTypes = IQBFileTypes.filter(innertype => innertype !== 'Testtakers' && innertype !== 'SysCheck' && innertype !== 'Booklet');
-                        innerFilteredTypes.forEach(innertype => {
-                          fileList[innertype].forEach(checkedDependency => {
-                            if (checkedDependency.name === dep.object_name) {
-                              file.info.totalSize! += checkedDependency.size;
-                            }
-                          });
-                        });
-                      }
-                    });
-                  } else {
-                    file.info.totalSize = undefined;
-                  }
-                });
-                return fileList;
-              })
-            );
-          }),
           map(fileList => this.addFrontendChecksToFiles(fileList))
         )
         .subscribe(fileList => {
@@ -218,6 +188,12 @@ export class FilesComponent implements OnInit, OnDestroy {
             });
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
+
+          const fileListWithFileSize = FilesComponent.calculateFileSize(fileList);
+          IQBFileTypes
+            .forEach(type => {
+              this.files[type] = new MatTableDataSource(fileListWithFileSize[type]);
+            });
         });
     }
   }
@@ -339,5 +315,36 @@ export class FilesComponent implements OnInit, OnDestroy {
       });
     });
     return result;
+  }
+
+  private static calculateFileSize(fileList: GetFileResponseData) {
+    const needsToCalculate = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
+
+    IQBFileTypes.forEach(type => {
+      fileList[type]?.forEach(file => {
+        if (needsToCalculate.includes(type) && file.dependencies.length !== 0) {
+          file.info.totalSize = file.size;
+          file.dependencies.forEach(dep => {
+            if (
+              dep.relationship_type !== 'usesPlayer' ||
+              (dep.relationship_type === 'usesPlayer' && file.type === 'Booklet')
+            ) {
+              const innerFilteredTypes = IQBFileTypes.filter(innertype => innertype !== 'Testtakers' && innertype !== 'SysCheck' && innertype !== 'Booklet');
+              innerFilteredTypes.forEach(innertype => {
+                fileList[innertype].forEach(checkedDependency => {
+                  if (checkedDependency.name === dep.object_name) {
+                    file.info.totalSize! += checkedDependency.size;
+                  }
+                });
+              });
+            }
+          });
+        } else {
+          file.info.totalSize = file.size;
+        }
+      });
+    });
+
+    return fileList;
   }
 }

@@ -387,7 +387,7 @@ class WorkspaceDAO extends DAO {
     return $this->fetchFiles($sql, $replacements);
   }
 
-  private function fetchFiles($sql, $replacements, bool $getDependencies = false): array {
+  private function fetchFiles($sql, $replacements): array {
     $files = [];
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];

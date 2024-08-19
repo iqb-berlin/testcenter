@@ -113,6 +113,10 @@ class FileData extends DataCollectionTypeSafe {
     return $this->contextData;
   }
 
+  public function setContextData(array $contextData): void {
+    $this->contextData = $contextData;
+  }
+
   public function getVeronaModuleType(): string {
     return $this->veronaModuleType;
   }
@@ -145,8 +149,10 @@ class FileData extends DataCollectionTypeSafe {
    * @param self[] $fileDigestList
    * @return self[]
    */
-  public static function removeWarningForUnusedFiles(array $fileDigestList): array {
+  public static function removeDeprecatedValues(array $fileDigestList): array {
     foreach ($fileDigestList as $file) {
+
+      // remove 'unused resource' warning, as this is calculated in FE
       $report = $file->getValidationReport();
       if (isset($report['warning'])) {
         $report['warning'] = array_values(
@@ -156,6 +162,13 @@ class FileData extends DataCollectionTypeSafe {
           )
         );
         $file->setValidationReport($report);
+      }
+
+      // remove totalSize, as this is calculated in FE
+      $contextData = $file->getContextData();
+      if (isset($contextData['totalSize'])) {
+        unset($contextData['totalSize']);
+        $file->setContextData($contextData);
       }
     }
     return $fileDigestList;

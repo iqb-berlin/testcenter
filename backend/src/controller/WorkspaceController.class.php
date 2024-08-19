@@ -151,7 +151,7 @@ class WorkspaceController extends Controller {
     // TODo change the FE and endpoint to accept it with keys
     $fileDigestList = [];
     foreach ($files as $fileType => $fileList) {
-      $fileDigestList[$fileType] = array_values(File::removeWarningForUnusedFiles($fileList));
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
     }
 
     return $response->withJson($fileDigestList);
