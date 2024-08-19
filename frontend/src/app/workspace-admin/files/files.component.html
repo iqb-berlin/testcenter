@@ -56,7 +56,7 @@
                     </mat-card-header>
                     <mat-card-content >
                       <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
-                      <div *ngIf="!getDependenciesOfFile(element).length">
+                      <div *ngIf="!getDependenciesOfFile(element).length && !(element.type == 'SysCheck' || element.type == 'Testtakers')">
                         <tc-alert [level]="'warning'" [text]="element.type + ' is never used.'"></tc-alert>
                       </div>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
