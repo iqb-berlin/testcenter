@@ -157,6 +157,21 @@ class WorkspaceController extends Controller {
     return $response->withJson($fileDigestList);
   }
 
+  public static function getFilesWithDependencies(Request $request, Response $response) {
+    $workspaceId = (int) $request->getAttribute('ws_id');
+    $names = RequestBodyParser::getRequiredElement($request, 'body');
+
+    $workspace = new Workspace($workspaceId);
+    $files = $workspace->workspaceDAO->getFilesByNames($names);
+
+    $fileDigestList = [];
+    foreach ($files as $fileType => $fileList) {
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
+    }
+
+    return $response->withJson($fileDigestList);
+  }
+
   /** TODO since only allowed files are in the five main folders, a better syntax for the body would suit
    * eg [{"type": "Booklet", "name": "SAMPLE_BOOKLET.XML"}]
    */

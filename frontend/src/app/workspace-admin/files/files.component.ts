@@ -189,10 +189,13 @@ export class FilesComponent implements OnInit, OnDestroy {
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
 
-          const fileListWithFileSize = FilesComponent.calculateFileSize(fileList);
-          IQBFileTypes
-            .forEach(type => {
-              this.files[type] = new MatTableDataSource(fileListWithFileSize[type]);
+          this.bs.getFilesWithDependencies(this.wds.workspaceId, ...IQBFileTypes.map(typehere => fileList[typehere].map(file => file.name)).flat())
+            .subscribe(withDependencies => {
+              const withDependenciesWithFileSize = FilesComponent.calculateFileSize(withDependencies);
+              IQBFileTypes
+                .forEach(type => {
+                  this.files[type] = new MatTableDataSource(withDependenciesWithFileSize[type]);
+                });
             });
         });
     }

@@ -162,6 +162,8 @@ $app->group('/workspace', function(RouteCollectorProxy $group) {
 
   $group->get('/{ws_id}/files', [WorkspaceController::class, 'getFiles'])
     ->add(new IsWorkspacePermitted('RO'));
+  $group->post('/{ws_id}/files-dependencies', [WorkspaceController::class, 'getFilesWithDependencies'])
+    ->add(new IsWorkspacePermitted('RO'));
 
   $group->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
     ->add(new IsWorkspacePermitted('RW'))

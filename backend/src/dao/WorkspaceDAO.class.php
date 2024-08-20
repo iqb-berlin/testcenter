@@ -271,6 +271,38 @@ class WorkspaceDAO extends DAO {
                 where workspace_id = ?";
     $replacements = [$this->workspaceId];
 
+    return $this->fetchFiles($sql, $replacements);
+  }
+
+  public function getFilesByNames(array $names): array {
+    $sql = "
+            select
+                name,
+                type,
+                id,
+                label,
+                description,
+                is_valid,
+                validation_report,
+                size,
+                modification_ts,
+                version_mayor,
+                version_minor,
+                version_patch,
+                version_label,
+                verona_module_id,
+                verona_module_type,
+                verona_version,
+                context_data
+            from files
+                where workspace_id = ? and
+                name in (" . implode(',', array_map(fn ($name) => '?', $names)) . ')';
+
+    $replacements = [
+      $this->workspaceId,
+      ...$names
+    ];
+
     return $this->fetchFiles($sql, $replacements, true);
   }
 
@@ -305,7 +337,7 @@ class WorkspaceDAO extends DAO {
       $replacements[] = $value;
     }
 
-    return $this->fetchFiles($sql, $replacements, false);
+    return $this->fetchFiles($sql, $replacements);
   }
 
   public function getFileRelations(string $name, string $type): array {
@@ -387,7 +419,7 @@ class WorkspaceDAO extends DAO {
     return $this->fetchFiles($sql, $replacements);
   }
 
-  private function fetchFiles($sql, $replacements): array {
+  private function fetchFiles($sql, $replacements, bool $getDependencies = false): array {
     $files = [];
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
