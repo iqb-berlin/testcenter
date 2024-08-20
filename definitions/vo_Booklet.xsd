@@ -71,16 +71,6 @@
       <xs:selector xpath=".//Restrictions/Show" />
       <xs:field xpath="@if" />
     </xs:keyref>
-
-    <!-- TODO X add constraint -->
-<!--    <xs:key name="StateOptionIdKey"  >-->
-<!--      <xs:selector xpath="./States/State/Option" />-->
-<!--      <xs:field xpath="@id" />-->
-<!--    </xs:key>-->
-<!--    <xs:keyref name="StateOptionIdReference" refer="StateOptionIdKey">-->
-<!--      <xs:selector xpath=".//Restrictions/Show" />-->
-<!--      <xs:field xpath="@is" />-->
-<!--    </xs:keyref>-->
   </xs:element>
 
   <xs:simpleType name="stateId">

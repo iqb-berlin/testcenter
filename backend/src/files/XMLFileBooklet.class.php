@@ -22,6 +22,11 @@ class XMLFileBooklet extends XMLFile {
       'description' => 'At least one option per state must be empty',
       'xpath1' => '//States/State/@id',
       'compare' => 'assertAtLeastOneEmptyOptionPerState'
+    ],
+    [
+      'description' => 'units or alias in from-attribute must be defined',
+      'xpath1' => '//States/State/Option/If/*/@from',
+      'compare' => 'assertEveryReferredUnitMustBeDefined'
     ]
   ];
 
@@ -119,9 +124,24 @@ class XMLFileBooklet extends XMLFile {
     SimpleXMLElement $doc
   ): true | string {
     $xp = "//States/State[@id = '$stateId']/Option[not(text())]";
-    $emptyOptionsCounts = $doc->xpath($xp);
-    if (!$emptyOptionsCounts or !count($emptyOptionsCounts)) {
+    $emptyOptions = $doc->xpath($xp);
+    if (!$emptyOptions or !count($emptyOptions)) {
       return "State `$stateId` has no option without conditions. Each state must have at least one.";
+    }
+    return true;
+  }
+
+  protected static function assertEveryReferredUnitMustBeDefined(
+    string | SimpleXMLElement | null $unitId,
+    string | SimpleXMLElement | null $dummy,
+    array $results1,
+    array $results2,
+    SimpleXMLElement $doc
+  ): true | string {
+    $xp = "//Unit[@id = '$unitId'] | //Unit[@alias = '$unitId']";
+    $findUnit = $doc->xpath($xp);
+    if (!$findUnit or !count($findUnit)) {
+      return "No Unit with id or alias `$unitId` defined.";
     }
     return true;
   }

@@ -388,6 +388,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   registerTrackedVariables(): void {
     const emptyVariable = (id: string): IQBVariable => ({ id, status: 'UNSET', value: null });
     const registerVariablesFromSource = (source: BlockConditionSource): void => {
+      if (!this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]]) {
+        throw new AppError({
+          description: `Unit or Alias not defined: \`${source.unitAlias}\``,
+          label: 'Booklet Error',
+          type: 'xml'
+        });
+      }
       this.tcs.units[this.tcs.unitAliasMap[source.unitAlias]].variables[source.variable] =
         emptyVariable(source.variable);
     };
@@ -519,8 +526,9 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       throw new Error(`Invalid booklet: state ${stateDef.id} hat no default option`);
     }
     return Object.assign(stateDef, {
-      currentOption: defaultOption.id,
-      defaultOption: defaultOption.id
+      current: defaultOption.id,
+      default: defaultOption.id,
+      override: undefined
     });
   }
 }

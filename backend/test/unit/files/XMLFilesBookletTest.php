@@ -54,7 +54,7 @@ class XMLFilesBookletTest extends TestCase {
   <Units>
     <Testlet id="t1">
       <Restrictions>$restrictions</Restrictions>
-      <Unit id="u1" label="u1"></Unit>
+      <Unit id="u1" label="u1" alias="alias"></Unit>
     </Testlet>
   </Units>
 </Booklet>
@@ -153,6 +153,7 @@ EOT;
     $referringToUndefinedState = '<Show if="missing-state" is="option-1" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $referringToUndefinedState);
     $this->assertFalse($xmlFile->isValid());
+    $this->assertCount(3, $xmlFile->getValidationReport()['error']);
 
     $referringToUndefinedOption = '<Show if="booklet-variant" is="missing-option" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $referringToUndefinedOption);
@@ -181,6 +182,30 @@ EOT;
     ';
     $xmlFile = $this->prepareBookletWithStates($statesObjectWithNoDefault, $correctReference);
     $this->assertFalse($xmlFile->isValid());
+    $this->assertCount(1, $xmlFile->getValidationReport()['error']);
+
+    $referringToUndefinedUnit = '
+      <States>
+        <State id="booklet-variant">
+          <Option id="option-1">
+            <If><Code of="var1" from="i-am-not-defined" /><Is notEqual="0" /></If>
+          </Option>
+          <Option id="option-2">
+            <If>
+              <Median>
+                <Score of="var1" from="i-am-also-not-defined" />
+                <Code of="var2" from="alias" />
+              </Median>
+              <Is greaterThan="50" />
+            </If>
+          </Option>
+          <Option id="option-default"></Option>
+        </State>
+      </States>
+    ';
+    $xmlFile = $this->prepareBookletWithStates($referringToUndefinedUnit, $correctReference);
+    $this->assertFalse($xmlFile->isValid());
+    $this->assertCount(2, $xmlFile->getValidationReport()['error']);
   }
 }
 
