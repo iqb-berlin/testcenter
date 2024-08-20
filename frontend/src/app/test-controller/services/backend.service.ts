@@ -26,7 +26,7 @@ export class BackendService {
     testId: string,
     unitName: string | null,
     page: number | null,
-    pageLabel: string | null,
+    pagelabel: string | null,
     priority: number,
     categories: string,
     entry: string,
@@ -36,7 +36,7 @@ export class BackendService {
     return this.http.put<void>(
       `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
       {
-        priority, categories, entry, page, pageLabel, userAgent, originalUnitId
+        priority, categories, entry, page, pagelabel, userAgent, originalUnitId
       }
     );
   }
