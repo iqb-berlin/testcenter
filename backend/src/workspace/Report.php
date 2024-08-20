@@ -262,7 +262,7 @@ class Report {
       $offset = array_search('categories', array_keys($review));
       $transformedReview =
         array_slice($review, 0, $offset) +
-        $this->fillCategories($categoryKeys, explode(" ", $review['categories'] ?? '')) +
+        $this->fillCategories($categoryKeys, explode(" ", trim($review['categories']) ?? '')) +
         array_slice($review, $offset + 1, null);
 
       $transformedReviewData[] = $this->useNewVersion ?
@@ -282,7 +282,7 @@ class Report {
 
     foreach ($reviewData as $reviewEntry) {
       if (!empty($reviewEntry['categories'])) {
-        $categories = explode(" ", $reviewEntry['categories']);
+        $categories = explode(" ", trim($reviewEntry['categories']));
 
         foreach ($categories as $category) {
           if (0 === count(array_keys($categoryMap, $category))) {
