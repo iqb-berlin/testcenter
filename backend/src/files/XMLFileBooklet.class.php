@@ -18,6 +18,11 @@ class XMLFileBooklet extends XMLFile {
       'xpath1' => '//Show',
       'compare' => 'assertAllStateOptionsDefined'
     ],
+    [
+      'description' => 'At least one option per state must be empty',
+      'xpath1' => '//States/State/@id',
+      'compare' => 'assertAtLeastOneEmptyOptionPerState'
+    ]
   ];
 
   public function crossValidate(WorkspaceCache $workspaceCache): void {
@@ -84,7 +89,7 @@ class XMLFileBooklet extends XMLFile {
     array $results2,
     SimpleXMLElement $doc
   ): true | string {
-    return ($result1 and in_array($result1, $results2)) ? true : "State not defined: `$result1`";
+    return (!$result1 or in_array($result1, $results2)) ? true : "State not defined: `$result1`";
   }
 
   protected static function assertAllStateOptionsDefined(
@@ -98,10 +103,25 @@ class XMLFileBooklet extends XMLFile {
     $if = (string) $show['if'];
     $is = (string) $show['is'];
     if (!$if or !$is) return "`<Show>` misses attributes";
-    $xp = "//States/State[@id = '$if']/Option[@id = '$is']|//States/State[@id = '$if']/DefaultOption[@id = '$is']";
+    $xp = "//States/State[@id = '$if']/Option[@id = '$is']";
     $option = $doc->xpath($xp);
     if (!$option) {
       return "Option `$is` for state `$if` is not defined.";
+    }
+    return true;
+  }
+
+  protected static function assertAtLeastOneEmptyOptionPerState(
+    string | SimpleXMLElement | null $stateId,
+    string | SimpleXMLElement | null $dummy,
+    array $results1,
+    array $results2,
+    SimpleXMLElement $doc
+  ): true | string {
+    $xp = "//States/State[@id = '$stateId']/Option[not(text())]";
+    $emptyOptionsCounts = $doc->xpath($xp);
+    if (!$emptyOptionsCounts or !count($emptyOptionsCounts)) {
+      return "State `$stateId` has no option without conditions. Each state must have at least one.";
     }
     return true;
   }

@@ -69,7 +69,7 @@ EOT;
           <Option id="conditional-option-1">
             $conditions
           </Option>
-          <DefaultOption id="default" />
+          <Option id="default" />
         </State>
       </States>
     EOT;
@@ -145,7 +145,7 @@ EOT;
         <State id="booklet-variant">
           <Option id="option-1"></Option>
           <Option id="option-2"></Option>
-          <DefaultOption id="default-option"></DefaultOption>
+          <Option id="default-option"></Option>
         </State>
       </States>
     ';
@@ -161,6 +161,26 @@ EOT;
     $correctReference = '<Show if="booklet-variant" is="option-1" />';
     $xmlFile = $this->prepareBookletWithStates($aStatesObject, $correctReference);
     $this->assertTrue($xmlFile->isValid());
+
+
+    $noReferenceAtAll = '<TimeMax minutes="5" />';
+    $xmlFile = $this->prepareBookletWithStates($aStatesObject, $noReferenceAtAll);
+    $this->assertTrue($xmlFile->isValid());
+
+    $statesObjectWithNoDefault = '
+      <States>
+        <State id="booklet-variant">
+          <Option id="option-1">
+            <If><Code of="var1" from="alias" /><Is notEqual="0" /></If>
+          </Option>
+          <Option id="option-2">
+            <If><Code of="var1" from="alias" /><Is equal="0" /></If>
+          </Option>
+        </State>
+      </States>
+    ';
+    $xmlFile = $this->prepareBookletWithStates($statesObjectWithNoDefault, $correctReference);
+    $this->assertFalse($xmlFile->isValid());
   }
 }
 
