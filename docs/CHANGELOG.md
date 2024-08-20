@@ -8,6 +8,7 @@ layout: default
 * Im Workspace-Admin werden bei Klick auf eine Datei nun auch alle abhängigen Dateien gekennzeichnet. Damit lässt sich 
   feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei erfolgreich zu löschen - bevor
   der 'Löschen' Button geklickt werden muss.
+* Die Dateien werden zuerst angezeigt, können dann bei weiterem Laden erst einen Moment später gelöscht werden. 
 
 ### Bugfix
 * Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   

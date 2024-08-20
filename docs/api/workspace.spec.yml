@@ -339,6 +339,249 @@ paths:
                     type: Booklet
                     id: BOOKLET.SAMPLE-1
                     report: []
+                    dependencies: []
+                    info:
+                      label: Sample booklet
+                      description: This a sample booklet for testing/development/showcase purposes.
+                  - name: SAMPLE_BOOKLET2.XML
+                    size: 557
+                    modificationTime: 1673525827
+                    type: Booklet
+                    id: BOOKLET.SAMPLE-2
+                    report: []
+                    dependencies: []
+                    info:
+                      label: Reduced Booklet
+                      description: ''
+                  - name: SAMPLE_BOOKLET3.XML
+                    size: 1277
+                    modificationTime: 1673525827
+                    type: Booklet
+                    id: BOOKLET.SAMPLE-3
+                    report: []
+                    dependencies: []
+                    info:
+                      label: Similar Booklet to Sample 1
+                      description: some description
+                SysCheck:
+                  - name: SAMPLE_SYSCHECK.XML
+                    size: 1232
+                    modificationTime: 1673525827
+                    type: SysCheck
+                    id: SYSCHECK.SAMPLE
+                    report: []
+                    info:
+                      label: An example SysCheck definition
+                      description: An example SysCheck definition with long description
+                Testtakers:
+                  - name: SAMPLE_TESTTAKERS.XML
+                    size: 2173
+                    modificationTime: 1673525827
+                    type: Testtakers
+                    id: SAMPLE_TESTTAKERS.XML
+                    report: []
+                    dependencies: []
+                    info:
+                      label: ''
+                      description: This file contains some logins for testing and works a a sample for developers.
+                      testtakers: 10
+                Unit:
+                  - name: SAMPLE_UNIT.XML
+                    size: 1278
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE
+                    report:
+                      info:
+                        - "`1` attachment(s) requested."
+                    dependencies: []
+                    info:
+                      label: A sample unit
+                      description: This is a sample unit showing the possibilities of the sample player.
+                  - name: SAMPLE_UNIT2.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-2
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    dependencies: []
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                Resource:
+                  - name: SAMPLE_UNITCONTENTS.HTM
+                    size: 14195
+                    modificationTime: 1673525827
+                    type: Resource
+                    id: SAMPLE_UNITCONTENTS.HTM
+                    report: []
+                    dependencies: []
+                    info:
+                      label: ''
+                      description: ''
+                  - name: sample_resource_package.itcr.zip
+                    size: 412
+                    modificationTime: 1673525827
+                    type: Resource
+                    id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
+                    report:
+                      info:
+                        - Contains 0 files.
+                    dependencies: []
+                    info:
+                      label: ''
+                      description: ''
+                  - name: verona-player-simple-4.0.0.html
+                    size: 34864
+                    modificationTime: 1673525827
+                    type: Resource
+                    id: VERONA-PLAYER-SIMPLE-4.0.0.HTML
+                    report:
+                      info:
+                        - 'Verona-Version: 4.0'
+                    dependencies: []
+                    info:
+                      label: Simple HTML Player
+                      description: This is a simple, dependency-less, vanilla-js-written, but full-featured
+                        unit player, mainly as showcase for developers and for software-testing. It
+                        does implement the Verona 4.0.0-Standard and can be used for units containing
+                        simple any content in HTML-format. Unit Description ist the <code>form-content
+                        as HTML. Just give some names to the form element, and the player does the rest.
+                        Use some special Ids for some special buttons.
+                      veronaModuleType: player
+                      veronaVersion: '4.0'
+                      version: 4.0.0
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+    delete:
+      summary: delete files
+      description: deletes files from a workspace
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role "RW" (read/write) for this workspace
+          example: "a:user000000000.rw00000000"
+          required: true
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                f:
+                  type: array
+                  description: array of file names
+                  items:
+                    type: string
+            example:
+              f:
+                - "SysCheck/SAMPLE_SYSCHECK.XML"
+                - "Unit/SAMPLE_UNIT.XML"
+                - "some rubbish"
+                - "a/b"
+                - "../../README.md"
+      responses:
+        "207":
+          description: OK, a list of files
+          content:
+            application/json:
+              example:
+                deleted:
+                  - "SysCheck/SAMPLE_SYSCHECK.XML"
+                did_not_exist:
+                  - "some rubbish"
+                  - "a/b"
+                not_allowed:
+                  - "../../README.md"
+                was_used:
+                  - "Unit/SAMPLE_UNIT.XML"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "409":
+          description: Workspace blocked by another upload or deletion action.
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}/files-dependencies:
+    post:
+      summary: get files with respective dependencies of workspace
+      description: get a list of all files with their in workspace
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role at least "RO" (read only) for this workspace
+          example: "a:user000000000.superadmin0"
+          required: true
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                body:
+                  type: array
+                  description: array of file names
+                  items:
+                    type: string
+            example:
+              body:
+                - "SAMPLE_TESTTAKERS.XML"
+                - "SAMPLE_BOOKLET.XML"
+                - "SAMPLE_BOOKLET2.XML"
+                - "SAMPLE_BOOKLET3.XML"
+                - "SAMPLE_SYSCHECK.XML"
+                - "SAMPLE_UNIT.XML"
+                - "SAMPLE_UNIT2.XML"
+                - "sample_resource_package.itcr.zip"
+                - "SAMPLE_UNITCONTENTS.HTM"
+                - "verona-player-simple-6.0.html"
+      responses:
+        "200":
+          description: OK, a list of files
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/file_list'
+              example: # TODO add schema
+                Booklet:
+                  - name: SAMPLE_BOOKLET.XML
+                    size: 1397
+                    modificationTime: 1673525827
+                    type: Booklet
+                    id: BOOKLET.SAMPLE-1
+                    report: []
                     dependencies: [{"object_name": "SAMPLE_UNIT.XML","relationship_type": "containsUnit"},{"object_name": "SAMPLE_UNIT2.XML", "relationship_type": "containsUnit"},{"object_name": "verona-player-simple-6.0.html","relationship_type": "usesPlayer"},{"object_name": "SAMPLE_UNITCONTENTS.HTM","relationship_type": "isDefinedBy"},{"object_name": "sample_resource_package.itcr.zip","relationship_type": "usesPlayerResource"}]
                     info:
                       label: Sample booklet
@@ -460,68 +703,6 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
-        "410":
-          description: Session Expired
-        "500":
-          description: Server Error
-    delete:
-      summary: delete files
-      description: deletes files from a workspace
-      tags:
-        - admin workspace
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          example: "a:user000000000.rw00000000"
-          required: true
-        - in: path
-          name: ws_id
-          description: workspace-id
-          example: 1
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                f:
-                  type: array
-                  description: array of file names
-                  items:
-                    type: string
-            example:
-              f:
-                - "SysCheck/SAMPLE_SYSCHECK.XML"
-                - "Unit/SAMPLE_UNIT.XML"
-                - "some rubbish"
-                - "a/b"
-                - "../../README.md"
-      responses:
-        "207":
-          description: OK, a list of files
-          content:
-            application/json:
-              example:
-                deleted:
-                  - "SysCheck/SAMPLE_SYSCHECK.XML"
-                did_not_exist:
-                  - "some rubbish"
-                  - "a/b"
-                not_allowed:
-                  - "../../README.md"
-                was_used:
-                  - "Unit/SAMPLE_UNIT.XML"
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "409":
-          description: Workspace blocked by another upload or deletion action.
         "410":
           description: Session Expired
         "500":
