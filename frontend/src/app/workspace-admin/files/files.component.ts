@@ -69,6 +69,8 @@ export class FilesComponent implements OnInit, OnDestroy {
   selectedRow: IQBFile | null = null;
   dependenciesOfRow: IQBFile[] = [];
 
+  enableInteraction = true;
+
   private wsIdSubscription: Subscription | null = null;
 
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
@@ -177,6 +179,7 @@ export class FilesComponent implements OnInit, OnDestroy {
           this.files[type] = new MatTableDataSource();
         });
     } else {
+      this.enableInteraction = false;
       this.bs.getFiles(this.wds.workspaceId)
         .pipe(
           map(fileList => this.addFrontendChecksToFiles(fileList))
@@ -189,13 +192,15 @@ export class FilesComponent implements OnInit, OnDestroy {
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
 
-          this.bs.getFilesWithDependencies(this.wds.workspaceId, ...IQBFileTypes.map(typehere => fileList[typehere].map(file => file.name)).flat())
+          this.bs.getFilesWithDependencies(this.wds.workspaceId, ...IQBFileTypes.map(typehere => fileList[typehere]?.map(file => file.name)).flat())
             .subscribe(withDependencies => {
               const withDependenciesWithFileSize = FilesComponent.calculateFileSize(withDependencies);
               IQBFileTypes
                 .forEach(type => {
                   this.files[type] = new MatTableDataSource(withDependenciesWithFileSize[type]);
                 });
+
+              this.enableInteraction = true;
             });
         });
     }

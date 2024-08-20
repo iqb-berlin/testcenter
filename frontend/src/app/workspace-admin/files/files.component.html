@@ -16,10 +16,19 @@
           <mat-table [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
             <ng-container matColumnDef="checked">
               <mat-header-cell *matHeaderCellDef class="checkboxcell">
-                <mat-checkbox [attr.data-cy]="'files-checkAll-' + type" (change)="checkAll($event.checked, type)"></mat-checkbox>
+                <mat-checkbox
+                  [attr.data-cy]="'files-checkAll-' + type"
+                  (change)="checkAll($event.checked, type)"
+                  [disabled]="!enableInteraction"
+                ></mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let element" class="checkboxcell" >
-                <mat-checkbox [attr.data-cy]="'files-checkbox-' + element.id" [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
+                <mat-checkbox
+                  [attr.data-cy]="'files-checkbox-' + element.id"
+                  [checked]="element.isChecked"
+                  (change)="element.isChecked=$event.checked"
+                  [disabled]="!enableInteraction"
+                ></mat-checkbox>
               </mat-cell>
             </ng-container>
 
@@ -80,7 +89,8 @@
             <ng-container matColumnDef="size">
               <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe</mat-header-cell>
               <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-                {{ element.info.totalSize | bytes }}
+                <mat-spinner *ngIf="!enableInteraction; else showSize" [diameter]="25" ></mat-spinner>
+                <ng-template #showSize>{{ element.info.totalSize | bytes }}</ng-template>
               </mat-cell>
             </ng-container>
 
@@ -103,10 +113,11 @@
         (click)="deleteFiles()"
         matTooltip="Markierte Dateien löschen"
         matTooltipPosition="above"
-        [disabled]="(wds.wsRole !== 'RW') || !files"
+        [disabled]="(wds.wsRole !== 'RW') || !files || !enableInteraction"
         data-cy="delete-files"
       >
-        <mat-icon>delete</mat-icon>
+        <mat-icon *ngIf="enableInteraction;else deleteSpinner">delete</mat-icon>
+        <ng-template #deleteSpinner><mat-spinner [diameter]="15" ></mat-spinner></ng-template>
         Löschen
       </button>
       <button
