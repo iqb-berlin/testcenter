@@ -3,13 +3,13 @@
 
   <mat-dialog-content>
     <p>{{
-      'Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Kennwort ein, das'
+      'Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das'
       + 'Sie von der Projektleitung erhalten haben!'
       | customtext:'syscheck_report_aboutPassword'
       | async
     }}</p>
     <mat-form-field appearance="outline">
-      <input matInput type="password" formControlName="key" placeholder="Kennwort" [type]="showPassword ? 'text' : 'password'">
+      <input matInput type="password" formControlName="key" placeholder="System-Check-Kennwort" [type]="showPassword ? 'text' : 'password'" autocomplete ="new-password">
       <button mat-icon-button matSuffix type="button"
               [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
               (click)="showPassword = !showPassword">

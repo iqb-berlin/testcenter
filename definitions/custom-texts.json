@@ -157,7 +157,7 @@
   },
   "syscheck_report_aboutPassword": {
     "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
-    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Kennwort ein, das Sie von der Projektleitung erhalten haben!"
+    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!"
   },
   "syscheck_report_aboutReportId": {
     "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
