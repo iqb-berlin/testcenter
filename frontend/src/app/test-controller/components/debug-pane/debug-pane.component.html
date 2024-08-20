@@ -125,15 +125,20 @@
     <ng-container *ngFor="let state of bookletStates | keyvalue">
       <thead>
         <tr>
-          <td colspan="2">{{state.value.id}} ({{state.value.label}})</td>
+          <td colspan="2">{{state.value.id}} ({{state.value.label}}) [{{state.value.current}}|{{state.value.override}}]</td>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let option of state.value.options | keyvalue" [class]="{'current': option.value.id === state.value.currentOption}">
-          <td><b>{{option.value.id}}</b> ({{option.value.label}}){{option.value.id === state.value.defaultOption ? ' *' : ''}}</td>
+        <tr
+          *ngFor="let option of state.value.options | keyvalue"
+          [class.override]="option.value.id === (state.value.override || state.value.current)"
+          [class.current]="option.value.id === state.value.current"
+        >
+          <td>{{option.value.id}} ({{option.value.label}}){{option.value.id === state.value.default ? ' *' : ''}}</td>
           <td>
             <div
               *ngFor="let cond of option.value.conditions; let conditionIndex = index"
+              class="condition"
               [class]="{'condition': true, 'satisfied': conditionIndex < option.value.firstUnsatisfiedCondition}"
             >
               {{cond | blockcondition}}

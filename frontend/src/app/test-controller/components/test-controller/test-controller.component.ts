@@ -28,6 +28,7 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   templateUrl: './test-controller.component.html',

@@ -83,8 +83,8 @@
 }
 
 .tab-states {
-  right: 0;
-  top: 65px;
+  left: 0;
+  bottom: 0;
 }
 
 .tab-unit .more-btn {
@@ -152,9 +152,21 @@ tbody:last-child tr:last-child td {
   border-collapse: collapse;
 }
 
-.tab-states .current {
+.tab-states table tbody tr td:first-child {
+  color: white;
+}
+
+.tab-states table tbody tr.current td:first-child {
+  color: orange;
+}
+
+.tab-states table tbody tr.override td:first-child {
   background: orange;
+}
+
+.tab-states table tbody tr.current.override td:first-child {
   color: black;
+  background: orange;
 }
 
 .tab-states td,

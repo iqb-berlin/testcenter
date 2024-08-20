@@ -114,7 +114,7 @@ export abstract class BookletParserService<
   }
 
   parseStates(bookletElement: Element): { [key: string]: BookletState } {
-    const statesElement = this.xmlGetChildIfExists(bookletElement, 'States');
+    const statesElement = this.xmlGetChildIfExists(bookletElement, 'States', true);
     if (!statesElement) return {};
     const states: { [key: string]: BookletState } = {};
     this.xmlGetDirectChildrenByTagName(statesElement, ['State'])

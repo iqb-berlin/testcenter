@@ -1,6 +1,6 @@
-<div class="sidebar-main" *ngIf="booklet?.units">
+<div class="sidebar-main" *ngIf="tcs.booklet?.units">
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
-  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}"></ng-container>
+  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: tcs.booklet?.units, level: 0}"></ng-container>
 
   <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
     <div class="testlet">
@@ -8,7 +8,7 @@
         <div *ngIf="!isTestlet(testletOrUnit); else: subTestlet" class="child">
           <a
             mat-raised-button
-            (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
+            (click)="goto(testletOrUnit.sequenceId.toString())"
             [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
             [disabled]="testletOrUnit | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by"
             [matTooltip]="testletOrUnit.label"
@@ -28,8 +28,32 @@
   </ng-template>
 </div>
 
-
 <div class="sidebar-bottom">
+  <ng-container *ngIf="tcs.testMode.canChangeStateOptions">
+    <h3>Zustände</h3>
+    <div *ngFor="let state of (tcs.booklet?.states || {}) | keyvalue">
+      <mat-form-field>
+        <mat-label>{{state.value.label}}</mat-label>
+        <mat-select [(value)]="state.value.override" (selectionChange)="tcs.onStateOptionChanged()">
+          <mat-option
+            *ngFor="let stateOption of state.value.options | keyvalue"
+            value="{{stateOption.value.id}}"
+          >
+            <div [class.current-option]="stateOption.value.id === state.value.current">
+              {{stateOption.value.label}}
+              <mat-icon
+                *ngIf="stateOption.value.id === state.value.current"
+                matTooltip="Aufgrund Ihrer Antworten würde dieser Zustand gewählt werden"
+                fontIcon="beenhere"
+              ></mat-icon>
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </ng-container>
+
+
   <a mat-raised-button data-cy="endTest" color="primary" (click)="terminateTest()">
     {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
   </a>

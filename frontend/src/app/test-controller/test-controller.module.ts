@@ -37,6 +37,7 @@ import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
 import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
 import { PropertiesPipe } from './pipes/properties.pipe';
 import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
+import { MatSelectModule } from '@angular/material/select';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -65,7 +66,8 @@ export { TestControllerService } from './services/test-controller.service';
     MatSidenavModule,
     MatDividerModule,
     MatListModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSelectModule
   ],
   declarations: [
     UnithostComponent,

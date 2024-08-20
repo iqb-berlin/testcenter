@@ -12,7 +12,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": true
+      "canChangeStateOptions": true
     }
   },
   "MONITOR-GROUP": {
@@ -28,7 +28,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": true
+      "canChangeStateOptions": true
     }
   },
   "MONITOR-STUDY": {
@@ -44,7 +44,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": true
+      "canChangeStateOptions": true
     }
   },
   "RUN-HOT-RETURN": {
@@ -60,7 +60,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": true,
-      "canChoosePathManually": false
+      "canChangeStateOptions": false
     }
   },
   "RUN-HOT-RESTART": {
@@ -76,7 +76,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": true,
-      "canChoosePathManually": false
+      "canChangeStateOptions": false
     }
   },
   "RUN-REVIEW": {
@@ -92,7 +92,7 @@
       "showTimeLeft": true,
       "showUnitMenu": true,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": true
+      "canChangeStateOptions": true
     }
   },
   "RUN-TRIAL": {
@@ -108,7 +108,7 @@
       "showTimeLeft": true,
       "showUnitMenu": true,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": true
+      "canChangeStateOptions": true
     }
   },
   "RUN-SIMULATION": {
@@ -124,7 +124,7 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChoosePathManually": false
+      "canChangeStateOptions": false
     }
   }
 }

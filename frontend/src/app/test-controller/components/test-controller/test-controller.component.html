@@ -58,7 +58,6 @@
 >
   <mat-sidenav
     #unitMenu
-    (click)="unitMenu.toggle(false)"
     mode="over"
     class="sidebar"
     fixedInViewport="true"
@@ -66,7 +65,7 @@
     position="end"
     opened="false"
   >
-    <tc-unit-menu [booklet]="tcs.booklet"></tc-unit-menu>
+    <tc-unit-menu (close)="unitMenu.close()"></tc-unit-menu>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

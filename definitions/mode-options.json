@@ -9,5 +9,5 @@
   "showTimeLeft": "Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.",
   "showUnitMenu": "Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.",
   "receiveRemoteCommands": "Kann aus dem Gruppen-Monitor aus gesteuert werden",
-  "canChoosePathManually": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab."
+  "canChangeStateOptions": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab."
 }

@@ -638,9 +638,13 @@ export class TestControllerService {
 
   evaluateConditions(): void {
     this.updateStates();
+    this.onStateOptionChanged();
+  }
+
+  onStateOptionChanged(): void {
     this.updateShowLocks();
     this.updateLocks();
-    this.updateConditionsTestState();
+    this.saveConditionsTestState();
   }
 
   private updateStates(): void {
@@ -657,19 +661,22 @@ export class TestControllerService {
                   .findIndex(condition => !ConditionUtil.isSatisfied(condition, getVar));
               return option.firstUnsatisfiedCondition === -1;
             });
-        state.currentOption = firstMatchingOption?.id || state.options[Object.keys(state.options).length - 1].id;
+        state.current = firstMatchingOption?.id || state.options[Object.keys(state.options).length - 1].id;
       });
   }
 
   private updateShowLocks(): void {
     Object.values(this.testlets)
       .forEach(testlet => {
-        testlet.locks.show = !!testlet.restrictions.show &&
-          (this.booklet!.states[testlet.restrictions.show.if].currentOption !== testlet.restrictions.show.is);
+        if (!testlet.restrictions.show) return;
+        const current =
+          this.booklet?.states[testlet.restrictions.show.if].override ||
+          this.booklet?.states[testlet.restrictions.show.if].current;
+        testlet.locks.show = current !== testlet.restrictions.show.is;
       });
   }
 
-  private updateConditionsTestState(): void {
+  private saveConditionsTestState(): void {
     // this is a summary of the state of the conditions for navigation-UI, Group-monitor and the like
     const lockedByShow = Object.values(this.testlets)
       .filter(testlet => testlet.restrictions.show && !testlet.locks.show)

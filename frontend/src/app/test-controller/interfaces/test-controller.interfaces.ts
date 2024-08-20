@@ -234,8 +234,9 @@ export interface BookletStateOption extends BookletStateOptionDef {
 }
 
 export interface BookletState extends BookletStateDef<BookletStateOption> {
-  currentOption: string;
-  defaultOption: string;
+  override: string | undefined;
+  current: string;
+  default: string;
 }
 
 export type Booklet = BookletDef<Testlet, BookletState>;

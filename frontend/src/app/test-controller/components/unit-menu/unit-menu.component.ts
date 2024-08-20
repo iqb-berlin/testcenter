@@ -1,6 +1,8 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component, EventEmitter, Input, Output
+} from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
-import { Booklet, Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
+import { Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
@@ -9,8 +11,8 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   styleUrls: ['./unit-menu.component.css']
 })
 export class UnitMenuComponent {
-  @Input() booklet: Booklet | null = null;
   @Input() freeNavigation: boolean = false;
+  @Output() close = new EventEmitter<void>();
 
   testletContext?: { testlet: Testlet, level: number };
 
@@ -19,10 +21,16 @@ export class UnitMenuComponent {
     private cts: CustomtextService
   ) { }
 
+  protected readonly isTestlet = isTestlet;
+
   terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
 
-  protected readonly isTestlet = isTestlet;
+  goto(target: string): void {
+    console.log('close');
+    this.close.emit();
+    this.tcs.setUnitNavigationRequest(target);
+  }
 }

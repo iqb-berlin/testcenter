@@ -10,7 +10,7 @@ export class TestModeData {
   showTimeLeft: boolean = false;
   showUnitMenu: boolean = false;
   receiveRemoteCommands: boolean = false;
-  canChoosePathManually: boolean = true;
+  canChangeStateOptions: boolean = true;
 
   static modes = {
     'RUN-DEMO': {
@@ -24,7 +24,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChoosePathManually: true
+      canChangeStateOptions: true
     },
     'MONITOR-GROUP': {
       alwaysNewSession: false,
@@ -37,7 +37,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChoosePathManually: true
+      canChangeStateOptions: true
     },
     'MONITOR-STUDY': {
       alwaysNewSession: false,
@@ -50,7 +50,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChoosePathManually: true
+      canChangeStateOptions: true
     },
     'RUN-HOT-RETURN': {
       alwaysNewSession: false,
@@ -63,7 +63,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
-      canChoosePathManually: false
+      canChangeStateOptions: false
     },
     'RUN-HOT-RESTART': {
       alwaysNewSession: true,
@@ -76,7 +76,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
-      canChoosePathManually: false
+      canChangeStateOptions: false
     },
     'RUN-REVIEW': {
       alwaysNewSession: false,
@@ -89,7 +89,7 @@ export class TestModeData {
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
-      canChoosePathManually: true
+      canChangeStateOptions: true
     },
     'RUN-TRIAL': {
       alwaysNewSession: false,
@@ -102,7 +102,7 @@ export class TestModeData {
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
-      canChoosePathManually: true
+      canChangeStateOptions: true
     },
     'RUN-SIMULATION': {
       alwaysNewSession: false,
@@ -115,7 +115,7 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChoosePathManually: false
+      canChangeStateOptions: false
     }
   };
 
