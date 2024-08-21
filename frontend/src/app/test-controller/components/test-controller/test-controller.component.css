@@ -1,6 +1,6 @@
-.timer {
+.divider {
   color: lightgray;
-  margin: 0 10px;
+  margin: 0 auto 0 auto;
 }
 
 .tc-body {
@@ -23,6 +23,7 @@ h1 {
   color: white;
   height: 65px;
   padding-left: 116px;
+  align-items: center;
 }
 
 
