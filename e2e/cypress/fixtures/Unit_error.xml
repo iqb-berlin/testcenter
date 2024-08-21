@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.1.8/definitions/vo_Unit.xsd">
+  <Metadata-wrong-schema lastChange="2022-10-11T09:30:00+00:00">
+    <Id>UNIT.SAMPLE</Id>
+    <Label>A sample unit</Label>
+    <Description>This is a sample unit showing the possibilities of the sample player.</Description>
+  </Metadata-wrong-schema>
+
+</Unit>

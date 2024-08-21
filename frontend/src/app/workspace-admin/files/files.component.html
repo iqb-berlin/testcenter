@@ -5,21 +5,30 @@
       <ng-container *ngFor="let type of fileTypes">
         <mat-expansion-panel [expanded]="true" *ngIf="files && files[type].data.length">
           <mat-expansion-panel-header>
-            <mat-panel-title class="table-header">{{typeLabels[type]}}</mat-panel-title>
+            <mat-panel-title class="table-header">{{ typeLabels[type] }}</mat-panel-title>
             <mat-panel-description>
-              <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
-              <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>
-              <span *ngIf="type=='Testtakers'">, {{fileStats.testtakers}} Teilnehmer</span>
+              <span>{{ files[type].data.length }} Datei{{ files[type].data.length === 1 ? '' : 'en' }}</span>
+              <span *ngIf="fileStats.invalid[type]">, davon {{ fileStats.invalid[type] }} Fehlerhaft</span>
+              <span *ngIf="type=='Testtakers'">, {{ fileStats.testtakers }} Teilnehmer</span>
             </mat-panel-description>
           </mat-expansion-panel-header>
 
           <mat-table [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
             <ng-container matColumnDef="checked">
               <mat-header-cell *matHeaderCellDef class="checkboxcell">
-                <mat-checkbox [attr.data-cy]="'files-checkAll-' + type" (change)="checkAll($event.checked, type)"></mat-checkbox>
+                <mat-checkbox
+                  [attr.data-cy]="'files-checkAll-' + type"
+                  (change)="checkAll($event.checked, type)"
+                  [disabled]="!enableInteraction"
+                ></mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let element" class="checkboxcell" >
-                <mat-checkbox [attr.data-cy]="'files-checkbox-' + element.id" [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
+                <mat-checkbox
+                  [attr.data-cy]="'files-checkbox-' + element.id"
+                  [checked]="element.isChecked"
+                  (change)="element.isChecked=$event.checked"
+                  [disabled]="!enableInteraction"
+                ></mat-checkbox>
               </mat-cell>
             </ng-container>
 
@@ -33,25 +42,32 @@
                       <mat-icon class="report-error">error</mat-icon>
                     </ng-container>
                     <ng-template #noError>
-                      <ng-container *ngIf="element.report.warning && element.report.warning?.length">
+                      <ng-container *ngIf="(element.report.warning && element.report.warning?.length) || !getDependenciesOfFile(element).length">
                         <mat-icon class="report-warning">warning</mat-icon>
                       </ng-container>
                     </ng-template>
                   </span>
-                  <mat-card appearance="raised" class="full-file-report">
+                  <mat-card
+                    *ngIf="element.info.label || (element.id && element.id !== element.name.toUpperCase()) ||
+                    element.info.testtakers || element.report.hasOwnProperty('info') || element.report.hasOwnProperty('warning')
+                    || element.report.hasOwnProperty('error') || !getDependenciesOfFile(element).length"
+                    appearance="raised" class="full-file-report">
                     <mat-card-header *ngIf="element.info.label || element.id">
                       <mat-card-title>
-                        {{element.info.label}}
+                        {{ element.info.label }}
                         <span
-                            *ngIf="element.id !== element.name.toUpperCase()"
-                            style="{{element.info.label ? 'color:silver' : ''}}">
-                        #{{element.id}}
-                      </span>
+                          *ngIf="element.id !== element.name.toUpperCase()"
+                          style="{{element.info.label ? 'color:silver' : ''}}">
+                          #{{ element.id }}
+                        </span>
                       </mat-card-title>
-                      <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
+                      <mat-card-subtitle>{{ element.info.description }}</mat-card-subtitle>
                     </mat-card-header>
-                    <mat-card-content>
+                    <mat-card-content >
                       <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
+                      <div *ngIf="!getDependenciesOfFile(element).length && !(element.type == 'SysCheck' || element.type == 'Testtakers')">
+                        <tc-alert [level]="'warning'" [text]="element.type + ' is never used.'"></tc-alert>
+                      </div>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
                         <div *ngFor="let message of element.report[level]">
                           <tc-alert [level]="level" [text]="message"></tc-alert>
@@ -64,21 +80,24 @@
             </ng-container>
 
             <ng-container matColumnDef="modificationTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung</mat-header-cell>
               <mat-cell *matCellDef="let element" class="datecell">
-                {{(element.modificationTime * 1000) | date: 'dd.MM.yy HH:mm'}}
+                {{ (element.modificationTime * 1000) | date: 'dd.MM.yy HH:mm' }}
               </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="size">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe</mat-header-cell>
               <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-                {{(element.info.totalSize || element.size) | bytes}}
+                <mat-spinner *ngIf="!enableInteraction; else showSize" [diameter]="25" ></mat-spinner>
+                <ng-template #showSize>{{ element.info.totalSize | bytes }}</ng-template>
               </mat-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow($event, row)"
+              [class.selected-row]="selectedRow === row"
+              [class.isDependency]="dependenciesOfRow.includes(row)"></mat-row>
           </mat-table>
 
         </mat-expansion-panel>
@@ -94,10 +113,11 @@
         (click)="deleteFiles()"
         matTooltip="Markierte Dateien löschen"
         matTooltipPosition="above"
-        [disabled]="(wds.wsRole !== 'RW') || !files"
+        [disabled]="(wds.wsRole !== 'RW') || !files || !enableInteraction"
         data-cy="delete-files"
       >
-        <mat-icon>delete</mat-icon>
+        <mat-icon *ngIf="enableInteraction;else deleteSpinner">delete</mat-icon>
+        <ng-template #deleteSpinner><mat-spinner [diameter]="15" ></mat-spinner></ng-template>
         Löschen
       </button>
       <button
