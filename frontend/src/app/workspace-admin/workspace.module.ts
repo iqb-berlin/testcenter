@@ -18,6 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModule } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -55,7 +56,8 @@ import {
     MatGridListModule,
     SharedModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     WorkspaceComponent

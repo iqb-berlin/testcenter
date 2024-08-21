@@ -40,8 +40,6 @@ class XMLFileUnit extends XMLFile {
   }
 
   private function checkIfResourcesExist(WorkspaceCache $validator): void {
-    $this->contextData['totalSize'] = $this->size;
-
     $definitionRef = $this->getDefinitionRef();
 
     $resources = $this->readPlayerDependencies();
@@ -52,21 +50,16 @@ class XMLFileUnit extends XMLFile {
 
     foreach ($resources as $key => $resourceName) {
       $resourceId = strtoupper($resourceName);
-      $resource = $validator->getResource($resourceId, false);
+      $resource = $validator->getResource($resourceId);
 
       if ($resource != null) {
         $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
         $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
-        $this->contextData['totalSize'] += $resource->getSize();
 
       } else {
         $this->report('error', "Resource `$resourceName` not found");
       }
     }
-  }
-
-  public function getTotalSize(): int {
-    return $this->contextData['totalSize'];
   }
 
   public function readPlayerId(): string {

@@ -6,7 +6,6 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
-use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
@@ -123,31 +122,24 @@ class WorkspaceController extends Controller {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 
-    $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
+    $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
-    $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
+    $importedFilesReports = $workspace->importUncategorizedFiles($filesToImport);
     $workspace->setWorkspaceHash();
 
-    $reports = [];
     $loginsAffected = false;
     $containsErrors = false;
-    foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
-      $reports[$localPath] = $file->getValidationReport();
-      $containsErrors = (
-        $containsErrors
-        or (isset($reports[$localPath]['error'])
-          and count(
-            $reports[$localPath]['error']
-          ))
-      );
-      $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
+    foreach ($importedFilesReports as $localPath => $report) {
+        $containsErrors = ($containsErrors or !empty($importedFilesReports[$localPath]['error']));
+        $loginsAffected = ($loginsAffected or ($containsErrors and ($importedFilesReports[$localPath]['type'] == 'Testtakers')));
+        $importedFilesReports[$localPath] = array_splice($report, 1); // revert to current structure for output so not to needlessly change the API
     }
 
     if ($loginsAffected) {
       BroadcastService::send('system/clean');
     }
 
-    return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
+    return $response->withJson($importedFilesReports)->withStatus($containsErrors ? 207 : 201);
   }
 
   public static function getFiles(Request $request, Response $response): Response {
@@ -159,7 +151,22 @@ class WorkspaceController extends Controller {
     // TODo change the FE and endpoint to accept it with keys
     $fileDigestList = [];
     foreach ($files as $fileType => $fileList) {
-      $fileDigestList[$fileType] = array_values($fileList);
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
+    }
+
+    return $response->withJson($fileDigestList);
+  }
+
+  public static function getFilesWithDependencies(Request $request, Response $response) {
+    $workspaceId = (int) $request->getAttribute('ws_id');
+    $names = RequestBodyParser::getRequiredElement($request, 'body');
+
+    $workspace = new Workspace($workspaceId);
+    $files = $workspace->workspaceDAO->getFilesByNames($names);
+
+    $fileDigestList = [];
+    foreach ($files as $fileType => $fileList) {
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
     }
 
     return $response->withJson($fileDigestList);

@@ -123,4 +123,12 @@ export class BackendService {
         )
       );
   }
+
+  getFilesWithDependencies(workspaceId: number, ...files: string[]): Observable<GetFileResponseData> {
+    return this.http
+      .post<GetFileResponseData>(
+      `${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
+      { body: files }
+    );
+  }
 }

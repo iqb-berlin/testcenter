@@ -5,6 +5,8 @@ import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
 import { ReportEntry } from '../sys-check.interfaces';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interfaces';
 
 @Component({
   templateUrl: './report.component.html',
@@ -17,13 +19,13 @@ export class ReportComponent implements OnInit {
   constructor(
     private backendService: BackendService,
     public dataService: SysCheckDataService,
-    private saveDialog: MatDialog,
+    private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
   }
 
   saveReport(): void {
-    const dialogRef = this.saveDialog.open(SaveReportComponent, {
+    const dialogRef = this.dialog.open(SaveReportComponent, {
       width: '500px',
       height: '600px'
     });
@@ -44,8 +46,14 @@ export class ReportComponent implements OnInit {
               unit: []
             }
           ).subscribe(() => {
-            this.snackBar.open('Bericht gespeichert.', '', { duration: 3000 });
-            this.isReportSaved = true;
+            this.dialog.open(ConfirmDialogComponent, {
+              width: '400px',
+              data: <ConfirmDialogData>{
+                title: 'Bericht gespeichert',
+                content: 'Der Bericht wurde erfolgreich gespeichert.',
+                confirmbuttonlabel: 'Verstanden'
+              }
+            });
           });
         }
       }

@@ -274,6 +274,72 @@ class WorkspaceDAO extends DAO {
     return $this->fetchFiles($sql, $replacements);
   }
 
+  public function getFilesByNames(array $names): array {
+    $sql = "
+            select
+                name,
+                type,
+                id,
+                label,
+                description,
+                is_valid,
+                validation_report,
+                size,
+                modification_ts,
+                version_mayor,
+                version_minor,
+                version_patch,
+                version_label,
+                verona_module_id,
+                verona_module_type,
+                verona_version,
+                context_data
+            from files
+                where workspace_id = ? and
+                name in (" . implode(',', array_map(fn ($name) => '?', $names)) . ')';
+
+    $replacements = [
+      $this->workspaceId,
+      ...$names
+    ];
+
+    return $this->fetchFiles($sql, $replacements, true);
+  }
+
+  /** @param array $conditions list('column' => value)
+   * @return array ['filetype' => File[]]*/
+  public function getAllFilesWhere(array $conditions): array {
+    $sql = "
+            select
+                name,
+                type,
+                id,
+                label,
+                description,
+                is_valid,
+                validation_report,
+                size,
+                modification_ts,
+                version_mayor,
+                version_minor,
+                version_patch,
+                version_label,
+                verona_module_id,
+                verona_module_type,
+                verona_version,
+                context_data
+            from files
+                where workspace_id = ?";
+    $replacements = [$this->workspaceId];
+
+    foreach ($conditions as $condition => $value) {
+      $sql .= " and $condition = ?";
+      $replacements[] = $value;
+    }
+
+    return $this->fetchFiles($sql, $replacements);
+  }
+
   public function getFileRelations(string $name, string $type): array {
     $relations = $this->_("
             select
@@ -353,12 +419,15 @@ class WorkspaceDAO extends DAO {
     return $this->fetchFiles($sql, $replacements);
   }
 
-  private function fetchFiles($sql, $replacements): array {
+  private function fetchFiles($sql, $replacements, bool $getDependencies = false): array {
     $files = [];
     foreach ($this->_($sql, $replacements, true) as $row) {
       $files[$row['type']] ??= [];
       // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
-      $files[$row['type']][$row['name']] = $this->resultRow2File($row, []);
+      if ($getDependencies) {
+        $dependencies = $this->fetchDependenciesForFile($row['name']);
+      }
+      $files[$row['type']][$row['name']] = $this->resultRow2File($row, $dependencies ?? []);
     }
     return $files;
   }
@@ -409,6 +478,7 @@ class WorkspaceDAO extends DAO {
     $selectedFilesConditions = implode(' or ', $conditions);
 
     $sql = "with recursive affected_files as (
+                    -- base/first case that initializes the recursion
                     select
                         subject_type as object_type,
                         subject_name as object_name,
@@ -419,6 +489,7 @@ class WorkspaceDAO extends DAO {
                 
                     union all
                 
+                    -- recursive case
                     select
                         file_relations.subject_type as object_type,
                         file_relations.subject_name as object_name,
@@ -482,46 +553,7 @@ class WorkspaceDAO extends DAO {
     return [$unresolvedRelations, $updatedRelations];
   }
 
-  public function getRelatingFiles(File $file): array {
-    // TODO make recursive: a player may affect a unit, that a booklet, and that a testtakers file
-
-    $sql = "select
-      files.name,
-      files.type,
-      files.id,
-      files.label,
-      files.description,
-      files.is_valid,
-      files.validation_report,
-      files.size,
-      files.modification_ts,
-      files.version_mayor,
-      files.version_minor,
-      files.version_patch,
-      files.version_label,
-      files.verona_module_id,
-      files.verona_module_type,
-      files.verona_version,
-      files.context_data
-    from file_relations
-      left join files
-        on file_relations.workspace_id = files.workspace_id
-          and file_relations.subject_name = files.name
-          and file_relations.subject_type = files.type
-    where
-          files.workspace_id = :ws_id
-          and object_type = :file_type and object_name= :file_name ";
-
-    $replacements = [
-      ':ws_id' => $this->workspaceId,
-      ':file_type' => $file->getType(),
-      ':file_name' => $file->getName()
-    ];
-
-    return $this->fetchFiles($sql, $replacements);
-  }
-
-    public function getBookletResourcePaths(string $bookletFileName): array {
+  public function getBookletResourcePaths(string $bookletFileName): array {
       return
         $this->_(
           "select distinct
@@ -571,5 +603,79 @@ class WorkspaceDAO extends DAO {
       "update workspaces set workspace_hash = :hash where id = :ws_id",
       [':hash' => $hash, ':ws_id' => $this->workspaceId]
     );
+  }
+
+  public function fetchDependenciesForFile(string $name): ?array {
+    return $this->_(
+      "
+        -- base case that starts the recursion
+          with recursive dependencies as (
+            select subject_name, object_name, relationship_type
+            from file_relations
+            where subject_name = :name
+              
+            union all 
+            
+            -- recursive case
+            select fr.subject_name, fr.object_name, fr.relationship_type
+            from file_relations fr
+            inner join dependencies dep
+              on fr.subject_name = dep.object_name 
+          )
+          select distinct object_name, relationship_type
+          from dependencies;",
+      [
+        ':name' => $name,
+      ],
+      true
+    );
+  }
+
+  public function getDependentFilesByTypes(File $file, array $types = []): array {
+    $sql = "select
+      files.name,
+      files.type,
+      files.id,
+      files.label,
+      files.description,
+      files.is_valid,
+      files.validation_report,
+      files.size,
+      files.modification_ts,
+      files.version_mayor,
+      files.version_minor,
+      files.version_patch,
+      files.version_label,
+      files.verona_module_id,
+      files.verona_module_type,
+      files.verona_version,
+      files.context_data
+    from file_relations
+      left join files
+        on file_relations.workspace_id = files.workspace_id
+          and file_relations.subject_name = files.name
+          and file_relations.subject_type = files.type
+    where
+          files.workspace_id = :ws_id
+          and object_type = :file_type and object_name= :file_name";
+
+    $replacements = [
+      ':ws_id' => $this->workspaceId,
+      ':file_type' => $file->getType(),
+      ':file_name' => $file->getName()
+    ];
+
+    // add more conditions
+    if (!empty($types)) {
+      $conditions = [];
+      foreach ($types as $index => $type) {
+        $conditions[] = "files.type = :type$index";
+        $replacements[":type$index"] = $type;
+      }
+      $addCondition = ' and (' . implode(' or ', $conditions) . ')';
+      $sql .= $addCondition;
+    }
+
+    return $this->fetchFiles($sql, $replacements);
   }
 }

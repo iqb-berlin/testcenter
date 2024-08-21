@@ -98,39 +98,39 @@ class CLI {
     }
   }
 
-  static function p(string $text): void {
-    echo "\n$text";
+  static function p(mixed $text): void {
+    echo "\n" . print_r($text, true);
   }
 
-  static function h1(string $text): void {
-    CLI::printColored($text, "Blue", "Grey", true);
+  static function h1(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Blue", "Grey", true);
   }
 
-  static function h2(string $text): void {
-    CLI::printColored($text, "Black", "Grey", true);
+  static function h2(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Black", "Grey", true);
   }
 
-  static function h3(string $text): void {
-    CLI::printColored($text, "Brown", "Grey", true);
+  static function h3(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Brown", "Grey", true);
   }
 
-  static function h(string $text): void {
-    CLI::printColored($text, "Grey", "Black", true);
+  static function h(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Grey", "Black", true);
   }
 
-  static function warning(string $text): void {
-    CLI::printColored($text, "Brown");
+  static function warning(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Brown");
   }
 
-  static function error(string $text): void {
-    CLI::printColored($text, "Red", null, true);
+  static function error(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Red", null, true);
   }
 
-  static function success(string $text): void {
-    CLI::printColored($text, "Green");
+  static function success(mixed $text): void {
+    CLI::printColored(print_r($text, true), "Green");
   }
 
-  static private function printColored(string $text, string $fg, string $bg = null, bool $bold = false): void {
+  static private function printColored(mixed $text, string $fg, string $bg = null, bool $bold = false): void {
     $colorString = ($bold ? '1' : '0') . ';' . CLI::foreground[$fg] . ($bg ? ';' . CLI::background[$bg] : '');
     echo "\n\e[{$colorString}m$text\e[0m";
   }
