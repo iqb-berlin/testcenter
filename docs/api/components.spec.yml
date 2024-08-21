@@ -456,6 +456,56 @@ components:
           laststate:
             type: string
 
+    ReviewReportOld:
+      type: array
+      items:
+        type: object
+        properties:
+          groupname:
+            type: string
+          loginname:
+            type: string
+          code:
+            type: string
+            description: person code
+          bookletname:
+            type: string
+          unitname:
+            type: string
+          priority:
+            type: number
+          category:
+            type: string
+            nullable: true
+            example: 'X'
+          "category: content":
+            type: string
+            nullable: true
+            example: 'X'
+          "category: design":
+            type: string
+            nullable: true
+            example: 'X'
+          "category: tech":
+            type: string
+            nullable: true
+            example: 'X'
+          reviewtime:
+            type: string
+            format: date-time
+          entry:
+            type: string
+          page:
+            type: number
+            nullable: true
+          pagelabel:
+            type: string
+            nullable: true
+          originalUnitId:
+            type: string
+          userAgent:
+            type: string
+
     ReviewReport:
       type: array
       items:
@@ -474,11 +524,31 @@ components:
             type: string
           priority:
             type: string
+          category_:
+            type: string
+          category_content:
+            type: string
+          category_tech:
+            type: boolean
           reviewtime:
             type: string
             format: date-time
+          page:
+            type: number
+            nullable: true
+          pagelabel:
+            type: string
+            nullable: true
+          originalUnitId:
+            type: string
+          userAgent:
+            type: string
+          reviewer:
+            type: string
           entry:
             type: string
+
+
 
     CommonSysCheckReportSection:
       type: array

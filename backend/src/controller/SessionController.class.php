@@ -1,14 +1,15 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\ServerRequest as Request;
-use Slim\Http\Response;
 use Slim\Exception\HttpException;
+use Slim\Exception\HttpUnauthorizedException;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class SessionController extends Controller {
   protected static array $_workspaces = [];
@@ -17,11 +18,13 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionAdmin(Request $request, Response $response): Response {
-    usleep(500000); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
+    usleep(
+      500000
+    ); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
 
-    $body = RequestBodyParser::getElements($request, [
-      "name" => null,
-      "password" => null
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      "name" => 'REQUIRED',
+      "password" => 'REQUIRED'
     ]);
 
     $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
@@ -38,8 +41,8 @@ class SessionController extends Controller {
   }
 
   public static function putSessionLogin(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
-      "name" => null,
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      "name" => 'REQUIRED',
       "password" => ''
     ]);
 
@@ -73,7 +76,7 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionPerson(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
+    $body = RequestBodyParser::getElementsFromRequest($request, [
       'code' => ''
     ]);
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
@@ -106,7 +109,12 @@ class SessionController extends Controller {
       }
 
       foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
-        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code, true, false);
+        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession(
+          $member,
+          $code,
+          true,
+          false
+        );
 
         foreach ($booklets as $bookletId) {
           if (!isset($bookletFiles[$bookletId])) {
@@ -119,7 +127,11 @@ class SessionController extends Controller {
 
           $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $bookletId);
           if (!$test) {
-            $test = self::testDAO()->createTest($memberPersonSession->getPerson()->getId(), $bookletId, $bookletFile->getLabel());
+            $test = self::testDAO()->createTest(
+              $memberPersonSession->getPerson()->getId(),
+              $bookletId,
+              $bookletFile->getLabel()
+            );
           }
 
           $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);
@@ -156,7 +168,12 @@ class SessionController extends Controller {
         'R'
       );
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors);
+      $accessSet = AccessSet::createFromPersonSession(
+        $personSession,
+        $workspaceData,
+        ...$testsOfPerson,
+        ...$groupMonitors
+      );
       return $response->withJson($accessSet);
     }
 

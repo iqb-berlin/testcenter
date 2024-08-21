@@ -110,4 +110,11 @@ export class UserAgentService {
     }
     return satisfies(semverifiedA, referenceVersion);
   }
+
+  static outputWithOs(UAstring: string = window.navigator.userAgent): string {
+    const browser = this.resolveUserAgent(UAstring);
+    const os = UAParser(UAstring).os;
+
+    return `${os.name}/${os.version} ${browser.family}/${browser.version}`;
+  }
 }

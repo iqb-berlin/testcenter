@@ -159,12 +159,16 @@ paths:
                 categories:
                   description: whitespace separated list of categories
                   type: string
+                originalUnitId:
+                  description: original unit id, in case the unit id in the URL was overwritten by an alias
+                  type: string
               required:
                 - entry
             example:
               entry: I am a critical review item for unit 1
               priority: 1
               categories: content whatever
+              originalUnitId: ''
       responses:
         "201":
           x-dredd-test-order: 1
@@ -267,6 +271,9 @@ paths:
                 responseType:
                   description: TODO what is this?
                   type: string
+                originalUnitId:
+                    description: original unit id, in case the unit id in the URL was overwritten by an alias
+                    type: string
               required:
                 - response
                 - timeStamp

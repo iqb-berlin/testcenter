@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -24,28 +25,38 @@ class RequestBodyParser {
     return isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
   }
 
-  static function getElements(Request $request, array $elements2defaults = []): array {
+  static function getElementsFromRequest(Request $request, array $requiredElements2defaults = []): array {
     $requestBody = JSON::decode($request->getBody()->getContents());
-    return self::applyDefaults($requestBody, $elements2defaults);
+    return self::applyDefaultsIfNotRequired($requestBody, $requiredElements2defaults);
   }
 
-  static private function applyDefaults($element, array $elements2defaults) {
+  /**
+   * @param $elementObject
+   * @param array $elements2defaults this array shows which elements are required to be present and which will be mapped with a
+   * default value. The structure is: ['element' => 'default', ...]. If the value is the string 'REQUIRED' the element
+   * is required and cannot be mapped with a default value. For every other value the element will be mapped with the
+   * given default value, if the element is not present in the request body.
+   * @return array
+   * @throws HttpError
+   */
+  static private function applyDefaultsIfNotRequired($elementObject, array $elements2defaults): array {
     $elements = [];
 
-    foreach ($elements2defaults as $elementName => $default) {
-      if (!isset($element->$elementName) and ($default === null)) {
-        throw new HttpError("Required body-parameter is missing: `$elementName`", 400);
+    foreach ($elements2defaults as $element => $default) {
+      if (!isset($elementObject->$element) and ($default === 'REQUIRED')) {
+        throw new HttpError("Required body-parameter is missing: `$element`", 400);
       }
 
-      $elements[$elementName] = isset($element->$elementName) ? $element->$elementName : $default;
+      $elements[$element] = $elementObject->$element ?? $default;
     }
 
     return $elements;
   }
 
   // TODO Unit Test
-  static function getElementsArray(Request $request, array $elements2defaults = []): array {
+  static function getElementsFromArray(Request $request, array $elements2defaults = [], mixed $getOnlyThisKey = null): array {
     $requestBody = JSON::decode($request->getBody()->getContents());
+    $requestBody = !is_null($getOnlyThisKey) ? $requestBody->$getOnlyThisKey : $requestBody;
 
     if (!is_array($requestBody)) {
       throw new HttpBadRequestException($request, "body has to be an array");
@@ -54,7 +65,7 @@ class RequestBodyParser {
     $result = [];
 
     foreach ($requestBody as $row) {
-      $result[] = self::applyDefaults($row, $elements2defaults);
+      $result[] = self::applyDefaultsIfNotRequired($row, $elements2defaults);
     }
 
     return $result;

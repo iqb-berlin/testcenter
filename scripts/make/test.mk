@@ -18,7 +18,7 @@ test-backend-unit-coverage:
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
 			--coverage-html /docs/dist/test-coverage-backend-unit \
-				/var/www/backend/test/unit/. \
+				/var/www/backend/test/unit/${target} \
 			--testdox
 
 test-backend-api:

@@ -1,9 +1,13 @@
-import { Injectable, Inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
-  UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
+  KeyValuePairString,
+  LoadingFile,
+  StateReportEntry,
+  TestData,
+  UnitData
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
@@ -21,13 +25,19 @@ export class BackendService {
   saveReview(
     testId: string,
     unitName: string | null,
+    page: number | null,
+    pagelabel: string | null,
     priority: number,
     categories: string,
-    entry: string
-  ) : Observable<void> {
+    entry: string,
+    userAgent: string,
+    originalUnitId: string
+  ): Observable<void> {
     return this.http.put<void>(
       `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
-      { priority, categories, entry }
+      {
+        priority, categories, entry, page, pagelabel, userAgent, originalUnitId
+      }
     );
   }
 
@@ -47,12 +57,18 @@ export class BackendService {
     return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
-  updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
+  updateUnitState(testId: string, unitName: string, originalUnitId: string, newState: StateReportEntry[]): Subscription {
+    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, {
+      newState,
+      originalUnitId
+    }).subscribe();
   }
 
-  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
+  addUnitLog(testId: string, unitName: string, originalUnitId:string, logEntries: StateReportEntry[]): Subscription {
+    return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, {
+      logEntries,
+      originalUnitId
+    }).subscribe();
   }
 
   notifyDyingTest(testId: string): void {
@@ -66,10 +82,12 @@ export class BackendService {
     }
   }
 
-  updateDataParts(testId: string, unitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
+  updateDataParts(testId: string, unitId: string, originalUnitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
     const timeStamp = Date.now();
     return this.http
-      .put(`${this.backendUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, dataParts, responseType })
+      .put(`${this.backendUrl}test/${testId}/unit/${unitId}/response`, {
+        timeStamp, dataParts, originalUnitId, responseType
+      })
       .subscribe();
   }
 

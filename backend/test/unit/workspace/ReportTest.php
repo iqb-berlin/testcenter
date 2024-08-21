@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -312,20 +313,20 @@ final class ReportTest extends TestCase {
   private ReportType $reportType;
   private ReportFormat $reportFormat;
 
-  private AdminDAO $adminDaoMock;
-  private SysChecksFolder $sysChecksFolderMock;
+  private AdminDAO|MockInterface $adminDaoMock;
+  private SysChecksFolder|MockInterface $sysChecksFolderMock;
 
   public function setUp(): void {
     $this->workspaceId = 1;
     $this->dataIds = ["sample_group", "sample_group"];
-    $this->adminDaoMock = $this->createMock(AdminDAO::class);
-    $this->sysChecksFolderMock = $this->createMock(SysChecksFolder::class);
+    $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
+    $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
   }
 
   function test__construct(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
@@ -333,21 +334,21 @@ final class ReportTest extends TestCase {
     // Assert
     parent::assertEquals($this->workspaceId, $report->getWorkspaceId());
     parent::assertEquals($this->dataIds, $report->getDataIds());
-    parent::assertEquals($this->reportType->getValue(), $report->getType());
-    parent::assertEquals($this->reportFormat->getValue(), $report->getFormat());
+    parent::assertEquals($this->reportType, $report->getType());
+    parent::assertEquals($this->reportFormat, $report->getFormat());
   }
 
   function testGenerateLogsCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
+    $this->adminDaoMock->allows('getLogReportData')->andReturn(self::LOGS);
 
     $expectedLogsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;timestamp;logentry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1627545600\";sample unit log\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1627545600\";sample log entry";
+      "groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry\n" .
+      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"\";\"1627545600\";sample unit log\n" .
+      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"\";\"1627545600\";sample log entry";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
@@ -361,9 +362,9 @@ final class ReportTest extends TestCase {
 
   function testGenerateLogsJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::LOG);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
-    $this->adminDaoMock->method('getLogReportData')->willReturn(self::LOGS);
+    $this->reportType = ReportType::LOG;
+    $this->reportFormat = ReportFormat::CSV;
+    $this->adminDaoMock->allows('getLogReportData')->andReturn(self::LOGS);
 
     $expectedLogsJsonReportData = self::LOGS;
 
@@ -378,18 +379,18 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateLogsCSVReportWithFailure(): void {
-    $this->testGenerateLogsReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateLogsReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateLogsReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getLogReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getLogReportData')->andReturn([]);
 
     // Act
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::LOG),
+      ReportType::LOG,
       $reportFormat
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -400,20 +401,20 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateLogsJsonReportWithFailure(): void {
-    $this->testGenerateLogsReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateLogsReportWithFailure(ReportFormat::JSON);
   }
 
   function testGenerateResponsesCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::RESPONSE);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::RESPONSE;
+    $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn(self::RESPONSES);
 
     $expectedResponsesCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;responses;laststate\n" .
-      '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"""{\""name\"":\""Sam Sample\"",\""age\"":34}""";"{""PRESENTATIONCOMPLETE"":""yes""}"' . "\n" .
-      '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"""{\""name\"":\""S\u00e4m S\u00e4mple\"",\""age\"":42}""";""';
+      "groupname;loginname;code;bookletname;unitname;originalUnitId;responses;laststate\n" .
+      '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"";"""{\""name\"":\""Sam Sample\"",\""age\"":34}""";"{""PRESENTATIONCOMPLETE"":""yes""}"' . "\n" .
+      '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"";"""{\""name\"":\""S\u00e4m S\u00e4mple\"",\""age\"":42}""";""';
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
@@ -427,9 +428,9 @@ final class ReportTest extends TestCase {
 
   function testGenerateResponsesJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::RESPONSE);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
-    $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
+    $this->reportType = ReportType::RESPONSE;
+    $this->reportFormat = ReportFormat::JSON;
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn(self::RESPONSES);
 
     $expectedResponsesJsonReportData = self::RESPONSES;
 
@@ -444,18 +445,18 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateResponsesCSVReportWithFailure(): void {
-    $this->testGenerateResponsesReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateResponsesReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateResponsesReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getResponseReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getResponseReportData')->andReturn([]);
 
     // Act
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::RESPONSE),
+      ReportType::RESPONSE,
       $reportFormat
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -466,47 +467,73 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateResponsesJsonReportWithFailure(): void {
-    $this->testGenerateresponsesReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateresponsesReportWithFailure(ReportFormat::JSON);
   }
 
-  function testGenerateReviewsCSVReportWithSuccess(): void {
+  function testGenerateReviewCSV_newVersion(): void {
+    $this->generateReviewsCSVReportWithSuccess(true);
+  }
+
+  function testGenerateReviewCSV_oldVersion(): void {
+    $this->generateReviewsCSVReportWithSuccess(false);
+  }
+
+  function generateReviewsCSVReportWithSuccess(bool $useNewVersion): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
-    $expectedReviewsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
+    $expectedReviewsCSVReportData = $useNewVersion
+      ? self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;reviewer;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+      : self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
     parent::assertSame($expectedReviewsCSVReportData, $report->getCsvReportData());
   }
 
-  function testGenerateDynamicReviewsCSVReportWithSuccess(): void {
+  function testGenerateDynamicReviewCSV_newVersion(): void {
+    $this->generateDynamicReviewsCSVReportWithSuccess(true);
+  }
+
+  function testGenerateDynamicReviewCSV_oldVersion(): void {
+    $this->generateDynamicReviewsCSVReportWithSuccess(false);
+  }
+
+  function generateDynamicReviewsCSVReportWithSuccess(bool $useNewVersion): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
 
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
 
-    $expectedReviewsCSVReportData = self::BOM .
-      "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
+    $expectedReviewsCSVReportData = $useNewVersion
+      ? self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;category_content;category_design;category_tech;reviewtime;reviewer;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"FALSE\";\"FALSE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"TRUE\";\"TRUE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+      : self::BOM .
+        "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
@@ -515,15 +542,13 @@ final class ReportTest extends TestCase {
 
   function testGenerateReviewsJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS);
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS);
 
     $expectedReviewsJsonReportData = array_map(
-
       function($review) {
         array_splice($review, array_search('categories', array_keys($review)), 1);
-
         return $review;
       },
       self::REVIEWS
@@ -539,44 +564,84 @@ final class ReportTest extends TestCase {
     parent::assertEquals($expectedReviewsJsonReportData, $report->getReportData());
   }
 
-  function testGenerateDynamicReviewsJsonReportWithSuccess(): void {
-    // Arrange
-    $this->reportType = new ReportType(ReportType::REVIEW);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
-    $this->adminDaoMock->method('getReviewReportData')->willReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
+  function testGenerateDynamicReviewJson_newVersion(): void {
+    $this->generateDynamicReviewsJsonReportWithSuccess(true);
+  }
 
-    $expectedReviewsJsonReportData = [
-      [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
-        'unitname' => 'UNIT.SAMPLE',
-        'priority' => '1',
-        'category: content' => null,
-        'category: design' => null,
-        'category: tech' => 'X',
-        'reviewtime' => '2021-07-29 10:00:00',
-        'entry' => 'this is a sample unit review'
-      ], [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
-        'unitname' => '',
-        'priority' => '1',
-        'category: content' => 'X',
-        'category: design' => 'X',
-        'category: tech' => 'X',
-        'reviewtime' => '2021-07-29 10:00:00',
-        'entry' => 'sample booklet review'
-      ]
-    ];
+  function testGenerateDynamicReviewJson_oldVersion(): void {
+    $this->generateDynamicReviewsJsonReportWithSuccess(false);
+  }
+
+  function generateDynamicReviewsJsonReportWithSuccess(bool $useNewVersion): void {
+    // Arrange
+    $this->reportType = ReportType::REVIEW;
+    $this->reportFormat = ReportFormat::CSV;
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn(self::REVIEWS_WITH_DYNAMIC_CATEGORIES);
+
+    if ($useNewVersion) {
+      $expectedReviewsJsonReportData = [
+        [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => 'UNIT.SAMPLE',
+          'priority' => '1',
+          'category_content' => 'FALSE',
+          'category_design' => 'FALSE',
+          'category_tech' => 'TRUE',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'reviewer' => null,
+          'entry' => 'this is a sample unit review'
+        ], [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => '',
+          'priority' => '1',
+          'category_content' => 'TRUE',
+          'category_design' => 'TRUE',
+          'category_tech' => 'TRUE',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'reviewer' => null,
+          'entry' => 'sample booklet review'
+        ]
+      ];
+    } else {
+      $expectedReviewsJsonReportData = [
+        [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => 'UNIT.SAMPLE',
+          'priority' => '1',
+          'category: content' => null,
+          'category: design' => null,
+          'category: tech' => 'X',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'entry' => 'this is a sample unit review'
+        ], [
+          'groupname' => 'sample_group',
+          'loginname' => 'sample_user',
+          'code' => 'xxx',
+          'bookletname' => 'BOOKLET.SAMPLE-1',
+          'unitname' => '',
+          'priority' => '1',
+          'category: content' => 'X',
+          'category: design' => 'X',
+          'category: tech' => 'X',
+          'reviewtime' => '2021-07-29 10:00:00',
+          'entry' => 'sample booklet review'
+        ]
+      ];
+    }
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
-    $generationSuccess = $report->generate();
+    $generationSuccess = $report->generate($useNewVersion);
 
     // Assert
     $this->assertTrue($generationSuccess);
@@ -584,18 +649,18 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateReviewsCSVReportWithFailure(): void {
-    $this->testGenerateReviewsReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateReviewsReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateReviewsReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
-    $this->adminDaoMock->method('getReviewReportData')->willReturn([]);
+    $this->adminDaoMock->allows('getReviewReportData')->andReturn([]);
 
     // Act
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::REVIEW),
+      ReportType::REVIEW,
       $reportFormat,
     );
     $report->setAdminDAOInstance($this->adminDaoMock);
@@ -606,16 +671,16 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateReviewsJsonReportWithFailure(): void {
-    $this->testGenerateReviewsReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateReviewsReportWithFailure(ReportFormat::CSV);
   }
 
   function testGenerateSysChecksCSVReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::SYSTEM_CHECK);
-    $this->reportFormat = new ReportFormat(ReportFormat::CSV);
+    $this->reportType = ReportType::SYSCHECK;
+    $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksCSVReportData = self::BOM .
       "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
@@ -633,11 +698,11 @@ final class ReportTest extends TestCase {
 
   function testGenerateSysChecksJsonReportWithSuccess(): void {
     // Arrange
-    $this->reportType = new ReportType(ReportType::SYSTEM_CHECK);
-    $this->reportFormat = new ReportFormat(ReportFormat::JSON);
+    $this->reportType = ReportType::SYSCHECK;
+    $this->reportFormat = ReportFormat::CSV;
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksJsonReportData = self::SYS_CHECKS;
     $expectedSysChecksJsonReportData[0]["fileData"] = [
@@ -667,20 +732,20 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateSysChecksCSVReportWithFailure(): void {
-    $this->testGenerateSysChecksReportWithFailure(new ReportFormat(ReportFormat::CSV));
+    $this->testGenerateSysChecksReportWithFailure(ReportFormat::CSV);
   }
 
   private function testGenerateSysChecksReportWithFailure(ReportFormat $reportFormat): void {
     // Arrange
     $this->sysChecksFolderMock
-      ->method('collectSysCheckReports')
-      ->willReturn([]);
+      ->allows('collectSysCheckReports')
+      ->andReturn([]);
 
     // Act
     $report = new Report(
       $this->workspaceId,
       $this->dataIds,
-      new ReportType(ReportType::SYSTEM_CHECK),
+      ReportType::SYSCHECK,
       $reportFormat
     );
     $report->setSysChecksFolderInstance($this->sysChecksFolderMock);
@@ -691,6 +756,6 @@ final class ReportTest extends TestCase {
   }
 
   function testGenerateSysChecksJsonReportWithFailure(): void {
-    $this->testGenerateSysChecksReportWithFailure(new ReportFormat(ReportFormat::JSON));
+    $this->testGenerateSysChecksReportWithFailure(ReportFormat::CSV);
   }
 }

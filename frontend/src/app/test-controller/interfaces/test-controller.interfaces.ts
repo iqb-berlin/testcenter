@@ -152,6 +152,8 @@ export interface ReviewDialogData {
   bookletname: string;
   unitDbKey: string;
   unitTitle: string;
+  currentPageIndex: number;
+  currentPageLabel: string;
 }
 
 export enum NoUnitFlag {
