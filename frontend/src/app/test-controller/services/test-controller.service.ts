@@ -677,10 +677,13 @@ export class TestControllerService {
   }
 
   private saveConditionsTestState(): void {
-    // this is a summary of the state of the conditions for navigation-UI, Group-monitor and the like
-    const lockedByShow = Object.values(this.testlets)
-      .filter(testlet => testlet.restrictions.show && !testlet.locks.show)
-      .map(testlet => testlet.id);
-    this.setTestState('OPTIONAL_TESTLETS_DISABLED', JSON.stringify(lockedByShow));
+    const bookletStates = Object.values(this.booklet?.states || {})
+      .reduce(
+        (agg, state) => {
+          agg[state.id] = state.override || state.current;
+          return agg;
+        }, <{ [state: string]: string }>{});
+    if (!Object.keys(bookletStates).length) return;
+    this.setTestState('BOOKLET_STATES', JSON.stringify(bookletStates));
   }
 }

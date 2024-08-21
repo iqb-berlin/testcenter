@@ -11,7 +11,7 @@ import {
   name: 'position'
 })
 export class PositionPipe implements PipeTransform {
-  transform(testSession: TestSession, theTestlet: Testlet): string {
+  transform(testSession: TestSession, root: Testlet): string {
     const c = {
       hiddenUnits: 0,
       hasShow: false,
@@ -27,7 +27,7 @@ export class PositionPipe implements PipeTransform {
             c.found = true;
             if (testSession.current) {
               c.position =
-                testSession.current[theTestlet.id === '[0]' ? 'indexGlobal' : 'indexAncestor'] + 1 - c.hiddenUnits;
+                testSession.current[root.id === '[0]' ? 'indexGlobal' : 'indexAncestor'] + 1 - c.hiddenUnits;
             }
           }
           continue;
@@ -36,12 +36,16 @@ export class PositionPipe implements PipeTransform {
           c.hasShow = true;
         }
         countHiddenChildren(child);
-        if (!!child.restrictions.show && !!testSession.optionalTestletsHidden?.includes(child.id)) {
+        if (
+          !!child.restrictions.show &&
+          testSession.states &&
+          (testSession.states[child.restrictions.show.if] !== child.restrictions.show.is)
+        ) {
           c.hiddenUnits += child.descendantCount;
         }
       }
     };
-    countHiddenChildren(theTestlet);
-    return `${c.position ? `${c.position} / ` : ''}${theTestlet.descendantCount - c.hiddenUnits}${c.hasShow ? '*' : ''}`;
+    countHiddenChildren(root);
+    return `${c.position ? `${c.position} / ` : ''}${root.descendantCount - c.hiddenUnits}${c.hasShow ? '*' : ''}`;
   }
 }

@@ -44,6 +44,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
+    statesColumn: 'hide',
     highlightSpecies: false,
     manualChecking: false
   };
@@ -147,7 +148,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
     if (Object.keys(this.displayOptions).includes(option)) {
-      (this.displayOptions as { [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey] })[option] = value;
+      (this.displayOptions as {
+        [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey]
+      })[option] = value;
     }
   }
 

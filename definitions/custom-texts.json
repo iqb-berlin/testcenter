@@ -211,6 +211,10 @@
     "label" : "Spalte: Aufgabe",
     "defaultvalue" : "Aufgabe"
   },
+  "gm_col_states" : {
+    "label" : "Spalte: Booklet-Zustände",
+    "defaultvalue" : "Zustände"
+  },
   "gm_view_full" : {
     "label" : "Ansicht: Vollständig",
     "defaultvalue" : "Vollständig"

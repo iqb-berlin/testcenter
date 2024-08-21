@@ -7,7 +7,7 @@ import {
 } from '../group-monitor.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import {
-  BookletDef, BookletStateDef, BookletStateOptionDef, ContextInBooklet, TestletDef, UnitDef
+  BookletConfig, BookletMetadata, BookletStateDef, BookletStateOptionDef, ContextInBooklet, TestletDef, UnitDef
 } from '../../shared/shared.module';
 
 @Injectable()
@@ -45,10 +45,21 @@ export class BookletService extends BookletParserService<Unit, Testlet, BookletS
     }
   }
 
-  toBooklet(bookletDef: BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>>): Booklet {
-    return Object.assign(bookletDef, {
-      species: this.getBookletSpecies(bookletDef)
-    });
+  toBooklet(
+    metadata: BookletMetadata,
+    config: BookletConfig,
+    customTexts: { [key: string]: string },
+    states: { [key: string]: BookletState },
+    units: Testlet
+  ): Booklet {
+    return {
+      metadata,
+      config,
+      customTexts,
+      states,
+      units,
+      species: this.getBookletSpecies(units)
+    };
   }
 
   override toTestlet(testletDef: TestletDef<Testlet, Unit>, e: Element, context: ContextInBooklet<Testlet>): Testlet {
@@ -65,17 +76,20 @@ export class BookletService extends BookletParserService<Unit, Testlet, BookletS
   }
 
   // eslint-disable-next-line class-methods-use-this
-  override toBookletState(stateDef: BookletStateDef<BookletStateOption>, unitElement: Element): BookletState {
-    return stateDef;
+  override toBookletState(stateDef: BookletStateDef<BookletStateOption>): BookletState {
+    const defaultOption = Object.values(stateDef.options).find(option => !option.conditions.length);
+    return Object.assign(stateDef, {
+      default: defaultOption?.id || Object.values(stateDef.options)[0].id
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
-  override toBookletStateOption(optionDef: BookletStateOptionDef, unitElement: Element): BookletStateOption {
+  override toBookletStateOption(optionDef: BookletStateOptionDef): BookletStateOption {
     return optionDef;
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getBookletSpecies(booklet: BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>>): string {
-    return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
+  getBookletSpecies(units: Testlet): string {
+    return `species: ${units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
   }
 }

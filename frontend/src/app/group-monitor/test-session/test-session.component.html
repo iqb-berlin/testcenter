@@ -1,3 +1,7 @@
+<style>
+  .booklet-state {
+  }
+</style>
 <td class="selected" *ngIf="displayOptions.manualChecking">
   <mat-checkbox
     *ngIf="testSession.data.testId >= 0"
@@ -121,22 +125,22 @@
         {{testletOrUnit.labelShort || "&nbsp;"}}
       </span>
 
-      <ng-container
-        *ngIf="isTestlet(testletOrUnit)"
-      >
-        <!-- TODO X  && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id)) -->
-        <span
-          [class]="{
-            testlet: true,
-            selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
-            marked: isMarked(testletOrUnit) && testletOrUnit.blockId
-          }"
-          (mouseenter)="mark(testletOrUnit)"
-          (click)="select($event, testletOrUnit)"
-          matTooltip="{{testletOrUnit.label}}"
-        >
-          <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
-        </span>
+      <ng-container *ngIf="isTestlet(testletOrUnit)">
+        <ng-container *ngIf="testSession | testletvisible : testletOrUnit">
+          <!-- TODO X  && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id)) -->
+          <span
+            [class]="{
+              testlet: true,
+              selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+              marked: isMarked(testletOrUnit) && testletOrUnit.blockId
+            }"
+            (mouseenter)="mark(testletOrUnit)"
+            (click)="select($event, testletOrUnit)"
+            matTooltip="{{testletOrUnit.label}}"
+          >
+            <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
+          </span>
+        </ng-container>
       </ng-container>
   </ng-container>
 </ng-template>
@@ -289,5 +293,16 @@
       matTooltip="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_ID'])}}"
     >description
     </mat-icon>
+  </div>
+</td>
+
+<td class="booklet-states" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.statesColumn === 'show'">
+  <div class="vertical-align-middle" *ngIf="testSession.states">
+    <div *ngFor="let bookletState of testSession.states | keyvalue" class="booklet-state">
+      <ng-container *ngIf="testSession | bookletstates : bookletState.key : bookletState.value as bookletStateLabels">
+        <b>{{ bookletStateLabels.state}}</b>:
+        {{bookletStateLabels.option}}
+      </ng-container>
+    </div>
   </div>
 </td>

@@ -4,7 +4,7 @@ import { Directive, Input } from '@angular/core';
   selector: '[appTemplateContext]'
 })
 export class TemplateContextDirective<T> {
-  @Input() appTemplateContext?: T;
+  @Input() appTemplateContext?: T | undefined;
 
   static ngTemplateContextGuard<T>(
     directive: TemplateContextDirective<T>,

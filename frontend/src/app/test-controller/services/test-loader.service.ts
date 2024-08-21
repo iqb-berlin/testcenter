@@ -9,10 +9,19 @@ import {
 import { CodingScheme, VariableCodingData } from '@iqb/responses';
 import {
   BlockCondition,
-  BlockConditionSource, BookletDef, BookletStateDef, BookletStateOptionDef, ContextInBooklet,
-  CustomtextService, sourceIsConditionAggregation,
-  sourceIsSingleSource, sourceIsSourceAggregation, TestletDef,
-  TestMode, UnitDef
+  BlockConditionSource,
+  BookletConfig,
+  BookletMetadata,
+  BookletStateDef,
+  BookletStateOptionDef,
+  ContextInBooklet,
+  CustomtextService,
+  sourceIsConditionAggregation,
+  sourceIsSingleSource,
+  sourceIsSourceAggregation,
+  TestletDef,
+  TestMode,
+  UnitDef
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded,
@@ -457,8 +466,16 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   // eslint-disable-next-line class-methods-use-this
-  override toBooklet(bookletDef: BookletDef<Testlet, BookletState>): Booklet {
-    return Object.assign(bookletDef, {});
+  override toBooklet(
+    metadata: BookletMetadata,
+    config: BookletConfig,
+    customTexts: { [key: string]: string },
+    states: { [key: string]: BookletState },
+    units: Testlet
+  ): Booklet {
+    return {
+      metadata, config, customTexts, states, units
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -513,14 +530,14 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   // eslint-disable-next-line class-methods-use-this
-  override toBookletStateOption(optionDef: BookletStateOptionDef, optionElement: Element): BookletStateOption {
+  override toBookletStateOption(optionDef: BookletStateOptionDef): BookletStateOption {
     return Object.assign(optionDef, {
       firstUnsatisfiedCondition: optionDef.conditions.length ? -1 : 0
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
-  override toBookletState(stateDef: BookletStateDef<BookletStateOption>, stateElement: Element): BookletState {
+  override toBookletState(stateDef: BookletStateDef<BookletStateOption>): BookletState {
     const defaultOption = Object.values(stateDef.options).find(option => !option.conditions.length);
     if (!defaultOption) {
       throw new Error(`Invalid booklet: state ${stateDef.id} hat no default option`);

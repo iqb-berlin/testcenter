@@ -28,6 +28,8 @@ import { GroupMonitorConfig } from './group-monitor.interfaces';
 import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
+import { BookletStatesPipe } from './test-session/bookletstates.pipe';
+import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { PositionPipe } from './test-session/position.pipe';
     TestSessionComponent,
     IsCodeClearPipe,
     TimeLeftPipe,
-    PositionPipe
+    PositionPipe,
+    BookletStatesPipe,
+    TestletvisiblePipe
   ],
   imports: [
     CommonModule,

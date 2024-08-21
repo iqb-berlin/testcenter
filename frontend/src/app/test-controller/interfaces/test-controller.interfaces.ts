@@ -81,7 +81,7 @@ export type TestState = {
   TESTLETS_TIMELEFT: string;
   TESTLETS_CLEARED_CODE: string;
   TESTLETS_LOCKED_AFTER_LEAVE: string;
-  OPTIONAL_TESTLETS_DISABLED: string;
+  BOOKLET_STATES: { [state: string]: string };
   UNITS_LOCKED_AFTER_LEAVE: string;
   FOCUS: AppFocusState;
   CONTROLLER: UnitPlayerState;

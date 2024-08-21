@@ -58,6 +58,10 @@
     <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
     <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
   </button>
+  <button mat-menu-item (click)="setDisplayOption('statesColumn', (displayOptions.statesColumn === 'hide') ? 'show' : 'hide')">
+    <mat-icon *ngIf="displayOptions.statesColumn === 'show'">check</mat-icon>
+    <span>{{'Zustände' | customtext:'gm_col_states' | async}}</span>
+  </button>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
@@ -240,6 +244,9 @@
                 </td>
                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
                   {{'Aufgabe' | customtext:'gm_col_unit' | async}}
+                </td>
+                <td mat-sort-header="_currentUnit" *ngIf="displayOptions.statesColumn === 'show'">
+                  {{'Zustände' | customtext:'gm_col_states' | async}}
                 </td>
               </tr>
             </thead>

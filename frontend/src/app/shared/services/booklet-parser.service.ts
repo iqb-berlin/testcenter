@@ -23,7 +23,11 @@ export abstract class BookletParserService<
   Booklet extends BookletDef<Testlet, BookletState>
 > {
   abstract toBooklet(
-    bookletDef: BookletDef<Testlet, BookletState>,
+    metadata: BookletMetadata,
+    config: BookletConfig,
+    customTexts: { [key: string]: string },
+    states: { [key: string]: BookletState },
+    units: Testlet,
     bookletElement: Element
   ): Booklet;
 
@@ -85,9 +89,11 @@ export abstract class BookletParserService<
     const units = this.parseTestlet(unitsElement, rootContext);
 
     return this.toBooklet(
-      {
-        units, metadata, config, customTexts, states
-      },
+      metadata,
+      config,
+      customTexts,
+      states,
+      units,
       bookletElement
     );
   }

@@ -16,7 +16,7 @@ export interface TestSession {
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: string[] | null;
   readonly timeLeft: Record<string, number> | null;
-  readonly optionalTestletsHidden: string[] | null;
+  readonly states: { [state: string]: string } | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -39,6 +39,7 @@ export interface TestViewDisplayOptions {
   view: 'full' | 'medium' | 'small';
   groupColumn: 'show' | 'hide';
   bookletColumn: 'show' | 'hide';
+  statesColumn: 'show' | 'hide';
   highlightSpecies: boolean;
   manualChecking: boolean;
 }
@@ -91,7 +92,7 @@ export interface GotoCommandData {
 
 export type Unit = UnitDef;
 
-export interface Booklet extends BookletDef<Testlet, BookletStateDef<BookletStateOptionDef>> {
+export interface Booklet extends BookletDef<Testlet, BookletState> {
   species: string;
 }
 
@@ -102,7 +103,9 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
 }
 
 export type BookletStateOption = BookletStateOptionDef;
-export type BookletState = BookletStateDef<BookletStateOption>;
+export interface BookletState extends BookletStateDef<BookletStateOption> {
+  default: string;
+}
 
 export function isUnit(testletOrUnit: Testlet | UnitDef): testletOrUnit is UnitDef {
   return !('children' in testletOrUnit);

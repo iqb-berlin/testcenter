@@ -320,8 +320,9 @@ export class TestSessionManager {
     const groupedByTargetUnitAlias: GotoCommandData = {};
     sessionsSet.forEach(session => {
       if (!session.data.bookletName || !isBooklet(session.booklet)) return;
-      const ignoreTestlet =
-        (testlet: Testlet) => !!testlet.restrictions.show && !!session.optionalTestletsHidden?.includes(testlet.id);
+      const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
+        !!session.states &&
+        (session.states[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
       const firstUnit = selection.element?.blockId ?
         BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
         null;
