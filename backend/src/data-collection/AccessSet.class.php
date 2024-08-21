@@ -1,6 +1,8 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO add unit-tests
 
 class AccessSet extends DataCollectionTypeSafe {
@@ -11,7 +13,8 @@ class AccessSet extends DataCollectionTypeSafe {
     'workspaceAdmin',
     'studyMonitor',
     'testGroupMonitor',
-    'attachmentManager'
+    'attachmentManager',
+    'sysCheck'
   ];
 
   protected string $token;
@@ -23,7 +26,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   static function createFromPersonSession(
     PersonSession $loginWithPerson,
-    WorkspaceData | TestData | Group ...$accessItems
+    WorkspaceData|TestData|Group|SystemCheck ...$accessItems
   ): AccessSet {
     $login = $loginWithPerson->getLoginSession()->getLogin();
 
@@ -55,6 +58,8 @@ class AccessSet extends DataCollectionTypeSafe {
         case 'TestData':
           $accessSet->addTests($accessItem);
           break;
+        case 'SystemCheck':
+          $accessSet->addSystemChecks($accessItem);
       }
     }
 
@@ -75,7 +80,7 @@ class AccessSet extends DataCollectionTypeSafe {
     );
 
     $accessObjects = array_map(
-      function(WorkspaceData $workspace): AccessObject {
+      function (WorkspaceData $workspace): AccessObject {
         return new AccessObject(
           (string) $workspace->getId(),
           'workspaceAdmin',
@@ -114,7 +119,7 @@ class AccessSet extends DataCollectionTypeSafe {
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
-    $this->flags = array_map(function($flag) {
+    $this->flags = array_map(function ($flag) {
       return (string) $flag;
     }, $flags);
 
@@ -164,7 +169,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   private function addTests(TestData ...$testsOfPerson): void {
     $bookletsData = array_map(
-      function(TestData $testData): AccessObject {
+      function (TestData $testData): AccessObject {
         return new AccessObject(
           $testData->bookletId,
           'test',
@@ -182,12 +187,14 @@ class AccessSet extends DataCollectionTypeSafe {
 
   private function addGroupMonitors(Group ...$groups): void {
     $groupMonitors = array_map(
-      function(Group $group) {
+      function (Group $group) {
         $flags = [];
         if ($group->_expired->type == ExpirationStateType::Expired) {
           $flags['expired'] = $group->_expired->timestamp * 1000;
-        } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
-          $flags['scheduled'] = $group->_expired->timestamp * 1000;
+        } else {
+          if ($group->_expired->type == ExpirationStateType::Scheduled) {
+            $flags['scheduled'] = $group->_expired->timestamp * 1000;
+          }
         };
         return new AccessObject($group->name, 'testGroupMonitor', $group->label, $flags);
       },
@@ -196,8 +203,7 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->addAccessObjects('testGroupMonitor', ...$groupMonitors);
   }
 
-  private function addStudyMonitor(WorkspaceData $accessItem): void
-  {
+  private function addStudyMonitor(WorkspaceData $accessItem): void {
     $this->addAccessObjects(
       'studyMonitor',
       new AccessObject(
@@ -207,5 +213,16 @@ class AccessSet extends DataCollectionTypeSafe {
       )
     );
 
+  }
+
+  private function addSystemChecks(SystemCheck $accessItem): void {
+    $this->addAccessObjects(
+      'sysCheck',
+      new AccessObject(
+        $accessItem->getId(),
+        'sysCheck',
+        $accessItem->getName()
+      )
+    );
   }
 }

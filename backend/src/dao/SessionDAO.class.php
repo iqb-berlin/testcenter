@@ -710,4 +710,42 @@ class SessionDAO extends DAO {
 
     return $logins;
   }
+
+  /** @return SystemCheck[] */
+  public function getSysChecksOfPerson(PersonSession $personSession): array
+  {
+    $mode = $personSession->getLoginSession()->getLogin()->getMode();
+    $wsId = $personSession->getLoginSession()->getLogin()->getWorkspaceId();
+    $sessionName = $personSession->getLoginSession()->getLogin()->getName();
+
+    $syschecks = $this->_("
+      select * 
+      from files 
+      left join logins on files.workspace_id = logins.workspace_id
+      where 
+        files.type = 'SysCheck' and
+        logins.name = :session_name and
+        logins.workspace_id = :ws_id and
+        logins.mode = 'sys-check-login'
+      ",
+      [
+        'session_name' => $sessionName,
+        'ws_id' => $wsId,
+      ],
+      true
+    );
+
+    return array_map(
+      function (array $sysCheck) {
+        return new SystemCheck(
+          (string) $sysCheck['workspace_id'],
+          (string) $sysCheck['id'],
+          $sysCheck['name'],
+          $sysCheck['label'],
+          $sysCheck['description']
+        );
+      },
+      $syschecks
+    );
+  }
 }
