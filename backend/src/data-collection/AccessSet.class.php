@@ -215,14 +215,20 @@ class AccessSet extends DataCollectionTypeSafe {
 
   }
 
-  private function addSystemChecks(SystemCheck $accessItem): void {
-    $this->addAccessObjects(
-      'sysCheck',
-      new AccessObject(
-        $accessItem->getId(),
-        'sysCheck',
-        $accessItem->getName()
-      )
+  private function addSystemChecks(SystemCheck ...$accessItems): void {
+    $systemChecks = array_map(
+      function (SystemCheck $systemCheck) {
+        return new SystemCheckAccessObject(
+          $systemCheck->getWorkspaceId(),
+          $systemCheck->getId(),
+          'sysCheck',
+          $systemCheck->getLabel(),
+          $systemCheck->getDescription()
+        );
+      },
+      $accessItems
     );
+
+    $this->addAccessObjects('sysCheck', ...$systemChecks);
   }
 }

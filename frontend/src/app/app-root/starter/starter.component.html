@@ -95,16 +95,17 @@
           </div>
         </a>
 
-        <ng-container *ngIf="!mds.sysCheckAvailableForAll">
+        <ng-container *ngIf="accessObjects.sysCheck">
           <h4>System-Check</h4>
           <a
+            *ngFor="let sc of accessObjects.sysCheck"
             mat-raised-button
             class="starter"
             color="primary"
-            [routerLink]="['/r/check-starter']"
+            [routerLink]="['/check', sc.workspaceId, sc.id]"
           >
-            <div class="starter-title">System Check</div>
-          </a>
+            <div class="starter-title">{{sc.label}}</div>
+            <div class="starter-status">{{sc.description}}</div>          </a>
         </ng-container>
       </div>
       <tc-alert
