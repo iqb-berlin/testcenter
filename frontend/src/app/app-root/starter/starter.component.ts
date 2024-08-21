@@ -17,7 +17,6 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  sessionHasSysCheck: boolean = false;
   constructor(
     private router: Router,
     private bs: BackendService,
@@ -52,11 +51,6 @@ export class StarterComponent implements OnInit, OnDestroy {
           this.reloadTestList();
         }
       });
-
-      this.bs.getSysCheckInfosForSessionWorkspace()
-        .subscribe(canSessionShowSysCheck => {
-          this.sessionHasSysCheck = canSessionShowSysCheck;
-        });
     });
   }
 

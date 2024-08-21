@@ -200,22 +200,4 @@ class SessionController extends Controller {
     return $response->withStatus(205);
   }
 
-  public static function showSysChecksForSession(Request $request, Response $response): Response {
-    $authToken = self::authToken($request);
-
-    if ($authToken->getType() == "person") {
-      $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-      $workspace = self::workspaceDAO($personSession->getLoginSession()->getLogin()->getWorkspaceId());
-
-      $workspaceCanShowSysChecks = !$workspace->isWorkspaceContentType('test');
-      if (!$workspaceCanShowSysChecks) {
-        return $response->withStatus(204, "Not allowed to show system checks.");
-      }
-
-      return $response->withJson($workspaceCanShowSysChecks);
-    }
-
-    throw new HttpUnauthorizedException($request);
-  }
-
 }

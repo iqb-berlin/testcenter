@@ -52,10 +52,6 @@ $app->put('/session/person', [SessionController::class, 'putSessionPerson'])
 $app->delete('/session', [SessionController::class, 'deleteSession'])
   ->add(new RequireToken('person', 'login', 'admin'));
 
-$app->get('/session/sys-checks', [SessionController::class, 'showSysChecksForSession'])
-  ->add(new RequireToken('person'));
-
-
 $app->group('/speed-test', function (RouteCollectorProxy $group) {
   $group->get('/random-package/{size}', [SpeedtestController::class, 'getRandomPackage']);
 

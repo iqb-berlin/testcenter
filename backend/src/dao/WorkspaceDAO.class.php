@@ -608,17 +608,6 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  public function isWorkspaceContentType(string $type): bool
-  {
-    return $this->_(
-      "select count(*) as count from workspaces where id = :ws_id and workspaces.content_type = :type",
-      [
-        ':ws_id' => $this->workspaceId,
-        ':type' => $type
-      ],
-    )['count'] > 0;
-  }
-
   private function checkForSysCheckMode(LoginArray $logins) {
     /** @var Login $login */
     foreach ($logins as $login) {
