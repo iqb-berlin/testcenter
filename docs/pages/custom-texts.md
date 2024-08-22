@@ -136,7 +136,7 @@ Funktioniert auch nicht? Dann...
 |syscheck_intro|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|
 |syscheck_questionsRequiredMessage|Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden|Bitte prüfen Sie die Eingaben (unvollständig):|
 |syscheck_questionsintro|Aufforderung, die Fragen (Questionnaire) zu beantworten|Bitte bearbeiten Sie die nachfolgenden Fragen.|
-|syscheck_report_aboutPassword|Dialog 'Bericht senden': Text über das Passworteingabefeld|Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Kennwort ein, das Sie von der Projektleitung erhalten haben!|
+|syscheck_report_aboutPassword|Dialog 'Bericht senden': Text über das Passworteingabefeld|Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!|
 |syscheck_report_aboutReportId|Dialog 'Bericht senden': Text über das Passworteingabefeld|Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten '        + 'Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!|
 |syscheck_report_id|Dialog 'Bericht senden': Platzhalter für das ID-Eingabefeld vor dem Senden des Berichts|Schul-ID|
 |syscheck_unitPrompt|Titelzeile über der Aufgabe|Bitte prüfen Sie die folgenden Aufgaben-Elemente|

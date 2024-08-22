@@ -25,17 +25,18 @@ test like a testtaker.
 * `RUN-REVIEW`: Prüfdurchgang ohne Speichern
 * `RUN-TRIAL`: Prüfdurchgang mit Speichern und Reviewfunktionalität
 * `RUN-SIMULATION`: Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen
+* `SYS-CHECK-LOGIN`: Dieser Modus versteckt für alle anderen Logins den System Check. Der Check kann dann nur noch von Logins durchgeführt werden mit diesem Mode
 
 
-|  | `RUN-DEMO` | `MONITOR-GROUP` | `MONITOR-STUDY` | `RUN-HOT-RETURN` | `RUN-HOT-RESTART` | `RUN-REVIEW` | `RUN-TRIAL` | `RUN-SIMULATION` | 
-| :------------- | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
-|Bie jedem Einloggen wird ein neuer Teilnehmer angelegt|  |  |  |  |X |  |  |  |
-|Es können Reviews abgegeben werden (Kommentare/Einschätzungen zur Unit bzw. zum Test)|  |  |  |  |  |X |X |  |
-|Es werden Antworten und Logs gespeichert.|  |  |  |X |X |  |X |  |
-|Alle Zeitbeschränkungen für Testabschnitte werden angewendet.|  |  |  |X |X |  |  |X |
-|Alle Navigationsbeschränkungen des Booklets werden angewendet (z. B. erst weiter, wenn vollständig angezeigt).|  |  |  |X |X |  |  |X |
-|Kann im Gruppen-Monitor beobachtet werden|  |  |  |X |X |  |X |  |
-|Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses bei der Eingabebox schon eingetragen.|X |X |X |  |  |X |X |  |
-|Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.|  |  |  |  |  |X |X |  |
-|Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.|  |  |  |  |  |X |X |  |
-|Kann aus dem Gruppen-Monitor aus gesteuert werden|  |  |  |X |X |  |  |  |
+|  | `RUN-DEMO` | `MONITOR-GROUP` | `MONITOR-STUDY` | `RUN-HOT-RETURN` | `RUN-HOT-RESTART` | `RUN-REVIEW` | `RUN-TRIAL` | `RUN-SIMULATION` | `SYS-CHECK-LOGIN` | 
+| :------------- | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
+|Bie jedem Einloggen wird ein neuer Teilnehmer angelegt|  |  |  |  |X |  |  |  |  |
+|Es können Reviews abgegeben werden (Kommentare/Einschätzungen zur Unit bzw. zum Test)|  |  |  |  |  |X |X |  |  |
+|Es werden Antworten und Logs gespeichert.|  |  |  |X |X |  |X |  |  |
+|Alle Zeitbeschränkungen für Testabschnitte werden angewendet.|  |  |  |X |X |  |  |X |  |
+|Alle Navigationsbeschränkungen des Booklets werden angewendet (z. B. erst weiter, wenn vollständig angezeigt).|  |  |  |X |X |  |  |X |  |
+|Kann im Gruppen-Monitor beobachtet werden|  |  |  |X |X |  |X |  |  |
+|Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses bei der Eingabebox schon eingetragen.|X |X |X |  |  |X |X |  |  |
+|Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.|  |  |  |  |  |X |X |  |  |
+|Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.|  |  |  |  |  |X |X |  |  |
+|Kann aus dem Gruppen-Monitor aus gesteuert werden|  |  |  |X |X |  |  |  |  |
