@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 class SystemCheckAccessObject extends AccessObject {
   public function __construct(
-    protected string $workspaceId,
+    readonly public string $workspaceId,
     string $id,
-    string $type,
+    AccessObjectType $type,
     string $label,
-    protected string $description,
+    public readonly string $description,
     array $flags = []
   ) {
     parent::__construct(
@@ -17,10 +17,6 @@ class SystemCheckAccessObject extends AccessObject {
       $label,
       $flags
     );
-  }
-
-  public function getWorkspaceId(): string {
-    return $this->workspaceId;
   }
 
 }

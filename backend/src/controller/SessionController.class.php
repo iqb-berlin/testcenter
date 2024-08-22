@@ -33,7 +33,7 @@ class SessionController extends Controller {
     $workspaces = self::adminDAO()->getWorkspaces($token);
     $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
-    if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
+    if (!$accessSet->hasAccessType(AccessObjectType::WORKSPACE_ADMIN) and !$accessSet->hasAccessType(AccessObjectType::SUPER_ADMIN)) {
       throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
     }
 

@@ -40,6 +40,6 @@ class AccessSetTest extends TestCase {
     $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData);
 
     // Assert
-    parent::assertTrue($accessSet->hasAccessType('studyMonitor'));
+    parent::assertTrue($accessSet->hasAccessType(AccessObjectType::STUDY_MONITOR));
   }
 }
