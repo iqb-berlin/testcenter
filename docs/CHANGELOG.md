@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:
   * Alle Reviewdateien beinhalten zusätzlich eine Spalte (CSV) / Feld (JSON) mit dem ursprünglichen Unitnamen, für
