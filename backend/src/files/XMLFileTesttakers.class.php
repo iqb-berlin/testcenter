@@ -14,8 +14,6 @@ class XMLFileTesttakers extends XMLFile {
     $this->logins = $this->getAllLogins();
     $this->contextData['testtakers'] = count($this->logins->asArray());
 
-//    $this->checkForDuplicateLogins();
-
     foreach ($this->logins as $login) {
       /* @var Login $login */
       $this->checkIfBookletsArePresent($login, $workspaceCache);
@@ -25,8 +23,10 @@ class XMLFileTesttakers extends XMLFile {
   }
 
   private function checkIfBookletsArePresent(Login $testtaker, WorkspaceCache $validator): void {
-    foreach ($testtaker->getBooklets() as $code => $booklets) {
-      foreach ($booklets as $bookletId) {
+    foreach ($testtaker->testNames() as $code => $testNames) {
+      foreach ($testNames as $testName) {
+        $testName = TestName::fromString($testName);
+        $bookletId = $testName->bookletFileId;
         $booklet = $validator->getBooklet($bookletId);
 
         if ($booklet != null) {
@@ -164,7 +164,7 @@ class XMLFileTesttakers extends XMLFile {
     $name = (string) $loginElement['name'];
     $booklets = ($mode == 'monitor-group')
       ? ['' => $this->collectBookletsOfGroup($workspaceId, $name)]
-      : self::collectBookletsPerCode($loginElement);
+      : self::collectTestNamesPerCode($loginElement);
 
     return new Login(
       $name,
@@ -183,69 +183,79 @@ class XMLFileTesttakers extends XMLFile {
 
   // TODO write unit test
   // TODO make private
+  /**
+   * @return string[]
+   */
   public function collectBookletsOfGroup(int $workspaceId, string $loginName): array {
     $members = $this->getLoginsInSameGroup($loginName, $workspaceId);
-    $booklets = [];
+    /** @var $testNames string[] */
+    $testNames = [];
 
     foreach ($members as $member) {
-      /* @var $member Login */
+      /** @var $member Login */
+      $codes2booklets = $member->testNames();
 
-      $codes2booklets = $member->getBooklets() ?? [];
-
-      foreach ($codes2booklets as $bookletList) {
-        foreach ($bookletList as $booklet) {
-          $booklets[] = $booklet;
+      foreach ($codes2booklets as $testNamesOfCode) {
+        foreach ($testNamesOfCode as $testName) {
+          $testNames[$testName] = $testName;
         }
       }
     }
 
-    return array_unique($booklets);
+    return array_values($testNames);
   }
 
-  protected static function collectBookletsPerCode(SimpleXMLElement $loginNode): array {
-    $noCodeBooklets = [];
-    $codeBooklets = [];
+  /** @return TestName[] */
+  protected static function collectTestNamesPerCode(SimpleXMLElement $loginNode): array {
+    /** @var $noCodeTestNames string[] */
+    $noCodeTestNames = [];
+    /** @var $codeTestNames string[] */
+    $codeTestNames = [];
+
+    $testNameFromElement = function (SimpleXMLElement $bookletElement): string {
+      $bookletFileId = strtoupper(trim((string) $bookletElement));
+      $statesString = (string) $bookletElement['state'];
+      $testName = TestName::fromStrings($bookletFileId, $statesString);
+      return $testName->name;
+    };
 
     foreach ($loginNode->xpath('Booklet') as $bookletElement) {
-      $bookletName = strtoupper(trim((string) $bookletElement));
+      $testName = $testNameFromElement($bookletElement);
+      if (!$testName) continue;
 
-      if (!$bookletName) {
-        continue;
-      }
+      $codesOfThisTestName = self::getCodesFromBookletElement($bookletElement);
 
-      $codesOfThisBooklet = self::getCodesFromBookletElement($bookletElement);
-
-      if (count($codesOfThisBooklet) > 0) {
-        foreach ($codesOfThisBooklet as $c) {
-          if (!isset($codeBooklets[$c])) {
-            $codeBooklets[$c] = [];
+      if (count($codesOfThisTestName) > 0) {
+        foreach ($codesOfThisTestName as $c) {
+          if (!isset($codeTestNames[$c])) {
+            $codeTestNames[$c] = [];
           }
 
-          if (!in_array($bookletName, $codeBooklets[$c])) {
-            $codeBooklets[$c][] = $bookletName;
+          if (!in_array($testName, $codeTestNames[$c])) {
+            $codeTestNames[$c][] = $testName;
           }
         }
 
       } else {
-        $noCodeBooklets[] = $bookletName;
+        $noCodeTestNames[] = $testName;
       }
     }
 
-    $noCodeBooklets = array_unique($noCodeBooklets);
+    $noCodeTestNames = array_unique($noCodeTestNames);
 
-    if (count($codeBooklets) === 0) {
-      $codeBooklets = ['' => $noCodeBooklets];
-
+    if (count($codeTestNames) === 0) {
+      $codeTestNames = ['' => $noCodeTestNames];
     } else {
       // add all no-code-booklets to every code
-      foreach ($codeBooklets as $code => $booklets) {
-        $codeBooklets[$code] = array_unique(array_merge($codeBooklets[$code], $noCodeBooklets));
+      foreach ($codeTestNames as $code => $testNames) {
+        $codeTestNames[$code] = array_unique(array_merge($testNames, $noCodeTestNames));
       }
     }
 
-    return $codeBooklets;
+    return $codeTestNames;
   }
 
+  /** @return string[] */
   protected static function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
     if ($bookletElement->getName() !== 'Booklet') {
       return [];

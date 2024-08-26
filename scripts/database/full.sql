@@ -64,13 +64,14 @@ truncate person_sessions; -- to reset auto-increment
 
 CREATE TABLE `tests` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `name` varchar(250) COLLATE utf8mb3_german2_ci NOT NULL,
   `person_id` bigint unsigned NOT NULL,
   `laststate` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `label` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `running` tinyint(1) NOT NULL DEFAULT '0',
   `timestamp_server` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `file_id` varchar(50) COLLATE utf8mb3_german2_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `index_fk_booklet_person` (`person_id`) USING BTREE,
   CONSTRAINT `fk_booklet_person` FOREIGN KEY (`person_id`) REFERENCES `person_sessions` (`id`) ON DELETE CASCADE

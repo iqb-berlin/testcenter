@@ -10,7 +10,6 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
-use Slim\Psr7\Stream;
 
 class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
@@ -24,8 +23,10 @@ class TestController extends Controller {
 
     if (!$test) {
       $workspace = new Workspace($authToken->getWorkspaceId());
-      $bookletLabel = $workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
-      $test = self::testDAO()->createTest($authToken->getId(), $body['bookletName'], $bookletLabel);
+      $testName = TestName::fromString($body['bookletName']);
+      $bookletLabel = $workspace->getFileById('Booklet', $testName->bookletFileId)->getLabel();
+
+      $test = self::testDAO()->createTest($authToken->getId(), $testName, $bookletLabel);
     }
 
     if ($test->locked) {
@@ -52,14 +53,15 @@ class TestController extends Controller {
     }
 
     $workspace = new Workspace($authToken->getWorkspaceId());
-    $bookletFile = $workspace->getFileById('Booklet', $test->bookletId); // 3
+    $bookletFile = $workspace->getFileById('Booklet', $test->bookletFileId);
+    $testName = TestName::fromString($test->name);
 
     // TODO check for Mode::hasCapability('monitorable'))
 
     if (!$test->running) {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $message = SessionChangeMessage::session($test->id, $personSession);
-      $message->setTestState((array) $test->state, $test->bookletId);
+      $message->setTestState((array) $test->state, $test->name);
       self::testDAO()->setTestRunning($test->id);
     } else {
       $message = SessionChangeMessage::testState(
@@ -67,7 +69,7 @@ class TestController extends Controller {
         $authToken->getId(),
         $test->id,
         (array) $test->state,
-        $test->bookletId
+        $test->name
       );
     }
     BroadcastService::sessionChange($message);
@@ -78,7 +80,8 @@ class TestController extends Controller {
       'xml' => $bookletFile->getContent(),
       'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()),
       'firstStart' => !$test->running,
-      'workspaceId' =>  $workspace->getId()
+      'workspaceId' =>  $workspace->getId(),
+      'presetBookletStates' => $testName->states
     ]);
   }
 

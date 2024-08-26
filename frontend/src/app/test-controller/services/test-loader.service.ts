@@ -46,6 +46,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
   private loadingQueue: LoadingQueueEntry[] = [];
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
+  private presetBookletStates: { [p: string]: string } = {};
 
   constructor(
     public tcs: TestControllerService,
@@ -69,6 +70,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
     this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
+    this.presetBookletStates = testData.presetBookletStates;
+
     this.getBookletFromXml(testData.xml);
 
     this.tcs.timerWarningPoints =
@@ -91,6 +94,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     // Reset TestMode to be Demo, before the correct one comes with getTestData
     // TODO maybe it would be better to retrieve the testmode from the login
     this.tcs.testMode = new TestMode();
+    this.presetBookletStates = {};
     this.tcs.reset();
 
     this.tcs.totalLoadingProgress = 0;
@@ -542,10 +546,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     if (!defaultOption) {
       throw new Error(`Invalid booklet: state ${stateDef.id} hat no default option`);
     }
+    console.log(stateDef.id, this.presetBookletStates[stateDef.id]);
     return Object.assign(stateDef, {
       current: defaultOption.id,
       default: defaultOption.id,
-      override: undefined
+      override: this.presetBookletStates[stateDef.id]
     });
   }
 }

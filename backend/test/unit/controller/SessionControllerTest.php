@@ -185,6 +185,7 @@ final class SessionControllerTest extends TestCase {
         new TestData(
           1,
           'THE_BOOKLET',
+          'THE_BOOKLET',
           'Label of THE_BOOKLET',
           'Description',
           true,
@@ -274,6 +275,7 @@ final class SessionControllerTest extends TestCase {
               return new TestData(
                 1,
                 $bookletId,
+                $bookletId,
                 "label of $bookletId",
                 "desc",
                 false,
@@ -281,7 +283,7 @@ final class SessionControllerTest extends TestCase {
                 (object) []
               );
             },
-            $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? '']
+            $personSession->getLoginSession()->getLogin()->testNames()[$personSession->getPerson()->getCode() ?? '']
           );
         }
       ],
@@ -296,10 +298,11 @@ final class SessionControllerTest extends TestCase {
     $this->mockTestDAO(
       [
         'getTestByPerson' => null,
-        'createTest' => function(int $personId, string $bookletId, string $bookletLabel): TestData {
+        'createTest' => function(int $personId, TestName $testName, string $bookletLabel): TestData {
           return new TestData(
             1,
-            $bookletId,
+            $testName->name,
+            $testName->bookletFileId,
             $bookletLabel,
             'desc',
             false,
@@ -395,6 +398,7 @@ final class SessionControllerTest extends TestCase {
         new TestData(
           1,
           'THE_BOOKLET',
+          'THE_BOOKLET',
           'Label of THE_BOOKLET',
           'Description',
           true,
@@ -453,6 +457,7 @@ final class SessionControllerTest extends TestCase {
       'getTestsOfPerson' => [
         new TestData(
           1,
+          'THE_BOOKLET',
           'THE_BOOKLET',
           'Label of THE_BOOKLET',
           'Description',

@@ -247,7 +247,7 @@ class SessionDAO extends DAO {
   ): PersonSession {
     $login = $loginSession->getLogin();
 
-    if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
+    if (count($login->testNames()) and !array_key_exists($code, $login->testNames())) {
       throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
     }
 
@@ -532,35 +532,52 @@ class SessionDAO extends DAO {
   }
 
   public function getTestsOfPerson(PersonSession $personSession): array {
-    $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
-    if (!count($bookletIds)) {
-      return [];
+    $testNames = $personSession->getLoginSession()->getLogin()->testNames()[$personSession->getPerson()->getCode() ?? ''];
+    if (!count($testNames)) return [];
+
+    $replacementsVirtualTable = [];
+    foreach ($testNames as $testName) {
+      $testName = TestName::fromString($testName);
+      $replacementsVirtualTable[] = $testName->name;
+      $replacementsVirtualTable[] = $testName->bookletFileId;
     }
-    $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
-    $sql = "select
-              tests.person_id,
-              tests.id,
-              tests.locked,
-              tests.running,
-              files.name,
-              files.id as bookletId,
-              files.label as testLabel,
-              files.description
-            from files
-              left outer join tests on files.id = tests.name and tests.person_id = ?
-            where
-              files.workspace_id = ?
-              and files.type = 'Booklet'
-              and files.id in ($placeHolder)
-            order by
-              field(files.id, $placeHolder)";
+
+    $virtualTable = implode(",\n", array_fill(0, count($testNames), 'row (?, ?)'));
+    $orderField = implode(', ', array_fill(0, count($testNames), '?'));
+
+    $sql = "
+      with ba (test_name, booklet_file_id) as (
+        values 
+          $virtualTable
+      )
+      select
+        ba.test_name,
+        tests.person_id,
+        tests.id,
+        tests.locked,
+        tests.running,
+        files.name,
+        files.id as bookletId,
+        files.label as testLabel,
+        files.description
+      from ba
+        left outer join tests
+          on ba.test_name = tests.name
+            and tests.person_id = ?
+        left outer join files
+          on ba.booklet_file_id = files.id
+            and files.workspace_id = ?
+            and files.type = 'Booklet'
+      order by
+        field($orderField)
+    ";
     $tests = $this->_(
       $sql,
       [
+        ...$replacementsVirtualTable,
         $personSession->getPerson()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
-        ...$bookletIds,
-        ...$bookletIds
+        ...$testNames
       ],
       true
     );
@@ -568,6 +585,7 @@ class SessionDAO extends DAO {
       function(array $res): TestData {
         return new TestData(
           (int) $res['id'],
+          $res['test_name'],
           $res['bookletId'],
           $res['testLabel'],
           $res['description'],

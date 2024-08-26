@@ -437,7 +437,7 @@ class SessionDAOTest extends TestCase {
       "hot-run-restart",
       "sample_group",
       "Sample Group",
-      ['' => 'A.BOOKLET'],
+      ['' => ['A.BOOKLET']],
       1,
       946803600
     );

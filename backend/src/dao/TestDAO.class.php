@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 class TestDAO extends DAO {
   // TODO unit test
-  public function getTestByPerson(int $personId, string $bookletName): TestData | null {
+  public function getTestByPerson(int $personId, string $testName): TestData | null {
     $test = $this->_(
-      'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests
-            where tests.person_id=:personId and tests.name=:bookletname',
+      'select tests.locked, tests.name, tests.id, tests.file_id, tests.laststate, tests.label, tests.running from tests
+            where tests.person_id=:personId and tests.name=:testname',
       [
         ':personId' => $personId,
-        ':bookletname' => $bookletName
+        ':testname' => $testName
       ]
     );
 
@@ -20,6 +20,7 @@ class TestDAO extends DAO {
     return new TestData(
       $test['id'],
       $test['name'],
+      $test['file_id'],
       $test['label'],
       '',
       (bool) $test['locked'],
@@ -29,31 +30,35 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function createTest(int $personId, string $bookletId, string $bookletLabel): TestData {
+  public function createTest(int $personId, TestName $testName, string $bookletLabel): TestData {
+    $state = (object) [];
     $this->_(
-      'insert into tests (person_id, name, label) values (:person_id, :name, :label)',
+      'insert into tests (person_id, name, label, laststate, file_id) values (:person_id, :name, :label, :state, :file_id)',
       [
         ':person_id' => $personId,
-        ':name' => $bookletId,
-        ':label' => $bookletLabel
+        ':name' => $testName->name,
+        ':label' => $bookletLabel,
+        ':state' => json_encode($state),
+        ':file_id' => $testName->bookletFileId
       ]
     );
 
     return new TestData(
       (int) $this->pdoDBhandle->lastInsertId(),
-      $bookletId,
+      $testName->name,
+      $testName->bookletFileId,
       $bookletLabel,
       '',
       false,
       false,
-      (object) []
+      $state
     );
   }
 
   // TODO unit test
   public function getTestById(int $testId): TestData | null {
     $test = $this->_(
-      'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests where id = :id',
+      'select tests.locked, tests.name, tests.id, tests.file_id, tests.laststate, tests.label, tests.running from tests where id = :id',
       [
         ':id' => $testId
       ]
@@ -66,6 +71,7 @@ class TestDAO extends DAO {
     return new TestData(
       $test['id'],
       $test['name'],
+      $test['file_id'],
       $test['label'],
       '',
       (bool) $test['locked'],
@@ -114,6 +120,7 @@ class TestDAO extends DAO {
     return ($test) ? JSON::decode($test['laststate'], true) : [];
   }
 
+  // TODO use data-collection class
   public function getTestSession(int $testId): array {
     $testSession = $this->_(
     'select

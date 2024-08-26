@@ -88,8 +88,8 @@ EOT;
       <If><Score of="var1" from="alias" /><Is lowerThan="10" /></If>
       <If><Score of="var1" from="alias" /><Is notEqual="10" /></If>
 
-      <If><Value of="4" from="4"/><Is/></If>
-      <If><Value of="4" from="4"/><Is greaterThan="5" lowerThan="7"/></If>
+      <If><Value of="4" from="alias"/><Is/></If>
+      <If><Value of="4" from="alias"/><Is greaterThan="5" lowerThan="7"/></If>
 
       <If>
         <Sum>

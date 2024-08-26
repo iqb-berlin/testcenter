@@ -50,6 +50,7 @@ export interface TestData {
   resources: TestDataResourcesMap;
   firstStart: boolean;
   workspaceId: number;
+  presetBookletStates: { [ k :string]: string };
 }
 
 export type TestControllerState =
