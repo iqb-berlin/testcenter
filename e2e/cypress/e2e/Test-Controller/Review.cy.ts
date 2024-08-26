@@ -1,7 +1,16 @@
 import {
-  loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
-  useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder,
-  convertResultsSeperatedArrays, getFromIframe, forwardTo, backwardsTo
+  backwardsTo,
+  convertResultsSeperatedArrays,
+  credentialsControllerTest,
+  deleteDownloadsFolder,
+  forwardTo,
+  getFromIframe,
+  loginSuperAdmin,
+  loginTestTaker,
+  openSampleWorkspace1,
+  resetBackendData,
+  useTestDB,
+  visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
@@ -218,7 +227,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     // responses must be empty
     convertResultsSeperatedArrays('responses')
       .then(sepArrays => {
-        expect(sepArrays[1][5]).to.be.equal('[]');
+        expect(sepArrays[1][6]).to.be.equal('[]');
       });
   });
 
@@ -226,6 +235,16 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-logs"]')
+      .should('exist')
+      .click();
+    cy.contains('Keine Daten verfügbar')
+      .should('exist');
+  });
+
+  it('should be there no review file', () => {
+    cy.get('[data-cy="results-checkbox1"]')
+      .click();
+    cy.get('[data-cy="download-comments"]')
       .should('exist')
       .click();
     cy.contains('Keine Daten verfügbar')

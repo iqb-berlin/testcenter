@@ -2,25 +2,28 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
-import { Subscription, combineLatest } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import UAParser from 'ua-parser-js';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
   CustomtextService,
-  MainDataService
+  MainDataService, UserAgentService
 } from '../../../shared/shared.module';
 import {
   AppFocusState,
-  Command, MaxTimerDataType,
+  Command,
+  MaxTimerDataType,
   ReviewDialogData,
   StateReportEntry,
   TestControllerState,
-  TestStateKey, UnitNaviButtonData,
+  TestStateKey,
+  UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
@@ -54,6 +57,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationList: Array<UnitNaviButtonData | string> = [];
   debugPane = false;
   unitScreenHeader: string = '';
+  uaParser: UAParser = new UAParser();
 
   constructor(
     public mainDataService: MainDataService,
@@ -188,7 +192,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           loginname: authData.displayName,
           bookletname: this.tcs.rootTestlet.title,
           unitTitle: this.tcs.currentUnitTitle,
-          unitDbKey: this.tcs.currentUnitDbKey
+          unitDbKey: this.tcs.currentUnitDbKey,
+          currentPageIndex: this.tcs.currentPageIndex,
+          currentPageLabel: this.tcs.currentPageLabel
         }
       });
 
@@ -199,10 +205,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u') ? this.tcs.currentUnitDbKey : null,
+          (result.target === 'u' || result.target === 'p') ? this.tcs.currentUnitDbKey : null,
+          (result.target === 'p') ? this.tcs.currentPageIndex : null,
+          (result.target === 'p') ? this.tcs.currentPageLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+          UserAgentService.outputWithOs(),
+          this.tcs.rootTestlet?.getUnitAt(this.tcs.currentUnitSequenceId)?.unitDef.id ?? ''
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });

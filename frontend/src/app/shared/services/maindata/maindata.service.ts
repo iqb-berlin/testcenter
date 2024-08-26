@@ -69,6 +69,8 @@ export class MainDataService {
   appWindowHasFocus$ = new Subject<boolean>();
   isFullScreen: boolean = false;
 
+  isExtendedKbUsed: boolean | null = null;
+
   getAuthData(): AuthData | null {
     if (this._authData$.getValue()) {
       return this._authData$.getValue();

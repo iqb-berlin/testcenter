@@ -959,9 +959,9 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;timestamp;logentry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1627545600";sample unit log
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1627545600";sample log entry
+                groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"UNIT.SAMPLE";"1627545600";sample unit log
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600";sample log entry
             application/json:
               schema:
                 $ref: '#/components/schemas/LogReport'
@@ -1010,8 +1010,8 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;responses;laststate
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"[{""id"":""1:UNIT.SAMPLE:v2"",""content"":""[{\""id\"":\""v2\"",\""value\"":[\""image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\""],\""status\"":\""VALUE_CHANGED\""}]"",""ts"":1627545600000,""responseType"":""iqb-standard@1.0""},{""id"":""all"",""content"":""{\""name\"":\""Sam Sample\"",\""age\"":34}"",""ts"":1627545600,""responseType"":""example-data-format""}]";"{""PRESENTATIONCOMPLETE"":""yes""}"
+                groupname;loginname;code;bookletname;unitname;originalUnitId;responses;laststate
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"UNIT.SAMPLE";"[{""id"":""1:UNIT.SAMPLE:v2"",""content"":""[{\""id\"":\""v2\"",\""value\"":[\""image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\""],\""status\"":\""VALUE_CHANGED\""}]"",""ts"":1627545600000,""responseType"":""iqb-standard@1.0""},{""id"":""all"",""content"":""{\""name\"":\""Sam Sample\"",\""age\"":34}"",""ts"":1627545600,""responseType"":""example-data-format""}]";"{""PRESENTATIONCOMPLETE"":""yes""}"
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseReport'
@@ -1054,6 +1054,10 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
           required: true
+        - in: header
+          name: Accept
+          description: "Expected response Mimetype: 'text/csv' or 'application/json'"
+          example: "text/csv"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1069,6 +1073,18 @@ paths:
             items:
               type: string
           example: [review_group, sample_group]
+        - in: query
+          name: useNewVersion
+          description: triggers the new enhanced format of reviews. set to true or false (false is default)
+          schema:
+            type: string
+          examples:
+            old:
+              description: old format
+              value: false
+            new:
+              description: new format
+              value: true
       responses:
         "200":
           description: Reviews report in JSON or CSV format based on aggregated unit and booklet review data.
@@ -1076,14 +1092,27 @@ paths:
             text/csv;charset=utf-8:
               schema:
                 type: string
-              example: |-
-                groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"2021-07-29 10:00:00";"this is a sample unit review"
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"2021-07-29 10:00:00";"sample booklet review"
+              examples:
+                old:
+                  value: |-
+                    groupname;loginname;code;bookletname;unitname;priority;category: content;reviewtime;entry;page;pagelabel;originalUnitId;userAgent
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"X";"2021-07-29 10:00:00";"mario: this is a sample unit review";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0"
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"X";"2021-07-29 10:00:00";"luigi: sample booklet review";;;"";"Firefox/126.0"
+                new:
+                  value: |-
+                    groupname;loginname;code;bookletname;unitname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";"mario";"this is a sample unit review"
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";"luigi";"sample booklet review"
             application/json:
               schema:
-                $ref: '#/components/schemas/ReviewReport'
-              example: [{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"UNIT.SAMPLE","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"this is a sample unit review"},{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"sample booklet review"}]
+                oneOf:
+                  - $ref: '#/components/schemas/ReviewReport'
+                  - $ref: '#/components/schemas/ReviewReportOld'
+              examples:
+                old:
+                  value: [{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"UNIT.SAMPLE","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"this is a sample unit review"},{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"sample booklet review"}]
+                new:
+                  value: [{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"UNIT.SAMPLE","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"this is a sample unit review"},{"groupname":"sample_group","loginname":"test","code":"xxx","bookletname":"BOOKLET.SAMPLE-1","unitname":"","priority":"1","reviewtime":"2021-07-29 10:00:00","entry":"sample booklet review"}]
         "401":
           description: Not authenticated
         "403":

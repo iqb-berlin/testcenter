@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 declare(strict_types=1);
 
@@ -88,6 +89,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
         'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -104,6 +106,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -140,14 +143,17 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample unit log'
-      ], [
+      ],
+      [
         'groupname' => 'sample_group',
         'loginname' => 'sample_user',
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => '',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample log entry'
       ]
@@ -175,17 +181,26 @@ final class AdminDAOTest extends TestCase {
         'priority' => 1,
         'categories' => '',
         'reviewtime' => '2030-01-01 12:00:00',
-        'entry' => 'this is a sample unit review'
-      ], [
+        'entry' => 'this is a sample unit review',
+        'page' => null,
+        'pagelabel' => null,
+        'originalUnitId' => '',
+        'userAgent' => ''
+      ],
+      [
         'groupname' => 'review_group',
         'loginname' => 'test-review',
         'code' => '',
-        'bookletname' =>  'BOOKLET.SAMPLE-1',
+        'bookletname' => 'BOOKLET.SAMPLE-1',
         'unitname' => '',
         'priority' => 1,
         'categories' => '',
         'reviewtime' => '2030-01-01 12:00:00',
-        'entry' => 'sample booklet review'
+        'entry' => 'sample booklet review',
+        'page' => null,
+        'pagelabel' => null,
+        'originalUnitId' => '',
+        'userAgent' => ''
       ]
     ];
 
@@ -271,19 +286,21 @@ final class AdminDAOTest extends TestCase {
     $this->assertSame($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
-    $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
+    $this->dbc->_(
+      "insert into tests (name, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')"
+    );
     $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 4)");
 
     $expectation = [
       [
-      'groupName' => 'sample_group',
-      'groupLabel' => 'Sample Group',
-      'bookletsStarted' => 3,
-      'numUnitsMin' => 0,
-      'numUnitsMax' => 2,
-      'numUnitsTotal' => 3,
-      'numUnitsAvg' => 1.0,
-      'lastChange' => 1699956800
+        'groupName' => 'sample_group',
+        'groupLabel' => 'Sample Group',
+        'bookletsStarted' => 3,
+        'numUnitsMin' => 0,
+        'numUnitsMax' => 2,
+        'numUnitsTotal' => 3,
+        'numUnitsAvg' => 1.0,
+        'lastChange' => 1699956800
       ],
       [
         'groupName' => 'review_group',
@@ -307,8 +324,10 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getResultStats(1);
     $this->assertSame([$expectation[0]], $result);
 
-    $this->dbc->_("insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')");
+    $this->dbc->_(
+      "insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
+      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
+    );
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
   }
@@ -349,19 +368,19 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame([], $resultAsArray);
