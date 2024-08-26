@@ -8,7 +8,8 @@ export type AuthAccessType =
   | 'workspaceMonitor'
   | 'testGroupMonitor'
   | 'attachmentManager'
-  | 'studyMonitor';
+  | 'studyMonitor'
+  | 'sysCheck';
 
 export interface AccessObject {
   label: string;

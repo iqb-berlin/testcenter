@@ -20,6 +20,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
+import { AutofocusDirective } from './directives/autofocus.directive';
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.comp
     CustomtextPipe,
     AlertComponent,
     ErrorComponent,
-    PageNavBarComponent
+    PageNavBarComponent,
+    AutofocusDirective
   ],
   exports: [
     ConfirmDialogComponent,
@@ -53,7 +55,8 @@ import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.comp
     CustomtextPipe,
     AlertComponent,
     ErrorComponent,
-    PageNavBarComponent
+    PageNavBarComponent,
+    AutofocusDirective
   ],
   providers: [
     BackendService

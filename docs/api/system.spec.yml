@@ -298,6 +298,20 @@ paths:
         "500":
           description: Server Error
 
+  /sys-check-mode:
+    get:
+      summary: get info on weather the sys check menu should be shown on the login screen
+      description: get a boolean, showing weather this the system check menu is shown on the login screen
+      tags:
+        - ask for system check
+      responses:
+        "200":
+          description: boolean if to show or not
+          content:
+            application/json:
+              schema:
+                type: boolean
+
   /sys-checks:
     get:
       summary: get a list of system checks

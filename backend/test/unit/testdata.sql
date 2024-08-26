@@ -2,7 +2,7 @@ insert into `users` values (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb'
 insert into `users` values (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
 insert into admin_sessions (token, user_id, valid_until) values('admin_token', 1, '2032-01-01 00:00:00');
 insert into admin_sessions (token, user_id, valid_until) values('other_admin_token', 2, '2032-01-01 00:00:00');
-insert into `workspaces` values (1,'example_workspace', '');
+insert into `workspaces` values (1,'example_workspace', '', 'mixed');
 insert into `workspace_users` values (1, 1, 'RW');
 
 

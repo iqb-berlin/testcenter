@@ -107,6 +107,18 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false
+    },
+    'SYS-CHECK-LOGIN': {
+      alwaysNewSession: false,
+      monitorable: false,
+      canReview: false,
+      saveResponses: false,
+      forceTimeRestrictions: false,
+      forceNaviRestrictions: false,
+      presetCode: false,
+      showTimeLeft: false,
+      showUnitMenu: false,
+      receiveRemoteCommands: false
     }
   };
 
@@ -118,6 +130,7 @@ export class TestModeData {
     'RUN-HOT-RESTART': 'Durchführung Test/Befragung',
     'RUN-REVIEW': 'Prüfdurchgang ohne Speichern',
     'RUN-TRIAL': 'Prüfdurchgang mit Speichern und Reviewfunktionalität',
-    'RUN-SIMULATION': 'Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen'
+    'RUN-SIMULATION': 'Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen',
+    'SYS-CHECK-LOGIN': 'Dieser Modus versteckt für alle anderen Logins den System Check. Der Check kann dann nur noch von Logins durchgeführt werden mit diesem Mode'
   };
 }

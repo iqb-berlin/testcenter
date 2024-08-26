@@ -14,6 +14,7 @@ CREATE TABLE `workspaces` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
   `workspace_hash` varchar(255) COLLATE utf8mb3_german2_ci NOT NULL DEFAULT '',
+  `content_type` varchar(255) COLLATE utf8mb3_german2_ci NOT NULL DEFAULT 'mixed',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate workspaces; -- to reset auto-increment

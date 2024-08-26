@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -131,7 +132,7 @@ class AdminDAO extends DAO {
       true
     );
     return array_map(
-      function(array $ws): WorkspaceData {
+      function (array $ws): WorkspaceData {
         return new WorkspaceData($ws['id'], $ws['name'], $ws['role']);
       },
       $workspaces
@@ -284,10 +285,10 @@ class AdminDAO extends DAO {
           units.booklet_id = :testId
           and units.name = :unitName",
       [
-          ':testId' => $testId,
-          ':unitName' => $unitName
+        ':testId' => $testId,
+        ':unitName' => $unitName
       ]
-     );
+    );
 
     if (!$unitData) {
       return (object) [];
@@ -347,7 +348,8 @@ class AdminDAO extends DAO {
        where
          unit_id = :unit_id',
       [':unit_id' => $unitId],
-      true);
+      true
+    );
     foreach ($data as $index => $row) {
       $data[$index]['ts'] = (int) $row['ts'];
     }
@@ -528,7 +530,7 @@ class AdminDAO extends DAO {
       true
     );
 
-    return array_map(function($groupStats) {
+    return array_map(function ($groupStats) {
       return [
         "groupName" => $groupStats["group_name"],
         "groupLabel" => $groupStats["group_label"],
@@ -559,7 +561,8 @@ class AdminDAO extends DAO {
         ':parameter' => json_encode($command->getArguments()),
         ':commander_id' => $commanderId,
         ':timestamp' => TimeStamp::toSQLFormat($command->getTimestamp())
-      ]);
+      ]
+    );
 
     return $commandId;
   }
@@ -670,7 +673,11 @@ class AdminDAO extends DAO {
     return $attachmentData;
   }
 
-    public function deleteAdminSession(AuthToken $authToken): void {
-      $this->_('delete from admin_sessions where token =:token',[':token' => $authToken->getToken()]);
-    }
+  public function deleteAdminSession(AuthToken $authToken): void {
+    $this->_('delete from admin_sessions where token =:token', [':token' => $authToken->getToken()]);
+  }
+
+  public function doesWSwitTypeSyscheckExist(): bool {
+    return $this->_("select count(*) as count from workspaces where content_type = 'sysCheck'")['count'] > 0;
+  }
 }

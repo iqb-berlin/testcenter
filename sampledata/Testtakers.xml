@@ -2,7 +2,7 @@
 <Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.1.8/definitions/vo_Testtakers.xsd">
 
   <Metadata>
-    <Description>This file contains some logins for testing and works a a sample for developers.</Description>
+    <Description>This file contains some logins for testing and works a sample for developers.</Description>
   </Metadata>
 
   <CustomTexts>
@@ -18,6 +18,7 @@
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+    <Login mode="sys-check-login" name="sys-check" />
   </Group>
 
   <Group id="study_group" label="A group for the study monitor">

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Slim\Routing\RouteCollectorProxy;
@@ -7,7 +8,7 @@ global $app;
 
 $app->get('/', [SystemController::class, 'get']);
 
-$app->group('/booklet', function(RouteCollectorProxy $group) {
+$app->group('/booklet', function (RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/{booklet_name}/data', [BookletController::class, 'getData']);
 
@@ -21,7 +22,7 @@ $app->post('/clear-cache', [SystemController::class, 'postClearCache']);
 
 $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
-$app->group('/monitor', function(RouteCollectorProxy $group) {
+$app->group('/monitor', function (RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/group/{group_name}', [MonitorController::class, 'getGroup']);
 
@@ -51,13 +52,14 @@ $app->put('/session/person', [SessionController::class, 'putSessionPerson'])
 $app->delete('/session', [SessionController::class, 'deleteSession'])
   ->add(new RequireToken('person', 'login', 'admin'));
 
-$app->group('/speed-test', function(RouteCollectorProxy $group) {
+$app->group('/speed-test', function (RouteCollectorProxy $group) {
   $group->get('/random-package/{size}', [SpeedtestController::class, 'getRandomPackage']);
 
   $group->post('/random-package', [SpeedtestController::class, 'postRandomPackage']);
 });
 
 $app->get('/sys-checks', [SystemController::class, 'getSysChecks']);
+$app->get('/sys-check-mode', [SystemController::class, 'getSysCheckMode']);
 
 $app->get('/system/config', [SystemController::class, 'getConfig']);
 
@@ -73,7 +75,7 @@ $app->get('/system/time', [SystemController::class, 'getTime']);
 
 $app->get('/system/status', [SystemController::class, 'getStatus']);
 
-$app->group('/test', function(RouteCollectorProxy $group) {
+$app->group('/test', function (RouteCollectorProxy $group) {
   $group->put('', [TestController::class, 'put']);
 
   $group->get('/{test_id}', [TestController::class, 'get'])
@@ -112,11 +114,11 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 })
   ->add(new RequireToken('person'));
 
-$app->group('/test', function(RouteCollectorProxy $group) {
+$app->group('/test', function (RouteCollectorProxy $group) {
   $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
 
-$app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) {
+$app->group('/attachment/{attachmentId}', function (RouteCollectorProxy $group) {
   $group->get('/file/{fileId}', [AttachmentController::class, 'getFile']);
 
   $group->delete('/file/{fileId}', [AttachmentController::class, 'deleteFile']);
@@ -130,7 +132,7 @@ $app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) {
   ->add(new MayModifyAttachments())
   ->add(new RequireToken('person'));
 
-$app->group('/attachments', function(RouteCollectorProxy $group) {
+$app->group('/attachments', function (RouteCollectorProxy $group) {
   $group->get('/list', [AttachmentController::class, 'getList']);
 
   $group->get('/pages', [AttachmentController::class, 'getAttachmentsPages']);
@@ -142,7 +144,7 @@ $app->get('/workspace/{ws_id}/studyresults', [WorkspaceController::class, 'getRe
   ->add(new IsGroupMonitor())
   ->add(new RequireToken('person'));
 
-$app->group('/workspace', function(RouteCollectorProxy $group) {
+$app->group('/workspace', function (RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/{ws_id}', [WorkspaceController::class, 'get'])
     ->add(new IsWorkspacePermitted('RO'));
@@ -180,7 +182,7 @@ $app->group('/workspace', function(RouteCollectorProxy $group) {
 })
   ->add(new RequireToken('admin'));
 
-$app->group('/user', function(RouteCollectorProxy $group) {
+$app->group('/user', function (RouteCollectorProxy $group) {
   $group->get('/{user_id}/workspaces', [UserController::class, 'getWorkspaces']);
 
   $group->patch('/{user_id}/workspaces', [UserController::class, 'patchWorkspaces']);
@@ -204,7 +206,7 @@ $app->delete('/users', [SystemController::class, 'deleteUsers'])
 
 $app->get('/version', [SystemController::class, 'getVersion']);
 
-$app->group('/workspace', function(RouteCollectorProxy $group) {
+$app->group('/workspace', function (RouteCollectorProxy $group) {
   $group->put('', [WorkspaceController::class, 'put']);
 
   $group->patch('/{ws_id}', [WorkspaceController::class, 'patch']);
@@ -216,7 +218,7 @@ $app->group('/workspace', function(RouteCollectorProxy $group) {
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
 
-$app->group('/workspace/{ws_id}/sys-check', function(RouteCollectorProxy $group) {
+$app->group('/workspace/{ws_id}/sys-check', function (RouteCollectorProxy $group) {
   $group->get('/{sys-check_name}', [WorkspaceController::class, 'getSysCheck']);
 
   $group->get('/{sys-check_name}/unit-and-player', [WorkspaceController::class, 'getSysCheckUnitAndPLayer']);

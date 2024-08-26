@@ -94,6 +94,19 @@
             {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (accessObjects.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
           </div>
         </a>
+
+        <ng-container *ngIf="accessObjects.sysCheck">
+          <h4>System-Check</h4>
+          <a
+            *ngFor="let sc of accessObjects.sysCheck"
+            mat-raised-button
+            class="starter"
+            color="primary"
+            [routerLink]="['/check', sc.workspaceId, sc.id]"
+          >
+            <div class="starter-title">{{sc.label}}</div>
+            <div class="starter-status">{{sc.description}}</div>          </a>
+        </ng-container>
       </div>
       <tc-alert
         *ngIf="(accessObjects.test && !accessObjects.test.length) || !(accessObjects | keyvalue).length"

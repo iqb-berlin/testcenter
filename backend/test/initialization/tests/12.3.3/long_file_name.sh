@@ -17,8 +17,13 @@ echo_h2 "12.3.2 broke on filenames 30+ characters"
 echo "<Testtakers><Metadata><Description>30+ chars in filename</Description></Metadata><Group id=\"x\" label=\"x\"><Login mode=\"run-hot-restart\" name=\"x\"><Booklet>BOOKLET.SAMPLE-1</Booklet></Login></Group></Testtakers>" \
   > vo_data/ws_1/Testtakers/2023-04-28_V8DeuTBAPilot_LOGINS_Testtaker_FMB-A.xml
 php backend/initialize.php
-expect_init_script_failed
+(
+  expect_init_script_failed
+)
 remove_error_lock
+if [ $? = 1 ] then
+  return 1
+fi
 
 echo_h2 "But 12.3.3 should accept up to 120 characters";
 take_current_version
