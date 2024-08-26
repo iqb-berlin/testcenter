@@ -10,7 +10,7 @@ Releases:
 ![Stable](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb.release-channels.stable&style=flat&label=Stable)
 ![LTS](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb.release-channels.lts&style=flat&label=LTS)
 
-{% include {{ versions }} %}
+{% include versions.md %}
 
 # IQB-Testcenter
 
