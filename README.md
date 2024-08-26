@@ -2,8 +2,8 @@
 [![(CI Status)](https://scm.cms.hu-berlin.de/iqb/testcenter/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter)
 
-![LTS](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb%5B%22release-channels%22%5D.lts&style=flat&label=LTS)
-![Stable](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb%5B%22release-channels%22%5D.stable&style=flat&label=Stable)
+![LTS](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb%5B%22release-channels%22%5D.lts&style=flat&label=LTS&link=https%3A%2F%2Fgithub.com%2Fiqb-berlin%2Ftestcenter%2Freleases)
+![Stable](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fiqb-berlin%2Ftestcenter%2Fmaster%2Fpackage.json&query=%24.iqb%5B%22release-channels%22%5D.stable&style=flat&label=Stable&link=https%3A%2F%2Fgithub.com%2Fiqb-berlin%2Ftestcenter%2Freleases)
 
 
 # IQB-Testcenter
