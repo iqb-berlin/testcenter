@@ -3,43 +3,36 @@ layout: default
 ---
 ## [next]
 ### neue Features
-* Review Dateien -> es gibt die Möglichkeit neben dem alten Format auch das neue Format zu nutzen mit diesen Änderungen:
-  * Alle Review Dateien (Ansicht aller Kommentare) beinhalten zusätzlich eine Spalte mit dem ursprünglichen Unitnamen, für
+* Überarbeitetes neues Format für Reviews:
+  * Alle Reviewdateien beinhalten zusätzlich eine Spalte (CSV) / Feld (JSON) mit dem ursprünglichen Unitnamen, für
     den Fall, dass dieser in der Spalte UnitName durch dessen Alias ersetzt wurde.
-  * Beim Erstellen eines Kommentars kann man jetzt auch die Teilaufgabe angeben, auf die sich der Kommentar bezieht.
-    Damit eine weitere Stufe granularer als die Unitebene.
-  * Die Werte in den Spalten sind R-lesbarer: : gegen _ erstezt, X gegen TRUE ersetzt.
-  * Der Autor und der Kommentareintrag sind nun zwei verschiedene Spalten.
+  * Beim Erstellen eines Kommentars kann man jetzt auch die Seite angeben, auf die sich der Kommentar bezieht und ist
+    damit eine weitere Stufe granularer als die Unitebene.
+  * Die Werte in den Spalten/Feldern sind R-lesbarer: : gegen _ erstezt, X gegen TRUE ersetzt.
+  * Autor und Kommentareintrag sind nun zwei verschiedene Spalten.
   * Die Datei beinhaltet auch Informationen zum User-Agent, sprich Browserinformationen, des Autors von Kommentaren.
+  * Das neue Format lsässt sich durch einen zusätzlichen Parameter im Endpunkt bzw. einen neuen Knopf in der GUI
+    erzeugen. Das alte ist (noch) ebenfalls verfügbar.
 
-## [next]
-
-### neue Features
-* Im Workspace-Admin werden bei Klick auf eine Datei nun auch alle abhängigen Dateien gekennzeichnet. Damit lässt sich 
-  feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei erfolgreich zu löschen - bevor
-  der 'Löschen' Button geklickt werden muss.
-* Die Dateien werden zuerst angezeigt, können dann bei weiterem Laden erst einen Moment später gelöscht werden. 
-* Es gibt in der Testtakers.xml einen neuen Modus 'sys-check-login'. Wenn es innerhalb einer Testcenter Instanz mind. 
-  ein Login mit diesem Modus gibt, so wird auf der Login-Seite '/r/login' der Button für die Sys-Checks ausgeblendet. 
-  Die Sys-Checks erscheinen dann nur noch nach dem Login, wenn man sich in demselben Workspace eingeloggt hat, indem 
-  sich auch das Login mit dem Modus 'sys-check-login' befindet. Gibt es innerhalb einer Testcenter Instanz kein Login
-  mit dem Modus 'sys-check-login', bleibt das alte Verhalten bestehen.
-
+* Workspace-Dateiübersicht:
+  * Mit einem Klick auf eine Datei werden nun alle abhängigen Dateien gekennzeichnet. 
+    Damit lässt sich feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei 
+    erfolgreich zu löschen ohne den 'Löschen' Button erst clicken zu müssen wird.
+  * Die Dateien werden schneller angezeigt, da bestimmte Angaben, zum Beispiel die Gesamtgröße eines Booklets erst
+    später berechnet werden.
+  
+* Neuer Modus: `sys-check-login`
+  * SysChecks sind nun erst verfügbar, wenn man sich eingeloggt hat in diesem Modus.
+  * Rückwärtskompatibilität: Gibt es in der gesamten Instanz keinen Login in diesem Modus, so stehen alle SysChecks
+    wie gehabt auf der Startseite ohne login bereit.
 
 ### Bugfix
-* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
+* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des Uploads wurde nicht mehr korrekt aufgehoben.   
 
 ### Verbesserungen
 * Nach dem Speichern eines SysCheck-Berichts wird ein deutliches Feedback gegeben, dass der Bericht gespeichert wurde. 
-* Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
-  haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
-  haben, so wird kein Datein-Import durchgeführt. Dies beschleunigt die Arbeit in der Entwicklung und auch beim Pflegen
-  von Testdaten.
-* Während Initialization Tests werden fake patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests 
-  wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
-* Die Berechnung der Dateigröße von Dateien innerhalb des Workspace-Admin wurde optimiert. Die Berechnung der Dateigröße 
-  erfolgt nun im Frontend. Dies führt zu einer schnelleren Anzeige des Dashboards und einer Entlastung des Backends.
 * Die Uploadgeschwindigkeit für einzelne Dateien im Workspace-Admin wurde erheblich verbessert.
+* Systemstart radikal beschleunigt, indem nur veränderte Workspaces neu eingelesen werden.
 
 ### Deployment
 * dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
@@ -51,7 +44,9 @@ layout: default
 ### Development
 * make Befehle für Unit Tests können nun mit einem 'target' Argument aufgerufen werden, um gezielt nur bestimmte Tests auszuführen.
 * make backend-refresh-autoload baut nun den BE Container neu auf, um sicherzustellen, dass alle Klassen geladen werden können.
-* mixed type könenn als Argumente in CLI print-functions gegeben werden.
+* mixed type können als Argumente in CLI print-functions gegeben werden.
+* Während Initialization-Tests werden Fake-Patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests
+    wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
 
 ## 15.1.8
 ### Bugfix
