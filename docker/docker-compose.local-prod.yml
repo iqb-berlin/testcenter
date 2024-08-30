@@ -32,7 +32,7 @@ services:
     image: iqbberlin/testcenter-frontend:current-prod
     build:
       context: ..
-      dockerfile: docker/frontend.Dockerfile
+      dockerfile: frontend/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"

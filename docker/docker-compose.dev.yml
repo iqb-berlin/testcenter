@@ -63,7 +63,7 @@ services:
   testcenter-frontend:
     build:
       context: ..
-      dockerfile: docker/frontend.Dockerfile
+      dockerfile: frontend/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1
