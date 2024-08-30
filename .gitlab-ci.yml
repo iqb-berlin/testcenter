@@ -209,7 +209,7 @@ build-broadcasting-service-prod:
   script:
     - apk add make curl
     - make init
-    - docker build --no-cache --target prod -t iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG -f docker/broadcasting-service.Dockerfile .
+    - docker build --no-cache --target prod -t iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG -f broadcasting-service/Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \

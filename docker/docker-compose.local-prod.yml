@@ -43,7 +43,7 @@ services:
     image: iqbberlin/testcenter-broadcasting-service:current-prod
     build:
       context: ..
-      dockerfile: docker/broadcasting-service.Dockerfile
+      dockerfile: broadcasting-service/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"

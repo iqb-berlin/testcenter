@@ -88,7 +88,7 @@ services:
   testcenter-broadcasting-service:
     build:
       context: ..
-      dockerfile: docker/broadcasting-service.Dockerfile
+      dockerfile: broadcasting-service/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1
