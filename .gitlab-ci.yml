@@ -195,7 +195,7 @@ build-file-service-prod:
   script:
     - apk add make curl
     - make init
-    - docker build --no-cache -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
+    - docker build --no-cache -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f file-service/Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
