@@ -161,7 +161,7 @@ build-backend-prod:
   script:
     - apk add make
     - make init
-    - docker build --no-cache --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f docker/backend.Dockerfile .
+    - docker build --no-cache --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f backend/Dockerfile .
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \

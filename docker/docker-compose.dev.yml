@@ -32,7 +32,7 @@ services:
   testcenter-backend:
     build:
       context: ..
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: backend/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1

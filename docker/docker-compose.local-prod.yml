@@ -19,7 +19,7 @@ services:
     image: iqbberlin/testcenter-backend:current-prod
     build:
       context: ..
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: backend/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"

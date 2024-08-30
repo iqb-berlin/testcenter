@@ -73,7 +73,7 @@ RUN chown -R www-data:www-data /var/www
 
 EXPOSE 80
 
-COPY docker/backend-entrypoint.sh /entrypoint.sh
+COPY backend/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 
