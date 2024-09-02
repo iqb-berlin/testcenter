@@ -32,7 +32,6 @@ import { BookletUtil } from './booklet/booklet.util';
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   connectionStatus$: Observable<ConnectionStatus> | null = null;
 
-  private ownGroupName = '';
   groupLabel = '';
 
   selectedElement: Selected | null = null;
@@ -45,7 +44,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     blockColumn: 'show',
     unitColumn: 'hide',
     highlightSpecies: false,
-    manualChecking: false
+    manualChecking: false,
+    filter: {
+      person: 'x'
+    }
   };
 
   isScrollable = false;
@@ -72,7 +74,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.route.params.subscribe(params => {
         this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
-        this.ownGroupName = params['group-name'];
         this.tsm.connect(params['group-name']);
       }),
       this.tsm.sessionsStats$.subscribe(stats => {

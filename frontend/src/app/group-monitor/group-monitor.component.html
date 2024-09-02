@@ -227,6 +227,7 @@
                   {{'Gruppe' | customtext:'gm_col_group' | async}}
                 </td>
                 <td mat-sort-header="personLabel">
+                  <tc-table-filter-box [(value)]="filters.person" />
                   {{'Teilnehmer' | customtext:'gm_col_person' | async}}
                 </td>
                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">

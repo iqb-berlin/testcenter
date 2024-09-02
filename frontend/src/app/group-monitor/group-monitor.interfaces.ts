@@ -77,8 +77,20 @@ export interface Restrictions {
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
+export const testSessionFilterTargets = [
+  'groupName',
+  'bookletName',
+  'testState',
+  'mode',
+  'state',
+  'bookletSpecies',
+  'personName'
+];
+
+export type TestSessionFilterTarget = (typeof testSessionFilterTargets)[number];
+
 export interface TestSessionFilter {
-  type: 'groupName' | 'bookletName' | 'testState' | 'mode' | 'state' | 'bookletSpecies';
+  type: TestSessionFilterTarget;
   value: string;
   subValue?: string;
   not?: true;
@@ -92,6 +104,9 @@ export interface TestViewDisplayOptions {
   bookletColumn: 'show' | 'hide';
   highlightSpecies: boolean;
   manualChecking: boolean;
+  filter: {
+    person: string;
+  }
 }
 
 export interface CheckingOptions {

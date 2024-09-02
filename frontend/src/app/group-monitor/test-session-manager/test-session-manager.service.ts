@@ -14,7 +14,7 @@ import {
   Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig
+  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig, TestSessionFilterTarget
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -88,6 +88,8 @@ export class TestSessionManager {
     }
   ];
 
+  manualFilters: { column: TestSessionFilterTarget, test: string }[] = [];
+
   constructor(
     private bs: BackendService,
     private bookletService: BookletService,
@@ -144,13 +146,23 @@ export class TestSessionManager {
   }
 
   switchFilter(indexInFilterOptions: number): void {
-    this.filterOptions[indexInFilterOptions].selected =
-      !this.filterOptions[indexInFilterOptions].selected;
-    this.filters$.next(
-      this.filterOptions
+    this.filterOptions[indexInFilterOptions].selected = !this.filterOptions[indexInFilterOptions].selected;
+    this.refreshFilter();
+  }
+
+  refreshFilter(): void {
+    this.filters$.next([
+      ...this.filterOptions
         .filter(filterOption => filterOption.selected)
-        .map(filterOption => filterOption.filter)
-    );
+        .map(filterOption => filterOption.filter),
+      ...this.manualFilters
+        .filter(manualFilter => manualFilter.test)
+        .map((manualFilter): TestSessionFilter => ({
+          type: manualFilter.column,
+          value: manualFilter.test,
+          not: true
+        }))
+    ]);
   }
 
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {

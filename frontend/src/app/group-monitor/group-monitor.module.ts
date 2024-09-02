@@ -25,11 +25,14 @@ import { TestSessionComponent } from './test-session/test-session.component';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
+import { TableFilterBoxComponent } from './components/table-filter-box/table-filter-box.component';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
     GroupMonitorComponent,
-    TestSessionComponent
+    TestSessionComponent,
+    TableFilterBoxComponent
   ],
   imports: [
     CommonModule,
@@ -49,7 +52,8 @@ import { GroupMonitorConfig } from './group-monitor.interfaces';
     MatCheckboxModule,
     MatSlideToggleModule,
     SharedModule,
-    MatDialogModule
+    MatDialogModule,
+    MatInputModule
   ],
   providers: [
     BackendService,
