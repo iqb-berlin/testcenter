@@ -27,6 +27,7 @@
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>
+    <xs:attribute name="alias" type="xs:string"/>
     <xs:attribute name="type" type="VariableTypeValue" use="required"/>
     <xs:attribute name="format" type="VariableFormatValue"/>
     <xs:attribute name="multiple" type="xs:boolean"/>

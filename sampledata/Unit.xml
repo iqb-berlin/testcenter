@@ -11,7 +11,7 @@
   <CodingSchemeRef schemer="default-schemer-1" lastChange="2022-10-11T09:30:00+00:00" />
 
   <BaseVariables>
-    <Variable id="v1" type="integer" />
+    <Variable id="v1" type="integer" alias="Variable1" />
     <Variable id="v2" type="attachment" format="capture-image" />
     <Variable id="v3" type="string" multiple="true">
       <Values>
