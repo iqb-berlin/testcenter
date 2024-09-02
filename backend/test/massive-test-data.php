@@ -1,7 +1,9 @@
 <?php
 define('ROOT_DIR', realpath(__DIR__ . '/../..'));
 const DATA_DIR = ROOT_DIR . '/data';
-require_once(ROOT_DIR . '/backend/autoload.php');
+require_once(ROOT_DIR . '/backend/vendor/autoload.php');
+SystemConfig::readFromEnvironment();
+DB::connect();
 
 $args = CLI::getOpt();
 
