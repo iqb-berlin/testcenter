@@ -16,7 +16,6 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/backend/config" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/dist" />
@@ -36,6 +35,7 @@
       <excludeFolder url="file://$MODULE_DIR$/data-main" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/out-tsc" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/src/assets" />
     </content>
     <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="jdk" jdkName="Python 3.7 (isaac-sas-backend)" jdkType="Python SDK" />
