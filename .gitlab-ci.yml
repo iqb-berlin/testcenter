@@ -9,14 +9,31 @@ gemnasium-dependency_scanning:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_COMMIT_TAG
 
-image: docker:23.0
+image: ${DOCKER_HUB_PROXY}${BASE_IMAGE}
 
 variables:
-  DOCKER_TLS_CERTDIR: ""
+  REGISTRY: "$CI_REGISTRY"
+  REGISTRY_USER: "$CI_REGISTRY_USER"
+  REGISTRY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+  REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
+  DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
+  BASE_IMAGE: docker:27.2
+  #CICD_BASE_IMAGE: "${BASE_IMAGE}-git"
+  #CYPRESS_IMAGE: cypress/browsers:node-20.17.0-chrome-128.0.6613.84-1-ff-129.0.2-edge-128.0.2739.42-1
+  #CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
+  #E2E_BASE_IMAGE: "${CYPRESS_IMAGE}-docker"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
+  DOCKER_IMAGE: ${DOCKER_HUB_PROXY}docker:27.2
+  DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.2-dind
+  DOCKER_SERVICE_MTU: 1442
+  DOCKER_TLS_CERTDIR: ''
+  TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
 
 services:
-  - name: docker:23.0-dind
-    command: [ "--mtu=1442" ]
+  - name: ${DOCKER_SERVICE}
+    entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]
+    alias: docker
 
 stages:
   - build
@@ -127,7 +144,7 @@ build-backend-prod:
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
+      ${TRIVY_IMAGE} image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
       --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
       iqbberlin/testcenter-backend:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-backend:$CI_COMMIT_TAG
@@ -151,7 +168,7 @@ build-frontend-prod:
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
+      ${TRIVY_IMAGE} image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
       --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
       iqbberlin/testcenter-frontend:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-frontend:$CI_COMMIT_TAG
@@ -175,7 +192,7 @@ build-broadcasting-service-prod:
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
+      ${TRIVY_IMAGE} image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
       --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
       iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG
@@ -199,7 +216,7 @@ build-file-service-prod:
     - |
       docker run --rm \
       -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
+      ${TRIVY_IMAGE} image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
       --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
       iqbberlin/testcenter-file-service:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-file-service:$CI_COMMIT_TAG
