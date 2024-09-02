@@ -1,6 +1,5 @@
 # Base compose file defining services and their settings
 # For concrete images check the environment specific override files.
-version: '3.9'
 
 x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-no}"
@@ -32,7 +31,7 @@ services:
   testcenter-db:
     <<: *restart-policy
     container_name: testcenter-db
-    image: iqbberlin/testcenter-db:current
+    image: ${DOCKERHUB_PROXY}mysql:8.0
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

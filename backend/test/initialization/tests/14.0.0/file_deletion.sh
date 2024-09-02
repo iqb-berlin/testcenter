@@ -10,7 +10,7 @@ echo_h1 "File deletion and it's aftermath";
 echo_h2 "Install";
 php backend/initialize.php
 expect_init_script_ok
-chmod -R 777 /var/www/data
+chmod -R 777 /var/www/testcenter/data
 
 
 echo_h2 "start apache"

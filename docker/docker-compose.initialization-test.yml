@@ -4,8 +4,6 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
-version: '3.9'
-
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
   MYSQL_USER: testcenter_user
@@ -14,15 +12,19 @@ x-env-mysql: &env-mysql
 services:
 
   testcenter-initialization-test-db:
-    image: iqbberlin/testcenter-db
+    image: ${DOCKERHUB_PROXY}mysql:8.0
+    command:
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"
     container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     user: root
-    command:
-      - --log_error_verbosity=1
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
       interval: 1s
@@ -37,9 +39,9 @@ services:
     image: iqbberlin/testcenter-backend:dev
     build:
       context: ..
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: backend/Dockerfile
       target: dev
-    entrypoint: [ "bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
+    entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
@@ -54,17 +56,17 @@ services:
       PORT: 80
       TLS_PORT: 443
     volumes:
-      - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/index.php:/var/www/backend/index.php
-      - ../backend/initialize.php:/var/www/backend/initialize.php
-      - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/src
-      - ../backend/test:/var/www/backend/test
-      - ../definitions:/var/www/definitions
+      - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
+      - ../backend/index.php:/var/www/testcenter/backend/index.php
+      - ../backend/initialize.php:/var/www/testcenter/backend/initialize.php
+      - ../backend/routes.php:/var/www/testcenter/backend/routes.php
+      - ../backend/src:/var/www/testcenter/backend/src
+      - ../backend/test:/var/www/testcenter/backend/test
+      - ../definitions:/var/www/testcenter/definitions
       - ../docs:/docs
-      - ../package.json:/var/www/package.original.json
-      - ../sampledata:/var/www/sampledata
-      - ../scripts/database:/var/www/scripts/database
+      - ../package.json:/var/www/testcenter/package.original.json
+      - ../sampledata:/var/www/testcenter/sampledata
+      - ../scripts/database:/var/www/testcenter/scripts/database
     depends_on:
       testcenter-initialization-test-db:
         condition: service_healthy
@@ -80,17 +82,17 @@ services:
       - dredd_test_against_mysql
     build:
       context: ..
-      dockerfile: docker/runner.Dockerfile
+      dockerfile: task-runner/Dockerfile
     command: "npm run backend:api-test"
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:
-      - ../sampledata:/app/sampledata
-      - ../test:/app/test
-      - ../scripts:/app/scripts
-      - ../docs:/app/docs
-      - ../package.json:/app/package.json
-      - ../package-lock.json:/app/package-lock.json
+      - ../sampledata:/usr/src/testcenter/task-runner/sampledata
+      - ../test:/usr/src/testcenter/task-runner/test
+      - ../scripts:/usr/src/testcenter/task-runner/scripts
+      - ../docs:/usr/src/testcenter/task-runner/docs
+      - ../package.json:/usr/src/testcenter/task-runner/package.json
+      - ../package-lock.json:/usr/src/testcenter/task-runner/package-lock.json
     depends_on:
       - testcenter-initialization-test-db
       - testcenter-initialization-test-backend

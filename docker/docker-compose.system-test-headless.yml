@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   testcenter-backend:
     environment:
@@ -19,13 +17,13 @@ services:
         condition: service_healthy
     build:
       context: ..
-      dockerfile: docker/e2e.Dockerfile
+      dockerfile: e2e/Dockerfile
     environment:
       - CYPRESS_baseUrl=http://testcenter-frontend:4200
-    entrypoint: sh -c "cypress run --browser chrome"
+    command: "npx cypress run --browser chrome"
     volumes:
-      - ../e2e/cypress:/app/cypress
-      - ../e2e/cypress.e2e.config.js:/app/cypress.config.js
-      - ../sampledata:/sampledata
+      - ../e2e/cypress:/usr/src/testcenter/e2e/cypress
+      - ../e2e/cypress.e2e.config.js:/usr/src/testcenter/e2e/cypress.config.js
+      - ../sampledata:/usr/src/testcenter/sampledata
     networks:
       - testcenter

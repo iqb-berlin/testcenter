@@ -1,6 +1,5 @@
 # Compose file for local development and testing. Images are built from
 # local directories which need to be cloned from the repository.
-version: '3.9'
 
 services:
   traefik:
@@ -20,7 +19,7 @@ services:
     image: iqbberlin/testcenter-backend:current-prod
     build:
       context: ..
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: backend/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
@@ -33,7 +32,7 @@ services:
     image: iqbberlin/testcenter-frontend:current-prod
     build:
       context: ..
-      dockerfile: docker/frontend.Dockerfile
+      dockerfile: frontend/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
@@ -44,7 +43,7 @@ services:
     image: iqbberlin/testcenter-broadcasting-service:current-prod
     build:
       context: ..
-      dockerfile: docker/broadcasting-service.Dockerfile
+      dockerfile: broadcasting-service/Dockerfile
       target: prod
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
@@ -53,12 +52,6 @@ services:
     image: iqbberlin/testcenter-file-service:current-prod
     build:
       context: ..
-      dockerfile: docker/file-service.Dockerfile
+      dockerfile: file-service/Dockerfile
     labels:
       - "traefik.http.routers.testcenter-file-service.tls=true"
-
-  testcenter-db:
-    image: iqbberlin/testcenter-db:current
-    build:
-      context: ..
-      dockerfile: docker/database.Dockerfile

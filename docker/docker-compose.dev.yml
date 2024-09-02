@@ -1,6 +1,5 @@
 # Compose file for local development and testing. Images are built from
 # local directories which need to be cloned from the repository.
-version: '3.9'
 
 services:
   traefik:
@@ -11,21 +10,15 @@ services:
       - testcenter
 
   testcenter-db:
-    build:
-      context: ..
-      dockerfile: docker/database.Dockerfile
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-db
-      tags:
-        - iqbberlin/testcenter-db
     ports:
       - "9091:3306"
     command:
-      - --log_error_verbosity=2
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=2"
     volumes:
-      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
       - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     networks:
       - testcenter
@@ -33,7 +26,7 @@ services:
   testcenter-backend:
     build:
       context: ..
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: backend/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1
@@ -42,22 +35,22 @@ services:
       tags:
         - iqbberlin/testcenter-backend:dev
     volumes:
-      - ../backend/.htaccess:/var/www/backend/.htaccess
-      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
-      - ../backend/index.php:/var/www/backend/index.php
-      - ../backend/initialize.php:/var/www/backend/initialize.php
-      - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/src
-      - ../backend/test:/var/www/backend/test
-      - ../data:/var/www/data
-      - ../scripts/database:/var/www/scripts/database
-      - ../definitions:/var/www/definitions
-      - ../docs/dist:/docs/dist
-      - ../package.json:/var/www/package.json
-      - ../sampledata:/var/www/sampledata
-      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
+      - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
+      - ../backend/config/no-cors.htaccess/:/var/www/testcenter/.htaccess
+      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
+      - ../backend/index.php:/var/www/testcenter/backend/index.php
+      - ../backend/initialize.php:/var/www/testcenter/backend/initialize.php
+      - ../backend/routes.php:/var/www/testcenter/backend/routes.php
+      - ../backend/src:/var/www/testcenter/backend/src
+      - ../backend/test:/var/www/testcenter/backend/test
+      - ../data:/var/www/testcenter/data
+      - ../definitions:/var/www/testcenter/definitions
+      - ../docs/dist:/docs/dist
+      - ../package.json:/var/www/testcenter/package.json
+      - ../sampledata:/var/www/testcenter/sampledata
+      - ../scripts/database:/var/www/testcenter/scripts/database
     environment:
       TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:
@@ -70,7 +63,7 @@ services:
   testcenter-frontend:
     build:
       context: ..
-      dockerfile: docker/frontend.Dockerfile
+      dockerfile: frontend/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1
@@ -79,9 +72,9 @@ services:
       tags:
         - iqbberlin/testcenter-frontend:dev
     volumes:
-      - ../common:/common
-      - ../definitions:/definitions
-      - ../frontend/src:/app/src
+      - ../common:/usr/src/testcenter/common
+      - ../definitions:/usr/src/testcenter/definitions
+      - ../frontend/src:/usr/src/testcenter/frontend/src
       - ../docs/dist:/docs/dist
     networks:
       - testcenter
@@ -89,7 +82,7 @@ services:
   testcenter-broadcasting-service:
     build:
       context: ..
-      dockerfile: docker/broadcasting-service.Dockerfile
+      dockerfile: broadcasting-service/Dockerfile
       target: dev
       args:
         BUILDKIT_INLINE_CACHE: 1
@@ -98,8 +91,8 @@ services:
       tags:
         - iqbberlin/testcenter-broadcasting-service:dev
     volumes:
-      - ../common:/common
-      - ../broadcasting-service/src:/app/src
+      - ../common:/usr/src/testcenter/common
+      - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
       - ../docs/dist:/docs/dist
     networks:
       - testcenter
@@ -107,7 +100,7 @@ services:
   testcenter-file-service:
     build:
       context: ..
-      dockerfile: docker/file-service.Dockerfile
+      dockerfile: file-service/Dockerfile
       args:
         ENABLED_MODULES: lua
         BUILDKIT_INLINE_CACHE: 1
@@ -120,9 +113,9 @@ services:
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
       - ../sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
       - ../data:/var/www/html/
-      - ../scripts/file-service/nginx.conf:/etc/nginx/nginx.conf
-      - ../scripts/file-service/auth/:/usr/share/nginx/auth
-      - ../scripts/file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
+      - ../file-service/nginx.conf:/etc/nginx/nginx.conf
+      - ../file-service/auth/:/usr/share/nginx/auth
+      - ../file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 
@@ -136,21 +129,21 @@ services:
       - task-runner
     build:
       context: ..
-      dockerfile: docker/runner.Dockerfile
+      dockerfile: task-runner/Dockerfile
     volumes:
-      - ../README.md:/app/README.md
-      - ../broadcasting-service:/app/broadcasting-service
-      - ../common:/app/common
-      - ../definitions:/app/definitions
-      - ../dist-src:/app/dist-src
-      - ../dist:/app/dist
-      - ../docker/docker-compose.yml:/app/docker-compose.yml
-      - ../docs:/app/docs
-      - ../frontend:/app/frontend
-      - ../package.json:/app/package.json
-      - ../sampledata:/app/sampledata
-      - ../scripts:/app/scripts
-      - ../test/api:/app/test/api
-      - ../test/config.docker.json:/app/test/config.json
+      - ../README.md:/usr/src/testcenter/task-runner/README.md
+      - ../broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
+      - ../common:/usr/src/testcenter/task-runner/common
+      - ../definitions:/usr/src/testcenter/task-runner/definitions
+      - ../dist-src:/usr/src/testcenter/task-runner/dist-src
+      - ../dist:/usr/src/testcenter/task-runner/dist
+      - ../docker/docker-compose.yml:/usr/src/testcenter/task-runner/docker-compose.yml
+      - ../docs:/usr/src/testcenter/task-runner/docs
+      - ../frontend:/usr/src/testcenter/task-runner/frontend
+      - ../package.json:/usr/src/testcenter/task-runner/package.json
+      - ../sampledata:/usr/src/testcenter/task-runner/sampledata
+      - ../scripts:/usr/src/testcenter/task-runner/scripts
+      - ../test/api:/usr/src/testcenter/task-runner/test/api
+      - ../test/config.docker.json:/usr/src/testcenter/task-runner/test/config.json
     networks:
       - testcenter

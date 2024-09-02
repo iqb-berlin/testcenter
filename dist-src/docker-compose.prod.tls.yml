@@ -1,7 +1,6 @@
 #  Compose file for production environment. Images are NOT locally built but
 #  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
 #  communication.
-version: '3.9'
 
 services:
   traefik:
@@ -21,9 +20,13 @@ services:
       - ./config/tls-config.yml:/tls-config.yml
 
   testcenter-db:
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-db:${VERSION}
+    image: ${DOCKERHUB_PROXY}mysql:8.0
     command:
-      - --log_error_verbosity=1
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"
 
   testcenter-backend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
@@ -33,7 +36,7 @@ services:
       - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
     volumes:
-      - testcenter_backend_vo_data:/var/www/data
+      - testcenter_backend_vo_data:/var/www/testcenter/data
 
   testcenter-frontend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
