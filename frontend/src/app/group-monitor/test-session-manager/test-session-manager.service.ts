@@ -11,10 +11,15 @@ import { BookletService } from '../booklet/booklet.service';
 import { TestSessionUtil } from '../test-session/test-session.util';
 import {
   isBooklet,
-  Selected, CheckingOptions,
+  Selected,
+  CheckingOptions,
   TestSession,
-  TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig
+  TestSessionFilter,
+  TestSessionSetStats,
+  TestSessionsSuperStates,
+  CommandResponse,
+  GotoCommandData,
+  GroupMonitorConfig, TestSessionFilterList
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -23,6 +28,7 @@ import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 export class TestSessionManager {
   sortBy$: Subject<Sort>;
   filters$: Subject<TestSessionFilter[]>;
+
   checkingOptions: CheckingOptions = {
     enableAutoCheckAll: false,
     autoCheckAll: false
@@ -67,26 +73,32 @@ export class TestSessionManager {
 
   // attention: this works the other way round than Array.filter:
   // it defines which sessions are to filter out, not which ones are to keep
-  filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
-    {
-      label: 'gm_filter_locked',
+  filterOptions: TestSessionFilterList = {
+    locked: {
       selected: false,
+      source: 'base',
       filter: {
-        type: 'testState',
+        id: 'locked',
+        label: 'gm_filter_locked',
+        target: 'testState',
         value: 'status',
-        subValue: 'locked'
+        subValue: 'locked',
+        type: 'equal'
       }
     },
-    {
-      label: 'gm_filter_pending',
+    pending: {
       selected: false,
+      source: 'base',
       filter: {
-        type: 'testState',
+        id: 'pending',
+        label: 'gm_filter_pending',
+        target: 'testState',
         value: 'status',
-        subValue: 'pending'
+        subValue: 'pending',
+        type: 'equal'
       }
     }
-  ];
+  };
 
   constructor(
     private bs: BackendService,
@@ -143,13 +155,15 @@ export class TestSessionManager {
     this.bs.cutConnection();
   }
 
-  switchFilter(indexInFilterOptions: number): void {
-    this.filterOptions[indexInFilterOptions].selected =
-      !this.filterOptions[indexInFilterOptions].selected;
-    this.filters$.next(
-      this.filterOptions
-        .filter(filterOption => filterOption.selected)
-        .map(filterOption => filterOption.filter)
+  switchFilter(filterId: string): void {
+    this.filterOptions[filterId].selected = !this.filterOptions[filterId].selected;
+    this.refreshFilters();
+  }
+
+  refreshFilters(): void {
+    this.filters$.next(Object.values(this.filterOptions)
+      .filter(filterOption => filterOption.selected)
+      .map(filterOption => filterOption.filter)
     );
   }
 
@@ -160,29 +174,40 @@ export class TestSessionManager {
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
-    const applyNot = (isMatching: boolean, not: boolean): boolean => (not ? !isMatching : isMatching);
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const apply = (subject: string, filter: TestSessionFilter, inverted?: true): boolean => {
+      if (filter.not && !inverted) return !apply(subject, filter, true);
+      if (Array.isArray(filter.value)) return filter.value.includes(subject);
+      switch (filter.type) {
+        case 'substring': return subject.includes(filter.value);
+        case 'equal': return subject === filter.value;
+        case 'regex': return (new RegExp(filter.value)).test(subject);
+        default: return false;
+      }
+    };
     return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
-      switch (nextFilter.type) {
-        case 'groupName': {
-          return keep && applyNot(session.data.groupName !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'bookletName': {
-          return keep && applyNot(session.data.bookletName !== nextFilter.value, !!nextFilter.not);
-        }
+      switch (nextFilter.target) {
+        case 'groupName':
+        case 'personLabel':
+        case 'mode':
+        case 'bookletName':
+          return keep && apply(session.data[nextFilter.target] || '', nextFilter);
+        case 'bookletLabel':
+          return keep && apply('metadata' in session.booklet ? session.booklet.metadata.label : '', nextFilter);
+        case 'blockId':
+          return keep && apply(session.current?.ancestor?.blockId || '', nextFilter);
         case 'testState': {
+          if (Array.isArray(nextFilter.value)) return keep;
           const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
           const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-          const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
-          return keep && applyNot(keepIn, !!nextFilter.not);
+          const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
+          return keep && (nextFilter.not ? !testStateMatching : testStateMatching);
         }
         case 'state': {
-          return keep && applyNot(session.state !== nextFilter.value, !!nextFilter.not);
+          return keep && apply(session.state, nextFilter);
         }
         case 'bookletSpecies': {
-          return keep && applyNot(session.booklet.species !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'mode': {
-          return keep && applyNot(session.data.mode !== nextFilter.value, !!nextFilter.not);
+          return keep && apply(session.booklet.species || '', nextFilter);
         }
         default:
           return false;

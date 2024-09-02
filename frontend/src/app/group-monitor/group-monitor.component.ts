@@ -9,17 +9,28 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { catchError, switchMap } from 'rxjs/operators';
+import { KeyValue } from '@angular/common';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,
   MainDataService
 } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import {
-  TestViewDisplayOptions, TestViewDisplayOptionKey, Selected,
-  TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
+  TestViewDisplayOptions,
+  TestViewDisplayOptionKey,
+  Selected,
+  TestSession,
+  TestSessionSetStats,
+  CommandResponse,
+  UIMessage,
+  isBooklet,
+  TestSessionFilter,
+  TestSessionFilterListEntry,
+  testSessionFilterListEntrySources, EditFilterDialogData
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
+import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -32,7 +43,6 @@ import { BookletUtil } from './booklet/booklet.util';
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   connectionStatus$: Observable<ConnectionStatus> | null = null;
 
-  private ownGroupName = '';
   groupLabel = '';
 
   selectedElement: Selected | null = null;
@@ -65,14 +75,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     public tsm: TestSessionManager,
     private router: Router,
     private cts: CustomtextService,
-    public mds: MainDataService
+    public mds: MainDataService,
+    private addFilterDialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe(params => {
         this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
-        this.ownGroupName = params['group-name'];
         this.tsm.connect(params['group-name']);
       }),
       this.tsm.sessionsStats$.subscribe(stats => {
@@ -292,5 +302,39 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     } else {
       this.tsm.checkNone();
     }
+  }
+
+  addFilter(): void {
+    this.openFilterDialog();
+  }
+
+  editFilter(key: string): void {
+    this.openFilterDialog(this.tsm.filterOptions[key].filter);
+  }
+
+  private openFilterDialog(filter: TestSessionFilter | undefined = undefined) {
+    const data : EditFilterDialogData = {
+      columnList: []
+    };
+    if (filter) data.filter = filter;
+
+    const dialogRef = this.addFilterDialog.open(AddFilterDialogComponent, { width: 'auto', data });
+
+    dialogRef.afterClosed().subscribe((newFilter: TestSessionFilter) => {
+      if (!newFilter) return;
+      this.tsm.filterOptions[newFilter.id] = { selected: true, filter: newFilter, source: 'custom' };
+      this.tsm.refreshFilters();
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  sortFilterMenuEntries(
+    a: KeyValue<string, TestSessionFilterListEntry>,
+    b: KeyValue<string, TestSessionFilterListEntry>
+  ): number {
+    const aLevel = testSessionFilterListEntrySources.indexOf(a.value.source);
+    const bLevel = testSessionFilterListEntrySources.indexOf(b.value.source);
+    if (aLevel !== bLevel) return aLevel - bLevel;
+    return a.value.filter.label > b.value.filter.label ? 1 : -1;
   }
 }

@@ -77,10 +77,36 @@ export interface Restrictions {
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
+export const testSessionFilterTargets = {
+  bookletLabel: false,
+  personLabel: false,
+  state: false,
+  blockLabel: false,
+  groupName: true,
+  bookletName: true,
+  blockId: true,
+  testState: true,
+  mode: true,
+  bookletSpecies: true
+} as const;
+
+export const testSessionFilterTypes = {
+  regex: true,
+  substring: false,
+  equal: false
+} as const;
+
+export type TestSessionFilterType = (keyof typeof testSessionFilterTypes)[number];
+
+export type TestSessionFilterTarget = (keyof typeof testSessionFilterTargets)[number];
+
 export interface TestSessionFilter {
-  type: 'groupName' | 'bookletName' | 'testState' | 'mode' | 'state' | 'bookletSpecies';
-  value: string;
+  target: TestSessionFilterTarget;
+  value: string | string[];
+  id: string;
+  label: string;
   subValue?: string;
+  type: TestSessionFilterType;
   not?: true;
 }
 
@@ -92,6 +118,25 @@ export interface TestViewDisplayOptions {
   bookletColumn: 'show' | 'hide';
   highlightSpecies: boolean;
   manualChecking: boolean;
+}
+
+export const testSessionFilterListEntrySources = ['base', 'profile', 'custom'];
+
+export type TestSessionFilterListEntrySource = typeof testSessionFilterListEntrySources[number];
+
+export interface TestSessionFilterListEntry {
+  filter: TestSessionFilter,
+  selected: boolean,
+  source: TestSessionFilterListEntrySource
+}
+
+export interface TestSessionFilterList {
+  [filterId: string]: TestSessionFilterListEntry
+}
+
+export interface EditFilterDialogData {
+  filter?: TestSessionFilter;
+  columnList: string[]
 }
 
 export interface CheckingOptions {

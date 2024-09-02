@@ -35,9 +35,21 @@
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <button mat-menu-item *ngFor="let filterOption of tsm.filterOptions; let i = index" (click)="tsm.switchFilter(i)">
-    <mat-icon *ngIf="filterOption.selected">check</mat-icon>
-    <span>{{filterOption.label | customtext:filterOption.label | async}}</span>
+  <button
+    mat-menu-item
+    *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries"
+    (click)="tsm.switchFilter(fo.key)"
+  >
+    <mat-icon *ngIf="fo.value.selected">check</mat-icon>
+    <span>{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
+    <span class="menu-edit-filter">
+      <mat-icon *ngIf="fo.value.source != 'base'" (click)="$event.stopPropagation(); editFilter(fo.key)">edit</mat-icon>
+    </span>
+  </button>
+  <hr>
+  <button mat-menu-item (click)="addFilter()">
+    <mat-icon>add</mat-icon>
+    <span>{{'Eigenen Filter hinzufügen' | customtext:'gm_add_custom_filter' | async}}</span>
   </button>
 </mat-menu>
 

@@ -177,3 +177,8 @@ mat-sidenav {
   animation: fade 6s forwards;
   z-index: 100000;
 }
+
+.menu-edit-filter {
+  position: absolute;
+  right: 0;
+}
