@@ -12,7 +12,8 @@ RUN --mount=type=cache,target=~/.npm \
     npm install -g --no-fund npm
 RUN npm --version
 
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,sharing=locked,target=~/.npm \
+COPY package*.json .
+#RUN --mount=type=bind,source=package.json,target=package.json \
+#    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
     npm ci --include=dev --no-fund

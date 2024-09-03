@@ -1,0 +1,298 @@
+.backend-change:
+  rules:
+    - changes:
+        - backend/**/*
+        - scripts/database/**/*
+        - definitions/**/*
+
+.frontend-change:
+  rules:
+    - changes:
+        - frontend/**/*
+        - common/**/*
+
+.bs-change:
+  rules:
+    - changes:
+        - broadcasting-service/**/*
+        - common/**/*
+
+.fs-change:
+  rules:
+    - changes:
+        - scripts/file-service/**/*
+
+build-backend:
+  stage: build
+  rules:
+    - !reference [ .backend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - changes:
+        - e2e/**/*
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --progress plain --file docker/docker-compose.yml --file docker/docker-compose.dev.yml build testcenter-backend
+    - docker push iqbberlin/testcenter-backend:dev
+
+build-frontend:
+  stage: build
+  rules:
+    - !reference [ .frontend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - changes:
+        - e2e/**/*
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --progress plain --file docker/docker-compose.yml --file docker/docker-compose.dev.yml build testcenter-frontend
+    - docker push iqbberlin/testcenter-frontend:dev
+
+build-broadcasting-service:
+  stage: build
+  rules:
+    - !reference [ .bs-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - changes:
+        - e2e/**/*
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --progress plain --file docker/docker-compose.yml --file docker/docker-compose.dev.yml build testcenter-broadcasting-service
+    - docker push iqbberlin/testcenter-broadcasting-service:dev
+
+build-file-service:
+  stage: build
+  rules:
+    - !reference [ .fs-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - changes:
+        - e2e/**/*
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --progress plain --file docker/docker-compose.yml --file docker/docker-compose.dev.yml build testcenter-file-service
+    - docker push iqbberlin/testcenter-file-service
+
+test-backend-unit:
+  stage: test
+  rules:
+    - !reference [ .backend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-backend
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      run --rm --entrypoint "" testcenter-backend php
+      -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
+      --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
+      --configuration /var/www/testcenter/backend/phpunit.xml
+      --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
+      --testdox
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-backend-unit/*
+    expire_in: 30 minutes
+
+test-frontend-unit:
+  stage: test
+  rules:
+    - !reference [ .frontend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-frontend
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      run testcenter-frontend npx ng test --watch=false --code-coverage
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-frontend-unit/*
+    expire_in: 30 minutes
+
+test-broadcasting-service-unit:
+  stage: test
+  rules:
+    - !reference [ .bs-change, rules ]
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-broadcasting-service
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      run testcenter-broadcasting-service npx jest --coverage
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-broadcasting-service-unit/*
+    expire_in: 30 minutes
+
+test-backend-api:
+  stage: test
+  rules:
+    - !reference [ .backend-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-backend
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      -f docker/docker-compose.api-test.yml
+      run --rm testcenter-task-runner-backend npm run backend:api-test
+
+test-file-service-api:
+  stage: test
+  rules:
+    - !reference [ .fs-change, rules ]
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-file-service
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      -f docker/docker-compose.api-test.yml
+      run --rm testcenter-task-runner-file-service npm run file-service:api-test
+
+test-backend-initialization:
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+  dependencies:
+    - build-backend
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml stop # TODO this should be able to run while the testcenter runs ins dev-mode
+    - export test=general/db-versions
+    - docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - export test=general/vanilla-installation
+    - docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - export test=general/no-db-but-files
+    - docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - export test=general/install-db-patches
+    - docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - export test=general/re-initialize
+    - docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+
+test-e2e:
+  stage: test
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
+    - !reference [ .frontend-change, rules ]
+    - changes:
+        - e2e/**/*
+  script:
+    - cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+    - cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+    - chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+    - mkdir -p $(TC_BASE_DIR)/docs/dist
+    - chmod 777 $(TC_BASE_DIR)/docs/dist
+    - mkdir -p $(TC_BASE_DIR)/data
+    - chmod 777 $(TC_BASE_DIR)/data
+    - docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml down --remove-orphans
+    - docker compose
+      -f docker/docker-compose.yml
+      -f docker/docker-compose.dev.yml
+      -f docker/docker-compose.system-test-headless.yml
+      up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress/videos/**/*.mp4
+      - e2e/cypress/screenshots/**/*.png
