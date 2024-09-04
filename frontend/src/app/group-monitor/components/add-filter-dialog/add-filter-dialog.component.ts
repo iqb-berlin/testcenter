@@ -1,6 +1,7 @@
 import {
-  Component, OnInit
+  Component, Inject, OnInit
 } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   isBooklet,
   TestSessionFilter, TestSessionFilterTarget,
@@ -23,8 +24,14 @@ import { TestSessionManager } from '../../test-session-manager/test-session-mana
 export class AddFilterDialogComponent implements OnInit {
   constructor(
     public tsm: TestSessionManager,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    @Inject(MAT_DIALOG_DATA) filterToEdit: TestSessionFilter
   ) {
+    console.log({ filterToEdit });
+    if (filterToEdit) {
+      this.originalId = filterToEdit.id;
+      this.filter = filterToEdit;
+    }
   }
 
   filter: TestSessionFilter = {
@@ -36,6 +43,7 @@ export class AddFilterDialogComponent implements OnInit {
     type: 'substring'
   };
 
+  originalId: string | undefined;
   targets = testSessionFilterTargets;
   filterTypes = testSessionFilterTypes;
   superStates = superStates as {
@@ -66,7 +74,6 @@ export class AddFilterDialogComponent implements OnInit {
     };
     this.tsm.sessions
       .forEach(session => {
-        console.log(session);
         pushUnique(this.lists.groupName, session.data.groupName);
         pushUnique(this.lists.bookletName, session.data.bookletName || '');
         if (isBooklet(session.booklet)) pushUnique(this.lists.bookletLabel, session.booklet.metadata.label);
@@ -76,17 +83,16 @@ export class AddFilterDialogComponent implements OnInit {
       });
 
     this.lists.mode = Object.keys(TestMode.modes).map(mode => mode.toLowerCase());
-
-    console.log(this.lists);
   }
 
   updateFilterId(): void {
-    this.filter.id = `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
+    this.filter.id = this.originalId ||
+      `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
     this.filter.label = [
       this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
       this.filter.not ? (this.cts.getCustomText(`gm_filter_not_${this.filter.not}`) ?? 'not') : '',
       this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
-      this.filter.value
+      this.filter.value.length > 15 ? `${this.filter.value.slice(0, 14)}...` : this.filter.value
     ]
       .filter(a => !!a)
       .join(' ');

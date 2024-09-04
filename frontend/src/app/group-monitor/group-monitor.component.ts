@@ -15,12 +15,22 @@ import {
 } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import {
-  TestViewDisplayOptions, TestViewDisplayOptionKey, Selected,
-  TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet, TestSessionFilter
+  TestViewDisplayOptions,
+  TestViewDisplayOptionKey,
+  Selected,
+  TestSession,
+  TestSessionSetStats,
+  CommandResponse,
+  UIMessage,
+  isBooklet,
+  TestSessionFilter,
+  TestSessionFilterListEntry,
+  testSessionFilterListEntrySources
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -303,5 +313,31 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'custom' };
       this.tsm.refreshFilters();
     });
+  }
+
+  editFilter(key: string): void {
+    const dialogRef = this.addFilterDialog.open(
+      AddFilterDialogComponent, {
+        width: 'auto',
+        data: this.tsm.filterOptions[key].filter
+      }
+    );
+
+    dialogRef.afterClosed().subscribe((filter: TestSessionFilter) => {
+      if (!filter) return;
+      this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'custom' };
+      this.tsm.refreshFilters();
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  sortFilterMenuEntries(
+    a: KeyValue<string, TestSessionFilterListEntry>,
+    b: KeyValue<string, TestSessionFilterListEntry>
+  ): number {
+    const aLevel = testSessionFilterListEntrySources.indexOf(a.value.source);
+    const bLevel = testSessionFilterListEntrySources.indexOf(b.value.source);
+    if (aLevel !== bLevel) return aLevel - bLevel;
+    return a.value.filter.label > b.value.filter.label ? 1 : -1;
   }
 }

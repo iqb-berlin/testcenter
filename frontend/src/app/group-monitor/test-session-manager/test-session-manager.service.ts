@@ -180,7 +180,6 @@ export class TestSessionManager {
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const apply = (subject: string, filter: TestSessionFilter, inverted?: true): boolean => {
-      console.log({ subject, filter });
       if (filter.not && !inverted) return !apply(subject, filter, true);
       if (Array.isArray(filter.value)) return filter.value.includes(subject);
       switch (filter.type) {

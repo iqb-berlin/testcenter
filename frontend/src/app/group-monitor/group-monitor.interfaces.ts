@@ -120,12 +120,18 @@ export interface TestViewDisplayOptions {
   manualChecking: boolean;
 }
 
+export const testSessionFilterListEntrySources = ['base', 'profile', 'custom'];
+
+export type TestSessionFilterListEntrySource = typeof testSessionFilterListEntrySources[number];
+
+export interface TestSessionFilterListEntry {
+  filter: TestSessionFilter,
+  selected: boolean,
+  source: TestSessionFilterListEntrySource
+}
+
 export interface TestSessionFilterList {
-  [filterId: string]: {
-    filter: TestSessionFilter,
-    selected: boolean,
-    source: 'base' | 'profile' | 'custom'
-  }
+  [filterId: string]: TestSessionFilterListEntry
 }
 
 export interface CheckingOptions {
