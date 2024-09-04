@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -25,7 +25,7 @@ import {
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources
+  testSessionFilterListEntrySources, EditFilterDialogData
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -306,26 +306,24 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   addFilter(): void {
-    const dialogRef = this.addFilterDialog.open(AddFilterDialogComponent);
-
-    dialogRef.afterClosed().subscribe((filter: TestSessionFilter) => {
-      if (!filter) return;
-      this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'custom' };
-      this.tsm.refreshFilters();
-    });
+    this.openFilterDialog();
   }
 
   editFilter(key: string): void {
-    const dialogRef = this.addFilterDialog.open(
-      AddFilterDialogComponent, {
-        width: 'auto',
-        data: this.tsm.filterOptions[key].filter
-      }
-    );
+    this.openFilterDialog(this.tsm.filterOptions[key].filter);
+  }
 
-    dialogRef.afterClosed().subscribe((filter: TestSessionFilter) => {
-      if (!filter) return;
-      this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'custom' };
+  private openFilterDialog(filter: TestSessionFilter | undefined = undefined) {
+    const data : EditFilterDialogData = {
+      columnList: []
+    };
+    if (filter) data.filter = filter;
+
+    const dialogRef = this.addFilterDialog.open(AddFilterDialogComponent, { width: 'auto', data });
+
+    dialogRef.afterClosed().subscribe((newFilter: TestSessionFilter) => {
+      if (!newFilter) return;
+      this.tsm.filterOptions[newFilter.id] = { selected: true, filter: newFilter, source: 'custom' };
       this.tsm.refreshFilters();
     });
   }

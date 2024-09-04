@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
+  EditFilterDialogData,
   isBooklet,
   TestSessionFilter, TestSessionFilterTarget,
   testSessionFilterTargets,
@@ -25,22 +26,22 @@ export class AddFilterDialogComponent implements OnInit {
   constructor(
     public tsm: TestSessionManager,
     private cts: CustomtextService,
-    @Inject(MAT_DIALOG_DATA) filterToEdit: TestSessionFilter
+    @Inject(MAT_DIALOG_DATA) data: EditFilterDialogData
   ) {
-    console.log({ filterToEdit });
-    if (filterToEdit) {
-      this.originalId = filterToEdit.id;
-      this.filter = filterToEdit;
+    console.log({ data });
+    if (data.filter) {
+      this.originalId = data.filter.id;
+      this.filter = data.filter;
     }
   }
 
   filter: TestSessionFilter = {
     id: '',
     label: '',
-    target: 'mode',
+    target: 'personLabel',
     value: '',
     not: true,
-    type: 'substring'
+    type: 'equal'
   };
 
   originalId: string | undefined;
@@ -67,6 +68,8 @@ export class AddFilterDialogComponent implements OnInit {
     bookletSpecies: [],
     personLabel: []
   };
+
+  advancedMode: boolean = false;
 
   ngOnInit(): void {
     const pushUnique = <T>(arr: T[], item: T): void => {

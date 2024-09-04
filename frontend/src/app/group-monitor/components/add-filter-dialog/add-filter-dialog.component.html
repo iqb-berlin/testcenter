@@ -1,40 +1,32 @@
 <p mat-dialog-title data-cy="comment-diag-title">Neuen Filter Hinzufügen</p>
 
 <mat-dialog-content>
-  <br>
-
-  <mat-form-field appearance="outline">
-    <mat-label>Name</mat-label>
-    <input
-      matInput
-      [(ngModel)]="filter.label"
-      placeholder=""
-      data-cy="comment-diag-name"
-      required>
-  </mat-form-field>
-
   <p>Folgende Test-Sitzungen sollen heraus gefiltert werden:</p>
 
   <mat-form-field appearance="outline">
     <mat-label>Feld</mat-label>
     <mat-select [(ngModel)]="filter.target" (ngModelChange)="updateFilterId()">
-      <mat-option *ngFor="let target of targets" [value]="target">
-        {{target | customtext : 'gm_filter_target_' + target | async}}
-      </mat-option>
+      <ng-container *ngFor="let target of targets | keyvalue">
+        <mat-option *ngIf="!target.value || advancedMode || target.key === filter.target" [value]="target.key">
+          {{target.key | customtext : 'gm_filter_target_' + target.key | async}}
+        </mat-option>
+      </ng-container>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
     <mat-label>Filtertyp</mat-label>
     <mat-select [(ngModel)]="filter.type" (ngModelChange)="updateFilterId()">
-      <mat-option *ngFor="let type of filterTypes" [value]="type">
-        {{type | customtext : 'gm_filter_type_' + type | async}}
-      </mat-option>
+      <ng-container *ngFor="let type of filterTypes | keyvalue">
+        <mat-option *ngIf="!type.value || advancedMode || type.key === filter.type" [value]="type.key">
+          {{type.key | customtext : 'gm_filter_type_' + type.key | async}}
+        </mat-option>
+      </ng-container>
     </mat-select>
   </mat-form-field>
 
   <p>
-    <mat-slide-toggle color="accent" [(ngModel)]="filter.not" (ngModelChange)="updateFilterId()">
+    <mat-slide-toggle color="accent" [(ngModel)]="filter.not" (ngModelChange)="updateFilterId()" *ngIf="advancedMode">
       {{'Nicht' | customtext : 'gm_filter_not' | async}}
     </mat-slide-toggle>
   </p>
@@ -58,6 +50,19 @@
     </mat-autocomplete>
   </mat-form-field>
 
+  <mat-form-field appearance="outline" *ngIf="filter.target === 'testState'">
+    <mat-label>Unterfilter</mat-label>
+    <input
+      type="text"
+      matInput
+      [(ngModel)]="filter.subValue"
+      (ngModelChange)="updateFilterId()"
+      placeholder=""
+      data-cy="comment-diag-subValue"
+      required
+    >
+  </mat-form-field>
+
   <mat-form-field appearance="outline" *ngIf="filter.target === 'state'">
     <mat-label>Filter</mat-label>
     <mat-select [(ngModel)]="filter.value" (ngModelChange)="updateFilterId()" multiple>
@@ -72,12 +77,15 @@
     </mat-select>
   </mat-form-field>
 
-
-
-  <pre>
-    {{filter|json}}
-  </pre>
-
+  <mat-form-field appearance="outline" *ngIf="advancedMode">
+    <mat-label>Filtername</mat-label>
+    <input
+      matInput
+      [(ngModel)]="filter.label"
+      placeholder=""
+      data-cy="comment-diag-name"
+      required>
+  </mat-form-field>
 
 
 </mat-dialog-content>
@@ -96,4 +104,7 @@
   <button mat-raised-button [mat-dialog-close]="false">
     Abbrechen
   </button>
+  <p>
+    <mat-slide-toggle [(ngModel)]="advancedMode">Erweiterter Modus</mat-slide-toggle>
+  </p>
 </mat-dialog-actions>
