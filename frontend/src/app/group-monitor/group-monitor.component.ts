@@ -61,6 +61,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   isScrollable = false;
   isClosing = false;
 
+  quickFilter: string = '';
+  quickFilterBoxOpen: boolean = false;
+
   messages: UIMessage[] = [];
 
   private subscriptions: Subscription[] = [];
@@ -336,5 +339,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const bLevel = testSessionFilterListEntrySources.indexOf(b.value.source);
     if (aLevel !== bLevel) return aLevel - bLevel;
     return a.value.filter.label > b.value.filter.label ? 1 : -1;
+  }
+
+  quickFilterOnUpdateModel() {
+    console.log('upd', this.quickFilter);
+    if (!this.quickFilter) {
+      this.tsm.filterOptions.quick.selected = false;
+    } else {
+      this.tsm.filterOptions.quick.selected = true;
+      this.tsm.filterOptions.quick.filter.value = this.quickFilter;
+    }
+
+    this.tsm.refreshFilters();
+  }
+
+  toggleQuickFilterBox(): void {
+    this.quickFilterBoxOpen = !this.quickFilterBoxOpen;
+  }
+
+  quickFilterOnFocusOut(): void {
+    if (!this.quickFilter) this.quickFilterBoxOpen = false;
   }
 }

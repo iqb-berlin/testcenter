@@ -120,7 +120,7 @@ export interface TestViewDisplayOptions {
   manualChecking: boolean;
 }
 
-export const testSessionFilterListEntrySources = ['base', 'profile', 'custom'];
+export const testSessionFilterListEntrySources = ['base', 'quick', 'profile', 'custom'] as const;
 
 export type TestSessionFilterListEntrySource = typeof testSessionFilterListEntrySources[number];
 
