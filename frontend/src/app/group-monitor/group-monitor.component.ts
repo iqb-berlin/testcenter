@@ -16,10 +16,11 @@ import {
 import { BackendService } from './backend.service';
 import {
   TestViewDisplayOptions, TestViewDisplayOptionKey, Selected,
-  TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
+  TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet, TestSessionFilter
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
+import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -44,10 +45,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     blockColumn: 'show',
     unitColumn: 'hide',
     highlightSpecies: false,
-    manualChecking: false,
-    filter: {
-      person: 'x'
-    }
+    manualChecking: false
   };
 
   isScrollable = false;
@@ -67,7 +65,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     public tsm: TestSessionManager,
     private router: Router,
     private cts: CustomtextService,
-    public mds: MainDataService
+    public mds: MainDataService,
+    private addFilterDialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +91,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
+    this.addFilter(); // tmp
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -293,5 +293,15 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     } else {
       this.tsm.checkNone();
     }
+  }
+
+  addFilter(): void {
+    const dialogRef = this.addFilterDialog.open(AddFilterDialogComponent);
+
+    dialogRef.afterClosed().subscribe((filter: TestSessionFilter) => {
+      if (!filter) return;
+      this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'custom' };
+      this.tsm.refreshFilters();
+    });
   }
 }

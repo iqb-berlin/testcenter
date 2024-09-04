@@ -35,9 +35,15 @@
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <button mat-menu-item *ngFor="let filterOption of tsm.filterOptions; let i = index" (click)="tsm.switchFilter(i)">
-    <mat-icon *ngIf="filterOption.selected">check</mat-icon>
-    <span>{{filterOption.label | customtext:filterOption.label | async}}</span>
+  <button mat-menu-item *ngFor="let fo of tsm.filterOptions | keyvalue" (click)="tsm.switchFilter(fo.key)">
+    <mat-icon *ngIf="fo.value.selected">check</mat-icon>
+    <span>{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
+    <span style="float:right"><mat-icon *ngIf="fo.value.source != 'base'">edit</mat-icon></span>
+  </button>
+  <hr>
+  <button mat-menu-item (click)="addFilter()">
+    <mat-icon>add</mat-icon>
+    <span>{{'Eigenen Filter hinzufügen' | customtext:'gm_add_custom_filter' | async}}</span>
   </button>
 </mat-menu>
 
@@ -227,7 +233,6 @@
                   {{'Gruppe' | customtext:'gm_col_group' | async}}
                 </td>
                 <td mat-sort-header="personLabel">
-                  <tc-table-filter-box [(value)]="filters.person" />
                   {{'Teilnehmer' | customtext:'gm_col_person' | async}}
                 </td>
                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">

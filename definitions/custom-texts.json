@@ -275,6 +275,62 @@
     "label" : "Filter: nicht gestartete ausblenden",
     "defaultvalue" : "nicht gestartete"
   },
+  "gm_filter_target_mode": {
+    "label": "Benutzerdefinierter Filter: Ziel - Modus",
+    "defaultvalue": "Durchführungsmodus"
+  },
+  "gm_filter_target_bookletName": {
+    "label": "Benutzerdefinierter Filter: Ziel - TestheftId",
+    "defaultvalue": "Booklet-Id"
+  },
+  "gm_filter_target_bookletLabel": {
+    "label": "Benutzerdefinierter Filter: Ziel - Testhefttitel",
+    "defaultvalue": "Booklettitel"
+  },
+  "gm_filter_target_blockId": {
+    "label": "Benutzerdefinierter Filter: Ziel - Block-Id",
+    "defaultvalue": "Block-Id"
+  },
+  "gm_filter_target_blockLabel": {
+    "label": "Benutzerdefinierter Filter: Ziel - Blocktitel",
+    "defaultvalue": "Blocktitel"
+  },
+  "gm_filter_target_state": {
+    "label": "Benutzerdefinierter Filter: Ziel - Teststatus",
+    "defaultvalue": "Teststatus"
+  },
+  "gm_filter_target_bookletSpecies": {
+    "label": "Benutzerdefinierter Filter: Ziel -Testhefttyp",
+    "defaultvalue": "Testhefttyp"
+  },
+  "gm_filter_target_personLabel": {
+    "label": "Benutzerdefinierter Filter: Ziel - Teilnehmer",
+    "defaultvalue": "Teilnehmer"
+  },
+  "gm_filter_target_groupName": {
+    "label": "Benutzerdefinierter Filter: Ziel - Gruppe",
+    "defaultvalue": "Gruppe"
+  },
+  "gm_filter_target_testState": {
+    "label": "Benutzerdefinierter Filter: Ziel - detaillierter Teststatus",
+    "defaultvalue": "detaillierter Teststatus"
+  },
+  "gm_filter_type_equal": {
+    "label": "Benutzerdefinierter Filter: Typ - gleicht",
+    "defaultvalue": "gleicht"
+  },
+  "gm_filter_type_substring": {
+    "label": "Benutzerdefinierter Filter: Typ - enthält",
+    "defaultvalue": "enthält"
+  },
+  "gm_filter_type_regex": {
+    "label": "Benutzerdefinierter Filter: Typ - Regex",
+    "defaultvalue": "matched regulären Ausdruck"
+  },
+  "gm_filter_type_not": {
+    "label": "Benutzerdefinierter Filter: Nicht",
+    "defaultvalue": "nicht"
+  },
   "gm_timeleft_tooltip" : {
     "label" : "Tooltip zeitgesteuerter Block: verbleibende Zeit. Ersetzungen (%s): Verbleibende Minuten, Minuten gesamt",
     "defaultvalue" : "Verbleibende Zeit: %s von %s Minute(n)"

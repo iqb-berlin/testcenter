@@ -1,0 +1,99 @@
+<p mat-dialog-title data-cy="comment-diag-title">Neuen Filter Hinzufügen</p>
+
+<mat-dialog-content>
+  <br>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input
+      matInput
+      [(ngModel)]="filter.label"
+      placeholder=""
+      data-cy="comment-diag-name"
+      required>
+  </mat-form-field>
+
+  <p>Folgende Test-Sitzungen sollen heraus gefiltert werden:</p>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Feld</mat-label>
+    <mat-select [(ngModel)]="filter.target" (ngModelChange)="updateFilterId()">
+      <mat-option *ngFor="let target of targets" [value]="target">
+        {{target | customtext : 'gm_filter_target_' + target | async}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
+    <mat-label>Filtertyp</mat-label>
+    <mat-select [(ngModel)]="filter.type" (ngModelChange)="updateFilterId()">
+      <mat-option *ngFor="let type of filterTypes" [value]="type">
+        {{type | customtext : 'gm_filter_type_' + type | async}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>
+    <mat-slide-toggle color="accent" [(ngModel)]="filter.not" (ngModelChange)="updateFilterId()">
+      {{'Nicht' | customtext : 'gm_filter_not' | async}}
+    </mat-slide-toggle>
+  </p>
+
+  <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
+    <mat-label>Filter</mat-label>
+    <input
+      type="text"
+      matInput
+      [(ngModel)]="filter.value"
+      (ngModelChange)="updateFilterId()"
+      [matAutocomplete]="auto2"
+      placeholder=""
+      data-cy="comment-diag-value"
+      required
+    >
+    <mat-autocomplete #auto2="matAutocomplete">
+      <mat-option *ngFor="let option of lists[filter.target]" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" *ngIf="filter.target === 'state'">
+    <mat-label>Filter</mat-label>
+    <mat-select [(ngModel)]="filter.value" (ngModelChange)="updateFilterId()" multiple>
+      <mat-option
+        *ngFor="let superState of superStates | keyvalue"
+        [value]="superState.key"
+        class="super-state {{superState.value.class}}"
+      >
+        <mat-icon>{{superState.value.icon}}</mat-icon>
+        {{superState.value.tooltip}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+
+  <pre>
+    {{filter|json}}
+  </pre>
+
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [mat-dialog-close]="filter"
+    [disabled]="!filter.label || !filter.value"
+    data-cy="comment-diag-submit"
+  >
+    Speichern
+  </button>
+  <button mat-raised-button [mat-dialog-close]="false">
+    Abbrechen
+  </button>
+</mat-dialog-actions>
