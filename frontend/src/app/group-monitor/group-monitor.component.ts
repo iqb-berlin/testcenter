@@ -5,10 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { catchError, switchMap } from 'rxjs/operators';
+import { KeyValue } from '@angular/common';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,
   MainDataService
@@ -30,7 +31,6 @@ import {
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
-import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -101,7 +101,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
-    this.addFilter(); // tmp
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {

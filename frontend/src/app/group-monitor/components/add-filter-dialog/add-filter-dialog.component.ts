@@ -28,7 +28,6 @@ export class AddFilterDialogComponent implements OnInit {
     private cts: CustomtextService,
     @Inject(MAT_DIALOG_DATA) data: EditFilterDialogData
   ) {
-    console.log({ data });
     if (data.filter) {
       this.originalId = data.filter.id;
       this.filter = data.filter;

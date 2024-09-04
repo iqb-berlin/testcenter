@@ -161,9 +161,6 @@ export class TestSessionManager {
   }
 
   refreshFilters(): void {
-    console.log({
-      filterOptions: this.filterOptions
-    });
     this.filters$.next(Object.values(this.filterOptions)
       .filter(filterOption => filterOption.selected)
       .map(filterOption => filterOption.filter)
@@ -171,7 +168,6 @@ export class TestSessionManager {
   }
 
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
-    console.log({ filters });
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
       .filter(session => TestSessionManager.applyFilters(session, filters));
