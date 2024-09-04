@@ -35,17 +35,15 @@
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <button
-    mat-menu-item
-    *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries"
-    (click)="tsm.switchFilter(fo.key)"
-  >
-    <mat-icon *ngIf="fo.value.selected">check</mat-icon>
-    <span>{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
-    <span class="menu-edit-filter">
-      <mat-icon *ngIf="fo.value.source != 'base'" (click)="$event.stopPropagation(); editFilter(fo.key)">edit</mat-icon>
-    </span>
-  </button>
+  <ng-container *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries">
+    <button mat-menu-item *ngIf="fo.value.source !== 'quick'" (click)="tsm.switchFilter(fo.key)">
+      <mat-icon *ngIf="fo.value.selected">check</mat-icon>
+      <span>{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
+      <span class="menu-edit-filter">
+        <mat-icon *ngIf="fo.value.source != 'base'" (click)="$event.stopPropagation(); editFilter(fo.key)">edit</mat-icon>
+      </span>
+    </button>
+  </ng-container>
   <hr>
   <button mat-menu-item (click)="addFilter()">
     <mat-icon>add</mat-icon>
@@ -197,6 +195,27 @@
       <div #adminbackground class="adminbackground" (scroll)="updateScrollHint()">
 
         <div class="corner-menu">
+
+          <input
+            *ngIf="quickFilterBoxOpen"
+            type="text"
+            placeholder="Teilnehmer suchen"
+            [(ngModel)]="quickFilter"
+            (ngModelChange)="quickFilterOnUpdateModel()"
+            (focusout)="quickFilterOnFocusOut()"
+            [cdkTrapFocusAutoCapture]="quickFilterBoxOpen"
+            [cdkTrapFocus]="quickFilterBoxOpen"
+          >
+
+          <button
+            class="search-button"
+            mat-icon-button
+            (click)="toggleQuickFilterBox()"
+            matTooltip="{{'Suche Teilnehmer' | customtext:'gm_search_testtaker' | async}}"
+            matTooltipPosition="above"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
           <button
             class="settings-button"
             mat-icon-button

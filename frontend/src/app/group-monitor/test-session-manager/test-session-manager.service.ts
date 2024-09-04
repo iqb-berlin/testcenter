@@ -97,6 +97,18 @@ export class TestSessionManager {
         subValue: 'pending',
         type: 'equal'
       }
+    },
+    quick: {
+      selected: false,
+      source: 'quick',
+      filter: {
+        id: 'quickFilter',
+        label: 'gm_filter_quick',
+        target: 'personLabel',
+        value: '',
+        subValue: '',
+        type: 'substring'
+      }
     }
   };
 
@@ -168,6 +180,7 @@ export class TestSessionManager {
   }
 
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
+    console.log({ filters });
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
       .filter(session => TestSessionManager.applyFilters(session, filters));
