@@ -21,6 +21,14 @@
     - if: $CI_COMMIT_TAG
       when: never
 
+.pre-release_rules:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^(?P<MAJOR>0|[1-9]\d*)\.(?P<MINOR>0|[1-9]\d*)\.(?P<PATCH>0|[1-9]\d*)-(?P<PRERELEASE>(alpha|beta|rc)(\.)?(?:[1-9]\d*)?)$/
+
+.release_rules:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^(?P<MAJOR>0|[1-9]\d*)\.(?P<MINOR>0|[1-9]\d*)\.(?P<PATCH>0|[1-9]\d*)$/
+
 
 check-master-pr-rules:
   stage: .pre
@@ -85,12 +93,41 @@ check-master-commit-rules:
       then echo "commit tag string length is nonzero";
       else echo "commit tag = '$CI_COMMIT_TAG'"; fi
 
+check-pre-release-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .pre-release_rules, rules ]
+  before_script:
+    - PRERELEASE_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((alpha|beta|rc)(\.)?([1-9][0-9]*)?))?$"
+  script:
+    - echo $PRERELEASE_REGEX
+    - if [[ $CI_COMMIT_TAG =~ $PRERELEASE_REGEX ]];
+      then echo "$CI_COMMIT_TAG is a valid pre-release tag.";
+      else echo "$CI_COMMIT_TAG is not a valid pre-release tag!"; fi
+
+check-release-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .release_rules, rules ]
+  before_script:
+    - RELEASE_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
+  script:
+    - echo $RELEASE_REGEX
+    - if [[ $CI_COMMIT_TAG =~ $RELEASE_REGEX ]];
+      then echo "$CI_COMMIT_TAG is a valid release tag.";
+      else echo "$CI_COMMIT_TAG is not a valid release tag!"; fi
+
 
 build-backend:
   stage: build
   rules:
     - !reference [ .master_pr_rules, rules ]
-#    - !reference [ .backend-change, rules ]
+    - !reference [ .release_rules, rules ]
+  #    - !reference [ .backend-change, rules ]
 #    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
 #    - if: "$CI_COMMIT_TAG"
 #    - changes:
@@ -124,6 +161,7 @@ build-frontend:
   stage: build
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
 #    - !reference [ .frontend-change, rules ]
 #    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
 #    - if: "$CI_COMMIT_TAG"
@@ -159,6 +197,7 @@ build-broadcasting-service:
   stage: build
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
 #    - !reference [ .bs-change, rules ]
 #    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
 #    - if: "$CI_COMMIT_TAG"
@@ -254,6 +293,7 @@ build-task-runner:
   stage: build
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
   variables:
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
@@ -278,10 +318,62 @@ build-task-runner:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
 
+generate-docs:
+  stage: build
+  rules:
+    - !reference [ .release_rules, rules ]
+  needs:
+    - build-task-runner
+  variables:
+    TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
+  before_script:
+    - cp docker/default.env docker/.env
+    #    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    #    - chmod 0755 scripts/database/000-create-test-db.sh
+    #    - mkdir -m 777 -p docs/dist
+    #    - mkdir -m 777 -p data
+    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner
+  script:
+    - docker compose
+      --file docker/docker-compose.yml
+      --file docker/docker-compose.dev.yml
+      run --rm --no-deps testcenter-task-runner
+      npm run frontend:update-compodoc
+    - docker compose
+      --file docker/docker-compose.yml
+      --file docker/docker-compose.dev.yml
+      run --rm --no-deps testcenter-task-runner
+      npm run broadcasting-service:update-compodoc
+    - docker compose
+      --file docker/docker-compose.yml
+      --file docker/docker-compose.dev.yml
+      run --rm --no-deps testcenter-task-runner
+      npm run backend:update-specs
+    - docker compose
+      --file docker/docker-compose.yml
+      --file docker/docker-compose.dev.yml
+      run --rm --no-deps testcenter-task-runner
+      npm run create-docs
+  artifacts:
+    paths:
+      - docs/index.md
+      - docs/pages/booklet-config.md
+      - docs/pages/test-mode.md
+      - docs/dist/api/index.html
+      - docs/dist/api/specs.yml
+      - docs/dist/custom-texts.md
+      - docs/dist/test-session-super-states.html
+      - docs/dist/compodoc-frontend/*
+      - docs/dist/compodoc-broadcasting-service/*
+    expire_in: 30 minutes
+
+
 test-backend-unit:
   stage: test
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
 #    - !reference [ .backend-change, rules ]
 #    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
 #    - if: "$CI_COMMIT_TAG"
@@ -314,6 +406,7 @@ test-frontend-unit:
   stage: test
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
 #    - !reference [ .frontend-change, rules ]
 #    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
 #    - if: "$CI_COMMIT_TAG"
@@ -340,6 +433,7 @@ test-broadcasting-service-unit:
   stage: test
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
 #    - !reference [ .bs-change, rules ]
 #    - if: "$CI_COMMIT_TAG"
   needs:
@@ -850,3 +944,79 @@ scan-file-service-prod:
     when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+
+
+push-pre-release:
+  stage: deploy
+  rules:
+    - !reference [ .pre-release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+  after_script:
+    - docker logout
+
+pages:
+  stage: deploy
+  rules:
+    - !reference [ .release_rules, rules ]
+  needs:
+    - test-backend-unit
+    - test-frontend-unit
+    - test-broadcasting-service-unit
+    - generate-docs
+  image: ${PAGES_IMAGE}
+  script:
+    #    - mkdir public
+    #    - cd docs
+    #    - gem install bundler
+    #    - bundle install
+    #    - jekyll build -d ../public
+    - echo "Hooooooooraaaaay!!!!!!!"
+  artifacts:
+    paths:
+      - public
+
+push-release:
+  stage: deploy
+  rules:
+    - !reference [ .release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+  after_script:
+    - docker logout
