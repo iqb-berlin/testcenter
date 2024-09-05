@@ -30,6 +30,7 @@ variables:
   #CYPRESS_IMAGE: cypress/browsers:node-20.17.0-chrome-128.0.6613.84-1-ff-129.0.2-edge-128.0.2739.42-1
   #CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/Cypress"
   #E2E_BASE_IMAGE: "${CYPRESS_IMAGE}-docker"
+  PAGES_IMAGE: ruby:3.1
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
   DOCKER_IMAGE: ${DOCKER_HUB_PROXY}docker:27.2
