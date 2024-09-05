@@ -52,6 +52,7 @@
           <div class="starter-title">{{accessObject.label}}</div>
           <div class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
             {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
+            <ng-container *ngIf="accessObject.flags.subLabel">: {{accessObject.flags.subLabel}}</ng-container>
           </div>
           <div class="starter-status" *ngIf="(!!accessObject.flags.expired)">
             {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired | async}}

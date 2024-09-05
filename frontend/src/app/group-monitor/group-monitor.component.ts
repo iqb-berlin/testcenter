@@ -4,7 +4,9 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
-import { interval, Observable, Subscription } from 'rxjs';
+import {
+  interval, Observable, Subscription
+} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -26,7 +28,7 @@ import {
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources, EditFilterDialogData
+  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -86,6 +88,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.route.params.subscribe(params => {
         this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
+        const profileId = params['profile-id'];
+        if (profileId) {
+          this.bs.getProfile(profileId).subscribe(profile => this.applyProfile(profile));
+        }
         this.tsm.connect(params['group-name']);
       }),
       this.tsm.sessionsStats$.subscribe(stats => {
@@ -312,20 +318,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   editFilter(key: string): void {
-    this.openFilterDialog(this.tsm.filterOptions[key].filter);
+    this.openFilterDialog(this.tsm.filterOptions[key]);
   }
 
-  private openFilterDialog(filter: TestSessionFilter | undefined = undefined) {
-    const data : EditFilterDialogData = {
-      columnList: []
-    };
-    if (filter) data.filter = filter;
-
+  private openFilterDialog(filterEntry: TestSessionFilterListEntry | undefined = undefined) {
+    const data = filterEntry ? filterEntry.filter : {};
     const dialogRef = this.addFilterDialog.open(AddFilterDialogComponent, { width: 'auto', data });
 
     dialogRef.afterClosed().subscribe((newFilter: TestSessionFilter) => {
       if (!newFilter) return;
-      this.tsm.filterOptions[newFilter.id] = { selected: true, filter: newFilter, source: 'custom' };
+      this.tsm.filterOptions[newFilter.id] = {
+        selected: true,
+        filter: newFilter,
+        source: filterEntry?.source || 'custom'
+      };
       this.tsm.refreshFilters();
     });
   }
@@ -342,7 +348,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   quickFilterOnUpdateModel() {
-    console.log('upd', this.quickFilter);
     if (!this.quickFilter) {
       this.tsm.filterOptions.quick.selected = false;
     } else {
@@ -359,5 +364,28 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   quickFilterOnFocusOut(): void {
     if (!this.quickFilter) this.quickFilterBoxOpen = false;
+  }
+
+  private applyProfile(p: Profile): void {
+    if (isColumnOption(p.settings.blockColumn)) this.displayOptions.blockColumn = p.settings.blockColumn;
+    if (isColumnOption(p.settings.unitColumn)) this.displayOptions.unitColumn = p.settings.unitColumn;
+    if (isColumnOption(p.settings.groupColumn)) this.displayOptions.groupColumn = p.settings.groupColumn;
+    if (isColumnOption(p.settings.bookletColumn)) this.displayOptions.bookletColumn = p.settings.bookletColumn;
+    if (isViewOption(p.settings.view)) this.displayOptions.view = p.settings.view;
+
+    (p.filters || [])
+      .forEach((filter: TestSessionFilter, index: number) => {
+        filter.id = `profile_filter:${index}`;
+        this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'profile' };
+      });
+
+    Object.entries(p.filtersEnabled || [])
+      .forEach(([f, onOff]) => {
+        if (this.tsm.filterOptions[f]) {
+          this.tsm.filterOptions[f].selected = ['1', 'true', 'on', 'yes'].includes(onOff);
+        }
+      });
+
+    this.tsm.refreshFilters();
   }
 }
