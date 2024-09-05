@@ -168,9 +168,16 @@ class XMLFileTesttakers extends XMLFile {
   private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId): Login {
     $mode = (string) $loginElement['mode'];
     $name = (string) $loginElement['name'];
-    $booklets = ($mode == 'monitor-group')
-      ? ['' => $this->collectBookletsOfGroup($workspaceId, $name)]
-      : self::collectBookletsPerCode($loginElement);
+
+    $booklets = match ($mode) {
+      'monitor-group' => ['' => $this->collectBookletsOfGroup($workspaceId, $name)],
+      default => self::collectBookletsPerCode($loginElement)
+    };
+
+    $monitors = match ($mode) {
+      'monitor-group', 'monitor-study' => $this->collectProfiles($loginElement),
+      default => []
+    };
 
     return new Login(
       $name,
@@ -183,7 +190,8 @@ class XMLFileTesttakers extends XMLFile {
       isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
       TimeStamp::fromXMLFormat((string) $groupElement['validFrom']),
       (int) ($groupElement['validFor'] ?? 0),
-      $this->getCustomTexts()
+      $this->getCustomTexts(),
+      $monitors
     );
   }
 
@@ -274,5 +282,38 @@ class XMLFileTesttakers extends XMLFile {
       $customTexts[(string) $customTextElement['key'] ?? ''] = (string) $customTextElement;
     }
     return (object) $customTexts;
+  }
+
+  /**
+   * @return array[]
+   */
+  private function collectProfiles(SimpleXMLElement $loginElem): array {
+    return array_map(
+      fn (SimpleXMLElement $profileElem): array => [
+        'id' => Random::string(8, false),
+        'label' =>  ((string) $profileElem['label']) ?? "",
+        'settings' => [
+          'blockColumn' => ((string) $profileElem['blockColumn']) ?? "show",
+          'unitColumn' => ((string) $profileElem['unitColumn']) ?? "show",
+          'view' => ((string) $profileElem['view']) ?? "middle",
+          'groupColumn' => ((string) $profileElem['groupColumn']) ?? "hide",
+          'bookletColumn' => ((string) $profileElem['bookletColumn']) ?? "show"
+        ],
+        'filters' => array_map(
+          fn (SimpleXMLElement $filterElem): array => [
+            'target' => ((string) $filterElem['field']) ?? "personLabel",
+            'value' => ((string) $filterElem['value']) ?? "",
+            'label' => ((string) $filterElem['label']) ?? "",
+            'type' => ((string) $filterElem['type']) ?? "equals",
+          ],
+          $profileElem->xpath('Filter')
+        ),
+        'filtersEnabled' => [
+          'pending' => ((string) $profileElem['bookletColumn']) ?? "no",
+          'locked' => ((string) $profileElem['bookletColumn']) ?? "no"
+        ]
+      ],
+      $loginElem->xpath('Profile')
+    );
   }
 }

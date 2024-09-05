@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
-  EditFilterDialogData,
   isBooklet,
   TestSessionFilter, TestSessionFilterTarget,
   testSessionFilterTargets,
@@ -26,11 +25,11 @@ export class AddFilterDialogComponent implements OnInit {
   constructor(
     public tsm: TestSessionManager,
     private cts: CustomtextService,
-    @Inject(MAT_DIALOG_DATA) data: EditFilterDialogData
+    @Inject(MAT_DIALOG_DATA) data: TestSessionFilter
   ) {
-    if (data.filter) {
-      this.originalId = data.filter.id;
-      this.filter = data.filter;
+    if (data) {
+      this.originalId = data.id;
+      this.filter = data;
     }
   }
 

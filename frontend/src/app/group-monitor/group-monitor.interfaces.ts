@@ -77,6 +77,7 @@ export interface Restrictions {
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
+// analogous to GroupMonitorProfileFilterField in Testtakers.xsd
 export const testSessionFilterTargets = {
   bookletLabel: false,
   personLabel: false,
@@ -110,14 +111,31 @@ export interface TestSessionFilter {
   not?: true;
 }
 
-export interface TestViewDisplayOptions {
-  blockColumn: 'show' | 'hide';
-  unitColumn: 'show' | 'hide';
-  view: 'full' | 'medium' | 'small';
-  groupColumn: 'show' | 'hide';
-  bookletColumn: 'show' | 'hide';
+export interface MonitorProfileTestViewDisplayOptions {
+  blockColumn: ColumnOption;
+  unitColumn: ColumnOption;
+  view: ViewOption;
+  groupColumn: ColumnOption;
+  bookletColumn: ColumnOption;
+}
+
+export type ColumnOption = 'show' | 'hide';
+export type ViewOption = 'full' | 'medium' | 'small';
+
+export const isColumnOption = (v: string): v is ColumnOption => ['show', 'hide'].includes(v);
+export const isViewOption = (v: string): v is ViewOption => ['full', 'medium', 'small'].includes(v);
+
+export interface TestViewDisplayOptions extends MonitorProfileTestViewDisplayOptions {
   highlightSpecies: boolean;
   manualChecking: boolean;
+}
+
+export interface Profile {
+  id: string;
+  label: string;
+  settings: { [key: string]: string };
+  filtersEnabled: { [key: string]: string };
+  filters: TestSessionFilter[];
 }
 
 export const testSessionFilterListEntrySources = ['base', 'quick', 'profile', 'custom'] as const;
@@ -132,11 +150,6 @@ export interface TestSessionFilterListEntry {
 
 export interface TestSessionFilterList {
   [filterId: string]: TestSessionFilterListEntry
-}
-
-export interface EditFilterDialogData {
-  filter?: TestSessionFilter;
-  columnList: string[]
 }
 
 export interface CheckingOptions {

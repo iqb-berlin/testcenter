@@ -31,7 +31,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         this.workspaceDataService.workspaceId$.next(params.ws);
         const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
         this.workspaceDataService.wsName = workspace.label;
-        this.workspaceDataService.wsRole = workspace.flags.mode;
+        this.workspaceDataService.wsRole = workspace.flags.mode || 'ro';
         this.mainDataService.appSubTitle$.next(
           `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
         );
