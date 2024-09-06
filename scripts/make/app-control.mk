@@ -9,10 +9,8 @@ init:
 	cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
-	mkdir -p $(TC_BASE_DIR)/docs/dist
-	chmod 777 $(TC_BASE_DIR)/docs/dist
-	mkdir -p $(TC_BASE_DIR)/data
-	chmod 777 $(TC_BASE_DIR)/data
+	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
+	mkdir -m 777 -p $(TC_BASE_DIR)/data
 
 # Build all images of the project or a specified one as dev-images.
 # Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
