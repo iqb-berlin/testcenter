@@ -4,7 +4,7 @@
   "iqb": {
     "release-channels": {
       "lts": "15.1",
-      "stable": "15.2"
+      "stable": "99.99.99"
     },
     "verona-player-api-versions": {
       "min": 2,
