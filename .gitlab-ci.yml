@@ -1,5 +1,5 @@
 stages:
-  - ".pre"
+  - .pre
   - build
   - test
   #  - lint
@@ -121,20 +121,39 @@ include:
   rules:
     - if: $CI_COMMIT_TAG =~ /^(?<MAJOR>(?:0|(?:[1-9]\d*)))\.(?<MINOR>(?:0|(?:[1-9]\d*)))\.(?<PATCH>(?:0|(?:[1-9]\d*)))(?:-(?<prerelease>(alpha|beta|rc)((\.)?(\d+))?))$/
 
+.stable_release_rules:
+  rules:
+    - if: $STABLE_VERSION &&
+        $STABLE_VERSION == $CI_COMMIT_TAG &&
+        ($CI_COMMIT_TAG =~ /^(?<MAJOR>(?:0|(?:[1-9]\d*)))\.(?<MINOR>(?:0|(?:[1-9]\d*)))\.(?<PATCH>(?:0|(?:[1-9]\d*)))$/)
+
 .release_rules:
   rules:
     - if: $CI_COMMIT_TAG =~ /^(?<MAJOR>(?:0|(?:[1-9]\d*)))\.(?<MINOR>(?:0|(?:[1-9]\d*)))\.(?<PATCH>(?:0|(?:[1-9]\d*)))$/
 
 
+parse-testcenter-versions:
+  stage: .pre
+  script:
+    - echo LTS_VERSION=$(grep '"lts"' package.json | cut -d '"' -f 4 | head -n 1) | tee -a testcenter-version.env
+    - echo STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1) | tee -a testcenter-version.env
+  artifacts:
+    reports:
+      dotenv: testcenter-version.env
+
 check-config:
-  stage: ".pre"
+  stage: .pre
   interruptible: true
   allow_failure: true
+  needs:
+    - parse-testcenter-versions
   rules:
     - if: "$CI_PIPELINE_SOURCE == 'external_pull_request_event'"
     - if: "$CI_COMMIT_BRANCH"
     - if: "$CI_COMMIT_TAG"
   script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - echo $CI_PIPELINE_SOURCE
     - echo $CI_REGISTRY
     - echo $CI_REGISTRY_IMAGE
@@ -523,6 +542,28 @@ check-pre-release-rules:
       then echo "$CI_COMMIT_TAG is a valid pre-release tag.";
       else echo "$CI_COMMIT_TAG is not a valid pre-release tag!"; fi
 
+check-stable-release-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  needs:
+    - parse-testcenter-versions
+  rules:
+    - !reference [ .stable_release_rules, rules ]
+  before_script:
+    - RELEASE_REGEX="^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$"
+  script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
+    - echo $RELEASE_REGEX
+    - if [[ $CI_COMMIT_TAG =~ $RELEASE_REGEX ]];
+      then echo "$CI_COMMIT_TAG is a valid release tag.";
+      else echo "$CI_COMMIT_TAG is not a valid release tag!"; fi
+    - echo $IS_STABLE_VERSION
+    - if [[ $CI_COMMIT_TAG == $STABLE_VERSION ]];
+      then echo "$CI_COMMIT_TAG is a stable version tag.";
+      else echo "$CI_COMMIT_TAG is not a stable version tag!"; fi
+
 check-release-rules:
   stage: .pre
   interruptible: true
@@ -540,14 +581,18 @@ check-release-rules:
 
 build-backend:
   stage: build
+  needs:
+    - parse-testcenter-versions
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .e2e-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
+    - !reference [ .stable_release_rules, rules ]
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - docker login
@@ -572,15 +617,19 @@ build-backend:
 
 build-frontend:
   stage: build
+  needs:
+    - parse-testcenter-versions
   rules:
     - !reference [ .frontend-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .e2e-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
+    - !reference [ .stable_release_rules, rules ]
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
@@ -606,15 +655,19 @@ build-frontend:
 
 build-broadcasting-service:
   stage: build
+  needs:
+    - parse-testcenter-versions
   rules:
     - !reference [ .broadcasting-service-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .e2e-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
+    - !reference [ .stable_release_rules, rules ]
   variables:
     BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - docker login
@@ -702,15 +755,19 @@ build-e2e:
 
 build-task-runner:
   stage: build
+  needs:
+    - parse-testcenter-versions
   rules:
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .file-service-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
+    - !reference [ .stable_release_rules, rules ]
   variables:
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - docker login
@@ -734,13 +791,16 @@ build-task-runner:
 
 generate-docs:
   stage: build
-  rules:
-    - !reference [ .release_rules, rules ]
   needs:
+    - parse-testcenter-versions
     - build-task-runner
+  rules:
+    - !reference [ .stable_release_rules, rules ]
   variables:
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - cp docker/default.env docker/.env
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner
@@ -783,22 +843,25 @@ gemnasium-dependency_scanning:
   stage: test
   interruptible: true
   allow_failure: true
+  needs: []
   rules:
     - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
     - when: never
-  needs: []
 
 test-backend-unit:
   stage: test
+  needs:
+    - parse-testcenter-versions
+    - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
-  needs:
-    - build-backend
+    - !reference [ .stable_release_rules, rules ]
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - cp docker/default.env docker/.env
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
@@ -821,16 +884,19 @@ test-backend-unit:
 
 test-frontend-unit:
   stage: test
+  needs:
+    - parse-testcenter-versions
+    - build-frontend
   rules:
     - !reference [ .frontend-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
-  needs:
-    - build-frontend
+    - !reference [ .stable_release_rules, rules ]
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - cp docker/default.env docker/.env
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -847,16 +913,19 @@ test-frontend-unit:
 
 test-broadcasting-service-unit:
   stage: test
+  needs:
+    - parse-testcenter-versions
+    - build-broadcasting-service
   rules:
     - !reference [ .broadcasting-service-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
-    - !reference [ .release_rules, rules ]
-  needs:
-    - build-broadcasting-service
+    - !reference [ .stable_release_rules, rules ]
   variables:
     BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - cp docker/default.env docker/.env
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
@@ -873,15 +942,15 @@ test-broadcasting-service-unit:
 
 test-backend-api:
   stage: test
+  needs:
+    - build-backend
+    - build-task-runner
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-backend
-    - build-task-runner
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
@@ -903,15 +972,15 @@ test-backend-api:
 
 test-file-service-api:
   stage: test
+  needs:
+    - build-file-service
+    - build-task-runner
   rules:
     - !reference [ .file-service-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-file-service
-    - build-task-runner
   variables:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
@@ -931,13 +1000,13 @@ test-file-service-api:
 
 test-backend-initialization:
   stage: test
+  needs:
+    - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-backend
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
@@ -960,17 +1029,17 @@ test-backend-initialization:
 test-e2e:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .e2e-feature-rules, rules ]
-    - !reference [ .master_pr_rules, rules ]
-    - if: $CI_COMMIT_TAG
-      when: never
   needs:
     - build-backend
     - build-frontend
     - build-broadcasting-service
     - build-file-service
     - build-e2e
+  rules:
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
@@ -1125,10 +1194,10 @@ build-file-service-prod:
 scan-backend-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-backend-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1183,10 +1252,10 @@ scan-backend-prod:
 scan-frontend-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-frontend-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1241,10 +1310,10 @@ scan-frontend-prod:
 scan-broadcasting-service-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-broadcasting-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1299,10 +1368,10 @@ scan-broadcasting-service-prod:
 scan-file-service-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-file-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1384,27 +1453,35 @@ push-pre-release:
 
 pages:
   stage: deploy
-  rules:
-    - !reference [ .release_rules, rules ]
   needs:
+    - parse-testcenter-versions
     - test-backend-unit
     - test-frontend-unit
     - test-broadcasting-service-unit
     - generate-docs
+  rules:
+    - !reference [ .stable_release_rules, rules ]
   image: ${PAGES_IMAGE}
+  before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
   script:
-    - mkdir public
-    - cd docs
-    - gem install bundler
-    - bundle install
-    - jekyll build -d ../public
+#    - mkdir public
+#    - cd docs
+#    - gem install bundler
+#    - bundle install
+#    - jekyll build -d ../public
+    - echo success
   artifacts:
     paths:
       - public
 
 push-release:
   stage: deploy
+  needs:
+    - parse-testcenter-versions
   rules:
+    - !reference [ .stable_release_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
     BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
@@ -1412,6 +1489,8 @@ push-release:
     BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
     FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
   before_script:
+    - echo $LTS_VERSION
+    - echo $STABLE_VERSION
     - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
