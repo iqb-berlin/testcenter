@@ -54,11 +54,17 @@ describe('Check Login Possibilities', () => {
   });
 
   it('should be possible to login as link', () => {
-    cy.visit(`${Cypress.config().baseUrl}`);
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
+    cy.wait(1000);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.contains('as_link')
       .should('exist');
+  });
+
+  it('should be possible to login as link and jump into test', () => {
+    cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
+    cy.wait(1000);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
   });
 
   it('should be not possible to login with wrong code', () => {
