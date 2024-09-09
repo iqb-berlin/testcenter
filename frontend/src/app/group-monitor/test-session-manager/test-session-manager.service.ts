@@ -71,8 +71,6 @@ export class TestSessionManager {
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
-  // attention: this works the other way round than Array.filter:
-  // it defines which sessions are to filter out, not which ones are to keep
   filterOptions: TestSessionFilterList = {
     locked: {
       selected: false,
@@ -83,7 +81,8 @@ export class TestSessionManager {
         target: 'testState',
         value: 'status',
         subValue: 'locked',
-        type: 'equal'
+        type: 'equal',
+        not: true
       }
     },
     pending: {
@@ -95,7 +94,8 @@ export class TestSessionManager {
         target: 'testState',
         value: 'status',
         subValue: 'pending',
-        type: 'equal'
+        type: 'equal',
+        not: true
       }
     },
     quick: {
@@ -187,7 +187,7 @@ export class TestSessionManager {
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const apply = (subject: string, filter: TestSessionFilter, inverted?: true): boolean => {
+    const apply = (subject: string, filter: TestSessionFilter, inverted: boolean = false): boolean => {
       if (filter.not && !inverted) return !apply(subject, filter, true);
       if (Array.isArray(filter.value)) return filter.value.includes(subject);
       switch (filter.type) {
@@ -202,17 +202,24 @@ export class TestSessionManager {
         case 'groupName':
         case 'personLabel':
         case 'mode':
-        case 'bookletName':
           return keep && apply(session.data[nextFilter.target] || '', nextFilter);
+        case 'bookletId':
+          return keep && apply(session.data.bookletName || '', nextFilter); // bookletId is clearer for XML-authors
+        case 'unitId':
+          return keep && apply(session.data.unitName || '', nextFilter); // unitId is clearer for XML-authors
+        case 'unitLabel':
+          return keep && apply(session.current?.unit?.label || '', nextFilter);
         case 'bookletLabel':
           return keep && apply('metadata' in session.booklet ? session.booklet.metadata.label : '', nextFilter);
         case 'blockId':
           return keep && apply(session.current?.ancestor?.blockId || '', nextFilter);
+        case 'blockLabel':
+          return keep && apply(session.current?.ancestor?.label || '', nextFilter);
         case 'testState': {
           if (Array.isArray(nextFilter.value)) return keep;
           const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
           const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-          const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
+          const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
           return keep && (nextFilter.not ? !testStateMatching : testStateMatching);
         }
         case 'state': {

@@ -6,9 +6,9 @@
   <mat-form-field appearance="outline">
     <mat-label>Feld</mat-label>
     <mat-select [(ngModel)]="filter.target" (ngModelChange)="updateFilterId()">
-      <ng-container *ngFor="let target of targets | keyvalue">
-        <mat-option *ngIf="!target.value || advancedMode || target.key === filter.target" [value]="target.key">
-          {{target.key | customtext : 'gm_filter_target_' + target.key | async}}
+      <ng-container *ngFor="let target of targets.all">
+        <mat-option [value]="target" *ngIf="advancedMode || targets.basic.includes(target) || target == filter.target">
+          {{target | customtext : 'gm_filter_target_' + target | async}}
         </mat-option>
       </ng-container>
     </mat-select>
@@ -17,9 +17,9 @@
   <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
     <mat-label>Filtertyp</mat-label>
     <mat-select [(ngModel)]="filter.type" (ngModelChange)="updateFilterId()">
-      <ng-container *ngFor="let type of filterTypes | keyvalue">
-        <mat-option *ngIf="!type.value || advancedMode || type.key === filter.type" [value]="type.key">
-          {{type.key | customtext : 'gm_filter_type_' + type.key | async}}
+      <ng-container *ngFor="let type of filterTypes[advancedMode ? 'all' : 'basic']">
+        <mat-option [value]="type">
+          {{type | customtext : 'gm_filter_type_' + type | async}}
         </mat-option>
       </ng-container>
     </mat-select>
