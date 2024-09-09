@@ -259,7 +259,9 @@
       <xs:enumeration value="state"/>
       <xs:enumeration value="blockLabel"/>
       <xs:enumeration value="groupName"/>
-      <xs:enumeration value="bookletName"/>
+      <xs:enumeration value="bookletId"/>
+      <xs:enumeration value="unitId"/>
+      <xs:enumeration value="unitLabel"/>
       <xs:enumeration value="blockId"/>
       <xs:enumeration value="testState"/>
       <xs:enumeration value="mode"/>

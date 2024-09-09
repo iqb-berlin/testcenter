@@ -279,13 +279,21 @@
     "label": "Benutzerdefinierter Filter: Ziel - Modus",
     "defaultvalue": "Durchführungsmodus"
   },
-  "gm_filter_target_bookletName": {
+  "gm_filter_target_bookletId": {
     "label": "Benutzerdefinierter Filter: Ziel - TestheftId",
     "defaultvalue": "Booklet-Id"
   },
   "gm_filter_target_bookletLabel": {
     "label": "Benutzerdefinierter Filter: Ziel - Testhefttitel",
     "defaultvalue": "Booklettitel"
+  },
+  "gm_filter_target_unitId": {
+    "label": "Benutzerdefinierter Filter: Ziel - Aufgaben-Id",
+    "defaultvalue": "Aufgaben-Id"
+  },
+  "gm_filter_target_unitLabel": {
+    "label": "Benutzerdefinierter Filter: Ziel - Aufgabentitel",
+    "defaultvalue": "Aufgabentitel"
   },
   "gm_filter_target_blockId": {
     "label": "Benutzerdefinierter Filter: Ziel - Block-Id",
@@ -324,7 +332,7 @@
     "defaultvalue": "enthält"
   },
   "gm_filter_type_regex": {
-    "label": "Benutzerdefinierter Filter: Typ - Regex",
+    "label": "Benutzerdefinierter Filter: Typ - Regulärer Ausdruck",
     "defaultvalue": "matched regulären Ausdruck"
   },
   "gm_filter_type_not": {

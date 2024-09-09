@@ -78,28 +78,43 @@ export interface Restrictions {
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
 // analogous to GroupMonitorProfileFilterField in Testtakers.xsd
-export const testSessionFilterTargets = {
-  bookletLabel: false,
-  personLabel: false,
-  state: false,
-  blockLabel: false,
-  groupName: true,
-  bookletName: true,
-  blockId: true,
-  testState: true,
-  mode: true,
-  bookletSpecies: true
+export const testSessionFilterTargetLists = {
+  advanced: [
+    'groupName',
+    'bookletId',
+    'blockId',
+    'testState',
+    'mode',
+    'bookletSpecies',
+    'unitId'
+  ],
+  basic: [
+    'bookletLabel',
+    'personLabel',
+    'state',
+    'blockLabel',
+    'unitLabel'
+  ]
 } as const;
 
-export const testSessionFilterTypes = {
-  regex: true,
-  substring: false,
-  equal: false
+export const testSessionFilterTargets = [
+  ...testSessionFilterTargetLists.basic,
+  ...testSessionFilterTargetLists.advanced
+] as const;
+
+export const testSessionFilterTypeLists = {
+  basic: ['substring', 'equal'],
+  advanced: ['regex']
 } as const;
 
-export type TestSessionFilterType = (keyof typeof testSessionFilterTypes)[number];
+export const testSessionFilterTypes = [
+  ...testSessionFilterTypeLists.basic,
+  ...testSessionFilterTypeLists.advanced
+] as const;
 
-export type TestSessionFilterTarget = (keyof typeof testSessionFilterTargets)[number];
+export type TestSessionFilterType = (typeof testSessionFilterTypes)[number];
+
+export type TestSessionFilterTarget = (typeof testSessionFilterTargets)[number];
 
 export interface TestSessionFilter {
   target: TestSessionFilterTarget;
@@ -110,6 +125,12 @@ export interface TestSessionFilter {
   type: TestSessionFilterType;
   not?: true;
 }
+
+export const isTestSessionFilter = (obj: object): obj is TestSessionFilter => ('target' in obj) &&
+  ('value' in obj) && ('id' in obj) && ('label' in obj) && ('type' in obj) &&
+  (typeof obj.type === 'string') && (typeof obj.target === 'string') &&
+  (testSessionFilterTypes as readonly string[]).includes(obj.type) &&
+  (testSessionFilterTargets as readonly string[]).includes(obj.target);
 
 export interface MonitorProfileTestViewDisplayOptions {
   blockColumn: ColumnOption;
