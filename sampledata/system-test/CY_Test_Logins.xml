@@ -60,6 +60,10 @@
     </Login>
     <Login mode="run-demo" name="as_link">
       <Booklet>rundemo</Booklet>
+      <Booklet>SM_BKL</Booklet>
+    </Login>
+    <Login mode="run-demo" name="as_link_immediate">
+      <Booklet>rundemo</Booklet>
     </Login>
     <Login mode="run-demo" name="as_code1" pw="102">
       <Booklet codes="as_code01">rundemo</Booklet>
