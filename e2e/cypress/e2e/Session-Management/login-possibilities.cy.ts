@@ -161,4 +161,18 @@ describe('Check Login Possibilities', () => {
     cy.contains('hret2')
       .should('exist');
   });
+
+  it('should be possible to login as link and jump into test (sys-check)', () => {
+    cy.visit(`${Cypress.config().baseUrl}/#/syscheck`);
+    cy.wait(1000);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+  });
+
+  it('should be possible to login for sys-check with name and right password and start test immediately (sys-check)', () => {
+    insertCredentials('syscheck', '');
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+  });
 });

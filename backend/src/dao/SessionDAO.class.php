@@ -714,7 +714,6 @@ class SessionDAO extends DAO {
   /** @return SystemCheck[] */
   public function getSysChecksOfPerson(PersonSession $personSession): array
   {
-    $mode = $personSession->getLoginSession()->getLogin()->getMode();
     $wsId = $personSession->getLoginSession()->getLogin()->getWorkspaceId();
     $sessionName = $personSession->getLoginSession()->getLogin()->getName();
 

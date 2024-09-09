@@ -60,7 +60,8 @@ class SessionController extends Controller {
 
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
+      $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
 
       self::registerDependantSessions($loginSession);
       CacheService::storeAuthentication($personSession);

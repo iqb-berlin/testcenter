@@ -68,6 +68,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
               this.router.navigate(['/t', testId]);
             });
+          } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
+            this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
           } else {
             this.router.navigate(['/r/starter']);
           }

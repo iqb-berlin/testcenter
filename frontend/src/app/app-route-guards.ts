@@ -73,6 +73,10 @@ export class DirectLoginActivateGuard {
                     return false;
                   });
               }
+              if (authDataResponse.claims.sysCheck && authDataResponse.claims.sysCheck.length === 1) {
+                this.router.navigate([`/check/${authDataResponse.claims.sysCheck[0].workspaceId}/${authDataResponse.claims.sysCheck[0].id}`]);
+                return false;
+              }
             }
             this.router.navigate(['/r']);
             return false;
