@@ -1,5 +1,5 @@
 stages:
-  - ".pre"
+  - .pre
   - build
   - test
   #  - lint
@@ -101,8 +101,6 @@ include:
 .master_pr_rules:
   rules:
     - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
-    - if: $CI_COMMIT_TAG
-      when: never
 
 .master_pr_manual_rules:
   rules:
@@ -121,13 +119,17 @@ include:
   rules:
     - if: $CI_COMMIT_TAG =~ /^(?<MAJOR>(?:0|(?:[1-9]\d*)))\.(?<MINOR>(?:0|(?:[1-9]\d*)))\.(?<PATCH>(?:0|(?:[1-9]\d*)))(?:-(?<prerelease>(alpha|beta|rc)((\.)?(\d+))?))$/
 
+.stable_release_rules:
+  rules:
+    - if: $STABLE_VERSION
+
 .release_rules:
   rules:
     - if: $CI_COMMIT_TAG =~ /^(?<MAJOR>(?:0|(?:[1-9]\d*)))\.(?<MINOR>(?:0|(?:[1-9]\d*)))\.(?<PATCH>(?:0|(?:[1-9]\d*)))$/
 
 
 check-config:
-  stage: ".pre"
+  stage: .pre
   interruptible: true
   allow_failure: true
   rules:
@@ -452,6 +454,8 @@ check-master-pr-rules:
   allow_failure: true
   rules:
     - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
   script:
     - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME
     - echo $CI_COMMIT_TAG
@@ -550,25 +554,37 @@ build-backend:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker build
-        --progress plain
-        --pull
-        --target dev
-        --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from ${BACKEND_IMAGE_NAME}:dev
-        --file backend/Dockerfile
-        --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-        --tag ${BACKEND_IMAGE_NAME}:dev
-      .
-    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
-  after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        printf "$CI_DEPENDENCY_PROXY_PASSWORD" | \
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+        docker build \
+            --progress plain \
+            --pull \
+            --target dev \
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from ${BACKEND_IMAGE_NAME}:dev \
+            --file backend/Dockerfile \
+            --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev \
+            --tag ${BACKEND_IMAGE_NAME}:dev \
+          .
+        docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
+        docker logout $CI_DEPENDENCY_PROXY_SERVER
+        docker logout $REGISTRY
+      fi
 
 build-frontend:
   stage: build
@@ -584,26 +600,37 @@ build-frontend:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker build
-        --progress plain
-        --pull
-        --target dev
-        --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from ${FRONTEND_IMAGE_NAME}:dev
-        --file frontend/Dockerfile
-        --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-        --tag ${FRONTEND_IMAGE_NAME}:dev
-      .
-    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
-  after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
-
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        printf $CI_DEPENDENCY_PROXY_PASSWORD | \
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+        docker build \
+            --progress plain \
+            --pull \
+            --target dev \
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from ${FRONTEND_IMAGE_NAME}:dev \
+            --file frontend/Dockerfile \
+            --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev \
+            --tag ${FRONTEND_IMAGE_NAME}:dev \
+          .
+        docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+        docker logout $CI_DEPENDENCY_PROXY_SERVER
+        docker logout $REGISTRY
+      fi
 build-broadcasting-service:
   stage: build
   rules:
@@ -617,25 +644,37 @@ build-broadcasting-service:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker build
-        --progress plain
-        --pull
-        --target dev
-        --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
-        --file broadcasting-service/Dockerfile
-        --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-        --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
-      .
-    - docker push --quiet --all-tags ${BROADCASTING_SERVICE_IMAGE_NAME}
-  after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        printf $CI_DEPENDENCY_PROXY_PASSWORD | \
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+        docker build \
+            --progress plain \
+            --pull \
+            --target dev \
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY} \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:dev \
+            --file broadcasting-service/Dockerfile \
+            --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev \
+            --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:dev \
+          .
+        docker push --quiet --all-tags ${BROADCASTING_SERVICE_IMAGE_NAME}
+        docker logout $CI_DEPENDENCY_PROXY_SERVER
+        docker logout $REGISTRY
+      fi
 
 build-file-service:
   stage: build
@@ -650,9 +689,9 @@ build-file-service:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-        --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
           --progress plain
@@ -681,9 +720,9 @@ build-e2e:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
         --progress plain
@@ -713,58 +752,83 @@ build-task-runner:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker build
-        --progress plain
-        --pull
-        --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
-        --build-arg BUILDKIT_INLINE_CACHE=1
-        --cache-from ${TASK_RUNNER_IMAGE_NAME}:latest
-        --file task-runner/Dockerfile
-        --tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-        --tag ${TASK_RUNNER_IMAGE_NAME}:latest
-      .
-    - docker push --quiet --all-tags ${TASK_RUNNER_IMAGE_NAME}
-  after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        printf $CI_DEPENDENCY_PROXY_PASSWORD | \
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+        docker build \
+          --progress plain \
+          --pull \
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY} \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --cache-from ${TASK_RUNNER_IMAGE_NAME}:latest \
+          --file task-runner/Dockerfile \
+          --tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} \
+          --tag ${TASK_RUNNER_IMAGE_NAME}:latest \
+        .
+        docker push --quiet --all-tags ${TASK_RUNNER_IMAGE_NAME}
+        docker logout $CI_DEPENDENCY_PROXY_SERVER
+        docker logout $REGISTRY
+      fi
 
 generate-docs:
   stage: build
-  rules:
-    - !reference [ .release_rules, rules ]
   needs:
     - build-task-runner
+  rules:
+    - !reference [ .release_rules, rules ]
   variables:
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
-    - cp docker/default.env docker/.env
-    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run --rm --no-deps testcenter-task-runner
-          npm run frontend:update-compodoc
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run --rm --no-deps testcenter-task-runner
-          npm run broadcasting-service:update-compodoc
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run --rm --no-deps testcenter-task-runner
-          npm run backend:update-specs
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run --rm --no-deps testcenter-task-runner
-          npm run create-docs
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        cp docker/default.env docker/.env
+        docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+        docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run --rm --no-deps testcenter-task-runner \
+            npm run frontend:update-compodoc
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run --rm --no-deps testcenter-task-runner \
+            npm run broadcasting-service:update-compodoc
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run --rm --no-deps testcenter-task-runner \
+            npm run backend:update-specs
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run --rm --no-deps testcenter-task-runner \
+            npm run create-docs
+      fi
   artifacts:
     paths:
       - docs/index.md
@@ -783,37 +847,50 @@ gemnasium-dependency_scanning:
   stage: test
   interruptible: true
   allow_failure: true
+  needs: []
   rules:
     - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
     - when: never
-  needs: []
 
 test-backend-unit:
   stage: test
+  needs:
+    - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
-  needs:
-    - build-backend
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - cp docker/default.env docker/.env
-    - chmod 0755 scripts/database/000-create-test-db.sh
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
-    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run --rm --entrypoint "" testcenter-backend php -dxdebug.mode='coverage'
-          /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
-            --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
-            --configuration /var/www/testcenter/backend/phpunit.xml
-            --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
-            --testdox
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        cp docker/default.env docker/.env
+        chmod 0755 scripts/database/000-create-test-db.sh
+        docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+        docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+        docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run --rm --entrypoint "" testcenter-backend php -dxdebug.mode='coverage' \
+            /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit \
+              --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php \
+              --configuration /var/www/testcenter/backend/phpunit.xml \
+              --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/ \
+              --testdox
+      fi
   artifacts:
     paths:
       - docs/dist/test-coverage-backend-unit/*
@@ -821,25 +898,38 @@ test-backend-unit:
 
 test-frontend-unit:
   stage: test
+  needs:
+    - build-frontend
   rules:
     - !reference [ .frontend-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
-  needs:
-    - build-frontend
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
-    - cp docker/default.env docker/.env
-    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run testcenter-frontend npx ng test --watch=false --code-coverage
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        cp docker/default.env docker/.env
+        cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+        docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+        docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run testcenter-frontend npx ng test --watch=false --code-coverage
+      fi
   artifacts:
     paths:
       - docs/dist/test-coverage-frontend-unit/*
@@ -847,25 +937,38 @@ test-frontend-unit:
 
 test-broadcasting-service-unit:
   stage: test
+  needs:
+    - build-broadcasting-service
   rules:
     - !reference [ .broadcasting-service-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
-  needs:
-    - build-broadcasting-service
   variables:
     BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
   before_script:
-    - cp docker/default.env docker/.env
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - docker compose
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
-        run testcenter-broadcasting-service npx jest --coverage
+    - |
+      if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] \
+        && [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] \
+        && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]]; then
+        
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n" $CI_COMMIT_TAG $STABLE_VERSION
+        printf 'Backend build is not necessary.\n'
+        printf 'Job finished with success.\n'
+      else
+        cp docker/default.env docker/.env
+        docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+        docker tag \
+          ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        docker compose \
+            --file docker/docker-compose.yml \
+            --file docker/docker-compose.dev.yml \
+          run testcenter-broadcasting-service npx jest --coverage
+      fi
   artifacts:
     paths:
       - docs/dist/test-coverage-broadcasting-service-unit/*
@@ -873,15 +976,15 @@ test-broadcasting-service-unit:
 
 test-backend-api:
   stage: test
+  needs:
+    - build-backend
+    - build-task-runner
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-backend
-    - build-task-runner
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
@@ -903,15 +1006,15 @@ test-backend-api:
 
 test-file-service-api:
   stage: test
+  needs:
+    - build-file-service
+    - build-task-runner
   rules:
     - !reference [ .file-service-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-file-service
-    - build-task-runner
   variables:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
@@ -931,13 +1034,13 @@ test-file-service-api:
 
 test-backend-initialization:
   stage: test
+  needs:
+    - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
-  needs:
-    - build-backend
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
@@ -960,17 +1063,17 @@ test-backend-initialization:
 test-e2e:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .e2e-feature-rules, rules ]
-    - !reference [ .master_pr_rules, rules ]
-    - if: $CI_COMMIT_TAG
-      when: never
   needs:
     - build-backend
     - build-frontend
     - build-broadcasting-service
     - build-file-service
     - build-e2e
+  rules:
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
@@ -1018,9 +1121,9 @@ build-backend-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-        --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
           --progress plain
@@ -1047,9 +1150,9 @@ build-frontend-prod:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - docker login
-        --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
           --progress plain
@@ -1075,9 +1178,9 @@ build-broadcasting-service-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-      --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
           --progress plain
@@ -1103,9 +1206,9 @@ build-file-service-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - docker login
-        --username $CI_DEPENDENCY_PROXY_USER --password $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
-    - echo "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
     - docker build
           --progress plain
@@ -1125,10 +1228,10 @@ build-file-service-prod:
 scan-backend-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-backend-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1183,10 +1286,10 @@ scan-backend-prod:
 scan-frontend-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-frontend-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1241,10 +1344,10 @@ scan-frontend-prod:
 scan-broadcasting-service-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-broadcasting-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1299,10 +1402,10 @@ scan-broadcasting-service-prod:
 scan-file-service-prod:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [ .master_commit_rules, rules ]
   needs:
     - build-file-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1384,20 +1487,25 @@ push-pre-release:
 
 pages:
   stage: deploy
-  rules:
-    - !reference [ .release_rules, rules ]
   needs:
     - test-backend-unit
     - test-frontend-unit
     - test-broadcasting-service-unit
     - generate-docs
+  rules:
+    - !reference [ .release_rules, rules ]
   image: ${PAGES_IMAGE}
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
   script:
-    - mkdir public
-    - cd docs
-    - gem install bundler
-    - bundle install
-    - jekyll build -d ../public
+#    - mkdir public
+#    - cd docs
+#    - gem install bundler
+#    - bundle install
+#    - jekyll build -d ../public
+    - echo success
   artifacts:
     paths:
       - public
@@ -1412,6 +1520,9 @@ push-release:
     BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
     FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
   before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo $STABLE_VERSION
+    - echo ${CI_COMMIT_TAG%.*}
     - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
