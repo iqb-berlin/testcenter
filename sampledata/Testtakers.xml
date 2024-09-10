@@ -18,6 +18,31 @@
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+    <Login mode="monitor-group" name="test-group-monitor-2" pw="user123">
+      <Profile
+        label="Superklein"
+        blockColumn="hide"
+        unitColumn="hide"
+        groupColumn="hide"
+        bookletColumn="hide"
+        view="small"
+        filterLocked="yes"
+        filterPending="yes"
+      >
+        <Filter label="Reduced Booklet" type="equal" field="bookletLabel" value="Reduced Booklet" />
+      </Profile>
+      <Profile
+        label="Alles zeigen"
+        blockColumn="show"
+        unitColumn="show"
+        groupColumn="show"
+        bookletColumn="show"
+        view="full"
+        filterLocked="no"
+        filterPending="no"
+      >
+      </Profile>
+    </Login>
     <Login mode="sys-check-login" name="sys-check" />
   </Group>
 

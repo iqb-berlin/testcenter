@@ -221,6 +221,7 @@ END;
   }
 
   function test_getAllLogins() {
+    TestEnvironment::makeRandomStatic();
     $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
     $expected = new LoginArray(
@@ -266,6 +267,67 @@ END;
         1583053200,
         0,
         (object) ["somestr" => "string"],
+      ),
+      new Login(
+        'test-group-monitor-2',
+        'user123',
+        'monitor-group',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          '' => [
+            'BOOKLET.SAMPLE-1',
+            'BOOKLET.SAMPLE-3',
+            'BOOKLET.SAMPLE-2'
+          ]
+        ],
+
+        -1,
+        0,
+        1583053200,
+        0,
+        (object) ["somestr" => "string"],
+        [
+          [
+            'id' => 'h5ki-bd-',
+            'label' => 'Superklein',
+            'settings' => [
+              'blockColumn' => 'hide',
+              'unitColumn' => 'hide',
+              'view' => 'small',
+              'groupColumn' => 'hide',
+              'bookletColumn' => 'hide',
+            ],
+            'filters' => [
+              [
+                'target' => 'bookletLabel',
+                'value' => 'Reduced Booklet',
+                'label' => 'Reduced Booklet',
+                'type' => 'equal',
+              ],
+            ],
+            'filtersEnabled' => [
+              'pending' => 'yes',
+              'locked' => 'yes',
+            ],
+          ],
+          [
+            'id' => 'va4dg-jc',
+            'label' => 'Alles zeigen',
+            'settings' => [
+              'blockColumn' => 'show',
+              'unitColumn' => 'show',
+              'view' => 'full',
+              'groupColumn' => 'show',
+              'bookletColumn' => 'show',
+            ],
+            'filters' => [],
+            'filtersEnabled' => [
+              'pending' => 'no',
+              'locked' => 'no',
+            ],
+          ],
+        ]
       ),
       new Login(
         'sys-check',
