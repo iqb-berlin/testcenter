@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## 15.2.0-alpha
+## 15.3.0-alpha
 ### neue Features
 * Konfigurierbarer Testleitungskonsole
   * (Doku folgt)
