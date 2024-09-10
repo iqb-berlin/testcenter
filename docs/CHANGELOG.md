@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+
+## 15.2.0-alpha
+### neue Features
+* Konfigurierbarer Testleitungskonsole
+  * (Doku folgt)
+
 ## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:

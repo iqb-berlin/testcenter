@@ -8,8 +8,12 @@ if [ "$1" == '' ]; then
 fi
 
 if [ "$(git symbolic-ref --short HEAD)" != "master" ]; then
-  echo "Not on master!";
-  exit 1;
+  echo "Not on Master!"
+  echo "Current Branch: $(git branch --show-current)"
+  read -n1 -p "Continue? (y/N) " confirm
+  if echo "$confirm" | grep '^[Nn]\?$'; then
+    exit 1;
+  fi
 fi
 
 make docs-user
@@ -41,12 +45,13 @@ fi
 
 git commit -m "Update to version $VERSION"
 git tag $VERSION
-git push origin master
+git push origin "$(git branch --show-current)"
 git push origin $VERSION
 
 
 read -n1 -p "Push Images Version $VERSION manually? (y/N) " confirm
 if echo "$confirm" | grep '^[Nn]\?$'; then
+  echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
   exit 0
 fi
 
@@ -54,6 +59,7 @@ docker build --target prod -t "iqbberlin/testcenter-backend:$VERSION" -f docker/
 docker build --target prod -t "iqbberlin/testcenter-frontend:$VERSION" -f docker/frontend.Dockerfile .
 docker build --target prod -t "iqbberlin/testcenter-broadcasting-service:$VERSION" -f docker/broadcasting-service.Dockerfile .
 docker build -t "iqbberlin/testcenter-file-service:$VERSION" -f docker/file-service.Dockerfile .
+docker build -t "iqbberlin/testcenter-db:$VERSION" -f docker/database.Dockerfile .
 
 docker login -u "iqbberlin4cicd"
 
@@ -61,5 +67,6 @@ docker push iqbberlin/testcenter-backend:$VERSION
 docker push iqbberlin/testcenter-frontend:$VERSION
 docker push iqbberlin/testcenter-broadcasting-service:$VERSION
 docker push iqbberlin/testcenter-file-service:$VERSION
+docker push iqbberlin/testcenter-db:$VERSION
 
 echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
