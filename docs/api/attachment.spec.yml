@@ -75,7 +75,7 @@ paths:
             type: string
         - in: path
           name: attachment_file_id
-          example: image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png
+          example: image:rzb9rsmyd77hf58xf_o-i83-5mjc_-tq.png
           required: true
           schema:
             type: string
@@ -116,7 +116,7 @@ paths:
             type: string
         - in: path
           name: attachment_file_id
-          example: image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png
+          example: image:rzb9rsmyd77hf58xf_o-i83-5mjc_-tq.png
           required: true
           schema:
             type: string
@@ -156,7 +156,7 @@ paths:
                     "attachmentType": "capture-image",
                     "dataType": "image",
                     "attachmentFileIds": [
-                      "image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png"
+                      "image:rzb9rsmyd77hf58xf_o-i83-5mjc_-tq.png"
                     ],
                     "lastModified": 1627545600000,
                     "testLabel": "sample_booklet_label",
@@ -215,7 +215,7 @@ paths:
                   "attachmentType": "capture-image",
                   "dataType": "image",
                   "attachmentFileIds": [
-                    "image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png"
+                    "image:rzb9rsmyd77hf58xf_o-i83-5mjc_-tq.png"
                   ],
                   "lastModified": 1627545600000,
                   "testLabel": "sample_booklet_label",

@@ -103,7 +103,7 @@ paths:
                     state: { PRESENTATIONCOMPLETE: "yes" } # you need JSOn notation here because YML transforms "yes" into true otherwise
                     dataParts:
                       all: "{\"name\":\"Sam Sample\",\"age\":34}"
-                      "1:UNIT.SAMPLE:v2": "[{\"id\":\"v2\",\"value\":[\"image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\"],\"status\":\"VALUE_CHANGED\"}]"
+                      "1:UNIT.SAMPLE:v2": "[{\"id\":\"v2\",\"value\":[\"image:rzb9rsmyd77hf58xf_o-i83-5mjc_-tq.png\"],\"status\":\"VALUE_CHANGED\"}]"
                     unitResponseType: "example-data-format"
                     "definition": ""
                 directUnitContents:
