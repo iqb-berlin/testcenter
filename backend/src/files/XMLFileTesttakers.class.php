@@ -309,8 +309,8 @@ class XMLFileTesttakers extends XMLFile {
           $profileElem->xpath('Filter')
         ),
         'filtersEnabled' => [
-          'pending' => ((string) $profileElem['bookletColumn']) ?? "no",
-          'locked' => ((string) $profileElem['bookletColumn']) ?? "no"
+          'pending' => ((string) $profileElem['filterPending']) ?? "no",
+          'locked' => ((string) $profileElem['filterLocked']) ?? "no"
         ]
       ],
       $loginElem->xpath('Profile')

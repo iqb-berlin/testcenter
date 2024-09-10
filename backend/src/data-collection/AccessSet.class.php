@@ -39,7 +39,7 @@ class AccessSet extends DataCollectionTypeSafe {
       switch (get_class($accessItem)) {
         case 'WorkspaceData':
           if ($login->getMode() == 'monitor-study') {
-            $accessSet->addStudyMonitor($login, $accessItem);
+            $accessSet->addStudyMonitor($accessItem);
           }
           break;
         case 'Group':
@@ -202,17 +202,15 @@ class AccessSet extends DataCollectionTypeSafe {
     }
   }
 
-  private function addStudyMonitor(array $profiles, WorkspaceData $accessItem): void {
-    foreach ($profiles as $profile) {
-      $this->addAccessObjects(
+  private function addStudyMonitor(WorkspaceData $accessItem): void {
+    $this->addAccessObjects(
+      AccessObjectType::STUDY_MONITOR,
+      new AccessObject(
+        (string) $accessItem->getId(),
         AccessObjectType::STUDY_MONITOR,
-        new AccessObject(
-          (string) $accessItem->getId(),
-          AccessObjectType::STUDY_MONITOR,
-          $accessItem->getName()
-        )
-      );
-    }
+        $accessItem->getName()
+      )
+    );
   }
 
   private function addSystemChecks(SystemCheck ...$accessItems): void {
