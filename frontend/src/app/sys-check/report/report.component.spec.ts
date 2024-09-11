@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -23,7 +22,6 @@ describe('ReportComponent', () => {
       imports: [
         HttpClientTestingModule,
         MatDialogModule,
-        MatSnackBarModule,
         MatCardModule,
         RouterTestingModule
       ],
