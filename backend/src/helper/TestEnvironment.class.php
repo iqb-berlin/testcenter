@@ -8,7 +8,7 @@ use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamWrapper;
 
 class TestEnvironment {
-  const staticDate = 1627545600;
+  const int staticDate = 1627545600;
 
   public static function setup(string $testMode, ?string $testClock = null): void {
     $testMode = in_array($testMode, ['prepare', 'api', 'integration', 'prepare-integration']) ? $testMode : 'api';
@@ -19,6 +19,7 @@ class TestEnvironment {
       SystemConfig::$debug_useStaticTokens = true;
       SystemConfig::$debug_useInsecurePasswords = true;
       SystemConfig::$debug_allowExternalXmlSchema = false;
+      SystemConfig::$debug_fastLoginReuse = true;
       self::makeRandomStatic();
       DB::connectToTestDB();
 

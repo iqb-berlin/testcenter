@@ -49,7 +49,7 @@ class CacheService {
       self::$redis->expire("file:$filePath", 24*60*60);
     } else {
       try {
-        self::$redis->set("file:$filePath", file_get_contents(DATA_DIR . $filePath), 24 * 60 * 60);
+        self::$redis->set("file:$filePath", file_get_contents(DATA_DIR . $filePath), 24*60*60);
       } catch (RedisException $e) {
         error_log('Cache exhausted: ' . $filePath);
       }
@@ -66,5 +66,19 @@ class CacheService {
       return 'unreachable';
     }
     return 'on';
+  }
+
+  public static function getFailedLogins(string $name): int {
+    if (!self::connect()) return 0;
+    $loginsFailed = self::$redis->get("login-failed:$name:");
+    return (int) $loginsFailed;
+  }
+
+  public static function addFailedLogin(string $name): void {
+    if (!self::connect()) return;
+    $loginsFailed = self::getFailedLogins($name);
+    $loginsFailed++;
+    $expiration = SystemConfig::$debug_fastLoginReuse ? 5 : 30*60;
+    self::$redis->set("login-failed:$name:", $loginsFailed, $expiration);
   }
 }

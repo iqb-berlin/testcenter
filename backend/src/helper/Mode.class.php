@@ -4,7 +4,7 @@ declare(strict_types=1);
 // TODO unit test
 
 class Mode {
-  const relations = [
+  const array relations = [
     'RW' => ['RO'],
     'RO' => [],
     'monitor' => [
@@ -16,7 +16,7 @@ class Mode {
   ];
 
   // capabilities are defined in /definitions/, this is a digest on what concerns the backend TODO use the /definitions/ maybe
-  const capabilities = [
+  const array capabilities = [
     'run-hot-return' => [
       'monitorable'
     ],
@@ -32,8 +32,12 @@ class Mode {
     ],
     'run-review' => [],
     'run-simulation' => [],
-    'monitor-group' => [],
-    'monitor-study' => []
+    'monitor-group' => [
+      'protectedLogin'
+    ],
+    'monitor-study' => [
+      'protectedLogin'
+    ]
   ];
 
   static function withChildren(string $role): array {

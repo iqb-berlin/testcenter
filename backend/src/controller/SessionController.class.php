@@ -18,16 +18,24 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionAdmin(Request $request, Response $response): Response {
-    usleep(
-      500000
-    ); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
+    usleep(500000); // 0.5s delay to slow down brute force attack
 
     $body = RequestBodyParser::getElementsFromRequest($request, [
       "name" => 'REQUIRED',
       "password" => 'REQUIRED'
     ]);
 
+    $attempts = CacheService::getFailedLogins($body['name']);
+    if ($attempts >= 5) {
+      throw new HttpError("Too many login attempts", 429);
+    }
+
     $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
+
+    if (is_a($token, FailedLogin::class)) {
+      CacheService::addFailedLogin($body['name']);
+      throw new HttpError("No login with this password.", 400);
+    }
 
     $admin = self::adminDAO()->getAdmin($token);
     $workspaces = self::adminDAO()->getWorkspaces($token);
@@ -46,9 +54,17 @@ class SessionController extends Controller {
       "password" => ''
     ]);
 
+    $attempts = CacheService::getFailedLogins($body['name']);
+    if ($attempts >= 5) {
+      throw new HttpError("Too many login attempts", 429);
+    }
+
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
-    if (!$loginSession) {
+    if (!is_a($loginSession, LoginSession::class)) {
+      if ($loginSession === FailedLogin::wrongPasswordProtectedLogin) {
+        CacheService::addFailedLogin($body['name']);
+      }
       $userName = htmlspecialchars($body['name']);
       throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
@@ -79,9 +95,11 @@ class SessionController extends Controller {
     $body = RequestBodyParser::getElementsFromRequest($request, [
       'code' => ''
     ]);
+
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+
     $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
-    CacheService::removeAuthentication($personSession); // TODO X correct?!
+    CacheService::removeAuthentication($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
     CacheService::storeAuthentication($personSession);
     return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));

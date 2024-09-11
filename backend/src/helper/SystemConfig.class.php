@@ -24,6 +24,7 @@ class SystemConfig {
   public static bool $debug_useInsecurePasswords = false;
   public static bool $debug_allowExternalXmlSchema = true;
   public static bool $debug_useStaticTokens = false;
+  public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
   // TODO server URL, port
