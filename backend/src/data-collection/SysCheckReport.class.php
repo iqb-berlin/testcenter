@@ -4,8 +4,8 @@
 
 class SysCheckReport extends DataCollection {
 
-    public $keyPhrase =  null;
-    public $title = null;
+    public $keyPhrase = '';
+    public $title = '';
     public $environment = array();
     public $network = array();
     public $questionnaire =  array();
