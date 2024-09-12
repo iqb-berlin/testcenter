@@ -161,7 +161,7 @@ class Report {
         } else {
           $this->reportData = array_map(
             function(SysCheckReportFile $report) {
-              return $report->get();
+              return $report->getReport();
             },
             $systemChecks
           );
@@ -169,7 +169,7 @@ class Report {
           if ($this->format == ReportFormat::CSV) {
             $flatReports = array_map(
               function(SysCheckReportFile $report) {
-                return $report->getFlat();
+                return $report->getFlatReport();
               },
               $systemChecks
             );

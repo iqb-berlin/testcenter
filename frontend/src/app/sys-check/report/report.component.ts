@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
-import { ReportEntry } from '../sys-check.interfaces';
+import { ReportEntry, ResponsesForSysCheck } from '../sys-check.interfaces';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
@@ -40,6 +40,13 @@ export class ReportComponent implements OnInit {
       }, 500);
     });
 
+    const responses: ResponsesForSysCheck[] = Object.keys(this.dataService.dataParts).map(key => ({
+      id: key,
+      content: this.dataService.dataParts[key],
+      ts: Date.now(),
+      responseType: this.dataService.unitStateDataType
+    }));
+
     if (!this.mds.sysCheckAvailableForAll) {
       this.backendService.saveReport(
         this.dataService.checkConfig.workspaceId,
@@ -48,7 +55,8 @@ export class ReportComponent implements OnInit {
           environment: this.dataService.environmentReport,
           network: this.dataService.networkReport,
           questionnaire: this.dataService.questionnaireReport,
-          unit: []
+          unit: [],
+          responses: responses
         }
       ).subscribe(() => {
         confirmDialogRef();
@@ -72,7 +80,8 @@ export class ReportComponent implements OnInit {
                 environment: this.dataService.environmentReport,
                 network: this.dataService.networkReport,
                 questionnaire: this.dataService.questionnaireReport,
-                unit: []
+                unit: [],
+                responses: responses
               }
             ).subscribe(() => {
               confirmDialogRef();

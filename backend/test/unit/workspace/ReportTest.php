@@ -106,6 +106,7 @@ final class ReportTest extends TestCase {
       "checkId" => "SYSCHECK.SAMPLE",
       "checkLabel" => "An example SysCheck definition",
       "title" => "SAMPLE SYS-CHECK REPORT",
+      "responses" => "",
       "environment" => [
         [
           "id" => "0",
@@ -683,8 +684,8 @@ final class ReportTest extends TestCase {
       ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksCSVReportData = self::BOM .
-      "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
-      "\"SAMPLE SYS-CHECK REPORT\";\"SYSCHECK.SAMPLE\";\"An example SysCheck definition\";\"" . filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"" . TimeStamp::toSQLFormat(filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE)) . "\";\"" . basename(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"Linux\";\"x86_64\";\"1680 x 1050\";\"Chrome\";\"1\";\"Chromium PDF Plugin, Chromium PDF Viewer\";\"en-US\";\"79\";\"amd64\";\"8\";\"1680 x 914\";\"75.72 Mbit/s\";\"8.19 kbit/s\";\"good\";\"2.84 Mbit/s\";\"8.19 kbit/s\";\"good\";\"good\";\"100\";\"4g\";\"1.45\";\"Sam Sample\";\"Harvy Dent\";\"Because.\";\"1\";\"Radio Gaga\";\"1594.295166015625\"";
+      "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"Responses\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
+      "\"SAMPLE SYS-CHECK REPORT\";\"SYSCHECK.SAMPLE\";\"An example SysCheck definition\";\"\";\"" . filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"" . TimeStamp::toSQLFormat(filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE)) . "\";\"" . basename(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"Linux\";\"x86_64\";\"1680 x 1050\";\"Chrome\";\"1\";\"Chromium PDF Plugin, Chromium PDF Viewer\";\"en-US\";\"79\";\"amd64\";\"8\";\"1680 x 914\";\"75.72 Mbit/s\";\"8.19 kbit/s\";\"good\";\"2.84 Mbit/s\";\"8.19 kbit/s\";\"good\";\"good\";\"100\";\"4g\";\"1.45\";\"Sam Sample\";\"Harvy Dent\";\"Because.\";\"1\";\"Radio Gaga\";\"1594.295166015625\"";
 
     // Act
     $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);

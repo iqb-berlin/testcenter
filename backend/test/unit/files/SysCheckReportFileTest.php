@@ -18,7 +18,7 @@ class SysCheckReportFileTest extends TestCase {
 
   function test_construct(): void {
     $sysCheckReportFile = new SysCheckReportFile(DATA_DIR . '/ws_1/SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON');
-    $report = $sysCheckReportFile->get();
+    $report = $sysCheckReportFile->getReport();
     $this->assertEquals('2020-02-17 13:01:31', $report['date']);
     $this->assertEquals('SYSCHECK.SAMPLE', $report['checkId']);
     $this->assertEquals('Linux', $report['environment'][0]['value']);
