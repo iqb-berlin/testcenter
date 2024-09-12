@@ -581,6 +581,8 @@ components:
             type: string
           title:
             type: string
+          responses:
+            type: string
           environment:
             $ref: '#/components/schemas/CommonSysCheckReportSection'
           network:

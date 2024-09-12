@@ -6,14 +6,15 @@ class SysCheckReport extends DataCollection {
 
     public $keyPhrase = '';
     public $title = '';
-    public $environment = array();
-    public $network = array();
-    public $questionnaire =  array();
-    public $unit = array();
-    public $date = "";
+    public $environment = [];
+    public $network = [];
+    public $questionnaire =  [];
+    public $unit = [];
+    public $date = '';
+    public $responses = '';
 
-    public $checkId = "--";
-    public $checkLabel = "--";
+    public $checkId = '--';
+    public $checkLabel = '--';
 
     public function __construct($initData) {
 

@@ -94,9 +94,17 @@ export interface SysCheckReport {
   network: ReportEntry[];
   questionnaire: ReportEntry[];
   unit: ReportEntry[];
+  responses: ResponsesForSysCheck[];
 }
 
 export interface StepDef {
   route: string;
   label: string;
+}
+
+export interface ResponsesForSysCheck {
+  id: string;
+  content: any;
+  ts: number;
+  responseType: string;
 }
