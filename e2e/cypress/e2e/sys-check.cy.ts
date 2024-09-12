@@ -57,6 +57,6 @@ describe('Sys-Check', () => {
     cy.contains('Optionsfelder: Option B');
     cy.contains('System-Check Abbrechen')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
   });
 });

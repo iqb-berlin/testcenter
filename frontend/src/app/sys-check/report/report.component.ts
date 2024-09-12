@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
@@ -20,19 +21,25 @@ export class ReportComponent implements OnInit {
     private backendService: BackendService,
     public dataService: SysCheckDataService,
     private dialog: MatDialog,
-    private mds: MainDataService
+    private mds: MainDataService,
+    private router: Router
   ) {
   }
 
   saveReport(): void {
-    const confirmDialog = () => this.dialog.open(ConfirmDialogComponent, {
+    const confirmDialogRef = () => this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: <ConfirmDialogData>{
         title: 'Bericht gespeichert',
-        content: 'Der Bericht wurde erfolgreich gespeichert.',
+        content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.',
         confirmbuttonlabel: 'Verstanden'
       }
+    }).afterClosed().subscribe(() => {
+      setTimeout(() => {
+        this.router.navigate(['/r']);
+      }, 500);
     });
+
     if (!this.mds.sysCheckAvailableForAll) {
       this.backendService.saveReport(
         this.dataService.checkConfig.workspaceId,
@@ -44,7 +51,7 @@ export class ReportComponent implements OnInit {
           unit: []
         }
       ).subscribe(() => {
-        confirmDialog();
+        confirmDialogRef();
       });
     } else {
       const dialogRef = this.dialog.open(SaveReportComponent, {
@@ -68,7 +75,7 @@ export class ReportComponent implements OnInit {
                 unit: []
               }
             ).subscribe(() => {
-              confirmDialog();
+              confirmDialogRef();
             });
           }
         }
