@@ -45,7 +45,6 @@ include:
       changes:
         - backend/**/*
         - scripts/database/**/*
-        - definitions/**/*
 
 .broadcasting-service-feature-rules:
   rules:
@@ -64,6 +63,15 @@ include:
         ($CI_PIPELINE_SOURCE != "external_pull_request_event")
       changes:
         - common/**/*
+
+.definitions-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - definitions/**/*
 
 .e2e-feature-rules:
   rules:
@@ -253,6 +261,46 @@ check-common-feature-rules:
   allow_failure: true
   rules:
     - !reference [ .common-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-definitions-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .definitions-feature-rules, rules ]
   script:
     - echo $CI_COMMIT_BRANCH
     - echo $CI_PIPELINE_SOURCE
@@ -564,6 +612,7 @@ build-backend:
   needs: []
   rules:
     - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .e2e-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
@@ -610,6 +659,7 @@ build-frontend:
   rules:
     - !reference [ .frontend-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .e2e-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
@@ -766,6 +816,7 @@ build-task-runner:
   rules:
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .file-service-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
@@ -878,6 +929,7 @@ test-backend-unit:
     - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -922,6 +974,7 @@ test-frontend-unit:
   rules:
     - !reference [ .frontend-feature-rules, rules ]
     - !reference [ .common-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -998,6 +1051,7 @@ test-backend-api:
     - build-task-runner
   rules:
     - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .task-runner-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
@@ -1055,6 +1109,7 @@ test-backend-initialization:
     - build-backend
   rules:
     - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
