@@ -17,7 +17,7 @@ services:
   traefik:
     <<: *restart-policy
     container_name: testcenter-traefik
-    image: traefik:v2.10
+    image: ${DOCKERHUB_PROXY}traefik:v2.10
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -111,7 +111,7 @@ services:
   testcenter-cache-service:
     <<: *restart-policy
     container_name: testcenter-cache-service
-    image: redis:7.0-bullseye
+    image: ${DOCKERHUB_PROXY}redis:7.0-bullseye
     command:
       - "bash"
       - "-c"
