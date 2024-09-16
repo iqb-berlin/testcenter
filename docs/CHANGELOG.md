@@ -1,6 +1,20 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Die Navigation des SystemChecks wurde überarbeitet.
+  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+    und Schul-ID aus.
+  * "sys-check-login" Logins können auch mit Passwort geschützt werden
+  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
+  * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
+
+### Bugfixes
+* Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
+  das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
+
 ## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:
