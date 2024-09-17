@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: cs-pod
+  template:
+    metadata:
+      labels:
+        app: cs-pod
+    spec:
+      containers:
+        - name: cs-container
+          image: redis:7.0-bullseye
+          command: ['bash']
+          args: ['-c', 'redis-server --maxmemory 111111111 --maxmemory-policy volatile-lru']
+          ports:
+            - name: http-container
+              containerPort: 6379 #interner port innerhalb von cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testcenter-cache-service #hard coded in application as internal address
+spec:
+  selector:
+    app: cs-pod
+  ports:
+    - name: http-service
+      port: 82 #interner port innerhalb von cluster
+      targetPort: http-container
