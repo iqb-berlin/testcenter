@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testcenter-file-service-deployment
+ # namespace: testcenter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testcenter-file-service
+  template:
+    metadata:
+      labels:
+        app: testcenter-file-service
+    spec:
+      containers:
+      - name: testcenter-file-service-container
+        image: iqbberlin/testcenter-file-service:15.2.0
+        env:
+        - name: CACHE_SERVICE_INCLUDE_FILES
+          valueFrom:
+            configMapKeyRef:
+              name: testcenter-config
+              key: CACHE_SERVICE_INCLUDE_FILES
+        volumeMounts:
+        - name: backend-data
+          mountPath: /var/www/html/
+      volumes:
+      - name: backend-data
+        persistentVolumeClaim:
+          claimName: testcenter-backend-vo-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testcenter-file-service #hard coded in application as internal address
+  #namespace: testcenter
+spec:
+  selector:
+    app: testcenter-file-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
