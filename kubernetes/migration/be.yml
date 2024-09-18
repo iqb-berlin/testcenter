@@ -65,7 +65,7 @@ spec:
               path: /
               port: 80
             initialDelaySeconds: 30
-            periodSeconds: 300  # 5 minutes
+            periodSeconds: 60
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 3

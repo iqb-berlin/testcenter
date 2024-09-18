@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: testcenter-db-container
-        image: iqbberlin/testcenter-db:15.2.0
+        image: mysql:8.0
         env:
           - name: MYSQL_DATABASE
             valueFrom:
@@ -39,6 +39,13 @@ spec:
                 key: MYSQL_ROOT_PASSWORD
           - name: MYSQL_INITDB_SKIP_TZINFO
             value: "true"
+        args: [
+          "--explicit-defaults-for-timestamp=TRUE",
+          "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
+          "--tls-version=TLSv1.2,TLSv1.3",
+          "--max-connections=500",
+          "--log_error_verbosity=1"
+        ]
         ports:
           - containerPort: 3306
         volumeMounts:
