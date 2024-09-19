@@ -27,7 +27,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: testcenter-broadcasting-service
+  name: testcenter-broadcasting-service #hard coded in application as internal address
 spec:
   selector:
     app: bs-pod

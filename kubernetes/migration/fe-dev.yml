@@ -5,9 +5,12 @@ kind: Deployment
 metadata:
   name: fe-deployment
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: fe-pod
@@ -18,21 +21,33 @@ spec:
     spec:
       containers:
         - name: fe-container
-          image: iqbberlin/testcenter-frontend:15.2.0
+          image: iqbberlin/testcenter-frontend:current
           ports:
             - name: http-container
-              containerPort: 80 #interner port innerhalb von cluster
+              containerPort: 4200 #interner port innerhalb von cluster
           volumeMounts:
-            - name: nginx-config-volume
-              mountPath: /etc/nginx/templates/default.conf.template
-              subPath: default.conf.template
+            - name: common
+              mountPath: /usr/src/testcenter/common
+            - name: definitions
+              mountPath: /usr/src/testcenter/definitions
+            - name: frontend-src
+              mountPath: /usr/src/testcenter/frontend/src
+            - name: docs-dist
+              mountPath: /usr/src/testcenter/docs/dist
+      # todo use volumeclaims as direct hostpath is insecure
       volumes:
-        - name: nginx-config-volume
-          configMap:
-            name: nginx-config-configmap
-            items:
-              - key: config.nginx.conf
-                path: default.conf.template
+        - name: common
+          hostPath:
+            path: /home/oem/IdeaProjects/testcenter2/common
+        - name: definitions
+          hostPath:
+            path: /home/oem/IdeaProjects/testcenter2/definitions
+        - name: frontend-src
+          hostPath:
+            path: /home/oem/IdeaProjects/testcenter2/frontend/src
+        - name: docs-dist
+          hostPath:
+            path: /home/oem/IdeaProjects/testcenter2/docs/dist
 ---
 apiVersion: v1
 kind: Service
