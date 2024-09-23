@@ -94,5 +94,5 @@ re-init-backend:
 # Use this param to only show issues which can be solved by updating
 #--ignore-unfixed
 image-scan:
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
     --security-checks vuln $(image):$(tag)
