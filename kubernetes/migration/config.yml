@@ -10,7 +10,7 @@ metadata:
   name: testcenter-config
   #namespace: tc
 data:
-  HOSTNAME: "localhost"
+  HOSTNAME: "192.168.49.2"
   TLS_PORT: "443"
   TLS_ENABLED: "off"
   MYSQL_DATABASE: "iqb_tba_testcenter"
