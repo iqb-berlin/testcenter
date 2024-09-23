@@ -219,7 +219,11 @@ const addHugeFile = async (transaction, done) => {
 };
 
 const addResourceToExpectation = async (transaction, done) => {
+  dreddHooks.log('A');
+  dreddHooks.log(sampledataDir);
+  dreddHooks.log(fs.readdirSync(sampledataDir));
   transaction.expected.body = fs.readFileSync(`${sampledataDir}/SAMPLE_UNITCONTENTS.HTM`).toString();
+  dreddHooks.log('B');
   done();
 };
 
