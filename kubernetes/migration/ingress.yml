@@ -16,30 +16,30 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: minikube-ip-defined-in-hosts.example
-    http:
-      paths:
-      - path: /api(/|$)(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: testcenter-backend-service
-            port: 
-              number: 80
-      - path: /fs(/|$)(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: testcenter-file-service
-            port: 
-              number: 80
-      - path: /bs/public(/|$)(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: testcenter-broadcasting-service
-            port: 
-              number: 3000
+#  - host: minikube-ip-defined-in-hosts.example
+    - http:
+        paths:
+        - path: /api(/|$)(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: testcenter-backend-service
+              port:
+                number: 80
+        - path: /fs(/|$)(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: testcenter-file-service
+              port:
+                number: 80
+        - path: /bs/public(/|$)(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: testcenter-broadcasting-service
+              port:
+                number: 3000
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -58,8 +58,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: minikube-ip-defined-in-hosts.example
-      http:
+#    - host: minikube-ip-defined-in-hosts.example
+    - http:
         paths:
           - path: /
             pathType: Prefix

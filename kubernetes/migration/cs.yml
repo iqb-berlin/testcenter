@@ -20,11 +20,26 @@ spec:
       containers:
         - name: cs-container
           image: redis:7.0-bullseye
-          command: ['bash']
-          args: ['-c', 'redis-server --maxmemory 111111111 --maxmemory-policy volatile-lru']
+          command:
+            - bash
+          args:
+            - "-c"
+            - "redis-server"
+            - "--maxmemory"
+            - "111Mi"
+            - "--maxmemory-policy"
+            - "volatile-lru"
           ports:
             - name: http-container
-              containerPort: 6379 #interner port innerhalb von cluster
+              containerPort: 6379
+          # vielleicht nur der Volume mount benötigt
+          volumeMounts:
+            - name: lv-storage
+              mountPath: /data
+      volumes:
+        - name: lv-storage
+          persistentVolumeClaim:
+            claimName: redis-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -35,5 +50,17 @@ spec:
     app: cs-pod
   ports:
     - name: http-service
-      port: 82 #interner port innerhalb von cluster
+      port: 6379
       targetPort: http-container
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi
