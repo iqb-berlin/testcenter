@@ -210,7 +210,7 @@ class WorkspaceController extends Controller {
 
     $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
-    $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
+    $report = ReportOutputFactory::createReportOutput($workspaceId, $dataIds, $reportType, $reportFormat);
 
     if ($report->generate($request->getParam('useNewVersion') === 'true')) {
       $response->getBody()->write($report->asString());
