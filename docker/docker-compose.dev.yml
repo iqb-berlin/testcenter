@@ -28,12 +28,6 @@ services:
       context: ..
       dockerfile: backend/Dockerfile
       target: dev
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-backend:dev
-      tags:
-        - iqbberlin/testcenter-backend:dev
     volumes:
       - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
@@ -65,17 +59,11 @@ services:
       context: ..
       dockerfile: frontend/Dockerfile
       target: dev
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-frontend:dev
-      tags:
-        - iqbberlin/testcenter-frontend:dev
     volumes:
       - ../common:/usr/src/testcenter/common
       - ../definitions:/usr/src/testcenter/definitions
       - ../frontend/src:/usr/src/testcenter/frontend/src
-      - ../docs/dist:/docs/dist
+      - ../docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 
@@ -84,16 +72,10 @@ services:
       context: ..
       dockerfile: broadcasting-service/Dockerfile
       target: dev
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-broadcasting-service:dev
-      tags:
-        - iqbberlin/testcenter-broadcasting-service:dev
     volumes:
       - ../common:/usr/src/testcenter/common
       - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
-      - ../docs/dist:/docs/dist
+      - ../docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 
@@ -103,11 +85,6 @@ services:
       dockerfile: file-service/Dockerfile
       args:
         ENABLED_MODULES: lua
-        BUILDKIT_INLINE_CACHE: 1
-      cache_from:
-        - iqbberlin/testcenter-file-service
-      tags:
-        - iqbberlin/testcenter-file-service
     volumes:
       - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
       - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
