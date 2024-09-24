@@ -69,18 +69,21 @@ export class ErrorInterceptor implements HttpInterceptor {
         description: httpError.error.type,
         details: httpError.message,
         type: 'network',
-        errorId: httpError.headers.get('error-id')
+        errorId: httpError.headers.get('error-id'),
+        testMode: httpError.headers.get('test-mode')
       });
     }
 
     if (httpError.error instanceof ErrorEvent) {
+      console.log(httpError.headers);
       return new AppError({
         code: httpError.status,
         label: 'Fehler in der Netzwerkverbindung',
         description: httpError.error.message,
         type: 'network',
         details: httpError.message,
-        errorId: httpError.headers.get('error-id')
+        errorId: httpError.headers.get('error-id'),
+        testMode: httpError.headers.get('test-mode')
       });
     }
 
@@ -93,7 +96,8 @@ export class ErrorInterceptor implements HttpInterceptor {
             description: text,
             type: 'network',
             details: httpError.message,
-            errorId: httpError.headers.get('error-id')
+            errorId: httpError.headers.get('error-id'),
+            testMode: httpError.headers.get('test-mode')
           });
         });
       return null;
@@ -162,7 +166,8 @@ export class ErrorInterceptor implements HttpInterceptor {
       description: description,
       type: errorType,
       details: httpError.message,
-      errorId: httpError.headers.get('error-id')
+      errorId: httpError.headers.get('error-id')?.toLowerCase(),
+      testMode: httpError.headers.get('test-mode')
     });
   }
 }

@@ -54,6 +54,7 @@ export interface AppErrorInterface {
   description: string;
   type?: AppErrorType;
   code?: number;
+  testMode?: string | null;
   details?: string;
   errorId?: string | null;
 }
@@ -63,6 +64,7 @@ export class AppError extends Error implements AppErrorInterface {
   description: string = '';
   type: AppErrorType = 'general';
   code?: number;
+  testMode?: string;
   details?: string;
   errorId?: string;
   constructor(p: AppErrorInterface) {

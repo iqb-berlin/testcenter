@@ -27,6 +27,12 @@ class ErrorHandler {
       $request = $throwable->getRequest();
       $serverParams = $request->getServerParams();
       $logHeadline[] = "on `[{$serverParams['REQUEST_METHOD']}] {$serverParams['REQUEST_URI']}`";
+    } else {
+      $logHeadline[] = "on `[{$_SERVER['REQUEST_METHOD']}]` {$_SERVER['REQUEST_URI']}`";
+    }
+
+    if ($testMode = TestEnvironment::$testMode) {
+      $logHeadline[] = "(testMode = $testMode)";
     }
 
     if ($logTrace) {
@@ -69,13 +75,21 @@ class ErrorHandler {
       $throwable = $newThrowable;
     }
 
-    return $app
+    $response = $app
       ->getResponseFactory()
       ->createResponse()
       ->withStatus($throwable->getCode(), $throwable->getTitle())
       ->withHeader('Content-Type', 'text/html')
       ->withHeader('Error-ID', $errorUniqueId)
       ->write(htmlspecialchars($throwable->getMessage() ?: $throwable->getDescription()));
+
+    if (TestEnvironment::$testMode) {
+      return $response
+        ->withHeader('Test-Mode', TestEnvironment::$testMode);
+    }
+
+    return $response
+      ->withHeader('Test-Mode', 'NO');
   }
 
   public static function fatal(): void {

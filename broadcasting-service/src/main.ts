@@ -15,6 +15,6 @@ async function bootstrap() {
   app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(3000);
   // eslint-disable-next-line no-console
-  console.log('Broadcasting Service is running');
+  console.log(`Broadcasting Service is running (Debug-Level: ${isDevelopment ? 'dev' : 'prod'})`);
 }
 bootstrap();
