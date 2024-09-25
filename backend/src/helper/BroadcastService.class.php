@@ -39,6 +39,11 @@ class BroadcastService {
 
     $bsUri = 'http://' . SystemConfig::$broadcastingService_internal;
 
+    $headers = ["Content-Type: application/json"];
+    if (TestEnvironment::$testMode) {
+      $headers[] = "Test-Mode: " . TestEnvironment::$testMode;
+    }
+
     curl_setopt_array($curl, [
       CURLOPT_URL => $bsUri . '/' . $endpoint,
       CURLOPT_RETURNTRANSFER => true,
@@ -50,9 +55,7 @@ class BroadcastService {
       CURLOPT_CUSTOMREQUEST => $verb,
       CURLOPT_POSTFIELDS => $message,
       CURLOPT_FAILONERROR => false, // allows to read body on error
-      CURLOPT_HTTPHEADER => [
-        "Content-Type: application/json"
-      ],
+      CURLOPT_HTTPHEADER => $headers,
     ]);
 
     $curlResponse = curl_exec($curl);

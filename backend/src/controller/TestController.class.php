@@ -397,6 +397,9 @@ class TestController extends Controller {
       'testId' => $testId,
       'disconnectNotificationUri' => Server::getUrl() . "/test/$testId/connection-lost"
     ];
+    if (TestEnvironment::$testMode) {
+      $testee['disconnectNotificationUri'] .= '?testMode=' . TestEnvironment::$testMode;
+    }
     $bsUrl = BroadcastService::registerChannel('testee', $testee);
 
     if ($bsUrl !== null) {
