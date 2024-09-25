@@ -32,6 +32,10 @@ export const resetBackendData = (): void => {
     headers: { TestMode: 'prepare-integration' }
   })
     .its('status').should('eq', 200);
+  cy.request({
+    url: `${Cypress.env('urls').backend}/flush-broadcasting-service`
+  })
+    .its('status').should('eq', 200);
 };
 
 export const insertCredentials = (username: string, password = ''): void => {
@@ -63,11 +67,14 @@ export const logoutAdmin = (): Chainable => cy.url()
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
+    cy.log('WE ARE HERE: ' + url);
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
       // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
       // seems to be the least bad solution
+      cy.log('BEFORE');
       cy.wait(2000);
+      cy.log('AFTER');
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();
