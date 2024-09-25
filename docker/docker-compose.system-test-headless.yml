@@ -6,7 +6,6 @@ services:
         external=testcenter-file-service/
         [broadcastingService]
         external=testcenter-broadcasting-service:3000/
-
   testcenter-frontend:
     command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
 
@@ -27,3 +26,7 @@ services:
       - ../sampledata:/usr/src/testcenter/sampledata
     networks:
       - testcenter
+
+  testcenter-broadcasting-service:
+    environment:
+      DEV_MODE: false # loglevel
