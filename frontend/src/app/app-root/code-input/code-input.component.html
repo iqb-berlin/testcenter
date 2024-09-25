@@ -13,7 +13,12 @@
         <mat-form-field appearance="outline">
           <input matInput formControlName="code" customAutofocus> <!-- no placeholder! -->
         </mat-form-field>
-        <p style="color: chocolate"><b>{{ problemText }}</b></p>
+        <tc-alert
+          *ngIf="problemText"
+          [attr.data-cy]="'login-code-problem:' + problemCode"
+          level="error"
+          [text]="problemText"
+        ></tc-alert>
       </mat-card-content>
       <mat-card-actions [style.justify-content]="'space-between'">
         <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"

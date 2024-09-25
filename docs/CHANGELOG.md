@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Sicherheit
+  * Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+
 ## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:

@@ -15,6 +15,7 @@ import { BackendService } from '../../backend.service';
 export class CodeInputComponent implements OnInit {
   @ViewChild('codeInputControl') codeInputControl!: FormControl;
   problemText = '';
+  problemCode = 0;
 
   codeinputform = new FormGroup({
     code: new FormControl('', [Validators.required, Validators.minLength(2)])
@@ -41,6 +42,8 @@ export class CodeInputComponent implements OnInit {
   codeinput(): void {
     const codeData = this.codeinputform.value;
     this.problemText = '';
+    this.problemCode = 0;
+
     this.bs.codeLogin(codeData.code ?? '').subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
@@ -54,8 +57,11 @@ export class CodeInputComponent implements OnInit {
         }
       },
       error: (error: AppError) => {
+        this.problemCode = error.code || 777;
         if (error.code === 400) {
           this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
+        } else if (error.code === 429) {
+          this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
         } else {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
