@@ -12,7 +12,7 @@ services:
       - "--entrypoints.websecure.http.tls.options=default@file"
       #- "--certificatesresolvers.iqbresolver.acme.tlschallenge=true"
       ## - "--certificatesresolvers.iqbresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      #- "--certificatesresolvers.iqbresolver.acme.email=sven.wolter@iqb.hu-berlin.de"
+      #- "--certificatesresolvers.iqbresolver.acme.email=admin.name@company.com"
       #- "--certificatesresolvers.iqbresolver.acme.storage=/letsencrypt/acme.json"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
