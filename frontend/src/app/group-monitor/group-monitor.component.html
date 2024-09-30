@@ -38,7 +38,7 @@
   <ng-container *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries">
     <button mat-menu-item *ngIf="fo.value.source !== 'quick'" (click)="tsm.switchFilter(fo.key)">
       <mat-icon *ngIf="fo.value.selected">check</mat-icon>
-      <span>{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
+      <span class="menu-filter-label">{{fo.value.filter.label | customtext:fo.value.filter.label | async}}</span>
       <span class="menu-edit-filter">
         <mat-icon *ngIf="fo.value.source != 'base'" (click)="$event.stopPropagation(); editFilter(fo.key)">edit</mat-icon>
       </span>

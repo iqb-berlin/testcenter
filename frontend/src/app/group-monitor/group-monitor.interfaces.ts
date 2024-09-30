@@ -123,12 +123,13 @@ export interface TestSessionFilter {
   label: string;
   subValue?: string;
   type: TestSessionFilterType;
-  not?: true;
+  not: boolean;
 }
 
 export const isTestSessionFilter = (obj: object): obj is TestSessionFilter => ('target' in obj) &&
-  ('value' in obj) && ('id' in obj) && ('label' in obj) && ('type' in obj) &&
+  ('value' in obj) && ('id' in obj) && ('label' in obj) && ('type' in obj) && ('not' in obj) &&
   (typeof obj.type === 'string') && (typeof obj.target === 'string') &&
+  (typeof obj.label === 'string') && (typeof obj.not === 'boolean') &&
   (testSessionFilterTypes as readonly string[]).includes(obj.type) &&
   (testSessionFilterTargets as readonly string[]).includes(obj.target);
 

@@ -38,7 +38,7 @@ export class AddFilterDialogComponent implements OnInit {
     label: '',
     target: 'personLabel',
     value: '',
-    not: true,
+    not: false,
     type: 'equal'
   };
 
@@ -105,8 +105,8 @@ export class AddFilterDialogComponent implements OnInit {
       `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
     this.filter.label = [
       this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
-      this.filter.not ? (this.cts.getCustomText(`gm_filter_not_${this.filter.not}`) ?? 'not') : '',
       this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
+      this.filter.not ? (this.cts.getCustomText(`gm_filter_not`) ?? 'not') : '',
       this.filter.value.length > 15 ? `${this.filter.value.slice(0, 14)}...` : this.filter.value
     ]
       .filter(a => !!a)

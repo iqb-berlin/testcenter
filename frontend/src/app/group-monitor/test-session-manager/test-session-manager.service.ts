@@ -19,7 +19,7 @@ import {
   TestSessionsSuperStates,
   CommandResponse,
   GotoCommandData,
-  GroupMonitorConfig, TestSessionFilterList
+  GroupMonitorConfig, TestSessionFilterList, TestSessionFilterListEntry
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -71,7 +71,7 @@ export class TestSessionManager {
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
-  filterOptions: TestSessionFilterList = {
+  public static readonly basicFilters : TestSessionFilterList = {
     locked: {
       selected: false,
       source: 'base',
@@ -82,7 +82,7 @@ export class TestSessionManager {
         value: 'status',
         subValue: 'locked',
         type: 'equal',
-        not: true
+        not: false
       }
     },
     pending: {
@@ -95,7 +95,7 @@ export class TestSessionManager {
         value: 'status',
         subValue: 'pending',
         type: 'equal',
-        not: true
+        not: false
       }
     },
     quick: {
@@ -107,10 +107,13 @@ export class TestSessionManager {
         target: 'personLabel',
         value: '',
         subValue: '',
-        type: 'substring'
+        type: 'substring',
+        not: true
       }
     }
   };
+
+  filterOptions: TestSessionFilterList = {};
 
   constructor(
     private bs: BackendService,
@@ -124,6 +127,7 @@ export class TestSessionManager {
     this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
       interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
       of(0);
+    this.resetFilters();
   }
 
   connect(groupName: string): void {
@@ -179,10 +183,22 @@ export class TestSessionManager {
     );
   }
 
+  resetFilters(): void {
+    this.filterOptions = {};
+    Object.keys(TestSessionManager.basicFilters)
+      .forEach(key => {
+        this.filterOptions[key] = {
+          selected: TestSessionManager.basicFilters[key].selected,
+          source: TestSessionManager.basicFilters[key].source,
+          filter: {...TestSessionManager.basicFilters[key].filter}
+        }
+      });
+  }
+
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
-      .filter(session => TestSessionManager.applyFilters(session, filters));
+      .filter(session => !TestSessionManager.applyFilters(session, filters));
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
@@ -197,41 +213,44 @@ export class TestSessionManager {
         default: return false;
       }
     };
-    return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
-      switch (nextFilter.target) {
-        case 'groupName':
-        case 'personLabel':
-        case 'mode':
-          return keep && apply(session.data[nextFilter.target] || '', nextFilter);
-        case 'bookletId':
-          return keep && apply(session.data.bookletName || '', nextFilter); // bookletId is clearer for XML-authors
-        case 'unitId':
-          return keep && apply(session.data.unitName || '', nextFilter); // unitId is clearer for XML-authors
-        case 'unitLabel':
-          return keep && apply(session.current?.unit?.label || '', nextFilter);
-        case 'bookletLabel':
-          return keep && apply('metadata' in session.booklet ? session.booklet.metadata.label : '', nextFilter);
-        case 'blockId':
-          return keep && apply(session.current?.ancestor?.blockId || '', nextFilter);
-        case 'blockLabel':
-          return keep && apply(session.current?.ancestor?.label || '', nextFilter);
-        case 'testState': {
-          if (Array.isArray(nextFilter.value)) return keep;
-          const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
-          const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-          const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
-          return keep && (nextFilter.not ? !testStateMatching : testStateMatching);
+    const filterOut: TestSessionFilter | undefined = filters
+      .find((nextFilter: TestSessionFilter) => {
+        switch (nextFilter.target) {
+          case 'groupName':
+          case 'personLabel':
+          case 'mode':
+            return apply(session.data[nextFilter.target] || '', nextFilter);
+          case 'bookletId':
+            return apply(session.data.bookletName || '', nextFilter); // bookletId is clearer for XML-authors
+          case 'unitId':
+            return apply(session.data.unitName || '', nextFilter); // unitId is clearer for XML-authors
+          case 'unitLabel':
+            return apply(session.current?.unit?.label || '', nextFilter);
+          case 'bookletLabel':
+            return apply('metadata' in session.booklet ? session.booklet.metadata.label : '', nextFilter);
+          case 'blockId':
+            return apply(session.current?.ancestor?.blockId || '', nextFilter);
+          case 'blockLabel':
+            return apply(session.current?.ancestor?.label || '', nextFilter);
+          case 'testState': {
+            if (Array.isArray(nextFilter.value)) return filterOut;
+            const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
+            const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
+            const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
+            return (nextFilter.not ? !testStateMatching : testStateMatching);
+          }
+          case 'state': {
+            return apply(session.state, nextFilter);
+          }
+          case 'bookletSpecies': {
+            return apply(session.booklet.species || '', nextFilter);
+          }
+          default:
+            return false;
         }
-        case 'state': {
-          return keep && apply(session.state, nextFilter);
-        }
-        case 'bookletSpecies': {
-          return keep && apply(session.booklet.species || '', nextFilter);
-        }
-        default:
-          return false;
-      }
-    }, true);
+      });
+    console.log({filterOut});
+    return typeof filterOut !== "undefined";
   }
 
   private static getEmptyStats(): TestSessionSetStats {

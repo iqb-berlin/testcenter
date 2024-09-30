@@ -104,6 +104,7 @@ Funktioniert auch nicht? Dann...
 |gm_control_unlock_tooltip|Tooltip: Freigeben|Test Freigeben|
 |gm_controls|Überschrift: Test-Steuerung|Test-Steuerung|
 |gm_filter_locked|Filter: gesperrte ausblenden|gesperrte|
+|gm_filter_not|Benutzerdefinierter Filter: Nicht|nicht|
 |gm_filter_pending|Filter: nicht gestartete ausblenden|nicht gestartete|
 |gm_filter_target_blockId|Benutzerdefinierter Filter: Ziel - Block-Id|Block-Id|
 |gm_filter_target_blockLabel|Benutzerdefinierter Filter: Ziel - Blocktitel|Blocktitel|
@@ -118,7 +119,6 @@ Funktioniert auch nicht? Dann...
 |gm_filter_target_unitId|Benutzerdefinierter Filter: Ziel - Aufgaben-Id|Aufgaben-Id|
 |gm_filter_target_unitLabel|Benutzerdefinierter Filter: Ziel - Aufgabentitel|Aufgabentitel|
 |gm_filter_type_equal|Benutzerdefinierter Filter: Typ - gleicht|gleicht|
-|gm_filter_type_not|Benutzerdefinierter Filter: Nicht|nicht|
 |gm_filter_type_regex|Benutzerdefinierter Filter: Typ - Regulärer Ausdruck|matched regulären Ausdruck|
 |gm_filter_type_substring|Benutzerdefinierter Filter: Typ - enthält|enthält|
 |gm_headline|Überschrift: Gruppenmonitor|Gruppenüberwachung|

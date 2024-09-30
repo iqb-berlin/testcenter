@@ -182,3 +182,7 @@ mat-sidenav {
   position: absolute;
   right: 0;
 }
+
+.menu-filter-label {
+  word-break: break-word;
+}

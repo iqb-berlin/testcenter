@@ -335,7 +335,7 @@
     "label": "Benutzerdefinierter Filter: Typ - Regulärer Ausdruck",
     "defaultvalue": "matched regulären Ausdruck"
   },
-  "gm_filter_type_not": {
+  "gm_filter_not": {
     "label": "Benutzerdefinierter Filter: Nicht",
     "defaultvalue": "nicht"
   },
