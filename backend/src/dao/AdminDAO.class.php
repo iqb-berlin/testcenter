@@ -19,28 +19,30 @@ class AdminDAO extends DAO {
     );
   }
 
-  public function createAdminToken(string $username, string $password, ?int $validTo = null): string {
+  public function createAdminToken(string $username, string $password, ?int $validTo = null): string | FailedLogin {
     if ((strlen($username) == 0) or (strlen($username) > 50)) {
       throw new Exception("Invalid Username `$username`", 400);
     }
 
     $user = $this->getUserByNameAndPassword($username, $password);
 
+    if (is_a($user, FailedLogin::class)) return $user;
+
     $this->deleteTokensByUser((int) $user['id']);
-
     $token = Token::generate('admin', $username);
-
     $this->storeToken((int) $user['id'], $token, $validTo);
 
     return $token;
   }
 
-  private function getUserByNameAndPassword(string $userName, string $password): ?array {
+  private function getUserByNameAndPassword(string $userName, string $password): array | FailedLogin {
     $usersOfThisName = $this->_(
       'select * from users where users.name = :name',
       [':name' => $userName],
       true
     );
+
+    $return = (!count($usersOfThisName)) ? FailedLogin::usernameNotFound : FailedLogin::wrongPassword;
 
     // we always check at least one user to not leak the existence of username to time-attacks
     $usersOfThisName = (!count($usersOfThisName)) ? [['password' => 'dummy']] : $usersOfThisName;
@@ -53,7 +55,7 @@ class AdminDAO extends DAO {
 
     // obfuscate the time taken even more
     usleep(rand(000000, 100000));
-    throw new HttpError("No Login for `$userName` with this password.", 400);
+    return $return;
   }
 
   private function deleteTokensByUser(int $userId): void {
@@ -116,6 +118,7 @@ class AdminDAO extends DAO {
     );
   }
 
+  /** @return WorkspaceData[] */
   public function getWorkspaces(string $token): array {
     $workspaces = $this->_(
       'select

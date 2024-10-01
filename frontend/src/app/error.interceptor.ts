@@ -131,6 +131,10 @@ export class ErrorInterceptor implements HttpInterceptor {
       case 423:
         statusMessage = 'Test ist gesperrt!';
         break;
+      case 429:
+        statusMessage = 'Login ist gesperrt!';
+        errorType = 'session';
+        break;
       case 500:
         statusMessage = 'Allgemeines Server-Problem.';
         break;
@@ -140,7 +144,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         errorType = 'network_temporally';
         break;
       case 504:
-        statusMessage = 'Der Server ist augenblicklich überlastet!'
+        statusMessage = 'Der Server ist augenblicklich überlastet!';
         break;
       default:
         statusMessage = 'Unbekanntes Verbindungsproblem';

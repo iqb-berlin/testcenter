@@ -144,11 +144,11 @@ final class SessionControllerTest extends TestCase {
     );
   }
 
-  public function test_putSessionLogin_throwExceptionNoLOginFound(): void {
+  public function test_putSessionLogin_throwExceptionNoLoginFound(): void {
     // happens im login is expired for example
 
     $this->mockSessionDAO([
-      'getOrCreateLoginSession' => null
+      'getOrCreateLoginSession' => FailedLogin::usernameNotFound
     ]);
 
     $this->expectException(Exception::class);
@@ -328,6 +328,28 @@ final class SessionControllerTest extends TestCase {
     $this->assertEquals(200, $response->getStatusCode());
   }
 
+  public function test_putSessionAdmin(): void {
+    $this->mockAdminDAO([
+      'createAdminToken' => 'admin_token',
+      'getAdmin' => new Admin(1, 'Admin1', 'admin1@mail.com', true, 'admin_token'),
+      'getWorkspaces' => [new WorkspaceData(1, 'ws1', 'Workspace 1')]
+    ]);
+
+    $response = SessionController::putSessionAdmin(
+      RequestCreator::create('PUT', '/session/admin', '{"name":"super", "password":"user123"}'),
+      ResponseCreator::createEmpty()
+    );
+
+    $response->getBody()->rewind();
+
+    $this->assertEquals(
+      '{"token":"admin_token","displayName":"Admin1","customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"ws1","flags":{"mode":"Workspace 1"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
+      $response->getBody()->getContents()
+    );
+    $this->assertEquals(200, $response->getStatusCode());
+  }
+
+
   public function test_getSession_loginSession() {
     $loginSession = new LoginSession(
       1,
@@ -360,7 +382,6 @@ final class SessionControllerTest extends TestCase {
       '{"token":"login_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
       $response->getBody()->getContents()
     );
-
   }
 
   public function test_getSession_personSession() {

@@ -12,6 +12,7 @@ class TestEnvironment {
   const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
   static string | null $testMode = null;
 
+
   public static function setup(string $testMode, ?string $testClock = null): void {
     self::$testMode = in_array($testMode, self::testModes) ? $testMode : 'api';
     $testClock = $testClock ?? self::staticDate;
@@ -21,6 +22,7 @@ class TestEnvironment {
       SystemConfig::$debug_useStaticTokens = true;
       SystemConfig::$debug_useInsecurePasswords = true;
       SystemConfig::$debug_allowExternalXmlSchema = false;
+      SystemConfig::$debug_fastLoginReuse = true;
       self::makeRandomStatic();
       DB::connectToTestDB();
 
@@ -179,7 +181,8 @@ class TestEnvironment {
   private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
     touch($dir, TestEnvironment::staticDate);
     foreach (new DirectoryIterator($dir) as $child) {
-      if ($child->isDot() or $child->isLink()) {
+      if ($child->isDot() or $child->i(merge with error blub)
+sLink()) {
         continue;
       }
       touch($child->getPathname(), TestEnvironment::staticDate);

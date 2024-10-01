@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## [next]
+### Sicherheit
+  * Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+  * Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+
 ## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:
