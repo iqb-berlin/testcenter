@@ -121,7 +121,7 @@ class WorkspaceDAO extends DAO {
 
     $this->_($sql, [], true);
 
-    $this->setSysCheckMode($logins);
+    $this->setSysCheckModeAccordingToTT($logins);
 
     return count($logins->asArray());
   }
@@ -608,7 +608,7 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  private function setSysCheckMode(LoginArray $logins) {
+  private function setSysCheckModeAccordingToTT(LoginArray $logins) {
     $enableSysCheckMode = SysCheckMode::TEST;
     /** @var Login $login */
     foreach ($logins as $login) {
@@ -618,8 +618,19 @@ class WorkspaceDAO extends DAO {
       }
     }
     $this->_(
-      "update workspaces set content_type = '$enableSysCheckMode->name' where id = :ws_id",
+      "update workspaces set content_type = '$enableSysCheckMode->value' where id = :ws_id",
       [':ws_id' => $this->workspaceId],
+      true
+    );
+  }
+
+  public function setSysCheckMode(string $mode) {
+    $this->_(
+      "update workspaces set content_type = :mode where id = :ws_id",
+      [
+        ':mode' => $mode,
+        ':ws_id' => $this->workspaceId
+      ],
       true
     );
   }
