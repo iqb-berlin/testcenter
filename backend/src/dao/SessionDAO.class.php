@@ -27,7 +27,7 @@ class SessionDAO extends DAO {
                     person_sessions.valid_until as "validTo",
                     logins.group_name as "group"
                 from person_sessions
-                     left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                     erson_sessions.login_sessions_id = login_sessions.id)
                      left join logins on (logins.name = login_sessions.name)
                 where
                     person_sessions.token = :token
@@ -77,18 +77,18 @@ class SessionDAO extends DAO {
   /**
    * @codeCoverageIgnore
    */
-  public function getOrCreateLoginSession(string $name, string $password): ?LoginSession {
+  public function getOrCreateLoginSession(string $name, string $password): LoginSession | FailedLogin {
     $login = $this->getLogin($name, $password);
 
-    if (!$login) {
-      return null;
+    if (!is_a($login, Login::class)) {
+      return $login;
     }
 
     return $this->createLoginSession($login);
   }
 
-  public function getLogin(string $name, string $password): ?Login {
-    $login = $this->_(
+  public function getLogin(string $name, string $password): Login | FailedLogin {
+    $result = $this->_(
       'select         
               logins.name,
               logins.mode,
@@ -114,35 +114,41 @@ class SessionDAO extends DAO {
       ]
     );
 
-    // we always check one password to not leak the existence of username to time-attacks
-    if (!$login) {
-      $login = ['password' => 'dummy'];
-    }
-
-    // TODO also use customizable use salt for testees? -> change would break current sessions
-    if (!Password::verify($password, $login['password'], 't')) {
-      return null;
+    if (!$result) {
+      // we always check one password to not leak the existence of username to time-attacks
+      Password::verify($password, 'dummy', 't');
+      return FailedLogin::usernameNotFound;
     }
 
     TimeStamp::checkExpiration(
-      TimeStamp::fromSQLFormat($login['valid_from']),
-      TimeStamp::fromSQLFormat($login['valid_to'])
+      TimeStamp::fromSQLFormat($result['valid_from']),
+      TimeStamp::fromSQLFormat($result['valid_to'])
     );
 
-    return new Login(
-      $login['name'],
+    $login = new Login(
+      $result['name'],
       '',
-      $login['mode'],
-      $login['group_name'],
-      $login['group_label'],
-      JSON::decode($login['codes_to_booklets'], true),
-      (int) $login['workspace_id'],
-      TimeStamp::fromSQLFormat($login['valid_to']),
-      TimeStamp::fromSQLFormat($login['valid_from']),
-      (int) $login['valid_for'],
-      JSON::decode($login['custom_texts']),
-      JSON::decode($login['monitors'], true)
+      $result['mode'],
+      $result['group_name'],
+      $result['group_label'],
+      JSON::decode($result['codes_to_booklets'], true),
+      (int) $result['workspace_id'],
+      TimeStamp::fromSQLFormat($result['valid_to']),
+      TimeStamp::fromSQLFormat($result['valid_from']),
+      (int) $result['valid_for'],
+      JSON::decode($result['custom_texts']),
+      JSON::decode($result['monitors'], true)
     );
+
+
+    // TODO also use customizable use salt for testees? -> change would break current sessions
+    if (!Password::verify($password, $result['password'], 't')) {
+      return Mode::hasCapability($login->getMode(), 'protectedLogin') ?
+        FailedLogin::wrongPasswordProtectedLogin :
+        FailedLogin::wrongPassword;
+    }
+
+    return $login;
   }
 
   public function createLoginSession(Login $login): LoginSession {
@@ -251,7 +257,7 @@ class SessionDAO extends DAO {
   ): PersonSession {
     $login = $loginSession->getLogin();
 
-    if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
+    if (count($login->getBooklets()) and !$login->codeExists($code)) {
       throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
     }
 

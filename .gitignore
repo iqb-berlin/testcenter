@@ -6,6 +6,9 @@
 .settings/
 *.sublime-workspace
 
+# IDE - JetBrains (e.g. IntelliJ IDEA, PHPStorm, WebStorm, etc.)
+.idea/google-java-format.xml
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json

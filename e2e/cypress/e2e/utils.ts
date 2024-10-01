@@ -143,7 +143,7 @@ export const loginWorkspaceAdmin = (): void => {
 };
 
 export const loginTestTaker =
-  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' = 'starter'): void => {
+  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' = 'starter'): void => {
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
@@ -154,15 +154,22 @@ export const loginTestTaker =
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
-    if (expectedView === 'test-hot') {
-      cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
-    }
-    if (expectedView !== 'starter') {
-      cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
-    } else {
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-      cy.contains(name)
-        .should('exist');
+
+    // eslint-disable-next-line default-case
+    switch (expectedView) {
+      case 'test-hot':
+        cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
+      // eslint-disable-next-line no-fallthrough
+      case 'test':
+        cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
+        break;
+      case 'starter':
+        cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.contains(name)
+          .should('exist');
+        break;
+      case 'code-input':
+        cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
     }
   };
 

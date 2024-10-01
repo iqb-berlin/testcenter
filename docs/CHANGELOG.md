@@ -2,10 +2,15 @@
 layout: default
 ---
 
-## 15.3.0-alpha
+
+## [next]
 ### neue Features
 * Konfigurierbarer Testleitungskonsole
-  * (Doku folgt)
+
+### Sicherheit
+  * Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+  * Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+
 
 ## 15.2.0
 ### neue Features

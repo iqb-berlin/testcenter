@@ -61,8 +61,10 @@ const prepareSpecsForDredd = done => {
    * * Dredd supports only in-file-references
    * * For more quirks of Dredd see:
    *   @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
-   * * [500] Server errors get not tested (how could that be)
-   * * [202] get not tested // TODO why? is this necessary
+   * * Some cases are not tested:
+   * * * [500] (server error)
+   * * * [202] (no content) // TODO: add test-account with no workspaces for this test
+   * * * [429] (too many requests) // can not be created with only one call
    */
 
   const specsJson = YAML.parse(fs.readFileSync(compiledFileName, 'utf8'));
@@ -97,7 +99,7 @@ const prepareSpecsForDredd = done => {
     'parameters > \\d+ > schema$': null,
     'text/xml > example$': null,
     'application/octet-stream > example$': null,
-    '^paths > .*? > .*? > responses > (500|202)$': null,
+    '^paths > .*? > .*? > responses > (500|202|429)$': null,
     'schema > \\$ref$': resolveReference,
     'items > \\$ref$': resolveReference,
     deprecated: null,

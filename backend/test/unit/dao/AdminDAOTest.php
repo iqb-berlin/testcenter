@@ -29,8 +29,11 @@ final class AdminDAOTest extends TestCase {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $this->assertNotNull($token);
 
-    $this->expectException("HttpError");
-    $this->dbc->createAdminToken('peter', 'peterspassword');
+    $rejection = $this->dbc->createAdminToken('peter', 'peterspassword');
+    $this->assertEquals(FailedLogin::usernameNotFound, $rejection);
+
+    $rejection = $this->dbc->createAdminToken('super', 'peterspassword');
+    $this->assertEquals(FailedLogin::wrongPassword, $rejection);
   }
 
   public function test_validateToken() {
@@ -38,7 +41,7 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getAdmin($token);
     $this->assertEquals(1, $result->getId());
     $this->assertEquals('super', $result->getName());
-    $this->assertEquals(true, $result->isSuperadmin());
+    $this->assertTrue($result->isSuperadmin());
   }
 
   public function test_getWorkspaces() {
