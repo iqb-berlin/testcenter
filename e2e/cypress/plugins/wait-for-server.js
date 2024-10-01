@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const http = require('http');
 
 module.exports = async function waitForServer(serverUrl) {

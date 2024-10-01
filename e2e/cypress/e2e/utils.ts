@@ -67,14 +67,10 @@ export const logoutAdmin = (): Chainable => cy.url()
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
-    cy.log('WE ARE HERE: ' + url);
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
       // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
       // seems to be the least bad solution
-      cy.log('BEFORE');
-      cy.wait(2000);
-      cy.log('AFTER');
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();
@@ -106,6 +102,13 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     }
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
+
+export const hardLogOut = (): void => {
+  // this might replace logoutTestTaker once
+  cy.clearLocalStorage();
+  cy.clearCookies();
+  cy.reload(true);
+}
 
 export const openSampleWorkspace1 = (): void => {
   cy.get('[data-cy="workspace-1"]')
