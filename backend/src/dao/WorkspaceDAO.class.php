@@ -121,7 +121,7 @@ class WorkspaceDAO extends DAO {
 
     $this->_($sql, [], true);
 
-    $this->checkForSysCheckMode($logins);
+    $this->setSysCheckMode($logins);
 
     return count($logins->asArray());
   }
@@ -608,17 +608,20 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  private function checkForSysCheckMode(LoginArray $logins) {
+  private function setSysCheckMode(LoginArray $logins) {
+    $enableSysCheckMode = SysCheckMode::TEST;
     /** @var Login $login */
     foreach ($logins as $login) {
       if ($login->getMode() == 'sys-check-login') {
-        $this->_(
-          "update workspaces set content_type = 'sysCheck' where id = :ws_id",
-          [':ws_id' => $this->workspaceId],
-          true
-        );
+        $enableSysCheckMode = SysCheckMode::SYSCHECK;
+        break;
       }
     }
+    $this->_(
+      "update workspaces set content_type = '$enableSysCheckMode->name' where id = :ws_id",
+      [':ws_id' => $this->workspaceId],
+      true
+    );
   }
 
   public function fetchDependenciesForFile(string $name): ?array {
