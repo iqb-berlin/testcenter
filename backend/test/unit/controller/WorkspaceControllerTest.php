@@ -61,6 +61,7 @@ final class WorkspaceControllerTest extends TestCase {
     $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
     $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
     $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
+    $this->workspaceDaoMock = Mockery::mock( 'overload:' . WorkspaceDAO::class);
 
     $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
     $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
@@ -372,6 +373,10 @@ final class WorkspaceControllerTest extends TestCase {
     $this->workspaceMock
       ->expects('setWorkspaceHash')
       ->once();
+
+    $this->workspaceDaoMock
+      ->expects()
+      ->setSysCheckMode('mixed');
 
     $this->broadcastingServiceMock
       ->expects('send')
