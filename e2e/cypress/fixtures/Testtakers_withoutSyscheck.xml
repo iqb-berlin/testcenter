@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.2.0/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>This file contains some logins for testing and works a sample for developers.</Description>
+  </Metadata>
+
+  <CustomTexts>
+    <CustomText key="somestr">string</CustomText>
+  </CustomTexts>
+
+  <Group id="sample_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
+
+    <Login mode="run-hot-return" name="test" pw="user123">
+      <Booklet codes="xxx yyy">BOOKLET.SAMPLE-1</Booklet>
+      <Booklet codes="xxx yyy">BOOKLET.SAMPLE-3</Booklet>
+      <Booklet>BOOKLET.SAMPLE-2</Booklet>
+    </Login>
+
+    <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+  </Group>
+
+  <Group id="study_group" label="A group for the study monitor">
+    <!-- the study monitor has access to all other groups on the workspace -->
+    <Login mode="monitor-study" name="test-study-monitor" pw="user123"/>
+  </Group>
+
+  <Group id="review_group" label="A Group of Reviewers">
+    <Login mode="run-review" name="test-review" pw="user123">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="trial_group" label="A Group for Trials and Demos" validFor="45">
+    <Login mode="run-trial" name="test-trial" pw="user123">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+    <Login mode="run-demo" name="test-demo" pw="user123">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+    <Login mode="run-simulation" name="test-simulation" pw="user123">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="passwordless_group" label="A group of persons without password">
+    <Login mode="run-hot-restart" name="test-no-pw">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+    <Login mode="run-trial" name="test-no-pw-trial">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="expired_group" validTo="1/3/2020 19:30" label="An already expired group">
+    <Login mode="run-hot-restart" name="test-expired">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+    <Login mode="monitor-group" name="expired-group-monitor" pw="user123"/>
+    <Login mode="monitor-study" name="expired-study-monitor" pw="user123"/>
+  </Group>
+
+  <Group id="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">
+    <Login mode="run-hot-restart" name="test-future">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+    </Login>
+  </Group>
+
+</Testtakers>

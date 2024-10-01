@@ -624,7 +624,7 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  public function setSysCheckMode(string $mode) {
+  public function setSysCheckMode(string $mode): void {
     $this->_(
       "update workspaces set content_type = :mode where id = :ws_id",
       [
