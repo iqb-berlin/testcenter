@@ -181,8 +181,7 @@ class TestEnvironment {
   private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
     touch($dir, TestEnvironment::staticDate);
     foreach (new DirectoryIterator($dir) as $child) {
-      if ($child->isDot() or $child->i(merge with error blub)
-sLink()) {
+      if ($child->isDot() or $child->isLink()) {
         continue;
       }
       touch($child->getPathname(), TestEnvironment::staticDate);
