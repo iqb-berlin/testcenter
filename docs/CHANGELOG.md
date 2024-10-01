@@ -15,6 +15,11 @@ layout: default
 * Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
   das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
 
+### Sicherheit
+* Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+* Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+
+
 ## 15.2.0
 ### neue Features
 * Überarbeitetes neues Format für Reviews:

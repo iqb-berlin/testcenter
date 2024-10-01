@@ -87,6 +87,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
         } else if (error.code === 410) {
           this.problemText = 'Anmeldedaten sind abgelaufen';
+        } else if (error.code === 429) {
+          this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
         } else {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
