@@ -180,7 +180,8 @@ describe('TestSessionManager', () => {
         label: 'removeEverythingButBooklet1',
         target: 'bookletId',
         type: 'equal',
-        value: 'example_booklet_1'
+        value: 'example_booklet_1',
+        not: true
       };
       let result = filterSessions(sessionsSet, [keepOnlyBooklet1]).map(s => s.data.testId);
       expect(result).toEqual([1]);
@@ -191,7 +192,7 @@ describe('TestSessionManager', () => {
         target: 'mode',
         type: 'equal',
         value: 'run-hot-return',
-        not: true
+        not: false
       };
       result = filterSessions(sessionsSet, [removeHotRunReturn]).map(s => s.data.testId);
       expect(result).toEqual([3]);
@@ -203,7 +204,7 @@ describe('TestSessionManager', () => {
         target: 'testState',
         value: 'CONTROLLER',
         subValue: 'RUNNING',
-        not: true
+        not: false
       };
       result = filterSessions(sessionsSet, [removeStatusControllerRunning]).map(s => s.data.testId);
       expect(result).toEqual([2, 3]);
@@ -214,7 +215,8 @@ describe('TestSessionManager', () => {
         type: 'equal',
         target: 'testState',
         value: 'CONTROLLER',
-        subValue: 'RUNNING'
+        subValue: 'RUNNING',
+        not: true
       };
       result = filterSessions(sessionsSet, [removeStatusControllerNotRunning]).map(s => s.data.testId);
       expect(result).toEqual([1]);
@@ -225,7 +227,7 @@ describe('TestSessionManager', () => {
         target: 'state',
         value: 'pending',
         type: 'equal',
-        not: true
+        not: false
       };
       result = filterSessions(sessionsSet, [removePending]).map(s => s.data.testId);
       expect(result).toEqual([1, 2]);
@@ -236,7 +238,7 @@ describe('TestSessionManager', () => {
         target: 'bookletSpecies',
         value: 'example-species-1',
         type: 'equal',
-        not: true
+        not: false
       };
       result = filterSessions(sessionsSet, [removeAllButSpecies1]).map(s => s.data.testId);
       expect(result).toEqual([2, 3]);
@@ -255,7 +257,8 @@ describe('TestSessionManager', () => {
         label: 'keepUnit1x',
         target: 'unitId',
         value: 'unit-1.*',
-        type: 'regex'
+        type: 'regex',
+        not: true
       };
       const result = filterSessions(sessionsSet, [keepUnit1x])
         .map(s => s.data.testId);
@@ -268,7 +271,8 @@ describe('TestSessionManager', () => {
         label: 'keepBlockTestlet0',
         target: 'blockLabel',
         value: 'let-0',
-        type: 'substring'
+        type: 'substring',
+        not: true
       };
       const result = filterSessions(sessionsSet, [keepBlockTestlet0])
         .map(s => s.data.testId);
@@ -282,7 +286,7 @@ describe('TestSessionManager', () => {
         target: 'state',
         value: <Array<TestSessionSuperState>>['connection_lost', 'error', 'focus_lost', 'locked', 'idle', 'pending'],
         type: 'equal',
-        not: true
+        not: false
       };
       const result = filterSessions(sessionsSet, [removeInactiveStates])
         .map(s => s.data.testId);

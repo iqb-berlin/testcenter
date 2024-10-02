@@ -19,7 +19,7 @@ import {
   TestSessionsSuperStates,
   CommandResponse,
   GotoCommandData,
-  GroupMonitorConfig, TestSessionFilterList, TestSessionFilterListEntry
+  GroupMonitorConfig, TestSessionFilterList
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -71,7 +71,7 @@ export class TestSessionManager {
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
-  public static readonly basicFilters : TestSessionFilterList = {
+  static readonly basicFilters : TestSessionFilterList = {
     locked: {
       selected: false,
       source: 'base',
@@ -190,8 +190,8 @@ export class TestSessionManager {
         this.filterOptions[key] = {
           selected: TestSessionManager.basicFilters[key].selected,
           source: TestSessionManager.basicFilters[key].source,
-          filter: {...TestSessionManager.basicFilters[key].filter}
-        }
+          filter: { ...TestSessionManager.basicFilters[key].filter }
+        };
       });
   }
 
@@ -249,8 +249,7 @@ export class TestSessionManager {
             return false;
         }
       });
-    console.log({filterOut});
-    return typeof filterOut !== "undefined";
+    return typeof filterOut !== 'undefined';
   }
 
   private static getEmptyStats(): TestSessionSetStats {
