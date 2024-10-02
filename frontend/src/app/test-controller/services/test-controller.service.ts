@@ -562,7 +562,11 @@ export class TestControllerService {
     return true;
   }
 
-  updateVariables(sequenceId: number, unitStateDataType: string, dataParts: KeyValuePairString): boolean {
+  updateVariables(
+    sequenceId: number,
+    unitStateDataType: string = this.units[sequenceId].responseType || 'unknown',
+    dataParts: KeyValuePairString = this.units[sequenceId].dataParts
+  ): boolean {
     const isIqbStandard = unitStateDataType.match(/iqb-standard@(\d+)/);
     const iqbStandardVersion = isIqbStandard ? Number(isIqbStandard[1]) : 0;
     if (
@@ -625,7 +629,7 @@ export class TestControllerService {
     return somethingChanged;
   }
 
-  codeVariables(sequenceId: number): void {
+  private codeVariables(sequenceId: number): void {
     const baseVars = Object.values(this.units[sequenceId].variables)
       .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
     this.units[sequenceId].scheme.code(baseVars)

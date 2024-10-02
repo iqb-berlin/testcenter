@@ -83,7 +83,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
     await this.loadResources(testData);
-    this.updateVariables();
+    this.updateVariablesInUnitsWithoutCodingScheme(testData);
     console.log({ loaded: (Date.now() - ts) });
     return this.resumeTest(testData.laststate);
   }
@@ -332,13 +332,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     });
   }
 
-  private updateVariables(): void {
-    Object.values(this.tcs.units)
-      .forEach(unit => {
-        this.tcs.updateVariables(unit.sequenceId, unit.responseType || 'unknown', unit.dataParts);
-      });
-  }
-
   private unsubscribeTestSubscriptions(): void {
     if (this.resourcesLoadSubscription !== null) {
       this.resourcesLoadSubscription.unsubscribe();
@@ -440,7 +433,16 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
           this.tcs.units[sequenceId].variables[baseVariableId] = { id: baseVariableId, status: 'UNSET', value: null };
         }
       });
-    this.tcs.codeVariables(sequenceId);
+
+    this.tcs.updateVariables(sequenceId);
+    this.tcs.evaluateConditions();
+  }
+
+  private updateVariablesInUnitsWithoutCodingScheme(testData: TestData): void {
+    Object.values(this.tcs.units)
+      .forEach(unit => {
+        if (!testData.resources[unit.id].usesScheme?.length) this.tcs.updateVariables(unit.sequenceId);
+      });
     this.tcs.evaluateConditions();
   }
 
