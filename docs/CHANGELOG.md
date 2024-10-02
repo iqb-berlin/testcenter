@@ -1,15 +1,27 @@
 ---
 layout: default
 ---
-
-
 ## [next]
 ### neue Features
-* Konfigurierbarer Testleitungskonsole
+* Die Navigation des SystemChecks wurde überarbeitet.
+  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+    und Schul-ID aus.
+  * "sys-check-login" Logins können auch mit Passwort geschützt werden
+  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
+  * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
+* Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
+  * schnelles Filtern nach Person
+  * Eigene Filter können definiert werden
+  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
+
+### Bugfixes
+* Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
+  das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
 
 ### Sicherheit
-  * Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
-  * Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+* Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+* Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
 
 
 ## 15.2.0

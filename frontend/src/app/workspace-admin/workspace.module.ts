@@ -21,6 +21,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModule } from '../shared/shared.module';
 import { BackendService } from './backend.service';
+import { BackendService as RootBackendService } from '../backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
 import { WorkspaceRoutingModule } from './workspace-routing.module';
 import { WorkspaceComponent } from './workspace.component';
@@ -73,6 +74,7 @@ import {
   ],
   providers: [
     BackendService,
+    RootBackendService,
     WorkspaceDataService
   ]
 })

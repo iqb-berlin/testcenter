@@ -24,6 +24,8 @@ export interface AccessObject {
     mode?: 'RW' | 'RO';
     subLabel?: string;
   };
+  workspaceId: string;
+  description: string;
 }
 
 export interface AuthData {

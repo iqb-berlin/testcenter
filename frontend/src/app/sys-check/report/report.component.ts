@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
-import { ReportEntry } from '../sys-check.interfaces';
+import { ReportEntry, ResponsesForSysCheck } from '../sys-check.interfaces';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interfaces';
+import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
 @Component({
   templateUrl: './report.component.html',
@@ -20,44 +21,75 @@ export class ReportComponent implements OnInit {
     private backendService: BackendService,
     public dataService: SysCheckDataService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private mds: MainDataService,
+    private router: Router
   ) {
   }
 
   saveReport(): void {
-    const dialogRef = this.dialog.open(SaveReportComponent, {
-      width: '500px',
-      height: '600px'
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          const reportKey = result.get('key').value as string;
-          const reportTitle = result.get('title').value as string;
-          this.backendService.saveReport(
-            this.dataService.checkConfig.workspaceId,
-            this.dataService.checkConfig.name,
-            {
-              keyPhrase: reportKey,
-              title: reportTitle,
-              environment: this.dataService.environmentReport,
-              network: this.dataService.networkReport,
-              questionnaire: this.dataService.questionnaireReport,
-              unit: []
-            }
-          ).subscribe(() => {
-            this.dialog.open(ConfirmDialogComponent, {
-              width: '400px',
-              data: <ConfirmDialogData>{
-                title: 'Bericht gespeichert',
-                content: 'Der Bericht wurde erfolgreich gespeichert.',
-                confirmbuttonlabel: 'Verstanden'
-              }
-            });
-          });
-        }
+    const confirmDialogRef = () => this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: <ConfirmDialogData>{
+        title: 'Bericht gespeichert',
+        content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.',
+        confirmbuttonlabel: 'Verstanden'
       }
+    }).afterClosed().subscribe(() => {
+      setTimeout(() => {
+        this.router.navigate(['/r']);
+      }, 500);
     });
+
+    const responses: ResponsesForSysCheck[] = Object.keys(this.dataService.dataParts).map(key => ({
+      id: key,
+      content: this.dataService.dataParts[key],
+      ts: Date.now(),
+      responseType: this.dataService.unitStateDataType
+    }));
+
+    if (!this.mds.sysCheckAvailableForAll) {
+      this.backendService.saveReport(
+        this.dataService.checkConfig.workspaceId,
+        this.dataService.checkConfig.name,
+        {
+          environment: this.dataService.environmentReport,
+          network: this.dataService.networkReport,
+          questionnaire: this.dataService.questionnaireReport,
+          unit: [],
+          responses: responses
+        }
+      ).subscribe(() => {
+        confirmDialogRef();
+      });
+    } else {
+      const dialogRef = this.dialog.open(SaveReportComponent, {
+        width: '500px',
+        height: '600px'
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (typeof result !== 'undefined') {
+          if (result !== false) {
+            const reportKey = result.get('key').value as string;
+            const reportTitle = result.get('title').value as string;
+            this.backendService.saveReport(
+              this.dataService.checkConfig.workspaceId,
+              this.dataService.checkConfig.name,
+              {
+                keyPhrase: reportKey,
+                title: reportTitle,
+                environment: this.dataService.environmentReport,
+                network: this.dataService.networkReport,
+                questionnaire: this.dataService.questionnaireReport,
+                unit: [],
+                responses: responses
+              }
+            ).subscribe(() => {
+              confirmDialogRef();
+            });
+          }
+        }
+      });
+    }
   }
 
   ngOnInit(): void {

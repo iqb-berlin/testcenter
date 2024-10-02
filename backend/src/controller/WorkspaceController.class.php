@@ -186,6 +186,7 @@ class WorkspaceController extends Controller {
       list($type) = explode('/', $deletedFile);
       if ($type == 'Testtakers') {
         BroadcastService::send('system/clean');
+        self::workspaceDAO($workspaceId)->setSysCheckMode('mixed');
         break;
       }
     }
@@ -210,7 +211,7 @@ class WorkspaceController extends Controller {
 
     $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
-    $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
+    $report = ReportOutputFactory::createReportOutput($workspaceId, $dataIds, $reportType, $reportFormat);
 
     if ($report->generate($request->getParam('useNewVersion') === 'true')) {
       $response->getBody()->write($report->asString());
@@ -318,22 +319,31 @@ class WorkspaceController extends Controller {
   public static function putSysCheckReport(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
-    $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
+
+    $authToken = $request->getAttribute('AuthToken');
+    $bodyContents = JSON::decode($request->getBody()->getContents());
 
     $sysChecksFolder = new SysChecksFolder($workspaceId);
-
     /* @var XMLFileSysCheck $sysCheck */
     $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
 
-    if (strlen((string) $report->keyPhrase) <= 0) {
-      throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
+    if ($authToken) {
+      $session = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+      $bodyContents->title = $session->getLoginSession()->getLogin()->getName();
+      $bodyContents->keyPhrase = '';
+      $report = new SysCheckReport($bodyContents);
+    } else {
+      $report = new SysCheckReport($bodyContents);
+      if (strlen((string) $report->keyPhrase) <= 0) {
+        throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
+      }
+
+      if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
+        throw new HttpError("Wrong key `$report->keyPhrase`", 403);
+      }
     }
 
-    if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
-      throw new HttpError("Wrong key `$report->keyPhrase`", 403);
-    }
-
-    $report->checkId = $sysCheckName;
+    $report->checkId = $sysCheck->getId();
     $report->checkLabel = $sysCheck->getLabel();
 
     $sysChecksFolder->saveSysCheckReport($report);

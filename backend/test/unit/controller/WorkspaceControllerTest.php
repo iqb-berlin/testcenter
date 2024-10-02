@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
-use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 /**
@@ -35,8 +34,7 @@ final class WorkspaceControllerTest extends TestCase {
   ];
 
   private array $callable;
-
-  private Report|MockInterface $reportMock;
+  private array $reportMock;
   private AdminDAO|MockInterface $adminDaoMock;
   private SysChecksFolder|MockInterface $sysChecksFolderMock;
   private Workspace|MockInterface $workspaceMock;
@@ -54,10 +52,16 @@ final class WorkspaceControllerTest extends TestCase {
     require_once "test/unit/mock-classes/PasswordMock.php";
 
     $this->callable = [WorkspaceController::class, 'getReport'];
-    $this->reportMock = Mockery::mock('overload:' . Report::class);
+    $this->reportMock = [
+      ReportType::LOG->value => Mockery::mock('overload:' . LogReportOutput::class),
+      ReportType::RESPONSE->value => Mockery::mock('overload:' . ResponseReportOutput::class),
+      ReportType::REVIEW->value => Mockery::mock('overload:' . ReviewReportOutput::class),
+      ReportType::SYSCHECK->value => Mockery::mock('overload:' . SysCheckReportOutput::class)
+    ];
     $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
     $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
     $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
+    $this->workspaceDaoMock = Mockery::mock( 'overload:' . WorkspaceDAO::class);
 
     $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
     $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
@@ -146,9 +150,9 @@ final class WorkspaceControllerTest extends TestCase {
     $path = "/$this->workspaceId/report/$reportType";
 
     if ($expectedMethod) {
-      $this->reportMock->expects($expectedMethod)->withAnyArgs();
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
     }
-    $this->reportMock->expects('generate')->andReturn(false);
+    $this->reportMock[$reportType]->expects('generate')->andReturn(false);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -201,9 +205,9 @@ final class WorkspaceControllerTest extends TestCase {
     $path = "/$this->workspaceId/report/$reportType";
 
     if ($expectedMethod) {
-      $this->reportMock->expects($expectedMethod)->withAnyArgs();
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
     }
-    $this->reportMock->expects('generate')->andReturn(false);
+    $this->reportMock[$reportType]->expects('generate')->andReturn(false);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -253,10 +257,10 @@ final class WorkspaceControllerTest extends TestCase {
     $path = "/$this->workspaceId/report/$reportType";
 
     if ($expectedMethod) {
-      $this->reportMock->expects($expectedMethod)->withAnyArgs();
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
     }
-    $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('asString')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
+    $this->reportMock[$reportType]->expects('generate')->andReturn(true);
+    $this->reportMock[$reportType]->expects('asString')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -281,10 +285,10 @@ final class WorkspaceControllerTest extends TestCase {
     $path = "/$this->workspaceId/report/$reportType";
 
     if ($expectedMethod) {
-      $this->reportMock->expects($expectedMethod)->withAnyArgs();
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
     }
-    $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('asString')->andReturn(json_encode(self::JSON_REPORT_DATA_SAMPLE));
+    $this->reportMock[$reportType]->expects('generate')->andReturn(true);
+    $this->reportMock[$reportType]->expects('asString')->andReturn(json_encode(self::JSON_REPORT_DATA_SAMPLE));
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -321,17 +325,26 @@ final class WorkspaceControllerTest extends TestCase {
 
   function test_GetReport_LogAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::LOG->value, 'application/xml', ['application/json']);
+      ReportType::LOG->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithResponseAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::RESPONSE->value, 'application/xml', ['application/json']);
+      ReportType::RESPONSE->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithReviewAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::REVIEW->value, 'application/xml', ['application/json']);
+      ReportType::REVIEW->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithSystemCheckAndInvalidAcceptHeader(): void {
@@ -361,6 +374,10 @@ final class WorkspaceControllerTest extends TestCase {
       ->expects('setWorkspaceHash')
       ->once();
 
+    $this->workspaceDaoMock
+      ->expects()
+      ->setSysCheckMode('mixed');
+
     $this->broadcastingServiceMock
       ->expects('send')
       ->times(1)
@@ -384,7 +401,10 @@ final class WorkspaceControllerTest extends TestCase {
   function test_postFile() {
     $booklet = XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml');
     $unit = XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml');
-    $testtakers = XMLFileTesttakers::fromString(file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml');
+    $testtakers = XMLFileTesttakers::fromString(
+      file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'),
+      'Testtakers.xml'
+    );
     $files = [
       'Booklet.xml' => $booklet,
       'Unit2.xml' => $unit,
@@ -393,7 +413,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     $fileReports = array_reduce(
       array_keys($files),
-      function($agg, $fileName) use ($files) {
+      function ($agg, $fileName) use ($files) {
         $agg[$fileName] = ['type' => $files[$fileName]->getType(), ...$files[$fileName]->getValidationReport()];
         return $agg;
       },

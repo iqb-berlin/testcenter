@@ -88,15 +88,23 @@ export interface DetectedNetworkInformation {
 }
 
 export interface SysCheckReport {
-  keyPhrase: string;
-  title: string;
+  keyPhrase?: string;
+  title?: string;
   environment: ReportEntry[];
   network: ReportEntry[];
   questionnaire: ReportEntry[];
   unit: ReportEntry[];
+  responses: ResponsesForSysCheck[];
 }
 
 export interface StepDef {
   route: string;
   label: string;
+}
+
+export interface ResponsesForSysCheck {
+  id: string;
+  content: any;
+  ts: number;
+  responseType: string;
 }

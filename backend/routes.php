@@ -226,7 +226,8 @@ $app->group('/workspace/{ws_id}/sys-check', function (RouteCollectorProxy $group
   $group->get('/{sys-check_name}/unit-and-player', [WorkspaceController::class, 'getSysCheckUnitAndPLayer']);
 
   $group->put('/{sys-check_name}/report', [WorkspaceController::class, 'putSysCheckReport']);
-});
+})
+->add(new HandleOptionalToken('person'));
 
 $app->get('/workspaces', [SystemController::class, 'getWorkspaces'])
   ->add(new IsSuperAdmin())
