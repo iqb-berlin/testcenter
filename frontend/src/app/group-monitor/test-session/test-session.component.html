@@ -127,7 +127,6 @@
 
       <ng-container *ngIf="isTestlet(testletOrUnit)">
         <ng-container *ngIf="testSession | testletvisible : testletOrUnit">
-          <!-- TODO X  && (!testletOrUnit.restrictions.if.length || testSession.conditionsSatisfied?.includes(testletOrUnit.id)) -->
           <span
             [class]="{
               testlet: true,

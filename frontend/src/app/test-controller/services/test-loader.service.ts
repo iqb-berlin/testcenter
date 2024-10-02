@@ -75,7 +75,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.getBookletFromXml(testData.xml);
 
     this.tcs.timerWarningPoints =
-      this.tcs.bookletConfig.unit_time_left_warnings
+      (this.tcs.booklet?.config.unit_time_left_warnings || '')
         .split(',')
         .map(x => parseInt(x, 10))
         .filter(x => !Number.isNaN(x));
@@ -282,7 +282,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       });
 
     return new Promise<void>(resolve => {
-      if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+      if (this.tcs.booklet?.config.loading_mode === 'LAZY') {
         resolve();
       }
 
@@ -324,7 +324,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
               }]);
             }
             this.tcs.totalLoadingProgress = 100;
-            if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+            if (this.tcs.booklet?.config.loading_mode === 'EAGER') {
               resolve();
             }
           }
@@ -387,7 +387,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     registerChildren(booklet.units);
     this.tcs.booklet = booklet;
     this.registerTrackedVariables();
-    this.tcs.bookletConfig = booklet.config;
     this.cts.addCustomTexts(booklet.customTexts);
   }
 

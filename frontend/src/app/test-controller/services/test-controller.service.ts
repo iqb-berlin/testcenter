@@ -29,6 +29,7 @@ import { AppError } from '../../app.interfaces';
 import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
+import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +43,6 @@ export class TestControllerService {
   totalLoadingProgress = 0;
 
   testMode = new TestMode();
-  bookletConfig = new BookletConfig(); // TODO X uneeded?, why not booklet.config
 
   // TODO hide those behind functions, this will be way easier with ts 5.5
   booklet: Booklet | null = null;
@@ -142,12 +142,12 @@ export class TestControllerService {
   }
 
   private createClosingSignal(
-    configSetting: keyof typeof this.bookletConfig
+    configSetting: keyof BookletConfigData
   ): { tracker$: Observable<string>, factory: () => Observable<string> } {
     const tracker$ = new Subject<string>();
     const factory = () => {
       const closer$ = merge(
-        timer(Number(this.bookletConfig[configSetting])).pipe(map(() => 'timer')),
+        timer(Number(this.booklet?.config[configSetting])).pipe(map(() => 'timer')),
         this.closeBuffers$
       );
       closer$.subscribe(tracker$);
@@ -458,7 +458,7 @@ export class TestControllerService {
         return this.terminateTest(
           force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
           force,
-          this.bookletConfig.lock_test_on_termination === 'ON'
+          this.booklet?.config.lock_test_on_termination === 'ON'
         );
       default:
         // eslint-disable-next-line no-case-declarations
@@ -546,8 +546,8 @@ export class TestControllerService {
         }
       }
     }
-    const end = (this.bookletConfig.allow_player_to_terminate_test === 'ON') ||
-      ((this.bookletConfig.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
+    const end = (this.booklet?.config.allow_player_to_terminate_test === 'ON') ||
+      ((this.booklet?.config.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
       Infinity :
       null;
     this.navigationTargets = {

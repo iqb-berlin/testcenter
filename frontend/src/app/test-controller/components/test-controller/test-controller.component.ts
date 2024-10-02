@@ -340,7 +340,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   async requestFullScreen(): Promise<void> {
-    if (this.tcs.bookletConfig.ask_for_fullscreen === 'OFF') {
+    if (this.tcs.booklet?.config.ask_for_fullscreen === 'OFF') {
       return;
     }
     if (this.mainDataService.isFullScreen) {

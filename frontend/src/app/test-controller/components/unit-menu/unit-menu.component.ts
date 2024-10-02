@@ -24,7 +24,7 @@ export class UnitMenuComponent {
   protected readonly isTestlet = isTestlet;
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
 

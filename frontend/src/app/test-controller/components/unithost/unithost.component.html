@@ -1,10 +1,10 @@
 <div [class]="{
-  'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
-  'with-title': tcs.bookletConfig.unit_title === 'ON',
-  'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
+  'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF',
+  'with-title': tcs.booklet?.config?.unit_title === 'ON',
+  'with-footer': tcs.booklet?.config?.page_navibuttons === 'SEPARATE_BOTTOM',
   'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((resourcesLoading$ | async) || []).length
 }">
-  <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
+  <div *ngIf="tcs.booklet?.config?.unit_title === 'ON'" class="unit-title">
     <h2 data-cy="unit-title">{{tcs.currentUnit ? tcs.currentUnit.label : ''}}</h2>
     <mat-divider></mat-divider>
   </div>
@@ -99,7 +99,7 @@
   </ng-container>
 
   <div
-    *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' && pageLabels && pageLabels.length && (pageLabels.length > 1)"
+    *ngIf="tcs.booklet?.config?.page_navibuttons === 'SEPARATE_BOTTOM' && pageLabels && pageLabels.length && (pageLabels.length > 1)"
     class="page-navigation"
   >
     <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">

@@ -420,16 +420,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private getPlayerConfig(): VeronaPlayerConfig {
-    if (!this.tcs.currentUnit) {
-      throw new Error('Unit not loaded');
-    }
+    if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
+    if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(this.tcs.navigationTargets)
         .filter(t => this.tcs.navigationTargets[t] && this.tcs.navigationTargets[t] !== this.tcs.currentUnitSequenceId),
-      logPolicy: this.tcs.bookletConfig.logPolicy,
-      pagingMode: this.tcs.bookletConfig.pagingMode,
+      logPolicy: this.tcs.booklet.config.logPolicy,
+      pagingMode: this.tcs.booklet.config.pagingMode,
       unitNumber: this.tcs.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnit.label,
       unitId: this.tcs.currentUnit.alias,
@@ -438,7 +437,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     };
     if (
       this.tcs.currentUnit.state.CURRENT_PAGE_ID &&
-      (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')
+      (this.tcs.booklet.config.restore_current_page_on_return === 'ON')
     ) {
       playerConfig.startPage = this.tcs.currentUnit.state.CURRENT_PAGE_ID;
     }
