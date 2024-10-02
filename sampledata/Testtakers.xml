@@ -48,6 +48,10 @@
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+    <Login mode="monitor-group" name="test-group-monitor-2" pw="user123">
+      <Profile id="all" />
+      <Profile id="small" />
+    </Login>
     <Login mode="sys-check-login" name="sys-check" />
   </Group>
 

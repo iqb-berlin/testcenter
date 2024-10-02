@@ -27,7 +27,7 @@ class SessionDAO extends DAO {
                     person_sessions.valid_until as "validTo",
                     logins.group_name as "group"
                 from person_sessions
-                     erson_sessions.login_sessions_id = login_sessions.id)
+                     left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
                      left join logins on (logins.name = login_sessions.name)
                 where
                     person_sessions.token = :token
