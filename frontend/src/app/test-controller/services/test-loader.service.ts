@@ -6,7 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CodingScheme, VariableCodingData } from '@iqb/responses';
+import { CodingScheme } from '@iqb/responses';
 import {
   BlockCondition,
   BlockConditionSource,
@@ -432,8 +432,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   registerIndirectlyTrackedVariables(sequenceId: number): void {
     // this happens when the coding-scheme is available, not when the base variables themselves are registered
-    this.tcs.units[sequenceId].baseVariableIds = this // temporary - should be: this.tcs.units[sequenceId].scheme
-      .getBaseVarsList(this.tcs.units[sequenceId].scheme, Object.keys(this.tcs.units[sequenceId].variables));
+    this.tcs.units[sequenceId].baseVariableIds = this.tcs.units[sequenceId].scheme
+      .getBaseVarsList(Object.keys(this.tcs.units[sequenceId].variables));
     this.tcs.units[sequenceId].baseVariableIds
       .forEach(baseVariableId => {
         if (!Object.keys(this.tcs.units[sequenceId].variables).includes(baseVariableId)) {
@@ -442,31 +442,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       });
     this.tcs.codeVariables(sequenceId);
     this.tcs.evaluateConditions();
-  }
-
-  // TODO X can this be removed?
-  // temporary until fix is in @iqb/responses - this logic relies on the scheme-format and should NOT be part of TC!
-  // eslint-disable-next-line class-methods-use-this
-  getBaseVarsList(codingScheme: CodingScheme, derivedVarsIds: string[]): string[] {
-    const allBaseVariables:string[] = codingScheme.variableCodings
-      .filter(c => c.deriveSources.length === 0)
-      .map(c => c.id);
-    const baseVariablesIds: string[] = [];
-    if (derivedVarsIds.length > 0) {
-      derivedVarsIds.forEach(derivedVarId => {
-        const derivedVar: VariableCodingData | undefined = codingScheme.variableCodings
-          .find(variableCoding => variableCoding.id === derivedVarId);
-        if (derivedVar) {
-          if (derivedVar.sourceType === 'BASE') {
-            baseVariablesIds.push(derivedVar.id);
-          } else {
-            baseVariablesIds.push(...codingScheme.derivedVarToBaseVars(derivedVar, allBaseVariables));
-          }
-        }
-      });
-      return [...new Set(baseVariablesIds)];
-    }
-    return [];
   }
 
   // eslint-disable-next-line class-methods-use-this
