@@ -157,17 +157,20 @@ tbody:last-child tr:last-child td {
 }
 
 .tab-states table tbody tr.current td:first-child {
+  background: orange;
+  color: black;
+}
+
+.tab-states table tbody tr .badge {
+  border-color: orange;
   color: orange;
 }
 
-.tab-states table tbody tr.override td:first-child {
-  background: orange;
+.tab-states table tbody tr.current .badge {
+  border-color: black;
+  color: black;
 }
 
-.tab-states table tbody tr.current.override td:first-child {
-  color: black;
-  background: orange;
-}
 
 .tab-states td,
 .tab-variables td {

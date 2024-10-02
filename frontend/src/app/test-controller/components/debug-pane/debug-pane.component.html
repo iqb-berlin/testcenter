@@ -125,23 +125,33 @@
     <ng-container *ngFor="let state of bookletStates | keyvalue">
       <thead>
         <tr>
-          <td colspan="2">{{state.value.id}} ({{state.value.label}}) [{{state.value.current}}|{{state.value.override}}]</td>
+          <td colspan="2">{{state.value.id}} ({{state.value.label}})</td>
         </tr>
       </thead>
       <tbody>
         <tr
           *ngFor="let option of state.value.options | keyvalue"
-          [class.override]="option.value.id === (state.value.override || state.value.current)"
-          [class.current]="option.value.id === state.value.current"
+          [class.current]="option.value.id === (state.value.override || state.value.current)"
         >
-          <td>{{option.value.id}} ({{option.value.label}}){{option.value.id === state.value.default ? ' *' : ''}}</td>
+          <td>{{option.value.id}} ({{option.value.label}})
+            <span
+              class="badge"
+              *ngIf="option.value.id === state.value.default"
+              matTooltip="default value"
+            >D</span>
+            <span
+              class="badge"
+              *ngIf="option.value.id === state.value.current && option.value.id !== state.value.default && state.value.override && state.value.override !== state.value.current"
+              matTooltip="would be automatically selected"
+            >A</span>
+          </td>
           <td>
             <div
               *ngFor="let cond of option.value.conditions; let conditionIndex = index"
               class="condition"
-              [class]="{'condition': true, 'satisfied': conditionIndex < option.value.firstUnsatisfiedCondition}"
+              [class.satisfied]="conditionIndex < option.value.firstUnsatisfiedCondition || option.value.firstUnsatisfiedCondition < 0"
             >
-              {{cond | blockcondition}}
+             {{cond | blockcondition}}
             </div>
           </td>
         </tr>
