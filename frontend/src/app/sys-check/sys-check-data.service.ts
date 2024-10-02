@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import {
   CheckConfig,
   NetworkCheckStatus,
-  ReportEntry, SpeedParameters,
+  ReportEntry,
+  SpeedParameters,
   StepDef,
   UnitAndPlayerContainer
 } from './sys-check.interfaces';
+import { KeyValuePairString } from '../test-controller/interfaces/test-controller.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -66,16 +68,19 @@ export class SysCheckDataService {
 
   timeCheckDone = false;
 
+  dataParts: KeyValuePairString = {};
+  unitStateDataType: string = '';
+
   setSteps(): void {
     this.steps = [];
     this.stepLabels = [];
     this.stepDefs.forEach(step => {
       if (this.checkConfig) {
         if ((step.route === 'w') ||
-         (step.route === 'n' && !this.checkConfig.skipNetwork) ||
-         (step.route === 'u' && this.checkConfig.hasUnit) ||
-         (step.route === 'q' && this.checkConfig.questions.length > 0) ||
-         (step.route === 'r' && this.checkConfig.canSave)) {
+          (step.route === 'n' && !this.checkConfig.skipNetwork) ||
+          (step.route === 'u' && this.checkConfig.hasUnit) ||
+          (step.route === 'q' && this.checkConfig.questions.length > 0) ||
+          (step.route === 'r' && this.checkConfig.canSave)) {
           this.steps.push(step.route);
           this.stepLabels.push(step.label);
         }

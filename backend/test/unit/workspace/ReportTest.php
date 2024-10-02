@@ -106,6 +106,7 @@ final class ReportTest extends TestCase {
       "checkId" => "SYSCHECK.SAMPLE",
       "checkLabel" => "An example SysCheck definition",
       "title" => "SAMPLE SYS-CHECK REPORT",
+      "responses" => "",
       "environment" => [
         [
           "id" => "0",
@@ -329,12 +330,12 @@ final class ReportTest extends TestCase {
     $this->reportFormat = ReportFormat::CSV;
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
 
     // Assert
     parent::assertEquals($this->workspaceId, $report->getWorkspaceId());
     parent::assertEquals($this->dataIds, $report->getDataIds());
-    parent::assertEquals($this->reportType, $report->getType());
+    parent::assertEquals(get_class($report), LogReportOutput::class);
     parent::assertEquals($this->reportFormat, $report->getFormat());
   }
 
@@ -351,7 +352,7 @@ final class ReportTest extends TestCase {
       "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"\";\"1627545600\";sample log entry";
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -369,7 +370,7 @@ final class ReportTest extends TestCase {
     $expectedLogsJsonReportData = self::LOGS;
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -387,12 +388,7 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getLogReportData')->andReturn([]);
 
     // Act
-    $report = new Report(
-      $this->workspaceId,
-      $this->dataIds,
-      ReportType::LOG,
-      $reportFormat
-    );
+    $report = new LogReportOutput($this->workspaceId, $this->dataIds, $reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -417,7 +413,7 @@ final class ReportTest extends TestCase {
       '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"";"""{\""name\"":\""S\u00e4m S\u00e4mple\"",\""age\"":42}""";""';
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ResponseReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -435,7 +431,7 @@ final class ReportTest extends TestCase {
     $expectedResponsesJsonReportData = self::RESPONSES;
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ResponseReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -453,12 +449,7 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getResponseReportData')->andReturn([]);
 
     // Act
-    $report = new Report(
-      $this->workspaceId,
-      $this->dataIds,
-      ReportType::RESPONSE,
-      $reportFormat
-    );
+    $report = new ResponseReportOutput($this->workspaceId, $this->dataIds, $reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -496,7 +487,7 @@ final class ReportTest extends TestCase {
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ReviewReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate($useNewVersion);
 
@@ -531,7 +522,7 @@ final class ReportTest extends TestCase {
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"X\";\"X\";\"X\";\"2021-07-29 10:00:00\";\"sample booklet review\"";
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ReviewReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate($useNewVersion);
 
@@ -555,7 +546,7 @@ final class ReportTest extends TestCase {
     );
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ReviewReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -639,7 +630,7 @@ final class ReportTest extends TestCase {
     }
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new ReviewReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate($useNewVersion);
 
@@ -657,12 +648,7 @@ final class ReportTest extends TestCase {
     $this->adminDaoMock->allows('getReviewReportData')->andReturn([]);
 
     // Act
-    $report = new Report(
-      $this->workspaceId,
-      $this->dataIds,
-      ReportType::REVIEW,
-      $reportFormat,
-    );
+    $report = new ReviewReportOutput($this->workspaceId, $this->dataIds, $reportFormat);
     $report->setAdminDAOInstance($this->adminDaoMock);
     $generationSuccess = $report->generate();
 
@@ -683,11 +669,11 @@ final class ReportTest extends TestCase {
       ->andReturn([new SysCheckReportFile(self::SYS_CHECK_SAMPLE_DATA_FILE)]);
 
     $expectedSysChecksCSVReportData = self::BOM .
-      "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
-      "\"SAMPLE SYS-CHECK REPORT\";\"SYSCHECK.SAMPLE\";\"An example SysCheck definition\";\"" . filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"" . TimeStamp::toSQLFormat(filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE)) . "\";\"" . basename(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"Linux\";\"x86_64\";\"1680 x 1050\";\"Chrome\";\"1\";\"Chromium PDF Plugin, Chromium PDF Viewer\";\"en-US\";\"79\";\"amd64\";\"8\";\"1680 x 914\";\"75.72 Mbit/s\";\"8.19 kbit/s\";\"good\";\"2.84 Mbit/s\";\"8.19 kbit/s\";\"good\";\"good\";\"100\";\"4g\";\"1.45\";\"Sam Sample\";\"Harvy Dent\";\"Because.\";\"1\";\"Radio Gaga\";\"1594.295166015625\"";
+      "\"Titel\";\"SysCheck-Id\";\"SysCheck\";\"Responses\";\"DatumTS\";\"Datum\";\"FileName\";\"Betriebsystem\";\"Betriebsystem-Version\";\"Bildschirm-Auflösung\";\"Browser\";\"Browser-Cookies aktiviert\";\"Browser-Plugins:\";\"Browser-Sprache\";\"Browser-Version\";\"CPU-Architektur\";\"CPU-Kerne\";\"Fenster-Größe\";\"Downloadgeschwindigkeit\";\"Downloadgeschwindigkeit benötigt\";\"Downloadbewertung\";\"Uploadgeschwindigkeit\";\"Uploadgeschwindigkeit benötigt\";\"Uploadbewertung\";\"Gesamtbewertung\";\"RoundTrip in Ms\";\"Netzwerktyp nach Leistung\";\"Downlink MB/s\";\"Name\";\"Who am I?\";\"Why so serious?\";\"Check this out\";\"All we here is\";\"loading time\"\n" .
+      "\"SAMPLE SYS-CHECK REPORT\";\"SYSCHECK.SAMPLE\";\"An example SysCheck definition\";\"\";\"" . filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"" . TimeStamp::toSQLFormat(filemtime(self::SYS_CHECK_SAMPLE_DATA_FILE)) . "\";\"" . basename(self::SYS_CHECK_SAMPLE_DATA_FILE) . "\";\"Linux\";\"x86_64\";\"1680 x 1050\";\"Chrome\";\"1\";\"Chromium PDF Plugin, Chromium PDF Viewer\";\"en-US\";\"79\";\"amd64\";\"8\";\"1680 x 914\";\"75.72 Mbit/s\";\"8.19 kbit/s\";\"good\";\"2.84 Mbit/s\";\"8.19 kbit/s\";\"good\";\"good\";\"100\";\"4g\";\"1.45\";\"Sam Sample\";\"Harvy Dent\";\"Because.\";\"1\";\"Radio Gaga\";\"1594.295166015625\"";
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new SysCheckReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setSysChecksFolderInstance($this->sysChecksFolderMock);
     $generationSuccess = $report->generate();
 
@@ -722,7 +708,7 @@ final class ReportTest extends TestCase {
     ];
 
     // Act
-    $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
+    $report = new SysCheckReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);
     $report->setSysChecksFolderInstance($this->sysChecksFolderMock);
     $generationSuccess = $report->generate();
 
@@ -742,12 +728,7 @@ final class ReportTest extends TestCase {
       ->andReturn([]);
 
     // Act
-    $report = new Report(
-      $this->workspaceId,
-      $this->dataIds,
-      ReportType::SYSCHECK,
-      $reportFormat
-    );
+    $report = new SysCheckReportOutput($this->workspaceId, $this->dataIds, $reportFormat);
     $report->setSysChecksFolderInstance($this->sysChecksFolderMock);
     $generationSuccess = $report->generate();
 

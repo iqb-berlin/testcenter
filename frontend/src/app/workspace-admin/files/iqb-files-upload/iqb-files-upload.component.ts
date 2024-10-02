@@ -3,8 +3,10 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { BackendService } from '../../backend.service';
+import { BackendService as RootBackendService } from '../../../backend.service';
 import { UploadReport, UploadStatus } from '../files.interfaces';
 import { WorkspaceDataService } from '../../workspacedata.service';
+import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 @Component({
   selector: 'tc-files-upload',
@@ -16,6 +18,8 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private bs: BackendService,
+    private rbs: RootBackendService,
+    private mds: MainDataService,
     public wds: WorkspaceDataService
   ) { }
 
@@ -104,6 +108,10 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
         this.requestResponse = res.report;
         this.status = res.status;
         this.progressPercentage = res.progress;
+        this.rbs.checkIfSysCheckModeExists()
+          .subscribe(doesSysCheckModeExist => {
+            this.mds.sysCheckAvailableForAll = !doesSysCheckModeExist;
+          });
       });
   }
 

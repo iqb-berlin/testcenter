@@ -65,6 +65,19 @@ export class DirectLoginActivateGuard {
         .pipe(
           map((authDataResponse: AuthData) => {
             this.mds.setAuthData(authDataResponse as AuthData);
+            if (!authDataResponse.flags.includes('codeRequired')) {
+              if (authDataResponse.claims.test && authDataResponse.claims.test.length === 1) {
+                this.bs.startTest(authDataResponse.claims.test[0].id)
+                  .subscribe(testId => {
+                    this.router.navigate(['/t', testId]);
+                    return false;
+                  });
+              }
+              if (authDataResponse.claims.sysCheck && authDataResponse.claims.sysCheck.length === 1) {
+                this.router.navigate([`/check/${authDataResponse.claims.sysCheck[0].workspaceId}/${authDataResponse.claims.sysCheck[0].id}`]);
+                return false;
+              }
+            }
             this.router.navigate(['/r']);
             return false;
           })
