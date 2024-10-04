@@ -24,13 +24,12 @@ VERSION=$(npm pkg get version | xargs echo)
 
 git checkout -b release/$VERSION
 
-git add dist-src/.env
+git add dist-src/.env.prod-template
 git add docs/CHANGELOG.md
 git add docs/pages/*
 git add package.json
 git add package-lock.json
 git add sampledata/*
-git add dist-src/install.sh
 git add scripts/database/patches.d/*
 
 if [ ! -e scripts/database/patches.d/next.sql ]; then

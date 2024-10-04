@@ -1,37 +1,50 @@
 target ?= .
 
 test-backend-unit:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-	--rm --entrypoint "" \
-	testcenter-backend \
-		php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit \
-			--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php \
-			--configuration /var/www/testcenter/backend/phpunit.xml \
-				/var/www/testcenter/backend/test/unit/$(target) \
-
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+		run --rm --entrypoint "" testcenter-backend\
+			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
+						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
+						--configuration /var/www/testcenter/backend/phpunit.xml\
+					/var/www/testcenter/backend/test/unit/$(target)
 
 test-backend-unit-coverage:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-	--rm --entrypoint "" \
-	testcenter-backend \
-		php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit \
-			--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php \
-			--configuration /var/www/testcenter/backend/phpunit.xml \
-			--coverage-html /docs/dist/test-coverage-backend-unit \
-				/var/www/testcenter/backend/test/unit/${target} \
-			--testdox
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+		run --rm --entrypoint "" testcenter-backend\
+			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
+					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
+					--configuration /var/www/testcenter/backend/phpunit.xml\
+					--coverage-html /docs/dist/test-coverage-backend-unit\
+				/var/www/testcenter/backend/test/unit/${target} --testdox
 
 test-backend-api:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.api-test.yml run \
-		--rm \
-		testcenter-task-runner-backend npm run backend:api-test
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.api-test.yml\
+		run --rm testcenter-task-runner-backend\
+			npm run backend:api-test
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
 # Example: `make test-backend-initialization test=general/db-versions`
 test-backend-initialization:
-	TEST_NAME=$(test) \
-		docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+	TEST_NAME=$(test)\
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.initialization-test.yml\
+		up\
+			--force-recreate\
+			--renew-anon-volumes\
+			--abort-on-container-exit\
+			--exit-code-from=testcenter-initialization-test-backend
 
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
@@ -43,32 +56,48 @@ test-backend-initialization-general:
 	make test-backend-initialization test=general/re-initialize
 
 test-broadcasting-service-unit:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		testcenter-broadcasting-service \
-		npx jest
+	docker compose\
+ 			--env-file docker/.env.dev\
+ 			--file docker/docker-compose.yml\
+ 			--file docker/docker-compose.dev.yml run\
+		testcenter-broadcasting-service\
+			npx jest
 
 test-broadcasting-service-unit-coverage:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		testcenter-broadcasting-service \
-		npx jest --coverage
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml run\
+		testcenter-broadcasting-service\
+			npx jest --coverage
 
 test-frontend-unit:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		testcenter-frontend \
-		npx ng test --watch=false
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml run\
+		testcenter-frontend\
+			npx ng test --watch=false
 
 test-frontend-unit-coverage:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		testcenter-frontend \
-		npx ng test --watch=false --code-coverage
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml run\
+		testcenter-frontend\
+			npx ng test --watch=false --code-coverage
 
 # Performs some API tests with Dredd on the file-service
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
 test-file-service-api:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.api-test.yml run \
-		--rm \
-		testcenter-task-runner-file-service npm run file-service:api-test
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.api-test.yml\
+		run --rm testcenter-task-runner-file-service\
+			npm run file-service:api-test
 
 # Performs some integration tests with CyPress against mocked backend with Prism
 test-frontend-integration:
@@ -78,15 +107,20 @@ test-frontend-integration:
 # Param: (optional) spec - specific spec to run (example: spec=Test-Controller/RunHotReturn), omit parameter for all.
 test-system-headless:
 	make down
-	SPEC=$(spec) docker compose \
-		-f docker/docker-compose.yml \
-		-f docker/docker-compose.dev.yml \
-		-f docker/docker-compose.system-test-headless.yml \
-		up \
-		--abort-on-container-exit \
-		--exit-code-from=testcenter-e2e
+	SPEC=$(spec)\
+	docker compose\
+			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.system-test-headless.yml\
+		up\
+			--abort-on-container-exit\
+			--exit-code-from=testcenter-e2e
 
 test-system:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up &
+	docker compose\
+ 			--env-file docker/.env.dev\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+		up &
 	bash e2e/run-e2e.sh
-
