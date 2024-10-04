@@ -37,7 +37,7 @@ services:
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
     volumes:
-      - ../frontend/config/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ../config/frontend/nginx.conf:/etc/nginx/templates/default.conf.template
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:current-prod

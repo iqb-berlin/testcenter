@@ -51,8 +51,8 @@
 /frontend/.angular
 
 # env
-/.env
-/docker/.env
+.env.dev
+.env.prod
 
 # cypress
 /e2e/cypress/videos

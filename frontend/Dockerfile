@@ -44,7 +44,7 @@ CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--
 
 FROM ${REGISTRY_PATH}nginx:1.26 AS prod
 COPY --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
-COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
+COPY ../config/frontend/nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
