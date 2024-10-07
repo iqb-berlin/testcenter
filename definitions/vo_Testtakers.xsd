@@ -244,12 +244,20 @@
       <xs:extension base="xs:string">
         <xs:attribute name="label" type="xs:string" />
         <xs:attribute name="field" type="GroupMonitorProfileFilterField" />
-        <xs:attribute name="type" type="xs:string" />
+        <xs:attribute name="type" type="FilterTypeType" />
         <xs:attribute name="value" type="xs:string" />
         <xs:attribute name="not" type="xs:boolean" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+
+  <xs:simpleType name="FilterTypeType" final="restriction" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="equal" />
+      <xs:enumeration value="substring" />
+      <xs:enumeration value="regex" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <!-- see groupMonitorInterfaces.ts -->
   <xs:simpleType name="GroupMonitorProfileFilterField">
