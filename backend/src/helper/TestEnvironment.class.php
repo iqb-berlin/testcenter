@@ -9,9 +9,12 @@ use org\bovigo\vfs\vfsStreamWrapper;
 
 class TestEnvironment {
   const int staticDate = 1627545600;
+  const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
+  static string | null $testMode = null;
+
 
   public static function setup(string $testMode, ?string $testClock = null): void {
-    $testMode = in_array($testMode, ['prepare', 'api', 'integration', 'prepare-integration']) ? $testMode : 'api';
+    self::$testMode = in_array($testMode, self::testModes) ? $testMode : 'api';
     $testClock = $testClock ?? self::staticDate;
 
     try {
@@ -23,12 +26,12 @@ class TestEnvironment {
       self::makeRandomStatic();
       DB::connectToTestDB();
 
-      if ($testMode == 'integration') {
+      if (self::$testMode == 'integration') {
         // this is called every single call from integration tests
         self::defineTestDataDir(false);
       }
 
-      if ($testMode == 'prepare-integration') {
+      if (self::$testMode == 'prepare-integration') {
         // this is called one time before each integration test (cypress)
         self::defineTestDataDir(true);
         self::createTestFiles(true);
@@ -37,7 +40,7 @@ class TestEnvironment {
         self::createTestData();
       }
 
-      if ($testMode == 'prepare') {
+      if (self::$testMode == 'prepare') {
         // this is called once before the api tests (dredd)
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);
@@ -46,7 +49,7 @@ class TestEnvironment {
         self::createTestData();
       }
 
-      if ($testMode == 'api') {
+      if (self::$testMode == 'api') {
         // api tests can use vfs for more speed
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);
