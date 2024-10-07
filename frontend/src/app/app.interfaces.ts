@@ -49,12 +49,18 @@ export type AppErrorType =
     | 'xml'
     | 'verona_player_runtime_error';
 
+export const TestModeNames = ['prepare', 'api', 'integration', 'prepare-integration'] as const;
+
+export type TestModeName = typeof TestModeNames[number];
+
+export const isTestModeName = (str: string): str is TestModeName => (TestModeNames as readonly string[]).includes(str);
+
 export interface AppErrorInterface {
   label: string;
   description: string;
   type?: AppErrorType;
   code?: number;
-  testMode?: 'prepare' | 'api' | 'integration' | 'prepare-integration' | null;
+  testMode?: TestModeName | null;
   details?: string;
   errorId?: string | null;
 }
@@ -64,7 +70,7 @@ export class AppError extends Error implements AppErrorInterface {
   description: string = '';
   type: AppErrorType = 'general';
   code?: number;
-  testMode?: 'prepare' | 'api' | 'integration' | 'prepare-integration' | null;
+  testMode?: TestModeName | null;
   details?: string;
   errorId?: string;
   constructor(p: AppErrorInterface) {
