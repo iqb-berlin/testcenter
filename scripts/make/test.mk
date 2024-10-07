@@ -75,13 +75,16 @@ test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
 # Performs some e2e tests with CyPress against real backend and services
+# Param: (optional) spec - specific spec to run (example: spec=Test-Controller/RunHotReturn), omit parameter for all.
 test-system-headless:
 	make down
-	docker compose \
+	SPEC=$(spec) docker compose \
 		-f docker/docker-compose.yml \
 		-f docker/docker-compose.dev.yml \
-		-f docker/docker-compose.system-test-headless.yml up \
-		--abort-on-container-exit --exit-code-from=testcenter-e2e
+		-f docker/docker-compose.system-test-headless.yml \
+		up \
+		--abort-on-container-exit \
+		--exit-code-from=testcenter-e2e
 
 test-system:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up &

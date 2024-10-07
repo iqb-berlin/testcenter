@@ -8,7 +8,7 @@ import { Command } from '../command/command.interface';
 export class TesteeService {
   constructor(
     private readonly websocketGateway: WebsocketGateway,
-    private http: HttpService
+    private readonly http: HttpService,
   ) {
     this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
       this.notifyDisconnection(disconnected);
@@ -43,15 +43,21 @@ export class TesteeService {
       return;
     }
     if (this.testees[testeeToken].disconnectNotificationUri) {
-      const disconnectNotificationUri = this.testees[testeeToken].disconnectNotificationUri;
-      this.http.post(this.testees[testeeToken].disconnectNotificationUri).subscribe(
-        () => {
-          this.logger.log(`sent connection-lost signal to ${disconnectNotificationUri}`);
-        },
-        error => {
-          this.logger.warn(`could not send connection-lost signal to ${disconnectNotificationUri}: ${error.message}`);
-        }
-      );
+      const uri = new URL(this.testees[testeeToken].disconnectNotificationUri);
+
+      const disconnectNotificationUri = this.testees[testeeToken].disconnectNotificationUri.replace(uri.search, '');
+      const testMode = uri.searchParams.get('testMode');
+      const config = testMode ? { headers: { testMode } } : {};
+
+      this.http.post(this.testees[testeeToken].disconnectNotificationUri, {}, config)
+        .subscribe(
+          () => {
+            this.logger.log(`sent connection-lost signal to ${disconnectNotificationUri}`);
+          },
+          error => {
+            this.logger.warn(`could not send connection-lost signal to ${disconnectNotificationUri}: ${error.message}`);
+          }
+        );
     }
   }
 
