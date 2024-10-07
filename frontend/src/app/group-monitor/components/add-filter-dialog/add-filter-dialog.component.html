@@ -1,4 +1,14 @@
-<p mat-dialog-title data-cy="comment-diag-title">Neuen Filter hinzufügen</p>
+<p
+  *ngIf="!originalId"
+  mat-dialog-title
+  data-cy="comment-diag-title"
+>Neuen Filter hinzufügen</p>
+
+<p
+  *ngIf="originalId"
+  mat-dialog-title
+  data-cy="comment-diag-title"
+>Filter bearbeiten</p>
 
 <mat-dialog-content>
   <p>Folgende Test-Sitzungen sollen herausgefiltert werden:</p>
