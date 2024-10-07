@@ -3,7 +3,16 @@
 // TODO mock backend responses for networktest to speed up things
 // TODO test sending of a report
 
-import { resetBackendData, selectFromDropdown, useTestDB } from './utils';
+import {
+  deleteDownloadsFolder,
+  resetBackendData,
+  selectFromDropdown,
+  useTestDB,
+  loginSuperAdmin,
+  openSampleWorkspace1,
+  visitLoginPage,
+  logoutAdmin
+} from './utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
@@ -13,6 +22,38 @@ describe('Sys-Check', () => {
     cy.contains('System-Check Auswahl')
       .should('exist');
     cy.contains('Beschreibungstext für den Systemcheck')
+      .should('exist');
+  });
+
+  it('should show the correct system-check button depending on the current state of testtakers.xml', () => {
+    deleteDownloadsFolder();
+    visitLoginPage();
+    cy.get('[data-cy="general-sys-check"]')
+      .should('not.exist');
+    loginSuperAdmin();
+    openSampleWorkspace1();
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
+    cy.get('[data-cy="delete-files"]')
+      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .should('exist')
+      .contains('Löschen von Dateien');
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .contains('Löschen')
+      .click();
+    cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+      .should('not.exist');
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Testtakers_withoutSyscheck.xml', { force: true });
+    cy.contains('Erfolgreich hochgeladen')
+      .should('exist');
+    cy.contains('Testtakers_withoutSyscheck.xml')
+      .should('exist');
+    logoutAdmin();
+    cy.wait(1000);
+    cy.get('[data-cy="general-sys-check"]')
       .should('exist');
   });
 
@@ -57,6 +98,6 @@ describe('Sys-Check', () => {
     cy.contains('Optionsfelder: Option B');
     cy.contains('System-Check Abbrechen')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
   });
 });

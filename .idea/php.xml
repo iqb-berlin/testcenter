@@ -155,7 +155,6 @@
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" port="85" />
       <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/testcenter/backend" />

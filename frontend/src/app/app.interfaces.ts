@@ -22,6 +22,8 @@ export interface AccessObject {
     expired?: number;
     mode: 'RW' | 'RO'
   };
+  workspaceId: string;
+  description: string;
 }
 
 export interface AuthData {

@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { RouterModule } from '@angular/router';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -44,7 +43,6 @@ import { SysCheckDataService } from './sys-check-data.service';
     MatListModule,
     MatRadioModule,
     MatSelectModule,
-    MatSnackBarModule,
     MatStepperModule,
     MatTooltipModule,
     ReactiveFormsModule,

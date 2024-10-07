@@ -41,6 +41,10 @@ class SysChecksFolder extends Workspace {
   }
 
   // TODO unit test
+
+  /**
+   * @return SysCheckReportFile[]
+   */
   public function collectSysCheckReports(array $filterCheckIds = null): array {
     $reportFolderName = $this->getSysCheckReportsPath();
     $reportDir = opendir($reportFolderName);

@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef
+  Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../../shared/shared.module';
@@ -75,6 +75,23 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
                   this.readPages(playerState.validPages);
                   this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
                 }
+                if (msgData.unitState) {
+                  const { unitState } = msgData;
+
+                  if (unitState?.dataParts) {
+                    // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
+                    // by the player itself ot the host. To maintain backwards-compatibility we check this here.
+                    Object.keys(unitState.dataParts)
+                      .forEach(dataPartId => {
+                        if (typeof unitState.dataParts[dataPartId] !== 'string') {
+                          unitState.dataParts[dataPartId] = JSON.stringify(unitState.dataParts[dataPartId]);
+                        }
+                      });
+
+                    this.ds.dataParts = unitState.dataParts;
+                    this.ds.unitStateDataType = unitState.unitStateDataType;
+                  }
+                }
                 break;
 
               case 'vopRuntimeErrorNotification':
@@ -112,7 +129,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
-    this.pages = { };
+    this.pages = {};
     if (!Array.isArray(validPages)) {
       // Verona 2-5
       this.pages = validPages;

@@ -3,6 +3,7 @@
   "checkId": "SYSCHECK.SAMPLE",
   "checkLabel": "An example SysCheck definition",
   "title": "SAMPLE SYS-CHECK REPORT",
+  "responses": "",
   "environment": [
     {
       "id": "0",
