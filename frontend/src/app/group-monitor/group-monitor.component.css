@@ -178,9 +178,17 @@ mat-sidenav {
   z-index: 100000;
 }
 
-.menu-edit-filter {
-  position: absolute;
+.menu-entry {
+  display: flex;
+}
+
+.in-menu-icon {
+  min-width: 25px;
+}
+
+.in-menu-icon.right {
   right: 0;
+  position: absolute;
 }
 
 .menu-filter-label {
