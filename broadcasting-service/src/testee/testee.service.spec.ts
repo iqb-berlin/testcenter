@@ -59,13 +59,13 @@ describe('testeeService', () => {
   const mockTestee : Testee = {
     token: 'testeeToken',
     testId: 5,
-    disconnectNotificationUri: 'disconnectURI'
+    disconnectNotificationUri: 'http://www.disconnectURI.de'
   };
 
   const mockTestee2 : Testee = {
     token: 'testeeToken2',
     testId: 6,
-    disconnectNotificationUri: 'disconnectURI'
+    disconnectNotificationUri: 'http://www.disconnectURI.de'
   };
 
   const expectedTestees = [mockTestee, mockTestee2];
@@ -110,7 +110,7 @@ describe('testeeService', () => {
     const invalidTestee : Testee = {
       token: '',
       testId: 2,
-      disconnectNotificationUri: 'disconnectURI'
+      disconnectNotificationUri: 'http://www.disconnectURI.de'
     };
     expect(testeeService.notifyDisconnection(invalidTestee.token)).toBeUndefined();
   });
@@ -120,7 +120,7 @@ describe('testeeService', () => {
     postReturn = new Subject<void>();
     testeeService.notifyDisconnection(mockTestee.token);
     expect(mockHTTPService.post)
-      .toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri);
+      .toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri, {}, {});
     mockHTTPService.post().error('any error message');
     expect(spyLogger).toHaveBeenCalled();
   });
@@ -130,7 +130,7 @@ describe('testeeService', () => {
     postReturn = new Subject<void>();
     testeeService.notifyDisconnection(mockTestee.token);
     expect(mockHTTPService.post)
-      .toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri);
+      .toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri, {}, {});
     mockHTTPService.post().next();
     expect(spyLogger).toHaveBeenCalled();
   });

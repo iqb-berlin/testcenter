@@ -1,2 +1,5 @@
 Small service for the so called supervising monitor of the IQB-testcenter. It's purpose is
 to allow websocket connections between the backend and the clients.
+
+# Application Context
+* Environment variable: DEV_MODE = "true" | "false" - if set when application is started, an extensive logging is provided. This var is normally set in the Dockerfile and mabe overwritten in the docker-compose file.

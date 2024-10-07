@@ -33,6 +33,8 @@ EXPOSE 3000
 
 
 FROM base AS dev
+
+#turn extensive logging on (can be overwritten in compose file)
 ENV DEV_MODE="true"
 
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
