@@ -202,6 +202,13 @@ export class TestSessionManager {
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
+    const regexTest = (regex: string, value: string): boolean => {
+      try {
+        return new RegExp(regex).test(value);
+      } catch (e) {
+        return false;
+      }
+    };
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const apply = (subject: string, filter: TestSessionFilter, inverted: boolean = false): boolean => {
       if (filter.not && !inverted) return !apply(subject, filter, true);
@@ -209,7 +216,7 @@ export class TestSessionManager {
       switch (filter.type) {
         case 'substring': return subject.includes(filter.value);
         case 'equal': return subject === filter.value;
-        case 'regex': return (new RegExp(filter.value)).test(subject);
+        case 'regex': return regexTest(filter.value, subject);
         default: return false;
       }
     };

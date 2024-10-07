@@ -76,6 +76,7 @@ export class AddFilterDialogComponent implements OnInit {
     unitId: []
   };
 
+  isValid: boolean = true;
   advancedMode: boolean = false;
   originalId: string | undefined;
 
@@ -98,15 +99,30 @@ export class AddFilterDialogComponent implements OnInit {
     this.lists.mode = Object.keys(TestMode.modes).map(mode => mode.toLowerCase());
   }
 
+  validate(): void {
+    this.isValid = true;
+    if (typeof this.filter.value !== 'string') {
+      this.isValid = false;
+      return;
+    }
+    if (this.filter.type === 'regex') {
+      try {
+        // eslint-disable-next-line no-new
+        new RegExp(this.filter.value);
+      } catch (e) {
+        this.isValid = false;
+      }
+    }
+  }
+
   updateFilterId(): void {
-    console.log(this.filter);
     if (!this.filter.value) return;
     this.filter.id = this.originalId ||
       `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
     this.filter.label = [
       this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
       this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
-      this.filter.not ? (this.cts.getCustomText(`gm_filter_not`) ?? 'not') : '',
+      this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
       this.filter.value.length > 15 ? `${this.filter.value.slice(0, 14)}...` : this.filter.value
     ]
       .filter(a => !!a)

@@ -26,7 +26,7 @@
 
   <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
     <mat-label>Filtertyp</mat-label>
-    <mat-select [(ngModel)]="filter.type" (ngModelChange)="updateFilterId()">
+    <mat-select [(ngModel)]="filter.type" (ngModelChange)="validate() && updateFilterId()">
       <ng-container *ngFor="let type of filterTypes[advancedMode ? 'all' : 'basic']">
         <mat-option [value]="type">
           {{type | customtext : 'gm_filter_type_' + type | async}}
@@ -47,7 +47,7 @@
       type="text"
       matInput
       [(ngModel)]="filter.value"
-      (ngModelChange)="updateFilterId()"
+      (ngModelChange)="validate() && updateFilterId()"
       [matAutocomplete]="auto2"
       placeholder=""
       data-cy="comment-diag-value"
@@ -58,6 +58,7 @@
         {{option}}
       </mat-option>
     </mat-autocomplete>
+    <tc-alert level="error" *ngIf="!isValid" text="Ungültiger Wert" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" *ngIf="filter.target === 'testState'">
@@ -106,7 +107,7 @@
     color="primary"
     type="submit"
     [mat-dialog-close]="filter"
-    [disabled]="!filter.label || !filter.value"
+    [disabled]="!filter.label || !filter.value || !isValid"
     data-cy="comment-diag-submit"
   >
     Speichern
