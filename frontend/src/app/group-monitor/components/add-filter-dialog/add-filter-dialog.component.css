@@ -1,0 +1,10 @@
+mat-form-field {
+  width: 100%;
+}
+
+.super-state.danger {
+  color: #821123;
+}
+.super-state.success {
+  color: #b2ff59
+}

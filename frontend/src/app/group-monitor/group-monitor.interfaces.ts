@@ -77,21 +77,101 @@ export interface Restrictions {
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
+// analogous to GroupMonitorProfileFilterField in Testtakers.xsd
+export const testSessionFilterTargetLists = {
+  advanced: [
+    'groupName',
+    'bookletId',
+    'blockId',
+    'testState',
+    'mode',
+    'bookletSpecies',
+    'unitId'
+  ],
+  basic: [
+    'bookletLabel',
+    'personLabel',
+    'state',
+    'blockLabel',
+    'unitLabel'
+  ]
+} as const;
+
+export const testSessionFilterTargets = [
+  ...testSessionFilterTargetLists.basic,
+  ...testSessionFilterTargetLists.advanced
+] as const;
+
+export const testSessionFilterTypeLists = {
+  basic: ['substring', 'equal'],
+  advanced: ['regex']
+} as const;
+
+export const testSessionFilterTypes = [
+  ...testSessionFilterTypeLists.basic,
+  ...testSessionFilterTypeLists.advanced
+] as const;
+
+export type TestSessionFilterType = (typeof testSessionFilterTypes)[number];
+
+export type TestSessionFilterTarget = (typeof testSessionFilterTargets)[number];
+
 export interface TestSessionFilter {
-  type: 'groupName' | 'bookletName' | 'testState' | 'mode' | 'state' | 'bookletSpecies';
-  value: string;
+  target: TestSessionFilterTarget;
+  value: string | string[];
+  id: string;
+  label: string;
   subValue?: string;
-  not?: true;
+  type: TestSessionFilterType;
+  not: boolean;
 }
 
-export interface TestViewDisplayOptions {
-  blockColumn: 'show' | 'hide';
-  unitColumn: 'show' | 'hide';
-  view: 'full' | 'medium' | 'small';
-  groupColumn: 'show' | 'hide';
-  bookletColumn: 'show' | 'hide';
+export const isTestSessionFilter = (obj: object): obj is TestSessionFilter => ('target' in obj) &&
+  ('value' in obj) && ('id' in obj) && ('label' in obj) && ('type' in obj) && ('not' in obj) &&
+  (typeof obj.type === 'string') && (typeof obj.target === 'string') &&
+  (typeof obj.label === 'string') && (typeof obj.not === 'boolean') &&
+  (testSessionFilterTypes as readonly string[]).includes(obj.type) &&
+  (testSessionFilterTargets as readonly string[]).includes(obj.target);
+
+export interface MonitorProfileTestViewDisplayOptions {
+  blockColumn: ColumnOption;
+  unitColumn: ColumnOption;
+  view: ViewOption;
+  groupColumn: ColumnOption;
+  bookletColumn: ColumnOption;
+}
+
+export type ColumnOption = 'show' | 'hide';
+export type ViewOption = 'full' | 'medium' | 'small';
+
+export const isColumnOption = (v: string): v is ColumnOption => ['show', 'hide'].includes(v);
+export const isViewOption = (v: string): v is ViewOption => ['full', 'medium', 'small'].includes(v);
+
+export interface TestViewDisplayOptions extends MonitorProfileTestViewDisplayOptions {
   highlightSpecies: boolean;
   manualChecking: boolean;
+}
+
+export interface Profile {
+  id: string;
+  label: string;
+  settings: { [key: string]: string };
+  filtersEnabled: { [key: string]: string };
+  filters: TestSessionFilter[];
+}
+
+export const testSessionFilterListEntrySources = ['base', 'quick', 'profile', 'custom'] as const;
+
+export type TestSessionFilterListEntrySource = typeof testSessionFilterListEntrySources[number];
+
+export interface TestSessionFilterListEntry {
+  filter: TestSessionFilter,
+  selected: boolean,
+  source: TestSessionFilterListEntrySource
+}
+
+export interface TestSessionFilterList {
+  [filterId: string]: TestSessionFilterListEntry
 }
 
 export interface CheckingOptions {

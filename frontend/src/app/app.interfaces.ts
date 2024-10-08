@@ -20,7 +20,9 @@ export interface AccessObject {
     running?: boolean;
     scheduled?: number;
     expired?: number;
-    mode: 'RW' | 'RO'
+    profile?: string;
+    mode?: 'RW' | 'RO';
+    subLabel?: string;
   };
   workspaceId: string;
   description: string;

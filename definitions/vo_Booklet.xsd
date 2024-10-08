@@ -84,7 +84,7 @@
   </xs:simpleType>
 
   <xs:complexType name="DenyNavigationOnIncompleteRestrictionType">
-    <xs:simpleContent><!-- TODO should be camleCase.. -->
+    <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="presentation" />
         <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="response" />

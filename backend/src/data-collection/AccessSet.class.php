@@ -43,7 +43,7 @@ class AccessSet extends DataCollectionTypeSafe {
           }
           break;
         case 'Group':
-          $accessSet->addGroupMonitors($accessItem);
+          $accessSet->addGroupMonitors($login, $accessItem);
           break;
         case 'TestData':
           $accessSet->addTests($accessItem);
@@ -127,7 +127,7 @@ class AccessSet extends DataCollectionTypeSafe {
       $deprecatedFormat->$accessType = [];
 
       foreach ($accessObjectList as $accessObject) {
-        /* @var $accessObject AccessObject */
+        /** @var $accessObject AccessObject */
         $deprecatedFormat->$accessType[] = $accessObject->id;
       }
     }
@@ -173,22 +173,33 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->addAccessObjects(AccessObjectType::TEST, ...$bookletsData);
   }
 
-  private function addGroupMonitors(Group ...$groups): void {
-    $groupMonitors = array_map(
-      function (Group $group) {
-        $flags = [];
-        if ($group->_expired->type == ExpirationStateType::Expired) {
-          $flags['expired'] = $group->_expired->timestamp * 1000;
-        } else {
-          if ($group->_expired->type == ExpirationStateType::Scheduled) {
-            $flags['scheduled'] = $group->_expired->timestamp * 1000;
-          }
-        };
-        return new AccessObject($group->name, AccessObjectType::TEST_GROUP_MONITOR, $group->label, $flags);
-      },
-      $groups
-    );
-    $this->addAccessObjects(AccessObjectType::TEST_GROUP_MONITOR, ...$groupMonitors);
+  private function addGroupMonitors(Login $login, Group ...$groups): void {
+    $profiles = $login->getProfiles();
+
+    foreach ($groups as $group) {
+      $flags = [];
+      if ($group->_expired->type == ExpirationStateType::Expired) {
+        $flags['expired'] = $group->_expired->timestamp * 1000;
+      } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
+        $flags['scheduled'] = $group->_expired->timestamp * 1000;
+      }
+      if (count($profiles)) {
+        foreach ($profiles as $profile) {
+          $profileFlags = $flags;
+          $profileFlags['profile'] = $profile['id'];
+          $profileFlags['subLabel'] = $profile['label'];
+          $this->addAccessObjects(
+            AccessObjectType::TEST_GROUP_MONITOR,
+            new AccessObject($group->name, AccessObjectType::TEST_GROUP_MONITOR, $group->label, $profileFlags)
+          );
+        }
+      } else {
+        $this->addAccessObjects(
+          AccessObjectType::TEST_GROUP_MONITOR,
+          new AccessObject($group->name, AccessObjectType::TEST_GROUP_MONITOR, $group->label, $flags)
+        );
+      }
+    }
   }
 
   private function addStudyMonitor(WorkspaceData $accessItem): void {
@@ -200,7 +211,6 @@ class AccessSet extends DataCollectionTypeSafe {
         $accessItem->getName()
       )
     );
-
   }
 
   private function addSystemChecks(SystemCheck ...$accessItems): void {

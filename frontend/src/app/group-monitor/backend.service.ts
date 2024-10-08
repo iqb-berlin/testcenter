@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BookletError, CommandResponse, TestSessionData } from './group-monitor.interfaces';
+import {
+  BookletError, CommandResponse, Profile, TestSessionData
+} from './group-monitor.interfaces';
 import { WebsocketBackendService } from '../shared/shared.module';
 import { AppError } from '../app.interfaces';
 
@@ -67,5 +69,9 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
       .pipe(
         map(() => ({ commandType: 'unlock', testIds }))
       );
+  }
+
+  getProfile(profileId: string): Observable<Profile> {
+    return this.http.get<Profile>(`${this.serverUrl}monitor/profile/${profileId}`);
   }
 }

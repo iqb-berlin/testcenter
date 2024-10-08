@@ -10,6 +10,10 @@ layout: default
   * "sys-check-login" Logins können auch mit Passwort geschützt werden
   * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
   * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
+* Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
+  * schnelles Filtern nach Person
+  * Eigene Filter können definiert werden
+  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
 
 ### Bugfixes
 * Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern

@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { GroupMonitorComponent } from './group-monitor.component';
 
 const routes: Routes = [
+  { path: ':group-name/:profile-id', component: GroupMonitorComponent },
   { path: ':group-name', component: GroupMonitorComponent }
 ];
 

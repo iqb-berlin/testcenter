@@ -14,7 +14,7 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:9091/iqb_tba_testcenter</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="Docker | db_TEST" uuid="dd60c978-0a23-422e-abc4-dc13b5b6839f">
+    <data-source source="LOCAL" name="Docker | TEST" uuid="dd60c978-0a23-422e-abc4-dc13b5b6839f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

@@ -26,6 +26,8 @@ $app->group('/monitor', function (RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/group/{group_name}', [MonitorController::class, 'getGroup']);
 
+  $group->get('/profile/{profile_id}', [MonitorController::class, 'getProfile']);
+
   $group->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
 
   $group->get('/group/{group_name}/test-sessions', [MonitorController::class, 'getTestSessions']);

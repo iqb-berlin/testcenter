@@ -221,6 +221,7 @@ END;
   }
 
   function test_getAllLogins() {
+    TestEnvironment::makeRandomStatic();
     $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
     $expected = new LoginArray(
@@ -266,6 +267,68 @@ END;
         1583053200,
         0,
         (object) ["somestr" => "string"],
+      ),
+      new Login(
+        'test-group-monitor-2',
+        'user123',
+        'monitor-group',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          '' => [
+            'BOOKLET.SAMPLE-1',
+            'BOOKLET.SAMPLE-3',
+            'BOOKLET.SAMPLE-2'
+          ]
+        ],
+
+        -1,
+        0,
+        1583053200,
+        0,
+        (object) ["somestr" => "string"],
+        [
+          [
+            'id' => 'all',
+            'label' => 'Alles zeigen',
+            'settings' => [
+              'blockColumn' => 'show',
+              'unitColumn' => 'show',
+              'view' => 'full',
+              'groupColumn' => 'show',
+              'bookletColumn' => 'show',
+            ],
+            'filters' => [],
+            'filtersEnabled' => [
+              'pending' => 'no',
+              'locked' => 'no',
+            ],
+          ],
+          [
+            'id' => 'small',
+            'label' => 'Superklein',
+            'settings' => [
+              'blockColumn' => 'hide',
+              'unitColumn' => 'hide',
+              'view' => 'small',
+              'groupColumn' => 'hide',
+              'bookletColumn' => 'hide',
+            ],
+            'filters' => [
+              [
+                'target' => 'bookletLabel',
+                'value' => 'Reduced Booklet',
+                'label' => 'Reduced Booklet',
+                'type' => 'equal',
+                'not' => false
+              ],
+            ],
+            'filtersEnabled' => [
+              'pending' => 'yes',
+              'locked' => 'yes',
+            ],
+          ],
+        ]
       ),
       new Login(
         'sys-check',
