@@ -19,6 +19,10 @@ fi
 make docs-user
 make new-version version=$1
 
+VERSION=$(npm pkg get version | xargs echo)
+
+git checkout -b release/$VERSION
+
 git add dist-src/.env
 git add docs/CHANGELOG.md
 git add docs/pages/*
@@ -36,7 +40,7 @@ fi
 
 git status
 
-VERSION=$(npm pkg get version | xargs echo)
+
 
 read -n1 -p "Commit Version $VERSION? (Y/n) " confirm
 if ! echo "$confirm" | grep '^[Yy]\?$'; then
