@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.0-alpha2/definitions/vo_Booklet.xsd">
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.0-alpha3/definitions/vo_Booklet.xsd">
   <Metadata>
     <Id>BOOKLET.SAMPLE-3</Id>
     <Label>Similar Booklet to Sample 1</Label>
