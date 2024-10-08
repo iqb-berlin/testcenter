@@ -32,11 +32,13 @@ git add sampledata/*
 git add dist-src/install.sh
 git add scripts/database/patches.d/*
 
-if [ ! -e scripts/database/next.sql ]; then
-  if [ "$(git status | grep -c scripts/database/next.sql)" -gt 0 ]; then
-    git rm scripts/database/next.sql
+if [ ! -e scripts/database/patches.d/next.sql ]; then
+  if [ "$(git status | grep -c scripts/database/patches.d/next.sql)" -gt 0 ]; then
+    git rm scripts/database/patches.d/next.sql
   fi
 fi
+
+# git add scripts/database/patches.d/next.sql
 
 git status
 
@@ -70,7 +72,7 @@ git pull
 git tag $VERSION
 git push origin $VERSION
 
-git branch -d release/$VERSION
+git branch -D release/$VERSION
 git push origin --delete release/$VERSION
 
 echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release Dont forget to attach install.sh." #TODO
