@@ -1,6 +1,13 @@
 ---
 layout: default
 ---
+
+## [next]
+### Bugfixes
+* Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
+  eingerichtet worden sein.)
+
+
 ## 15.3.0-alpha3
 ### neue Features
 * Die Navigation des SystemChecks wurde überarbeitet.
