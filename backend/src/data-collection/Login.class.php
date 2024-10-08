@@ -16,8 +16,8 @@ class Login extends DataCollectionTypeSafe {
   protected $validFrom = 0;
   protected $validTo = 0;
   protected $validForMinutes = 0;
-
   protected $customTexts;
+  protected array $profiles;
 
 
   function __construct(
@@ -31,9 +31,9 @@ class Login extends DataCollectionTypeSafe {
     ?int $validTo = 0,
     ?int $validFrom = 0,
     ?int $validForMinutes = 0,
-    $customTexts = null
+    $customTexts = null,
+    $profiles = []
   ) {
-
     $this->name = $name;
     $this->_password = $password;
     $this->mode = $mode;
@@ -45,6 +45,7 @@ class Login extends DataCollectionTypeSafe {
     $this->validTo = $validTo ?? 0;
     $this->validForMinutes = $validForMinutes ?? 0;
     $this->customTexts = $customTexts ?? new stdClass();
+    $this->profiles = $profiles;
   }
 
   public function getName(): string {
@@ -95,6 +96,11 @@ class Login extends DataCollectionTypeSafe {
     return (array_keys($this->booklets) != ['']);
   }
 
+
+  public function getProfiles(): array {
+    return $this->profiles;
+  }
+  
   public function codeExists(string $code): bool {
     return array_key_exists($code, $this->booklets);
   }

@@ -65,6 +65,7 @@ class MockTestSessionManagerService {
   connect = (_: string) => {};
   disconnect = () => {};
   isChecked = () => false;
+  resetFilters = () => null;
 }
 
 @Pipe({ name: 'customtext' })

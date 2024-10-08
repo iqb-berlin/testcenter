@@ -138,4 +138,19 @@ class MonitorController extends Controller {
 
     return $response->withStatus(200);
   }
+
+  public static function getProfile(Request $request, Response $response): Response {
+    $authToken = $request->getAttribute('AuthToken');
+    /** @var $authToken AuthToken */
+
+    $profileId = $groupName = $request->getAttribute('profile_id');
+    $session = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+    $profiles = $session->getLoginSession()->getLogin()->getProfiles();
+    foreach ($profiles as $profile) {
+      if ($profile['id'] == $profileId) {
+        return $response->withJson((object) $profile);
+      }
+    }
+    throw new HttpNotFoundException($request, "Profile not found `$profileId`");
+  }
 }

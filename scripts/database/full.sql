@@ -152,6 +152,7 @@ CREATE TABLE `logins` (
   `group_name` varchar(100) COLLATE utf8mb3_german2_ci DEFAULT NULL,
   `group_label` text COLLATE utf8mb3_german2_ci,
   `custom_texts` text COLLATE utf8mb3_german2_ci,
+  `monitors` text COLLATE utf8mb3_german2_ci,
   PRIMARY KEY (`name`),
   KEY `logins_workspaces_id_fk` (`workspace_id`),
   CONSTRAINT `logins_workspaces_id_fk` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE

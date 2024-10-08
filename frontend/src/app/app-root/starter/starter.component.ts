@@ -76,7 +76,9 @@ export class StarterComponent implements OnInit, OnDestroy {
   }
 
   buttonGotoMonitor(accessObject: AccessObject): void {
-    this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
+    let url = `/gm/${accessObject.id.toString()}`;
+    if (accessObject.flags.profile) url += `/${accessObject.flags.profile}`;
+    this.router.navigateByUrl(url);
   }
 
   buttonGotoAttachmentManager(accessObject: AccessObject) {

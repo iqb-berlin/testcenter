@@ -104,7 +104,23 @@ Funktioniert auch nicht? Dann...
 |gm_control_unlock_tooltip|Tooltip: Freigeben|Test Freigeben|
 |gm_controls|Überschrift: Test-Steuerung|Test-Steuerung|
 |gm_filter_locked|Filter: gesperrte ausblenden|gesperrte|
+|gm_filter_not|Benutzerdefinierter Filter: Nicht|nicht|
 |gm_filter_pending|Filter: nicht gestartete ausblenden|nicht gestartete|
+|gm_filter_target_blockId|Benutzerdefinierter Filter: Ziel - Block-Id|Block-Id|
+|gm_filter_target_blockLabel|Benutzerdefinierter Filter: Ziel - Blocktitel|Blocktitel|
+|gm_filter_target_bookletId|Benutzerdefinierter Filter: Ziel - TestheftId|Booklet-Id|
+|gm_filter_target_bookletLabel|Benutzerdefinierter Filter: Ziel - Testhefttitel|Booklettitel|
+|gm_filter_target_bookletSpecies|Benutzerdefinierter Filter: Ziel -Testhefttyp|Testhefttyp|
+|gm_filter_target_groupName|Benutzerdefinierter Filter: Ziel - Gruppe|Gruppe|
+|gm_filter_target_mode|Benutzerdefinierter Filter: Ziel - Modus|Durchführungsmodus|
+|gm_filter_target_personLabel|Benutzerdefinierter Filter: Ziel - Teilnehmer|Teilnehmer|
+|gm_filter_target_state|Benutzerdefinierter Filter: Ziel - Teststatus|Teststatus|
+|gm_filter_target_testState|Benutzerdefinierter Filter: Ziel - detaillierter Teststatus|detaillierter Teststatus|
+|gm_filter_target_unitId|Benutzerdefinierter Filter: Ziel - Aufgaben-Id|Aufgaben-Id|
+|gm_filter_target_unitLabel|Benutzerdefinierter Filter: Ziel - Aufgabentitel|Aufgabentitel|
+|gm_filter_type_equal|Benutzerdefinierter Filter: Typ - gleicht|gleicht|
+|gm_filter_type_regex|Benutzerdefinierter Filter: Typ - Regulärer Ausdruck|matched regulären Ausdruck|
+|gm_filter_type_substring|Benutzerdefinierter Filter: Typ - enthält|enthält|
 |gm_headline|Überschrift: Gruppenmonitor|Gruppenüberwachung|
 |gm_hide_controls_tooltip|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
 |gm_menu_activity|Meinueintrag: Aktivität|Aktivität|

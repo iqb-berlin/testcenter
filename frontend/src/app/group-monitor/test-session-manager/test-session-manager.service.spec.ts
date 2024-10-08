@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -172,61 +172,125 @@ describe('TestSessionManager', () => {
   describe('filterSessions', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const filterSessions = TestSessionManager['filterSessions'];
+    const sessionsSet = [...unitTestExampleSessions];
 
     it('should filter the sessions array by various filters', () => {
-      const sessionsSet = [...unitTestExampleSessions];
-      const removeEverythingButBooklet1: TestSessionFilter = {
-        not: true,
-        type: 'bookletName',
-        value: 'example_booklet_1'
+      const keepOnlyBooklet1: TestSessionFilter = {
+        id: 'removeEverythingButBooklet1',
+        label: 'removeEverythingButBooklet1',
+        target: 'bookletId',
+        type: 'equal',
+        value: 'example_booklet_1',
+        not: true
       };
-      let result = filterSessions(sessionsSet, [removeEverythingButBooklet1]).map(s => s.data.testId);
+      let result = filterSessions(sessionsSet, [keepOnlyBooklet1]).map(s => s.data.testId);
       expect(result).toEqual([1]);
 
       const removeHotRunReturn: TestSessionFilter = {
-        type: 'mode',
-        value: 'run-hot-return'
+        id: 'removeHotRunReturn',
+        label: 'removeHotRunReturn',
+        target: 'mode',
+        type: 'equal',
+        value: 'run-hot-return',
+        not: false
       };
       result = filterSessions(sessionsSet, [removeHotRunReturn]).map(s => s.data.testId);
       expect(result).toEqual([3]);
 
       const removeStatusControllerRunning: TestSessionFilter = {
-        type: 'testState',
+        id: 'removeStatusControllerRunning',
+        label: 'removeStatusControllerRunning',
+        type: 'equal',
+        target: 'testState',
         value: 'CONTROLLER',
-        subValue: 'RUNNING'
+        subValue: 'RUNNING',
+        not: false
       };
       result = filterSessions(sessionsSet, [removeStatusControllerRunning]).map(s => s.data.testId);
       expect(result).toEqual([2, 3]);
 
       const removeStatusControllerNotRunning: TestSessionFilter = {
-        not: true,
-        type: 'testState',
+        id: 'removeStatusControllerNotRunning',
+        label: 'removeStatusControllerNotRunning',
+        type: 'equal',
+        target: 'testState',
         value: 'CONTROLLER',
-        subValue: 'RUNNING'
+        subValue: 'RUNNING',
+        not: true
       };
       result = filterSessions(sessionsSet, [removeStatusControllerNotRunning]).map(s => s.data.testId);
       expect(result).toEqual([1]);
 
       const removePending: TestSessionFilter = {
-        type: 'state',
-        value: 'pending'
+        id: 'removePending',
+        label: 'removePending',
+        target: 'state',
+        value: 'pending',
+        type: 'equal',
+        not: false
       };
       result = filterSessions(sessionsSet, [removePending]).map(s => s.data.testId);
       expect(result).toEqual([1, 2]);
 
-      const removeBookletSpecies1: TestSessionFilter = {
-        type: 'bookletSpecies',
-        value: 'example-species-1'
+      const removeAllButSpecies1: TestSessionFilter = {
+        id: 'removeAllButSpecies1',
+        label: 'removeAllButSpecies1',
+        target: 'bookletSpecies',
+        value: 'example-species-1',
+        type: 'equal',
+        not: false
       };
-      result = filterSessions(sessionsSet, [removeBookletSpecies1]).map(s => s.data.testId);
+      result = filterSessions(sessionsSet, [removeAllButSpecies1]).map(s => s.data.testId);
       expect(result).toEqual([2, 3]);
 
-      result = filterSessions(sessionsSet, [removeBookletSpecies1, removePending]).map(s => s.data.testId);
+      result = filterSessions(sessionsSet, [removeAllButSpecies1, removePending]).map(s => s.data.testId);
       expect(result).toEqual([2]);
 
-      result = filterSessions(sessionsSet, [removeBookletSpecies1, removeStatusControllerRunning, removeHotRunReturn])
+      result = filterSessions(sessionsSet, [removeAllButSpecies1, removeStatusControllerRunning, removeHotRunReturn])
         .map(s => s.data.testId);
       expect(result).toEqual([3]);
+    });
+
+    it('should filter by regex', () => {
+      const keepUnit1x: TestSessionFilter = {
+        id: 'keepUnit1x',
+        label: 'keepUnit1x',
+        target: 'unitId',
+        value: 'unit-1.*',
+        type: 'regex',
+        not: true
+      };
+      const result = filterSessions(sessionsSet, [keepUnit1x])
+        .map(s => s.data.testId);
+      expect(result).toEqual([1, 2]);
+    });
+
+    it('should filter by substring', () => {
+      const keepBlockTestlet0: TestSessionFilter = {
+        id: 'keepBlockTestlet0',
+        label: 'keepBlockTestlet0',
+        target: 'blockLabel',
+        value: 'let-0',
+        type: 'substring',
+        not: true
+      };
+      const result = filterSessions(sessionsSet, [keepBlockTestlet0])
+        .map(s => s.data.testId);
+      expect(result).toEqual([2]);
+    });
+
+    it('should filter from a set of superstates', () => {
+      const removeInactiveStates: TestSessionFilter = {
+        id: 'removeInactiveStates',
+        label: 'removeInactiveStates',
+        target: 'state',
+        value: <Array<TestSessionSuperState>>['connection_lost', 'error', 'focus_lost', 'locked', 'idle', 'pending'],
+        type: 'equal',
+        not: false
+      };
+      const result = filterSessions(sessionsSet, [removeInactiveStates])
+        .map(s => s.data.testId);
+      expect(result).toEqual([2]);
     });
   });
 
