@@ -207,7 +207,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.testId,
           (result.target === 'u' || result.target === 'p') ? this.tcs.currentUnitDbKey : null,
           (result.target === 'p') ? this.tcs.currentPageIndex : null,
-          (result.target === 'p') ? this.tcs.currentPageLabel : null,
+          (result.target === 'p') ? result.targetLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry,
