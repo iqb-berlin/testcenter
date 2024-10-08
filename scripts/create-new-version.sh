@@ -48,29 +48,29 @@ if ! echo "$confirm" | grep '^[Yy]\?$'; then
 fi
 
 git commit -m "Update to version $VERSION"
-git tag $VERSION
 git push origin "$(git branch --show-current)"
-git push origin $VERSION
 
 
-read -n1 -p "Push Images Version $VERSION manually? (y/N) " confirm
-if echo "$confirm" | grep '^[Nn]\?$'; then
-  echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
+read -n1 -p "☕ NOW WAIT until CI is ready. Proceed? (y/N)" confirm
+if ! echo "$confirm" | grep '^[Yy]\?$'; then
+  exit 0
+fi
+read -n1 -p "create pull request, merge. Proceed? (y/N)" confirm #TODO
+if ! echo "$confirm" | grep '^[Yy]\?$'; then
+  exit 0
+fi
+read -n1 -p "☕ WAIT AGAIN until CI is ready. Proceed? (y/N)" confirm
+if ! echo "$confirm" | grep '^[Yy]\?$'; then
   exit 0
 fi
 
-docker build --target prod -t "iqbberlin/testcenter-backend:$VERSION" -f docker/backend.Dockerfile .
-docker build --target prod -t "iqbberlin/testcenter-frontend:$VERSION" -f docker/frontend.Dockerfile .
-docker build --target prod -t "iqbberlin/testcenter-broadcasting-service:$VERSION" -f docker/broadcasting-service.Dockerfile .
-docker build -t "iqbberlin/testcenter-file-service:$VERSION" -f docker/file-service.Dockerfile .
-docker build -t "iqbberlin/testcenter-db:$VERSION" -f docker/database.Dockerfile .
+git checkout master
+git pull
 
-docker login -u "iqbberlin4cicd"
+git tag $VERSION
+git push origin $VERSION
 
-docker push iqbberlin/testcenter-backend:$VERSION
-docker push iqbberlin/testcenter-frontend:$VERSION
-docker push iqbberlin/testcenter-broadcasting-service:$VERSION
-docker push iqbberlin/testcenter-file-service:$VERSION
-docker push iqbberlin/testcenter-db:$VERSION
+git branch -d release/$VERSION
+git push origin --delete release/$VERSION
 
-echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
+echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release Dont forget to attach install.sh." #TODO
