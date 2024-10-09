@@ -80,6 +80,7 @@ paths:
                   value:
                     token: "static:admin:super"
                     displayName: "super"
+                    id: 1
                     access:
                       superAdmin: []
                     claims:

@@ -62,6 +62,10 @@ components:
           type: string
           description: name to be displayed
           example: super
+        id:
+          type: integer
+          description: id of the (admin) user
+          example: 1
         customTexts:
           type: object
           description: An Object containing customtext-strings for the UI as key-value-pairs

@@ -120,6 +120,9 @@
       <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
         Systemverwaltung
       </button>
+      <button mat-raised-button *ngIf="accessObjects.workspaceAdmin" color="primary" >
+        Passwort ändern
+      </button>
       <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>
   </mat-card>

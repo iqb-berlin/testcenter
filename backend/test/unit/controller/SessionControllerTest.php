@@ -507,9 +507,6 @@ final class SessionControllerTest extends TestCase {
   public function test_getSession_adminSession() {
     $adminToken = new AuthToken('admin_token', 1, 'admin', -1, 'admin', '[admins]');
 
-//        $accessObject = new AccessSet('admin_token', 'Super', []);
-//        $accessObject->addAccessObjects("workspaceAdmin", "1");
-
     $this->mockAdminDao([
       'refreshAdminToken' => function(): void {
       },

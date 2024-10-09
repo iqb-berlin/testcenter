@@ -31,6 +31,7 @@ export interface AccessObject {
 export interface AuthData {
   token: string;
   displayName: string;
+  id?: number;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
   claims: { [key in AuthAccessType]: AccessObject[] };
