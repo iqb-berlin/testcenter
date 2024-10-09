@@ -127,8 +127,8 @@ class WorkspaceTest extends TestCase {
       '.',
       '..',
       'SAMPLE_UNITCONTENTS.HTM',
+      'coding-scheme.vocs.json',
       'sample_resource_package.itcr.zip',
-      'scheme.vocs.json',
       'verona-player-simple-6.0.html'
     ];
     $this->assertEquals($resourcesLeftExpected, $resourcesLeft);

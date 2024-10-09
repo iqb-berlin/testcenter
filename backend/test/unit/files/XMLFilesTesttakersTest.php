@@ -286,7 +286,11 @@ END;
         'run-review',
         'review_group',
         'A Group of Reviewers',
-        ['' => ["BOOKLET.SAMPLE-1"]],
+        ['' => [
+          "BOOKLET.SAMPLE-1",
+          'BOOKLET.SAMPLE-2#bonus:yes',
+          'BOOKLET.SAMPLE-2#bonus:no'
+        ]],
         -1,
         0,
         0,

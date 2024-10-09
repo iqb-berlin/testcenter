@@ -132,7 +132,7 @@ class WorkspaceCacheTest extends TestCase {
         'info' => ['Contains 0 files.']
       ],
       'Resource/SAMPLE_UNITCONTENTS.HTM' => [],
-      "Resource/scheme.vocs.json" => [],
+      "Resource/coding-scheme.vocs.json" => [],
       'Booklet/SAMPLE_BOOKLET3.XML' => [],
       'Booklet/SAMPLE_BOOKLET2.XML' => [],
       'Booklet/SAMPLE_BOOKLET.XML' => [],

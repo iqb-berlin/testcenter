@@ -17,7 +17,7 @@ class WorkspaceInitializer {
       "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
       "sampledata/sample_resource_package.itcr.zip" => "Resource/sample_resource_package.itcr.zip",
       "sampledata/verona-player-simple-6.0.html" => "Resource/verona-player-simple-6.0.html",
-      "sampledata/coding-scheme.vocs.json" => "Resource/scheme.vocs.json",
+      "sampledata/coding-scheme.vocs.json" => "Resource/coding-scheme.vocs.json",
     ],
     "system-test" => [
       "sampledata/system-test/CY_BKL_Mode_Demo.xml" => "Booklet/CY_BKL_Mode_Demo.xml",

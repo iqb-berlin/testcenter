@@ -1,37 +1,234 @@
 {
-  "variableCodings" : [
+  "variableCodings": [
     {
-      "id" : "var6",
-      "label" : "",
-      "sourceType" : "BASE",
-      "deriveSources" : [],
-      "processing" : [],
-      "manualInstruction" : "",
-      "codeModel" : "NONE",
-      "codeModelParameters" : [],
-      "codes" : [
+      "id": "var1",
+      "alias": "var1",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": [
         {
-          "id" : 1,
-          "label" : "Richtig",
-          "score" : 100,
-          "ruleSetOperatorAnd" : false,
-          "ruleSets" : [
+          "id": 1,
+          "type": "FULL_CREDIT",
+          "label": "",
+          "score": 100,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [
             {
-              "ruleOperatorAnd" : false,
-              "rules" : [
+              "ruleOperatorAnd": true,
+              "rules": [
                 {
-                  "method" : "MATCH",
-                  "parameters" : [
-                    "x"
+                  "method": "MATCH",
+                  "parameters": [
+                    "a"
                   ]
                 }
               ]
             }
           ],
-          "manualInstruction" : ""
+          "manualInstruction": ""
+        },
+        {
+          "id": 0,
+          "type": "RESIDUAL_AUTO",
+          "label": "",
+          "score": 0,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [],
+          "manualInstruction": ""
+        }
+      ]
+    },
+    {
+      "id": "var2",
+      "alias": "var2",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": [
+        {
+          "id": 1,
+          "type": "FULL_CREDIT",
+          "label": "",
+          "score": 100,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [
+            {
+              "ruleOperatorAnd": true,
+              "rules": [
+                {
+                  "method": "MATCH",
+                  "parameters": [
+                    "a"
+                  ]
+                }
+              ]
+            }
+          ],
+          "manualInstruction": ""
+        },
+        {
+          "id": 2,
+          "type": "PARTIAL_CREDIT",
+          "label": "",
+          "score": 50,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [
+            {
+              "ruleOperatorAnd": true,
+              "rules": [
+                {
+                  "method": "MATCH",
+                  "parameters": [
+                    "b"
+                  ]
+                }
+              ]
+            }
+          ],
+          "manualInstruction": ""
+        },
+        {
+          "id": 0,
+          "type": "RESIDUAL_AUTO",
+          "label": "",
+          "score": 0,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [],
+          "manualInstruction": ""
+        }
+      ]
+    },
+    {
+      "id": "var3",
+      "alias": "var3",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": []
+    },
+    {
+      "id": "var4",
+      "alias": "var4",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": []
+    },
+    {
+      "id": "var5",
+      "alias": "var5",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": []
+    },
+    {
+      "id": "var6",
+      "alias": "var6",
+      "label": "",
+      "sourceType": "BASE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [],
+      "processing": [],
+      "fragmenting": "",
+      "manualInstruction": "",
+      "codeModel": "NONE",
+      "codes": []
+    },
+    {
+      "id": "derived_var",
+      "alias": "derived_var",
+      "label": "",
+      "sourceType": "SUM_SCORE",
+      "sourceParameters": {
+        "solverExpression": "",
+        "processing": []
+      },
+      "deriveSources": [
+        "var1",
+        "var2"
+      ],
+      "processing": [],
+      "codeModel": "NONE",
+      "manualInstruction": "",
+      "codes": [
+        {
+          "id": 1,
+          "type": "FULL_CREDIT",
+          "label": "",
+          "score": 1,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [
+            {
+              "ruleOperatorAnd": true,
+              "rules": [
+                {
+                  "method": "NUMERIC_MORE_THAN",
+                  "parameters": [
+                    "100"
+                  ]
+                }
+              ]
+            }
+          ],
+          "manualInstruction": ""
+        },
+        {
+          "id": 0,
+          "type": "RESIDUAL_AUTO",
+          "label": "",
+          "score": 0,
+          "ruleSetOperatorAnd": false,
+          "ruleSets": [],
+          "manualInstruction": ""
         }
       ],
-      "page" : ""
+      "page": ""
     }
-  ]
+  ],
+  "version": "3.0"
 }
