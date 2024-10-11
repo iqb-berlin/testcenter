@@ -14,20 +14,20 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:9091/iqb_tba_testcenter</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="Docker | TEST" uuid="dd60c978-0a23-422e-abc4-dc13b5b6839f">
+    <data-source source="LOCAL" name="Docker | db_TEST" uuid="dd60c978-0a23-422e-abc4-dc13b5b6839f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:9091/TEST_iqb_tba_testcenter</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="local | db" uuid="831ab058-dae4-44eb-8ff6-d504297064ab">
+    <data-source source="LOCAL" name="iqb_tba_testcenter@localhost" uuid="831ab058-dae4-44eb-8ff6-d504297064ab">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/testcenter_monorepo</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="local | TEST" uuid="db50b1c3-31be-4d3b-bb59-cd72e0c21d80">
+    <data-source source="LOCAL" name="TEST_iqb_tba_testcenter@localhost" uuid="db50b1c3-31be-4d3b-bb59-cd72e0c21d80">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
