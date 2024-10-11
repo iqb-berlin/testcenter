@@ -1130,7 +1130,7 @@ test-backend-initialization:
     - cp docker/default.env docker/.env
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   script:
     - TEST_NAME=general/db-versions docker compose --file docker/docker-compose.initialization-test.yml
         up --force-recreate --renew-anon-volumes --abort-on-container-exit
