@@ -1132,16 +1132,36 @@ test-backend-initialization:
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   script:
-    - TEST_NAME=general/db-versions docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/vanilla-installation docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/no-db-but-files docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/install-db-patches docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/re-initialize docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/db-versions
+      docker compose --file docker/docker-compose.initialization-test.yml up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/vanilla-installation
+      docker compose --file docker/docker-compose.initialization-test.yml up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/no-db-but-files
+      docker compose --file docker/docker-compose.initialization-test.yml up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/install-db-patches
+      docker compose --file docker/docker-compose.initialization-test.yml up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/re-initialize
+      docker compose --file docker/docker-compose.initialization-test.yml up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
 
 test-e2e:
   stage: test
