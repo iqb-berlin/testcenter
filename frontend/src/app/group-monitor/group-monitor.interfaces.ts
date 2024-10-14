@@ -160,7 +160,15 @@ export interface TestSessionSetStats {
   differentBookletSpecies: number;
   paused: number;
   locked: number;
+  bookletStateLabels: { [bookletStateId: string]: string }
 }
+
+// export interface BookletState {
+//   bookletStateId: string;
+//   bookletStateLabel: string;
+//   bookletStateOptionId: string;
+//   bookletStateOptionLabel: string;
+// }
 
 export interface UIMessage {
   level: 'error' | 'warning' | 'info' | 'success';

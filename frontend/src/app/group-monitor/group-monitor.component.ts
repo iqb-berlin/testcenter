@@ -56,7 +56,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
-    statesColumn: 'hide',
+    statesColumn: 'show',
     highlightSpecies: false,
     manualChecking: false
   };
@@ -68,6 +68,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   quickFilterBoxOpen: boolean = false;
 
   messages: UIMessage[] = [];
+
+  bookletStates: { [p: string]: string } = {};
 
   private subscriptions: Subscription[] = [];
 
@@ -148,6 +150,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!this.tsm.checkingOptions.enableAutoCheckAll) {
       this.displayOptions.manualChecking = true;
     }
+
+    this.bookletStates = stats.bookletStateLabels;
   }
 
   private onCheckedChange(stats: TestSessionSetStats): void {

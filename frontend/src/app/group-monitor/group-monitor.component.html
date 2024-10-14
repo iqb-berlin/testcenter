@@ -286,8 +286,8 @@
                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
                   {{'Aufgabe' | customtext:'gm_col_unit' | async}}
                 </td>
-                <td mat-sort-header="_currentUnit" *ngIf="displayOptions.statesColumn === 'show'">
-                  {{'Zustände' | customtext:'gm_col_states' | async}}
+                <td *ngFor="let bookletState of bookletStates | keyvalue" mat-sort-header="bookletState:{{bookletState.key}}">
+                  {{ bookletState.value }}
                 </td>
               </tr>
             </thead>
@@ -303,6 +303,7 @@
                 [checked]="tsm.isChecked(session)"
                 (checked$)="toggleChecked($event, session)"
                 [ngStyle]="{background: getSessionColor(session)}"
+                [bookletStates]="bookletStates"
               >
               </tc-test-session>
             </ng-container>

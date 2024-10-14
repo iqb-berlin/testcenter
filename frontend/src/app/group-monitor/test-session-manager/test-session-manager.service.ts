@@ -266,6 +266,7 @@ export class TestSessionManager {
         number: 0,
         differentBookletSpecies: 0,
         differentBooklets: 0,
+        bookletStateLabels: {},
         paused: 0,
         locked: 0
       }
@@ -325,6 +326,16 @@ export class TestSessionManager {
           const s1currentUnit = session1.current?.unit?.label ?? 'zzzzzzzzzz';
           const s2currentUnit = session2.current?.unit?.label ?? 'zzzzzzzzzz';
           return s1currentUnit.localeCompare(s2currentUnit) * sortDirectionFactor;
+        }
+        if (sort.active.startsWith('bookletState:')) {
+          const bookletState = sort.active.replace('bookletState:', '');
+          const a = session1.states && isBooklet(session1.booklet) ?
+            session1.booklet.states[bookletState].options[session1.states[bookletState]].label :
+            'zzzzzzzzzz';
+          const b = session2.states && isBooklet(session2.booklet) ?
+            session2.booklet.states[bookletState].options[session2.states[bookletState]].label :
+            'zzzzzzzzzz';
+          return a.localeCompare(b) * sortDirectionFactor;
         }
         let valA = session1.data[sort.active as keyof typeof session1.data] ?? 'zzzzzzzzzz';
         let valB = session2.data[sort.active as keyof typeof session2.data] ?? 'zzzzzzzzzz';
@@ -523,6 +534,7 @@ export class TestSessionManager {
   private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStats {
     const booklets = new Set();
     const bookletSpecies = new Set();
+    const bookletStateLabels: { [key: string]: string } = {};
     let paused = 0;
     let locked = 0;
 
@@ -530,6 +542,11 @@ export class TestSessionManager {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
+        Object.keys(session.states || {})
+          .forEach((bookletState: string) => {
+            if (!isBooklet(session.booklet)) return;
+            bookletStateLabels[bookletState] = session.booklet.states[bookletState].label;
+          });
         if (TestSessionUtil.isPaused(session)) paused += 1;
         if (TestSessionUtil.isLocked(session)) locked += 1;
       });
@@ -539,6 +556,7 @@ export class TestSessionManager {
       differentBooklets: booklets.size,
       differentBookletSpecies: bookletSpecies.size,
       all: (all === sessionSet.length),
+      bookletStateLabels,
       paused,
       locked
     };

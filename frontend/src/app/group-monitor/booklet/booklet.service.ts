@@ -12,7 +12,7 @@ import {
 
 @Injectable()
 export class BookletService extends BookletParserService<Unit, Testlet, BookletStateOption, BookletState, Booklet> {
-  booklets: { [k: string]: Observable<Booklet | BookletError> } = {};
+  private readonly booklets: { [k: string]: Observable<Booklet | BookletError> } = {};
 
   constructor(
     private bs: BackendService
