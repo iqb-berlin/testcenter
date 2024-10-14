@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
+
 /** @noinspection PhpUnusedParameterInspection */
 declare(strict_types=1);
 
@@ -54,7 +55,7 @@ class SystemController extends Controller {
     global $app;
     $routes = array_reduce(
       $app->getRouteCollector()->getRoutes(),
-      function($target, Route $route) {
+      function ($target, Route $route) {
         foreach ($route->getMethods() as $method) {
           $target[] = "[$method] " . $route->getPattern();
         }
@@ -138,7 +139,7 @@ class SystemController extends Controller {
       $availableSysChecks = array_merge(
         $availableSysChecks,
         array_map(
-          function(XMLFileSysCheck $file) use ($sysChecksFolder) {
+          function (XMLFileSysCheck $file) use ($sysChecksFolder) {
             return [
               'workspaceId' => $sysChecksFolder->getId(),
               'name' => $file->getId(),
@@ -156,6 +157,12 @@ class SystemController extends Controller {
     }
 
     return $response->withJson($availableSysChecks);
+  }
+
+  public static function getSysCheckMode(Request $request, Response $response): Response {
+    $sysCheckModeExists = self::AdminDAO()->doesWSwitTypeSyscheckExist();
+
+     return $response->withJson($sysCheckModeExists);
   }
 
   public static function getFlushBroadcastingService(Request $request, Response $response): Response {

@@ -22,6 +22,7 @@ import { BackendService } from './services/backend.service';
 import { BlockConditionPipe } from './pipes/block-condition.pipe';
 import { TemplateContextDirective } from './directives/template-context.directive';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
+import { AutofocusDirective } from './directives/autofocus.directive';
 import { TrustPipe } from './pipes/trust.pipe';
 
 @NgModule({
@@ -50,7 +51,9 @@ import { TrustPipe } from './pipes/trust.pipe';
     ErrorComponent,
     TemplateContextDirective,
     PageNavBarComponent,
-    TrustPipe
+    TrustPipe,
+    PageNavBarComponent,
+    AutofocusDirective
   ],
   exports: [
     ConfirmDialogComponent,
@@ -62,7 +65,9 @@ import { TrustPipe } from './pipes/trust.pipe';
     ErrorComponent,
     TemplateContextDirective,
     PageNavBarComponent,
-    TrustPipe
+    TrustPipe,
+    PageNavBarComponent,
+    AutofocusDirective
   ],
   providers: [
     BackendService

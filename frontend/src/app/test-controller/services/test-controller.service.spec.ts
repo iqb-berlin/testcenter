@@ -17,7 +17,7 @@ const uploadedStates: UnitStateUpdate[] = [];
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
   updateDataParts(
-    testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
+    testId: string, unitDbKey: string, originalUnitId: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
     uploadedData.push({ testId, unitAlias: unitDbKey, dataParts, unitStateDataType });
     return of(true);

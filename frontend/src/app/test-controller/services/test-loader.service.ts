@@ -505,7 +505,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       dataParts: {},
       loadingProgress: { },
       lockedAfterLeaving: false,
-      scheme: new CodingScheme([])
+      scheme: new CodingScheme([]),
+      pageLabels: {}
     });
   }
 

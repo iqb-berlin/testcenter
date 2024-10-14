@@ -15,6 +15,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 import { ReviewDialogComponent } from './review-dialog.component';
+import { KbDetectionService } from '../../../shared/services/kb-detection/kb-detection.service';
+import { MainDataService } from '../../../shared/shared.module';
+
+const MockKBDetectionService = {};
+const MockMainDataService = {};
 
 describe('ReviewDialogComponent', () => {
   let component: ReviewDialogComponent;
@@ -24,7 +29,9 @@ describe('ReviewDialogComponent', () => {
     loginname: 'loginname',
     bookletname: 'bookletname',
     unitAlias: 'unitAlias',
-    unitTitle: 'unitTitle'
+    unitTitle: 'unitTitle',
+    currentPageIndex: 1,
+    currentPageLabel: 'first page label'
   };
 
   beforeEach(waitForAsync(() => {
@@ -43,7 +50,9 @@ describe('ReviewDialogComponent', () => {
       ],
       providers: [
         MatDialog,
-        { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub }
+        { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub },
+        { provide: KbDetectionService, useValue: MockKBDetectionService },
+        { provide: MainDataService, useValue: MockMainDataService }
       ]
     })
       .compileComponents();

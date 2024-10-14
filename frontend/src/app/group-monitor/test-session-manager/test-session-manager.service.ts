@@ -11,10 +11,15 @@ import { BookletService } from '../booklet/booklet.service';
 import { TestSessionUtil } from '../test-session/test-session.util';
 import {
   isBooklet,
-  Selected, CheckingOptions,
+  Selected,
+  CheckingOptions,
   TestSession,
-  TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig, Testlet
+  TestSessionFilter,
+  TestSessionSetStats,
+  TestSessionsSuperStates,
+  CommandResponse,
+  GotoCommandData,
+  GroupMonitorConfig, TestSessionFilterList, Testlet
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -23,6 +28,7 @@ import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 export class TestSessionManager {
   sortBy$: Subject<Sort>;
   filters$: Subject<TestSessionFilter[]>;
+
   checkingOptions: CheckingOptions = {
     enableAutoCheckAll: false,
     autoCheckAll: false
@@ -65,28 +71,49 @@ export class TestSessionManager {
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
-  // attention: this works the other way round than Array.filter:
-  // it defines which sessions are to filter out, not which ones are to keep
-  filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
-    {
-      label: 'gm_filter_locked',
+  static readonly basicFilters : TestSessionFilterList = {
+    locked: {
       selected: false,
+      source: 'base',
       filter: {
-        type: 'testState',
+        id: 'locked',
+        label: 'gm_filter_locked',
+        target: 'testState',
         value: 'status',
-        subValue: 'locked'
+        subValue: 'locked',
+        type: 'equal',
+        not: false
       }
     },
-    {
-      label: 'gm_filter_pending',
+    pending: {
       selected: false,
+      source: 'base',
       filter: {
-        type: 'testState',
+        id: 'pending',
+        label: 'gm_filter_pending',
+        target: 'testState',
         value: 'status',
-        subValue: 'pending'
+        subValue: 'pending',
+        type: 'equal',
+        not: false
+      }
+    },
+    quick: {
+      selected: false,
+      source: 'quick',
+      filter: {
+        id: 'quickFilter',
+        label: 'gm_filter_quick',
+        target: 'personLabel',
+        value: '',
+        subValue: '',
+        type: 'substring',
+        not: true
       }
     }
-  ];
+  };
+
+  filterOptions: TestSessionFilterList = {};
 
   constructor(
     private bs: BackendService,
@@ -100,6 +127,7 @@ export class TestSessionManager {
     this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
       interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
       of(0);
+    this.resetFilters();
   }
 
   connect(groupName: string): void {
@@ -143,51 +171,92 @@ export class TestSessionManager {
     this.bs.cutConnection();
   }
 
-  switchFilter(indexInFilterOptions: number): void {
-    this.filterOptions[indexInFilterOptions].selected =
-      !this.filterOptions[indexInFilterOptions].selected;
-    this.filters$.next(
-      this.filterOptions
-        .filter(filterOption => filterOption.selected)
-        .map(filterOption => filterOption.filter)
+  switchFilter(filterId: string): void {
+    this.filterOptions[filterId].selected = !this.filterOptions[filterId].selected;
+    this.refreshFilters();
+  }
+
+  refreshFilters(): void {
+    this.filters$.next(Object.values(this.filterOptions)
+      .filter(filterOption => filterOption.selected)
+      .map(filterOption => filterOption.filter)
     );
+  }
+
+  resetFilters(): void {
+    this.filterOptions = {};
+    Object.keys(TestSessionManager.basicFilters)
+      .forEach(key => {
+        this.filterOptions[key] = {
+          selected: TestSessionManager.basicFilters[key].selected,
+          source: TestSessionManager.basicFilters[key].source,
+          filter: { ...TestSessionManager.basicFilters[key].filter }
+        };
+      });
   }
 
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
-      .filter(session => TestSessionManager.applyFilters(session, filters));
+      .filter(session => !TestSessionManager.applyFilters(session, filters));
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
-    const applyNot = (isMatching: boolean, not: boolean): boolean => (not ? !isMatching : isMatching);
-    return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
-      switch (nextFilter.type) {
-        case 'groupName': {
-          return keep && applyNot(session.data.groupName !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'bookletName': {
-          return keep && applyNot(session.data.bookletName !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'testState': {
-          const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
-          const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-          const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
-          return keep && applyNot(keepIn, !!nextFilter.not);
-        }
-        case 'state': {
-          return keep && applyNot(session.state !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'bookletSpecies': {
-          return keep && applyNot(session.booklet.species !== nextFilter.value, !!nextFilter.not);
-        }
-        case 'mode': {
-          return keep && applyNot(session.data.mode !== nextFilter.value, !!nextFilter.not);
-        }
-        default:
-          return false;
+    const regexTest = (regex: string, value: string): boolean => {
+      try {
+        return new RegExp(regex).test(value);
+      } catch (e) {
+        return false;
       }
-    }, true);
+    };
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const apply = (subject: string, filter: TestSessionFilter, inverted: boolean = false): boolean => {
+      if (filter.not && !inverted) return !apply(subject, filter, true);
+      if (Array.isArray(filter.value)) return filter.value.includes(subject);
+      switch (filter.type) {
+        case 'substring': return subject.includes(filter.value);
+        case 'equal': return subject === filter.value;
+        case 'regex': return regexTest(filter.value, subject);
+        default: return false;
+      }
+    };
+    const filterOut: TestSessionFilter | undefined = filters
+      .find((nextFilter: TestSessionFilter) => {
+        switch (nextFilter.target) {
+          case 'groupName':
+          case 'personLabel':
+          case 'mode':
+            return apply(session.data[nextFilter.target] || '', nextFilter);
+          case 'bookletId':
+            return apply(session.data.bookletName || '', nextFilter); // bookletId is clearer for XML-authors
+          case 'unitId':
+            return apply(session.data.unitName || '', nextFilter); // unitId is clearer for XML-authors
+          case 'unitLabel':
+            return apply(session.current?.unit?.label || '', nextFilter);
+          case 'bookletLabel':
+            return apply('metadata' in session.booklet ? session.booklet.metadata.label : '', nextFilter);
+          case 'blockId':
+            return apply(session.current?.ancestor?.blockId || '', nextFilter);
+          case 'blockLabel':
+            return apply(session.current?.ancestor?.label || '', nextFilter);
+          case 'testState': {
+            if (Array.isArray(nextFilter.value)) return filterOut;
+            const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
+            const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
+            const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
+            return (nextFilter.not ? !testStateMatching : testStateMatching);
+          }
+          case 'state': {
+            return apply(session.state, nextFilter);
+          }
+          case 'bookletSpecies': {
+            return apply(session.booklet.species || '', nextFilter);
+          }
+          default:
+            return false;
+        }
+      });
+    return typeof filterOut !== 'undefined';
   }
 
   private static getEmptyStats(): TestSessionSetStats {

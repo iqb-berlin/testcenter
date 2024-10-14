@@ -1,40 +1,24 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 class AccessObject extends DataCollectionTypeSafe {
-    protected string $label;
-    protected string $id;
-    protected string $type;
-    protected array $flags;
+  public readonly string $id;
+  public readonly string $type;
+  public readonly string $label;
+  public readonly array $flags;
 
-    public function __construct(string $id, string $type, string $label, array $flags = []) {
+  public function __construct(
+    string $id,
+    AccessObjectType $type,
+    string $label,
+    array $flags = []
+  ) {
+    $this->id = $id;
+    $this->type = $type->value;
+    $this->label = $label;
+    $this->flags = $flags;
+  }
 
-        $this->id = $id;
-        $this->type = $type;
-        $this->label = $label;
-        $this->flags = $flags;
-    }
-
-
-    public function getLabel(): string {
-        return $this->label;
-    }
-
-
-    public function getId(): string {
-        return $this->id;
-    }
-
-
-    public function getType(): string {
-
-        return $this->type;
-    }
-
-
-    public function getFlags(): array {
-
-        return $this->flags;
-    }
 }

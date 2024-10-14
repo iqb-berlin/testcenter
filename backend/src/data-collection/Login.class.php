@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -19,12 +20,12 @@ class Login extends DataCollectionTypeSafe {
     protected int $validTo = 0,
     protected int $validFrom = 0,
     int | null $validForMinutes = 0,
-    object | null $customTexts = null
+    object | null $customTexts = null,
+    protected array $profiles = []
   ) {
     $this->validForMinutes = $validForMinutes ?? 0;
     $this->customTexts = $customTexts ?? new stdClass();
   }
-
 
   public function getName(): string {
     return $this->name;
@@ -45,7 +46,6 @@ class Login extends DataCollectionTypeSafe {
     return $this->groupName;
   }
 
-
   public function getGroupLabel(): string {
     return $this->groupLabel;
   }
@@ -60,11 +60,9 @@ class Login extends DataCollectionTypeSafe {
     return $this->workspaceId;
   }
 
-
   public function getValidFrom(): int {
     return $this->validFrom;
   }
-
 
   public function getValidTo(): int {
     return $this->validTo;
@@ -74,13 +72,19 @@ class Login extends DataCollectionTypeSafe {
     return $this->validForMinutes;
   }
 
-
   public function getCustomTexts(): ?stdClass {
     return $this->customTexts;
   }
 
-
   public function isCodeRequired(): bool {
     return (array_keys($this->testNames) != ['']);
+  }
+
+  public function getProfiles(): array {
+    return $this->profiles;
+  }
+
+  public function codeExists(string $code): bool {
+    return array_key_exists($code, $this->testNames);
   }
 }

@@ -60,7 +60,7 @@ export class MainDataService {
     cacheService: 'unknown'
   };
 
-  sysCheckAvailable = false;
+  sysCheckAvailableForAll = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
   globalWarning = '';
@@ -68,6 +68,8 @@ export class MainDataService {
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
   isFullScreen: boolean = false;
+
+  isExtendedKbUsed: boolean | null = null;
 
   getAuthData(): AuthData | null {
     if (this._authData$.getValue()) {

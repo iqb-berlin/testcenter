@@ -3,7 +3,9 @@
     <mat-card-title>
       <tc-alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></tc-alert>
     </mat-card-title>
-    <mat-card-subtitle *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="error.errorId">
+      <b>Error-Id:</b> {{error.errorId}} {{error.testMode ? '(test-mode: ' + error.testMode + ')' : ''}}
+    </mat-card-subtitle>
     <button
       mat-icon-button
       class="main-alert-close-button"

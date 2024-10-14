@@ -96,6 +96,7 @@ Funktioniert auch nicht? Dann...
 |gm_col_booklet|Spalte: Testheft|Testheft|
 |gm_col_group|Spalte: Gruppe|Gruppe|
 |gm_col_person|Spalte: Teilnehmer|Teilnehmer|
+|gm_col_states|Spalte: Booklet-Zustände|Zustände|
 |gm_col_testlet|Spalte: Block|Block|
 |gm_col_unit|Spalte: Aufgabe|Aufgabe|
 |gm_control_finish_everything|Control: Testung beenden|Testung beenden|
@@ -108,7 +109,23 @@ Funktioniert auch nicht? Dann...
 |gm_control_unlock_tooltip|Tooltip: Freigeben|Test Freigeben|
 |gm_controls|Überschrift: Test-Steuerung|Test-Steuerung|
 |gm_filter_locked|Filter: gesperrte ausblenden|gesperrte|
+|gm_filter_not|Benutzerdefinierter Filter: Nicht|nicht|
 |gm_filter_pending|Filter: nicht gestartete ausblenden|nicht gestartete|
+|gm_filter_target_blockId|Benutzerdefinierter Filter: Ziel - Block-Id|Block-Id|
+|gm_filter_target_blockLabel|Benutzerdefinierter Filter: Ziel - Blocktitel|Blocktitel|
+|gm_filter_target_bookletId|Benutzerdefinierter Filter: Ziel - TestheftId|Booklet-Id|
+|gm_filter_target_bookletLabel|Benutzerdefinierter Filter: Ziel - Testhefttitel|Booklettitel|
+|gm_filter_target_bookletSpecies|Benutzerdefinierter Filter: Ziel -Testhefttyp|Testhefttyp|
+|gm_filter_target_groupName|Benutzerdefinierter Filter: Ziel - Gruppe|Gruppe|
+|gm_filter_target_mode|Benutzerdefinierter Filter: Ziel - Modus|Durchführungsmodus|
+|gm_filter_target_personLabel|Benutzerdefinierter Filter: Ziel - Teilnehmer|Teilnehmer|
+|gm_filter_target_state|Benutzerdefinierter Filter: Ziel - Teststatus|Teststatus|
+|gm_filter_target_testState|Benutzerdefinierter Filter: Ziel - detaillierter Teststatus|detaillierter Teststatus|
+|gm_filter_target_unitId|Benutzerdefinierter Filter: Ziel - Aufgaben-Id|Aufgaben-Id|
+|gm_filter_target_unitLabel|Benutzerdefinierter Filter: Ziel - Aufgabentitel|Aufgabentitel|
+|gm_filter_type_equal|Benutzerdefinierter Filter: Typ - gleicht|gleicht|
+|gm_filter_type_regex|Benutzerdefinierter Filter: Typ - Regulärer Ausdruck|matched regulären Ausdruck|
+|gm_filter_type_substring|Benutzerdefinierter Filter: Typ - enthält|enthält|
 |gm_headline|Überschrift: Gruppenmonitor|Gruppenüberwachung|
 |gm_hide_controls_tooltip|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
 |gm_menu_activity|Meinueintrag: Aktivität|Aktivität|
@@ -140,7 +157,7 @@ Funktioniert auch nicht? Dann...
 |syscheck_intro|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|
 |syscheck_questionsRequiredMessage|Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden|Bitte prüfen Sie die Eingaben (unvollständig):|
 |syscheck_questionsintro|Aufforderung, die Fragen (Questionnaire) zu beantworten|Bitte bearbeiten Sie die nachfolgenden Fragen.|
-|syscheck_report_aboutPassword|Dialog 'Bericht senden': Text über das Passworteingabefeld|Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Kennwort ein, das Sie von der Projektleitung erhalten haben!|
+|syscheck_report_aboutPassword|Dialog 'Bericht senden': Text über das Passworteingabefeld|Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!|
 |syscheck_report_aboutReportId|Dialog 'Bericht senden': Text über das Passworteingabefeld|Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten '        + 'Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!|
 |syscheck_report_id|Dialog 'Bericht senden': Platzhalter für das ID-Eingabefeld vor dem Senden des Berichts|Schul-ID|
 |syscheck_unitPrompt|Titelzeile über der Aufgabe|Bitte prüfen Sie die folgenden Aufgaben-Elemente|

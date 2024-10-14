@@ -6,6 +6,7 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, isTestlet, KeyValuePairNumber,
@@ -19,9 +20,7 @@ import {
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import {
-  BookletConfig, MainDataService, TestMode
-} from '../../shared/shared.module';
+import { MainDataService, TestMode } from '../../shared/shared.module';
 import { isVeronaProgress, VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
@@ -29,7 +28,6 @@ import { AppError } from '../../app.interfaces';
 import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
-import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 
 @Injectable({
   providedIn: 'root'
@@ -133,6 +131,7 @@ export class TestControllerService {
               this.bs.updateDataParts(
                 this.testId,
                 changedDataPartsPerUnit.unitAlias,
+                this.units[this.unitAliasMap[changedDataPartsPerUnit.unitAlias]].id,
                 changedDataPartsPerUnit.dataParts,
                 changedDataPartsPerUnit.unitStateDataType
               );
@@ -167,7 +166,7 @@ export class TestControllerService {
       .subscribe(updates => {
         if (!this.testMode.saveResponses) return;
         updates
-          .forEach(patch => this.bs.patchUnitState(patch));
+          .forEach(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id));
       });
   }
 

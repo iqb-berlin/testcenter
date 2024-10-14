@@ -2,8 +2,9 @@
 set -e
 
 if [ "$1" == '' ]; then
-  echo "usage: bash scripts/create-new-version.sh [major|minor|patch][-{label}]"
+  echo "usage: bash scripts/create-new-version.sh [major|minor|patch|{current-version}][-{label}]"
   echo "example: bash scripts/create_new_version.sh minor"
+  echo "example: bash scripts/create_new_version.sh 15.3.0-alpha3"
   exit 1;
 fi
 
@@ -19,6 +20,10 @@ fi
 make docs-user
 make new-version version=$1
 
+VERSION=$(npm pkg get version | xargs echo)
+
+git checkout -b release/$VERSION
+
 git add dist-src/.env
 git add docs/CHANGELOG.md
 git add docs/pages/*
@@ -28,15 +33,17 @@ git add sampledata/*
 git add dist-src/install.sh
 git add scripts/database/patches.d/*
 
-if [ ! -e scripts/database/next.sql ]; then
-  if [ "$(git status | grep -c scripts/database/next.sql)" -gt 0 ]; then
-    git rm scripts/database/next.sql
+if [ ! -e scripts/database/patches.d/next.sql ]; then
+  if [ "$(git status | grep -c scripts/database/patches.d/next.sql)" -gt 0 ]; then
+    git rm scripts/database/patches.d/next.sql
   fi
 fi
 
+# git add scripts/database/patches.d/next.sql
+
 git status
 
-VERSION=$(npm pkg get version | xargs echo)
+
 
 read -n1 -p "Commit Version $VERSION? (Y/n) " confirm
 if ! echo "$confirm" | grep '^[Yy]\?$'; then
@@ -44,29 +51,27 @@ if ! echo "$confirm" | grep '^[Yy]\?$'; then
 fi
 
 git commit -m "Update to version $VERSION"
-git tag $VERSION
 git push origin "$(git branch --show-current)"
+
+read -n1 -p "[GitHub]: Create pull request from `feature/$VERSION`" confirm
+# TODO : automate
+
+read -n1 -p "[GitLab]: ☕ NOW WAIT until CI is ready." confirm
+
+read -n1 -p "[GitHub]: Merge PR." confirm
+# TODO : automate
+
+read -n1 -p "[GitLab]: ☕ WAIT AGAIN until CI is ready." confirm
+
+git checkout master
+git pull
+
+git tag $VERSION
 git push origin $VERSION
 
+git branch -D release/$VERSION
+git push origin --delete release/$VERSION
 
-read -n1 -p "Push Images Version $VERSION manually? (y/N) " confirm
-if echo "$confirm" | grep '^[Nn]\?$'; then
-  echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
-  exit 0
-fi
-
-docker build --target prod -t "iqbberlin/testcenter-backend:$VERSION" -f docker/backend.Dockerfile .
-docker build --target prod -t "iqbberlin/testcenter-frontend:$VERSION" -f docker/frontend.Dockerfile .
-docker build --target prod -t "iqbberlin/testcenter-broadcasting-service:$VERSION" -f docker/broadcasting-service.Dockerfile .
-docker build -t "iqbberlin/testcenter-file-service:$VERSION" -f docker/file-service.Dockerfile .
-docker build -t "iqbberlin/testcenter-db:$VERSION" -f docker/database.Dockerfile .
-
-docker login -u "iqbberlin4cicd"
-
-docker push iqbberlin/testcenter-backend:$VERSION
-docker push iqbberlin/testcenter-frontend:$VERSION
-docker push iqbberlin/testcenter-broadcasting-service:$VERSION
-docker push iqbberlin/testcenter-file-service:$VERSION
-docker push iqbberlin/testcenter-db:$VERSION
-
-echo "Now go to to https://github.com/iqb-berlin/testcenter/releases and create the new release".
+echo "[GitHub]: Go to to https://github.com/iqb-berlin/testcenter/releases and create the new release"
+echo "Dont forget to attach install.sh."
+# TODO : automate

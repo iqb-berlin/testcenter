@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use JetBrains\PhpStorm\NoReturn;
@@ -7,10 +8,13 @@ use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamWrapper;
 
 class TestEnvironment {
-  const staticDate = 1627545600;
+  const int staticDate = 1627545600;
+  const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
+  static string | null $testMode = null;
+
 
   public static function setup(string $testMode, ?string $testClock = null): void {
-    $testMode = in_array($testMode, ['prepare', 'api', 'integration', 'prepare-integration']) ? $testMode : 'api';
+    self::$testMode = in_array($testMode, self::testModes) ? $testMode : 'api';
     $testClock = $testClock ?? self::staticDate;
 
     try {
@@ -18,24 +22,25 @@ class TestEnvironment {
       SystemConfig::$debug_useStaticTokens = true;
       SystemConfig::$debug_useInsecurePasswords = true;
       SystemConfig::$debug_allowExternalXmlSchema = false;
+      SystemConfig::$debug_fastLoginReuse = true;
       self::makeRandomStatic();
       DB::connectToTestDB();
 
-      if ($testMode == 'integration') {
+      if (self::$testMode == 'integration') {
         // this is called every single call from integration tests
-        self::setUpTestDataDir(false);
+        self::defineTestDataDir(false);
       }
 
-      if ($testMode == 'prepare-integration') {
+      if (self::$testMode == 'prepare-integration') {
         // this is called one time before each integration test (cypress)
-        self::setUpTestDataDir(true);
+        self::defineTestDataDir(true);
         self::createTestFiles(true);
         self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
         self::createTestData();
       }
 
-      if ($testMode == 'prepare') {
+      if (self::$testMode == 'prepare') {
         // this is called once before the api tests (dredd)
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);
@@ -44,7 +49,7 @@ class TestEnvironment {
         self::createTestData();
       }
 
-      if ($testMode == 'api') {
+      if (self::$testMode == 'api') {
         // api tests can use vfs for more speed
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);
@@ -144,7 +149,7 @@ class TestEnvironment {
 
     $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
-      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
+      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] . ";";
       $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
     }
     file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
@@ -164,9 +169,9 @@ class TestEnvironment {
     throw new RuntimeException("Could not create environment: " . $exception->getMessage());
   }
 
-  private static function setUpTestDataDir(bool $reset): void {
+  private static function defineTestDataDir(bool $shouldReset): void {
     define('DATA_DIR', ROOT_DIR . '/data-TEST');
-    if (!$reset) {
+    if (!$shouldReset) {
       return;
     }
     Folder::createPath(DATA_DIR);
@@ -174,7 +179,7 @@ class TestEnvironment {
   }
 
   private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
-    touch($dir,TestEnvironment::staticDate);
+    touch($dir, TestEnvironment::staticDate);
     foreach (new DirectoryIterator($dir) as $child) {
       if ($child->isDot() or $child->isLink()) {
         continue;

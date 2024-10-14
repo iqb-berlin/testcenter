@@ -1,14 +1,15 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\ServerRequest as Request;
-use Slim\Http\Response;
 use Slim\Exception\HttpException;
+use Slim\Exception\HttpUnauthorizedException;
+use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class SessionController extends Controller {
   protected static array $_workspaces = [];
@@ -17,20 +18,30 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionAdmin(Request $request, Response $response): Response {
-    usleep(500000); // 0.5s delay to slow down brute force attack TODO remove this for better solution to prevent DOS attacks as sleep clocks the server when parallel requests are made
+    usleep(500000); // 0.5s delay to slow down brute force attack
 
-    $body = RequestBodyParser::getElements($request, [
-      "name" => null,
-      "password" => null
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      "name" => 'REQUIRED',
+      "password" => 'REQUIRED'
     ]);
 
+    $attempts = CacheService::getFailedLogins($body['name']);
+    if ($attempts >= 5) {
+      throw new HttpError("Too many login attempts", 429);
+    }
+
     $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
+
+    if (is_a($token, FailedLogin::class)) {
+      CacheService::addFailedLogin($body['name']);
+      throw new HttpError("No login with this password.", 400);
+    }
 
     $admin = self::adminDAO()->getAdmin($token);
     $workspaces = self::adminDAO()->getWorkspaces($token);
     $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
-    if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
+    if (!$accessSet->hasAccessType(AccessObjectType::WORKSPACE_ADMIN) and !$accessSet->hasAccessType(AccessObjectType::SUPER_ADMIN)) {
       throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
     }
 
@@ -38,14 +49,22 @@ class SessionController extends Controller {
   }
 
   public static function putSessionLogin(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
-      "name" => null,
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      "name" => 'REQUIRED',
       "password" => ''
     ]);
 
+    $attempts = CacheService::getFailedLogins($body['name']);
+    if ($attempts >= 5) {
+      throw new HttpError("Too many login attempts", 429);
+    }
+
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
-    if (!$loginSession) {
+    if (!is_a($loginSession, LoginSession::class)) {
+      if ($loginSession === FailedLogin::wrongPasswordProtectedLogin) {
+        CacheService::addFailedLogin($body['name']);
+      }
       $userName = htmlspecialchars($body['name']);
       throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
@@ -57,7 +76,8 @@ class SessionController extends Controller {
 
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
+      $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
 
       self::registerDependantSessions($loginSession);
       CacheService::storeAuthentication($personSession);
@@ -73,12 +93,14 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionPerson(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
+    $body = RequestBodyParser::getElementsFromRequest($request, [
       'code' => ''
     ]);
+
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+
     $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
-    CacheService::removeAuthentication($personSession); // TODO X correct?!
+    CacheService::removeAuthentication($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
     CacheService::storeAuthentication($personSession);
     return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
@@ -123,7 +145,11 @@ class SessionController extends Controller {
 
           $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $testName->name);
           if (!$test) {
-            $test = self::testDAO()->createTest($memberPersonSession->getPerson()->getId(), $testName, $bookletFile->getLabel());
+            $test = self::testDAO()->createTest(
+              $memberPersonSession->getPerson()->getId(),
+              $testName,
+              $bookletFile->getLabel()
+            );
           }
 
           $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);
@@ -160,7 +186,9 @@ class SessionController extends Controller {
         'R'
       );
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors);
+      $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
+
+      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
       return $response->withJson($accessSet);
     }
 
@@ -189,4 +217,5 @@ class SessionController extends Controller {
     // nothing to do for login-sessions; they have constant token as they are only the first step of 2f-auth
     return $response->withStatus(205);
   }
+
 }

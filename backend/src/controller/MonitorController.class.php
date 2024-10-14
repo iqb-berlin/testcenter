@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
@@ -6,8 +7,8 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 
 class MonitorController extends Controller {
   /**
@@ -60,10 +61,10 @@ class MonitorController extends Controller {
     $authToken = $request->getAttribute('AuthToken');
     $personId = $authToken->getId();
 
-    $body = RequestBodyParser::getElements($request, [
-      'keyword' => null,
+    $body = RequestBodyParser::getElementsFromRequest($request, [
+      'keyword' => 'REQUIRED',
       'arguments' => [],
-      'timestamp' => null,
+      'timestamp' => 'REQUIRED',
       'testIds' => []
     ]);
 
@@ -71,7 +72,9 @@ class MonitorController extends Controller {
 
     foreach (array_unique($body['testIds']) as $testId) {
       if (!self::adminDAO()->getTest($testId)) {
-        throw new HttpNotFoundException($request, "Test `$testId` not found. `{$command->getKeyword()}` not committed.");
+        throw new HttpNotFoundException(
+          $request, "Test `$testId` not found. `{$command->getKeyword()}` not committed."
+        );
       }
     }
 
@@ -97,12 +100,14 @@ class MonitorController extends Controller {
       self::testDAO()->changeTestLockStatus((int) $testId);
 
       $testSession = self::testDAO()->getTestSession($testId);
-      BroadcastService::sessionChange(SessionChangeMessage::testState(
-        $groupName,
-        (int) $testSession['person_id'],
-        $testId,
-        $testSession['laststate']
-      ));
+      BroadcastService::sessionChange(
+        SessionChangeMessage::testState(
+          $groupName,
+          (int) $testSession['person_id'],
+          $testId,
+          $testSession['laststate']
+        )
+      );
     }
 
     return $response->withStatus(200);
@@ -121,14 +126,31 @@ class MonitorController extends Controller {
 
       $testSession = self::testDAO()->getTestSession($testId);
       self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
-      BroadcastService::sessionChange(SessionChangeMessage::testState(
-        $groupName,
-        (int) $testSession['person_id'],
-        $testId,
-        $testSession['laststate']
-      ));
+      BroadcastService::sessionChange(
+        SessionChangeMessage::testState(
+          $groupName,
+          (int) $testSession['person_id'],
+          $testId,
+          $testSession['laststate']
+        )
+      );
     }
 
     return $response->withStatus(200);
+  }
+
+  public static function getProfile(Request $request, Response $response): Response {
+    $authToken = $request->getAttribute('AuthToken');
+    /** @var $authToken AuthToken */
+
+    $profileId = $groupName = $request->getAttribute('profile_id');
+    $session = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+    $profiles = $session->getLoginSession()->getLogin()->getProfiles();
+    foreach ($profiles as $profile) {
+      if ($profile['id'] == $profileId) {
+        return $response->withJson((object) $profile);
+      }
+    }
+    throw new HttpNotFoundException($request, "Profile not found `$profileId`");
   }
 }

@@ -1,246 +1,1812 @@
-include:
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
-  - local: scripts/gitlab-ci/tests.yml
-  - local: scripts/gitlab-ci/docs.yml
-
-gemnasium-dependency_scanning:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
-    - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_COMMIT_TAG
-
-image: docker:23.0
-
-variables:
-  DOCKER_TLS_CERTDIR: ""
-
-services:
-  - name: docker:23.0-dind
-    command: [ "--mtu=1442" ]
-
 stages:
+  - .pre
   - build
   - test
+  #  - lint
+  #  - audit
   - deploy
 
-.backend-change:
+image: ${DOCKER_HUB_PROXY}${BASE_IMAGE}
+
+services:
+  - name: ${DOCKER_SERVICE}
+    entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]
+    alias: docker
+
+variables:
+  REGISTRY: "$CI_REGISTRY"
+  REGISTRY_USER: "$CI_REGISTRY_USER"
+  REGISTRY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+  REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
+  DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
+  BASE_IMAGE: docker:27.3
+  PAGES_IMAGE: ruby:3.1
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
+  DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
+  DOCKER_SERVICE_MTU: 1442
+  DOCKER_TLS_CERTDIR: ''
+  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.10
+  DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
+  CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+  TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
+  PRERELEASE_SCRIPT_REGEX: ^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$
+  PRERELEASE_RULES_REGEX: /^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$/
+  RELEASE_SCRIPT_REGEX: ^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$
+  RELEASE_RULES_REGEX: /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/
+
+
+include:
+  # - template: Jobs/Dependency-Scanning.gitlab-ci.yml        # commits
+  - template: Jobs/Dependency-Scanning.latest.gitlab-ci.yml # pull requests
+
+
+.backend-feature-rules:
   rules:
-    - changes:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
         - backend/**/*
         - scripts/database/**/*
+
+.broadcasting-service-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - broadcasting-service/**/*
+
+.common-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - common/**/*
+
+.definitions-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
         - definitions/**/*
 
-.frontend-change:
+.e2e-feature-rules:
   rules:
-    - changes:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - e2e/**/*
+
+.file-service-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - file-service/**/*
+
+.frontend-feature-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
         - frontend/**/*
-        - common/**/*
 
-.bs-change:
+.task-runner-feature-rules:
   rules:
-    - changes:
-        - broadcasting-service/**/*
-        - common/**/*
+    - if: $CI_COMMIT_BRANCH &&
+        ($CI_COMMIT_BRANCH != "master") &&
+        ($CI_COMMIT_BRANCH != "release/lts") &&
+        ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+      changes:
+        - task-runner/**/*
 
-.fs-change:
+.master_pr_rules:
   rules:
-    - changes:
-        - scripts/file-service/**/*
+    - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
 
-build-db:
-  stage: build
+.master_pr_manual_rules:
   rules:
-    - !reference [ .backend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
+      when: manual
+    - if: $CI_COMMIT_TAG
+      when: never
+
+.master_commit_rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH == "master") && ($CI_PIPELINE_SOURCE != "external_pull_request_event")
+    - if: $CI_COMMIT_TAG
+      when: never
+
+.pre-release_rules:
+  rules:
+    - if: "$CI_COMMIT_TAG =~ $PRERELEASE_RULES_REGEX"
+
+.release_rules:
+  rules:
+    - if: "$CI_COMMIT_TAG =~ $RELEASE_RULES_REGEX"
+
+
+check-config:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'external_pull_request_event'"
+    - if: "$CI_COMMIT_BRANCH"
     - if: "$CI_COMMIT_TAG"
-  before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
   script:
-    - apk add make
-    - make init
-    - make build service=testcenter-db
-    - docker push iqbberlin/testcenter-db
+    - echo $CI_PIPELINE_SOURCE
+    - echo $CI_REGISTRY
+    - echo $CI_REGISTRY_IMAGE
+    - echo $CI_DEPENDENCY_PROXY_SERVER
+    - echo $CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX
+    - echo $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX
+    - echo $CI_PROJECT_PATH
+    - echo $CI_DEFAULT_BRANCH
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_COMMIT_TAG
+    - echo $CI_COMMIT_BEFORE_SHA
+    - echo $CI_COMMIT_SHA
+    - echo $CI_COMMIT_SHORT_SHA
+    - echo $CI_COMMIT_REF_NAME
+    - echo $CI_COMMIT_REF_SLUG
+    - echo $CI_COMMIT_REF_PROTECTED
+    - echo $CI_EXTERNAL_PULL_REQUEST_IID
+    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY
+    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY
+    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_NAME
+    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_SHA
+    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_SHA
+    - echo $CI_MERGE_REQUEST_IID
+    - echo $CI_MERGE_REQUEST_LABELS
+    - echo $CI_MERGE_REQUEST_EVENT_TYPE
+    - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_SHA
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_SHA
+
+check-backend-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .backend-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-broadcasting-service-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .broadcasting-service-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-common-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .common-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-definitions-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .definitions-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-e2e-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .e2e-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-file-service-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .file-service-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-frontend-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .frontend-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-task-runner-feature-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .task-runner-feature-rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      then echo "commit branch is not 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      then echo "commit branch is 'release/lts'";
+      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+
+check-master-pr-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  script:
+    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_COMMIT_TAG
+    - if [ "$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME" != "master" ];
+      then echo "pull request target branch is not 'master'";
+      else echo "pull request target branch '$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME' == 'master'"; fi
+    - if [ "$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME" == "master" ];
+      then echo "pull request target branch is 'master'";
+      else echo "pull request target branch '$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME' != 'master'"; fi
+    - if [ -n "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is nonzero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+    - if [ -z "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is zero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+
+check-master-commit-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  script:
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_PIPELINE_SOURCE
+    - echo $CI_COMMIT_TAG
+    - if [ -n "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is nonzero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ];
+      then echo "commit branch string length is zero";
+      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
+    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      then echo "commit branch is 'master'";
+      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
+    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      then echo "commit branch is not 'master'";
+      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "pipeline source is 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
+    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "pipeline source is not 'external_pull_request_event'";
+      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" = "master" ] && [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      then echo "commit branch exists, is 'master', and it's an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" != "master" ] || [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      then echo "commit branch doesn't exist or isn't 'master' or it isn't an external_pull_request_event";
+      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+    - if [ -z "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is zero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+    - if [ -n "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is nonzero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+
+check-pre-release-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .pre-release_rules, rules ]
+  script:
+    - echo $PRERELEASE_SCRIPT_REGEX
+    - if [[ $CI_COMMIT_TAG =~ $PRERELEASE_SCRIPT_REGEX ]];
+      then echo "$CI_COMMIT_TAG is a valid pre-release tag.";
+      else echo "$CI_COMMIT_TAG is not a valid pre-release tag!"; fi
+
+check-release-rules:
+  stage: .pre
+  interruptible: true
+  allow_failure: true
+  rules:
+    - !reference [ .release_rules, rules ]
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - echo $STABLE_VERSION
+    - if [ -n "$STABLE_VERSION" ];
+      then echo "stable version string length is nonzero"
+      else echo "stable version = '$STABLE_VERSION'"; fi
+    - if [ -z "$STABLE_VERSION" ];
+      then echo "stable version string length is zero";
+      else echo "stable version = '$STABLE_VERSION'"; fi
+    - echo $CI_COMMIT_TAG
+    - if [ -n "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is nonzero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+    - if [ -z "$CI_COMMIT_TAG" ];
+      then echo "commit tag string length is zero";
+      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+    - if [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]];
+      then echo "shortened commit tag and stable version are equal";
+      else echo "commit tag = '$CI_COMMIT_TAG' and stable version = '$STABLE_VERSION' are unequal"; fi
+    - if [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]];
+      then echo "shortened commit tag and stable version are unequal";
+      else echo "commit tag = '$CI_COMMIT_TAG' and stable version = '$STABLE_VERSION' are equal"; fi
+    - echo $RELEASE_SCRIPT_REGEX
+    - if [[ $CI_COMMIT_TAG =~ $RELEASE_SCRIPT_REGEX ]];
+      then echo "$CI_COMMIT_TAG is a valid release tag.";
+      else echo "$CI_COMMIT_TAG is not a valid release tag!"; fi
+    - if [ -n "$CI_COMMIT_TAG" ] && [ -n "$STABLE_VERSION" ] && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]] && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+      then echo "commit tag exists, stable version exists, shortened commit tag and stable version are equal, and commit tag matches regular release tag expression";
+      else echo "commit tag = '$CI_COMMIT_TAG', stable version = '$STABLE_VERSION', release regex = '$RELEASE_SCRIPT_REGEX'"; fi
+    - if [ -z "$CI_COMMIT_TAG" ] || [ -z "$STABLE_VERSION" ] || [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] || [[ ! "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+      then echo "commit tag doesn't exist or stable version doesn't exist or shortened commit tag aren't equal to stable version or commit tag doesn't match regular release tag expression";
+      else echo "commit tag = '$CI_COMMIT_TAG', stable version = '$STABLE_VERSION', release regex = '$RELEASE_SCRIPT_REGEX'"; fi
+
 
 build-backend:
   stage: build
+  needs: []
   rules:
-    - !reference [ .backend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-    - changes:
-        - e2e/**/*
+    - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .task-runner-feature-rules, rules ]
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - apk add make
-    - make init
-    - make build service=testcenter-backend
-    - docker push iqbberlin/testcenter-backend:dev
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        printf "$CI_DEPENDENCY_PROXY_PASSWORD" |
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        docker build
+            --progress plain
+            --pull
+            --target dev
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+            --build-arg BUILDKIT_INLINE_CACHE=1
+            --cache-from ${BACKEND_IMAGE_NAME}:dev
+            --file backend/Dockerfile
+            --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+            --tag ${BACKEND_IMAGE_NAME}:dev
+          . &&
+        docker push --quiet --all-tags ${BACKEND_IMAGE_NAME} &&
+        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
+        docker logout $REGISTRY;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
 
 build-frontend:
   stage: build
+  needs: []
   rules:
-    - !reference [ .frontend-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-    - changes:
-        - e2e/**/*
+    - !reference [ .frontend-feature-rules, rules ]
+    - !reference [ .common-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - apk add make
-    - make init
-    - make build service=testcenter-frontend
-    - docker push iqbberlin/testcenter-frontend:dev
-
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        printf $CI_DEPENDENCY_PROXY_PASSWORD |
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        docker build
+            --progress plain
+            --pull
+            --target dev
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+            --build-arg BUILDKIT_INLINE_CACHE=1
+            --cache-from ${FRONTEND_IMAGE_NAME}:dev
+            --file frontend/Dockerfile
+            --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+            --tag ${FRONTEND_IMAGE_NAME}:dev
+          . &&
+        docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME} &&
+        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
+        docker logout $REGISTRY;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
 build-broadcasting-service:
   stage: build
+  needs: []
   rules:
-    - !reference [ .bs-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-    - changes:
-        - e2e/**/*
+    - !reference [ .broadcasting-service-feature-rules, rules ]
+    - !reference [ .common-feature-rules, rules ]
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - apk add make
-    - make init
-    - make build service=testcenter-broadcasting-service
-    - docker push iqbberlin/testcenter-broadcasting-service:dev
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        printf $CI_DEPENDENCY_PROXY_PASSWORD |
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        docker build
+            --progress plain
+            --pull
+            --target dev
+            --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+            --build-arg BUILDKIT_INLINE_CACHE=1
+            --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
+            --file broadcasting-service/Dockerfile
+            --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+            --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
+          . &&
+        docker push --quiet --all-tags ${BROADCASTING_SERVICE_IMAGE_NAME} &&
+        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
+        docker logout $REGISTRY;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
 
 build-file-service:
   stage: build
+  needs: []
   rules:
-    - !reference [ .fs-change, rules ]
-    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
-    - if: "$CI_COMMIT_TAG"
-    - changes:
-        - e2e/**/*
+    - !reference [ .file-service-feature-rules, rules ]
+    - !reference [ .task-runner-feature-rules, rules ]
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
-    - apk add make
-    - make init
-    - make build service=testcenter-file-service
-    - docker push iqbberlin/testcenter-file-service
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${FILE_SERVICE_IMAGE_NAME}:dev
+          --file file-service/Dockerfile
+          --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+          --tag ${FILE_SERVICE_IMAGE_NAME}:dev
+      .
+    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
 
-build-db-prod:
-  stage: deploy
+build-e2e:
+  stage: build
+  needs: []
   rules:
-    - if: "$CI_COMMIT_TAG"
-  cache:
-    paths:
-      - .trivycache/
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
-    - apk add make curl
-    - make init
-    - docker build --no-cache -t iqbberlin/testcenter-db:$CI_COMMIT_TAG -f docker/database.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-db:$CI_COMMIT_TAG
-    - docker push iqbberlin/testcenter-db:$CI_COMMIT_TAG
+    - docker build
+        --progress plain
+        --pull
+        --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+        --build-arg BUILDKIT_INLINE_CACHE=1
+        --cache-from ${E2E_IMAGE_NAME}:latest
+        --file e2e/Dockerfile
+        --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+        --tag ${E2E_IMAGE_NAME}:latest
+      .
+    - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
+build-task-runner:
+  stage: build
+  needs: []
+  rules:
+    - !reference [ .task-runner-feature-rules, rules ]
+    - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .file-service-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        printf $CI_DEPENDENCY_PROXY_PASSWORD |
+          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
+        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${TASK_RUNNER_IMAGE_NAME}:latest
+          --file task-runner/Dockerfile
+          --tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${TASK_RUNNER_IMAGE_NAME}:latest
+        . &&
+        docker push --quiet --all-tags ${TASK_RUNNER_IMAGE_NAME} &&
+        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
+        docker logout $REGISTRY;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
+
+generate-docs:
+  stage: build
+  needs:
+    - build-task-runner
+  rules:
+    - !reference [ .release_rules, rules ]
+  variables:
+    TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+      then
+        cp docker/default.env docker/.env &&
+        docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} &&
+        docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run --rm --no-deps testcenter-task-runner
+            npm run frontend:update-compodoc &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run --rm --no-deps testcenter-task-runner
+            npm run broadcasting-service:update-compodoc &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run --rm --no-deps testcenter-task-runner
+            npm run backend:update-specs &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run --rm --no-deps testcenter-task-runner
+            npm run create-docs;
+      else
+        rm -rf docs/ &&
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
   artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
+    paths:
+      - docs/index.md
+      - docs/pages/booklet-config.md
+      - docs/pages/test-mode.md
+      - docs/dist/api/index.html
+      - docs/dist/api/specs.yml
+      - docs/dist/custom-texts.md
+      - docs/dist/test-session-super-states.html
+      - docs/dist/compodoc-frontend/*
+      - docs/dist/compodoc-broadcasting-service/*
+    expire_in: 30 minutes
+
+
+gemnasium-dependency_scanning:
+  stage: test
+  interruptible: true
+  allow_failure: true
+  needs: []
+  rules:
+    - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
+    - when: never
+
+test-backend-unit:
+  stage: test
+  needs:
+    - build-backend
+  rules:
+    - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        cp docker/default.env docker/.env &&
+        chmod 0755 scripts/database/000-create-test-db.sh &&
+        docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0 &&
+        docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
+        docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run --rm --entrypoint "" testcenter-backend php -dxdebug.mode='coverage'
+            /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
+              --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
+              --configuration /var/www/testcenter/backend/phpunit.xml
+              --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
+              --testdox;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-backend-unit/*
+    expire_in: 30 minutes
+
+test-frontend-unit:
+  stage: test
+  needs:
+    - build-frontend
+  rules:
+    - !reference [ .frontend-feature-rules, rules ]
+    - !reference [ .common-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        cp docker/default.env docker/.env &&
+        cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts &&
+        docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
+        docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run testcenter-frontend npx ng test --watch=false --code-coverage;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-frontend-unit/*
+    expire_in: 30 minutes
+
+test-broadcasting-service-unit:
+  stage: test
+  needs:
+    - build-broadcasting-service
+  rules:
+    - !reference [ .broadcasting-service-feature-rules, rules ]
+    - !reference [ .common-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - !reference [ .release_rules, rules ]
+  variables:
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -z $CI_COMMIT_TAG ] ||
+        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+      then
+        cp docker/default.env docker/.env &&
+        docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
+        docker tag
+          ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current &&
+        docker compose
+            --file docker/docker-compose.yml
+            --file docker/docker-compose.dev.yml
+          run testcenter-broadcasting-service npx jest --coverage;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
+  artifacts:
+    paths:
+      - docs/dist/test-coverage-broadcasting-service-unit/*
+    expire_in: 30 minutes
+
+test-backend-api:
+  stage: test
+  needs:
+    - build-backend
+    - build-task-runner
+  rules:
+    - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .task-runner-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
+  before_script:
+    - cp docker/default.env docker/.env
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-backend
+  script:
+    - docker compose
+          --file docker/docker-compose.yml
+          --file docker/docker-compose.dev.yml
+          --file docker/docker-compose.api-test.yml
+        run --rm testcenter-task-runner-backend npm run backend:api-test
+
+test-file-service-api:
+  stage: test
+  needs:
+    - build-file-service
+    - build-task-runner
+  rules:
+    - !reference [ .file-service-feature-rules, rules ]
+    - !reference [ .task-runner-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
+  before_script:
+    - cp docker/default.env docker/.env
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-service
+  script:
+    - docker compose
+          -f docker/docker-compose.yml
+          -f docker/docker-compose.dev.yml
+          -f docker/docker-compose.api-test.yml
+        run --rm testcenter-task-runner-file-service npm run file-service:api-test
+
+test-backend-initialization:
+  stage: test
+  needs:
+    - build-backend
+  rules:
+    - !reference [ .backend-feature-rules, rules ]
+    - !reference [ .definitions-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+  before_script:
+    - cp docker/default.env docker/.env
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:dev
+  script:
+    - TEST_NAME=general/db-versions docker compose --file docker/docker-compose.initialization-test.yml
+        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/vanilla-installation docker compose --file docker/docker-compose.initialization-test.yml
+        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/no-db-but-files docker compose --file docker/docker-compose.initialization-test.yml
+        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/install-db-patches docker compose --file docker/docker-compose.initialization-test.yml
+        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/re-initialize docker compose --file docker/docker-compose.initialization-test.yml
+        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+
+test-e2e:
+  stage: test
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    - !reference [ .e2e-feature-rules, rules ]
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - cp docker/default.env docker/.env
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.10
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-e2e
+  script:
+    - docker compose
+          --file docker/docker-compose.yml
+          --file docker/docker-compose.dev.yml
+          --file docker/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress/videos/**/*.mp4
+      - e2e/cypress/screenshots/**/*.png
+
 
 build-backend-prod:
-  stage: deploy
+  stage: build
+  needs: []
   rules:
-    - if: "$CI_COMMIT_TAG"
-  cache:
-    paths:
-      - .trivycache/
+    - !reference [ .master_commit_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
-    - apk add make
-    - make init
-    - docker build --no-cache --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f docker/backend.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-backend:$CI_COMMIT_TAG
-    - docker push iqbberlin/testcenter-backend:$CI_COMMIT_TAG
-  artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${BACKEND_IMAGE_NAME}:latest
+          --file backend/Dockerfile
+          --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${BACKEND_IMAGE_NAME}:latest
+        .
+    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
 
 build-frontend-prod:
-  stage: deploy
+  stage: build
+  needs: []
   rules:
-    - if: "$CI_COMMIT_TAG"
-  cache:
-    paths:
-      - .trivycache/
+    - !reference [ .master_commit_rules, rules ]
+  variables:
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
   script:
-    - apk add make curl
-    - make init
-    - docker build --no-cache --target prod -t iqbberlin/testcenter-frontend:$CI_COMMIT_TAG -f docker/frontend.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-frontend:$CI_COMMIT_TAG
-    - docker push iqbberlin/testcenter-frontend:$CI_COMMIT_TAG
-  artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${FRONTEND_IMAGE_NAME}:latest
+          --file frontend/Dockerfile
+          --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${FRONTEND_IMAGE_NAME}:latest
+        .
+    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
 
 build-broadcasting-service-prod:
-  stage: deploy
+  stage: build
+  needs: []
   rules:
-    - if: "$CI_COMMIT_TAG"
+    - !reference [ .master_commit_rules, rules ]
+  variables:
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+  script:
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:latest
+          --file broadcasting-service/Dockerfile
+          --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:latest
+        .
+    - docker push --quiet --all-tags ${BROADCASTING_SERVICE_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
+build-file-service-prod:
+  stage: build
+  needs: []
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  variables:
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
+        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+  script:
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${FILE_SERVICE_IMAGE_NAME}:latest
+          --file file-service/Dockerfile
+          --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${FILE_SERVICE_IMAGE_NAME}:latest
+        .
+    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
+scan-backend-prod:
+  stage: test
+  allow_failure: true
+  needs:
+    - build-backend-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend:${CI_COMMIT_SHA}"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+          --format template
+          --template "@/contrib/gitlab.tpl"
+          --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+        "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+        "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+          --exit-code 1
+          --timeout 30m
+          --scanners vuln
+          --ignore-unfixed
+          --severity CRITICAL
+        "$FULL_IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-  script:
-    - apk add make curl
-    - make init
-    - docker build --no-cache --target prod -t iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG -f docker/broadcasting-service.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG
-    - docker push iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
   artifacts:
+    when: always
     reports:
       container_scanning: gl-container-scanning-report.json
 
-build-file-service-prod:
-  stage: deploy
+scan-frontend-prod:
+  stage: test
+  allow_failure: true
+  needs:
+    - build-frontend-prod
   rules:
-    - if: "$CI_COMMIT_TAG"
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend:${CI_COMMIT_SHA}"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+          --format template
+          --template "@/contrib/gitlab.tpl"
+          --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+        "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+        "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+          --exit-code 1
+          --timeout 30m
+          --scanners vuln
+          --ignore-unfixed
+          --severity CRITICAL
+        "$FULL_IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
-  before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-  script:
-    - apk add make curl
-    - make init
-    - docker build --no-cache -t iqbberlin/testcenter-file-service:$CI_COMMIT_TAG -f docker/file-service.Dockerfile .
-    - |
-      docker run --rm \
-      -v /.trivycache/:/.trivycache/ -v /builds/iqb/testcenter/:/root/ -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy image --exit-code 0 -q --timeout 20m --cache-dir .trivycache/ --security-checks vuln \
-      --format template --template "@contrib/gitlab.tpl" -o /root/gl-container-scanning-report.json \
-      iqbberlin/testcenter-file-service:$CI_COMMIT_TAG
-    - docker push iqbberlin/testcenter-file-service:$CI_COMMIT_TAG
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
   artifacts:
+    when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+
+scan-broadcasting-service-prod:
+  stage: test
+  allow_failure: true
+  needs:
+    - build-broadcasting-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service:${CI_COMMIT_SHA}"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+          --format template
+          --template "@/contrib/gitlab.tpl"
+          --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+        "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+        "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+          --exit-code 1
+          --timeout 30m
+          --scanners vuln
+          --ignore-unfixed
+          --severity CRITICAL
+        "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+scan-file-service-prod:
+  stage: test
+  allow_failure: true
+  needs:
+    - build-file-service-prod
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service:${CI_COMMIT_SHA}"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+          --format template
+          --template "@/contrib/gitlab.tpl"
+          --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+        "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+          --exit-code 0
+          --timeout 30m
+          --scanners vuln
+        "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+          --exit-code 1
+          --timeout 30m
+          --scanners vuln
+          --ignore-unfixed
+          --severity CRITICAL
+        "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+scan-traefik-prod:
+  stage: test
+  allow_failure: true
+  needs: []
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "$TRAEFIK_BASE_IMAGE"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      --format template
+      --template "@/contrib/gitlab.tpl"
+      --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+      "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+      --exit-code 1
+      --timeout 30m
+      --scanners vuln
+      --ignore-unfixed
+      --severity CRITICAL
+      "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+scan-db-prod:
+  stage: test
+  allow_failure: true
+  needs: []
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "$DB_BASE_IMAGE"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      --format template
+      --template "@/contrib/gitlab.tpl"
+      --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+      "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+      --exit-code 1
+      --timeout 30m
+      --scanners vuln
+      --ignore-unfixed
+      --severity CRITICAL
+      "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+scan-cache-service-prod:
+  stage: test
+  allow_failure: true
+  needs: []
+  rules:
+    - !reference [ .master_commit_rules, rules ]
+  image:
+    name: $TRIVY_IMAGE
+    entrypoint: [ "" ]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: "$CACHE_SERVICE_BASE_IMAGE"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      --format template
+      --template "@/contrib/gitlab.tpl"
+      --output "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+      "$FULL_IMAGE_NAME"
+    # Prints full report
+    - trivy image
+      --exit-code 0
+      --timeout 30m
+      --scanners vuln
+      "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - trivy image
+      --exit-code 1
+      --timeout 30m
+      --scanners vuln
+      --ignore-unfixed
+      --severity CRITICAL
+      "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+
+push-pre-release:
+  stage: deploy
+  rules:
+    - !reference [ .pre-release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+  before_script:
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+  after_script:
+    - docker logout
+
+pages:
+  stage: deploy
+  needs:
+    - test-backend-unit
+    - test-frontend-unit
+    - test-broadcasting-service-unit
+    - generate-docs
+  rules:
+    - !reference [ .release_rules, rules ]
+  image: ${PAGES_IMAGE}
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+  script:
+    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+      then
+        mkdir public &&
+        cd docs &&
+        gem install bundler &&
+        bundle install &&
+        jekyll build -d ../public;
+      else
+        printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
+          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+        printf 'Backend build is not necessary.\n' &&
+        printf 'Job finished with success.\n';
+      fi
+  artifacts:
+    paths:
+      - public
+
+push-release:
+  stage: deploy
+  rules:
+    - !reference [ .release_rules, rules ]
+  variables:
+    BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+  before_script:
+    - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
+          && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]];
+      then
+        docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:stable &&
+        docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:stable &&
+        docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTING_SERVICE_IMAGE_NAME}:stable &&
+        docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:stable;
+      fi
+    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+    - docker push --quiet --all-tags ${BROADCASTING_SERVICE_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+  after_script:
+    - docker logout

@@ -8,7 +8,8 @@ export type AuthAccessType =
   | 'workspaceMonitor'
   | 'testGroupMonitor'
   | 'attachmentManager'
-  | 'studyMonitor';
+  | 'studyMonitor'
+  | 'sysCheck';
 
 export interface AccessObject {
   label: string;
@@ -19,8 +20,12 @@ export interface AccessObject {
     running?: boolean;
     scheduled?: number;
     expired?: number;
-    mode: 'RW' | 'RO'
+    profile?: string;
+    mode?: 'RW' | 'RO';
+    subLabel?: string;
   };
+  workspaceId: string;
+  description: string;
 }
 
 export interface AuthData {
@@ -48,11 +53,18 @@ export type AppErrorType =
     | 'xml'
     | 'verona_player_runtime_error';
 
+export const TestModeNames = ['prepare', 'api', 'integration', 'prepare-integration'] as const;
+
+export type TestModeName = typeof TestModeNames[number];
+
+export const isTestModeName = (str: string): str is TestModeName => (TestModeNames as readonly string[]).includes(str);
+
 export interface AppErrorInterface {
   label: string;
   description: string;
   type?: AppErrorType;
   code?: number;
+  testMode?: TestModeName | null;
   details?: string;
   errorId?: string | null;
 }
@@ -62,6 +74,7 @@ export class AppError extends Error implements AppErrorInterface {
   description: string = '';
   type: AppErrorType = 'general';
   code?: number;
+  testMode?: TestModeName | null;
   details?: string;
   errorId?: string;
   constructor(p: AppErrorInterface) {

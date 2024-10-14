@@ -30,7 +30,7 @@ class WorkspaceCacheTest extends TestCase {
     ]);
     VfsForTest::setUp(true);
     $this->workspaceCache = new WorkspaceCache(new Workspace(1));
-    $this->workspaceCache->loadAllFiles();
+    $this->workspaceCache->loadFiles();
   }
 
   function test_validate() {

@@ -1,9 +1,15 @@
 import {
-  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace1,
-  deleteFilesSampleWorkspace, resetBackendData, logoutAdmin, visitLoginPage
-} from './utils';
+  deleteDownloadsFolder,
+  deleteFilesSampleWorkspace,
+  loginSuperAdmin,
+  logoutAdmin,
+  openSampleWorkspace1,
+  resetBackendData,
+  useTestDB,
+  visitLoginPage
+} from '../utils';
 
-describe('Workspace-Admin', () => {
+describe('Workspace-Admin-files', () => {
   beforeEach(deleteDownloadsFolder);
   beforeEach(resetBackendData);
   beforeEach(useTestDB);
@@ -98,6 +104,42 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.get('[data-cy="SAMPLE_BOOKLET.XML"]')
       .should('not.exist');
+  });
+
+  it('should be possible to upload any file as a resource', () => {
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/AnyResource.txt', { force: true });
+    cy.contains('Erfolgreich hochgeladen')
+      .should('exist');
+    cy.contains('AnyResource.txt')
+      .should('exist');
+  });
+
+  it('should be not possible to upload a Testtaker, Booklet, Unit or SysCheck file with the right root but w', () => {
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Testtakers_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Booklet_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/Unit_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('cypress/fixtures/SysCheck_error.xml', { force: true });
+    cy.contains('Abgelehnt')
+      .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
   it('should be possible to upload the file SysCheck.xml without any dependencies in other files', () => {
@@ -469,56 +511,5 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.contains('Duplicate Booklet-Id')
       .should('exist');
-  });
-
-  it('should be possible to download a systemcheck summary (csv)', () => {
-    cy.get('[data-cy="System-Check Berichte"]')
-      .click();
-    cy.get('[data-cy="systemcheck-checkbox"]')
-      .click();
-    cy.get('[data-cy="download-button"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-syscheckreports.csv')
-      .should('exist');
-  });
-
-  it('should download the responses of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="download-responses"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist');
-  });
-
-  it('should download the logs of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="download-logs"]')
-      .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-      .should('exist');
-  });
-
-  it('should delete the results of a group', () => {
-    cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .click();
-    cy.get('[data-cy="results-checkbox0"]')
-      .click();
-    cy.get('[data-cy="delete-files"]')
-      .click();
-    cy.get('[data-cy="dialog-title"]')
-      .should('exist')
-      .contains('Löschen von Gruppendaten');
-    cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
-      .contains('Gruppendaten löschen')
-      .click();
-    cy.get('[data-cy="results-checkbox"]')
-      .should('not.exist');
   });
 });

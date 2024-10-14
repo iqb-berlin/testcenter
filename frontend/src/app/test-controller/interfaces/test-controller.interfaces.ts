@@ -127,8 +127,8 @@ export interface StateUpdate<StateType extends string> {
   unitAlias: string;
 }
 
-export type UnitStateUpdate = StateUpdate<UnitStateKey>;
 export type TestStateUpdate = StateUpdate<TestStateKey>;
+export type UnitStateUpdate = StateUpdate<UnitStateKey>;
 
 export enum MaxTimerEvent {
   STARTED = 'STARTED',
@@ -143,6 +143,8 @@ export interface ReviewDialogData {
   bookletname: string;
   unitAlias: string;
   unitTitle: string;
+  currentPageIndex: number;
+  currentPageLabel: string;
 }
 
 export interface KeyValuePairNumber {
@@ -213,6 +215,7 @@ export interface Unit extends UnitDef {
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };
   lockedAfterLeaving: boolean;
+  pageLabels: { [id: string]: string };
 }
 
 export const TestletLockTypes = ['show', 'time', 'code', 'afterLeave'] as const;

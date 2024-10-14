@@ -109,6 +109,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.bs.addUnitLog(
             this.tcs.testId,
             this.tcs.currentUnit.alias,
+            this.tcs.currentUnit.id,
             [
               {
                 key: `Runtime Error: ${msgData.code}`,
@@ -176,6 +177,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       this.readPages(playerState.validPages);
       this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
+      if (this.tcs.currentUnit) this.tcs.currentUnit.pageLabels = this.pages;
 
       if (typeof playerState.currentPage !== 'undefined') {
         const pageId = playerState.currentPage;
@@ -212,7 +214,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     }
     if (msgData.log && this.tcs.currentUnit) {
-      this.bs.addUnitLog(this.tcs.testId, this.tcs.currentUnit.alias, msgData.log);
+      this.bs.addUnitLog(this.tcs.testId, this.tcs.currentUnit.alias, this.tcs.currentUnit.id, msgData.log);
     }
   }
 
@@ -350,10 +352,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (this.tcs.testMode.presetCode) {
       this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';
     }
-
-    // if (this.tcs.testMode.canChoosePathManually) {
-    //   this.tsc.unlock
-    // }
 
     this.runUnit();
   }

@@ -2,7 +2,7 @@ insert into `users` values (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb'
 insert into `users` values (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
 insert into admin_sessions (token, user_id, valid_until) values('admin_token', 1, '2032-01-01 00:00:00');
 insert into admin_sessions (token, user_id, valid_until) values('other_admin_token', 2, '2032-01-01 00:00:00');
-insert into `workspaces` values (1,'example_workspace', '');
+insert into `workspaces` values (1,'example_workspace', '', 'mixed');
 insert into `workspace_users` values (1, 1, 'RW');
 
 
@@ -89,11 +89,11 @@ values (2, 'sample unit log', '1597903000');
 insert into test_logs (booklet_id, logentry, timestamp)
 values (1, 'sample log entry', 1597903000);
 
-insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review');
+insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent)
+values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review', '');
 
-insert into unit_reviews (unit_id, reviewtime, priority, categories, entry)
-values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review');
+insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent)
+values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review', null, null, '');
 
 insert into unit_data (unit_id, part_id, content, ts, response_type)
 values (1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');

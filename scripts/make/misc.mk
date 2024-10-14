@@ -8,14 +8,14 @@ run-task-runner:
 # Copies files from the containers to local. This is useful for development in an IDE environment.
 # Container must be run at least once!
 sync-package-files:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package.json frontend/package.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/node_modules frontend/node_modules
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/vendor backend
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/composer.lock backend/composer.lock
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/package.json frontend/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/package-lock.json frontend/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/usr/src/testcenter/frontend/node_modules frontend/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package.json broadcasting-service/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package-lock.json broadcasting-service/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/node_modules broadcasting-service/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/vendor backend
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
 
 update-docs:
 	make docs-frontend-compodoc
@@ -43,54 +43,56 @@ create-interfaces:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run --name=testcenter-task-runner \
 		testcenter-task-runner npx --yes update-browserslist-db@latest && npm run create-interfaces
 	# can not  use compose here https://github.com/docker/compose/issues/8467
-	docker cp testcenter-task-runner:/app/package.json ./package.json
-	docker cp testcenter-task-runner:/app/package-lock.json ./package-lock.json
+	docker cp testcenter-task-runner:/usr/src/testcenter/task-runner/package.json ./package.json
+	docker cp testcenter-task-runner:/usr/src/testcenter/task-runner/package-lock.json ./package-lock.json
 
 composer-install:
-	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
-		testcenter-backend-composer \
-		composer install --no-interaction --no-ansi
+	docker run --rm --interactive --tty\
+			--volume $(CURDIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
+			--volume $(CURDIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock\
+			--volume $(CURDIR)/backend/src:/usr/src/testcenter/backend/src\
+			--volume $(CURDIR)/backend/test:/usr/src/testcenter/backend/test\
+			--volume $(CURDIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
+			--volume $(HOME)/.composer:/tmp/cache\
+		composer:lts install --no-interaction --ignore-platform-reqs --no-ansi --working-dir=/usr/src/testcenter/backend
+	make build service=testcenter-backend
 
 composer-update:
-	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
-		testcenter-backend-composer \
-		composer update --no-interaction --no-ansi --working-dir=/var/www/backend
+	docker run --rm --interactive --tty\
+			--volume $(CURDIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
+			--volume $(CURDIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock\
+			--volume $(CURDIR)/backend/src:/usr/src/testcenter/backend/src\
+			--volume $(CURDIR)/backend/test:/usr/src/testcenter/backend/test\
+			--volume $(CURDIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
+			--volume $(HOME)/.composer:/tmp/cache\
+		composer:lts update --no-interaction --ignore-platform-reqs --no-ansi --working-dir=/usr/src/testcenter/backend
+	make build service=testcenter-backend
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.
-backend-refresh-autoload:
-	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-	docker run \
-		-v $(CURDIR)/backend/composer.json:/var/www/backend/composer.json \
-		-v $(CURDIR)/backend/composer.lock:/var/www/backend/composer.lock \
-		-v $(CURDIR)/backend/vendor:/var/www/backend/vendor \
-		-v $(CURDIR)/backend/src:/var/www/backend/src \
-		-v $(CURDIR)/backend/test:/var/www/backend/test \
-		testcenter-backend-composer \
-		composer dump-autoload --working-dir=/var/www/backend
+composer-refresh-autoload:
+	docker run --rm --interactive --tty\
+			--volume $(CURDIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json:ro\
+			--volume $(CURDIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock:ro\
+			--volume $(CURDIR)/backend/src:/usr/src/testcenter/backend/src:ro\
+			--volume $(CURDIR)/backend/test:/usr/src/testcenter/backend/test:ro\
+			--volume $(CURDIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
+			--volume $(HOME)/.composer:/tmp/cache\
+		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
+	make build service=testcenter-backend
 
 new-version:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
  		--rm --entrypoint="" \
  		testcenter-backend \
- 		php /var/www/backend/test/update-sql-scheme.php
+    php /var/www/testcenter/backend/test/update-sql-scheme.php
 	make run-task-runner task="new-version $(version)"
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/backend/initialize.php
+	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
 
 # Use this param to only show issues which can be solved by updating
 #--ignore-unfixed
 image-scan:
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image \
     --security-checks vuln $(image):$(tag)

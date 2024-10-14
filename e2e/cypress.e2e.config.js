@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { defineConfig } = require('cypress');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const logToOutput = require('cypress-log-to-output');
 const deleteFolder = require('./cypress/plugins/delete-folder');
 const waitForServer = require('./cypress/plugins/wait-for-server');

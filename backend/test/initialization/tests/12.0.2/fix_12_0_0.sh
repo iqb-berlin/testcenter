@@ -32,12 +32,17 @@ php backend/initialize.php \
 --dont_create_sample_data \
 --skip_read_workspace_files=true \
 --skip_db_integrity_check=true
-expect_init_script_failed
-expect_table_to_have_rows unit_data 0 # second part of the patch failed
-expect_table_to_have_rows units 2
-rm scripts/database/patches.d/12.0.0.sql
-
+(
+  expect_init_script_failed
+  expect_table_to_have_rows unit_data 0 # second part of the patch failed
+  expect_table_to_have_rows units 2
+)
+remove_patch 12.0.0
 remove_error_lock
+if [ $? = 1 ] then
+  return 1
+fi
+
 
 echo_h2 "In the mean time the testcenter could be used!"
 echo "INSERT INTO units (name, booklet_id, laststate) VALUES ('UNIT_NEW', 1, 'state');" | run sql

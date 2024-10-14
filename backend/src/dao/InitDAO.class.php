@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit tests
@@ -41,16 +42,46 @@ class InitDAO extends SessionDAO {
     $loginSession = $sessionDAO->createLoginSession($testLogin);
 
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
-    $test = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', 'Sample Booklet 1');
+    $test = $testDAO->createTest(
+      $personSession->getPerson()->getId(),
+      new TestName('BOOKLET.SAMPLE-1'),
+      'Sample Booklet 1'
+    );
     $testDAO->setTestRunning($test->id);
-    $testDAO->addTestReview($test->id, 1, "", "sample booklet review");
-    $testDAO->addUnitReview($test->id, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+    $testDAO->addTestReview(
+      $test->id,
+      1,
+      "content",
+      "luigi: sample booklet review",
+      'Firefox/126.0'
+    );
+    $testDAO->addUnitReview(
+      $test->id,
+      "UNIT.SAMPLE",
+      1,
+      "content",
+      "mario: this is a sample unit review",
+      'Firefox/126.0',
+      "UNIT.SAMPLE",
+      1,
+      'page-1',
+    );
     $testDAO->addUnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp);
     $testDAO->addTestLog($test->id, "sample log entry", $timestamp);
-    $testDAO->updateDataParts($test->id, 'UNIT.SAMPLE', ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"], "example-data-format", $timestamp);
+    $testDAO->updateDataParts(
+      $test->id,
+      'UNIT.SAMPLE',
+      ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"],
+      "example-data-format",
+      $timestamp
+    );
     $testDAO->updateUnitState($test->id, "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
     $testDAO->updateTestState($test->id, ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
-    $test2 = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', 'Sample Booklet 2');
+    $test2 = $testDAO->createTest(
+      $personSession->getPerson()->getId(),
+      new TestName('BOOKLET.SAMPLE-2'),
+      'Sample Booklet 2'
+    );
     $testDAO->lockTest($test2->id);
     $testDAO->setTestRunning($test2->id);
   }
@@ -155,7 +186,7 @@ class InitDAO extends SessionDAO {
     $superAdminDAO->setWorkspaceRightsByUser(
       $adminId,
       array_map(
-        function(int $wsId) {
+        function (int $wsId) {
           return (object) [
             "role" => "RW",
             "id" => $wsId
@@ -282,7 +313,7 @@ class InitDAO extends SessionDAO {
     ];
 
     $patches = array_map(
-      function($file) {
+      function ($file) {
         return basename($file, '.sql');
       },
       Folder::glob($patchesDir, '*.sql')

@@ -75,7 +75,7 @@ try {
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();
   if (!$initDAO->checkSQLMode()) {
-    throw new Exception('SQLMode is not set properly. Check the file-rights of config/my.cnf to be 444 and restart.');
+    throw new Exception('SQLMode is not set properly. Check the config and restart.');
   }
   CLI::success("SQL-Mode seems to be OK.");
 

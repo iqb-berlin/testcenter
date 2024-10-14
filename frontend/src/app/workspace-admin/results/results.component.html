@@ -24,6 +24,17 @@
     <button
       color="primary"
       mat-raised-button
+      (click)="downloadNewReviewsCSV()"
+      [disabled]="!tableSelectionCheckbox.hasValue()"
+      matTooltip="(NEU) Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-comments-newFormat"
+    >
+      <mat-icon>cloud_download</mat-icon>Kommentare (neues Format)
+    </button>
+    <button
+      color="primary"
+      mat-raised-button
       (click)="downloadReviewsCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
       matTooltip="Download markierte Gruppen als CSV für Excel"

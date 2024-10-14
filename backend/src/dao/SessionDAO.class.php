@@ -77,18 +77,18 @@ class SessionDAO extends DAO {
   /**
    * @codeCoverageIgnore
    */
-  public function getOrCreateLoginSession(string $name, string $password): ?LoginSession {
+  public function getOrCreateLoginSession(string $name, string $password): LoginSession | FailedLogin {
     $login = $this->getLogin($name, $password);
 
-    if (!$login) {
-      return null;
+    if (!is_a($login, Login::class)) {
+      return $login;
     }
 
     return $this->createLoginSession($login);
   }
 
-  public function getLogin(string $name, string $password): ?Login {
-    $login = $this->_(
+  public function getLogin(string $name, string $password): Login | FailedLogin {
+    $result = $this->_(
       'select         
               logins.name,
               logins.mode,
@@ -101,10 +101,11 @@ class SessionDAO extends DAO {
               logins.valid_from,
               logins.valid_for,
               logins.custom_texts,
-              logins.password
+              logins.password,
+              logins.monitors
             from 
               logins
-              left join login_sessions on (logins.name = login_sessions.name)
+              left join login_sessions on (logins.name = login_sessions.name and logins.group_name = login_sessions.group_name)  
               left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
             where 
               logins.name = :name',
@@ -113,34 +114,41 @@ class SessionDAO extends DAO {
       ]
     );
 
-    // we always check one password to not leak the existence of username to time-attacks
-    if (!$login) {
-      $login = ['password' => 'dummy'];
-    }
-
-    // TODO also use customizable use salt for testees? -> change would break current sessions
-    if (!Password::verify($password, $login['password'], 't')) {
-      return null;
+    if (!$result) {
+      // we always check one password to not leak the existence of username to time-attacks
+      Password::verify($password, 'dummy', 't');
+      return FailedLogin::usernameNotFound;
     }
 
     TimeStamp::checkExpiration(
-      TimeStamp::fromSQLFormat($login['valid_from']),
-      TimeStamp::fromSQLFormat($login['valid_to'])
+      TimeStamp::fromSQLFormat($result['valid_from']),
+      TimeStamp::fromSQLFormat($result['valid_to'])
     );
 
-    return new Login(
-      $login['name'],
+    $login = new Login(
+      $result['name'],
       '',
-      $login['mode'],
-      $login['group_name'],
-      $login['group_label'],
-      JSON::decode($login['codes_to_booklets'], true),
-      (int) $login['workspace_id'],
-      TimeStamp::fromSQLFormat($login['valid_to']),
-      TimeStamp::fromSQLFormat($login['valid_from']),
-      (int) $login['valid_for'],
-      JSON::decode($login['custom_texts'])
+      $result['mode'],
+      $result['group_name'],
+      $result['group_label'],
+      JSON::decode($result['codes_to_booklets'], true),
+      (int) $result['workspace_id'],
+      TimeStamp::fromSQLFormat($result['valid_to']),
+      TimeStamp::fromSQLFormat($result['valid_from']),
+      (int) $result['valid_for'],
+      JSON::decode($result['custom_texts']),
+      JSON::decode($result['monitors'], true)
     );
+
+
+    // TODO also use customizable use salt for testees? -> change would break current sessions
+    if (!Password::verify($password, $result['password'], 't')) {
+      return Mode::hasCapability($login->getMode(), 'protectedLogin') ?
+        FailedLogin::wrongPasswordProtectedLogin :
+        FailedLogin::wrongPassword;
+    }
+
+    return $login;
   }
 
   public function createLoginSession(Login $login): LoginSession {
@@ -200,7 +208,8 @@ class SessionDAO extends DAO {
                     logins.password,
                     logins.valid_for,
                     logins.valid_to,
-                    logins.valid_from
+                    logins.valid_from,
+                    logins.monitors
                 from
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
@@ -234,7 +243,8 @@ class SessionDAO extends DAO {
         TimeStamp::fromSQLFormat($loginSession['valid_to']),
         TimeStamp::fromSQLFormat($loginSession['valid_from']),
         (int) $loginSession['valid_for'],
-        JSON::decode($loginSession['custom_texts'])
+        JSON::decode($loginSession['custom_texts']),
+        JSON::decode($loginSession['monitors'], true)
       )
     );
   }
@@ -247,7 +257,7 @@ class SessionDAO extends DAO {
   ): PersonSession {
     $login = $loginSession->getLogin();
 
-    if (count($login->testNames()) and !array_key_exists($code, $login->testNames())) {
+    if (count($login->testNames()) and !$login->codeExists($code)) {
       throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
     }
 
@@ -365,6 +375,7 @@ class SessionDAO extends DAO {
                 logins.valid_to,
                 logins.valid_from,
                 logins.valid_for,
+                logins.monitors,
                 person_sessions.id as "person_id",
                 person_sessions.code,
                 person_sessions.valid_until,
@@ -403,7 +414,8 @@ class SessionDAO extends DAO {
           Timestamp::fromSQLFormat($personSession['valid_to']),
           Timestamp::fromSQLFormat($personSession['valid_from']),
           $personSession['valid_for'],
-          JSON::decode($personSession['custom_texts'])
+          JSON::decode($personSession['custom_texts']),
+          JSON::decode($personSession['monitors'], true)
         )
       ),
       new Person(
@@ -702,7 +714,7 @@ class SessionDAO extends DAO {
       $filterSQL
     order by id";
 
-    $result = $this->_($sql, $replacements,true);
+    $result = $this->_($sql, $replacements, true);
 
     foreach ($result as $row) {
       $logins[] =
@@ -727,5 +739,42 @@ class SessionDAO extends DAO {
     }
 
     return $logins;
+  }
+
+  /** @return SystemCheck[] */
+  public function getSysChecksOfPerson(PersonSession $personSession): array
+  {
+    $wsId = $personSession->getLoginSession()->getLogin()->getWorkspaceId();
+    $sessionName = $personSession->getLoginSession()->getLogin()->getName();
+
+    $syschecks = $this->_("
+      select * 
+      from files 
+      left join logins on files.workspace_id = logins.workspace_id
+      where 
+        files.type = 'SysCheck' and
+        logins.name = :session_name and
+        logins.workspace_id = :ws_id and
+        logins.mode = 'sys-check-login'
+      ",
+      [
+        'session_name' => $sessionName,
+        'ws_id' => $wsId,
+      ],
+      true
+    );
+
+    return array_map(
+      function (array $sysCheck) {
+        return new SystemCheck(
+          (string) $sysCheck['workspace_id'],
+          (string) $sysCheck['id'],
+          $sysCheck['name'],
+          $sysCheck['label'],
+          $sysCheck['description']
+        );
+      },
+      $syschecks
+    );
   }
 }

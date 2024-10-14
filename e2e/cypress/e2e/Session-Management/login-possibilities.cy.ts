@@ -54,11 +54,17 @@ describe('Check Login Possibilities', () => {
   });
 
   it('should be possible to login as link', () => {
-    cy.visit(`${Cypress.config().baseUrl}`);
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
+    cy.wait(1000);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.contains('as_link')
       .should('exist');
+  });
+
+  it('should be possible to login as link and jump into test', () => {
+    cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
+    cy.wait(1000);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
   });
 
   it('should be not possible to login with wrong code', () => {
@@ -154,5 +160,19 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.contains('hret2')
       .should('exist');
+  });
+
+  it('should be possible to login as link and jump into test (sys-check)', () => {
+    cy.visit(`${Cypress.config().baseUrl}/#/syscheck`);
+    cy.wait(1000);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+  });
+
+  it('should be possible to login for sys-check with name and right password and start test immediately (sys-check)', () => {
+    insertCredentials('syscheck', '');
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
   });
 });

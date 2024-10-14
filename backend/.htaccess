@@ -1,4 +1,4 @@
-Header add Access-Control-Expose-Headers "SubscribeURI, Error-ID"
+Header add Access-Control-Expose-Headers "SubscribeURI, Error-ID, Test-Mode"
 
 # the browsers does store 410, so re-activated accounts could never be used again without this
 Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate" "expr=%{REQUEST_STATUS} == 410"
@@ -13,7 +13,7 @@ RewriteEngine on
 # can be installed in subdir or not
 RewriteBase /
 
-# rewrite all calls except docs to index.php
+# rewrite all calls to index.php
 RewriteCond %{REQUEST_FILENAME} !index.php
 
 # find real base

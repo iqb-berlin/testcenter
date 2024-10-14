@@ -59,13 +59,14 @@ export class BackendService {
     );
   }
 
-  getReport(workspaceId: number, reportType: ReportType, dataIds: string[]) : Observable<Blob> {
+  getReport(workspaceId: number, reportType: ReportType, dataIds: string[], useNewVersion: boolean) : Observable<Blob> {
     return this.http
       .get(
         `${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
         {
           params: {
-            dataIds: dataIds.join(',')
+            dataIds: dataIds.join(','),
+            useNewVersion: useNewVersion
           },
           headers: {
             Accept: 'text/csv'
@@ -121,5 +122,13 @@ export class BackendService {
         filter((response: UploadResponse | null): response is UploadResponse => (response !== null)
         )
       );
+  }
+
+  getFilesWithDependencies(workspaceId: number, ...files: string[]): Observable<GetFileResponseData> {
+    return this.http
+      .post<GetFileResponseData>(
+      `${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
+      { body: files }
+    );
   }
 }

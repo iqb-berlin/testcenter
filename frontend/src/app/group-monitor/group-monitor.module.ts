@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -16,6 +16,11 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { A11yModule } from '@angular/cdk/a11y';
 import { SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
@@ -25,6 +30,7 @@ import { TestSessionComponent } from './test-session/test-session.component';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
+import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
 import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
@@ -34,6 +40,8 @@ import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
 @NgModule({
   declarations: [
     GroupMonitorComponent,
+    TestSessionComponent,
+    AddFilterDialogComponent,
     TestSessionComponent,
     IsCodeClearPipe,
     TimeLeftPipe,
@@ -59,7 +67,13 @@ import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
     MatCheckboxModule,
     MatSlideToggleModule,
     SharedModule,
-    MatDialogModule
+    MatDialogModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatAutocompleteModule,
+    A11yModule
   ],
   providers: [
     BackendService,

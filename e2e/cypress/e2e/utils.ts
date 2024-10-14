@@ -32,6 +32,10 @@ export const resetBackendData = (): void => {
     headers: { TestMode: 'prepare-integration' }
   })
     .its('status').should('eq', 200);
+  cy.request({
+    url: `${Cypress.env('urls').backend}/flush-broadcasting-service`
+  })
+    .its('status').should('eq', 200);
 };
 
 export const insertCredentials = (username: string, password = ''): void => {
@@ -67,7 +71,6 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
       // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
       // seems to be the least bad solution
-      cy.wait(2000);
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();
@@ -99,6 +102,13 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     }
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
+
+export const hardLogOut = (): void => {
+  // this might replace logoutTestTaker once
+  cy.clearLocalStorage();
+  cy.clearCookies();
+  cy.reload(true);
+}
 
 export const openSampleWorkspace1 = (): void => {
   cy.get('[data-cy="workspace-1"]')
@@ -143,7 +153,7 @@ export const loginWorkspaceAdmin = (): void => {
 };
 
 export const loginTestTaker =
-  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' = 'starter'): void => {
+  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' = 'starter'): void => {
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
@@ -154,15 +164,22 @@ export const loginTestTaker =
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
-    if (expectedView === 'test-hot') {
-      cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
-    }
-    if (expectedView !== 'starter') {
-      cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
-    } else {
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-      cy.contains(name)
-        .should('exist');
+
+    // eslint-disable-next-line default-case
+    switch (expectedView) {
+      case 'test-hot':
+        cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
+      // eslint-disable-next-line no-fallthrough
+      case 'test':
+        cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
+        break;
+      case 'starter':
+        cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.contains(name)
+          .should('exist');
+        break;
+      case 'code-input':
+        cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
     }
   };
 

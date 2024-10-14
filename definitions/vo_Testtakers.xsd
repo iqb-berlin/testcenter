@@ -18,22 +18,32 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="Profiles" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="GroupMonitor" minOccurs="0" type="ProfilesSectorGroupMonitorType" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="Group" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Login" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Booklet" minOccurs="0" maxOccurs="unbounded">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute name="codes" type="xs:string" />
-                            <xs:attribute name="state" type="StateListType" />
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element>
+                    <xs:choice>
+                      <xs:element name="Booklet" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                          <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                              <xs:attribute name="codes" type="xs:string" />
+                              <xs:attribute name="state" type="StateListType" />
+                            </xs:extension>
+                          </xs:simpleContent>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType" />
+                    </xs:choice>
                   </xs:sequence>
                   <xs:attribute name="name" type="xs:string" use="required"/>
                   <xs:attribute name="pw" type="xs:string"/>
@@ -94,6 +104,15 @@
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
+                        <xs:enumeration value="sys-check-login">
+                          <xs:annotation>
+                            <xs:documentation>
+                              If this role is given once within a testcenter instance, the system check will be removed
+                              from the login-page and can only be accessed after logging into the workspace where this
+                              role exists.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
                         <xs:enumeration value="run-demo">
                           <xs:annotation>
                             <xs:documentation>
@@ -115,8 +134,8 @@
                   <xs:attribute name="monitorcode" type="xs:string">
                     <xs:annotation>
                       <xs:documentation>
-                        This attribute creates an group-monitor for this group which has the same login-credentials as
-                        the testees but it's own code.
+                        This attribute creates a group-monitor for this group which has the same login-credentials as
+                        the testees, but its own code.
                         ** This feature is only a proposal and not implemented **
                       </xs:documentation>
                     </xs:annotation>
@@ -180,6 +199,14 @@
       <xs:selector xpath="Group"/>
       <xs:field xpath="@id"/>
     </xs:unique>
+    <xs:key name="profileId">
+      <xs:selector xpath="Profiles/*/Profile"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="profileIdRef" refer="profileId">
+      <xs:selector xpath="Group/Login/Profile" />
+      <xs:field xpath="@id"/>
+    </xs:keyref>
   </xs:element>
 
   <xs:complexType name="customTextType">
@@ -195,4 +222,92 @@
       <xs:pattern value="([a-z\d-]+:[a-z\d-]+,?\W?)+"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="ProfileReferenceType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProfileType">
+    <xs:sequence>
+      <xs:element name="Filter" type="FilterType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="label" type="xs:string" />
+    <xs:attribute name="blockColumn" type="GroupMonitorProfileColumnSetting" />
+    <xs:attribute name="unitColumn" type="GroupMonitorProfileColumnSetting" />
+    <xs:attribute name="groupColumn" type="GroupMonitorProfileColumnSetting" />
+    <xs:attribute name="bookletColumn" type="GroupMonitorProfileColumnSetting" />
+    <xs:attribute name="view" type="GroupMonitorProfileViewSetting" />
+    <xs:attribute name="filterPending" type="GroupMonitorProfileFilterSetting" />
+    <xs:attribute name="filterLocked" type="GroupMonitorProfileFilterSetting" />
+  </xs:complexType>
+
+  <xs:complexType name="FilterType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="field" type="GroupMonitorProfileFilterField" />
+        <xs:attribute name="type" type="FilterTypeType" />
+        <xs:attribute name="value" type="xs:string" />
+        <xs:attribute name="not" type="xs:boolean" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="FilterTypeType" final="restriction" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="equal" />
+      <xs:enumeration value="substring" />
+      <xs:enumeration value="regex" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- see groupMonitorInterfaces.ts -->
+  <xs:simpleType name="GroupMonitorProfileFilterField">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bookletLabel"/>
+      <xs:enumeration value="personLabel"/>
+      <xs:enumeration value="state"/>
+      <xs:enumeration value="blockLabel"/>
+      <xs:enumeration value="groupName"/>
+      <xs:enumeration value="bookletId"/>
+      <xs:enumeration value="unitId"/>
+      <xs:enumeration value="unitLabel"/>
+      <xs:enumeration value="blockId"/>
+      <xs:enumeration value="testState"/>
+      <xs:enumeration value="mode"/>
+      <xs:enumeration value="bookletSpecies"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorProfileColumnSetting">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="show"/>
+      <xs:enumeration value="hide"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorProfileFilterSetting">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="yes"/>
+      <xs:enumeration value="no"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorProfileViewSetting">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="full"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="small"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ProfilesSectorGroupMonitorType">
+    <xs:sequence>
+      <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileType" />
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>

@@ -1,45 +1,95 @@
+#TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
+TC_BASE_DIR := .
+
+## prevents collisions of make target names with possible file names
+.PHONY: init build run down start stop logs build-prod-local up-prod-local down-prod-local logs-prod-local
+
 # Initialized the Application. Run this right after checking out the Repo.
 init:
-	cp docker/default.env docker/.env
-	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-	chmod 0444 scripts/database/my.cnf # mysql does not accept it with more rights
-	chmod 0644 scripts/database/000-create-test-db.sh # with more rights it does fail with seemingly unrelated error
-	mkdir -p docs/dist
-	chmod 777 docs/dist
-	mkdir -p data
-	chmod 777 data
+	cp $(TC_BASE_DIR)/docker/default.env $(TC_BASE_DIR)/docker/.env
+	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
+	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
+	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
+	mkdir -m 777 -p $(TC_BASE_DIR)/data
 
 # Build all images of the project or a specified one as dev-images.
-# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
+# Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
 build:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml build $(service)
+	cd $(TC_BASE_DIR) &&\
+	docker compose --progress plain --file docker/docker-compose.yml --file docker/docker-compose.dev.yml build $(service)
 
-# Starts the application.
+# Ramp the application up (i.e. creates and starts all application containers).
 # Hint: Stop local webserver before, to free port 80
-# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
+# Param: (optional) service - Only ramp up a specified service, e.g. `service=testcenter-backend`
 run:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
+	cd $(TC_BASE_DIR) &&\
+	docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml up --detach $(service)
+
+# Stop and remove all application containers.
+down:
+	cd $(TC_BASE_DIR) &&\
+	docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml down --remove-orphans $(service)
+
+# Start the application with already existing containers.
+# Param: (optional) service - Only start a specified service, e.g. `service=testcenter-backend`
+start:
+	cd $(TC_BASE_DIR) &&\
+	docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml start $(service)
+
+# Stop the application but don't remove the service containers.
+# Param: (optional) service - Only stop a specified service, e.g. `service=testcenter-backend`
+stop:
+	cd $(TC_BASE_DIR) &&\
+	docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml stop $(service)
+
+# Log the application.
+# Param: (optional) service - Only log a specified service, e.g. `service=testcenter-backend`
+logs:
+	cd $(TC_BASE_DIR) &&\
+	docker compose --file docker/docker-compose.yml --file docker/docker-compose.dev.yml logs --follow $(service)
 
 run-fast:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
 
 # Build all images of the project or a specified one as prod-images.
-# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
+# Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
 build-prod-local:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.local-prod.yml build $(service)
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--progress plain\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.local-prod.yml\
+		build $(service)
 
-# Starts the application with locally build prod-images.
+# Ramp the application up from locally build production images.
 # Hint: Stop local webserver before, to free port 80
-# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
-run-prod-local:
-	make build-prod-local container=$(service)
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml -f docker/docker-compose.local-prod.yml up $(service)
+# Param: (optional) service - Only ramp up a specified production service, e.g. `service=testcenter-backend`
+up-prod-local:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--progress plain\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.local-prod.yml\
+		up --build --detach $(service)
 
-# Stops the application.
-stop:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml stop $(service)
+# Stop and remove all application containers from locally build production images.
+# Param: (optional) service - Only stop and remove a specified service, e.g. `service=testcenter-backend`
+down-prod-local:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.local-prod.yml\
+		down $(service)
 
-
-# Stops the application. Deletes all containers.
-down:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down --remove-orphans $(service)
+# Logs the application with locally build prod-images.
+# Param: (optional) service - Only log a specified service, e.g. `service=testcenter-backend`
+logs-prod-local:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--file docker/docker-compose.yml\
+			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.local-prod.yml\
+		logs --follow $(service)

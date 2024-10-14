@@ -1,18 +1,11 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO add unit-tests
 
 class AccessSet extends DataCollectionTypeSafe {
-
-  static array $accessObjectTypes = [
-    'test',
-    'superAdmin',
-    'workspaceAdmin',
-    'studyMonitor',
-    'testGroupMonitor',
-    'attachmentManager'
-  ];
 
   protected string $token;
   protected string $displayName;
@@ -23,7 +16,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
   static function createFromPersonSession(
     PersonSession $loginWithPerson,
-    WorkspaceData | TestData | Group ...$accessItems
+    WorkspaceData|TestData|Group|SystemCheck ...$accessItems
   ): AccessSet {
     $login = $loginWithPerson->getLoginSession()->getLogin();
 
@@ -50,18 +43,20 @@ class AccessSet extends DataCollectionTypeSafe {
           }
           break;
         case 'Group':
-          $accessSet->addGroupMonitors($accessItem);
+          $accessSet->addGroupMonitors($login, $accessItem);
           break;
         case 'TestData':
           $accessSet->addTests($accessItem);
           break;
+        case 'SystemCheck':
+          $accessSet->addSystemChecks($accessItem);
       }
     }
 
     if (($login->getMode() == 'monitor-group') and str_starts_with($login->getGroupName(), 'experimental')) {
       $accessSet->addAccessObjects(
-        'attachmentManager',
-        new AccessObject($login->getGroupName(), 'attachmentManager', $login->getGroupLabel())
+        AccessObjectType::ATTACHMENT_MANAGER,
+        new AccessObject($login->getGroupName(), AccessObjectType::ATTACHMENT_MANAGER, $login->getGroupLabel())
       );
     }
 
@@ -75,10 +70,10 @@ class AccessSet extends DataCollectionTypeSafe {
     );
 
     $accessObjects = array_map(
-      function(WorkspaceData $workspace): AccessObject {
+      function (WorkspaceData $workspace): AccessObject {
         return new AccessObject(
           (string) $workspace->getId(),
-          'workspaceAdmin',
+          AccessObjectType::WORKSPACE_ADMIN,
           $workspace->getName(),
           ["mode" => $workspace->getMode()]
         );
@@ -86,10 +81,10 @@ class AccessSet extends DataCollectionTypeSafe {
       $workspaces
     );
 
-    $accessSet->addAccessObjects('workspaceAdmin', ...$accessObjects);
+    $accessSet->addAccessObjects(AccessObjectType::WORKSPACE_ADMIN, ...$accessObjects);
 
     if ($admin->isSuperadmin()) {
-      $accessSet->addAccessObjects('superAdmin');
+      $accessSet->addAccessObjects(AccessObjectType::SUPER_ADMIN);
     }
 
     return $accessSet;
@@ -114,7 +109,7 @@ class AccessSet extends DataCollectionTypeSafe {
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
-    $this->flags = array_map(function($flag) {
+    $this->flags = array_map(function ($flag) {
       return (string) $flag;
     }, $flags);
 
@@ -132,8 +127,8 @@ class AccessSet extends DataCollectionTypeSafe {
       $deprecatedFormat->$accessType = [];
 
       foreach ($accessObjectList as $accessObject) {
-        /* @var $accessObject AccessObject */
-        $deprecatedFormat->$accessType[] = $accessObject->getId();
+        /** @var $accessObject AccessObject */
+        $deprecatedFormat->$accessType[] = $accessObject->id;
       }
     }
     $json['access'] = $deprecatedFormat;
@@ -146,28 +141,26 @@ class AccessSet extends DataCollectionTypeSafe {
     return $displayName;
   }
 
-  public function hasAccessType(string $type): bool {
-    return isset($this->claims->$type);
+  public function hasAccessType(AccessObjectType $type): bool {
+    $accessType = $type->value;
+    return isset($this->claims->$accessType);
   }
 
-  private function addAccessObjects(string $type, AccessObject ...$accessObjects): void {
-    if (!in_array($type, $this::$accessObjectTypes)) {
-      throw new Exception("AccessObject type `$type` is not valid.");
+  private function addAccessObjects(AccessObjectType $type, AccessObject ...$accessObjects): void {
+    $accessType = $type->value;
+    if (!isset($this->claims->$accessType)) {
+      $this->claims->$accessType = [];
     }
 
-    if (!isset($this->claims->$type)) {
-      $this->claims->$type = [];
-    }
-
-    array_push($this->claims->$type, ...$accessObjects);
+    array_push($this->claims->$accessType, ...$accessObjects);
   }
 
   private function addTests(TestData ...$testsOfPerson): void {
     $bookletsData = array_map(
-      function(TestData $testData): AccessObject {
+      function (TestData $testData): AccessObject {
         return new AccessObject(
           $testData->name,
-          'test',
+          AccessObjectType::TEST,
           $testData->label,
           [
             'locked' => $testData->locked,
@@ -177,35 +170,63 @@ class AccessSet extends DataCollectionTypeSafe {
       },
       $testsOfPerson
     );
-    $this->addAccessObjects('test', ...$bookletsData);
+    $this->addAccessObjects(AccessObjectType::TEST, ...$bookletsData);
   }
 
-  private function addGroupMonitors(Group ...$groups): void {
-    $groupMonitors = array_map(
-      function(Group $group) {
-        $flags = [];
-        if ($group->_expired->type == ExpirationStateType::Expired) {
-          $flags['expired'] = $group->_expired->timestamp * 1000;
-        } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
-          $flags['scheduled'] = $group->_expired->timestamp * 1000;
-        };
-        return new AccessObject($group->name, 'testGroupMonitor', $group->label, $flags);
-      },
-      $groups
-    );
-    $this->addAccessObjects('testGroupMonitor', ...$groupMonitors);
+  private function addGroupMonitors(Login $login, Group ...$groups): void {
+    $profiles = $login->getProfiles();
+
+    foreach ($groups as $group) {
+      $flags = [];
+      if ($group->_expired->type == ExpirationStateType::Expired) {
+        $flags['expired'] = $group->_expired->timestamp * 1000;
+      } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
+        $flags['scheduled'] = $group->_expired->timestamp * 1000;
+      }
+      if (count($profiles)) {
+        foreach ($profiles as $profile) {
+          $profileFlags = $flags;
+          $profileFlags['profile'] = $profile['id'];
+          $profileFlags['subLabel'] = $profile['label'];
+          $this->addAccessObjects(
+            AccessObjectType::TEST_GROUP_MONITOR,
+            new AccessObject($group->name, AccessObjectType::TEST_GROUP_MONITOR, $group->label, $profileFlags)
+          );
+        }
+      } else {
+        $this->addAccessObjects(
+          AccessObjectType::TEST_GROUP_MONITOR,
+          new AccessObject($group->name, AccessObjectType::TEST_GROUP_MONITOR, $group->label, $flags)
+        );
+      }
+    }
   }
 
-  private function addStudyMonitor(WorkspaceData $accessItem): void
-  {
+  private function addStudyMonitor(WorkspaceData $accessItem): void {
     $this->addAccessObjects(
-      'studyMonitor',
+      AccessObjectType::STUDY_MONITOR,
       new AccessObject(
         (string) $accessItem->getId(),
-        'studyMonitor',
+        AccessObjectType::STUDY_MONITOR,
         $accessItem->getName()
       )
     );
+  }
 
+  private function addSystemChecks(SystemCheck ...$accessItems): void {
+    $systemChecks = array_map(
+      function (SystemCheck $systemCheck) {
+        return new SystemCheckAccessObject(
+          $systemCheck->getWorkspaceId(),
+          $systemCheck->getId(),
+          AccessObjectType::SYS_CHECK,
+          $systemCheck->getLabel(),
+          $systemCheck->getDescription()
+        );
+      },
+      $accessItems
+    );
+
+    $this->addAccessObjects(AccessObjectType::SYS_CHECK, ...$systemChecks);
   }
 }

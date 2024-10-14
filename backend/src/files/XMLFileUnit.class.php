@@ -54,8 +54,6 @@ class XMLFileUnit extends XMLFile {
   }
 
   private function checkIfResourcesExist(WorkspaceCache $cache): void {
-    $this->contextData['totalSize'] = $this->size;
-
     $this->addDependency($cache, FileRelationshipType::isDefinedBy, $this->getDefinitionRef());
     $this->addDependency($cache, FileRelationshipType::usesScheme, $this->getSchemeRef());
 
@@ -83,10 +81,6 @@ class XMLFileUnit extends XMLFile {
     } else {
       $this->report('error', "Resource `$resourceName` not found");
     }
-  }
-
-  public function getTotalSize(): int {
-    return $this->contextData['totalSize'];
   }
 
   public function readPlayerId(): string {

@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 declare(strict_types=1);
 
@@ -28,8 +29,11 @@ final class AdminDAOTest extends TestCase {
     $token = $this->dbc->createAdminToken('super', 'user123');
     $this->assertNotNull($token);
 
-    $this->expectException("HttpError");
-    $this->dbc->createAdminToken('peter', 'peterspassword');
+    $rejection = $this->dbc->createAdminToken('peter', 'peterspassword');
+    $this->assertEquals(FailedLogin::usernameNotFound, $rejection);
+
+    $rejection = $this->dbc->createAdminToken('super', 'peterspassword');
+    $this->assertEquals(FailedLogin::wrongPassword, $rejection);
   }
 
   public function test_validateToken() {
@@ -37,7 +41,7 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getAdmin($token);
     $this->assertEquals(1, $result->getId());
     $this->assertEquals('super', $result->getName());
-    $this->assertEquals(true, $result->isSuperadmin());
+    $this->assertTrue($result->isSuperadmin());
   }
 
   public function test_getWorkspaces() {
@@ -88,6 +92,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
         'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -104,6 +109,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+        'originalUnitId' => '',
         'responses' => [
           [
             'id' => "all",
@@ -140,14 +146,17 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample unit log'
-      ], [
+      ],
+      [
         'groupname' => 'sample_group',
         'loginname' => 'sample_user',
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => '',
+        'originalUnitId' => '',
         'timestamp' => 1597903000,
         'logentry' => 'sample log entry'
       ]
@@ -175,8 +184,13 @@ final class AdminDAOTest extends TestCase {
         'priority' => 1,
         'categories' => '',
         'reviewtime' => '2030-01-01 12:00:00',
-        'entry' => 'this is a sample unit review'
-      ], [
+        'entry' => 'this is a sample unit review',
+        'page' => null,
+        'pagelabel' => null,
+        'originalUnitId' => '',
+        'userAgent' => ''
+      ],
+      [
         'groupname' => 'review_group',
         'loginname' => 'test-review',
         'code' => '',
@@ -185,7 +199,11 @@ final class AdminDAOTest extends TestCase {
         'priority' => 1,
         'categories' => '',
         'reviewtime' => '2030-01-01 12:00:00',
-        'entry' => 'sample booklet review'
+        'entry' => 'sample booklet review',
+        'page' => null,
+        'pagelabel' => null,
+        'originalUnitId' => '',
+        'userAgent' => ''
       ]
     ];
 
@@ -276,14 +294,14 @@ final class AdminDAOTest extends TestCase {
 
     $expectation = [
       [
-      'groupName' => 'sample_group',
-      'groupLabel' => 'Sample Group',
-      'bookletsStarted' => 3,
-      'numUnitsMin' => 0,
-      'numUnitsMax' => 2,
-      'numUnitsTotal' => 3,
-      'numUnitsAvg' => 1.0,
-      'lastChange' => 1699956800
+        'groupName' => 'sample_group',
+        'groupLabel' => 'Sample Group',
+        'bookletsStarted' => 3,
+        'numUnitsMin' => 0,
+        'numUnitsMax' => 2,
+        'numUnitsTotal' => 3,
+        'numUnitsAvg' => 1.0,
+        'lastChange' => 1699956800
       ],
       [
         'groupName' => 'review_group',
@@ -307,8 +325,10 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getResultStats(1);
     $this->assertSame([$expectation[0]], $result);
 
-    $this->dbc->_("insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')");
+    $this->dbc->_(
+      "insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
+      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
+    );
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
   }
@@ -349,19 +369,19 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
-    $resultAsArray = array_map(function(SessionChangeMessage $s) {
+    $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
     $this->assertSame([], $resultAsArray);

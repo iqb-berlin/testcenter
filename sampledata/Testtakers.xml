@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.1.8/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.0-alpha3/definitions/vo_Testtakers.xsd">
 
   <Metadata>
-    <Description>This file contains some logins for testing and works a a sample for developers.</Description>
+    <Description>This file contains some logins for testing and works a sample for developers.</Description>
   </Metadata>
 
   <CustomTexts>
     <CustomText key="somestr">string</CustomText>
   </CustomTexts>
+
+  <Profiles>
+    <GroupMonitor>
+      <Profile
+        id="small"
+        label="Superklein"
+        blockColumn="hide"
+        unitColumn="hide"
+        groupColumn="hide"
+        bookletColumn="hide"
+        view="small"
+        filterLocked="yes"
+        filterPending="yes"
+      >
+        <Filter label="Reduced Booklet" type="equal" field="bookletLabel" value="Reduced Booklet" />
+      </Profile>
+      <Profile
+        id="all"
+        label="Alles zeigen"
+        blockColumn="show"
+        unitColumn="show"
+        groupColumn="show"
+        bookletColumn="show"
+        view="full"
+        filterLocked="no"
+        filterPending="no"
+      >
+      </Profile>
+    </GroupMonitor>
+  </Profiles>
 
   <Group id="sample_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
 
@@ -18,6 +48,11 @@
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
+    <Login mode="monitor-group" name="test-group-monitor-2" pw="user123">
+      <Profile id="all" />
+      <Profile id="small" />
+    </Login>
+    <Login mode="sys-check-login" name="sys-check" />
   </Group>
 
   <Group id="study_group" label="A group for the study monitor">

@@ -12,7 +12,7 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
   CustomtextService,
-  MainDataService
+  MainDataService, UserAgentService
 } from '../../../shared/shared.module';
 import {
   Command, MaxTimerEvent,
@@ -28,7 +28,6 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
-import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -154,14 +153,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (!authData) {
       throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // necessary?!
     } else {
-      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
-        data: <ReviewDialogData>{
-          loginname: authData.displayName,
-          bookletname: this.tcs.booklet?.metadata.label,
-          unitTitle: this.tcs.currentUnit?.label,
-          unitAlias: this.tcs.currentUnit?.alias
-        }
-      });
+      const dialogData = <ReviewDialogData>{
+        loginname: authData.displayName,
+        bookletname: this.tcs.booklet?.metadata.label,
+        unitTitle: this.tcs.currentUnit?.label,
+        unitAlias: this.tcs.currentUnit?.alias,
+        currentPageIndex: this.tcs.currentUnit?.state.CURRENT_PAGE_NR,
+        currentPageLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])
+      };
+      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, { data: dialogData });
 
       dialogRef.afterClosed().subscribe(result => {
         if (!result) {
@@ -170,10 +170,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (this.tcs.currentUnit && (result.target === 'u')) ? this.tcs.currentUnit.alias : null,
+          (result.target === 'u' || result.target === 'p') ? dialogData.unitAlias : null,
+          (result.target === 'p') ? dialogData.currentPageIndex : null,
+          (result.target === 'p') ? dialogData.currentPageLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+          UserAgentService.outputWithOs(),
+          this.tcs.currentUnit?.id || ''
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });

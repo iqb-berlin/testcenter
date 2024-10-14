@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use DI\Container;
@@ -9,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Factory\AppFactory;
 use Slim\Http\ServerRequest as Request;
-use Slim\Http\Response;
 
 /**
  * @runTestsInSeparateProcesses
@@ -26,15 +26,15 @@ final class WorkspaceControllerTest extends TestCase {
     [
       'key1' => "value1",
       'key2' => "value2"
-    ], [
+    ],
+    [
       'key1' => "value3",
       'key2' => "value4"
     ]
   ];
 
   private array $callable;
-
-  private Report|MockInterface $reportMock;
+  private array $reportMock;
   private AdminDAO|MockInterface $adminDaoMock;
   private SysChecksFolder|MockInterface $sysChecksFolderMock;
   private Workspace|MockInterface $workspaceMock;
@@ -52,10 +52,16 @@ final class WorkspaceControllerTest extends TestCase {
     require_once "test/unit/mock-classes/PasswordMock.php";
 
     $this->callable = [WorkspaceController::class, 'getReport'];
-    $this->reportMock = Mockery::mock('overload:' . Report::class);
+    $this->reportMock = [
+      ReportType::LOG->value => Mockery::mock('overload:' . LogReportOutput::class),
+      ReportType::RESPONSE->value => Mockery::mock('overload:' . ResponseReportOutput::class),
+      ReportType::REVIEW->value => Mockery::mock('overload:' . ReviewReportOutput::class),
+      ReportType::SYSCHECK->value => Mockery::mock('overload:' . SysCheckReportOutput::class)
+    ];
     $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
     $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
     $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
+    $this->workspaceDaoMock = Mockery::mock( 'overload:' . WorkspaceDAO::class);
 
     $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
     $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
@@ -87,7 +93,13 @@ final class WorkspaceControllerTest extends TestCase {
     $app = AppFactory::create();
     $app->get($path, $this->callable);
 
-    $request = $this->createReportRequest($this->requestMethod, $mediaType, $this->workspaceId, $reportType, $this->dataIds);
+    $request = $this->createReportRequest(
+      $this->requestMethod,
+      $mediaType,
+      $this->workspaceId,
+      $reportType,
+      $this->dataIds
+    );
     $response = $app->handle($request);
     $response->getBody()->rewind();
 
@@ -95,10 +107,10 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   private function createReportRequest(
-    string  $requestMethod,
-    string  $mediaType,
-    int     $workspaceId,
-    string  $reportType,
+    string $requestMethod,
+    string $mediaType,
+    int $workspaceId,
+    string $reportType,
     ?string $dataIds
   ): Request {
     $request = RequestCreator::create(
@@ -125,15 +137,22 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_WithLogAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::LOG->value, 'text/csv');
   }
 
-  private function testGetReportWithEmptyDataIds(string $reportType, string $mediaType, string $expectedMethod): void {
+  private function testGetReportWithEmptyDataIds(
+    string $reportType,
+    string $mediaType,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $this->dataIds = "";
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
+    if ($expectedMethod) {
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
+    }
+    $this->reportMock[$reportType]->expects('generate')->andReturn(false);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -146,43 +165,49 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReportWithLogAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::LOG->value, 'application/json');
   }
 
   function test_GetReportWithResponseAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE->value, 'text/csv');
   }
 
   function test_GetReportWithResponseAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE->value, 'application/json');
   }
 
   function test_GetReportWithReviewAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW->value, 'text/csv');
   }
 
   function test_GetReportWithReviewAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::REVIEW->value, 'application/json');
   }
 
   function test_GetReportWithSystemCheckAndCSVAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::SYSCHECK->value, 'text/csv');
   }
 
   function test_GetReportWithSystemCheckAndJSONAndEmptyDataIds(): void {
-    $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
+    $this->testGetReportWithEmptyDataIds(ReportType::SYSCHECK->value, 'application/json');
   }
 
   function test_GetReportWithLogAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'text/csv');
   }
 
-  private function testGetReportWithoutReportGeneration(string $reportType, string $mediaType, string $expectedMethod): void {
+  private function testGetReportWithoutReportGeneration(
+    string $reportType,
+    string $mediaType,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
-    $this->reportMock->expects('generate')->andReturn(false);
+    if ($expectedMethod) {
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
+    }
+    $this->reportMock[$reportType]->expects('generate')->andReturn(false);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -195,45 +220,47 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_LogAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::LOG->value, 'application/json');
   }
 
   function test_GetReport_ResponseAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE->value, 'text/csv');
   }
 
   function test_GetReport_ResponseAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE->value, 'application/json');
   }
 
   function test_GetReport_ReviewAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW->value, 'text/csv');
   }
 
   function test_GetReport_ReviewAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::REVIEW->value, 'application/json');
   }
 
   function test_GetReport_SystemCheckAndCSVAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::SYSCHECK->value, 'text/csv');
   }
 
   function test_GetReport_SystemCheckAndJSONAndNoneReportGeneration(): void {
-    $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
+    $this->testGetReportWithoutReportGeneration(ReportType::SYSCHECK->value, 'application/json');
   }
 
   function test_GetReport_LogAndCSV(): void {
-    $this->testGetCSVReport(ReportType::LOG, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::LOG->value);
   }
 
-  private function testGetCSVReport(string $reportType, string $expectedMethod): void {
+  private function testGetCSVReport(string $reportType, ?string $expectedMethod = null): void {
     // Arrange
     $mediaType = 'text/csv';
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
-    $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('getCsvReportData')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
+    if ($expectedMethod) {
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
+    }
+    $this->reportMock[$reportType]->expects('generate')->andReturn(true);
+    $this->reportMock[$reportType]->expects('asString')->andReturn(self::CSV_REPORT_DATA_SAMPLE);
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -245,16 +272,23 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_LogAndJSON(): void {
-    $this->testGetJSONReport(ReportType::LOG, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::LOG->value, 'application/json', ['application/json']);
   }
 
-  private function testGetJSONReport(string $reportType, string $mediaType, array $expectedContentTypes, string $expectedMethod): void {
+  private function testGetJSONReport(
+    string $reportType,
+    string $mediaType,
+    array $expectedContentTypes,
+    ?string $expectedMethod = null
+  ): void {
     // Arrange
     $path = "/$this->workspaceId/report/$reportType";
 
-    $this->reportMock->expects($expectedMethod)->withAnyArgs();
-    $this->reportMock->expects('generate')->andReturn(true);
-    $this->reportMock->expects('getReportData')->andReturn(self::JSON_REPORT_DATA_SAMPLE);
+    if ($expectedMethod) {
+      $this->reportMock[$reportType]->expects($expectedMethod)->withAnyArgs();
+    }
+    $this->reportMock[$reportType]->expects('generate')->andReturn(true);
+    $this->reportMock[$reportType]->expects('asString')->andReturn(json_encode(self::JSON_REPORT_DATA_SAMPLE));
 
     // Act
     $response = $this->callSlimFramework($path, $mediaType, $reportType);
@@ -266,50 +300,58 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_GetReport_ResponseAndCSV(): void {
-    $this->testGetCSVReport(ReportType::RESPONSE, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::RESPONSE->value);
   }
 
   function test_GetReport_ResponseAndJSON(): void {
-    $this->testGetJSONReport(ReportType::RESPONSE, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::RESPONSE->value, 'application/json', ['application/json']);
   }
 
   function test_GetReport_ReviewAndCSV(): void {
-    $this->testGetCSVReport(ReportType::REVIEW, 'setAdminDAOInstance');
+    $this->testGetCSVReport(ReportType::REVIEW->value);
   }
 
   function test_GetReport_ReviewAndJSON(): void {
-    $this->testGetJSONReport(ReportType::REVIEW, 'application/json', ['application/json'], 'setAdminDAOInstance');
+    $this->testGetJSONReport(ReportType::REVIEW->value, 'application/json', ['application/json']);
   }
 
   function test_GetReport_SystemCheckAndCSV(): void {
-    $this->testGetCSVReport(ReportType::SYSTEM_CHECK, 'setSysChecksFolderInstance');
+    $this->testGetCSVReport(ReportType::SYSCHECK->value);
   }
 
   function test_GetReport_SystemCheckAndJSON(): void {
-    $this->testGetJSONReport(ReportType::SYSTEM_CHECK, 'application/json', ['application/json'], 'setSysChecksFolderInstance');
+    $this->testGetJSONReport(ReportType::SYSCHECK->value, 'application/json', ['application/json']);
   }
 
   function test_GetReport_LogAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::LOG, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::LOG->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithResponseAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::RESPONSE, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::RESPONSE->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithReviewAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::REVIEW, 'application/xml', ['application/json'], 'setAdminDAOInstance');
+      ReportType::REVIEW->value,
+      'application/xml',
+      ['application/json']
+    );
   }
 
   function test_GetReport_WithSystemCheckAndInvalidAcceptHeader(): void {
     $this->testGetJSONReport(
-      ReportType::SYSTEM_CHECK,
+      ReportType::SYSCHECK->value,
       'application/xml',
-      ['application/json'],
-      'setSysChecksFolderInstance'
+      ['application/json']
     );
   }
 
@@ -332,6 +374,10 @@ final class WorkspaceControllerTest extends TestCase {
       ->expects('setWorkspaceHash')
       ->once();
 
+    $this->workspaceDaoMock
+      ->expects()
+      ->setSysCheckMode('mixed');
+
     $this->broadcastingServiceMock
       ->expects('send')
       ->times(1)
@@ -353,15 +399,30 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_postFile() {
+    $booklet = XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml');
+    $unit = XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml');
+    $testtakers = XMLFileTesttakers::fromString(
+      file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'),
+      'Testtakers.xml'
+    );
     $files = [
-      'Booklet.xml' => XMLFileBooklet::fromString(file_get_contents(ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml'),
-      'Unit2.xml' => XMLFileUnit::fromString(file_get_contents(ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml'),
-      'Testtakers.xml' => XMLFileTesttakers::fromString(file_get_contents(ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml')
+      'Booklet.xml' => $booklet,
+      'Unit2.xml' => $unit,
+      'Testtakers.xml' => $testtakers
     ];
+
+    $fileReports = array_reduce(
+      array_keys($files),
+      function ($agg, $fileName) use ($files) {
+        $agg[$fileName] = ['type' => $files[$fileName]->getType(), ...$files[$fileName]->getValidationReport()];
+        return $agg;
+      },
+      []
+    );
 
     $filesContents = array_reduce(
       array_keys($files),
-      function($agg, $fileName) use ($files) {
+      function ($agg, $fileName) use ($files) {
         $agg[$fileName] = $files[$fileName]->getContent();
         return $agg;
       },
@@ -369,9 +430,9 @@ final class WorkspaceControllerTest extends TestCase {
     );
 
     $this->workspaceMock
-      ->expects('importUnsortedFiles')
+      ->expects('importUncategorizedFiles')
       ->times(1)
-      ->andReturn($files);
+      ->andReturn($fileReports);
 
     $this->workspaceMock
       ->expects('setWorkspaceHash')

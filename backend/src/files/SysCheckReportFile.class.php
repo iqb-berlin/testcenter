@@ -65,7 +65,7 @@ class SysCheckReportFile {
     }
 
 
-    function get(): array {
+    function getReport(): array {
 
         return $this->report;
     }
@@ -83,12 +83,13 @@ class SysCheckReportFile {
     }
 
 
-    function getFlat(): array {
+    function getFlatReport(): array {
 
         $flatReport = [
             'Titel' => $this->title,
             'SysCheck-Id' => $this->checkId,
-            'SysCheck' => $this->checkLabel
+            'SysCheck' => $this->checkLabel,
+            'Responses' => $this->report['responses'] ? json_encode($this->report['responses']): ''
         ];
 
         foreach (SysCheckReportFile::reportSections as $section) {

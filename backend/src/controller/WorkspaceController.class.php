@@ -1,14 +1,14 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
-use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
 use Slim\Psr7\Stream;
 
 class WorkspaceController extends Controller {
@@ -122,25 +122,24 @@ class WorkspaceController extends Controller {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $workspace = new Workspace($workspaceId);
 
-    $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
+    $filesToImport = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
 
-    $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
+    $importedFilesReports = $workspace->importUncategorizedFiles($filesToImport);
     $workspace->setWorkspaceHash();
 
-    $reports = [];
     $loginsAffected = false;
     $containsErrors = false;
-    foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
-      $reports[$localPath] = $file->getValidationReport();
-      $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
-      $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
+    foreach ($importedFilesReports as $localPath => $report) {
+        $containsErrors = ($containsErrors or !empty($importedFilesReports[$localPath]['error']));
+        $loginsAffected = ($loginsAffected or ($containsErrors and ($importedFilesReports[$localPath]['type'] == 'Testtakers')));
+        $importedFilesReports[$localPath] = array_splice($report, 1); // revert to current structure for output so not to needlessly change the API
     }
 
     if ($loginsAffected) {
       BroadcastService::send('system/clean');
     }
 
-    return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
+    return $response->withJson($importedFilesReports)->withStatus($containsErrors ? 207 : 201);
   }
 
   public static function getFiles(Request $request, Response $response): Response {
@@ -152,7 +151,22 @@ class WorkspaceController extends Controller {
     // TODo change the FE and endpoint to accept it with keys
     $fileDigestList = [];
     foreach ($files as $fileType => $fileList) {
-      $fileDigestList[$fileType] = array_values($fileList);
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
+    }
+
+    return $response->withJson($fileDigestList);
+  }
+
+  public static function getFilesWithDependencies(Request $request, Response $response) {
+    $workspaceId = (int) $request->getAttribute('ws_id');
+    $names = RequestBodyParser::getRequiredElement($request, 'body');
+
+    $workspace = new Workspace($workspaceId);
+    $files = $workspace->workspaceDAO->getFilesByNames($names);
+
+    $fileDigestList = [];
+    foreach ($files as $fileType => $fileList) {
+      $fileDigestList[$fileType] = array_values(File::removeDeprecatedValues($fileList));
     }
 
     return $response->withJson($fileDigestList);
@@ -172,6 +186,7 @@ class WorkspaceController extends Controller {
       list($type) = explode('/', $deletedFile);
       if ($type == 'Testtakers') {
         BroadcastService::send('system/clean');
+        self::workspaceDAO($workspaceId)->setSysCheckMode('mixed');
         break;
       }
     }
@@ -189,46 +204,21 @@ class WorkspaceController extends Controller {
       : explode(',', $request->getParam('dataIds', ''));
 
     try {
-      $reportType = new ReportType($request->getAttribute('type'));
-    } catch (InvalidArgumentException $exception) {
+      $reportType = ReportType::from($request->getAttribute('type'));
+    } catch (ValueError $exception) {
       throw new HttpNotFoundException($request, "Report type '{$request->getAttribute('type')}' not found.");
     }
 
-    $reportFormat = $request->getHeaderLine('Accept') == 'text/csv'
-      ? new ReportFormat(ReportFormat::CSV)
-      : new ReportFormat(ReportFormat::JSON);
+    $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
 
-    $report = new Report($workspaceId, $dataIds, $reportType, $reportFormat);
+    $report = ReportOutputFactory::createReportOutput($workspaceId, $dataIds, $reportType, $reportFormat);
 
-    if ($reportType->getValue() == ReportType::SYSTEM_CHECK) {
-      $report->setSysChecksFolderInstance(new SysChecksFolder($workspaceId));
-    } else {
-      $report->setAdminDAOInstance(self::adminDAO());
+    if ($report->generate($request->getParam('useNewVersion') === 'true')) {
+      $response->getBody()->write($report->asString());
     }
-
-    if (!empty($dataIds) and $report->generate()) {
-      switch ($reportFormat->getValue()) {
-        case ReportFormat::CSV:
-
-          $response->getBody()->write($report->getCsvReportData());
-          $response = $response->withHeader('Content-Type', 'text/csv;charset=UTF-8');
-          break;
-
-        case ReportFormat::JSON:
-
-          $response = $response->withJson($report->getReportData());
-          break;
-
-        default:
-
-          $response = $response->withHeader('Content-Type', 'application/json');  // @codeCoverageIgnore
-      }
-
-    } else {
-      $response = $reportFormat->getValue() === ReportFormat::CSV
-        ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
-        : $response->withHeader('Content-Type', 'application/json');
-    }
+    $response = $reportFormat === ReportFormat::CSV
+      ? $response->withHeader('Content-type', 'text/csv;charset=UTF-8')
+      : $response->withHeader('Content-Type', 'application/json');
 
     return $response;
   }
@@ -329,22 +319,31 @@ class WorkspaceController extends Controller {
   public static function putSysCheckReport(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
-    $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
+
+    $authToken = $request->getAttribute('AuthToken');
+    $bodyContents = JSON::decode($request->getBody()->getContents());
 
     $sysChecksFolder = new SysChecksFolder($workspaceId);
-
     /* @var XMLFileSysCheck $sysCheck */
     $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
 
-    if (strlen((string) $report->keyPhrase) <= 0) {
-      throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
+    if ($authToken) {
+      $session = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+      $bodyContents->title = $session->getLoginSession()->getLogin()->getName();
+      $bodyContents->keyPhrase = '';
+      $report = new SysCheckReport($bodyContents);
+    } else {
+      $report = new SysCheckReport($bodyContents);
+      if (strlen((string) $report->keyPhrase) <= 0) {
+        throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
+      }
+
+      if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
+        throw new HttpError("Wrong key `$report->keyPhrase`", 403);
+      }
     }
 
-    if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
-      throw new HttpError("Wrong key `$report->keyPhrase`", 403);
-    }
-
-    $report->checkId = $sysCheckName;
+    $report->checkId = $sysCheck->getId();
     $report->checkLabel = $sysCheck->getLabel();
 
     $sysChecksFolder->saveSysCheckReport($report);

@@ -5,6 +5,11 @@
   z-index: 10000;
   border-bottom-left-radius: 10px;
   background: white;
+  display: flex;
+}
+
+.corner-menu input[type="text"] {
+  margin: 1em;
 }
 
 mat-sidenav {

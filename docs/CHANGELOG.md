@@ -1,38 +1,75 @@
 ---
 layout: default
 ---
-## 15.2.0-alpha8
-* 0 wird als default für Scores angenommen. In <Score of... kann jetzt das Attribut or hinzugefügt werden, um diesen default zu ändern. 
+## 15.3.0-alpha3
+### neue Features
+* Die Navigation des SystemChecks wurde überarbeitet.
+  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+    und Schul-ID aus.
+  * "sys-check-login" Logins können auch mit Passwort geschützt werden
+  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
+  * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
+* Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
+  * schnelles Filtern nach Person
+  * Eigene Filter können definiert werden
+  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
 
-## 15.2.0-alpha7
-* Bugfix navigation wenn Zeit abgelaufen 
+### Bugfixes
+* Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
+  das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
 
-## 15.2.0-alpha6
-* Bugfix bezüglich Zeit/Passwort-gesteurten Blöcken
+### Sicherheit
+* Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+* Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
 
-## 15.2.0-alpha4
-* Schließt alle Änderungen von 15.1.0 bis 15.1.6 ein
-* Mehrere Bugfixes in der Verzweigung
-* Autocoder 2.1.5
 
-## [next]
+## 15.2.0
+### neue Features
+* Überarbeitetes neues Format für Reviews:
+  * Alle Reviewdateien beinhalten zusätzlich eine Spalte (CSV) / Feld (JSON) mit dem ursprünglichen Unitnamen, für
+    den Fall, dass dieser in der Spalte UnitName durch dessen Alias ersetzt wurde.
+  * Beim Erstellen eines Kommentars kann man jetzt auch die Seite angeben, auf die sich der Kommentar bezieht und ist
+    damit eine weitere Stufe granularer als die Unitebene.
+  * Die Werte in den Spalten/Feldern sind R-lesbarer: : gegen _ erstezt, X gegen TRUE ersetzt.
+  * Autor und Kommentareintrag sind nun zwei verschiedene Spalten.
+  * Die Datei beinhaltet auch Informationen zum User-Agent, sprich Browserinformationen, des Autors von Kommentaren.
+  * Das neue Format lsässt sich durch einen zusätzlichen Parameter im Endpunkt bzw. einen neuen Knopf in der GUI
+    erzeugen. Das alte ist (noch) ebenfalls verfügbar.
+
+* Workspace-Dateiübersicht:
+  * Mit einem Klick auf eine Datei werden nun alle abhängigen Dateien gekennzeichnet. 
+    Damit lässt sich feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei 
+    erfolgreich zu löschen ohne den 'Löschen' Button erst clicken zu müssen wird.
+  * Die Dateien werden schneller angezeigt, da bestimmte Angaben, zum Beispiel die Gesamtgröße eines Booklets erst
+    später berechnet werden.
+  
+* Neuer Modus: `sys-check-login`
+  * SysChecks sind nun erst verfügbar, wenn man sich eingeloggt hat in diesem Modus.
+  * Rückwärtskompatibilität: Gibt es in der gesamten Instanz keinen Login in diesem Modus, so stehen alle SysChecks
+    wie gehabt auf der Startseite ohne login bereit.
+
 ### Bugfix
-* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des uploads wurde nicht mehr korrekt aufgehoben.   
+* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des Uploads wurde nicht mehr korrekt aufgehoben.   
 
 ### Verbesserungen
-* Beim Ausführen von 'make run' wird nun geprüft, ob sich die Dateien innerhalb der einzelnen workspaces verändert 
-  haben, und nur dann werden die Dateien neu importiert. Sollten sich die Dateien zum letzten 'make run' nicht verändert
-  haben, so wird kein Datein-Import durchgeführt. Dies beschleunigt die Arbeit in der Entwicklung und auch beim Pflegen
-  von Testdaten.
-* Während Initialization Tests werden fake patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests 
-  wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
+* Nach dem Speichern eines SysCheck-Berichts wird ein deutliches Feedback gegeben, dass der Bericht gespeichert wurde. 
+* Die Uploadgeschwindigkeit für einzelne Dateien im Workspace-Admin wurde erheblich verbessert.
+* Systemstart radikal beschleunigt, indem nur veränderte Workspaces neu eingelesen werden.
 
 ### Deployment
 * dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
 * Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". 
   Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren 
   des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
+* Das benötigte PHP memory_limit für den Datei-Upload im Workspace-Admin wurde verringert, da dieser nun effizienter arbeitet.
 
+### Development
+* make Befehle für Unit Tests können nun mit einem 'target' Argument aufgerufen werden, um gezielt nur bestimmte Tests auszuführen.
+* make backend-refresh-autoload baut nun den BE Container neu auf, um sicherzustellen, dass alle Klassen geladen werden können.
+* mixed type können als Argumente in CLI print-functions gegeben werden.
+* Während Initialization-Tests werden Fake-Patches angelegt. Diese werden nun nach erfolgreichen Abschluss der Tests
+    wieder gelöscht. Damit können Initialization Tests mehrmals hintereinander gestartet werden.
 
 ## 15.1.8
 ### Bugfix

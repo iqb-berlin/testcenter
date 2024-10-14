@@ -7,6 +7,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material/icon';
 import { SaveReportComponent } from './save-report.component';
 import { SharedModule } from '../../../shared/shared.module';
 
@@ -21,6 +22,7 @@ describe('SaveReportComponent', () => {
         MatDialogModule,
         ReactiveFormsModule,
         MatInputModule,
+        MatIconModule,
         MatFormFieldModule,
         NoopAnimationsModule,
         SharedModule
