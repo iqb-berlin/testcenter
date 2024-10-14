@@ -37,7 +37,7 @@ export class SysCheckDataService {
     },
     {
       route: 'r',
-      label: 'Senden eines Berichtes (Kennwort erforderlich)'
+      label: 'Senden eines Berichtes'
     }
   ];
 
