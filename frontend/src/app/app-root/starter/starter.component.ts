@@ -1,9 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
+import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
 
 @Component({
   templateUrl: './starter.component.html',
@@ -21,10 +26,12 @@ export class StarterComponent implements OnInit, OnDestroy {
     private router: Router,
     private bs: BackendService,
     public cts: CustomtextService,
-    public mds: MainDataService
+    public mds: MainDataService,
+    public ds: SysCheckDataService
   ) { }
 
   ngOnInit(): void {
+    this.ds.networkReports = [];
     setTimeout(() => {
       this.bs.getSessionData().subscribe(authData => {
         if (!authData || !authData.token) {

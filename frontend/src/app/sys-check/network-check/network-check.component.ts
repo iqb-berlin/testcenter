@@ -51,7 +51,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.sysCheckDataService.setNewCurrentStep('n');
-      if (this.sysCheckDataService.checkConfig && this.sysCheckDataService.networkReport.length === 0) {
+      if (this.sysCheckDataService.checkConfig && this.sysCheckDataService.networkReports.length === 0) {
         this.startCheck();
       }
       this.readExperimentalNetworkInfosIfAvailable();
@@ -88,7 +88,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   startCheck(): void {
-    this.sysCheckDataService.networkReport = [];
+    this.sysCheckDataService.networkReports = [];
     this.sysCheckDataService.networkCheckStatus = {
       done: false,
       message: 'Netzwerk-Analyse wird gestartet',
@@ -258,49 +258,49 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     const downAvg = this.getAverageNetworkStat(true);
     const upAvg = this.getAverageNetworkStat(false);
 
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-download',
       type: 'network',
       label: 'Downloadgeschwindigkeit',
       warning: false,
       value: `${this.humanReadableBytes(downAvg, true)}/s`
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-download-needed',
       type: 'network',
       label: 'Downloadgeschwindigkeit benötigt',
       warning: false,
       value: `${this.humanReadableBytes(this.sysCheckDataService.checkConfig.downloadSpeed.min, true)}/s`
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-download-evaluation',
       type: 'network',
       label: 'Downloadbewertung',
       warning: this.networkRating.downloadRating === 'insufficient',
       value: this.networkRating.downloadRating
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-upload',
       type: 'network',
       label: 'Uploadgeschwindigkeit',
       warning: false,
       value: `${this.humanReadableBytes(upAvg, true)}/s`
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-upload-needed',
       type: 'network',
       label: 'Uploadgeschwindigkeit benötigt',
       warning: false,
       value: `${this.humanReadableBytes(this.sysCheckDataService.checkConfig.uploadSpeed.min, true)}/s`
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-upload-evaluation',
       type: 'network',
       label: 'Uploadbewertung',
       warning: this.networkRating.uploadRating === 'insufficient',
       value: this.networkRating.uploadRating
     });
-    this.sysCheckDataService.networkReport.push({
+    this.sysCheckDataService.networkReports.push({
       id: 'nw-overall',
       type: 'network',
       label: 'Gesamtbewertung',
@@ -310,7 +310,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
     if (this.detectedNetworkInformation.available) {
       if (this.detectedNetworkInformation.roundTripTimeMs) {
-        this.sysCheckDataService.networkReport.push({
+        this.sysCheckDataService.networkReports.push({
           id: 'bnni-roundtrip',
           type: 'network',
           label: 'RoundTrip in Ms',
@@ -319,7 +319,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.effectiveNetworkType) {
-        this.sysCheckDataService.networkReport.push({
+        this.sysCheckDataService.networkReports.push({
           id: 'bnni-effective-network-type',
           type: 'network',
           label: 'Netzwerktyp nach Leistung',
@@ -328,7 +328,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.networkType) {
-        this.sysCheckDataService.networkReport.push({
+        this.sysCheckDataService.networkReports.push({
           id: 'bnni-network-type',
           type: 'network',
           label: 'Netzwerktyp',
@@ -337,7 +337,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
       if (this.detectedNetworkInformation.downlinkMegabitPerSecond) {
-        this.sysCheckDataService.networkReport.push({
+        this.sysCheckDataService.networkReports.push({
           id: 'bnni-downlink',
           type: 'network',
           label: 'Downlink MB/s',
@@ -346,7 +346,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         });
       }
     } else {
-      this.sysCheckDataService.networkReport.push({
+      this.sysCheckDataService.networkReports.push({
         id: 'bnni-fail',
         type: 'network',
         label: 'Netzwerkprofil des Browsers',
