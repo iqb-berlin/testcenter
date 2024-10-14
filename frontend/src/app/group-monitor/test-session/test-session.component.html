@@ -1,7 +1,3 @@
-<style>
-  .booklet-state {
-  }
-</style>
 <td class="selected" *ngIf="displayOptions.manualChecking">
   <mat-checkbox
     *ngIf="testSession.data.testId >= 0"
@@ -295,13 +291,17 @@
   </div>
 </td>
 
-<td class="booklet-states" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.statesColumn === 'show'">
-  <div class="vertical-align-middle" *ngIf="testSession.states">
-    <div *ngFor="let bookletState of testSession.states | keyvalue" class="booklet-state">
-      <ng-container *ngIf="testSession | bookletstates : bookletState.key : bookletState.value as bookletStateLabels">
-        <b>{{ bookletStateLabels.state}}</b>:
-        {{bookletStateLabels.option}}
+<td
+  class="booklet-states"
+  (click)="deselect($event)"
+  (contextmenu)="deselectForce($event)"
+  *ngFor="let bookletState of bookletStates | keyvalue"
+>
+  <div class="vertical-align-middle">
+    <ng-container *ngIf="isBooklet(testSession.booklet)">
+      <ng-container *ngIf="testSession.states && testSession.states[bookletState.key]">
+        {{testSession.booklet.states[bookletState.key].options[testSession.states[bookletState.key]].label}}
       </ng-container>
-    </div>
+    </ng-container>
   </div>
 </td>

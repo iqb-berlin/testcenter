@@ -29,6 +29,7 @@ export class TestSessionComponent {
   @Input() marked: Selected | null = null;
   @Input() selected: Selected | null = null;
   @Input() checked: boolean = false;
+  @Input() bookletStates: { [p: string]: string } = {};
 
   @Output() markedElement$ = new EventEmitter<Selected>();
   @Output() selectedElement$ = new EventEmitter<Selected>();
