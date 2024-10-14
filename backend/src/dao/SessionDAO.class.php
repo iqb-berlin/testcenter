@@ -581,7 +581,7 @@ class SessionDAO extends DAO {
             and files.workspace_id = ?
             and files.type = 'Booklet'
       order by
-        field($orderField)
+        field(ba.test_name, $orderField)
     ";
     $tests = $this->_(
       $sql,
