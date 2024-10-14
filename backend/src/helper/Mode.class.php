@@ -1,6 +1,8 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO unit test
 
 class Mode {
@@ -37,7 +39,10 @@ class Mode {
     ],
     'monitor-study' => [
       'protectedLogin'
-    ]
+    ],
+    'sys-check-login' => [
+      'alwaysNewSession'
+    ],
   ];
 
   static function withChildren(string $role): array {
