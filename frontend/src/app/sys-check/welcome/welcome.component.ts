@@ -33,12 +33,12 @@ export class WelcomeComponent implements OnInit {
       this.getFromUAParser();
       this.getNavigatorInfo();
       this.getBrowserPluginInfo();
-      this.ds.questionnaireReport.length = 0;
+      this.ds.questionnaireReports.length = 0;
       this.getTime()
         .subscribe(() => {
           const report = Array.from(this.report.values())
             .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label ? 1 : -1));
-          this.ds.environmentReport = Object.values(report);
+          this.ds.environmentReports = Object.values(report);
           this.ds.timeCheckDone = true;
         });
     });

@@ -56,9 +56,9 @@ export class SysCheckDataService {
 
   loadConfigComplete = false;
   unitAndPlayerContainer: UnitAndPlayerContainer | null = null;
-  environmentReport: ReportEntry[] = [];
-  networkReport: ReportEntry[] = [];
-  questionnaireReport: ReportEntry[] = [];
+  environmentReports: ReportEntry[] = [];
+  networkReports: ReportEntry[] = [];
+  questionnaireReports: ReportEntry[] = [];
   networkCheckStatus: NetworkCheckStatus = {
     done: true,
     message: 'Messung noch nicht gestartet',
