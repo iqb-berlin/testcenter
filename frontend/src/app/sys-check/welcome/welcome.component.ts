@@ -7,7 +7,7 @@ import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
 
 @Component({
-  styleUrls: ['../sys-check.component.css'],
+  styleUrls: ['welcome.component.css', '../sys-check.component.css'],
   templateUrl: './welcome.component.html'
 })
 export class WelcomeComponent implements OnInit {
