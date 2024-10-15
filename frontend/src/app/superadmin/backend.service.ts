@@ -25,10 +25,6 @@ export class BackendService {
     return this.http.put<boolean>(`${this.serverUrl}user`, { n: name, p: password });
   }
 
-  changePassword(userId: number, password: string): Observable<boolean> {
-    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
-  }
-
   setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<void> {
     return this.http
       .patch<void>(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
