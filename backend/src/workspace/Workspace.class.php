@@ -99,7 +99,7 @@ class Workspace {
   }
 
   public function deleteFiles(array $filesToDelete): array {
-    $report = [
+    $deletionReport = [
       'deleted' => [],
       'did_not_exist' => [],
       'not_allowed' => [],
@@ -113,7 +113,7 @@ class Workspace {
       $pathParts = explode('/', $localFilePath, 2);
 
       if (count($pathParts) < 2) {
-        $report['incorrect_path'][] = $localFilePath;
+        $deletionReport['incorrect_path'][] = $localFilePath;
         continue;
       }
 
@@ -124,20 +124,20 @@ class Workspace {
       // file does not exist in db means, it must be something not validatable like sysCheck-Reports
       if ($cachedFile) {
         if (isset($blockedFiles[$localFilePath])) {
-          $report['was_used'][] = $localFilePath;
+          $deletionReport['was_used'][] = $localFilePath;
           continue;
         }
 
         if (!$this->deleteFileFromDb($cachedFile)) {
-          $report['error'][] = $localFilePath;
+          $deletionReport['error'][] = $localFilePath;
           continue;
         }
       }
 
-      $report[$this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath)][] = $localFilePath;
+      $deletionReport[$this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath)][] = $localFilePath;
     }
 
-    return $report;
+    return $deletionReport;
   }
 
   protected function deleteFileFromFs(string $fullPath): string {

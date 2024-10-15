@@ -83,7 +83,12 @@ class SysChecksFolder extends Workspace {
   public function deleteSysCheckReports(array $checkIds): array {
     $reports = $this->collectSysCheckReports($checkIds);
 
-    $deletionReport = [];
+    $deletionReport = [
+      'deleted' => [],
+      'did_not_exist' => [],
+      'not_allowed' => [],
+      'was_used' => []
+    ];
 
     foreach ($reports as $report) {
       /* @var SysCheckReportFile $report */

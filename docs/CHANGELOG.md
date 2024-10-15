@@ -7,6 +7,9 @@ layout: default
 * Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
   eingerichtet worden sein.)
 
+### API Changes
+* DELETE /workspace/{ws_id}/sys-check/reports:
+  * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
 
 ## 15.3.0-alpha3
 ### neue Features
