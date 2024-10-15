@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## next
+### API Changes
+* `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
+
+
 ## 15.3.0-alpha3
 ### neue Features
 * Die Navigation des SystemChecks wurde überarbeitet.
