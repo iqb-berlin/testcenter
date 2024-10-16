@@ -1,25 +1,25 @@
 ---
 layout: default
 ---
-## [next]
+## 15.2.1
 ### neue Features
 * Die Navigation des SystemChecks wurde überarbeitet.
-  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
-    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden Loginname und Passwort genutzt, um
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort
     und Schul-ID aus.
   * "sys-check-login" Logins können auch mit Passwort geschützt werden
-  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
+  * Die Anmeldung im SystemCheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
   * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
 
 ### Bugfixes
 * Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
   das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
-* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können
+* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeitig zu starten. Mehrere Geräte können
   sich mit einem gemeinsamen Systemcheck Login einloggen.
+* Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
+  entsprechende Startpage für (Un-)eingeloggte weitergeleitet.
 * Der Netzwerktest innerhalb des Systemchecks wird beim Verlassen des Systemchecks zurückgesetzt und startet automatisch
   beim Wiedereintritt neu.
-* Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
-  entsprechende Startpage für (Un-)Eingeloggte weitergeleitet.
 
 ## 15.2.0
 ### neue Features
@@ -28,16 +28,16 @@ layout: default
     den Fall, dass dieser in der Spalte UnitName durch dessen Alias ersetzt wurde.
   * Beim Erstellen eines Kommentars kann man jetzt auch die Seite angeben, auf die sich der Kommentar bezieht und ist
     damit eine weitere Stufe granularer als die Unitebene.
-  * Die Werte in den Spalten/Feldern sind R-lesbarer: : gegen _ erstezt, X gegen TRUE ersetzt.
+  * Die Werte in den Spalten/Feldern sind R-lesbarer: : gegen _ ersetzt, X gegen TRUE ersetzt.
   * Autor und Kommentareintrag sind nun zwei verschiedene Spalten.
   * Die Datei beinhaltet auch Informationen zum User-Agent, sprich Browserinformationen, des Autors von Kommentaren.
-  * Das neue Format lsässt sich durch einen zusätzlichen Parameter im Endpunkt bzw. einen neuen Knopf in der GUI
+  * Das neue Format lässt sich durch einen zusätzlichen Parameter im Endpunkt bzw. einen neuen Knopf in der GUI
     erzeugen. Das alte ist (noch) ebenfalls verfügbar.
 
 * Workspace-Dateiübersicht:
   * Mit einem Klick auf eine Datei werden nun alle abhängigen Dateien gekennzeichnet. 
     Damit lässt sich feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei 
-    erfolgreich zu löschen ohne den 'Löschen' Button erst clicken zu müssen wird.
+    erfolgreich zu löschen ohne den 'Löschen' Button erst klicken zu müssen wird.
   * Die Dateien werden schneller angezeigt, da bestimmte Angaben, zum Beispiel die Gesamtgröße eines Booklets erst
     später berechnet werden.
   
