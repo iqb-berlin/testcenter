@@ -16,7 +16,7 @@ export interface TestSession {
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: string[] | null;
   readonly timeLeft: Record<string, number> | null;
-  readonly states: { [state: string]: string } | null;
+  readonly bookletStates: { [state: string]: string } | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -42,7 +42,8 @@ export const testSessionFilterTargetLists = {
     'personLabel',
     'state',
     'blockLabel',
-    'unitLabel'
+    'unitLabel',
+    'bookletStates'
   ]
 } as const;
 
@@ -163,13 +164,6 @@ export interface TestSessionSetStats {
   bookletStateLabels: { [bookletStateId: string]: string }
 }
 
-// export interface BookletState {
-//   bookletStateId: string;
-//   bookletStateLabel: string;
-//   bookletStateOptionId: string;
-//   bookletStateOptionLabel: string;
-// }
-
 export interface UIMessage {
   level: 'error' | 'warning' | 'info' | 'success';
   text: string;
@@ -219,3 +213,5 @@ export interface BookletError {
   error: 'xml' | 'missing-id' | 'missing-file' | 'general';
   species: null;
 }
+
+export type TestSessionFilterSubValueSelect = BookletStateDef<BookletStateOption>;

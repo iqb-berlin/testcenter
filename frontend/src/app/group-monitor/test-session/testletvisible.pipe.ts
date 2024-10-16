@@ -9,8 +9,8 @@ export class TestletvisiblePipe implements PipeTransform {
   transform(session: TestSession, testlet: Testlet): boolean {
     if (!isBooklet(session.booklet)) return false;
     if (!testlet.restrictions.show) return true;
-    const current = (session.states && session.states[testlet.restrictions.show.if]) ?
-      session.states[testlet.restrictions.show.if] :
+    const current = (session.bookletStates && session.bookletStates[testlet.restrictions.show.if]) ?
+      session.bookletStates[testlet.restrictions.show.if] :
       session.booklet.states[testlet.restrictions.show.if].default;
     return current === testlet.restrictions.show.is;
   }
