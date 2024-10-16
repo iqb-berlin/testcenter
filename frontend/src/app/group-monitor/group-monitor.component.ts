@@ -114,6 +114,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
     this.tsm.resetFilters();
+    setTimeout(() => this.openFilterDialog(), 500);
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {

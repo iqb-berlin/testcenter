@@ -139,15 +139,45 @@ export class AddFilterDialogComponent implements OnInit {
   }
 
   updateFilterId(): void {
-    if (!this.filter.value) return;
-    this.filter.id = this.originalId ||
-      `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
-    this.filter.label = [
-      this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
-      this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
-      this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
-      this.filter.value.length > 15 ? `${this.filter.value.slice(0, 14)}...` : this.filter.value
+    if (['state'].includes(this.filter.target) && !this.isStringArray(this.filter.value)) {
+      this.filter.value = [];
+    }
+    if (!['bookletStates', 'testState'].includes(this.filter.target)) {
+      this.filter.subValue = undefined;
+    }
+    const newId = [
+      this.filter.target,
+      this.filter.not ? 'not_' : '',
+      this.filter.type,
+      ...(this.isStringArray(this.filter.value) ? this.filter.value : [this.filter.value]),
+      this.filter.subValue
     ]
+      .filter(t => !!t)
+      .join('_');
+    this.filter.id = this.originalId || newId;
+
+    const label = {
+      target: this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
+      type: this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
+      not: this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
+      value: '',
+      subValue: ''
+    };
+    if (this.isStringArray(this.filter.value)) {
+      label.value = this.filter.value.join(', ');
+    } else if (this.filter.subValue) {
+      label.value = this.subValueLists?.[this.filter.target]?.[this.filter.value]?.label || this.filter.value;
+      label.subValue =
+        this.subValueLists?.[this.filter.target]?.[this.filter.value]?.options[this.filter.subValue]?.label ||
+          this.filter.subValue;
+    } else {
+      label.value = this.filter.value;
+    }
+    this.filter.label = (
+      this.filter.subValue ?
+        [label.target, label.value, label.type, label.not, label.subValue] :
+        [label.target, label.type, label.not, label.value]
+    )
       .filter(a => !!a)
       .join(' ');
   }
