@@ -546,10 +546,9 @@ export class TestSessionManager {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
-        Object.keys(session.bookletStates || {})
-          .forEach((bookletState: string) => {
-            if (!isBooklet(session.booklet)) return;
-            bookletStateLabels[bookletState] = session.booklet.states[bookletState].label;
+        Object.values(isBooklet(session.booklet) ? session.booklet?.states : {})
+          .forEach(state => {
+            bookletStateLabels[state.id] = state.label;
           });
         if (TestSessionUtil.isPaused(session)) paused += 1;
         if (TestSessionUtil.isLocked(session)) locked += 1;

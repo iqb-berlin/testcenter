@@ -343,6 +343,10 @@
     "label": "Benutzerdefinierter Filter: Ziel - detaillierter Teststatus",
     "defaultvalue": "detaillierter Teststatus"
   },
+  "gm_filter_target_bookletStates": {
+    "label": "Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand",
+    "defaultvalue": "Testheft-Zustand"
+  },
   "gm_filter_type_equal": {
     "label": "Benutzerdefinierter Filter: Typ - gleicht",
     "defaultvalue": "gleicht"
