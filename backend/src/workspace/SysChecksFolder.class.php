@@ -80,20 +80,16 @@ class SysChecksFolder extends Workspace {
   }
 
   // TODO unit test
-  public function deleteSysCheckReports(array $checkIds): array {
+  public function deleteSysCheckReports(array $checkIds): FileDeletionReport {
     $reports = $this->collectSysCheckReports($checkIds);
 
-    $deletionReport = [
-      'deleted' => [],
-      'did_not_exist' => [],
-      'not_allowed' => [],
-      'was_used' => []
-    ];
+    $deletionReport = new FileDeletionReport();
 
     foreach ($reports as $report) {
       /* @var SysCheckReportFile $report */
       $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
-      $deletionReport[$this->deleteFileFromFs($fullPath)][] = $report->getCheckId();
+      $fieldName = $this->deleteFileFromFs($fullPath);
+      $deletionReport->$fieldName[] = $report->getCheckId();
     }
 
     return $deletionReport;

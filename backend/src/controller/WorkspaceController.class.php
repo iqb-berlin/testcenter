@@ -182,7 +182,7 @@ class WorkspaceController extends Controller {
     $workspace = new Workspace($workspaceId);
     $deletionReport = $workspace->deleteFiles($filesToDelete);
 
-    foreach ($deletionReport['deleted'] as $deletedFile) {
+    foreach ($deletionReport->deleted as $deletedFile) {
       list($type) = explode('/', $deletedFile);
       if ($type == 'Testtakers') {
         BroadcastService::send('system/clean');
