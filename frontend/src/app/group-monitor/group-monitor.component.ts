@@ -56,7 +56,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
-    statesColumn: 'show',
+    bookletStatesColumns: [],
     highlightSpecies: false,
     manualChecking: false
   };
@@ -114,7 +114,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
     this.tsm.resetFilters();
-    setTimeout(() => this.openFilterDialog(), 500);
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -177,6 +176,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey]
       })[option] = value;
     }
+  }
+
+  toggleBookletStatesColumn(column: string): void {
+    this.displayOptions.bookletStatesColumns =
+      (this.displayOptions.bookletStatesColumns.includes(column)) ?
+        this.displayOptions.bookletStatesColumns.filter(c => c !== column) :
+        [...this.displayOptions.bookletStatesColumns, column].sort();
   }
 
   scrollDown(): void {

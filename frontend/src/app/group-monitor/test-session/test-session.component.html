@@ -291,17 +291,19 @@
   </div>
 </td>
 
-<td
-  class="booklet-states"
-  (click)="deselect($event)"
-  (contextmenu)="deselectForce($event)"
-  *ngFor="let bookletState of bookletStates | keyvalue"
->
-  <div class="vertical-align-middle">
-    <ng-container *ngIf="isBooklet(testSession.booklet)">
-      <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]">
-        {{testSession.booklet.states[bookletState.key].options[testSession.bookletStates[bookletState.key]].label}}
+<ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+  <td
+    class="booklet-states"
+    (click)="deselect($event)"
+    (contextmenu)="deselectForce($event)"
+    *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)"
+  >
+    <div class="vertical-align-middle">
+      <ng-container *ngIf="isBooklet(testSession.booklet)">
+        <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]">
+          {{testSession.booklet.states[bookletState.key].options[testSession.bookletStates[bookletState.key]].label}}
+        </ng-container>
       </ng-container>
-    </ng-container>
-  </div>
-</td>
+    </div>
+  </td>
+</ng-container>
