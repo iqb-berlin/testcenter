@@ -4,10 +4,17 @@ import {
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   isBooklet,
-  TestSessionFilter, TestSessionFilterTarget,
-  testSessionFilterTargets, testSessionFilterTargetLists, testSessionFilterTypeLists,
+  TestSessionFilter,
+  TestSessionFilterTarget,
+  testSessionFilterTargets,
+  testSessionFilterTargetLists,
+  testSessionFilterTypeLists,
   testSessionFilterTypes,
-  TestSessionSuperState, isTestSessionFilter, isAdvancedTestSessionFilterTarget, isAdvancedTestSessionFilterType
+  TestSessionSuperState,
+  isTestSessionFilter,
+  isAdvancedTestSessionFilterTarget,
+  isAdvancedTestSessionFilterType,
+  TestSessionFilterSubValueSelect
 } from '../../group-monitor.interfaces';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -73,8 +80,13 @@ export class AddFilterDialogComponent implements OnInit {
     state: [],
     testState: [],
     unitLabel: [],
-    unitId: []
+    unitId: [],
+    bookletStates: []
   };
+
+  readonly subValueLists:
+  Partial<{ [field in TestSessionFilterTarget] : { [value: string] : TestSessionFilterSubValueSelect } }> =
+      { bookletStates: {} };
 
   isValid: boolean = true;
   advancedMode: boolean = false;
@@ -88,12 +100,23 @@ export class AddFilterDialogComponent implements OnInit {
       .forEach(session => {
         pushUnique(this.lists.groupName, session.data.groupName);
         pushUnique(this.lists.bookletId, session.data.bookletName || '');
-        if (isBooklet(session.booklet)) pushUnique(this.lists.bookletLabel, session.booklet.metadata.label);
         pushUnique(this.lists.blockId, session.current?.ancestor?.blockId || '');
         pushUnique(this.lists.blockLabel, session.current?.ancestor?.blockId || '');
         pushUnique(this.lists.bookletSpecies, session.booklet.species || '');
         pushUnique(this.lists.unitId, session.current?.unit?.id || '');
         pushUnique(this.lists.unitLabel, session.current?.unit?.label || '');
+        if (!isBooklet(session.booklet)) return;
+        pushUnique(this.lists.bookletLabel, session.booklet.metadata.label);
+        Object.entries(session.booklet.states)
+          .forEach(([stateId, state]) => {
+            pushUnique(this.lists.bookletStates, stateId);
+            if (!this.subValueLists.bookletStates) return;
+            this.subValueLists.bookletStates[stateId] = {
+              id: stateId,
+              label: state.label, //!
+              options: { ...state.options }
+            };
+          });
       });
 
     this.lists.mode = Object.keys(TestMode.modes).map(mode => mode.toLowerCase());
@@ -131,4 +154,7 @@ export class AddFilterDialogComponent implements OnInit {
 
   protected readonly isAdvancedTestSessionFilterTarget = isAdvancedTestSessionFilterTarget;
   protected readonly isAdvancedTestSessionFilterType = isAdvancedTestSessionFilterType;
+
+  // eslint-disable-next-line class-methods-use-this
+  protected readonly isStringArray = (s : string | string[]): s is string[] => Array.isArray(s);
 }

@@ -213,15 +213,16 @@ export class TestSessionManager {
     const apply = (subject: string, filter: TestSessionFilter, inverted: boolean = false): boolean => {
       if (filter.not && !inverted) return !apply(subject, filter, true);
       if (Array.isArray(filter.value)) return filter.value.includes(subject);
+      const object = filter.subValue ? filter.subValue : filter.value;
       switch (filter.type) {
-        case 'substring': return subject.includes(filter.value);
-        case 'equal': return subject === filter.value;
-        case 'regex': return regexTest(filter.value, subject);
+        case 'substring': return subject.includes(object);
+        case 'equal': return subject === object;
+        case 'regex': return regexTest(object, subject);
         default: return false;
       }
     };
     const filterOut: TestSessionFilter | undefined = filters
-      .find((nextFilter: TestSessionFilter) => {
+      .find((nextFilter: TestSessionFilter): boolean => {
         switch (nextFilter.target) {
           case 'groupName':
           case 'personLabel':
@@ -240,11 +241,14 @@ export class TestSessionManager {
           case 'blockLabel':
             return apply(session.current?.ancestor?.label || '', nextFilter);
           case 'testState': {
-            if (Array.isArray(nextFilter.value)) return filterOut;
-            const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
-            const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-            const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
-            return (nextFilter.not ? !testStateMatching : testStateMatching);
+            if (Array.isArray(nextFilter.value)) return false;
+            if (typeof session.data.testState[nextFilter.value] === 'undefined') return false;
+            return apply(session.data.testState[nextFilter.value], nextFilter);
+          }
+          case 'bookletStates': {
+            if (Array.isArray(nextFilter.value)) return false;
+            if (!session.bookletStates || typeof session.bookletStates[nextFilter.value] === 'undefined') return false;
+            return apply(session.bookletStates[nextFilter.value], nextFilter);
           }
           case 'state': {
             return apply(session.state, nextFilter);
@@ -329,11 +333,11 @@ export class TestSessionManager {
         }
         if (sort.active.startsWith('bookletState:')) {
           const bookletState = sort.active.replace('bookletState:', '');
-          const a = session1.states && isBooklet(session1.booklet) ?
-            session1.booklet.states[bookletState].options[session1.states[bookletState]].label :
+          const a = session1.bookletStates && isBooklet(session1.booklet) ?
+            session1.booklet.states[bookletState].options[session1.bookletStates[bookletState]].label :
             'zzzzzzzzzz';
-          const b = session2.states && isBooklet(session2.booklet) ?
-            session2.booklet.states[bookletState].options[session2.states[bookletState]].label :
+          const b = session2.bookletStates && isBooklet(session2.booklet) ?
+            session2.booklet.states[bookletState].options[session2.bookletStates[bookletState]].label :
             'zzzzzzzzzz';
           return a.localeCompare(b) * sortDirectionFactor;
         }
@@ -401,8 +405,8 @@ export class TestSessionManager {
     sessionsSet.forEach(session => {
       if (!session.data.bookletName || !isBooklet(session.booklet)) return;
       const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
-        !!session.states &&
-        (session.states[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
+        !!session.bookletStates &&
+        (session.bookletStates[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
       const firstUnit = selection.element?.blockId ?
         BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
         null;
@@ -542,7 +546,7 @@ export class TestSessionManager {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
-        Object.keys(session.states || {})
+        Object.keys(session.bookletStates || {})
           .forEach((bookletState: string) => {
             if (!isBooklet(session.booklet)) return;
             bookletStateLabels[bookletState] = session.booklet.states[bookletState].label;

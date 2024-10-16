@@ -38,8 +38,8 @@ export class PositionPipe implements PipeTransform {
         countHiddenChildren(child);
         if (
           !!child.restrictions.show &&
-          testSession.states &&
-          (testSession.states[child.restrictions.show.if] !== child.restrictions.show.is)
+          testSession.bookletStates &&
+          (testSession.bookletStates[child.restrictions.show.if] !== child.restrictions.show.is)
         ) {
           c.hiddenUnits += child.descendantCount;
         }

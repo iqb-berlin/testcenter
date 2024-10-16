@@ -299,8 +299,8 @@
 >
   <div class="vertical-align-middle">
     <ng-container *ngIf="isBooklet(testSession.booklet)">
-      <ng-container *ngIf="testSession.states && testSession.states[bookletState.key]">
-        {{testSession.booklet.states[bookletState.key].options[testSession.states[bookletState.key]].label}}
+      <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]">
+        {{testSession.booklet.states[bookletState.key].options[testSession.bookletStates[bookletState.key]].label}}
       </ng-container>
     </ng-container>
   </div>

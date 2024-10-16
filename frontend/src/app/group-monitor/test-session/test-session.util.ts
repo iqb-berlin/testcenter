@@ -34,7 +34,7 @@ export class TestSessionUtil {
       booklet,
       timeLeft: TestSessionUtil.parseJsonState<{ [timerId: string]: number }>(session.testState, 'TESTLETS_TIMELEFT'),
       clearedCodes: TestSessionUtil.parseJsonState<string[]>(session.testState, 'TESTLETS_CLEARED_CODE'),
-      states: TestSessionUtil.parseJsonState<{ [state: string]: string }>(session.testState, 'BOOKLET_STATES')
+      bookletStates: TestSessionUtil.parseJsonState<{ [state: string]: string }>(session.testState, 'BOOKLET_STATES')
     };
   }
 
