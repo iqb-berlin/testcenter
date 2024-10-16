@@ -240,6 +240,7 @@
     <xs:attribute name="unitColumn" type="GroupMonitorProfileColumnSetting" />
     <xs:attribute name="groupColumn" type="GroupMonitorProfileColumnSetting" />
     <xs:attribute name="bookletColumn" type="GroupMonitorProfileColumnSetting" />
+    <xs:attribute name="bookletStatesColumns" type="xs:string" />
     <xs:attribute name="view" type="GroupMonitorProfileViewSetting" />
     <xs:attribute name="filterPending" type="GroupMonitorProfileFilterSetting" />
     <xs:attribute name="filterLocked" type="GroupMonitorProfileFilterSetting" />
@@ -252,6 +253,7 @@
         <xs:attribute name="field" type="GroupMonitorProfileFilterField" />
         <xs:attribute name="type" type="FilterTypeType" />
         <xs:attribute name="value" type="xs:string" />
+        <xs:attribute name="subValue" type="xs:string" />
         <xs:attribute name="not" type="xs:boolean" />
       </xs:extension>
     </xs:simpleContent>
@@ -280,6 +282,7 @@
       <xs:enumeration value="testState"/>
       <xs:enumeration value="mode"/>
       <xs:enumeration value="bookletSpecies"/>
+      <xs:enumeration value="bookletStates"/>
     </xs:restriction>
   </xs:simpleType>
 
