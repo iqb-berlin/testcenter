@@ -323,12 +323,14 @@ class XMLFileTesttakers extends XMLFile {
           'unitColumn' => ((string) $profileElem['unitColumn']) ?? "show",
           'view' => ((string) $profileElem['view']) ?? "middle",
           'groupColumn' => ((string) $profileElem['groupColumn']) ?? "hide",
-          'bookletColumn' => ((string) $profileElem['bookletColumn']) ?? "show"
+          'bookletColumn' => ((string) $profileElem['bookletColumn']) ?? "show",
+          'bookletStatesColumns' => ((string) $profileElem['bookletStatesColumns']) ?? ''
         ],
         'filters' => array_map(
           fn (SimpleXMLElement $filterElem): array => [
             'target' => ((string) $filterElem['field']) ?? "personLabel",
             'value' => ((string) $filterElem['value']) ?? "",
+            'subValue' => ((string) $filterElem['subValue']) ?? null,
             'label' => ((string) $filterElem['label']) ?? "",
             'type' => ((string) $filterElem['type']) ?? "equals",
             'not' => ((bool) $profileElem['not']) ?? false

@@ -394,13 +394,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'profile' };
       });
 
+    this.displayOptions.bookletStatesColumns = (p.settings.bookletStatesColumns || '').split(/[\W,]+/);
+
     Object.entries(p.filtersEnabled || [])
       .forEach(([f, onOff]) => {
         if (this.tsm.filterOptions[f]) {
           this.tsm.filterOptions[f].selected = ['1', 'true', 'on', 'yes'].includes(onOff);
         }
       });
-
     this.tsm.refreshFilters();
   }
 }
