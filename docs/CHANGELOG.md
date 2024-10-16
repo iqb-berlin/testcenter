@@ -1,7 +1,12 @@
 ---
 layout: default
 ---
-## next
+## [next]
+
+### Bugfixes
+* Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
+  eingerichtet worden sein.)
+  
 ### API Changes
 * `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
 
