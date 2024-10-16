@@ -300,9 +300,14 @@
   >
     <div class="vertical-align-middle">
       <ng-container *ngIf="isBooklet(testSession.booklet)">
-        <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]">
+        <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]; else defaultOption">
           {{testSession.booklet.states[bookletState.key].options[testSession.bookletStates[bookletState.key]].label}}
         </ng-container>
+        <ng-template #defaultOption>
+          <ng-container *ngIf="testSession.booklet.states[bookletState.key]">
+            {{testSession.booklet.states[bookletState.key].options[testSession.booklet.states[bookletState.key].default].label}}
+          </ng-container>
+        </ng-template>
       </ng-container>
     </div>
   </td>
