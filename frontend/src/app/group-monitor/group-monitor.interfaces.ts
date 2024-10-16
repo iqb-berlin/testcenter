@@ -97,7 +97,7 @@ export interface MonitorProfileTestViewDisplayOptions {
   view: ViewOption;
   groupColumn: ColumnOption;
   bookletColumn: ColumnOption;
-  statesColumn: ColumnOption;
+  bookletStatesColumns: string[];
 }
 
 export type ColumnOption = 'show' | 'hide';

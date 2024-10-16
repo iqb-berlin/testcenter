@@ -78,10 +78,12 @@
     <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
     <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('statesColumn', (displayOptions.statesColumn === 'hide') ? 'show' : 'hide')">
-    <mat-icon *ngIf="displayOptions.statesColumn === 'show'">check</mat-icon>
-    <span>{{'Zustände' | customtext:'gm_col_states' | async}}</span>
-  </button>
+  <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+    <button mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)">
+      <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)">check</mat-icon>
+      <span>{{'Zustände' | customtext:'gm_col_states' | async}} {{bookletState.value}}</span>
+    </button>
+  </ng-container>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
@@ -286,9 +288,14 @@
                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
                   {{'Aufgabe' | customtext:'gm_col_unit' | async}}
                 </td>
-                <td *ngFor="let bookletState of bookletStates | keyvalue" mat-sort-header="bookletState:{{bookletState.key}}">
-                  {{ bookletState.value }}
-                </td>
+
+                <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+                  <td
+                    *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)"
+                    mat-sort-header="bookletState:{{bookletState.key}}">
+                    {{ bookletState.value }}
+                  </td>
+                </ng-container>
               </tr>
             </thead>
 
