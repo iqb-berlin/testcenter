@@ -98,13 +98,8 @@ class Workspace {
     return $this->workspacePath;
   }
 
-  public function deleteFiles(array $filesToDelete): array {
-    $deletionReport = [
-      'deleted' => [],
-      'did_not_exist' => [],
-      'not_allowed' => [],
-      'was_used' => []
-    ];
+  public function deleteFiles(array $filesToDelete): FileDeletionReport {
+    $deletionReport = new FileDeletionReport();
 
     $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete, true);
     $blockedFiles = $this->workspaceDAO->getBlockedFiles(array_merge(...array_values($cachedFilesToDelete)));
@@ -113,7 +108,7 @@ class Workspace {
       $pathParts = explode('/', $localFilePath, 2);
 
       if (count($pathParts) < 2) {
-        $deletionReport['incorrect_path'][] = $localFilePath;
+        $deletionReport->incorrect_path[] = $localFilePath;
         continue;
       }
 
@@ -124,17 +119,17 @@ class Workspace {
       // file does not exist in db means, it must be something not validatable like sysCheck-Reports
       if ($cachedFile) {
         if (isset($blockedFiles[$localFilePath])) {
-          $deletionReport['was_used'][] = $localFilePath;
+          $deletionReport->was_used[] = $localFilePath;
           continue;
         }
 
         if (!$this->deleteFileFromDb($cachedFile)) {
-          $deletionReport['error'][] = $localFilePath;
+          $deletionReport->error[] = $localFilePath;
           continue;
         }
       }
-
-      $deletionReport[$this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath)][] = $localFilePath;
+      $fieldName = $this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath);
+      $deletionReport->$fieldName[] = $localFilePath;
     }
 
     return $deletionReport;

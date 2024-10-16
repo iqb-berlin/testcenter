@@ -356,14 +356,14 @@ final class WorkspaceControllerTest extends TestCase {
   }
 
   function test_deleteFiles(): void {
-    $deletionReport = [
-      'deleted' => ['Testtakers/local_path.file', 'Booklet/other_local_path.xml'],
-      'did_not_exist' => ['Unit/not_exist.xml'],
-      'not_allowed' => ['Unit/not_allowed.xml'],
-      'was_used' => ['Resource/in_use.voud']
-    ];
+    $deletionReport = new FileDeletionReport(
+      deleted: ['Testtakers/local_path.file', 'Booklet/other_local_path.xml'],
+      did_not_exist: ['Unit/not_exist.xml'],
+      not_allowed: ['Unit/not_allowed.xml'],
+      was_used: ['Resource/in_use.voud']
+    );
 
-    $deletionRequest = call_user_func_array('array_merge', array_values($deletionReport));
+    $deletionRequest = ['Testtakers/local_path.file', 'Booklet/other_local_path.xml', 'Unit/not_exist.xml','Unit/not_allowed.xml','Resource/in_use.voud'];
 
     $this->workspaceMock
       ->expects('deleteFiles')
