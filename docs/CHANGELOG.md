@@ -14,6 +14,12 @@ layout: default
 ### Bugfixes
 * Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
   das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
+* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können
+  sich mit einem gemeinsamen Systemcheck Login einloggen.
+* Der Netzwerktest innerhalb des Systemchecks wird beim Verlassen des Systemchecks zurückgesetzt und startet automatisch
+  beim Wiedereintritt neu.
+* Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
+  entsprechende Startpage für (Un-)Eingeloggte weitergeleitet.
 
 ## 15.2.0
 ### neue Features
