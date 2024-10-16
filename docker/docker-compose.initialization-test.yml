@@ -36,7 +36,7 @@ services:
 
   testcenter-initialization-test-backend:
     container_name: testcenter-initialization-test-backend
-    image: iqbberlin/testcenter-backend:dev
+    image: iqbberlin/testcenter-backend:current
     build:
       context: ..
       dockerfile: backend/Dockerfile

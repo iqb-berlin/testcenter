@@ -31,7 +31,11 @@ test-backend-api:
 # Example: `make test-backend-initialization test=general/db-versions`
 test-backend-initialization:
 	TEST_NAME=$(test) \
-		docker compose -f docker/docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+	docker compose --file docker/docker-compose.initialization-test.yml up\
+			--force-recreate\
+			--renew-anon-volumes\
+			--abort-on-container-exit\
+			--exit-code-from=testcenter-initialization-test-backend
 
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
