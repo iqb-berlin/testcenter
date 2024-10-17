@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 source backend/test/initialization/functions/functions.sh
 

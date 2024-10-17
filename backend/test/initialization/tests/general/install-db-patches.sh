@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 source backend/test/initialization/functions/functions.sh
 
@@ -54,8 +53,10 @@ source backend/test/initialization/functions/functions.sh
   expect_table_to_have_rows meta 3 # namely "version", "but me," and "and me"
 )
 # wrap all in subshell to catch error returns and clean up afterwards
+EXITCODE=$?
 remove_error_lock
 remove_patch 7.0.0
 remove_patch 1000.0.0
 remove_patch 10.0.9998
 remove_patch 10.0.9999
+exit "$EXITCODE"

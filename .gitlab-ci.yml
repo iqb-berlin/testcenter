@@ -1116,7 +1116,6 @@ test-file-service-api:
 
 test-backend-initialization:
   stage: test
-  allow_failure: true
   needs:
     - build-backend
   rules:
