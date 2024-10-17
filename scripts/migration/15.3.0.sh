@@ -5,9 +5,6 @@ declare APP_NAME="testcenter"
 printf "Applying patch: 15.3.0 ...\n"
 
 # Add specialized config subdirectories
-if [ -f config/nginx.conf ]; then
-  mv config/nginx.conf config/frontend/nginx.conf
-fi
 if [ -f config/tls-config.yml ]; then
   mkdir -p config/traefik/
   mv config/tls-config.yml config/traefik/tls-config.yml
