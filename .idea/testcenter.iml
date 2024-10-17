@@ -10,9 +10,10 @@
       <sourceFolder url="file://$MODULE_DIR$/e2e/node_modules" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/frontend/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/frontend/node_modules" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/backend/vendor" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/backend/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/frontend/node_modules" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/node_modules" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
@@ -29,9 +30,6 @@
       <excludeFolder url="file://$MODULE_DIR$/e2e/cypress/videos" />
       <excludeFolder url="file://$MODULE_DIR$/testcenter-scripts" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
-      <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/node_modules" />
-      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
-      <excludeFolder url="file://$MODULE_DIR$/e2e/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/data-main" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/out-tsc" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/src/assets" />
@@ -101,7 +99,6 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/tecnickcom/tcpdf" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/theseer/tokenizer" />
     </content>
-    <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="jdk" jdkName="Python 3.7 (isaac-sas-backend)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

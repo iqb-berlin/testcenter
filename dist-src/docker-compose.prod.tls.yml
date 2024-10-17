@@ -20,9 +20,9 @@ services:
     ports:
       - "${TLS_PORT}:443"
     volumes:
-      - "./config/certs/:/certs/"
-      #- "./config/certs/:/letsencrypt"
-      - "./config/tls-config.yml:/tls-config.yml"
+      - "./config/traefik/tls-config.yml:/tls-config.yml"
+      - "./secrets/traefik/certs:/certs"
+      #- "./secrets/traefik/certs/letsencrypt:/letsencrypt"
 
   testcenter-db:
     image: ${DOCKERHUB_PROXY}mysql:8.0
