@@ -49,6 +49,8 @@ source backend/test/initialization/functions/functions.sh
   fi
 )
 # wrap all in subshell to catch error returns and clean up afterwards
+EXITCODE=$?
 remove_patch 7.0.0
 remove_patch 10.0.9998
 remove_patch 10.0.9999
+exit "$EXITCODE"
