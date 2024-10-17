@@ -148,7 +148,6 @@ prepare_installation_dir() {
 
   mkdir -p "$TARGET_DIR"/backup/release
   mkdir -p "$TARGET_DIR"/backup/temp
-  mkdir -p "$TARGET_DIR"/config/frontend
   mkdir -p "$TARGET_DIR"/config/traefik
   mkdir -p "$TARGET_DIR"/scripts/make
   mkdir -p "$TARGET_DIR"/scripts/migration
@@ -176,7 +175,6 @@ download_files() {
   download_file docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
   download_file .env.prod-template dist-src/.env.prod-template
   download_file config/traefik/tls-config.yml config/traefik/tls-config.yml
-  download_file config/frontend/nginx.conf config/frontend/nginx.conf
   download_file scripts/make/$APP_NAME.mk scripts/make/prod.mk
   download_file scripts/update_$APP_NAME.sh scripts/update.sh
   chmod +x scripts/update_$APP_NAME.sh
