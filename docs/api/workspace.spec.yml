@@ -1030,7 +1030,8 @@ paths:
                       "responseType": "example-data-format"
                     }
                   ],
-                  "laststate": "{\"PRESENTATIONCOMPLETE\":\"yes\"}"
+                  "laststate": "{\"PRESENTATIONCOMPLETE\":\"yes\"}",
+                  "originalUnitId": "UNIT.SAMPLE"
                 }
               ]
         "401":
