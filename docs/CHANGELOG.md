@@ -10,6 +10,9 @@ layout: default
 ### API Changes
 * `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
 
+### API Changes
+* DELETE /workspace/{ws_id}/sys-check/reports:
+  * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
 
 ## 15.3.0-alpha3
 ### neue Features

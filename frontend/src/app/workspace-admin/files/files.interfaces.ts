@@ -3,6 +3,8 @@ export interface FileDeletionReport {
   not_allowed: string[];
   did_not_exist: string[];
   was_used: string[];
+  incorrect_path: string[];
+  error: string[];
 }
 
 export interface UploadReport {

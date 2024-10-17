@@ -52,9 +52,9 @@ export class ReportComponent implements OnInit {
         this.dataService.checkConfig.workspaceId,
         this.dataService.checkConfig.name,
         {
-          environment: this.dataService.environmentReport,
-          network: this.dataService.networkReport,
-          questionnaire: this.dataService.questionnaireReport,
+          environment: this.dataService.environmentReports,
+          network: this.dataService.networkReports,
+          questionnaire: this.dataService.questionnaireReports,
           unit: [],
           responses: responses
         }
@@ -77,9 +77,9 @@ export class ReportComponent implements OnInit {
               {
                 keyPhrase: reportKey,
                 title: reportTitle,
-                environment: this.dataService.environmentReport,
-                network: this.dataService.networkReport,
-                questionnaire: this.dataService.questionnaireReport,
+                environment: this.dataService.environmentReports,
+                network: this.dataService.networkReports,
+                questionnaire: this.dataService.questionnaireReports,
                 unit: [],
                 responses: responses
               }
@@ -97,8 +97,8 @@ export class ReportComponent implements OnInit {
       this.dataService.setNewCurrentStep('r');
       this.questionnaireDataWarnings = [];
       if (this.dataService.checkConfig && this.dataService.checkConfig.questions.length > 0) {
-        if (this.dataService.questionnaireReport.length > 0) {
-          this.dataService.questionnaireReport.forEach(re => {
+        if (this.dataService.questionnaireReports.length > 0) {
+          this.dataService.questionnaireReports.forEach(re => {
             if (re.warning) {
               this.questionnaireDataWarnings.push(re);
             }

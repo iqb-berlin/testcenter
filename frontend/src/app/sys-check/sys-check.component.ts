@@ -23,6 +23,7 @@ export class SysCheckComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.ds.networkReports = [];
     setTimeout(() => this.mds.appSubTitle$.next('System-Check'));
     this.route.paramMap.subscribe((params: ParamMap) => {
       const sysCheckId = params.get('sys-check-name');

@@ -111,15 +111,15 @@ class WorkspaceTest extends TestCase {
       'i_dont/even.exist',
       "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
     ]);
-    $expectation = [
-      'deleted' => [
+    $expectation = new FileDeletionReport(
+      deleted: [
         'Resource/somePlayer.HTML',
         "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
       ],
-      'did_not_exist' => ['i_dont/even.exist'],
-      'not_allowed' => ['SysCheck/SAMPLE_SYSCHECK.XML'],
-      'was_used' => ['Resource/verona-player-simple-6.0.html']
-    ];
+      did_not_exist: ['i_dont/even.exist'],
+      not_allowed: ['SysCheck/SAMPLE_SYSCHECK.XML'],
+      was_used: ['Resource/verona-player-simple-6.0.html']
+    );
     $this->assertEquals($expectation, $result);
 
     $resourcesLeft = scandir('vfs://root/data/ws_1/Resource');
@@ -150,12 +150,12 @@ class WorkspaceTest extends TestCase {
     $result = $workspace->deleteFiles([
       'Resource/verona-player-simple-6.0.html',
     ]);
-    $expectation = [
-      'deleted' => [],
-      'did_not_exist' => [],
-      'not_allowed' => [],
-      'was_used' => ['Resource/verona-player-simple-6.0.html']
-    ];
+    $expectation = new FileDeletionReport(
+      deleted: [],
+      did_not_exist: [],
+      not_allowed: [],
+      was_used: ['Resource/verona-player-simple-6.0.html']
+    );
     $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
 
@@ -198,18 +198,18 @@ class WorkspaceTest extends TestCase {
       'Testtakers/SAMPLE_TESTTAKERS.XML',
       'SysCheck/SAMPLE_SYSCHECK.XML'
     ]);
-    $expectation = [
-      'deleted' => [
+    $expectation = new FileDeletionReport(
+      deleted: [
         'Testtakers/SAMPLE_TESTTAKERS.XML',
         'SysCheck/SAMPLE_SYSCHECK.XML'
       ],
-      'did_not_exist' => [],
-      'not_allowed' => [],
-      'was_used' => [
+      did_not_exist: [],
+      not_allowed: [],
+      was_used: [
         'Resource/SAMPLE_UNITCONTENTS.HTM',
         'Resource/verona-player-simple-6.0.html',
       ]
-    ];
+    );
     $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
   }
 
