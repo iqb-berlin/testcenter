@@ -99,7 +99,6 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/tecnickcom/tcpdf" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/theseer/tokenizer" />
     </content>
-    <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="jdk" jdkName="Python 3.7 (isaac-sas-backend)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
