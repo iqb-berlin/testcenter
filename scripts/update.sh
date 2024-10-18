@@ -65,9 +65,166 @@ get_new_release_version() {
 create_backup() {
   printf "2. Backup creation\n"
   # Save installation directory
-  mkdir -p "$PWD"/backup/release/"$SOURCE_TAG"
-  tar -cf - --exclude='./backup' . | tar -xf - -C "$PWD"/backup/release/"$SOURCE_TAG"
-  printf -- "- Current release files have been saved at: '%s'\n" "$PWD/backup/release/$SOURCE_TAG"
+  mkdir -p "${APP_DIR}"/backup/release/"$SOURCE_TAG"
+  tar -cf - --exclude='./backup' . | tar -xf - -C "${APP_DIR}"/backup/release/"$SOURCE_TAG"
+  printf -- "- Current release files have been saved at: '%s'\n" "${APP_DIR}/backup/release/$SOURCE_TAG"
+
+  if [ "$TLS_ENABLED" = "on" ] || [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]; then
+    if test "$(docker compose \
+        --env-file "${APP_DIR}"/.env.prod \
+        --file "${APP_DIR}"/docker-compose.yml \
+        --file "${APP_DIR}"/docker-compose.prod.yml \
+        --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+      ps -q testcenter-db)"; then
+
+      # Dump the db first ...
+      if docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        exec testcenter-db mysqldump \
+            --verbose \
+            --add-drop-database \
+            --user="${MYSQL_USER}" \
+            --password="${MYSQL_PASSWORD}" \
+            --databases "${MYSQL_DATABASE}" \
+          >"${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql; then
+
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql
+      fi
+
+      # Backup backend volume second ...
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        down
+      if vackup export "$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}" "${BACKUP_DIR}/${BACKEND_VOLUME_BACKUP_NAME}";
+      then
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}/backup/database_dump/backend_vo_data.tar.gz"
+      fi
+    else
+      # Backup backend volume first ...
+      if vackup export "$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}" "${BACKUP_DIR}/${BACKEND_VOLUME_BACKUP_NAME}";
+      then
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}/backup/database_dump/backend_vo_data.tar.gz"
+      fi
+
+      # Dump the db second ...
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        up -d testcenter-db
+      sleep 10 ## wait until testcenter-db startup is completed
+      if docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        exec testcenter-db mysqldump \
+            --verbose \
+            --add-drop-database \
+            --user="${MYSQL_USER}" \
+            --password="${MYSQL_PASSWORD}" \
+            --databases "${MYSQL_DATABASE}" \
+          >"${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql; then
+
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql
+      fi
+
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        down
+    fi
+  else
+    if test "$(docker compose \
+        --env-file "${APP_DIR}"/.env.prod \
+        --file "${APP_DIR}"/docker-compose.yml \
+        --file "${APP_DIR}"/docker-compose.prod.yml \
+      ps -q testcenter-db)"; then
+
+      # Dump the db first ...
+      if docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        exec testcenter-db mysqldump \
+            --verbose \
+            --add-drop-database \
+            --user="${MYSQL_USER}" \
+            --password="${MYSQL_PASSWORD}" \
+            --databases "${MYSQL_DATABASE}" \
+          >"${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql; then
+
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql
+      fi
+
+      # Backup backend volume second ...
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        down
+      if vackup export "$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}" "${BACKUP_DIR}/${BACKEND_VOLUME_BACKUP_NAME}";
+      then
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}/backup/database_dump/backend_vo_data.tar.gz"
+      fi
+    else
+      # Backup backend volume first ...
+      if vackup export "$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}" "${BACKUP_DIR}/${BACKEND_VOLUME_BACKUP_NAME}";
+      then
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}/backup/database_dump/backend_vo_data.tar.gz"
+      fi
+
+      # Dump the db second ...
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        up -d testcenter-db
+      sleep 10 ## wait until testcenter-db startup is completed
+      if docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        exec testcenter-db mysqldump \
+            --verbose \
+            --add-drop-database \
+            --user="${MYSQL_USER}" \
+            --password="${MYSQL_PASSWORD}" \
+            --databases "${MYSQL_DATABASE}" \
+          >"${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql; then
+
+        printf -- "- Current testcenter-db dump has been saved at: '%s'\n" \
+          "${APP_DIR}"/backup/database_dump/"${MYSQL_DATABASE}".sql
+      fi
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        down
+    fi
+  fi
   printf "Backup created.\n\n"
 }
 
