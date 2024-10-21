@@ -30,8 +30,8 @@ export class PasswordChangeService {
       )
         .subscribe(
           respOk => {
-            if (respOk) {
-              this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
+            if (!respOk) {
+              this.snackBar.open('Kennwort geändert', '', { duration: 3000 });
             }
           }
         );
