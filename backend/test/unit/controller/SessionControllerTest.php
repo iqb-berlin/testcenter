@@ -123,7 +123,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"some_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
+      '{"token":"some_token","displayName":"Sample Group\/sample_user","id":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -202,7 +202,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"new_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
+      '{"token":"new_token","displayName":"Sample Group\/sample_user","id":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -322,7 +322,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"new_token","displayName":"Sample Group\/test-monitor","customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"new_token","displayName":"Sample Group\/test-monitor","id":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -343,7 +343,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"admin_token","displayName":"Admin1","customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"ws1","flags":{"mode":"Workspace 1"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
+      '{"token":"admin_token","displayName":"Admin1","id":1,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"ws1","flags":{"mode":"Workspace 1"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -379,7 +379,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"login_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
+      '{"token":"login_token","displayName":"Sample Group\/sample_user","id":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
       $response->getBody()->getContents()
     );
   }
@@ -438,7 +438,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
+      '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","id":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
       $response->getBody()->getContents()
     );
   }
@@ -499,7 +499,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","id":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
   }
@@ -522,7 +522,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"admin_token","displayName":"super","customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"workspace","flags":{"mode":"RW"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
+      '{"token":"admin_token","displayName":"super","id":1,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"workspace","flags":{"mode":"RW"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
       $response->getBody()->getContents()
     );
   }

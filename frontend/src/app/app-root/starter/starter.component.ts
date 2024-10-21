@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { CustomtextService, MainDataService, PasswordChangeService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
@@ -27,7 +27,8 @@ export class StarterComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     public cts: CustomtextService,
     public mds: MainDataService,
-    public ds: SysCheckDataService
+    public ds: SysCheckDataService,
+    public pcs: PasswordChangeService
   ) { }
 
   ngOnInit(): void {

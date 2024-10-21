@@ -120,7 +120,7 @@
       <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
         Systemverwaltung
       </button>
-      <button mat-raised-button *ngIf="accessObjects.workspaceAdmin" color="primary" >
+      <button mat-raised-button *ngIf="accessObjects.workspaceAdmin" color="primary" (click)="pcs.showPasswordChangeDialog({id: mds.getAuthData()?.id, name: mds.getAuthData()?.displayName})">
         Passwort ändern
       </button>
       <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
