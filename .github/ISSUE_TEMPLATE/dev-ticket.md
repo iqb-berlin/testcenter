@@ -6,14 +6,14 @@ labels: ''
 assignees: ''
 
 ---
-# Ist:
+## Ist:
 
-# Soll:
+## Soll:
 
-# Warum (falls FeatureRequest)?
+## Warum (falls FeatureRequest)?
 
-# Feature Branch (vom Entwickler anzugeben):
+## Feature Branch (vom Entwickler anzugeben):
 
-# E2E-Test angelegt
-* Wenn E2E-Test-Label angelegt, hier bestätigen, dass E2E-Tests angelegt wurden
+## E2E-Test angelegt
+* Wenn E2E-Test-Label angelegt, hier bestätigen, dass E2E-Tests angelegt wurden. Anschließend in Spalte: Freigabe Release verschieben mit neuer Zuweisung
 
