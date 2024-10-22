@@ -96,7 +96,7 @@ describe('Sys-Check', () => {
     cy.contains('Eingabebereich: Test-Input2');
     cy.contains('Kontrollkästchen: true');
     cy.contains('Optionsfelder: Option B');
-    cy.contains('System-Check Abbrechen')
+    cy.contains('System-Check abbrechen')
       .click();
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
   });
