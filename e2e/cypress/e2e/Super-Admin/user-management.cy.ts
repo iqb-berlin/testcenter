@@ -126,6 +126,8 @@ describe('Usermanagement (user-tab)', () => {
       .click()
       .get('[formcontrolname="pw"]')
       .type('newPassword')
+      .get('[formcontrolname="pw_confirm"]')
+      .type('newPassword')
       .get('[type="submit"]')
       .click();
     logoutAdmin();
@@ -134,6 +136,18 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.contains('Status: Angemeldet als "workspace_admin"')
       .should('exist');
+  });
+
+  it('should not be able to change the password, if both input fields are different', () => {
+    cy.contains(userData.WorkspaceAdminName)
+      .click()
+      .get('[data-cy="change-password"]')
+      .click()
+      .get('[formcontrolname="pw"]')
+      .type('newPassword')
+      .get('[formcontrolname="pw_confirm"]')
+      .type('newPassword1');
+    cy.contains('Die Kennwörter stimmen nicht überein');
   });
 
   it('should be possible to delete a workspace admin', () => {
