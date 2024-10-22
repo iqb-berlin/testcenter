@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend/Unit-Tests-php-container" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+    <CommandLine>
+      <envFiles>
+        <find>$PROJECT_DIR$/docker/.env.dev</find>
+      </envFiles>
+      <PhpTestInterpreterSettings>
+        <option name="interpreterName" value="iqbberlin/testcenter-backend:current" />
+      </PhpTestInterpreterSettings>
+      <envs>
+        <env name="MYSQL_HOST" value="host-gateway" />
+        <env name="MYSQL_PORT" value="3306" />
+      </envs>
+    </CommandLine>
+    <option name="envFilePaths">
+      <list>
+        <option value="$PROJECT_DIR$/docker/.env.dev" />
+      </list>
+    </option>
+    <TestRunner bootstrap_file="$PROJECT_DIR$/backend/test/unit/bootstrap.php" configuration_file="phpunit.xml" directory="$PROJECT_DIR$/backend/test/unit" />
+    <method v="2" />
+  </configuration>
+</component>
