@@ -20,7 +20,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
         group[question.id] = new FormControl('');
       });
     this.form = new FormGroup(group);
-    this.dataservice.questionnaireReport
+    this.dataservice.questionnaireReports
       .forEach(reportEntry => {
         this.form.controls[reportEntry.id].setValue(reportEntry.value);
       });
@@ -40,13 +40,13 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   }
 
   private updateReport() {
-    this.dataservice.questionnaireReport = [];
+    this.dataservice.questionnaireReports = [];
     if (this.dataservice.checkConfig) {
       this.dataservice.checkConfig.questions.forEach(element => {
         if (element.type !== 'header') {
           const formControl = this.form.controls[element.id];
           if (formControl) {
-            this.dataservice.questionnaireReport.push({
+            this.dataservice.questionnaireReports.push({
               id: element.id,
               type: element.type,
               label: element.prompt,

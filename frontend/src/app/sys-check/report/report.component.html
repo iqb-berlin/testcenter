@@ -14,21 +14,21 @@
         </li>
       </ul>
 
-      <h2 *ngIf="dataService.environmentReport.length > 0">Computer (Betriebssystem, Browser)</h2>
+      <h2 *ngIf="dataService.environmentReports.length > 0">Computer (Betriebssystem, Browser)</h2>
       <ul>
-        <li *ngFor="let reportData of dataService.environmentReport">
+        <li *ngFor="let reportData of dataService.environmentReports">
           {{reportData.label}}: {{reportData.value}}
         </li>
       </ul>
-      <h2 *ngIf="dataService.networkReport.length > 0">Netzwerk/Internetverbindung</h2>
+      <h2 *ngIf="dataService.networkReports.length > 0">Netzwerk/Internetverbindung</h2>
       <ul>
-        <li *ngFor="let reportData of dataService.networkReport">
+        <li *ngFor="let reportData of dataService.networkReports">
           {{reportData.label}}: {{reportData.value}}
         </li>
       </ul>
-      <h2 *ngIf="dataService.questionnaireReport.length > 0">Fragen</h2>
+      <h2 *ngIf="dataService.questionnaireReports.length > 0">Fragen</h2>
       <ul>
-        <li *ngFor="let reportData of dataService.questionnaireReport">
+        <li *ngFor="let reportData of dataService.questionnaireReports">
           {{reportData.label}}: {{reportData.value}}
         </li>
       </ul>
@@ -41,7 +41,7 @@
         Bericht senden
       </button>
       <button mat-raised-button [routerLink]="['/r']">
-        {{isReportSaved ? 'Zurück' : 'System-Check Abbrechen'}}
+        {{isReportSaved ? 'Zurück' : 'System-Check abbrechen'}}
       </button>
     </mat-card-actions>
   </mat-card>
