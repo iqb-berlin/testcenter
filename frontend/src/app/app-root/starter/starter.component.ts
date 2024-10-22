@@ -3,9 +3,15 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, timeout } from 'rxjs';
 import { Router } from '@angular/router';
-import { CustomtextService, MainDataService, PasswordChangeService } from '../../shared/shared.module';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  CustomtextService,
+  MainDataService,
+  MessageDialogComponent, MessageDialogData,
+  PasswordChangeService
+} from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
@@ -28,7 +34,8 @@ export class StarterComponent implements OnInit, OnDestroy {
     public cts: CustomtextService,
     public mds: MainDataService,
     public ds: SysCheckDataService,
-    public pcs: PasswordChangeService
+    public pcs: PasswordChangeService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -77,6 +84,28 @@ export class StarterComponent implements OnInit, OnDestroy {
         this.router.navigate(['/t', testId]);
       }
     });
+  }
+
+  changePassword(): void {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.pcs.showPasswordChangeDialog({ id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! })
+      .subscribe(respOk => {
+        if (!respOk) {
+          const dialog = this.dialog.open(MessageDialogComponent, {
+            width: '400px',
+            data: <MessageDialogData>{
+              title: 'Passwort erfolgreich geändert',
+              content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+              type: 'info'
+            }
+          });
+
+          setTimeout(() => {
+            dialog.close();
+            this.mds.logOut();
+          }, 1500);
+        }
+      });
   }
 
   buttonGotoStudyMonitor(accessObject: AccessObject): void {
