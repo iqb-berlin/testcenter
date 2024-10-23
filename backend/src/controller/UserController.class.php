@@ -57,8 +57,8 @@ class UserController extends Controller {
     if (!isset($requestBody->p)) {
       throw new HttpBadRequestException($request, "Password missing");
     }
-
-    self::superAdminDAO()->setPassword($userId, $requestBody->p);
+    $authToken = $request->getAttribute('AuthToken');
+    self::superAdminDAO()->setPassword($userId, $requestBody->p, $authToken);
 
     return $response;
   }

@@ -64,7 +64,7 @@ export class StarterComponent implements OnInit, OnDestroy {
           this.workspaces = authData.claims.workspaceAdmin;
           this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
-          if (authData.pwSetByAdmin) {
+          if (authData.pwSetByAdmin && !this.isSuperAdmin) {
             this.dialog.open(ConfirmDialogComponent, {
               data: <MessageDialogData>{
                 title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
