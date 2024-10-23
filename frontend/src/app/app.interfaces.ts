@@ -32,6 +32,7 @@ export interface AuthData {
   token: string;
   displayName: string;
   id?: number;
+  pwSetByAdmin?: boolean;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
   claims: { [key in AuthAccessType]: AccessObject[] };

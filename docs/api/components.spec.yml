@@ -66,6 +66,10 @@ components:
           type: integer
           description: id of the (admin) user
           example: 1
+        pwSetByAdmin:
+          type: boolean
+          description: shows if the password was reset by the admin
+          example: true
         customTexts:
           type: object
           description: An Object containing customtext-strings for the UI as key-value-pairs

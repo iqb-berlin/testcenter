@@ -3,9 +3,9 @@ import {
   OnDestroy,
   OnInit
 } from '@angular/core';
-import { Subscription, timeout } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmDialogComponent,
   CustomtextService,
@@ -16,7 +16,6 @@ import {
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
-import { NewPasswordComponent } from '../../shared/components/newpassword/new-password.component';
 
 @Component({
   templateUrl: './starter.component.html',
@@ -65,55 +64,57 @@ export class StarterComponent implements OnInit, OnDestroy {
           this.workspaces = authData.claims.workspaceAdmin;
           this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
-          this.dialog.open(ConfirmDialogComponent, {
-            data: <MessageDialogData>{
-              title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
-              content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
-              type: 'info'
-            },
-            disableClose: true
-          }).afterClosed().subscribe(errorCode => {
-            if (!errorCode) {
-              this.mds.logOut();
-            }
-
-            this.pcs.showPasswordChangeDialog(
-              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
-              { disableClose: true }
-            ).subscribe(error => {
-              if (error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Sie müssen Ihr Passwort einmalig ändern',
-                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                    type: 'error'
-                  }
-                });
-
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
+          if (authData.pwSetByAdmin) {
+            this.dialog.open(ConfirmDialogComponent, {
+              data: <MessageDialogData>{
+                title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
+                content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
+                type: 'info'
+              },
+              disableClose: true
+            }).afterClosed().subscribe(errorCode => {
+              if (!errorCode) {
+                this.mds.logOut();
               }
 
-              if (!error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Passwort erfolgreich geändert',
-                    content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-                    type: 'info'
-                  }
-                });
+              this.pcs.showPasswordChangeDialog(
+                { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
+                { disableClose: true }
+              ).subscribe(error => {
+                if (error) {
+                  const dialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Sie müssen Ihr Passwort einmalig ändern',
+                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                      type: 'error'
+                    }
+                  });
 
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
-              }
+                  setTimeout(() => {
+                    dialog.close();
+                    this.mds.logOut();
+                  }, 1500);
+                }
+
+                if (!error) {
+                  const dialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Passwort erfolgreich geändert',
+                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+                      type: 'info'
+                    }
+                  });
+
+                  setTimeout(() => {
+                    dialog.close();
+                    this.mds.logOut();
+                  }, 1500);
+                }
+              });
             });
-          });
+          }
         } else {
           this.reloadTestList();
         }

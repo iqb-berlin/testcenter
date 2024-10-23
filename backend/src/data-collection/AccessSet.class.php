@@ -10,10 +10,32 @@ class AccessSet extends DataCollectionTypeSafe {
   protected string $token;
   protected string $displayName;
   protected ?int $id;
+  protected ?bool $pwSetByAdmin;
   protected object $customTexts;
   protected array $flags;
   protected object $claims;
   protected ?string $groupToken;
+
+  public function __construct(
+    string $token,
+    string $displayName,
+    array $flags = [],
+    stdClass $customTexts = null,
+    ?string $groupToken = null,
+    ?int $id = null,
+    ?bool $pwSetByAdmin = null
+  ) {
+    $this->token = $token;
+    $this->displayName = $displayName;
+    $this->flags = array_map(function ($flag) {
+      return (string) $flag;
+    }, $flags);
+    $this->claims = (object) [];
+    $this->customTexts = $customTexts ?? (object) [];
+    $this->groupToken = $groupToken;
+    $this->id = $id ?? null;
+    $this->pwSetByAdmin = $pwSetByAdmin;
+  }
 
   static function createFromPersonSession(
     PersonSession $loginWithPerson,
@@ -69,6 +91,7 @@ class AccessSet extends DataCollectionTypeSafe {
       token: $admin->getToken(),
       displayName: $admin->getName(),
       id: $admin->getId(),
+      pwSetByAdmin: $admin->isPwSetByAdmin(),
     );
 
     $accessObjects = array_map(
@@ -100,25 +123,6 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginSession->getLogin()->getCustomTexts(),
       $loginSession->getGroupToken()
     );
-  }
-
-  public function __construct(
-    string $token,
-    string $displayName,
-    array $flags = [],
-    stdClass $customTexts = null,
-    ?string $groupToken = null,
-    ?int $id = null
-  ) {
-    $this->token = $token;
-    $this->displayName = $displayName;
-    $this->flags = array_map(function ($flag) {
-      return (string) $flag;
-    }, $flags);
-    $this->claims = (object) [];
-    $this->customTexts = $customTexts ?? (object) [];
-    $this->groupToken = $groupToken;
-    $this->id = $id ?? null;
   }
 
   function jsonSerialize(): mixed {
