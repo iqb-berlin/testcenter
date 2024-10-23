@@ -4,6 +4,7 @@ import {
 } from '@angular/router';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
+import { Unit } from '../interfaces/test-controller.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -26,10 +27,12 @@ export class UnitActivateGuard implements CanActivate {
       return this.router.parseUrl(`/t/${testId}`);
     }
 
+    let targetUnit: Unit | undefined;
+
     try {
-      this.tcs.getUnit(targetUnitSequenceId);
+      targetUnit = this.tcs.getUnit(targetUnitSequenceId);
     } catch (e) {
-      // a unit-nr was entered in the URl which does not exist
+      // a unit-nr was entered in the URL which does not exist
       this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       // looking for alternatives where to go
       await this.tcs.closeBuffer('canActivate');
@@ -37,10 +40,17 @@ export class UnitActivateGuard implements CanActivate {
         // current unit is accessible, so we just stay here
         return false;
       }
-      const previousUnlockedUnit = this.tcs.navigationTargets.previous;
-      if (previousUnlockedUnit) {
+      if (this.tcs.navigationTargets.previous) {
         // a previous unit is accessible, so we go there
-        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`);
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${this.tcs.navigationTargets.previous}`);
+      }
+    }
+
+    if (targetUnit && TestControllerService.unitIsInaccessible(targetUnit)) {
+      // we navigate to a locked unit. example: we leave timed block to status and return.
+      if (this.tcs.navigationTargets.next) {
+        // a later unit is accessible, so we go there
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${this.tcs.navigationTargets.next}`);
       }
     }
 
