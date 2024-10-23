@@ -89,8 +89,8 @@ export class StarterComponent implements OnInit, OnDestroy {
   changePassword(): void {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.pcs.showPasswordChangeDialog({ id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! })
-      .subscribe(respOk => {
-        if (!respOk) {
+      .subscribe(errorCode => {
+        if (!errorCode) {
           const dialog = this.dialog.open(MessageDialogComponent, {
             width: '400px',
             data: <MessageDialogData>{

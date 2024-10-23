@@ -126,8 +126,8 @@ export class UsersComponent implements OnInit {
         }
       });
     } else {
-      this.newpasswordService.showPasswordChangeDialog(selectedRows[0]).subscribe(respOk => {
-        if (!respOk) {
+      this.newpasswordService.showPasswordChangeDialog(selectedRows[0]).subscribe(errorCode => {
+        if (!errorCode) {
           this.snackBar.open('Kennwort geändert', '', { duration: 3000 });
         }
       });
