@@ -31,7 +31,7 @@ export class SysCheckChildCanActivateGuard  {
     if (this.ds.checkConfig && this.ds.loadConfigComplete) {
       return true;
     }
-    this.router.navigate(['/r/check-starter']);
+    this.router.navigate(['/']); //TODO not ideal for not-logged in users (see commitmsg for more)
     return false;
   }
 }

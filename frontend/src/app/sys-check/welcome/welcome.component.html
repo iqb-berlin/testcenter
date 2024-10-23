@@ -16,10 +16,13 @@
     </mat-card>
 
     <mat-card appearance="raised" [style.flex-basis.px]="400">
+      <mat-card-header>
+        <mat-card-title>{{ ds.stepLabels[0] }}</mat-card-title>
+      </mat-card-header>
       <mat-card-content>
         <table>
           <tbody>
-          <tr *ngFor="let ed of ds.environmentReport">
+          <tr *ngFor="let ed of ds.environmentReports">
             <td>{{ed.label}}: </td>
             <td>&nbsp;{{ed.value}}</td>
           </tr>

@@ -1,15 +1,22 @@
 ---
 layout: default
 ---
-## [next]
 
+## [next]
 ### Bugfixes
 * Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
   eingerichtet worden sein.)
+* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können 
+  sich mit einem gemeinsamen Systemcheck Login einloggen.
+* Der Netzwerktest innerhalb des Systemchecks wird beim Verlassen des Systemchecks zurückgesetzt und startet automatisch
+  beim Wiedereintritt neu.
+* Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
+  entsprechende Startpage für (Un-)Eingeloggte weitergeleitet.
   
 ### API Changes
 * `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
-
+* DELETE /workspace/{ws_id}/sys-check/reports:
+  * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
 
 ## 15.3.0-alpha3
 ### neue Features

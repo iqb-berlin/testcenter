@@ -37,7 +37,7 @@ export class SysCheckDataService {
     },
     {
       route: 'r',
-      label: 'Senden eines Berichtes (Kennwort erforderlich)'
+      label: 'Senden eines Berichtes'
     }
   ];
 
@@ -56,9 +56,9 @@ export class SysCheckDataService {
 
   loadConfigComplete = false;
   unitAndPlayerContainer: UnitAndPlayerContainer | null = null;
-  environmentReport: ReportEntry[] = [];
-  networkReport: ReportEntry[] = [];
-  questionnaireReport: ReportEntry[] = [];
+  environmentReports: ReportEntry[] = [];
+  networkReports: ReportEntry[] = [];
+  questionnaireReports: ReportEntry[] = [];
   networkCheckStatus: NetworkCheckStatus = {
     done: true,
     message: 'Messung noch nicht gestartet',
