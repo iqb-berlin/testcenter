@@ -13,7 +13,7 @@ tls:
         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-      sniStrict: true
+      sniStrict: true # don't use if you want traefik to generate self-signed certificates ! ! !
   certificates:
     - certFile: /certs/certificate.cer
       keyFile: /certs/private_key.key

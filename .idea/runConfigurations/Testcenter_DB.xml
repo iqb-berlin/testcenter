@@ -1,0 +1,42 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Testcenter-DB" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+    <deployment type="docker-image">
+      <settings>
+        <option name="imageTag" value="mysql:8.0" />
+        <option name="command" value="--explicit-defaults-for-timestamp=TRUE --sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION --tls-version=TLSv1.2,TLSv1.3 --max-connections=500 --log_error_verbosity=2" />
+        <option name="containerName" value="testcenter-db" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="MYSQL_INITDB_SKIP_TZINFO" />
+              <option name="value" value="'true'" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="3306" />
+              <option name="hostPort" value="3306" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--env-file $PROJECT_DIR$/docker/.env.dev" />
+        <option name="showCommandPreview" value="true" />
+        <option name="volumeBindings">
+          <list>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/docker-entrypoint-initdb.d/000-create-test-db.sh" />
+              <option name="hostPath" value="$PROJECT_DIR$/scripts/database/000-create-test-db.sh" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/var/lib/mysql" />
+              <option name="hostPath" value="testcenter_dbdata" />
+            </DockerVolumeBindingImpl>
+          </list>
+        </option>
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
