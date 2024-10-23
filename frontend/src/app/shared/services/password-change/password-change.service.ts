@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Observable, of, switchMap } from 'rxjs';
 import { BackendService } from '../backend.service';
 import { NewPasswordComponent } from '../../components/newpassword/new-password.component';
@@ -11,15 +10,16 @@ import { NewPasswordComponent } from '../../components/newpassword/new-password.
 export class PasswordChangeService {
   constructor(
     private newpasswordDialog: MatDialog,
-    private bs: BackendService,
-    private snackBar: MatSnackBar
+    private bs: BackendService
   ) { }
 
-  showPasswordChangeDialog(user: { id: number; name: string }): Observable<boolean> {
-    const dialogRef = this.newpasswordDialog.open(NewPasswordComponent, {
-      width: '600px',
-      data: user.name
-    });
+  showPasswordChangeDialog(user: { id: number; name: string }, option: MatDialogConfig = {}): Observable<boolean> {
+    const dialogRef = this.newpasswordDialog.open(NewPasswordComponent,
+      {
+        width: '600px',
+        data: user.name,
+        ...option
+      });
 
     return dialogRef.afterClosed().pipe(
       switchMap(result => {
