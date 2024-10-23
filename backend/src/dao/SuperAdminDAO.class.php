@@ -112,7 +112,7 @@ class SuperAdminDAO extends DAO {
       'update users set password = :password, pw_set_by_admin = :pw_set_by_admin where id = :user_id',
       [
         ':user_id' => $userId,
-        ':pw_set_by_admin' => not_null($authToken) && $authToken->getMode() === 'super-admin' ? 1 : 0,
+        ':pw_set_by_admin' => (!is_null($authToken) && $authToken->getmode() === 'super-admin') ? 1 : 0,
         ':password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords)
       ]
     );
