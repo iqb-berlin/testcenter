@@ -17,7 +17,7 @@ services:
   traefik:
     <<: *restart-policy
     container_name: testcenter-traefik
-    image: ${DOCKERHUB_PROXY}traefik:v2.10
+    image: ${DOCKERHUB_PROXY}traefik:v2.11
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"

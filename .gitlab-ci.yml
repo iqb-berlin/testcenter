@@ -26,7 +26,7 @@ variables:
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
   DOCKER_SERVICE_MTU: 1442
   DOCKER_TLS_CERTDIR: ''
-  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.10
+  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.11
   DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
   CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.0-bullseye
   TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
@@ -1200,7 +1200,7 @@ test-e2e:
   before_script:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
-    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.10
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
