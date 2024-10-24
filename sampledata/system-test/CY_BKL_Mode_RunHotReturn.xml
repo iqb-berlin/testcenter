@@ -11,6 +11,9 @@
 		<Config key="force_response_complete">ON</Config>
 		<Config key="unit_show_time_left">ON</Config>
 		<Config key="unit_menu">ON</Config>
+    <Config key="unit_responses_buffer_time">20000000</Config>
+    <Config key="unit_state_buffer_time">20000000</Config>
+    <Config key="test_state_buffer_time">20000000</Config>
 	</BookletConfig>
 
 	<Units>
@@ -25,7 +28,7 @@
 			<Unit id="UNIT.SAMPLE-102" label="Aufgabe2" labelshort="3"/>
 			<Unit id="UNIT.SAMPLE-103" label="Aufgabe3" labelshort="4"/>
 		</Testlet>
-		
+
 		<Unit id="UNIT.SAMPLE-104" label="Endseite" labelshort="5"/>
 	</Units>
 </Booklet>
