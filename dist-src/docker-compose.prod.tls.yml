@@ -1,5 +1,5 @@
 #  Compose file for production environment. Images are NOT locally built but
-#  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
+#  downloaded from Docker-Hub. This is the TLS variant using encrypted
 #  communication.
 
 services:
