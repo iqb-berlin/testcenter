@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG REGISTRY_PATH=""
-ARG PHP_VERSION=8.3.2
+ARG PHP_VERSION=8.3.12-apache-bookworm
 
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
@@ -30,7 +30,7 @@ RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
       --ignore-platform-reqs
 
 
-FROM ${REGISTRY_PATH}php:${PHP_VERSION}-apache-bullseye AS base
+FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS base
 # Install PHP extensions
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
