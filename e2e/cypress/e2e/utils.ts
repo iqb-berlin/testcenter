@@ -118,22 +118,6 @@ export const openSampleWorkspace = (workspace: number): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/admin/${workspace}/files`);
 };
 
-export const openSampleWorkspace1 = (): void => {
-  cy.get('[data-cy="workspace-1"]')
-    .should('exist')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
-};
-
-export const openSampleWorkspace2 = (): void => {
-  cy.get('[data-cy="workspace-2"]')
-    .should('exist')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/admin/2/files`);
-};
-
 export const loginSuperAdmin = (): void => {
   insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
@@ -235,6 +219,16 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
     .click();
   cy.contains(username)
     .should('exist');
+};
+
+export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
+  hardLogOut();
+  loginSuperAdmin();
+  openSampleWorkspace(workspace);
+  cy.get('[data-cy="uplaod-file-select"]')
+    .selectFile(`cypress/fixtures/${fileName}`, { force: true });
+  logoutAdmin();
+  visitLoginPage();
 };
 
 export const deleteFilesSampleWorkspace = (): void => {
@@ -378,14 +372,4 @@ export const readBlockTime = (): Promise <number> => new Promise(resolve => {
 export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
   cy.get('.cdk-overlay-container').contains(optionName).click();
-};
-
-export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
-  hardLogOut();
-  loginSuperAdmin();
-  openSampleWorkspace(workspace);
-  cy.get('[data-cy="uplaod-file-select"]')
-    .selectFile(`cypress/fixtures/${fileName}`, { force: true });
-  logoutAdmin();
-  visitLoginPage();
 };

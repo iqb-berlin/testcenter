@@ -9,7 +9,7 @@ import {
   selectFromDropdown,
   useTestDB,
   loginSuperAdmin,
-  openSampleWorkspace1,
+  openSampleWorkspace,
   visitLoginPage,
   logoutAdmin, loginTestTaker, uploadFileFromFixtureToWorkspace
 } from '../utils';
@@ -32,7 +32,7 @@ describe('Sys-Check', () => {
     cy.get('[data-cy="general-sys-check"]')
       .should('not.exist');
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .click();
     cy.get('[data-cy="delete-files"]')
