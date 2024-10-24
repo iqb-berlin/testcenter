@@ -20,15 +20,15 @@ variables:
   REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
   DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
   BASE_IMAGE: docker:27.3
-  PAGES_IMAGE: ruby:3.1
+  PAGES_IMAGE: ruby:3.3
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
   DOCKER_SERVICE_MTU: 1442
   DOCKER_TLS_CERTDIR: ''
-  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.10
+  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.11
   DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
-  CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+  CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.4-bookworm
   TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
   PRERELEASE_SCRIPT_REGEX: ^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$
   PRERELEASE_RULES_REGEX: /^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$/
@@ -1073,7 +1073,7 @@ test-backend-api:
   before_script:
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1101,7 +1101,7 @@ test-file-service-api:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1200,9 +1200,9 @@ test-e2e:
   before_script:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
-    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.10
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev

@@ -15,7 +15,7 @@
           "lang": "en"
         }
       ],
-      "version": "6.0.0",
+      "version": "6.0.2",
       "specVersion": "6.0",
       "description": [
         {
@@ -209,8 +209,8 @@
         opacity: 1;
       }
     }
-</style>
-<style id="print-styles" media="print">
+  </style>
+  <style id="print-styles" media="print">
     @page {
       size: A4 landscape;
       margin: 15pt;
@@ -243,7 +243,7 @@
     #unit {
       margin: 0;
     }
-</style>
+  </style>
 </head>
 <body>
 
@@ -304,15 +304,20 @@
     Object.defineProperty(HTMLInputElement.prototype, "value", descriptor);
   }());
 
-  // some settings, that might be overridden for testing per query-params in URL
+  // Player Settings
+  // Some specific configs, that might be overridden in some test-contexts in two ways
+  // a) when player is embedded with src, put then in url parameters
+  // b) when player is embedded with srcdoc, the following line can be replaced;
+  const overridePlayerSettings = location.search;
+
   const playerSettings = Object.assign(
     {
-      debounceStateMessages: 1000,
+      debounceStateMessages: 50,
       debounceKeyboardEvents: 100,
       delayReadyNotification: 0
     },
-    location.search
-      .substr(1)
+    overridePlayerSettings
+      .substring(1)
       .split("&")
       .reduce((carry, item) => {const tmp = item.split("="); carry[tmp[0]] = tmp[1]; return carry;}, {})
   );
@@ -330,7 +335,7 @@
     pagingMode: "buttons", // "separate" | "concat-scroll" | "concat-scroll-snap" | "buttons"
     printMode: "off",
     startPage: null,
-    directDownloadUrl: null
+    directDownloadUrl: null,
   }
 
   let sessionId = "";

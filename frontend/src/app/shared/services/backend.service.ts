@@ -14,6 +14,10 @@ export class BackendService {
   ) {
   }
 
+  changePassword(userId: number, password: string): Observable<boolean> {
+    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
+  }
+
   deleteSession(): Observable<void> {
     return this.http
       .delete<void>(`${this.serverUrl}session`)

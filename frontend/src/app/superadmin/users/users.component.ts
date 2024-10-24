@@ -14,7 +14,7 @@ import {
 } from '../superadmin-password-request/superadmin-password-request.component';
 import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
-import { NewPasswordComponent } from './newpassword/new-password.component';
+import { PasswordChangeService } from '../../shared/services/password-change/password-change.service';
 
 @Component({
   templateUrl: './users.component.html',
@@ -36,11 +36,11 @@ export class UsersComponent implements OnInit {
   constructor(
     private bs: BackendService,
     private newuserDialog: MatDialog,
-    private newpasswordDialog: MatDialog,
     private confirmDialog: MatDialog,
     private superadminPasswordDialog: MatDialog,
     private messsageDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private newpasswordService: PasswordChangeService
   ) {
     this.tableSelectionRow.changed.subscribe(
       r => {
@@ -126,26 +126,10 @@ export class UsersComponent implements OnInit {
         }
       });
     } else {
-      const dialogRef = this.newpasswordDialog.open(NewPasswordComponent, {
-        width: '600px',
-        data: selectedRows[0].name
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (!result) {
-          return;
+      this.newpasswordService.showPasswordChangeDialog(selectedRows[0]).subscribe(errorCode => {
+        if (!errorCode) {
+          this.snackBar.open('Kennwort geändert', '', { duration: 3000 });
         }
-        this.bs.changePassword(
-          selectedRows[0].id,
-          result.get('pw').value
-        )
-          .subscribe(
-            respOk => {
-              if (respOk) {
-                this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
-              }
-            }
-          );
       });
     }
   }
