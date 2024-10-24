@@ -103,6 +103,7 @@
             mat-raised-button
             class="starter"
             color="primary"
+            [attr.data-cy]="'syscheck-' + sc.id"
             [routerLink]="['/check', sc.workspaceId, sc.id]"
           >
             <div class="starter-title">{{sc.label}}</div>

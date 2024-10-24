@@ -11,12 +11,13 @@ import {
   loginSuperAdmin,
   openSampleWorkspace1,
   visitLoginPage,
-  logoutAdmin
-} from './utils';
+  logoutAdmin, loginTestTaker, uploadFileFromFixtureToWorkspace
+} from '../utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
   beforeEach(useTestDB);
+
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Auswahl')
@@ -99,5 +100,28 @@ describe('Sys-Check', () => {
     cy.contains('System-Check abbrechen')
       .click();
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
+  });
+});
+
+describe('System Check as Login', () => {
+  before(() => {
+    cy.clearLocalStorage();
+    cy.clearCookies();
+    resetBackendData();
+    deleteDownloadsFolder();
+  });
+  beforeEach(() => {
+    useTestDB();
+    visitLoginPage();
+  });
+
+  it('should jump right into system-check, if only one system-check exits in workspace', () => {
+    loginTestTaker('syscheck', '', 'sys-check');
+  });
+
+  it('should show the starter page if more than one system-check is available in workspace', () => {
+    uploadFileFromFixtureToWorkspace('SysCheck_correct.xml', 1);
+    loginTestTaker('syscheck', '', 'starter');
+    cy.get('[data-cy*="syscheck"').should('have.length', 2);
   });
 });

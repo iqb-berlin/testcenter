@@ -108,7 +108,15 @@ export const hardLogOut = (): void => {
   cy.clearLocalStorage();
   cy.clearCookies();
   cy.reload(true);
-}
+};
+
+export const openSampleWorkspace = (workspace: number): void => {
+  cy.get(`[data-cy="workspace-${workspace}"]`)
+    .should('exist')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/admin/${workspace}/files`);
+};
 
 export const openSampleWorkspace1 = (): void => {
   cy.get('[data-cy="workspace-1"]')
@@ -153,7 +161,7 @@ export const loginWorkspaceAdmin = (): void => {
 };
 
 export const loginTestTaker =
-  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' = 'starter'): void => {
+  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' | 'sys-check' = 'starter'): void => {
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
@@ -180,6 +188,10 @@ export const loginTestTaker =
         break;
       case 'code-input':
         cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
+        break;
+      case 'sys-check':
+        cy.url().should('contain', `${Cypress.config().baseUrl}/#/check`);
+        break;
     }
   };
 
@@ -366,4 +378,14 @@ export const readBlockTime = (): Promise <number> => new Promise(resolve => {
 export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
   cy.get('.cdk-overlay-container').contains(optionName).click();
+};
+
+export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
+  hardLogOut();
+  loginSuperAdmin();
+  openSampleWorkspace(workspace);
+  cy.get('[data-cy="uplaod-file-select"]')
+    .selectFile(`cypress/fixtures/${fileName}`, { force: true });
+  logoutAdmin();
+  visitLoginPage();
 };
