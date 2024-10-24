@@ -3,7 +3,7 @@ import {
   deleteFilesSampleWorkspace,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace1,
+  openSampleWorkspace,
   resetBackendData,
   useTestDB,
   visitLoginPage
@@ -15,7 +15,7 @@ describe('Workspace-Admin-files', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
-  beforeEach(openSampleWorkspace1);
+  beforeEach(() => openSampleWorkspace(1));
 
   afterEach(logoutAdmin);
 

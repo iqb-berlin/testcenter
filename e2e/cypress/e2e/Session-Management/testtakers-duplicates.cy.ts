@@ -2,7 +2,7 @@ import {
   deleteTesttakersFiles,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace1, openSampleWorkspace2,
+  openSampleWorkspace,
   resetBackendData,
   useTestDB,
   visitLoginPage
@@ -17,7 +17,7 @@ describe('Check Testtakers Duplicates in workspaces', () => {
   afterEach(logoutAdmin);
 
   it('should be not possible to overwrite the testtaker file in ws1, if the file have the another name', () => {
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .should('exist');
     cy.get('.sidebar > input:nth-child(2)')
@@ -31,7 +31,7 @@ describe('Check Testtakers Duplicates in workspaces', () => {
   });
 
   it('should be possible overwrite the testtaker file in ws1, if the file have the same name', () => {
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     deleteTesttakersFiles();
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('../sampledata/Testtakers.xml', { force: true });
@@ -52,7 +52,7 @@ describe('Check Testtakers Duplicates in workspaces', () => {
   });
 
   it('should not be possible to load the same testtaker file that is already exist in ws1 to ws2', () => {
-    openSampleWorkspace2();
+    openSampleWorkspace(2);
     deleteTesttakersFiles();
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('../sampledata/Testtakers.xml', { force: true });

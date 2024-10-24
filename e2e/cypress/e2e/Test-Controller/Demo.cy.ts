@@ -1,5 +1,5 @@
 import {
-  loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
+  loginSuperAdmin, openSampleWorkspace, loginTestTaker, resetBackendData,
   useTestDB, credentialsControllerTest, visitLoginPage, getFromIframe, forwardTo, backwardsTo
 } from '../utils';
 
@@ -154,7 +154,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
 
   it('should be no answer file in demo-mode', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]') // TODO use data-cy
       .should('exist')
       .click();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SysCheck xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.0-alpha3/definitions/vo_SysCheck.xsd">
+  <Metadata>
+    <Id>SYSCHECK.CORRECT</Id>
+    <Label>System-Check korrektes Beispiel</Label>
+    <Description>Beschreibungstext für den Systemcheck. Ein bisschen mehr Text.</Description>
+  </Metadata>
+
+  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="false">
+    <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">
+      100000, 200000, 400000, 800000
+    </UploadSpeed>
+    <DownloadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="200000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">
+      400000, 800000, 1600000, 3200000
+    </DownloadSpeed>
+
+    <Q id="1" type="header" prompt="Beispielüberschrift"/>
+    <Q id="2" type="string" prompt="Eingabefeld" required="true"/>
+    <Q id="3" type="select" prompt="Auswahl">Option A#Option B</Q>
+    <Q id="4" type="text" prompt="Eingabebereich"/>
+    <Q id="5" type="check" prompt="Kontrollkästchen"/>
+    <Q id="6" type="radio" prompt="Optionsfelder">Option A#Option B</Q>
+  </Config>
+</SysCheck>
