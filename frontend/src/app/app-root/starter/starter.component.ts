@@ -5,7 +5,14 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  ConfirmDialogComponent,
+  CustomtextService,
+  MainDataService,
+  MessageDialogComponent, MessageDialogData,
+  PasswordChangeService
+} from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
@@ -27,7 +34,9 @@ export class StarterComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     public cts: CustomtextService,
     public mds: MainDataService,
-    public ds: SysCheckDataService
+    public ds: SysCheckDataService,
+    public pcs: PasswordChangeService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -54,6 +63,58 @@ export class StarterComponent implements OnInit, OnDestroy {
           }
           this.workspaces = authData.claims.workspaceAdmin;
           this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
+
+          if (authData.pwSetByAdmin && !this.isSuperAdmin) {
+            this.dialog.open(ConfirmDialogComponent, {
+              data: <MessageDialogData>{
+                title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
+                content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
+                type: 'info'
+              },
+              disableClose: true
+            }).afterClosed().subscribe(errorCode => {
+              if (!errorCode) {
+                this.mds.logOut();
+              }
+
+              this.pcs.showPasswordChangeDialog(
+                { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
+                { disableClose: true }
+              ).subscribe(error => {
+                if (error) {
+                  const dialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Sie müssen Ihr Passwort einmalig ändern',
+                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                      type: 'error'
+                    }
+                  });
+
+                  setTimeout(() => {
+                    dialog.close();
+                    this.mds.logOut();
+                  }, 1500);
+                }
+
+                if (!error) {
+                  const dialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Passwort erfolgreich geändert',
+                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+                      type: 'info'
+                    }
+                  });
+
+                  setTimeout(() => {
+                    dialog.close();
+                    this.mds.logOut();
+                  }, 1500);
+                }
+              });
+            });
+          }
         } else {
           this.reloadTestList();
         }
@@ -76,6 +137,28 @@ export class StarterComponent implements OnInit, OnDestroy {
         this.router.navigate(['/t', testId]);
       }
     });
+  }
+
+  changePassword(): void {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.pcs.showPasswordChangeDialog({ id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! })
+      .subscribe(errorCode => {
+        if (!errorCode) {
+          const dialog = this.dialog.open(MessageDialogComponent, {
+            width: '400px',
+            data: <MessageDialogData>{
+              title: 'Passwort erfolgreich geändert',
+              content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+              type: 'info'
+            }
+          });
+
+          setTimeout(() => {
+            dialog.close();
+            this.mds.logOut();
+          }, 1500);
+        }
+      });
   }
 
   buttonGotoStudyMonitor(accessObject: AccessObject): void {

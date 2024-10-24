@@ -3,6 +3,20 @@ layout: default
 ---
 
 ## [next]
+
+### neue Features
+* Workspace-Admins können nun ihr eigenes Passwort ändern. Dies ist im Startmenü nach dem Login möglich. Bei Neusetzen
+  des Passwortes wird man automatisch ausgeloggt, um das neue Passwort direkt zu testen.
+* Wenn der Super-Admin einen neuen Workspace-Admin einrichtet oder sein Passwort ändert, dann muss dieser Workspace-
+  Admin sich beim erstmaligen Einloggen ein neues Passwort geben. Dieser Aufruf tritt bei jeder Rücksetzung durch den
+  Super-Admin erneut auf.
+
+### Verbesserungen
+* Wenn ein Passwort geändert wird, sei es über den Super-Admin oder über den eigenen Workspace-Admin, dann wird das  
+  Passwort zur Sicherheit ein weiteres Mal abgefragt. Dies soll Fehler beim Schreiben des neuen Passworts verhindern.
+* Im Super-Admin wird über eine kleine Snackbar über das erfolgreiche Ändern des Passwortes informiert.
+* Neue Version des Verona Simple Player 6.0.2 in den Sampledata hinterlegt.
+
 ### Bugfixes
 * Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
   eingerichtet worden sein.)
@@ -15,8 +29,14 @@ layout: default
   
 ### API Changes
 * `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
-* DELETE /workspace/{ws_id}/sys-check/reports:
+* `DELETE /workspace/{ws_id}/sys-check/reports`:
   * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
+* `GET /session` 
+  * gibt unter dem Admintoken nun `id: int|null` aus
+  * gibt unter dem Admintoken nun `pwSetByAdmin: boolean|null` aus
+* `PATCH /user/{user_id}/password` kann nun als Super-Admin oder Workspace-Admin (unter Vorbehalt, dass die zu ändernde
+  `{user_id}` übereinstimmt mit der user_id des Request Tokens) aufgerufen werden
+
 
 ## 15.3.0-alpha3
 ### neue Features
