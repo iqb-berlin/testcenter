@@ -46,20 +46,19 @@ export class BackendService {
     return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
-  patchTestState(patch: TestStateUpdate): Subscription {
-    return this.http.patch(`${this.backendUrl}test/${patch.testId}/state`, patch.state).subscribe();
+  patchTestState(patch: TestStateUpdate): Observable<string> {
+    return this.http.patch<string>(`${this.backendUrl}test/${patch.testId}/state`, patch.state);
   }
 
   addTestLog(testId: string, logEntries: StateReportEntry<string>[]): Subscription {
     return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
-  patchUnitState(stateUpdate: UnitStateUpdate, originalUnitId: string): Subscription {
-    return this.http.patch(
+  patchUnitState(stateUpdate: UnitStateUpdate, originalUnitId: string): Observable<void> {
+    return this.http.patch<void>(
       `${this.backendUrl}test/${stateUpdate.testId}/unit/${stateUpdate.unitAlias}/state`,
       { newState: stateUpdate.state, originalUnitId }
-    )
-      .subscribe();
+    );
   }
 
   addUnitLog(testId: string, unitName: string, originalUnitId: string, logEntries: StateReportEntry<string>[]): Subscription {
@@ -80,13 +79,17 @@ export class BackendService {
     }
   }
 
-  updateDataParts(testId: string, unitAlias: string, originalUnitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
+  updateDataParts(
+    testId: string,
+    unitAlias: string,
+    originalUnitId: string,
+    dataParts: KeyValuePairString,
+    responseType: string
+  ): Observable<void> {
     const timeStamp = Date.now();
-    return this.http
-      .put(`${this.backendUrl}test/${testId}/unit/${unitAlias}/response`, {
-        timeStamp, dataParts, originalUnitId, responseType
-      })
-      .subscribe();
+    return this.http.put<void>(`${this.backendUrl}test/${testId}/unit/${unitAlias}/response`, {
+      timeStamp, dataParts, originalUnitId, responseType
+    });
   }
 
   lockTest(testId: string, timeStamp: number, message: string): Subscription {

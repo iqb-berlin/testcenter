@@ -1,15 +1,15 @@
 import {
-  bufferWhen, filter, map, takeUntil, withLatestFrom
+  bufferWhen, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, firstValueFrom, interval, merge, Observable, Subject, Subscription, timer
+  BehaviorSubject, forkJoin, interval, lastValueFrom, merge, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet, isTestlet, KeyValuePairNumber,
+  Booklet, BufferEvent, BufferEventType, bufferTypes, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
   MaxTimerEvent, NavigationTargets, StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
@@ -79,7 +79,7 @@ export class TestControllerService {
   };
 
   readonly conditionsEvaluated$ = new Subject<void>();
-  private readonly unitDataPartsBufferClosed$ = new Subject<string>();
+  private readonly bufferEventBus$ = new Subject<BufferEvent>();
   private readonly closeBuffers$ = new Subject<string>();
   private readonly unitDataPartsBuffer$ = new Subject<UnitDataParts>();
   private readonly unitStateBuffer$ = new Subject<UnitStateUpdate>();
@@ -123,19 +123,23 @@ export class TestControllerService {
           this.evaluateConditions();
         }
 
-        this.unitDataPartsBufferClosed$.next(String(closer));
+        this.bufferEventBus$.next({ type: 'unitData', event: 'closed', id: String(closer) });
 
         if (this.testMode.saveResponses) {
-          buffer
-            .forEach(changedDataPartsPerUnit => {
-              this.bs.updateDataParts(
-                this.testId,
-                changedDataPartsPerUnit.unitAlias,
-                this.units[this.unitAliasMap[changedDataPartsPerUnit.unitAlias]].id,
-                changedDataPartsPerUnit.dataParts,
-                changedDataPartsPerUnit.unitStateDataType
-              );
+          forkJoin(
+            buffer.map(changedDataPartsPerUnit => this.bs.updateDataParts(
+              this.testId,
+              changedDataPartsPerUnit.unitAlias,
+              this.units[this.unitAliasMap[changedDataPartsPerUnit.unitAlias]].id,
+              changedDataPartsPerUnit.dataParts,
+              changedDataPartsPerUnit.unitStateDataType
+            ))
+          )
+            .subscribe({
+              complete: () => this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: String(closer) })
             });
+        } else {
+          this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: String(closer) });
         }
       });
   }
@@ -144,9 +148,10 @@ export class TestControllerService {
     configSetting: keyof BookletConfigData
   ): { tracker$: Observable<string>, factory: () => Observable<string> } {
     const tracker$ = new Subject<string>();
+
     const factory = () => {
       const closer$ = merge(
-        timer(Number(this.booklet?.config[configSetting])).pipe(map(() => 'timer')),
+        timer(Number(this.booklet?.config[configSetting] || 100000)).pipe(map(() => 'timer')),
         this.closeBuffers$
       );
       closer$.subscribe(tracker$);
@@ -161,12 +166,23 @@ export class TestControllerService {
     this.subscriptions.unitStateBuffer = this.unitStateBuffer$
       .pipe(
         bufferWhen(closingSignal.factory),
-        map(TestStateUtil.sort)
+        map(TestStateUtil.sort),
+        withLatestFrom(closingSignal.tracker$)
       )
-      .subscribe(updates => {
-        if (!this.testMode.saveResponses) return;
-        updates
-          .forEach(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id));
+      .subscribe(([buffer, closer]) => {
+        this.bufferEventBus$.next({ type: 'unitState', event: 'closed', id: String(closer) });
+        if (!this.testMode.saveResponses) {
+          this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) });
+        } else {
+          forkJoin(
+            buffer
+              .map(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id))
+          ).subscribe(
+            {
+              complete: () => this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) })
+            }
+          );
+        }
       });
   }
 
@@ -176,13 +192,22 @@ export class TestControllerService {
     this.subscriptions.testStateBuffer = this.testStateBuffer$
       .pipe(
         bufferWhen(closingSignal.factory),
-        map(TestStateUtil.sort)
+        map(TestStateUtil.sort),
+        withLatestFrom(closingSignal.tracker$)
       )
-      .subscribe(updates => {
-        if (!this.testMode.saveResponses) return;
-        updates
-          .filter(patch => !!patch.testId)
-          .forEach(patch => this.bs.patchTestState(patch));
+      .subscribe(([buffer, closer]) => {
+        this.bufferEventBus$.next({ type: 'testState', event: 'closed', id: String(closer) });
+        if (!this.testMode.saveResponses) {
+          this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: String(closer) });
+        } else {
+          forkJoin(
+            buffer
+              .filter(patch => !!patch.testId)
+              .map(patch => this.bs.patchTestState(patch))
+          ).subscribe(
+            () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: String(closer) }); }
+          );
+        }
       });
   }
 
@@ -201,13 +226,26 @@ export class TestControllerService {
     delete this.subscriptions[name];
   }
 
-  async closeBuffer(reasonType: string): Promise<void> {
-    const reason = `${reasonType}:${Math.random()}`;
-    setTimeout(() => this.closeBuffers$.next(reason));
-    return firstValueFrom(
-      this.unitDataPartsBufferClosed$
-        .pipe(filter(closingSignal => closingSignal === reason))
-    ).then(() => undefined);
+  async closeBuffer(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<void> {
+    const closingSignalId = `${reasonType}:${Math.random()}`;
+
+    const closingBufferListener = this.bufferEventBus$
+      .pipe(
+        scan(
+          (agg, curr) => {
+            if ((curr.id === closingSignalId) && (curr.event === trackEvent)) {
+              agg.add(curr);
+            }
+            return agg;
+          },
+          new Set<BufferEvent>()
+        ),
+        takeWhile(agg => agg.size < bufferTypes.length)
+      );
+
+    setTimeout(() => this.closeBuffers$.next(closingSignalId));
+    return lastValueFrom(closingBufferListener)
+      .then(() => undefined);
   }
 
   reset(): void {
@@ -222,6 +260,8 @@ export class TestControllerService {
 
     this.timerWarningPoints = [];
     this.workspaceId = 0;
+
+    this.timers = {};
 
     if (this.timerIntervalSubscription !== null) {
       this.timerIntervalSubscription.unsubscribe();
@@ -416,7 +456,7 @@ export class TestControllerService {
     // last state that will and can be logged
     this.state$.next((oldTestStatus === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
 
-    await this.closeBuffer('terminateTest');
+    await this.closeBuffer(`terminateTest:${logEntryKey}`, 'saved');
 
     const navigationSuccessful = await this.router.navigate(['/r/starter'], { state: { force } });
     if (!(navigationSuccessful || force)) {
