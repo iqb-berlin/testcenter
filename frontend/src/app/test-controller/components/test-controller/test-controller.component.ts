@@ -300,7 +300,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionKey]?.unsubscribe();
         this.subscriptions[subscriptionKey] = null;
       });
-    this.tls.reset();
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }

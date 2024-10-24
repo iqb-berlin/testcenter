@@ -254,3 +254,13 @@ export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testl
 }
 
 export type NavigationTargets = { [key in VeronaNavigationTarget]: number | null };
+
+export const bufferTypes = ['testState', 'unitState', 'unitData'] as const;
+export type BufferType = typeof bufferTypes[number];
+export const bufferEventTypes = ['closed', 'saved'] as const;
+export type BufferEventType = typeof bufferEventTypes[number];
+export interface BufferEvent {
+  event: BufferEventType;
+  type: BufferType;
+  id: string;
+}

@@ -60,4 +60,10 @@
       {{tcs.totalLoadingProgress.toFixed(2)}}%
     </mat-card-content>
   </mat-card>
+
+  <mat-card *ngSwitchCase="'TERMINATED'">
+    <mat-card-content>
+      <tc-alert level="info" text="Test wird beendet"></tc-alert>
+    </mat-card-content>
+  </mat-card>
 </div>
