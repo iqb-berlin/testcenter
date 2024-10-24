@@ -126,6 +126,7 @@ composer-refresh-autoload:
 			--volume $(HOME)/.composer:/tmp/cache\
 		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
 	make build service=testcenter-backend
+	make run service=testcenter-backend
 
 new-version:
 	docker compose\
