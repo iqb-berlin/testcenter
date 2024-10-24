@@ -113,7 +113,7 @@ services:
   testcenter-cache-service:
     <<: *restart-policy
     container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
     command:
       - "bash"
       - "-c"
