@@ -20,7 +20,7 @@ variables:
   REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
   DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
   BASE_IMAGE: docker:27.3
-  PAGES_IMAGE: ruby:3.3
+  PAGES_IMAGE: ruby:3.1
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
@@ -707,7 +707,7 @@ build-frontend:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Frontend build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 build-broadcasting-service:
@@ -751,7 +751,7 @@ build-broadcasting-service:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Broadcasting service build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 
@@ -862,7 +862,7 @@ build-task-runner:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Task runner build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 
@@ -908,7 +908,7 @@ generate-docs:
         rm -rf docs/ &&
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Generating documents is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -970,7 +970,7 @@ test-backend-unit:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Backend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -1009,7 +1009,7 @@ test-frontend-unit:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Frontend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -1047,7 +1047,7 @@ test-broadcasting-service-unit:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Broadcasting service unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -1802,7 +1802,7 @@ pages:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Pages deployment is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
