@@ -100,4 +100,7 @@ FROM base AS prod
 # Copy prod dependencies
 COPY --chown=www-data:www-data --from=prod-composer /usr/src/testcenter/backend/vendor/ ./vendor/
 
+RUN mkdir /var/www/data
+RUN chown -R www-data:www-data /var/www/data
+
 USER www-data
