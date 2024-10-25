@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.3.0
 
 ### neue Features
 * Workspace-Admins können nun ihr eigenes Passwort ändern. Dies ist im Startmenü nach dem Login möglich. Bei Neusetzen
