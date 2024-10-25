@@ -11,7 +11,7 @@ import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, BufferEvent, BufferEventType, bufferTypes, isTestlet, KeyValuePairNumber,
   KeyValuePairString,
-  MaxTimerEvent, NavigationTargets, StateReportEntry,
+  MaxTimerEvent, NavigationLeaveRestrictionValue, NavigationTargets, StateReportEntry,
   TestControllerState, Testlet, TestletLockTypes,
   TestStateKey, TestStateUpdate, Unit,
   UnitDataParts,
@@ -21,7 +21,11 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { MainDataService, TestMode } from '../../shared/shared.module';
-import { isVeronaProgress, VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
+import {
+  isVeronaProgress,
+  VeronaNavigationDeniedReason,
+  VeronaProgressIncompleteValues
+} from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
 import { AppError } from '../../app.interfaces';
@@ -298,23 +302,25 @@ export class TestControllerService {
     if (!this.currentUnit) return;
 
     const setUnitState = (stateKey: string, value: string): void => {
-      if (isVeronaProgress(value)) {
-        this.currentUnit!.state.RESPONSE_PROGRESS = value;
+      if (!this.currentUnit) return;
+      if (stateKey === 'RESPONSE_PROGRESS' && isVeronaProgress(value)) {
+        this.currentUnit.state.RESPONSE_PROGRESS = value;
       }
 
-      if (isVeronaProgress(value)) {
-        this.currentUnit!.state.PRESENTATION_PROGRESS = value;
+      if (stateKey === 'PRESENTATION_PROGRESS' && isVeronaProgress(value)) {
+        this.currentUnit.state.PRESENTATION_PROGRESS = value;
       }
 
       if (stateKey === 'CURRENT_PAGE_ID') {
-        this.currentUnit!.state.CURRENT_PAGE_ID = value;
+        this.currentUnit.state.CURRENT_PAGE_ID = value;
       }
     };
 
     const changedStates = unitStateUpdate
       .filter(state => !!state.content)
       .filter(changedState => {
-        const oldState = this.currentUnit!.state[changedState.key];
+        if (!this.currentUnit) return false;
+        const oldState = this.currentUnit.state[changedState.key];
         if (oldState) {
           return oldState !== changedState.content;
         }
@@ -329,6 +335,7 @@ export class TestControllerService {
         state: changedStates
       });
     }
+    this.updateNavigationTargets();
   }
 
   addPlayer(fileName: string, player: string): void {
@@ -379,8 +386,6 @@ export class TestControllerService {
     const unit = this.units[unitSequenceId];
 
     if (!unit) {
-      // eslint-disable-next-line no-console
-      console.trace();
       // eslint-disable-next-line no-console
       console.log(`Unit not found:${unitSequenceId}`);
       throw new AppError({
@@ -585,6 +590,11 @@ export class TestControllerService {
         }
       }
     }
+    if (this.currentUnit) {
+      if (this.checkCompleteness(this.currentUnit, 'next').length) next = null;
+      if (this.checkCompleteness(this.currentUnit, 'previous').length) previous = null;
+    }
+
     const end = (this.booklet?.config.allow_player_to_terminate_test === 'ON') ||
       ((this.booklet?.config.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
       Infinity :
@@ -592,6 +602,40 @@ export class TestControllerService {
     this.navigationTargets = {
       next, previous, first, last, end
     };
+  }
+
+  checkCompleteness(unit: Unit, direction: 'next' | 'previous'): VeronaNavigationDeniedReason[] {
+    if (unit.parent.locked?.by === 'time') {
+      return [];
+    }
+    const reasons: VeronaNavigationDeniedReason[] = [];
+    const checkOnValue = {
+      next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
+      previous: <NavigationLeaveRestrictionValue[]>['ALWAYS']
+    };
+    console.log('checkCompleteness', direction, unit.state);
+    const presentationCompleteRequired =
+      unit.parent?.restrictions?.denyNavigationOnIncomplete?.presentation ||
+      this.booklet?.config.force_presentation_complete ||
+      'OFF';
+    if (
+      (checkOnValue[direction].includes(presentationCompleteRequired)) &&
+      (unit.state.PRESENTATION_PROGRESS !== 'complete')
+    ) {
+      reasons.push('presentationIncomplete');
+    }
+    const responseCompleteRequired =
+      unit.parent?.restrictions?.denyNavigationOnIncomplete?.response ||
+      this.booklet?.config.force_response_complete ||
+      'OFF';
+    if (
+      (checkOnValue[direction].includes(responseCompleteRequired)) &&
+      unit.state.RESPONSE_PROGRESS &&
+      (VeronaProgressIncompleteValues.includes(unit.state.RESPONSE_PROGRESS))
+    ) {
+      reasons.push('responsesIncomplete');
+    }
+    return reasons;
   }
 
   static unitIsInaccessible(unit: Unit): boolean {

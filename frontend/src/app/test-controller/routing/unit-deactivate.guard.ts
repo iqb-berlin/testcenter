@@ -11,10 +11,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
-import { NavigationLeaveRestrictionValue, Unit } from '../interfaces/test-controller.interfaces';
+import { Unit } from '../interfaces/test-controller.interfaces';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
-import { VeronaNavigationDeniedReason, VeronaProgressIncompleteValues } from '../interfaces/verona.interfaces';
+import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
@@ -71,51 +71,18 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
-    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'Next' : 'Prev';
-    const reasons = this.checkCompleteness(currentUnit, direction);
+    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'next' : 'previous';
+    const reasons = this.tcs.checkCompleteness(currentUnit, direction);
     if (!reasons.length) {
       return of(true);
     }
     return this.notifyNavigationDenied(currentUnit, reasons, direction);
   }
 
-  private checkCompleteness(unit: Unit, direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
-    if (unit.parent.locked?.by === 'time') {
-      return [];
-    }
-    const reasons: VeronaNavigationDeniedReason[] = [];
-    const checkOnValue = {
-      Next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
-      Prev: <NavigationLeaveRestrictionValue[]>['ALWAYS']
-    };
-    const presentationCompleteRequired =
-      unit.parent?.restrictions?.denyNavigationOnIncomplete?.presentation ||
-      this.tcs.booklet?.config.force_presentation_complete ||
-      'OFF';
-    if (
-      (checkOnValue[direction].includes(presentationCompleteRequired)) &&
-      (unit.state.PRESENTATION_PROGRESS !== 'complete')
-    ) {
-      reasons.push('presentationIncomplete');
-    }
-    const responseCompleteRequired =
-      unit.parent?.restrictions?.denyNavigationOnIncomplete?.response ||
-      this.tcs.booklet?.config.force_response_complete ||
-      'OFF';
-    if (
-      (checkOnValue[direction].includes(responseCompleteRequired)) &&
-      unit.state.RESPONSE_PROGRESS &&
-      (VeronaProgressIncompleteValues.includes(unit.state.RESPONSE_PROGRESS))
-    ) {
-      reasons.push('responsesIncomplete');
-    }
-    return reasons;
-  }
-
   private notifyNavigationDenied(
     currentUnit: Unit,
     reasons: VeronaNavigationDeniedReason[],
-    dir: 'Next' | 'Prev'
+    dir: 'next' | 'previous'
   ): Observable<boolean> {
     if (this.tcs.testMode.forceNaviRestrictions) {
       this.tcs.notifyNavigationDenied(currentUnit.sequenceId, reasons);
@@ -139,7 +106,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
     };
     this.snackBar.open(
-      `Im Testmodus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'} geblättert
+      `Im Testmodus dürfte hier nicht ${(dir === 'next') ? 'weiter' : ' zurück'} geblättert
                 werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
       'OK',
       { duration: 3000 }

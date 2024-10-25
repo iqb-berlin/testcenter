@@ -31,7 +31,7 @@ type Verona3NavigationDeniedReason = 'presentationIncomplete' | 'responsesIncomp
 const Verona2ProgressCompleteValues = ['complete', 'complete-and-valid'];
 const Verona2ProgressIncompleteValues = ['none', 'some'];
 
-const VeronaProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2ProgressCompleteValues];
+const VeronaProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2ProgressCompleteValues] as const;
 
 export type VeronaProgress = typeof VeronaProgressValues[number];
 export const isVeronaProgress = (value: string): value is VeronaProgress => VeronaProgressValues.includes(value);
@@ -64,3 +64,21 @@ export const VeronaPlayerRuntimeErrorCodes = [
   'unit-state-type-unsupported',
   'runtime-error'
 ];
+
+export interface VeronaUnitState {
+  dataParts?: { [chunkId: string]: string },
+  presentationProgress?: VeronaProgress;
+  responseProgress?: VeronaProgress;
+  unitStateDataType?: string;
+  [x: string]: any;
+}
+
+export interface VopStartCommand {
+  type: 'vopStartCommand',
+  sessionId: string;
+  uniDefinition?: string;
+  unitDefinitionType?: string;
+  unitState: VeronaUnitState;
+  playerConfig: Verona4PlayerConfig;
+  [x: string]: any;
+}

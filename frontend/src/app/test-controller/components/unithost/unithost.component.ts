@@ -15,7 +15,7 @@ import {
   Verona6ValidPages,
   VeronaNavigationDeniedReason,
   VeronaPlayerConfig,
-  VeronaPlayerRuntimeErrorCodes
+  VeronaPlayerRuntimeErrorCodes, VeronaUnitState, VopStartCommand
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
 
@@ -157,17 +157,26 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
 
-    this.postMessageTarget.postMessage({
+    const unitState: VeronaUnitState = {
+      dataParts: this.tcs.currentUnit.dataParts
+    };
+
+    if (this.tcs.currentUnit.state.PRESENTATION_PROGRESS) {
+      unitState.presentationProgress = this.tcs.currentUnit.state.PRESENTATION_PROGRESS;
+    }
+    if (this.tcs.currentUnit.state.RESPONSE_PROGRESS) {
+      unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
+    }
+
+    const msg: VopStartCommand = {
       type: 'vopStartCommand',
       sessionId: this.playerSessionId,
       unitDefinition: this.tcs.currentUnit.definition,
       unitDefinitionType: this.tcs.currentUnit.unitDefinitionType,
-      unitState: {
-        ...this.tcs.currentUnit.state,
-        dataParts: this.tcs.currentUnit.dataParts
-      },
+      unitState,
       playerConfig: this.getPlayerConfig()
-    }, '*');
+    };
+    this.postMessageTarget.postMessage(msg, '*');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
