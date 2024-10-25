@@ -105,13 +105,14 @@ class SuperAdminDAO extends DAO {
     }
   }
 
-  public function setPassword(int $userId, string $password): void {
+  public function setPassword(int $userId, string $password, ?AuthToken $authToken = null): void {
     Password::validate($password);
 
     $this->_(
-      'update users set password = :password where id = :user_id',
+      'update users set password = :password, pw_set_by_admin = :pw_set_by_admin where id = :user_id',
       [
         ':user_id' => $userId,
+        ':pw_set_by_admin' => (!is_null($authToken) && $authToken->getmode() === 'super-admin') ? 1 : 0,
         ':password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords)
       ]
     );
@@ -136,7 +137,7 @@ class SuperAdminDAO extends DAO {
     return false;
   }
 
-  public function createUser(string $userName, string $password, bool $isSuperadmin = false): array {
+  public function createUser(string $userName, string $password, bool $isSuperadmin = false, bool $pwSetByAdmin = false): array {
     Password::validate($password);
 
     $user = $this->_(
@@ -149,11 +150,12 @@ class SuperAdminDAO extends DAO {
     }
 
     $this->_(
-      'insert into users (name, password, is_superadmin) values (:user_name, :user_password, :is_superadmin)',
+      'insert into users (name, password, is_superadmin, pw_set_by_admin) values (:user_name, :user_password, :is_superadmin, :pw_set_by_admin)',
       [
         ':user_name' => $userName,
         ':user_password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords),
-        ':is_superadmin' => $isSuperadmin ? 1 : 0
+        ':is_superadmin' => $isSuperadmin ? 1 : 0,
+        ':pw_set_by_admin' => $pwSetByAdmin ? 1 : 0
       ]
     );
 

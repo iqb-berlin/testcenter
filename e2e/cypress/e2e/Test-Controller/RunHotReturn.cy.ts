@@ -1,7 +1,7 @@
 import {
   loginTestTaker, resetBackendData,
   useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder, getFromIframe, forwardTo,
-  backwardsTo, readBlockTime, loginSuperAdmin, openSampleWorkspace1, convertResultsLoginRows, hardLogOut
+  backwardsTo, readBlockTime, loginSuperAdmin, openSampleWorkspace, convertResultsLoginRows, hardLogOut
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret
@@ -464,7 +464,7 @@ describe('Check responses and logs', { testIsolation: false }, () => {
 
   it('should be possible to download a responses/log file in the workspace with groupname: RunHotReturn', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('RunHotReturn');
