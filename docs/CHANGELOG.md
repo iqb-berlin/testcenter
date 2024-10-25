@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 15.3.1
 ### bugfixes
 * install.sh fix
 
