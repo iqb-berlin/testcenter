@@ -1,5 +1,5 @@
 import {
-  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace1,
+  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace,
   resetBackendData, logoutAdmin, visitLoginPage
 } from '../utils';
 
@@ -9,7 +9,7 @@ describe('Workspace-Admin-system', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
-  beforeEach(openSampleWorkspace1);
+  beforeEach(() => openSampleWorkspace(1));
 
   afterEach(logoutAdmin);
 
