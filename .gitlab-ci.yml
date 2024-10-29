@@ -43,6 +43,7 @@ include:
 
 .backend-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -53,6 +54,7 @@ include:
 
 .broadcasting-service-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -62,6 +64,7 @@ include:
 
 .common-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -71,6 +74,7 @@ include:
 
 .definitions-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -80,6 +84,7 @@ include:
 
 .e2e-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -89,6 +94,7 @@ include:
 
 .file-service-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -98,6 +104,7 @@ include:
 
 .frontend-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -107,6 +114,7 @@ include:
 
 .task-runner-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
