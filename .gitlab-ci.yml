@@ -1811,6 +1811,8 @@ pages:
 
 push-release:
   stage: deploy
+  needs:
+    - pages
   rules:
     - !reference [ .release_rules, rules ]
   variables:
