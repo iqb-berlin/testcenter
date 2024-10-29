@@ -8,14 +8,39 @@ services:
       - "--log.level=INFO"
       - "--accesslog=false"
 
-  testcenter-db:
-    image: ${DOCKERHUB_PROXY}mysql:8.0
-    command:
-      - "--explicit-defaults-for-timestamp=TRUE"
-      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
-      - "--tls-version=TLSv1.2,TLSv1.3"
-      - "--max-connections=500"
-      - "--log_error_verbosity=1"
+  testcenter-broadcasting-service:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
+      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
+    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
+
+  testcenter-frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, stripwww-fe"
+      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
+    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
+
+  testcenter-file-service:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
+      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
+      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
+      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
+    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
   testcenter-backend:
     labels:
@@ -30,36 +55,11 @@ services:
     volumes:
       - testcenter_backend_vo_data:/var/www/testcenter/data
 
-  testcenter-frontend:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, stripwww-fe"
-      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
-      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
-
-  testcenter-broadcasting-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
-      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
-
-  testcenter-file-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
-      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
-      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
+  testcenter-db:
+    image: ${DOCKERHUB_PROXY}mysql:8.0
+    command:
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"

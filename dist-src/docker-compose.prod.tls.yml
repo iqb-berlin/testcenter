@@ -29,31 +29,20 @@ services:
       - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
       - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 
-  testcenter-db:
-    image: ${DOCKERHUB_PROXY}mysql:8.0
-    command:
-      - "--explicit-defaults-for-timestamp=TRUE"
-      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
-      - "--tls-version=TLSv1.2,TLSv1.3"
-      - "--max-connections=500"
-      - "--log_error_verbosity=1"
-
-  testcenter-backend:
+  testcenter-broadcasting-service:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-backend.tls=true"
-      - "traefik.http.routers.testcenter-backend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
-      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
-      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
-    volumes:
-      - testcenter_backend_vo_data:/var/www/testcenter/data
+      - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
+      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
+    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
   testcenter-frontend:
     labels:
@@ -73,21 +62,6 @@ services:
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
 
-  testcenter-broadcasting-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
-      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
-    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
-
   testcenter-file-service:
     labels:
       - "traefik.enable=true"
@@ -102,3 +76,29 @@ services:
       - "traefik.http.middlewares.tls-security-headers-fs.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.tls-security-headers-fs.headers.stsSeconds=31536000"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
+
+  testcenter-backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-backend.tls=true"
+      - "traefik.http.routers.testcenter-backend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
+      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
+    image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
+    volumes:
+      - testcenter_backend_vo_data:/var/www/testcenter/data
+
+  testcenter-db:
+    image: ${DOCKERHUB_PROXY}mysql:8.0
+    command:
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=1"

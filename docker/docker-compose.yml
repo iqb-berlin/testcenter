@@ -25,23 +25,46 @@ services:
     networks:
       testcenter:
 
-  testcenter-db:
+  testcenter-broadcasting-service:
     <<: *restart-policy
-    container_name: testcenter-db
-    image: ${DOCKERHUB_PROXY}mysql:8.0
+    container_name: testcenter-broadcasting-service
+    image: iqbberlin/testcenter-broadcasting-service:current
+    logging:
+      options:
+        <<: *env-logging-conf
+    networks:
+      testcenter:
+
+  testcenter-frontend:
+    <<: *restart-policy
+    container_name: testcenter-frontend
+    image: iqbberlin/testcenter-frontend:current
+    logging:
+      options:
+        <<: *env-logging-conf
+    networks:
+      testcenter:
+
+  testcenter-cache-service:
+    <<: *restart-policy
+    container_name: testcenter-cache-service
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    command:
+      - "bash"
+      - "-c"
+      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
+    networks:
+      testcenter:
+
+  testcenter-file-service:
+    <<: *restart-policy
+    container_name: testcenter-file-service
+    image: iqbberlin/testcenter-file-service:current
     environment:
-      <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_INITDB_SKIP_TZINFO: 'true'
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
     volumes:
-      - dbdata:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
-      start_period: 30s
-      start_interval: 3s
-      interval: 5m
-      timeout: 30s
-      retries: 3
+      - testcenter_backend_vo_data:/var/www/html/
     networks:
       testcenter:
 
@@ -82,46 +105,23 @@ services:
     networks:
       testcenter:
 
-  testcenter-file-service:
+  testcenter-db:
     <<: *restart-policy
-    container_name: testcenter-file-service
-    image: iqbberlin/testcenter-file-service:current
+    container_name: testcenter-db
+    image: ${DOCKERHUB_PROXY}mysql:8.0
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
+      <<: *env-mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
-      - testcenter_backend_vo_data:/var/www/html/
-    networks:
-      testcenter:
-
-  testcenter-cache-service:
-    <<: *restart-policy
-    container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
-    command:
-      - "bash"
-      - "-c"
-      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
-    networks:
-      testcenter:
-
-  testcenter-frontend:
-    <<: *restart-policy
-    container_name: testcenter-frontend
-    image: iqbberlin/testcenter-frontend:current
-    logging:
-      options:
-        <<: *env-logging-conf
-    networks:
-      testcenter:
-
-  testcenter-broadcasting-service:
-    <<: *restart-policy
-    container_name: testcenter-broadcasting-service
-    image: iqbberlin/testcenter-broadcasting-service:current
-    logging:
-      options:
-        <<: *env-logging-conf
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+      start_period: 30s
+      start_interval: 3s
+      interval: 5m
+      timeout: 30s
+      retries: 3
     networks:
       testcenter:
 

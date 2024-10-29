@@ -11,17 +11,74 @@ services:
     networks:
       - testcenter
 
-  testcenter-db:
-    ports:
-      - "9091:3306"
-    command:
-      - "--explicit-defaults-for-timestamp=TRUE"
-      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
-      - "--tls-version=TLSv1.2,TLSv1.3"
-      - "--max-connections=500"
-      - "--log_error_verbosity=2"
+  testcenter-broadcasting-service:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
+      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
+    build:
+      context: ..
+      dockerfile: broadcasting-service/Dockerfile
+      target: dev
     volumes:
-      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
+      - ../common:/usr/src/testcenter/common
+      - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
+      - ../docs/dist:/usr/src/testcenter/docs/dist
+    networks:
+      - testcenter
+
+  testcenter-frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, stripwww-fe"
+      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
+      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      target: dev
+    volumes:
+      - ../common:/usr/src/testcenter/common
+      - ../definitions:/usr/src/testcenter/definitions
+      - ../frontend/src:/usr/src/testcenter/frontend/src
+      - ../docs/dist:/usr/src/testcenter/docs/dist
+    networks:
+      - testcenter
+
+  testcenter-cache-service:
+    ports:
+      - "6379:6379"
+
+  testcenter-file-service:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
+      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
+      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
+      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
+    build:
+      context: ..
+      dockerfile: file-service/Dockerfile
+      args:
+        ENABLED_MODULES: lua
+    volumes:
+      - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
+      - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
+      - ../sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
+      - ../data:/var/www/html/
+      - ../file-service/nginx.conf:/etc/nginx/nginx.conf
+      - ../file-service/auth/:/usr/share/nginx/auth
+      - ../file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 
@@ -64,76 +121,19 @@ services:
     networks:
       - testcenter
 
-  testcenter-frontend:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, stripwww-fe"
-      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
-      - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
-    build:
-      context: ..
-      dockerfile: frontend/Dockerfile
-      target: dev
-    volumes:
-      - ../common:/usr/src/testcenter/common
-      - ../definitions:/usr/src/testcenter/definitions
-      - ../frontend/src:/usr/src/testcenter/frontend/src
-      - ../docs/dist:/usr/src/testcenter/docs/dist
-    networks:
-      - testcenter
-
-  testcenter-broadcasting-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
-      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
-    build:
-      context: ..
-      dockerfile: broadcasting-service/Dockerfile
-      target: dev
-    volumes:
-      - ../common:/usr/src/testcenter/common
-      - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
-      - ../docs/dist:/usr/src/testcenter/docs/dist
-    networks:
-      - testcenter
-
-  testcenter-file-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs"
-      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
-      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
-    build:
-      context: ..
-      dockerfile: file-service/Dockerfile
-      args:
-        ENABLED_MODULES: lua
-    volumes:
-      - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
-      - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
-      - ../sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
-      - ../data:/var/www/html/
-      - ../file-service/nginx.conf:/etc/nginx/nginx.conf
-      - ../file-service/auth/:/usr/share/nginx/auth
-      - ../file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
-    networks:
-      - testcenter
-
-  testcenter-cache-service:
+  testcenter-db:
     ports:
-      - "6379:6379"
+      - "9091:3306"
+    command:
+      - "--explicit-defaults-for-timestamp=TRUE"
+      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+      - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--max-connections=500"
+      - "--log_error_verbosity=2"
+    volumes:
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
+    networks:
+      - testcenter
 
   testcenter-task-runner:
     container_name: testcenter-task-runner

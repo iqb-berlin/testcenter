@@ -1,14 +1,4 @@
 services:
-  testcenter-backend:
-    environment:
-      OVERRIDE_CONFIG: |
-        [fileService]
-        external=testcenter-file-service/
-        [broadcastingService]
-        external=testcenter-broadcasting-service:3000/
-  testcenter-frontend:
-    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
-
   testcenter-e2e:
     container_name: testcenter-e2e
     depends_on:
@@ -30,3 +20,13 @@ services:
   testcenter-broadcasting-service:
     environment:
       DEV_MODE: false # loglevel
+
+  testcenter-backend:
+    environment:
+      OVERRIDE_CONFIG: |
+        [fileService]
+        external=testcenter-file-service/
+        [broadcastingService]
+        external=testcenter-broadcasting-service:3000/
+  testcenter-frontend:
+    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
