@@ -99,6 +99,7 @@ services:
     image: iqbberlin/testcenter-file-service:current
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
