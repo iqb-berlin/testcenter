@@ -293,6 +293,7 @@ run_update_script_in_selected_version() {
 
 prepare_installation_dir() {
   mkdir -p "${APP_DIR}"/backup/release
+  mkdir -p "${APP_DIR}"/backup/temp
   mkdir -p "${APP_DIR}"/config/traefik
   mkdir -p "${APP_DIR}"/scripts/make
   mkdir -p "${APP_DIR}"/scripts/migration
