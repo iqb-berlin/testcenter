@@ -4,7 +4,7 @@ run-task-runner:
 	docker compose\
  			--env-file docker/.env.dev\
 			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.api-test.yml\
 		run --rm --no-deps testcenter-task-runner\
 			npm run $(task)
 
@@ -78,7 +78,7 @@ create-interfaces:
 	docker compose\
 			--env-file docker/.env.dev\
 			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--file docker/docker-compose.api-test.yml\
 		run --name=testcenter-task-runner testcenter-task-runner\
 			npx --yes update-browserslist-db@latest && npm run create-interfaces
 	# can not  use compose here https://github.com/docker/compose/issues/8467

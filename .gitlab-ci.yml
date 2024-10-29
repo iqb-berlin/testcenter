@@ -886,22 +886,22 @@ generate-docs:
         docker compose
             --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --file docker/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run frontend:update-compodoc &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --file docker/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run broadcasting-service:update-compodoc &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --file docker/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run backend:update-specs &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --file docker/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run create-docs;
       else
