@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bs-deployment
+  namespace: tc
 spec:
   replicas: 1
   strategy:
@@ -28,6 +29,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: testcenter-broadcasting-service #hard coded in application as internal address
+  namespace: tc
 spec:
   selector:
     app: bs-pod
