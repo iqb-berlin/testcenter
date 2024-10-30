@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cs-deployment
+  namespace: tc
 spec:
   replicas: 1
   strategy:
@@ -45,6 +46,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: testcenter-cache-service #hard coded in application as internal address
+  namespace: tc
 spec:
   selector:
     app: cs-pod
@@ -57,6 +59,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redis-pvc
+  namespace: tc
 spec:
   accessModes:
     - ReadWriteOnce

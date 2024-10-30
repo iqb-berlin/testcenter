@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: testcenter-api-ingress
-  #namespace: testcenter
+  namespace: tc
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -45,7 +45,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: testcenter-fe-ingress
-  #namespace: testcenter
+  namespace: tc
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/affinity-mode: persistent
