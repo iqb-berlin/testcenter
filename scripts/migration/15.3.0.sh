@@ -1,4 +1,5 @@
 #!/bin/bash
+source .env
 
 declare APP_NAME="testcenter"
 declare REPO_URL="https://raw.githubusercontent.com/iqb-berlin/${APP_NAME}"
