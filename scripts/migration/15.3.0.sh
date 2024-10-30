@@ -12,7 +12,7 @@ mkdir -p ./backup/temp
 mkdir -p ./config/traefik
 mkdir -p ./scripts/make
 mkdir -p ./scripts/migration
-mkdir -p ./secrets/traefik/certs/letsencrypt
+mkdir -p ./secrets/traefik
 
 # Download updated compose files
 wget -nv -O docker-compose.yml ${REPO_URL}/${VERSION}/docker/docker-compose.yml
@@ -40,6 +40,8 @@ fi
 if [ -d config/certs/ ]; then
   mv config/certs/ secrets/traefik/
 fi
+
+mkdir -p ./secrets/traefik/certs/letsencrypt
 
 # Rename docker environment file
 mv .env .env.prod

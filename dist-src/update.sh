@@ -27,7 +27,7 @@ apply_patches() {
 
 create_backup
 
-source .env.prod
+source .env
 printf "Installed version: $VERSION\n"
 
 latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
@@ -43,7 +43,7 @@ if [[ $(echo -e "$VERSION\n$latest_version_tag" | sort -V | head -n1) == "$lates
   exit 0
 fi
 
-sed -i "s#VERSION=.*#VERSION=$latest_version_tag#" .env.prod
+sed -i "s#VERSION=.*#VERSION=$latest_version_tag#" .env
 
 apply_patches
 
