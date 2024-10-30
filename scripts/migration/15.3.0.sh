@@ -2,7 +2,7 @@
 source .env
 
 declare APP_NAME="testcenter"
-declare REPO_URL="https://raw.githubusercontent.com/iqb-berlin/${APP_NAME}"
+declare REPO_URL="https://raw.githubusercontent.com/iqb-berlin/${APP_NAME}/15.3.0"
 
 printf "Applying patch: 15.3.0 ...\n"
 
@@ -15,23 +15,23 @@ mkdir -p ./scripts/migration
 mkdir -p ./secrets/traefik
 
 # Download updated compose files
-wget -nv -O docker-compose.yml ${REPO_URL}/${VERSION}/docker/docker-compose.yml
-wget -nv -O docker-compose.prod.yml ${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.yml
-wget -nv -O docker-compose.prod.tls.yml ${REPO_URL}/${VERSION}/dist-src/docker-compose.prod.tls.yml
+wget -nv -O docker-compose.yml ${REPO_URL}/docker/docker-compose.yml
+wget -nv -O docker-compose.prod.yml ${REPO_URL}/dist-src/docker-compose.prod.yml
+wget -nv -O docker-compose.prod.tls.yml ${REPO_URL}/dist-src/docker-compose.prod.tls.yml
 
 # Download new Makefile
-wget -nv -O scripts/make/"${APP_NAME}".mk ${REPO_URL}/${VERSION}/scripts/make/prod.mk
+wget -nv -O scripts/make/"${APP_NAME}".mk ${REPO_URL}/scripts/make/prod.mk
 sed -i.bak "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" scripts/make/"${APP_NAME}".mk
 printf "include scripts/make/%s.mk\n" "${APP_NAME}" >Makefile
 
 # Download new update file
-wget -nv -O scripts/update_"${APP_NAME}".sh ${REPO_URL}/${VERSION}/scripts/update.sh
+wget -nv -O scripts/update_"${APP_NAME}".sh ${REPO_URL}/scripts/update.sh
 if [ -f update.sh ]; then
   rm update.sh
 fi
 
 # Download new traefik config file
-wget -nv -O config/traefik/tls-config.yml ${REPO_URL}/${VERSION}/config/traefik/tls-config.yml
+wget -nv -O config/traefik/tls-config.yml ${REPO_URL}/config/traefik/tls-config.yml
 if [ -f config/tls-config.yml ]; then
   mv config/tls-config.yml config/traefik/tls-config.yml_bkp
 fi
