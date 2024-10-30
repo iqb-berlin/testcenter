@@ -1,9 +1,9 @@
 ---
 layout: default
 ---
-## 15.3.3
+## 15.3.4
 ### bugfixes
-* install.sh fix
+* Fixes in installer und updater script
 
 ## 15.3.0
 
