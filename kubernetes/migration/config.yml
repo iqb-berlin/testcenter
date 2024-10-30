@@ -22,9 +22,7 @@ data:
   DOCKER_DAEMON_MTU: "1442"
   DOCKERHUB_PROXY: ''
   RESTART_POLICY: "no"
-  HALLO: "Welt"
-  RESOLVER: "127.0.0.11"
-  CACHE_SERVICE_ADDRESS_FOR_LUA: "testcenter-cache-service"
+  CACHE_SERVICE_ADDRESS_FOR_LUA: "testcenter-cache-service.tc.svc.cluster.local"
 ---
 apiVersion: v1
 kind: Secret
