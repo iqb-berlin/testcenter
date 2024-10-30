@@ -1,6 +1,6 @@
 #!/bin/bash
 source .env
-REPO_URL=iqb-berlin/testcenter
+REPO_URL=iqb-berlin/testcenter/14.11.0
 
 echo "Applying patch: 14.11"
 
@@ -15,11 +15,11 @@ fi
 if [ -f config/tls-config.yml ]; then
   # Save cert file names and insert them in the downloaded file
   certs=$(grep -A 3 certificates config/tls-config.yml)
-  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
+  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/dist-src/tls-config.yml
   printf "$(head -n 11 config/tls-config.yml)\n$(echo "$certs")\n" > config/tls-config.yml
 else
   # if no cert config present, just download file
-  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/tls-config.yml
+  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/dist-src/tls-config.yml
 fi
 
 # Delete outdated config lines
@@ -31,7 +31,7 @@ fi
 
 # Add MySQL config
 if [ -f config/my.cnf ]; then
-  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/scripts/database/my.cnf
+  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/scripts/database/my.cnf
   chmod 444 config/my.cnf
 fi
 
@@ -42,4 +42,4 @@ sed -i '/TLS_ENABLED=/d' .env
 mkdir -p config/certs
 
 # re-download Makefile which has been changed wrongly by the updater
-wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/dist-src/Makefile
+wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/dist-src/Makefile

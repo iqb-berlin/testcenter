@@ -107,7 +107,8 @@ dump_db() {
     printf -- "- Current testcenter-db dump has been saved at: '%s'\n" $db_dump_file
   else
     declare continue
-    read -p "- Current testcenter-db dump has not successful!\n  Do you want to continue? [y/N] " -er -n 1 continue
+    printf -- "- Current 'testcenter-db' dump was not successful!\n"
+    read -p "  Do you want to continue? [y/N] " -er -n 1 continue
 
     if [[ ! $continue =~ ^[yY]$ ]]; then
       printf "'%s' update script finished.\n" $APP_NAME
@@ -292,6 +293,7 @@ run_update_script_in_selected_version() {
 
 prepare_installation_dir() {
   mkdir -p "${APP_DIR}"/backup/release
+  mkdir -p "${APP_DIR}"/backup/temp
   mkdir -p "${APP_DIR}"/config/traefik
   mkdir -p "${APP_DIR}"/scripts/make
   mkdir -p "${APP_DIR}"/scripts/migration
