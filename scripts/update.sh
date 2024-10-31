@@ -316,7 +316,7 @@ update_files() {
   download_file "${APP_DIR}"/docker-compose.yml docker/docker-compose.yml
   download_file "${APP_DIR}"/docker-compose.prod.yml dist-src/docker-compose.prod.yml
   download_file "${APP_DIR}"/docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
-  download_file "${APP_DIR}"/scripts/make/prod.mk scripts/make/prod.mk
+  download_file "${APP_DIR}/scripts/make/${APP_NAME}.mk" scripts/make/prod.mk
 
   printf "File download done.\n\n"
 }
@@ -564,8 +564,8 @@ run_optional_migration_scripts() {
 
       for ((i = ${#migration_scripts[@]} - 1; i >= 0; i--)); do
         printf -- "- Executing '%s' ...\n" "${migration_scripts[$i]}"
-        bash "${APP_DIR}"/scripts/migration/"${migration_scripts[$i]}"
-        rm "${APP_DIR}"/scripts/migration/"${migration_scripts[$i]}"
+        bash "${APP_DIR}/scripts/migration/${migration_scripts[$i]}" "${TARGET_TAG}"
+        rm "${APP_DIR}/scripts/migration/${migration_scripts[$i]}"
       done
 
       printf "\nMigration scripts successfully executed.\n\n"
@@ -586,8 +586,8 @@ check_config_files_modifications() {
   # check traefik configuration files
   printf "7. Configuration template files modification check\n"
   get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
-  get_modified_file config/traefik/tls-certificates.yaml config/traefik/tls-certificates.yaml "conf-file"
-  get_modified_file config/traefik/tls-options.yaml config/traefik/tls-options.yaml "conf-file"
+  get_modified_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml "conf-file"
+  get_modified_file config/traefik/tls-options.yml config/traefik/tls-options.yml "conf-file"
 
   printf "Configuration template files modification check done.\n\n"
 }
@@ -609,8 +609,8 @@ customize_settings() {
   sed -i "s#VERSION.*#VERSION=$TARGET_TAG#" "${APP_DIR}"/.env.prod
 
   # Setup makefiles
-#  sed -i "s#TC_BASE_DIR :=.*#TC_BASE_DIR := \\$(pwd)#" "$PWD"/scripts/make/prod.mk
-  sed -i "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" "${APP_DIR}"/scripts/make/prod.mk
+#  sed -i "s#TC_BASE_DIR :=.*#TC_BASE_DIR := \\$(pwd)#" "$PWD/scripts/make/${APP_NAME}.mk"
+  sed -i "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" "${APP_DIR}/scripts/make/${APP_NAME}.mk"
 #  update_makefile
 }
 

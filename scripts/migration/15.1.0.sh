@@ -1,22 +1,27 @@
 #!/bin/bash
-source .env
-REPO_URL=iqb-berlin/testcenter/15.1.0
 
-echo "Applying patch: 15.1.0"
+source .env
+
+declare TARGET_VERSION="15.1.0"
+declare REPO_URL="https://raw.githubusercontent.com/iqb-berlin/testcenter/${TARGET_VERSION}"
+
+printf "Applying patch: %s ...\n" ${TARGET_VERSION}
 
 # Change base compose file for 'www-fix'
-wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/docker/docker-compose.yml
+curl --silent --fail --output docker-compose.yml ${REPO_URL}/docker/docker-compose.yml
 
 # Change compose file for non-tls setup
-wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/dist-src/docker-compose.prod.yml
+curl --silent --fail --output docker-compose.prod.yml ${REPO_URL}/dist-src/docker-compose.prod.yml
 
 # Download additional compose file
-wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/dist-src/docker-compose.prod.tls.yml
+curl --silent --fail --output docker-compose.prod.tls.yml ${REPO_URL}/dist-src/docker-compose.prod.tls.yml
 
 # Change Makefile for non-tls setup
-wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/dist-src/Makefile
+curl --silent --fail --output Makefile ${REPO_URL}/dist-src/Makefile
 
 # TLS is optional again
 if [ -z "$TLS_ENABLED" ]; then
-  echo -e "TLS_ENABLED=yes" >> .env
+  echo -e "TLS_ENABLED=yes" >>.env
 fi
+
+printf "Patch %s applied.\n" ${TARGET_VERSION}
