@@ -15,9 +15,13 @@ metadata:
       more_set_headers "Referrer-Policy: no-referrer";
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - minikube-ip-defined-in-hosts.example
+    secretName: tls-secret
   rules:
-#  - host: minikube-ip-defined-in-hosts.example
-    - http:
+    - host: minikube-ip-defined-in-hosts.example
+      http:
         paths:
         - path: /api(/|$)(.*)
           pathType: Prefix
@@ -57,9 +61,13 @@ metadata:
       more_set_headers "Referrer-Policy: no-referrer";
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - minikube-ip-defined-in-hosts.example
+    secretName: tls-secret
   rules:
-#    - host: minikube-ip-defined-in-hosts.example
-    - http:
+    - host: minikube-ip-defined-in-hosts.example
+      http:
         paths:
           - path: /
             pathType: Prefix
