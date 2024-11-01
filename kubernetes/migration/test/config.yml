@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tc
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testcenter-config
+  namespace: tc
+data:
+  HOSTNAME: "minikube-ip-defined-in-hosts.example"
+  TLS_PORT: "443"
+  TLS_ENABLED: "off"
+  MYSQL_DATABASE: "iqb_tba_testcenter"
+  MYSQL_USER: "iqb_tba_db_user"
+  BROADCAST_SERVICE_ENABLED: "true"
+  FILE_SERVICE_ENABLED: "true"
+  CACHE_SERVICE_RAM: "1073741824"
+  CACHE_SERVICE_INCLUDE_FILES: "false"
+  DOCKER_DAEMON_MTU: "1442"
+  DOCKERHUB_PROXY: ''
+  RESTART_POLICY: "no"
+  CACHE_SERVICE_ADDRESS_FOR_LUA: "testcenter-cache-service.tc.svc.cluster.local"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: testcenter-secrets
+  namespace: tc
+stringData:
+  PASSWORD_SALT: "t"
+  MYSQL_ROOT_PASSWORD: "o8en6jSGLyVKNZUN"
+  MYSQL_PASSWORD: "fEaU5COJYXv2atau"
