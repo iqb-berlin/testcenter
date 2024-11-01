@@ -36,7 +36,7 @@ export class WorkspaceDataService {
         if (response.size > 0) {
           FileService.saveBlobToFile(response, filename);
         } else {
-          this.messageService.showError('Keine Daten verfügbar.');
+          this.messageService.show('Keine Daten verfügbar.');
         }
       });
   }

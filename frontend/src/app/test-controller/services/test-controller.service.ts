@@ -8,7 +8,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet,
@@ -120,11 +119,10 @@ export class TestControllerService {
   constructor(
     private router: Router,
     private bs: BackendService,
-    private messageService: MessageService,
+    private ms: MessageService,
     private mds: MainDataService,
     private cts: CustomtextService,
-    public confirmDialog: MatDialog,
-    private snackBar: MatSnackBar
+    public confirmDialog: MatDialog
   ) {
     this.setupUnitDataPartsBuffer();
     this.setupUnitStateBuffer();
@@ -557,7 +555,7 @@ export class TestControllerService {
           .then(navOk => {
             if (!navOk && !targetIsCurrent) {
               // happens when a goto goes to a unit which does exist, but is not accessible
-              this.messageService.showError(`Navigation zu ${navString} nicht erlaubt.`);
+              this.ms.show(`Navigation zu ${navString} nicht erlaubt.`);
             }
             return navOk;
           });
@@ -830,11 +828,7 @@ export class TestControllerService {
       return of(true);
     }
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
-      this.snackBar.open(
-        'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.',
-        'OK',
-        { duration: 3000 }
-      );
+      this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
     }
     if (!this.testMode.forceTimeRestrictions) {
@@ -899,11 +893,9 @@ export class TestControllerService {
       presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
     };
-    this.snackBar.open(
+    this.ms.show(
       `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
-       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
-      'OK',
-      { duration: 3000 }
+      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
     );
     return of(true);
   }
@@ -928,11 +920,7 @@ export class TestControllerService {
           this.leaveLockUnit(currentUnit.sequenceId);
         }
       } else {
-        this.snackBar.open(
-          `${lockScope} würde im Testmodus nun gesperrt werden.`,
-          'OK',
-          { duration: 3000 }
-        );
+        this.ms.show(`${lockScope} würde im Testmodus nun gesperrt werden.`);
       }
     };
 
