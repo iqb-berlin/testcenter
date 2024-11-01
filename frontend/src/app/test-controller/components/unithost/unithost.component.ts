@@ -11,6 +11,7 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
+  isVeronaNavigationTarget,
   Verona5ValidPages,
   Verona6ValidPages,
   VeronaNavigationDeniedReason,
@@ -433,7 +434,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(this.tcs.navigation.targets)
-        .filter(t => this.tcs.navigation.targets[t] && this.tcs.navigation.targets[t] !== this.tcs.currentUnitSequenceId),
+        .filter(isVeronaNavigationTarget)
+        .filter(t => !!this.tcs.navigation.targets[t])
+        .filter(t => this.tcs.navigation.targets[t] !== this.tcs.currentUnitSequenceId),
       logPolicy: this.tcs.booklet.config.logPolicy,
       pagingMode: this.tcs.booklet.config.pagingMode,
       unitNumber: this.tcs.currentUnitSequenceId,

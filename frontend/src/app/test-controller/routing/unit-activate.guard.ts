@@ -41,16 +41,19 @@ export class UnitActivateGuard implements CanActivate {
         return false;
       }
       if (this.tcs.navigation.targets.previous) {
-        // a previous unit is accessible, so we go there
+        // a previous unit is accessible, so we can go there
         return this.router.parseUrl(`/t/${this.tcs.testId}/u/${this.tcs.navigation.targets.previous}`);
       }
+      // we stay anyway
+      return false;
     }
 
     if (targetUnit && TestControllerService.unitIsInaccessible(targetUnit)) {
       // we navigate to a locked unit. example: we leave timed block to status and return.
-      if (this.tcs.navigation.targets.next) {
+      const navigation = this.tcs.getNavigationState(targetUnitSequenceId);
+      if (navigation.targets.next) {
         // a later unit is accessible, so we go there
-        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${this.tcs.navigation.targets.next}`);
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${navigation.targets.next}`);
       }
     }
 

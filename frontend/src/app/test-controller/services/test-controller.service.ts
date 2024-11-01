@@ -605,6 +605,10 @@ export class TestControllerService {
   }
 
   updateNavigationState(): void {
+    this.navigation = this.getNavigationState(this.currentUnitSequenceId);
+  }
+
+  getNavigationState(fromUnitSequenceId: number): NavigationState {
     let unit: Unit;
     let first = null;
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -613,39 +617,39 @@ export class TestControllerService {
     let next = null;
     for (let sequenceId = 1; sequenceId <= Object.keys(this.units).length; sequenceId++) {
       unit = this.units[sequenceId];
-      // console.log(sequenceId, unit);
       if (!TestControllerService.unitIsInaccessible(unit)) {
         last = unit.sequenceId;
-        if (sequenceId > this.currentUnitSequenceId && next === null) {
+        if (sequenceId > fromUnitSequenceId && next === null) {
           next = unit.sequenceId;
         }
         if (first === null) {
           first = unit.sequenceId;
         }
-        if (sequenceId < this.currentUnitSequenceId) {
+        if (sequenceId < fromUnitSequenceId) {
           previous = unit.sequenceId;
         }
       }
     }
     const end = (this.booklet?.config.allow_player_to_terminate_test === 'ON') ||
-      ((this.booklet?.config.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
+    ((this.booklet?.config.allow_player_to_terminate_test === 'LAST_UNIT') && (fromUnitSequenceId === last)) ?
       Infinity :
       null;
 
-    this.navigation.directions = {
-      forward: (!!this.currentUnit && !this.checkCompleteness(this.currentUnit, 'forward').length),
-      backward:
-        (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') &&
-        (!!this.currentUnit && !this.checkCompleteness(this.currentUnit, 'backward').length)
-    };
+    const forward = (!this.currentUnit || !this.checkCompleteness(this.currentUnit, 'forward').length);
+    const backward =
+      (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') &&
+      (!this.currentUnit || !this.checkCompleteness(this.currentUnit, 'backward').length);
 
-    next = this.navigation.directions.forward ? next : null;
-    previous = this.navigation.directions.backward ? previous : null;
-    last = this.navigation.directions.forward ? next : null;
-    first = this.navigation.directions.backward ? previous : null;
+    next = forward ? next : null;
+    previous = backward ? previous : null;
+    last = forward ? next : null;
+    first = backward ? previous : null;
 
-    this.navigation.targets = {
-      next, previous, first, last, end
+    return {
+      directions: { forward, backward },
+      targets: {
+        next, previous, first, last, end
+      }
     };
   }
 

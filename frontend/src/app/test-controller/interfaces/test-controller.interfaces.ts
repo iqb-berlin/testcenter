@@ -253,12 +253,12 @@ export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testl
   return !isUnit(testletOrUnit);
 }
 
-export type NavigationTargets = { [key in VeronaNavigationTarget]: number | null };
+export type NavigationTargets = Readonly<Record<VeronaNavigationTarget, number | null>>;
 export type NavigationDirection = 'forward' | 'backward';
-export type NavigationDirections = Record<NavigationDirection, boolean>;
+export type NavigationDirections = Readonly<Record<NavigationDirection, boolean>>;
 export interface NavigationState {
-  targets: NavigationTargets;
-  directions: NavigationDirections;
+  readonly targets: NavigationTargets;
+  readonly directions: NavigationDirections;
 }
 
 export const bufferTypes = ['testState', 'unitState', 'unitData'] as const;

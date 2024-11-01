@@ -1,4 +1,4 @@
-const Verona2NavigationTargetValues = ['next', 'previous', 'first', 'last', 'end'];
+const Verona2NavigationTargetValues = ['next', 'previous', 'first', 'last', 'end'] as const;
 type Verona2NavigationTarget = typeof Verona2NavigationTargetValues[number];
 
 type Verona2LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
@@ -34,15 +34,17 @@ const Verona2ProgressIncompleteValues = ['none', 'some'];
 const VeronaProgressValues = [...Verona2ProgressIncompleteValues, ...Verona2ProgressCompleteValues] as const;
 
 export type VeronaProgress = typeof VeronaProgressValues[number];
-export const isVeronaProgress = (value: string): value is VeronaProgress => VeronaProgressValues.includes(value);
+export const isVeronaProgress =
+  (value: string): value is VeronaProgress => VeronaProgressValues.includes(value);
 export { Verona2ProgressIncompleteValues as VeronaProgressIncompleteValues };
 export { Verona2ProgressCompleteValues as VeronaProgressCompleteValues };
 
-export { Verona4PlayerConfig as VeronaPlayerConfig };
-export { Verona2NavigationTarget as VeronaNavigationTarget };
-export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
+export type VeronaPlayerConfig = Verona4PlayerConfig;
+export type VeronaNavigationTarget = Verona2NavigationTarget;
+export type VeronaNavigationDeniedReason = Verona3NavigationDeniedReason;
 
-export const isVeronaNavigationTarget = (value: string): value is VeronaProgress => Verona2NavigationTargetValues.includes(value);
+export const isVeronaNavigationTarget =
+  (value: string): value is VeronaNavigationTarget => (Verona2NavigationTargetValues as readonly string[]).includes(value);
 
 export interface Verona5ValidPages {
   [id: string]: string
