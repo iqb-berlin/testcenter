@@ -20,7 +20,7 @@ spec:
           command: ['sh', '-c', 'until nc -z testcenter-db 3306; do echo waiting for testcenter-db; sleep 2; done;']
       containers:
         - name: testcenter-backend-container
-          image: iqbberlin/testcenter-backend:15.2.0
+          image: iqbberlin/testcenter-backend:15.3.4
           env:
           - name: MYSQL_DATABASE
             valueFrom:
@@ -51,7 +51,7 @@ spec:
               name: testcenter-config
           volumeMounts:
           - name: backend-data
-            mountPath: /var/www/data
+            mountPath: /var/www/testcenter/data
           readinessProbe:
             httpGet:
               path: /

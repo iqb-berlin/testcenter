@@ -61,8 +61,8 @@ spec:
               - -h
               - 127.0.0.1
               - --silent
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 5
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3

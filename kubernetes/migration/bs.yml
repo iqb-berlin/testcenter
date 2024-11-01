@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: bs-container
-          image: iqbberlin/testcenter-broadcasting-service:15.2.0
+          image: iqbberlin/testcenter-broadcasting-service:15.3.4
           ports:
             - name: http-container
               containerPort: 3000
