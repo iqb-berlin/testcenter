@@ -92,10 +92,9 @@ export class BackendService {
     });
   }
 
-  lockTest(testId: string, timeStamp: number, message: string): Subscription {
+  lockTest(testId: string, timeStamp: number, message: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(`${this.backendUrl}test/${testId}/lock`, { timeStamp, message })
-      .subscribe();
+      .patch<boolean>(`${this.backendUrl}test/${testId}/lock`, { timeStamp, message });
   }
 
   getResource(workspaceId: number, path: string): Observable<LoadingFile> {

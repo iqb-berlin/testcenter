@@ -1,12 +1,14 @@
 import {
-  bufferWhen, map, scan, takeUntil, takeWhile, withLatestFrom
+  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, forkJoin, interval, lastValueFrom, merge, Observable, Subject, Subscription, timer
+  BehaviorSubject, forkJoin, from, interval, lastValueFrom, merge, Observable, of, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet, BufferEvent, BufferEventType, bufferTypes, isTestlet, KeyValuePairNumber,
@@ -20,7 +22,13 @@ import {
   WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { MainDataService, TestMode } from '../../shared/shared.module';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  CustomtextService,
+  MainDataService,
+  TestMode
+} from '../../shared/shared.module';
 import {
   isVeronaProgress,
   VeronaNavigationDeniedReason,
@@ -94,7 +102,10 @@ export class TestControllerService {
     private router: Router,
     private bs: BackendService,
     private messageService: MessageService,
-    private mds: MainDataService
+    private mds: MainDataService,
+    private cts: CustomtextService,
+    public confirmDialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.setupUnitDataPartsBuffer();
     this.setupUnitStateBuffer();
@@ -102,6 +113,15 @@ export class TestControllerService {
   }
 
   setupUnitDataPartsBuffer(): void {
+    // console.log('setupUnitDataPartsBuffer');
+    // const start = Date.now();
+    // const timeleft = () => Date.now() - start;
+    // this.bufferEventBus$.subscribe(be => console.log(`[${timeleft()}] BUFFER EVENT | ${be.type} ${be.event} ${be.id}`));
+    // this.testStateBuffer$
+    //   .subscribe(bu => {
+    //     console.log(`:: ${bu.testId}/${bu.unitAlias}: ${bu.state.map(s => `${s.key} : ${s.content}`).join()}`);
+    //   });
+
     this.destroySubscription('unitDataPartsBuffer'); // important when called from unit-test with fakeAsync
 
     const closingSignal = this.createClosingSignal('unit_responses_buffer_time');
@@ -216,6 +236,11 @@ export class TestControllerService {
   }
 
   setTestState(key: TestStateKey, content: string): void {
+    console.log('setTestState', {
+      set: key,
+      from: this.testState[key],
+      to: content
+    });
     if (this.testState[key] === content) return;
     this.testState[key] = content;
     this.testStateBuffer$.next(<TestStateUpdate>{
@@ -431,6 +456,7 @@ export class TestControllerService {
 
   cancelTimer(): void {
     if (this.timerIntervalSubscription !== null) {
+      console.log('cancelTimer');
       this.timerIntervalSubscription.unsubscribe();
       this.timerIntervalSubscription = null;
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.CANCELLED));
@@ -447,10 +473,6 @@ export class TestControllerService {
     this.currentTimerId = '';
   }
 
-  notifyNavigationDenied(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
-    this._navigationDenial$.next({ sourceUnitSequenceId, reason });
-  }
-
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
     if (this.state$.getValue() === 'TERMINATED') {
       // sometimes terminateTest get called two times from player
@@ -461,21 +483,23 @@ export class TestControllerService {
     // last state that will and can be logged
     this.state$.next((oldTestStatus === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
 
-    await this.closeBuffer(`terminateTest:${logEntryKey}`, 'saved');
-
-    const navigationSuccessful = await this.router.navigate(['/r/starter'], { state: { force } });
+    const navigationSuccessful = await lastValueFrom(this.canDeactivateUnit('/r/starter'));
     if (!(navigationSuccessful || force)) {
-      this.state$.next(oldTestStatus); // navigation was denied, test continues
+      // maybe unsuccessfully because of leave restrictions
+      this.state$.next(oldTestStatus);
       return true;
     }
-    return this.finishTest(logEntryKey, lockTest).then(() => true);
+    return this.finishTest(logEntryKey, lockTest);
   }
 
-  private async finishTest(logEntryKey: string, lockTest: boolean = false): Promise<void> {
+  private async finishTest(logEntryKey: string, lockTest: boolean = false): Promise<boolean> {
+    await this.closeBuffer(`terminateTest:${logEntryKey}`, 'saved');
+
     if (lockTest) {
-      return this.bs.lockTest(this.testId, Date.now(), logEntryKey).add();
+      await lastValueFrom(this.bs.lockTest(this.testId, Date.now(), logEntryKey));
     }
-    return Promise.resolve();
+
+    return this.router.navigate(['/r/starter']);
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
@@ -571,6 +595,7 @@ export class TestControllerService {
   updateNavigationTargets(): void {
     let unit: Unit;
     let first = null;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     let last = null;
     let previous = null;
     let next = null;
@@ -613,7 +638,6 @@ export class TestControllerService {
       next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
       previous: <NavigationLeaveRestrictionValue[]>['ALWAYS']
     };
-    console.log('checkCompleteness', direction, unit.state);
     const presentationCompleteRequired =
       unit.parent?.restrictions?.denyNavigationOnIncomplete?.presentation ||
       this.booklet?.config.force_presentation_complete ||
@@ -772,5 +796,190 @@ export class TestControllerService {
         }, <{ [state: string]: string }>{});
     if (!Object.keys(bookletStates).length) return;
     this.setTestState('BOOKLET_STATES', JSON.stringify(bookletStates));
+  }
+
+  private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    if (!this.currentTimerId) { // leaving unit is not in a timed block
+      return of(true);
+    }
+    if (newUnit && newUnit.parent.timerId && // staying in the same timed block
+      (newUnit.parent.timerId === this.currentTimerId)
+    ) {
+      return of(true);
+    }
+    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
+      this.snackBar.open(
+        'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.',
+        'OK',
+        { duration: 3000 }
+      );
+      return of(false);
+    }
+    if (!this.testMode.forceTimeRestrictions) {
+      this.interruptTimer();
+      return of(true);
+    }
+
+    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: <ConfirmDialogData>{
+        title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+        content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+        confirmbuttonlabel: 'Trotzdem weiter',
+        confirmbuttonreturn: true,
+        showcancel: true
+      }
+    });
+    return dialogCDRef.afterClosed()
+      .pipe(
+        map(cdresult => {
+          if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+            return false;
+          }
+          this.cancelTimer(); // does locking the block
+          return true;
+        })
+      );
+  }
+
+  private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'next' : 'previous';
+    const reasons = this.checkCompleteness(currentUnit, direction);
+    if (!reasons.length) {
+      return of(true);
+    }
+    return this.notifyNavigationDenied(currentUnit, reasons, direction);
+  }
+
+  private notifyNavigationDenied(
+    currentUnit: Unit,
+    reasons: VeronaNavigationDeniedReason[],
+    dir: 'next' | 'previous'
+  ): Observable<boolean> {
+    if (this.testMode.forceNaviRestrictions) {
+      this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
+
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: <ConfirmDialogData>{
+          title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+          content: reasons
+            .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+            .join(' '),
+          confirmbuttonlabel: 'OK',
+          confirmbuttonreturn: false,
+          showcancel: false
+        }
+      });
+      return dialogCDRef.afterClosed().pipe(map(() => false));
+    }
+    const reasonTexts = {
+      presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
+      responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
+    };
+    this.snackBar.open(
+      `Im Testmodus dürfte hier nicht ${(dir === 'next') ? 'weiter' : ' zurück'} geblättert
+       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
+      'OK',
+      { duration: 3000 }
+    );
+    return of(true);
+  }
+
+  private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    if (!currentUnit.parent.restrictions.lockAfterLeaving) {
+      return of(true);
+    }
+
+    const lockScope = currentUnit.parent.restrictions.lockAfterLeaving.scope;
+
+    if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
+      return of(true);
+    }
+
+    const leaveLock = () => {
+      if (this.testMode.forceNaviRestrictions) {
+        if (lockScope === 'testlet') {
+          this.leaveLockTestlet(currentUnit.parent.id);
+        }
+        if (lockScope === 'unit') {
+          this.leaveLockUnit(currentUnit.sequenceId);
+        }
+      } else {
+        this.snackBar.open(
+          `${lockScope} würde im Testmodus nun gesperrt werden.`,
+          'OK',
+          { duration: 3000 }
+        );
+      }
+    };
+
+    if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: <ConfirmDialogData>{
+          title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
+          content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
+          confirmbuttonlabel: 'Trotzdem weiter',
+          confirmbuttonreturn: true,
+          showcancel: true
+        }
+      });
+      return dialogCDRef.afterClosed()
+        .pipe(
+          map(cdresult => {
+            if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+              return false;
+            }
+            leaveLock();
+            return true;
+          })
+        );
+    }
+    leaveLock();
+    return of(true);
+  }
+
+  canDeactivateUnit(nextStateUrl: string): Observable<boolean> {
+    if (nextStateUrl === '/r/route-dispatcher') {
+      return of(true);
+    }
+    if (this.state$.getValue() === 'ERROR') {
+      return of(true);
+    }
+
+    if (!this.currentUnit) {
+      return of(true);
+    }
+
+    const currentUnit = this.currentUnit;
+
+    if (this.currentUnit.parent.locked) {
+      return of(true);
+    }
+
+    let newUnit: Unit | null = null;
+    const match = nextStateUrl.match(/t\/(\d+)\/u\/(\d+)$/);
+    if (match) {
+      const targetUnitSequenceId = Number(match[2]);
+      newUnit = this.units[targetUnitSequenceId] || null;
+    }
+
+    const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
+    if (forceNavigation) {
+      this.interruptTimer();
+      return of(true);
+    }
+
+    return from([
+      this.checkAndSolveCompleteness.bind(this),
+      this.checkAndSolveTimer.bind(this),
+      this.checkAndSolveLeaveLocks.bind(this)
+    ])
+      .pipe(
+        concatMap(check => check(currentUnit, newUnit)),
+        takeWhile(checkResult => checkResult, true),
+        last()
+      );
   }
 }
