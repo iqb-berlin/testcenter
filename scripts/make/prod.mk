@@ -248,13 +248,19 @@ restore-db-data-only:
 	docker exec -i testcenter-db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
 		<backup/temp/$(MYSQL_DATABASE)-data.sql
 
-## Creates a gzip'ed tarball in temporary backup directory from backend data volume
+## Creates a gzip'ed tarball in temporary backup directory from backend data (backend has to be up!)
 export-backend-vol:
-	vackup export testcenter_testcenter_backend_vo_data backup/temp/backend_vo_data.tar.gz
+	docker run --rm\
+			--volumes-from testcenter-backend\
+			--volume $(CUR_DIR)/backup/temp:/tmp\
+		busybox tar cvzf /tmp/backend_vo_data.tar.gz /var/www/testcenter/data
 
-## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (sudo rights may be required)
+## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (backend has to be up!)
 import-backend-vol:
-	vackup import backup/temp/backend_vo_data.tar.gz testcenter_testcenter_backend_vo_data
+	docker run --rm \
+			--volumes-from testcenter-backend\
+			--volume $(CUR_DIR)/backup/temp:/tmp\
+		busybox sh -c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vo_data.tar.gz --strip-components 4"
 
 # Start testcenter update procedure
 update:
