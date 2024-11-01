@@ -486,25 +486,12 @@ export class TestControllerService {
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
-    if (this.state$.getValue() === 'TERMINATED') {
-      // sometimes terminateTest get called two times from player
-      return true;
-    }
-
-    const oldTestStatus = this.state$.getValue();
-    // last state that will and can be logged
-    this.state$.next((oldTestStatus === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
+    if (this.state$.getValue() === 'TERMINATED') return true; // sometimes terminateTest get called two times
 
     const navigationSuccessful = await lastValueFrom(this.canDeactivateUnit('/r/starter'));
-    if (!(navigationSuccessful || force)) {
-      // maybe unsuccessfully because of leave restrictions
-      this.state$.next(oldTestStatus);
-      return true;
-    }
-    return this.finishTest(logEntryKey, lockTest);
-  }
+    if (!(navigationSuccessful || force)) return true;
 
-  private async finishTest(logEntryKey: string, lockTest: boolean = false): Promise<boolean> {
+    this.state$.next((this.state$.getValue() === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
     await this.closeBuffer(`terminateTest:${logEntryKey}`, 'saved');
 
     if (lockTest) {

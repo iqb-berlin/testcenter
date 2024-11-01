@@ -43,8 +43,8 @@ export type VeronaPlayerConfig = Verona4PlayerConfig;
 export type VeronaNavigationTarget = Verona2NavigationTarget;
 export type VeronaNavigationDeniedReason = Verona3NavigationDeniedReason;
 
-export const isVeronaNavigationTarget =
-  (value: string): value is VeronaNavigationTarget => (Verona2NavigationTargetValues as readonly string[]).includes(value);
+export const isVeronaNavigationTarget = (value: string):
+  value is VeronaNavigationTarget => (Verona2NavigationTargetValues as readonly string[]).includes(value);
 
 export interface Verona5ValidPages {
   [id: string]: string
@@ -72,7 +72,7 @@ export interface VeronaUnitState {
   presentationProgress?: VeronaProgress;
   responseProgress?: VeronaProgress;
   unitStateDataType?: string;
-  [x: string]: any;
+  [x: string]: unknown;
 }
 
 export interface VopStartCommand {
@@ -82,5 +82,5 @@ export interface VopStartCommand {
   unitDefinitionType?: string;
   unitState: VeronaUnitState;
   playerConfig: Verona4PlayerConfig;
-  [x: string]: any;
+  [x: string]: unknown;
 }
