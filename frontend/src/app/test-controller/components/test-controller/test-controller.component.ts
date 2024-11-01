@@ -255,7 +255,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (this.tcs.testMode.forceTimeRestrictions) {
           return this.tcs.setUnitNavigationRequest(
-            this.tcs.navigationTargets.next?.toString(10) ?? UnitNavigationTarget.END,
+            this.tcs.navigation.targets.next?.toString(10) ?? UnitNavigationTarget.END,
             true
           );
         }

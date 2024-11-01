@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, Output
+  Component, EventEmitter, Output
 } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { Testlet, isTestlet } from '../../interfaces/test-controller.interfaces';
@@ -11,7 +11,6 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   styleUrls: ['./unit-menu.component.css']
 })
 export class UnitMenuComponent {
-  @Input() freeNavigation: boolean = false;
   @Output() close = new EventEmitter<void>();
 
   testletContext?: { testlet: Testlet, level: number };
@@ -29,7 +28,6 @@ export class UnitMenuComponent {
   }
 
   goto(target: string): void {
-    console.log('close');
     this.close.emit();
     this.tcs.setUnitNavigationRequest(target);
   }

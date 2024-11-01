@@ -13,14 +13,15 @@
     </p>
   </div>
 
-
   <tc-unit-nav-bar
     *ngIf="(tcs.booklet?.config?.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === 'RUNNING')"
     [booklet]="tcs.booklet"
     [prevButtonVisible]="tcs.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY'"
     [nextButtonVisible]="true"
-    [prevButtonEnabled]="!!tcs.navigationTargets.previous"
-    [nextButtonEnabled]="!!tcs.navigationTargets.next"
+    [prevButtonEnabled]="!!tcs.navigation.targets.previous"
+    [nextButtonEnabled]="!!tcs.navigation.targets.next"
+    [forwardAllowed]="tcs.navigation.directions.forward"
+    [backwardAllowed]="tcs.navigation.directions.backward"
     [retardedDesign]="tcs.booklet?.config?.controller_design === '2018'"
   />
 

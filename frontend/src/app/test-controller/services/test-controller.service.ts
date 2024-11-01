@@ -11,11 +11,24 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TimerData } from '../classes/test-controller.classes';
 import {
-  Booklet, BufferEvent, BufferEventType, bufferTypes, isTestlet, KeyValuePairNumber,
+  Booklet,
+  BufferEvent,
+  BufferEventType,
+  bufferTypes,
+  isTestlet,
+  KeyValuePairNumber,
   KeyValuePairString,
-  MaxTimerEvent, NavigationLeaveRestrictionValue, NavigationTargets, StateReportEntry,
-  TestControllerState, Testlet, TestletLockTypes,
-  TestStateKey, TestStateUpdate, Unit,
+  MaxTimerEvent,
+  NavigationDirection,
+  NavigationLeaveRestrictionValue,
+  NavigationState,
+  StateReportEntry,
+  TestControllerState,
+  Testlet,
+  TestletLockTypes,
+  TestStateKey,
+  TestStateUpdate,
+  Unit,
   UnitDataParts,
   UnitNavigationTarget, UnitStateKey,
   UnitStateUpdate,
@@ -82,12 +95,18 @@ export class TestControllerService {
   private players: { [filename: string]: string } = {};
   private testState: { [key in TestStateKey]?: string } = {};
 
-  navigationTargets: NavigationTargets = {
-    next: null,
-    previous: null,
-    first: null,
-    last: null,
-    end: null
+  navigation: NavigationState = {
+    targets: {
+      next: null,
+      previous: null,
+      first: null,
+      last: null,
+      end: null
+    },
+    directions: {
+      forward: true,
+      backward: true
+    }
   };
 
   readonly conditionsEvaluated$ = new Subject<void>();
@@ -236,11 +255,6 @@ export class TestControllerService {
   }
 
   setTestState(key: TestStateKey, content: string): void {
-    console.log('setTestState', {
-      set: key,
-      from: this.testState[key],
-      to: content
-    });
     if (this.testState[key] === content) return;
     this.testState[key] = content;
     this.testStateBuffer$.next(<TestStateUpdate>{
@@ -305,11 +319,12 @@ export class TestControllerService {
     const changedParts: KeyValuePairString = {};
     Object.keys(dataParts)
       .forEach(dataPartId => {
+        if (!this.currentUnit) return; // ts haas forgotten we already checked this
         if (
-          !this.currentUnit!.dataParts[dataPartId] ||
-          (this.currentUnit!.dataParts[dataPartId] !== dataParts[dataPartId])
+          !this.currentUnit.dataParts[dataPartId] ||
+          (this.currentUnit.dataParts[dataPartId] !== dataParts[dataPartId])
         ) {
-          this.currentUnit!.dataParts[dataPartId] = dataParts[dataPartId];
+          this.currentUnit.dataParts[dataPartId] = dataParts[dataPartId];
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
@@ -360,7 +375,7 @@ export class TestControllerService {
         state: changedStates
       });
     }
-    this.updateNavigationTargets();
+    this.updateNavigationState();
   }
 
   addPlayer(fileName: string, player: string): void {
@@ -456,7 +471,6 @@ export class TestControllerService {
 
   cancelTimer(): void {
     if (this.timerIntervalSubscription !== null) {
-      console.log('cancelTimer');
       this.timerIntervalSubscription.unsubscribe();
       this.timerIntervalSubscription = null;
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.CANCELLED));
@@ -512,16 +526,16 @@ export class TestControllerService {
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
         await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.next}`], { state: { force } });
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.next}`], { state: { force } });
       case UnitNavigationTarget.PREVIOUS:
         await this.closeBuffer(`setUnitNavigationRequest(${navString} PREVIOUS`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.previous}`], { state: { force } });
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.previous}`], { state: { force } });
       case UnitNavigationTarget.FIRST:
         await this.closeBuffer(`setUnitNavigationRequest(${navString} FIRST`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.first}`], { state: { force } });
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.first}`], { state: { force } });
       case UnitNavigationTarget.LAST:
         await this.closeBuffer(`setUnitNavigationRequest(${navString} LAST`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigationTargets.last}`], { state: { force } });
+        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.last}`], { state: { force } });
       case UnitNavigationTarget.END:
         return this.terminateTest(
           force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
@@ -588,11 +602,11 @@ export class TestControllerService {
     }
 
     updateLocks(this.testlets[this.booklet.units.id]);
-    this.updateNavigationTargets();
+    this.updateNavigationState();
     this.conditionsEvaluated$.next();
   }
 
-  updateNavigationTargets(): void {
+  updateNavigationState(): void {
     let unit: Unit;
     let first = null;
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -615,28 +629,36 @@ export class TestControllerService {
         }
       }
     }
-    if (this.currentUnit) {
-      if (this.checkCompleteness(this.currentUnit, 'next').length) next = null;
-      if (this.checkCompleteness(this.currentUnit, 'previous').length) previous = null;
-    }
-
     const end = (this.booklet?.config.allow_player_to_terminate_test === 'ON') ||
       ((this.booklet?.config.allow_player_to_terminate_test === 'LAST_UNIT') && (this.currentUnitSequenceId === last)) ?
       Infinity :
       null;
-    this.navigationTargets = {
+
+    this.navigation.directions = {
+      forward: (!!this.currentUnit && !this.checkCompleteness(this.currentUnit, 'forward').length),
+      backward:
+        (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') &&
+        (!!this.currentUnit && !this.checkCompleteness(this.currentUnit, 'backward').length)
+    };
+
+    next = this.navigation.directions.forward ? next : null;
+    previous = this.navigation.directions.backward ? previous : null;
+    last = this.navigation.directions.forward ? next : null;
+    first = this.navigation.directions.backward ? previous : null;
+
+    this.navigation.targets = {
       next, previous, first, last, end
     };
   }
 
-  checkCompleteness(unit: Unit, direction: 'next' | 'previous'): VeronaNavigationDeniedReason[] {
-    if (unit.parent.locked?.by === 'time') {
+  checkCompleteness(unit: Unit, direction: NavigationDirection): VeronaNavigationDeniedReason[] {
+    if (unit.parent.locked || unit.lockedAfterLeaving) {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
     const checkOnValue = {
-      next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
-      previous: <NavigationLeaveRestrictionValue[]>['ALWAYS']
+      forward: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
+      backward: <NavigationLeaveRestrictionValue[]>['ALWAYS']
     };
     const presentationCompleteRequired =
       unit.parent?.restrictions?.denyNavigationOnIncomplete?.presentation ||
@@ -843,7 +865,7 @@ export class TestControllerService {
   }
 
   private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
-    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'next' : 'previous';
+    const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'forward' : 'backward';
     const reasons = this.checkCompleteness(currentUnit, direction);
     if (!reasons.length) {
       return of(true);
@@ -854,7 +876,7 @@ export class TestControllerService {
   private notifyNavigationDenied(
     currentUnit: Unit,
     reasons: VeronaNavigationDeniedReason[],
-    dir: 'next' | 'previous'
+    direction: NavigationDirection
   ): Observable<boolean> {
     if (this.testMode.forceNaviRestrictions) {
       this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
@@ -878,7 +900,7 @@ export class TestControllerService {
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
     };
     this.snackBar.open(
-      `Im Testmodus dürfte hier nicht ${(dir === 'next') ? 'weiter' : ' zurück'} geblättert
+      `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
        werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
       'OK',
       { duration: 3000 }

@@ -15,6 +15,8 @@ export class UnitNavBarComponent {
   @Input() nextButtonVisible: boolean = false;
   @Input() prevButtonEnabled: boolean = false;
   @Input() nextButtonEnabled: boolean = false;
+  @Input() forwardAllowed: boolean = true;
+  @Input() backwardAllowed: boolean = true;
   @Input() retardedDesign: boolean = false;
   testletContext?: { testlet: Testlet, level: number };
 

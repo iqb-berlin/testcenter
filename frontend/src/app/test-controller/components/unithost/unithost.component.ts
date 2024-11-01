@@ -374,7 +374,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.leaveWarning = false;
     this.prepareIframe();
-    this.tcs.updateNavigationTargets();
+    this.tcs.updateNavigationState();
   }
 
   private startTimerIfNecessary(): void {
@@ -432,8 +432,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const groupToken = this.mds.getAuthData()?.groupToken;
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
-      enabledNavigationTargets: Object.keys(this.tcs.navigationTargets)
-        .filter(t => this.tcs.navigationTargets[t] && this.tcs.navigationTargets[t] !== this.tcs.currentUnitSequenceId),
+      enabledNavigationTargets: Object.keys(this.tcs.navigation.targets)
+        .filter(t => this.tcs.navigation.targets[t] && this.tcs.navigation.targets[t] !== this.tcs.currentUnitSequenceId),
       logPolicy: this.tcs.booklet.config.logPolicy,
       pagingMode: this.tcs.booklet.config.pagingMode,
       unitNumber: this.tcs.currentUnitSequenceId,
