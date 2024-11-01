@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bs-deployment
+  namespace: tc
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: bs-pod
+  template:
+    metadata:
+      labels:
+        app: bs-pod
+    spec:
+      containers:
+        - name: bs-container
+          image: iqbberlin/testcenter-broadcasting-service:15.3.4
+          ports:
+            - name: http-container
+              containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testcenter-broadcasting-service #hard coded in application as internal address
+  namespace: tc
+spec:
+  selector:
+    app: bs-pod
+  ports:
+    - name: http-service
+      port: 3000 
+      targetPort: http-container

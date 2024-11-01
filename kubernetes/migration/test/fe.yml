@@ -1,0 +1,39 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-deployment
+  namespace: tc
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: fe-pod
+  template:
+    metadata:
+      labels:
+        app: fe-pod
+    spec:
+      containers:
+        - name: fe-container
+          image: iqbberlin/testcenter-frontend:15.3.4
+          ports:
+            - name: http-container
+              containerPort: 80 #interner port innerhalb von cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fe-service
+  namespace: tc
+spec:
+  selector:
+    app: fe-pod
+  ports:
+    - name: http-service
+      port: 80 #interner port innerhalb von cluster
+      targetPort: http-container
+  type: NodePort
