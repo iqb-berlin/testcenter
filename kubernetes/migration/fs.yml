@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: testcenter-file-service-container
-        image: iqbberlin/testcenter-file-service:15.2.0
+        image: iqbberlin/testcenter-file-service:15.3.4
         env:
         - name: CACHE_SERVICE_INCLUDE_FILES
           valueFrom:
