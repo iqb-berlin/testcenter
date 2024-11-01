@@ -151,7 +151,7 @@ prepare_installation_dir() {
   mkdir -p "$TARGET_DIR"/config/traefik
   mkdir -p "$TARGET_DIR"/scripts/make
   mkdir -p "$TARGET_DIR"/scripts/migration
-  mkdir -p "$TARGET_DIR"/secrets/traefik/certs/letsencrypt
+  mkdir -p "$TARGET_DIR"/secrets/traefik/certs/acme
 
   cd "$TARGET_DIR"
 }
@@ -174,7 +174,9 @@ download_files() {
   download_file docker-compose.prod.yml dist-src/docker-compose.prod.yml
   download_file docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
   download_file .env.prod-template dist-src/.env.prod-template
-  download_file config/traefik/tls-config.yml config/traefik/tls-config.yml
+  download_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml
+  download_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml
+  download_file config/traefik/tls-options.yml config/traefik/tls-options.yml
   download_file scripts/make/$APP_NAME.mk scripts/make/prod.mk
   download_file scripts/update_$APP_NAME.sh scripts/update.sh
   chmod +x scripts/update_$APP_NAME.sh
