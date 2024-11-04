@@ -37,3 +37,21 @@ spec:
       port: 80 #interner port innerhalb von cluster
       targetPort: http-container
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: testcenter-fe-ingress
+  namespace: tc
+spec:
+  rules:
+    - host: minikube-ip-defined-in-hosts.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fe-service
+                port:
+                  number: 80
