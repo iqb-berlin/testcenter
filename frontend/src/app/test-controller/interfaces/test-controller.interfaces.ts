@@ -168,6 +168,7 @@ export const commandKeywords = [
   'resume',
   'debug'
 ];
+
 export type CommandKeyword = (typeof commandKeywords)[number];
 export function isKnownCommand(keyword: string): keyword is CommandKeyword {
   return (commandKeywords as readonly string[]).includes(keyword);
@@ -179,6 +180,10 @@ export interface Command {
   arguments: string[];
   timestamp: number;
 }
+
+type CommandFunction = (args: string[]) => void;
+
+export type TcPublicApi = Record<CommandKeyword, CommandFunction>;
 
 export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'ALWAYS';
 export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {

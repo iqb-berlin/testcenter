@@ -17,7 +17,7 @@ import {
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
-  Command, CommandKeyword, commandKeywords, isKnownCommand, TestControllerState
+  Command, CommandKeyword, commandKeywords, isKnownCommand, TcPublicApi, TestControllerState
 } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
 import { WebsocketBackendService } from '../../shared/shared.module';
@@ -122,7 +122,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private setUpGlobalCommandsForDebug() {
-    (window as any).tc =
+    (window as { tc: TcPublicApi } & Window & typeof globalThis).tc =
       commandKeywords
         .reduce((acc, keyword) => {
           acc[keyword] = args => { this.commandFromTerminal(keyword, args); };
