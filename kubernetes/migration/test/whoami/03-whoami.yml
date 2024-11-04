@@ -32,6 +32,9 @@ spec:
     - name: web
       port: 80
       targetPort: web
+    - name: websecure
+      port: 443
+      targetPort: web
 
   selector:
     app: whoami
@@ -42,8 +45,7 @@ metadata:
   name: whoami-ingress
 spec:
   rules:
-    - host: minikube-ip-defined-in-hosts.example
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix

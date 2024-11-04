@@ -21,3 +21,15 @@ spec:
       port: 80
   selector:
     app: traefik-pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-web-secure-service
+spec:
+  type: LoadBalancer
+  ports:
+    - targetPort: websecure
+      port: 443
+  selector:
+    app: traefik-pod
