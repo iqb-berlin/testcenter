@@ -1,4 +1,5 @@
 <div class="version-label">
+  <span *ngIf="mainDataService.isTestingMode" style="color:red">Testmode!</span>
   <a href="{{'https://github.com/iqb-berlin/testcenter/releases/tag/' + mainDataService.appConfig?.version}}" target="_blank">
     IQB-Testcenter Version {{mainDataService.appConfig?.version}}
   </a>
