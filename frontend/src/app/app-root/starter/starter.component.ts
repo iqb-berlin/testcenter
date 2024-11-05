@@ -15,7 +15,6 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getMonitorDataSubscription: Subscription | null = null;
   private getBookletDataSubscription: Subscription | null = null;
   private getWorkspaceDataSubscription: Subscription | null = null;
-  problemText: string = '';
   isSuperAdmin = false;
   constructor(
     private router: Router,
@@ -47,28 +46,16 @@ export class StarterComponent implements OnInit, OnDestroy {
           }
           this.workspaces = authData.claims.workspaceAdmin;
           this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
-        } else {
-          this.reloadTestList();
         }
       });
     });
   }
 
   startTest(test: AccessObject): void {
-    this.bs.startTest(test.id).subscribe(testId => {
-      if ('workspaceMonitor' in test || 'testGroupMonitor' in test || 'attachmentManager' in test) {
-        const errCode = testId as number;
-        if (errCode === 423) {
-          this.problemText = 'Dieser Test ist gesperrt';
-        } else {
-          this.problemText = `Problem beim Start (${errCode})`;
-        }
-      } else if ('test' in test) {
-        this.reloadTestList();
-      } else {
+    this.bs.startTest(test.id)
+      .subscribe(testId => {
         this.router.navigate(['/t', testId]);
-      }
-    });
+      });
   }
 
   buttonGotoStudyMonitor(accessObject: AccessObject): void {
@@ -87,16 +74,6 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   resetLogin(): void {
     this.mds.logOut();
-  }
-
-  private reloadTestList(): void {
-    this.mds.appSubTitle$.next('Testauswahl');
-    this.bs.getSessionData().subscribe(authData => {
-      if (!authData || !authData.token) {
-        this.mds.logOut();
-      }
-      this.mds.setAuthData(authData);
-    });
   }
 
   buttonGotoWorkspaceAdmin(ws: AccessObject): void {

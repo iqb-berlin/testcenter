@@ -6,8 +6,6 @@
     </mat-card-header>
     <mat-card-content>
       <div class="flex-column" [style.gap.px]="10">
-        <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
-
         <h4 *ngIf="accessObjects.workspaceAdmin">Studien</h4>
         <a
           *ngFor="let workspace of workspaces"
