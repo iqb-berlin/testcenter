@@ -10,7 +10,7 @@
             mat-raised-button
             (click)="goto(testletOrUnit.sequenceId.toString())"
             [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
-            [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : tcs.navigation.directions.forward : tcs.navigation.directions.backward"
+            [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : tcs.navigation.directions.forward !== 'no' : tcs.navigation.directions.backward !== 'no'"
             [matTooltip]="testletOrUnit.label"
           >{{testletOrUnit.label || "&nbsp;"}}
           </a>

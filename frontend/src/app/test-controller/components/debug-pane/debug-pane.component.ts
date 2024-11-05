@@ -53,7 +53,7 @@ export class DebugPaneComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.tcs.conditionsEvaluated$
+    this.tcs.navigationUpdated$
       .subscribe(() => {
         this.cdr.detectChanges();
         this.getData();

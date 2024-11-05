@@ -18,7 +18,7 @@ import {
   KeyValuePairNumber,
   KeyValuePairString,
   MaxTimerEvent,
-  NavigationDirection,
+  NavigationDirection, NavigationDirectionValue,
   NavigationLeaveRestrictionValue,
   NavigationState,
   StateReportEntry,
@@ -103,12 +103,12 @@ export class TestControllerService {
       end: null
     },
     directions: {
-      forward: true,
-      backward: true
+      forward: 'yes',
+      backward: 'yes'
     }
   };
 
-  readonly conditionsEvaluated$ = new Subject<void>();
+  readonly navigationUpdated$ = new Subject<void>();
   private readonly bufferEventBus$ = new Subject<BufferEvent>();
   private readonly closeBuffers$ = new Subject<string>();
   private readonly unitDataPartsBuffer$ = new Subject<UnitDataParts>();
@@ -591,11 +591,12 @@ export class TestControllerService {
 
     updateLocks(this.testlets[this.booklet.units.id]);
     this.updateNavigationState();
-    this.conditionsEvaluated$.next();
   }
 
   updateNavigationState(): void {
+    if (!this.currentUnitSequenceId) return;
     this.navigation = this.getNavigationState(this.currentUnitSequenceId);
+    this.navigationUpdated$.next();
   }
 
   getNavigationState(fromUnitSequenceId: number): NavigationState {
@@ -625,15 +626,17 @@ export class TestControllerService {
       Infinity :
       null;
 
-    const forward = (!this.currentUnit || !this.checkCompleteness(this.currentUnit, 'forward').length);
-    const backward =
-      (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') &&
-      (!this.currentUnit || !this.checkCompleteness(this.currentUnit, 'backward').length);
+    let forward: NavigationDirectionValue = 'yes';
+    let backward: NavigationDirectionValue = (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') ? 'yes' : 'no';
+    if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'forward').length) {
+      forward = 'markedNo';
+    }
+    if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'backward').length) {
+      backward = 'markedNo';
+    }
 
-    next = forward ? next : null;
-    previous = backward ? previous : null;
-    last = forward ? next : null;
-    first = backward ? previous : null;
+    previous = backward !== 'no' ? previous : null;
+    first = backward !== 'no' ? previous : null;
 
     return {
       directions: { forward, backward },

@@ -61,7 +61,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-      this.subscriptions.conditionsEvaluated = this.tcs.conditionsEvaluated$
+      this.subscriptions.conditionsEvaluated = this.tcs.navigationUpdated$
         .subscribe(() => this.updatePlayerConfig());
     });
   }
@@ -355,9 +355,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.resourcesLoading$.next([]);
 
     this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
-    if (this.tcs.testMode.saveResponses) {
-      this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
-    }
+    this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
 
     if (this.tcs.testMode.presetCode) {
       this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';

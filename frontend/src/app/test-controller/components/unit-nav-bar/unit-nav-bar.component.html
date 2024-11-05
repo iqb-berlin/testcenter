@@ -6,6 +6,7 @@
     data-cy="unit-navigation-backward"
     [disabled]="!prevButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+    [class.marked]="backwardAllowed === 'markedNo'"
   >
     <i class="material-icons">chevron_left</i>
   </a>
@@ -17,6 +18,7 @@
     [style.border-radius]="0"
     [disabled]="!prevButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+    [class.marked]="backwardAllowed === 'markedNo'"
   >
     <i class="material-icons">chevron_left</i>
   </a>
@@ -32,7 +34,8 @@
           [class.unit-nav-item-selected]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
           [attr.aria-label]="testletOrUnit.label"
           [attr.data-cy]="'unit-nav-item:' + testletOrUnit.id"
-          [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : forwardAllowed : backwardAllowed"
+          [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : forwardAllowed !== 'no' : backwardAllowed !== 'no'"
+          [class.marked]="(forwardAllowed === 'markedNo' && testletOrUnit.sequenceId > tcs.currentUnitSequenceId) || (backwardAllowed === 'markedNo' && testletOrUnit.sequenceId < tcs.currentUnitSequenceId)"
           (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
         >
           {{testletOrUnit.labelShort || "&nbsp;"}}
@@ -54,6 +57,7 @@
     data-cy="unit-navigation-forward"
     [disabled]="!nextButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+    [class.marked]="forwardAllowed === 'markedNo'"
   >
     <i class="material-icons">chevron_right</i>
   </a>
@@ -65,6 +69,7 @@
     [style.border-radius]="0"
     [disabled]="!nextButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+    [class.marked]="forwardAllowed === 'markedNo'"
   >
     <i class="material-icons">chevron_right</i>
   </a>

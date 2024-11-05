@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import {
-  Booklet, Testlet, isTestlet, UnitNavigationTarget
+  Booklet, Testlet, isTestlet, UnitNavigationTarget, NavigationDirectionValue
 } from '../../interfaces/test-controller.interfaces';
 
 @Component({
@@ -15,8 +15,8 @@ export class UnitNavBarComponent {
   @Input() nextButtonVisible: boolean = false;
   @Input() prevButtonEnabled: boolean = false;
   @Input() nextButtonEnabled: boolean = false;
-  @Input() forwardAllowed: boolean = true;
-  @Input() backwardAllowed: boolean = true;
+  @Input() forwardAllowed: NavigationDirectionValue = 'yes';
+  @Input() backwardAllowed: NavigationDirectionValue = 'yes';
   @Input() retardedDesign: boolean = false;
   testletContext?: { testlet: Testlet, level: number };
 

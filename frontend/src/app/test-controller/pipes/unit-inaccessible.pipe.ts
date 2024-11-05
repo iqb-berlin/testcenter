@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { NavigationState, TestletLockType, Unit } from '../interfaces/test-controller.interfaces';
+import { TestletLockType, Unit } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../services/test-controller.service';
 
 @Pipe({

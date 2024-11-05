@@ -260,7 +260,8 @@ export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testl
 
 export type NavigationTargets = Readonly<Record<VeronaNavigationTarget, number | null>>;
 export type NavigationDirection = 'forward' | 'backward';
-export type NavigationDirections = Readonly<Record<NavigationDirection, boolean>>;
+export type NavigationDirectionValue = 'yes' | 'no' | 'markedNo';
+export type NavigationDirections = Readonly<Record<NavigationDirection, NavigationDirectionValue>>;
 export interface NavigationState {
   readonly targets: NavigationTargets;
   readonly directions: NavigationDirections;
