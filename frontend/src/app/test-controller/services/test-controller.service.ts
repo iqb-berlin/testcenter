@@ -398,8 +398,6 @@ export class TestControllerService {
     const unlockedTestlets = Object.values(this.testlets)
       .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
       .map(t => t.id);
-    console.log('clearTestlet', this.testId, unlockedTestlets);
-    console.log('clearTestlet:TESTLETS_CLEARED_CODE', JSON.stringify(this.testState.TESTLETS_CLEARED_CODE));
     this.setTestState('TESTLETS_CLEARED_CODE', JSON.stringify(unlockedTestlets));
   }
 
