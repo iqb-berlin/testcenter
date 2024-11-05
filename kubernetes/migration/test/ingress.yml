@@ -1,58 +1,45 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregex
+  namespace: tc
+spec:
+  stripPrefixRegex:
+    regex:
+      - "^/api(/|$)"
+      - "^/fs(/|$)"
+      - "^/bs/public(/|$)"
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: testcenter-path-ingress
   namespace: tc
   annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.middlewares: tc-strip-path-regex@kubernetescrd
-    # hier spielt die Musik, diese eine Zeile muss nach Traefik migriert werden. dann kannn man auch wieder die /api etc erreichen
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/affinity-mode: persistent
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/enable-cors: "false"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "X-Content-Type-Options: nosniff";
-      more_set_headers "X-Frame-Options: SAMEORIGIN";
-      more_set_headers "Referrer-Policy: no-referrer";
+    traefik.ingress.kubernetes.io/router.middlewares: tc-stripregex@kubernetescrd
 spec:
-  ingressClassName: traefik
   rules:
     - host: minikube-ip-defined-in-hosts.example
       http:
         paths:
-        - path: /api(/|$)(.*)
+        - path: /api
           pathType: Prefix
           backend:
             service:
               name: testcenter-backend-service
               port:
                 number: 80
-        - path: /fs(/|$)(.*)
+        - path: /fs
           pathType: Prefix
           backend:
             service:
               name: testcenter-file-service
               port:
                 number: 80
-        - path: /bs/public(/|$)(.*)
+        - path: /bs/public
           pathType: Prefix
           backend:
             service:
               name: testcenter-broadcasting-service
               port:
                 number: 3000
----
-
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: strip-path-regex
-  namespace: tc
-spec:
-  stripPrefixRegex:
-    regex:
-      - "^/api(/|$)(.*)"
-      - "^/fs(/|$)(.*)"
-      - "^/bs/public(/|$)(.*)"

@@ -22,6 +22,7 @@ spec:
           args:
             - --api.insecure
             - --providers.kubernetesingress
+            - --providers.kubernetescrd
             - --entrypoints.web.address=:80
             - --entrypoints.websecure.address=:443
           ports:
