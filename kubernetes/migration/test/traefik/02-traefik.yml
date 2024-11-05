@@ -18,13 +18,19 @@ spec:
       serviceAccountName: traefik-account
       containers:
         - name: traefik
-          image: traefik:v3.2
+          image: traefik:v2.11
           args:
             - --api.insecure
             - --providers.kubernetesingress
             - --providers.kubernetescrd
             - --entrypoints.web.address=:80
             - --entrypoints.websecure.address=:443
+#            - --entrypoints.web.http.redirections.entryPoint.to=websecure
+#            - --entrypoints.web.http.redirections.entryPoint.scheme=https
+#            - --certificatesresolvers.acme.acme.tlschallenge=true
+#            - --certificatesresolvers.myresolver.acme.email=your-email@example.com
+#            - --certificatesresolvers.acme.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+#            - --certificatesresolvers.acme.acme.storage=/certs/acme.json
           ports:
             - name: web
               containerPort: 80

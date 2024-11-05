@@ -46,9 +46,66 @@ spec:
               secretKeyRef:
                 name: testcenter-secrets
                 key: PASSWORD_SALT
-          envFrom:
-          - configMapRef:
-              name: testcenter-config
+          - name: BROADCAST_SERVICE_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: BROADCAST_SERVICE_ENABLED
+          - name: FILE_SERVICE_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: FILE_SERVICE_ENABLED
+          - name: HOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: HOSTNAME
+          - name: TLS_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: TLS_ENABLED
+          - name: CACHE_SERVICE_INCLUDE_FILES
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: CACHE_SERVICE_INCLUDE_FILES
+          - name: CACHE_SERVICE_RAM
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: CACHE_SERVICE_RAM
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: PORT
+          - name: TLS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: TLS_PORT
+          - name: SKIP_READ_FILES
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: SKIP_READ_FILES
+          - name: SKIP_DB_INTEGRITY
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: SKIP_DB_INTEGRITY
+          - name: OVERWRITE_INSTALLATION
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: OVERWRITE_INSTALLATION
+          - name: NO_SAMPLE_DATA
+            valueFrom:
+              configMapKeyRef:
+                name: testcenter-config
+                key: NO_SAMPLE_DATA
           volumeMounts:
           - name: backend-data
             mountPath: /var/www/testcenter/data
@@ -87,4 +144,3 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort

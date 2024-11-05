@@ -10,8 +10,10 @@ metadata:
   name: testcenter-config
   namespace: tc
 data:
+  VERSION: "15.3.4"
   HOSTNAME: "minikube-ip-defined-in-hosts.example"
-  TLS_PORT: "443"
+  PORT: "31011" #this needs to be configured
+  TLS_PORT: "32532" #this needs to be configured
   TLS_ENABLED: "off"
   MYSQL_DATABASE: "iqb_tba_testcenter"
   MYSQL_USER: "iqb_tba_db_user"
@@ -19,9 +21,14 @@ data:
   FILE_SERVICE_ENABLED: "true"
   CACHE_SERVICE_RAM: "1073741824"
   CACHE_SERVICE_INCLUDE_FILES: "false"
-  DOCKER_DAEMON_MTU: "1442"
+  DOCKER_DAEMON_MTU: "1500"
   DOCKERHUB_PROXY: ''
-  RESTART_POLICY: "no"
+  RESTART_POLICY: "always"
+  OVERWRITE_INSTALLATION: "no"
+  SKIP_READ_FILES: "no"
+  SKIP_DB_INTEGRITY: "no"
+  NO_SAMPLE_DATA: "no"
+
   CACHE_SERVICE_ADDRESS_FOR_LUA: "testcenter-cache-service.tc.svc.cluster.local"
 ---
 apiVersion: v1
