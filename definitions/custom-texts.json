@@ -20,12 +20,20 @@
     "defaultvalue" : "Aufgabe verlassen?"
   },
   "booklet_warningLeaveTextPrompt-testlet" : {
-    "label" : "Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
     "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
   },
   "booklet_warningLeaveTextPrompt-unit" : {
-    "label" : "Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
     "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_blockLockedByAfterLeave" : {
+    "label": "Block kann nicht noch einmal betreten werden",
+    "defaultvalue": "Block kann nicht noch einmal betreten werden"
+  },
+  "booklet_lockedByAfterLeave" : {
+    "label": "Aufgabe kann nicht noch einmal betreten werden",
+    "defaultvalue": "Aufgabe kann nicht noch einmal betreten werden"
   },
   "login_bookletSelectPromptNull" : {
     "label" : "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
