@@ -8,7 +8,7 @@ import {
   UnitDef
 } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
-import { VeronaNavigationTarget, VeronaProgress } from './verona.interfaces';
+import { VeronaNavigationTarget, VeronaNavigationTargetValues, VeronaProgress } from './verona.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -259,13 +259,21 @@ export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testl
 }
 
 export type NavigationTargets = Readonly<Record<VeronaNavigationTarget, number | null>>;
-export type NavigationDirection = 'forward' | 'backward';
+export const navigationDirections = ['forward', 'backward'] as const;
+export type NavigationDirection = typeof navigationDirections[number];
 export type NavigationDirectionValue = 'yes' | 'no' | 'markedNo';
 export type NavigationDirections = Readonly<Record<NavigationDirection, NavigationDirectionValue>>;
 export interface NavigationState {
   readonly targets: NavigationTargets;
   readonly directions: NavigationDirections;
 }
+
+export const isEqualNavigation = (a: NavigationState, b: NavigationState): boolean => [
+  ...VeronaNavigationTargetValues
+    .map(target => (a.targets[target] === b.targets[target])),
+  ...navigationDirections
+    .map(direction => (a.directions[direction] === b.directions[direction]))
+].filter(x => x).length > 0;
 
 export const bufferTypes = ['testState', 'unitState', 'unitData'] as const;
 export type BufferType = typeof bufferTypes[number];

@@ -6,7 +6,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Testlet, LoadingProgress, isUnit } from '../../interfaces/test-controller.interfaces';
+import {
+  Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
+} from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
@@ -19,6 +21,7 @@ import {
   VeronaPlayerRuntimeErrorCodes, VeronaUnitState, VopStartCommand
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -61,8 +64,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-      this.subscriptions.conditionsEvaluated = this.tcs.navigationUpdated$
-        .subscribe(() => this.updatePlayerConfig());
+      this.subscriptions.conditionsEvaluated = this.tcs.navigation$
+        .pipe(distinctUntilChanged(isEqualNavigation))
+        .subscribe(navigationState => this.updatePlayerConfig(navigationState));
     });
   }
 
@@ -152,8 +156,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]);
 
-    await this.tcs.closeBuffer('handleReadyNotification');
-
     if (!this.tcs.currentUnit) {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
@@ -169,13 +171,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     }
 
+    const navigation = await this.tcs.closeBuffer('handleReadyNotification');
+
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
       sessionId: this.playerSessionId,
       unitDefinition: this.tcs.currentUnit.definition,
       unitDefinitionType: this.tcs.currentUnit.unitDefinitionType,
       unitState,
-      playerConfig: this.getPlayerConfig()
+      playerConfig: this.getPlayerConfig(navigation)
     };
     this.postMessageTarget.postMessage(msg, '*');
   }
@@ -190,8 +194,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if (this.tcs.currentUnit) this.tcs.currentUnit.pageLabels = this.pages;
 
       if (typeof playerState.currentPage !== 'undefined') {
-        const pageId = playerState.currentPage;
-        const pageNr = Object.keys(this.pages)[pageId] + 1; // only for humans to read in the logs
+        const pageId: string = String(playerState.currentPage);
+        const pageNr = Object.keys(this.pages).indexOf(pageId) + 1; // human-readable in logs & group monitor
         const pageCount = Object.keys(this.pages).length;
         if (Object.keys(this.pages).length > 1 && this.pages[playerState.currentPage]) {
           this.tcs.updateUnitState([
@@ -425,16 +429,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getPlayerConfig(): VeronaPlayerConfig {
+  private getPlayerConfig(navigationState: NavigationState): VeronaPlayerConfig {
     if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
     if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
     const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
-      enabledNavigationTargets: Object.keys(this.tcs.navigation.targets)
+      enabledNavigationTargets: Object.keys(navigationState.targets)
         .filter(isVeronaNavigationTarget)
-        .filter(t => !!this.tcs.navigation.targets[t])
-        .filter(t => this.tcs.navigation.targets[t] !== this.tcs.currentUnitSequenceId),
+        .filter(t => !!navigationState.targets[t])
+        .filter(t => navigationState.targets[t] !== this.tcs.currentUnitSequenceId),
       logPolicy: this.tcs.booklet.config.logPolicy,
       pagingMode: this.tcs.booklet.config.pagingMode,
       unitNumber: this.tcs.currentUnitSequenceId,
@@ -510,14 +514,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updatePlayerConfig(): void {
+  private updatePlayerConfig(navigationState: NavigationState): void {
+    console.log('!! updatePlayerConfig', navigationState);
     if (!this.playerSessionId) {
       return;
     }
     this.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.playerSessionId,
-      playerConfig: this.getPlayerConfig()
+      playerConfig: this.getPlayerConfig(navigationState)
     }, '*');
   }
 }

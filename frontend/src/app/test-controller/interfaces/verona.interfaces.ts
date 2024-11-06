@@ -1,4 +1,7 @@
 const Verona2NavigationTargetValues = ['next', 'previous', 'first', 'last', 'end'] as const;
+
+export const VeronaNavigationTargetValues = Verona2NavigationTargetValues;
+
 type Verona2NavigationTarget = typeof Verona2NavigationTargetValues[number];
 
 type Verona2LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';

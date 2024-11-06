@@ -1,5 +1,5 @@
 import {
-  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
+  bufferWhen, concatMap, last, map, scan, switchMap, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, forkJoin, from, interval, lastValueFrom, merge, Observable, of, Subject, Subscription, timer
@@ -94,7 +94,7 @@ export class TestControllerService {
   private players: { [filename: string]: string } = {};
   private testState: { [key in TestStateKey]?: string } = {};
 
-  navigation: NavigationState = {
+  navigation$: Subject<NavigationState> = new BehaviorSubject<NavigationState>({
     targets: {
       next: null,
       previous: null,
@@ -106,9 +106,8 @@ export class TestControllerService {
       forward: 'yes',
       backward: 'yes'
     }
-  };
+  });
 
-  readonly navigationUpdated$ = new Subject<void>();
   private readonly bufferEventBus$ = new Subject<BufferEvent>();
   private readonly closeBuffers$ = new Subject<string>();
   private readonly unitDataPartsBuffer$ = new Subject<UnitDataParts>();
@@ -267,26 +266,27 @@ export class TestControllerService {
     delete this.subscriptions[name];
   }
 
-  async closeBuffer(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<void> {
+  async closeBuffer(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<NavigationState> {
     const closingSignalId = `${reasonType}:${Math.random()}`;
 
     const closingBufferListener = this.bufferEventBus$
       .pipe(
         scan(
-          (agg, curr) => {
-            if ((curr.id === closingSignalId) && (curr.event === trackEvent)) {
-              agg.add(curr);
+          (agg, current) => {
+            if ((current.id === closingSignalId) && (current.event === trackEvent)) {
+              agg.add(current);
             }
             return agg;
           },
           new Set<BufferEvent>()
         ),
-        takeWhile(agg => agg.size < bufferTypes.length)
+        takeWhile(collectedEvents => collectedEvents.size < bufferTypes.length, true),
+        withLatestFrom(this.navigation$),
+        map(([collectedEvents, navigation]) => navigation)
       );
 
     setTimeout(() => this.closeBuffers$.next(closingSignalId));
-    return lastValueFrom(closingBufferListener)
-      .then(() => undefined);
+    return lastValueFrom(closingBufferListener);
   }
 
   reset(): void {
@@ -318,7 +318,7 @@ export class TestControllerService {
     const changedParts: KeyValuePairString = {};
     Object.keys(dataParts)
       .forEach(dataPartId => {
-        if (!this.currentUnit) return; // ts haas forgotten we already checked this
+        if (!this.currentUnit) return; // ts has forgotten we already checked this
         if (
           !this.currentUnit.dataParts[dataPartId] ||
           (this.currentUnit.dataParts[dataPartId] !== dataParts[dataPartId])
@@ -335,6 +335,7 @@ export class TestControllerService {
         unitStateDataType
       });
     }
+    this.updateNavigationState(); // now, not after buffer is closed, because it affects forward/backward, not choice
   }
 
   updateUnitState(unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
@@ -374,7 +375,6 @@ export class TestControllerService {
         state: changedStates
       });
     }
-    this.updateNavigationState();
   }
 
   addPlayer(fileName: string, player: string): void {
@@ -506,22 +506,23 @@ export class TestControllerService {
     if (!this.booklet) {
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     }
+    let navigation: NavigationState;
     switch (navString) {
       case UnitNavigationTarget.ERROR:
       case UnitNavigationTarget.PAUSE:
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
-        await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.next}`], { state: { force } });
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
+        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.next}`], { state: { force } });
       case UnitNavigationTarget.PREVIOUS:
-        await this.closeBuffer(`setUnitNavigationRequest(${navString} PREVIOUS`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.previous}`], { state: { force } });
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} PREVIOUS`);
+        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.previous}`], { state: { force } });
       case UnitNavigationTarget.FIRST:
-        await this.closeBuffer(`setUnitNavigationRequest(${navString} FIRST`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.first}`], { state: { force } });
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} FIRST`);
+        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.first}`], { state: { force } });
       case UnitNavigationTarget.LAST:
-        await this.closeBuffer(`setUnitNavigationRequest(${navString} LAST`);
-        return this.router.navigate([`/t/${this.testId}/u/${this.navigation.targets.last}`], { state: { force } });
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} LAST`);
+        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.last}`], { state: { force } });
       case UnitNavigationTarget.END:
         return this.terminateTest(
           force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
@@ -593,8 +594,7 @@ export class TestControllerService {
 
   updateNavigationState(): void {
     if (!this.currentUnitSequenceId) return;
-    this.navigation = this.getNavigationState(this.currentUnitSequenceId);
-    this.navigationUpdated$.next();
+    this.navigation$.next(this.getNavigationState(this.currentUnitSequenceId));
   }
 
   getNavigationState(fromUnitSequenceId: number): NavigationState {

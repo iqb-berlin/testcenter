@@ -1,32 +1,34 @@
-<div class="sidebar-main" *ngIf="tcs.booklet?.units">
-  <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
-  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: tcs.booklet?.units, level: 0}"></ng-container>
+<ng-container *ngIf="this.tcs.navigation$ | async as navigation">
+  <div class="sidebar-main" *ngIf="tcs.booklet?.units">
+    <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
+    <ng-container *ngTemplateOutlet="testletFull; context: {testlet: tcs.booklet?.units, level: 0}"></ng-container>
 
-  <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
-    <div class="testlet">
-      <ng-container *ngFor="let testletOrUnit of testlet.children">
-        <div *ngIf="!isTestlet(testletOrUnit); else: subTestlet" class="child">
-          <a
-            mat-raised-button
-            (click)="goto(testletOrUnit.sequenceId.toString())"
-            [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
-            [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : tcs.navigation.directions.forward !== 'no' : tcs.navigation.directions.backward !== 'no'"
-            [matTooltip]="testletOrUnit.label"
-          >{{testletOrUnit.label || "&nbsp;"}}
-          </a>
-        </div>
-
-        <ng-template #subTestlet>
-          <div
-            *ngIf="!isTestlet(testletOrUnit) || !testletOrUnit.locks.show">
-            <h4 *ngIf="testletOrUnit.label" class="headline-level-{{level}}">{{testletOrUnit.label}}</h4>
-            <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}"></ng-container>
+    <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
+      <div class="testlet">
+        <ng-container *ngFor="let testletOrUnit of testlet.children">
+          <div *ngIf="!isTestlet(testletOrUnit); else: subTestlet" class="child">
+            <a
+              mat-raised-button
+              (click)="goto(testletOrUnit.sequenceId.toString())"
+              [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
+              [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : navigation.directions.forward !== 'no' : navigation.directions.backward !== 'no'"
+              [matTooltip]="testletOrUnit.label"
+            >{{testletOrUnit.label || "&nbsp;"}}
+            </a>
           </div>
-        </ng-template>
-      </ng-container>
-    </div>
-  </ng-template>
-</div>
+
+          <ng-template #subTestlet>
+            <div
+              *ngIf="!isTestlet(testletOrUnit) || !testletOrUnit.locks.show">
+              <h4 *ngIf="testletOrUnit.label" class="headline-level-{{level}}">{{testletOrUnit.label}}</h4>
+              <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}"></ng-container>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </ng-template>
+  </div>
+</ng-container>
 
 <div class="sidebar-bottom">
   <ng-container *ngIf="tcs.testMode.canChangeStateOptions">
