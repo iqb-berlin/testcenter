@@ -15,7 +15,7 @@
           "lang": "en"
         }
       ],
-      "version": "6.0.3",
+      "version": "6.0.4",
       "specVersion": "6.0",
       "description": [
         {
@@ -502,10 +502,14 @@
     receive = (type, data) => {
       if (type === "vopStartCommand") {
         Unit.start(data);
+        document.dispatchEvent(new CustomEvent(type, { detail: data }));
       } else if (sessionId && (data.sessionId !== sessionId)) {
         throw new VspRuntimeError('wrong-session-id', `Wrong Session-Id: '${sessionId}' (was: '${sessionId}').`);
+      } else if (sessionId) {
+        document.dispatchEvent(new CustomEvent(type, { detail: data }));
+      } else {
+        console.warn(`Message before first vopStartCommand, ignored: ${type}`, data);
       }
-      document.dispatchEvent(new CustomEvent(type, {detail: data}));
     };
   }
 
