@@ -17,6 +17,7 @@ class SystemConfig {
   public static string $password_salt = "t";
   public static bool $system_tlsEnabled = true;
   public static string $system_hostname;
+  public static int $system_portOfReverseProxy;
   public static string $system_version;
   public static int $system_veronaMax;
   public static int $system_veronaMin;
@@ -27,7 +28,7 @@ class SystemConfig {
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
-  // TODO server URL, port
+  // TODO server URL
 
   public static function read(): void {
     $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
@@ -79,16 +80,17 @@ class SystemConfig {
     $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
     $config['system']['hostname'] = preg_replace('#^[Ww][Ww][Ww]\.#', '', self::stringEnv('HOSTNAME'));
 
+    $portOfReverseProxy = $config['system']['portOfReverseProxy'] = $config['system']['tlsEnabled']
+      ? (self::stringEnv('TLS_PORT_OF_REVERSE_PROXY', '443'))
+      : (self::stringEnv('PORT_OF_REVERSE_PROXY', '80'));
+
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
-      $port = $config['system']['tlsEnabled']
-        ? (self::stringEnv('TLS_PORT', '443'))
-        : (self::stringEnv('PORT', '80'));
-      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$port/bs/public/";
+      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/bs/public/";
       $config['broadcastingService']['internal']= 'testcenter-broadcasting-service:3000';
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['fileService']['external'] = self::stringEnv('HOSTNAME') . ":$port/fs/";
+      $config['fileService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/fs/";
       $config['fileService']['internal'] = 'testcenter-file-service';
       $config['cacheService']['host'] = 'testcenter-cache-service';
     }

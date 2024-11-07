@@ -53,8 +53,8 @@ services:
       TLS_ENABLED: off
       CACHE_SERVICE_INCLUDE_FILES: off
       CACHE_SERVICE_RAM: 1
-      PORT: 80
-      TLS_PORT: 443
+      PORT_OF_REVERSE_PROXY: 80
+      TLS_PORT_OF_REVERSE_PROXY: 443
     volumes:
       - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../backend/index.php:/var/www/testcenter/backend/index.php
