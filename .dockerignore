@@ -3,6 +3,7 @@
 .idea
 data
 data-*
+docs
 dist
 e2e/cypress/downloads
 node_modules
