@@ -297,7 +297,7 @@ prepare_installation_dir() {
   mkdir -p "${APP_DIR}"/config/traefik
   mkdir -p "${APP_DIR}"/scripts/make
   mkdir -p "${APP_DIR}"/scripts/migration
-  mkdir -p "${APP_DIR}"/secrets/traefik/certs/letsencrypt
+  mkdir -p "${APP_DIR}"/secrets/traefik/certs/acme
 }
 
 download_file() {
@@ -334,9 +334,6 @@ get_modified_file() {
   declare current_env_file
   current_env_file=.env.prod
 
-  declare current_config_file
-  current_config_file="${APP_DIR}"/config/traefik/tls-config.yml
-
   if [ ! -f "$source_file" ] || ! (curl --stderr /dev/null "$target_file" | diff -q - "$source_file" &>/dev/null); then
 
     # no source file exists anymore
@@ -352,8 +349,6 @@ get_modified_file() {
       if [ "$file_type" == "conf-file" ]; then
         printf -- "- Configuration template file '%s' does not exist (anymore).\n" "$source_file"
         printf "  A version %s configuration template file will be downloaded now ...\n" "$TARGET_TAG"
-        printf "  Please compare your current '%s' file with the new template file and update it" "$current_config_file"
-        printf ", if necessary!\n"
       fi
 
     # source file and target file differ
@@ -368,12 +363,11 @@ get_modified_file() {
 
       if [ "$file_type" == "conf-file" ]; then
         mv "$source_file" "$source_file".old 2>/dev/null
-        cp "$current_config_file" "$current_config_file.old"
-        printf -- "- The current configuration template file '%s' is outdated.\n" "$source_file"
-        printf "  A version %s configuration template file will be downloaded now ...\n" "$TARGET_TAG"
-        printf "  Please compare your current configuration file with the new template file and update it, "
+        printf -- "- The current configuration file '%s' is outdated.\n" "$source_file"
+        printf "  A version %s configuration file will be downloaded now ...\n" "$TARGET_TAG"
+        printf "  Please compare the new configuration file with your old configuration file and modify it, "
         printf "if necessary!\n"
-        printf "  For comparison use e.g. 'diff %s %s'.\n" "$current_config_file" "$source_file"
+        printf "  For comparison use e.g. 'diff %s %s.old'.\n" "$source_file" "$source_file"
       fi
 
     fi
@@ -591,7 +585,10 @@ run_optional_migration_scripts() {
 check_config_files_modifications() {
   # check traefik configuration files
   printf "7. Configuration template files modification check\n"
-  get_modified_file config/traefik/tls-config.yml config/traefik/tls-config.yml "conf-file"
+  get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
+  get_modified_file config/traefik/tls-certificates.yaml config/traefik/tls-certificates.yaml "conf-file"
+  get_modified_file config/traefik/tls-options.yaml config/traefik/tls-options.yaml "conf-file"
+
   printf "Configuration template files modification check done.\n\n"
 }
 

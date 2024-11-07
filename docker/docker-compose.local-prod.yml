@@ -13,7 +13,7 @@ services:
     ports:
       - "${TLS_PORT}:443"
     volumes:
-      - ./tls.yml:/tls-config.yml
+      - ./tls.yml:/tls-options.yml
 
   testcenter-backend:
     image: iqbberlin/testcenter-backend:current-prod

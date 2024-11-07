@@ -1,0 +1,4 @@
+# Empty file as a placeholder and counterpart to tls-certificates.yml to enable switching between user-defined
+# certificates and certificates provided by an ACME provider such as 'Let's Encrypt'.
+#
+# Please do not delete this file, even if only user-defined certificates are used!
