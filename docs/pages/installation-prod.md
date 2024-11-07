@@ -68,5 +68,7 @@ After installation two logins are prepared:
 Settings can be manipulated in the file `.env`.
 
 ### TLS
-TLS certificates need to be placed under _config/certs_ and their path may be configured in _config/tls-config.yml_.
+TLS Certificates can be managed manually or via a ACME provider like "Let's Encrypt" or "Sectigo".
+If you choose to use an ACME provider, the install process will ask for all necessary configuration data and fill in the `.env` file and create additional config files.
+If managed manually, the TLS certificate must be named `certificate.pem` and TLS Private Key must be named `private_key.pem` and both need to be placed in the folder _/secrets/traefik/certs_. 
 If no certificates are configured, self-signed certificates are generated and used. This may cause a browser warning.
