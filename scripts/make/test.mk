@@ -32,7 +32,7 @@ test-backend-api:
 			--env-file docker/.env.dev\
 			--file docker/docker-compose.yml\
 			--file docker/docker-compose.dev.yml\
-			--file docker/docker-compose.api-test.yml\
+			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-backend\
 			npm run backend:api-test
 
@@ -108,7 +108,7 @@ test-file-service-api:
 			--env-file docker/.env.dev\
 			--file docker/docker-compose.yml\
 			--file docker/docker-compose.dev.yml\
-			--file docker/docker-compose.api-test.yml\
+			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-file-service\
 			npm run file-service:api-test
 

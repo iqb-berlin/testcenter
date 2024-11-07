@@ -886,22 +886,22 @@ generate-docs:
         docker compose
             --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
-            --file docker/docker-compose.api-test.yml
+            --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run frontend:update-compodoc &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.api-test.yml
+            --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run broadcasting-service:update-compodoc &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.api-test.yml
+            --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run backend:update-specs &&
         docker compose
             --file docker/docker-compose.yml
-            --file docker/docker-compose.api-test.yml
+            --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run create-docs;
       else
@@ -1083,7 +1083,7 @@ test-backend-api:
           --env-file docker/.env.dev-template
           --file docker/docker-compose.yml
           --file docker/docker-compose.dev.yml
-          --file docker/docker-compose.api-test.yml
+          --file test/docker-compose.api-test.yml
         run --rm testcenter-task-runner-backend npm run backend:api-test
 
 test-file-service-api:
@@ -1111,7 +1111,7 @@ test-file-service-api:
           --env-file docker/.env.dev-template
           --file docker/docker-compose.yml
           --file docker/docker-compose.dev.yml
-          --file docker/docker-compose.api-test.yml
+          --file test/docker-compose.api-test.yml
         run --rm testcenter-task-runner-file-service npm run file-service:api-test
 
 test-backend-initialization:
