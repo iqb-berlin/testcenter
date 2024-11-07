@@ -122,7 +122,7 @@ test-system-headless:
 			--env-file docker/.env.dev\
 			--file docker/docker-compose.yml\
 			--file docker/docker-compose.dev.yml\
-			--file docker/docker-compose.system-test-headless.yml\
+			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
 			--exit-code-from=testcenter-e2e
