@@ -43,7 +43,7 @@ test-backend-initialization:
 	TEST_NAME=$(test) \
 	docker compose\
 			--env-file docker/.env.dev\
-			--file docker/docker-compose.initialization-test.yml\
+			--file backend/test/initialization/docker-compose.initialization-test.yml\
 		up\
 			--force-recreate\
 			--renew-anon-volumes\
