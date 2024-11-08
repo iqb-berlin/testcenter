@@ -297,6 +297,7 @@ END;
               'view' => 'full',
               'groupColumn' => 'show',
               'bookletColumn' => 'show',
+              'bookletStatesColumns' => 'level bonus'
             ],
             'filters' => [],
             'filtersEnabled' => [
@@ -313,6 +314,7 @@ END;
               'view' => 'small',
               'groupColumn' => 'hide',
               'bookletColumn' => 'hide',
+              'bookletStatesColumns' => ''
             ],
             'filters' => [
               [
@@ -320,7 +322,8 @@ END;
                 'value' => 'Reduced Booklet',
                 'label' => 'Reduced Booklet',
                 'type' => 'equal',
-                'not' => false
+                'not' => false,
+                'subValue' => ''
               ],
             ],
             'filtersEnabled' => [
