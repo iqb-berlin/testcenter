@@ -13,8 +13,8 @@ data:
   VERSION: "15.3.4"
   HOSTNAME: "minikube-ip-defined-in-hosts.example"
   PORT: "30607" #this needs to be configured
-  TLS_PORT: "443" #this needs to be configured
-  TLS_ENABLED: "off"
+  TLS_PORT: "30527" #this needs to be configured
+  TLS_ENABLED: "on"
   MYSQL_DATABASE: "iqb_tba_testcenter"
   MYSQL_USER: "iqb_tba_db_user"
   BROADCAST_SERVICE_ENABLED: "true"
@@ -40,3 +40,13 @@ stringData:
   PASSWORD_SALT: "t"
   MYSQL_ROOT_PASSWORD: "o8en6jSGLyVKNZUN"
   MYSQL_PASSWORD: "fEaU5COJYXv2atau"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tls-secret
+  namespace: tc
+type: kubernetes.io/tls
+data:
+  tls.crt: ""
+  tls.key: ""

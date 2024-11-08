@@ -79,3 +79,5 @@ spec:
       services:
         - name: testcenter-broadcasting-service
           port: 3000
+  tls:
+    secretName: tls-secret
