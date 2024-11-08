@@ -126,7 +126,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.subscriptions.appFocus = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
-      if (this.tcs.state$.getValue() === 'ERROR') {
+      if (['ERROR', 'TERMINATED'].includes(this.tcs.state$.getValue())) {
         return;
       }
       if (newState === 'UNKNOWN') {
