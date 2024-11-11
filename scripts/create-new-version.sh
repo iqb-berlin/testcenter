@@ -24,7 +24,7 @@ VERSION=$(npm pkg get version | xargs echo)
 
 git checkout -b release/$VERSION
 
-git add dist-src/.env.prod-template
+git add .env.prod-template
 git add docs/CHANGELOG.md
 git add docs/pages/*
 git add package.json

@@ -4,9 +4,9 @@ target ?= .
 test-backend-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		run --rm --entrypoint "" testcenter-backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
@@ -16,9 +16,9 @@ test-backend-unit:
 test-backend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		run --rm --entrypoint "" testcenter-backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
@@ -29,9 +29,9 @@ test-backend-unit-coverage:
 test-backend-api:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-backend\
 			npm run backend:api-test
@@ -42,7 +42,7 @@ test-backend-api:
 test-backend-initialization:
 	TEST_NAME=$(test) \
 	docker compose\
-			--env-file docker/.env.dev\
+			--env-file .env.dev\
 			--file backend/test/initialization/docker-compose.initialization-test.yml\
 		up\
 			--force-recreate\
@@ -62,36 +62,36 @@ test-backend-initialization-general:
 test-broadcasting-service-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
- 			--env-file docker/.env.dev\
- 			--file docker/docker-compose.yml\
- 			--file docker/docker-compose.dev.yml run\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml run\
 		testcenter-broadcasting-service\
 			npx jest
 
 test-broadcasting-service-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml run\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml run\
 		testcenter-broadcasting-service\
 			npx jest --coverage
 
 test-frontend-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml run\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml run\
 		testcenter-frontend\
 			npx ng test --watch=false
 
 test-frontend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml run\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml run\
 		testcenter-frontend\
 			npx ng test --watch=false --code-coverage
 
@@ -105,9 +105,9 @@ test-frontend-integration:
 test-file-service-api:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-file-service\
 			npm run file-service:api-test
@@ -119,9 +119,9 @@ test-system-headless:
 	make down &&\
 	SPEC=$(spec) \
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
@@ -129,8 +129,8 @@ test-system-headless:
 
 test-system:
 	docker compose\
- 			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		up -d
 	bash e2e/run-e2e.sh

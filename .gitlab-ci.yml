@@ -884,23 +884,23 @@ generate-docs:
         docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} &&
         docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner &&
         docker compose
-            --env-file docker/.env.dev-template
-            --file docker/docker-compose.yml
+            --env-file .env.dev-template
+            --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run frontend:update-compodoc &&
         docker compose
-            --file docker/docker-compose.yml
+            --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run broadcasting-service:update-compodoc &&
         docker compose
-            --file docker/docker-compose.yml
+            --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run backend:update-specs &&
         docker compose
-            --file docker/docker-compose.yml
+            --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
             npm run create-docs;
@@ -958,9 +958,9 @@ test-backend-unit:
         docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker compose
-            --env-file docker/.env.dev-template
-            --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --env-file .env.dev-template
+            --file docker-compose.yml
+            --file docker-compose.dev.yml
           run --rm --entrypoint "" testcenter-backend php -dxdebug.mode='coverage'
             /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
               --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
@@ -1002,9 +1002,9 @@ test-frontend-unit:
         docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current &&
         docker compose
-            --env-file docker/.env.dev-template
-            --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --env-file .env.dev-template
+            --file docker-compose.yml
+            --file docker-compose.dev.yml
           run testcenter-frontend npx ng test --watch=false --code-coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
@@ -1040,9 +1040,9 @@ test-broadcasting-service-unit:
         docker tag
           ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current &&
         docker compose
-            --env-file docker/.env.dev-template
-            --file docker/docker-compose.yml
-            --file docker/docker-compose.dev.yml
+            --env-file .env.dev-template
+            --file docker-compose.yml
+            --file docker-compose.dev.yml
           run testcenter-broadcasting-service npx jest --coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
@@ -1080,9 +1080,9 @@ test-backend-api:
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-backend
   script:
     - docker compose
-          --env-file docker/.env.dev-template
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
           --file test/docker-compose.api-test.yml
         run --rm testcenter-task-runner-backend npm run backend:api-test
 
@@ -1108,9 +1108,9 @@ test-file-service-api:
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-service
   script:
     - docker compose
-          --env-file docker/.env.dev-template
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
           --file test/docker-compose.api-test.yml
         run --rm testcenter-task-runner-file-service npm run file-service:api-test
 
@@ -1133,7 +1133,7 @@ test-backend-initialization:
   script:
     - TEST_NAME=general/db-versions
       docker compose
-          --env-file docker/.env.dev-template
+          --env-file .env.dev-template
           --file backend/test/initialization/docker-compose.initialization-test.yml
         up
           --force-recreate
@@ -1142,7 +1142,7 @@ test-backend-initialization:
           --exit-code-from=testcenter-initialization-test-backend
     - TEST_NAME=general/vanilla-installation
       docker compose
-          --env-file docker/.env.dev-template
+          --env-file .env.dev-template
           --file backend/test/initialization/docker-compose.initialization-test.yml
         up
           --force-recreate
@@ -1151,7 +1151,7 @@ test-backend-initialization:
           --exit-code-from=testcenter-initialization-test-backend
     - TEST_NAME=general/no-db-but-files
       docker compose
-          --env-file docker/.env.dev-template
+          --env-file .env.dev-template
           --file backend/test/initialization/docker-compose.initialization-test.yml
         up
           --force-recreate
@@ -1160,7 +1160,7 @@ test-backend-initialization:
           --exit-code-from=testcenter-initialization-test-backend
     - TEST_NAME=general/install-db-patches
       docker compose
-          --env-file docker/.env.dev-template
+          --env-file .env.dev-template
           --file backend/test/initialization/docker-compose.initialization-test.yml
         up
           --force-recreate
@@ -1169,7 +1169,7 @@ test-backend-initialization:
           --exit-code-from=testcenter-initialization-test-backend
     - TEST_NAME=general/re-initialize
       docker compose
-          --env-file docker/.env.dev-template
+          --env-file .env.dev-template
           --file backend/test/initialization/docker-compose.initialization-test.yml
         up
           --force-recreate
@@ -1217,9 +1217,9 @@ test-e2e:
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-e2e
   script:
     - docker compose
-          --env-file docker/.env.dev-template
-          --file docker/docker-compose.yml
-          --file docker/docker-compose.dev.yml
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=testcenter-e2e
   artifacts:

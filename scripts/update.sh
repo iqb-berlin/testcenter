@@ -290,9 +290,9 @@ download_file() {
 update_files() {
   printf "4. File download\n"
 
-  download_file "${APP_DIR}"/docker-compose.yml docker/docker-compose.yml
-  download_file "${APP_DIR}"/docker-compose.prod.yml dist-src/docker-compose.prod.yml
-  download_file "${APP_DIR}"/docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
+  download_file "${APP_DIR}"/docker-compose.yml docker-compose.yml
+  download_file "${APP_DIR}"/docker-compose.prod.yml docker-compose.prod.yml
+  download_file "${APP_DIR}"/docker-compose.prod.tls.yml docker-compose.prod.tls.yml
   download_file "${APP_DIR}/scripts/make/${APP_NAME}.mk" scripts/make/prod.mk
 
   printf "File download done.\n\n"
@@ -382,7 +382,7 @@ get_modified_file() {
 check_environment_file_modifications() {
   # check environment file
   printf "5. Environment template file modification check\n"
-  get_modified_file .env.prod-template dist-src/.env.prod-template "env-file"
+  get_modified_file .env.prod-template .env.prod-template "env-file"
   printf "Environment template file modification check done.\n\n"
 }
 

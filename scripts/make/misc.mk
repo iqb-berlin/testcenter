@@ -2,8 +2,8 @@
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 run-task-runner:
 	docker compose\
- 			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
 		run --rm --no-deps testcenter-task-runner\
 			npm run $(task)
@@ -12,44 +12,44 @@ run-task-runner:
 # Container must be run at least once!
 sync-package-files:
 	docker compose\
- 			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-frontend:/usr/src/testcenter/frontend/package.json frontend/package.json
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-frontend:/usr/src/testcenter/frontend/package-lock.json frontend/package-lock.json
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-frontend:/usr/src/testcenter/frontend/node_modules frontend/node_modules
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package.json broadcasting-service/package.json
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/package-lock.json broadcasting-service/package-lock.json
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcasting-service/node_modules broadcasting-service/node_modules
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-backend:/var/www/testcenter/backend/vendor backend
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
 
 update-docs:
@@ -76,8 +76,8 @@ docs-user:
 create-interfaces:
 	docker container rm -f testcenter-task-runner 2> /dev/null || true
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
 		run --name=testcenter-task-runner testcenter-task-runner\
 			npx --yes update-browserslist-db@latest && npm run create-interfaces
@@ -130,9 +130,9 @@ composer-refresh-autoload:
 
 new-version:
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
  		run --rm --entrypoint="" testcenter-backend\
     	php /var/www/testcenter/backend/test/update-sql-scheme.php
 	make run-task-runner task="new-version $(version)"

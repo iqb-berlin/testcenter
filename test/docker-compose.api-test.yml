@@ -1,8 +1,8 @@
 services:
   testcenter-file-service:
     volumes:
-      - ../sampledata:/var/www/html
-      - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/html/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
+      - ./sampledata:/var/www/html
+      - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/html/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
     environment:
       CACHE_SERVICE_INCLUDE_FILES: off
 
@@ -11,24 +11,23 @@ services:
     profiles:
       - task-runner
     build:
-      context: ..
       dockerfile: task-runner/Dockerfile
     volumes:
-      - ../README.md:/usr/src/testcenter/task-runner/README.md
-      - ../broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
-      - ../common:/usr/src/testcenter/task-runner/common
-      - ../definitions:/usr/src/testcenter/task-runner/definitions
-      - ../dist-src:/usr/src/testcenter/task-runner/dist-src
-      - ../dist:/usr/src/testcenter/task-runner/dist
-      - ../docker/docker-compose.yml:/usr/src/testcenter/task-runner/docker-compose.yml
-      - ../docs:/usr/src/testcenter/task-runner/docs
-      - ../frontend:/usr/src/testcenter/task-runner/frontend
-      - ../package.json:/usr/src/testcenter/task-runner/package.json
-      - ../package-lock.json:/usr/src/testcenter/task-runner/package-lock.json
-      - ../sampledata:/usr/src/testcenter/task-runner/sampledata
-      - ../scripts:/usr/src/testcenter/task-runner/scripts
-      - ../test/api:/usr/src/testcenter/task-runner/test/api
-      - ../test/config.docker.json:/usr/src/testcenter/task-runner/test/config.json
+      - ./README.md:/usr/src/testcenter/task-runner/README.md
+      - ./broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
+      - ./common:/usr/src/testcenter/task-runner/common
+      - ./definitions:/usr/src/testcenter/task-runner/definitions
+      - ./.env.prod-template:/usr/src/testcenter/task-runner/.env.prod-template
+      - ./dist:/usr/src/testcenter/task-runner/dist
+      - ./docker-compose.yml:/usr/src/testcenter/task-runner/docker-compose.yml
+      - ./docs:/usr/src/testcenter/task-runner/docs
+      - ./frontend:/usr/src/testcenter/task-runner/frontend
+      - ./package.json:/usr/src/testcenter/task-runner/package.json
+      - ./package-lock.json:/usr/src/testcenter/task-runner/package-lock.json
+      - ./sampledata:/usr/src/testcenter/task-runner/sampledata
+      - ./scripts:/usr/src/testcenter/task-runner/scripts
+      - ./test/api:/usr/src/testcenter/task-runner/test/api
+      - ./test/config.docker.json:/usr/src/testcenter/task-runner/test/config.json
     networks:
       - testcenter
 

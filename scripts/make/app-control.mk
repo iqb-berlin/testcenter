@@ -5,8 +5,8 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
-	cp $(TC_BASE_DIR)/docker/.env.dev-template $(TC_BASE_DIR)/docker/.env.dev
-	cp $(TC_BASE_DIR)/dist-src/.env.prod-template $(TC_BASE_DIR)/dist-src/.env.prod
+	cp $(TC_BASE_DIR)/.env.dev-template $(TC_BASE_DIR)/.env.dev
+	cp $(TC_BASE_DIR)/.env.prod-template $(TC_BASE_DIR)/.env.prod
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
@@ -18,9 +18,9 @@ build:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--progress plain\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		build $(service)
 
 # Ramp the application up (i.e. creates and starts all application containers).
@@ -29,18 +29,18 @@ build:
 run:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		up --detach $(service)
 
 # Stop and remove all application containers.
 down:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		down --remove-orphans $(service)
 
 # Start the application with already existing containers.
@@ -48,9 +48,9 @@ down:
 start:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		start $(service)
 
 # Stop the application but don't remove the service containers.
@@ -58,9 +58,9 @@ start:
 stop:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		stop $(service)
 
 # Log the application.
@@ -68,9 +68,9 @@ stop:
 logs:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 		logs --follow $(service)
 
 run-fast:
@@ -82,9 +82,9 @@ build-prod-local:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--progress plain\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file docker/docker-compose.local-prod.yml\
 		build $(service)
 
@@ -95,9 +95,9 @@ up-prod-local:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--progress plain\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file docker/docker-compose.local-prod.yml\
 		up --build --detach $(service)
 
@@ -106,9 +106,9 @@ up-prod-local:
 down-prod-local:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file docker/docker-compose.local-prod.yml\
 		down $(service)
 
@@ -117,8 +117,8 @@ down-prod-local:
 logs-prod-local:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file docker/.env.dev\
-			--file docker/docker-compose.yml\
-			--file docker/docker-compose.dev.yml\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
 			--file docker/docker-compose.local-prod.yml\
 		logs --follow $(service)

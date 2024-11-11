@@ -21,13 +21,12 @@ services:
       - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
     build:
-      context: ..
       dockerfile: broadcasting-service/Dockerfile
       target: dev
     volumes:
-      - ../common:/usr/src/testcenter/common
-      - ../broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
-      - ../docs/dist:/usr/src/testcenter/docs/dist
+      - ./common:/usr/src/testcenter/common
+      - ./broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
+      - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 
@@ -42,14 +41,13 @@ services:
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     build:
-      context: ..
       dockerfile: frontend/Dockerfile
       target: dev
     volumes:
-      - ../common:/usr/src/testcenter/common
-      - ../definitions:/usr/src/testcenter/definitions
-      - ../frontend/src:/usr/src/testcenter/frontend/src
-      - ../docs/dist:/usr/src/testcenter/docs/dist
+      - ./common:/usr/src/testcenter/common
+      - ./definitions:/usr/src/testcenter/definitions
+      - ./frontend/src:/usr/src/testcenter/frontend/src
+      - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 
@@ -67,18 +65,17 @@ services:
       - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
     build:
-      context: ..
       dockerfile: file-service/Dockerfile
       args:
         ENABLED_MODULES: lua
     volumes:
-      - ../sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
-      - ../sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
-      - ../sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
-      - ../data:/var/www/html/
-      - ../file-service/nginx.conf:/etc/nginx/nginx.conf
-      - ../file-service/auth/:/usr/share/nginx/auth
-      - ../file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
+      - ./sampledata/sample_resource_package.itcr.zip:/var/www/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
+      - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
+      - ./sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
+      - ./data:/var/www/html/
+      - ./file-service/nginx.conf:/etc/nginx/nginx.conf
+      - ./file-service/auth/:/usr/share/nginx/auth
+      - ./file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 
@@ -92,26 +89,25 @@ services:
       - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
       - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
     build:
-      context: ..
       dockerfile: backend/Dockerfile
       target: dev
     volumes:
-      - ../backend/.htaccess:/var/www/testcenter/backend/.htaccess
-      - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-      - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
-      - ../backend/config/no-cors.htaccess/:/var/www/testcenter/.htaccess
-      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
-      - ../backend/index.php:/var/www/testcenter/backend/index.php
-      - ../backend/initialize.php:/var/www/testcenter/backend/initialize.php
-      - ../backend/routes.php:/var/www/testcenter/backend/routes.php
-      - ../backend/src:/var/www/testcenter/backend/src
-      - ../backend/test:/var/www/testcenter/backend/test
-      - ../data:/var/www/testcenter/data
-      - ../definitions:/var/www/testcenter/definitions
-      - ../docs/dist:/docs/dist
-      - ../package.json:/var/www/testcenter/package.json
-      - ../sampledata:/var/www/testcenter/sampledata
-      - ../scripts/database:/var/www/testcenter/scripts/database
+      - ./backend/.htaccess:/var/www/testcenter/backend/.htaccess
+      - ./backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./backend/config/no-cors.htaccess/:/var/www/testcenter/.htaccess
+      - ./backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
+      - ./backend/index.php:/var/www/testcenter/backend/index.php
+      - ./backend/initialize.php:/var/www/testcenter/backend/initialize.php
+      - ./backend/routes.php:/var/www/testcenter/backend/routes.php
+      - ./backend/src:/var/www/testcenter/backend/src
+      - ./backend/test:/var/www/testcenter/backend/test
+      - ./data:/var/www/testcenter/data
+      - ./definitions:/var/www/testcenter/definitions
+      - ./docs/dist:/docs/dist
+      - ./package.json:/var/www/testcenter/package.json
+      - ./sampledata:/var/www/testcenter/sampledata
+      - ./scripts/database:/var/www/testcenter/scripts/database
     environment:
       TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:
@@ -131,6 +127,6 @@ services:
       - "--max-connections=500"
       - "--log_error_verbosity=2"
     volumes:
-      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
+      - ./scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     networks:
       - testcenter

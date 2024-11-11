@@ -170,10 +170,10 @@ download_file() {
 download_files() {
   printf "4. Downloading files:\n"
 
-  download_file docker-compose.yml docker/docker-compose.yml
-  download_file docker-compose.prod.yml dist-src/docker-compose.prod.yml
-  download_file docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
-  download_file .env.prod-template dist-src/.env.prod-template
+  download_file docker-compose.yml docker-compose.yml
+  download_file docker-compose.prod.yml docker-compose.prod.yml
+  download_file docker-compose.prod.tls.yml docker-compose.prod.tls.yml
+  download_file .env.prod-template .env.prod-template
   download_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml
   download_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml
   download_file config/traefik/tls-options.yml config/traefik/tls-options.yml
