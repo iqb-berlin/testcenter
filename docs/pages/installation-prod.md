@@ -29,28 +29,28 @@ bash install.sh
 
 ## Usage
 ### Start & Stop
-Run application
+Run application in background
 ```
-make run
+make testcenter-up
 ```
-Run application without blocking the console
+Run application with log infos in foreground
 ```
-make run-detached
+make testcenter-up-fg
 ```
 Stop application
 ```
-make stop
+make testcenter-stop
 ```
 Show log output
 ```
-make logs
+make testcenter-logs
 ```
 
 ### Update
 
 To update your installation to the lastest release, run
 ```
-bash update.sh
+make testcenter-update
 ```
 from the installation directory.
 
