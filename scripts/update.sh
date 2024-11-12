@@ -1,6 +1,7 @@
 #!/bin/bash
 
 declare APP_NAME='testcenter'
+declare IS_TC_UP=false
 declare BACKEND_VOLUME_NAME='testcenter_backend_vo_data'
 declare BACKEND_VOLUME_BACKUP_NAME='backend_vo_data.tar.gz'
 
@@ -69,42 +70,97 @@ get_new_release_version() {
   done
 }
 
-testcenter_down(){
-  docker compose \
-      --progress quiet \
-      --env-file "${APP_DIR}"/.env.prod \
-      --file "${APP_DIR}"/docker-compose.yml \
-      --file "${APP_DIR}"/docker-compose.prod.yml \
-    down
+testcenter_up() {
+  if [ "$TLS_ENABLED" = "on" ] || [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]; then
+    if [ "$(docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        ps -q testcenter-db testcenter-backend | wc -l)" != 2 ]; then
+
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        up -d testcenter-db testcenter-backend
+    else
+      IS_TC_UP=true
+    fi
+  else
+    if [ "$(docker compose \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        ps -q testcenter-db testcenter-backend | wc -l)" != 2 ]; then
+
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        up -d testcenter-db testcenter-backend
+    else
+      IS_TC_UP=true
+    fi
+  fi
 }
 
-testcenter_down_tls(){
-  docker compose \
-      --progress quiet \
-      --env-file "${APP_DIR}"/.env.prod \
-      --file "${APP_DIR}"/docker-compose.yml \
-      --file "${APP_DIR}"/docker-compose.prod.yml \
-      --file "${APP_DIR}"/docker-compose.prod.tls.yml \
-    down
+testcenter_down() {
+  if [ $IS_TC_UP = false ]; then
+    if [ "$TLS_ENABLED" = "on" ] || [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]; then
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+        down
+    else
+      docker compose \
+          --progress quiet \
+          --env-file "${APP_DIR}"/.env.prod \
+          --file "${APP_DIR}"/docker-compose.yml \
+          --file "${APP_DIR}"/docker-compose.prod.yml \
+        down
+    fi
+  fi
 }
 
 dump_db() {
   declare db_dump_file="${BACKUP_DIR}/backup/${MYSQL_DATABASE}.sql"
 
-  docker compose \
-      --env-file "${APP_DIR}"/.env.prod \
-      --file "${APP_DIR}"/docker-compose.yml \
-      --file "${APP_DIR}"/docker-compose.prod.yml \
-    exec testcenter-db mysqldump \
-        --add-drop-database \
-        --user=root \
-        --password="${MYSQL_ROOT_PASSWORD}" \
-        --databases "${MYSQL_DATABASE}" \
-      2>/dev/null \
-      >$db_dump_file
+  if [ "$TLS_ENABLED" = "on" ] || [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]; then
+    docker compose \
+        --env-file "${APP_DIR}"/.env.prod \
+        --file "${APP_DIR}"/docker-compose.yml \
+        --file "${APP_DIR}"/docker-compose.prod.yml \
+        --file "${APP_DIR}"/docker-compose.prod.tls.yml \
+      exec testcenter-db mysqldump \
+          --add-drop-database \
+          --user=root \
+          --password="${MYSQL_ROOT_PASSWORD}" \
+          --databases "${MYSQL_DATABASE}" \
+        2>/dev/null \
+        >"$db_dump_file"
+  else
+    docker compose \
+        --env-file "${APP_DIR}"/.env.prod \
+        --file "${APP_DIR}"/docker-compose.yml \
+        --file "${APP_DIR}"/docker-compose.prod.yml \
+      exec testcenter-db mysqldump \
+          --add-drop-database \
+          --user=root \
+          --password="${MYSQL_ROOT_PASSWORD}" \
+          --databases "${MYSQL_DATABASE}" \
+        2>/dev/null \
+        >"$db_dump_file"
+  fi
 
   if test $? -eq 0; then
-    printf -- "- Current testcenter-db dump has been saved at: '%s'\n" $db_dump_file
+    printf -- "- Current 'testcenter-db' dump has been saved at: '%s'\n" "$db_dump_file"
   else
     declare continue
     printf -- "- Current 'testcenter-db' dump was not successful!\n"
@@ -117,47 +173,22 @@ dump_db() {
   fi
 }
 
-dump_db_tls() {
-  declare db_dump_file="${BACKUP_DIR}/backup/${MYSQL_DATABASE}.sql"
+export_backend_volume() {
+  declare volume_name
+  volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
 
-  docker compose \
-      --env-file "${APP_DIR}"/.env.prod \
-      --file "${APP_DIR}"/docker-compose.yml \
-      --file "${APP_DIR}"/docker-compose.prod.yml \
-      --file "${APP_DIR}"/docker-compose.prod.tls.yml \
-    exec testcenter-db mysqldump \
-        --add-drop-database \
-        --user=root \
-        --password="${MYSQL_ROOT_PASSWORD}" \
-        --databases "${MYSQL_DATABASE}" \
-      2>/dev/null \
-      >$db_dump_file
-
-  if test $? -eq 0;then
-    printf -- "- Current 'testcenter-db' dump has been saved at: '%s'\n" $db_dump_file
-  else
-    declare continue
-    printf -- "- Current 'testcenter-db' dump was not successful!\n"
-    read -p "  Do you want to continue? [y/N] " -er -n 1 continue
-
-    if [[ ! $continue =~ ^[yY]$ ]]; then
-      printf "'%s' update script finished.\n" $APP_NAME
-      exit 0
-    fi
-  fi
-}
-
-backup_backend_volume(){
-  declare volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
-  declare backup_file="${BACKUP_DIR}/backup/${BACKEND_VOLUME_BACKUP_NAME}"
-
-  vackup export $volume_name $backup_file &>/dev/null
+  docker run \
+      --rm \
+      --volumes-from testcenter-backend \
+      --volume "${APP_DIR}/${BACKUP_DIR}/backup":/tmp \
+    busybox tar czvf "/tmp/${BACKEND_VOLUME_BACKUP_NAME}" /var/www/testcenter/data &>/dev/null
 
   if test $? -eq 0; then
-    printf -- "- Current '%s' volume has been saved at: '%s'\n" $volume_name $backup_file
+    declare backup_file="${BACKUP_DIR}/backup/${BACKEND_VOLUME_BACKUP_NAME}"
+    printf -- "- Current '%s' volume has been saved at: '%s'\n" "$volume_name" "$backup_file"
   else
     declare continue
-    printf -- "- Current '%s' backup was not successful!\n" $volume_name
+    printf -- "- Current '%s' backup was not successful!\n" "$volume_name"
     read -p "  Do you want to continue? [y/N] " -er -n 1 continue
 
     if [[ ! $continue =~ ^[yY]$ ]]; then
@@ -176,65 +207,11 @@ create_backup() {
   tar -cf - --exclude='./backup' . | tar -xf - -C "${BACKUP_DIR}"
   printf -- "- Current '%s' release files have been saved at: '%s'\n" "${SOURCE_TAG}" "${BACKUP_DIR}"
 
-  if [ "$TLS_ENABLED" = "on" ] || [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]; then
-    if test "$(docker compose \
-        --env-file "${APP_DIR}"/.env.prod \
-        --file "${APP_DIR}"/docker-compose.yml \
-        --file "${APP_DIR}"/docker-compose.prod.yml \
-        --file "${APP_DIR}"/docker-compose.prod.tls.yml \
-      ps -q testcenter-db)"; then
+  testcenter_up
+  dump_db
+  export_backend_volume
+  testcenter_down
 
-      # Dump the db first ...
-      dump_db_tls
-
-      # Backup backend volume second ...
-      testcenter_down_tls
-      backup_backend_volume
-    else
-      # Backup backend volume first ...
-      backup_backend_volume
-
-      # Dump the db second ...
-      docker compose \
-          --progress quiet \
-          --env-file "${APP_DIR}"/.env.prod \
-          --file "${APP_DIR}"/docker-compose.yml \
-          --file "${APP_DIR}"/docker-compose.prod.yml \
-          --file "${APP_DIR}"/docker-compose.prod.tls.yml \
-        up -d testcenter-db
-      sleep 10 ## wait until testcenter-db startup is completed
-      dump_db_tls
-      testcenter_down_tls
-    fi
-  else
-    if test "$(docker compose \
-        --env-file "${APP_DIR}"/.env.prod \
-        --file "${APP_DIR}"/docker-compose.yml \
-        --file "${APP_DIR}"/docker-compose.prod.yml \
-      ps -q testcenter-db)"; then
-
-      # Dump the db first ...
-      dump_db
-
-      # Backup backend volume second ...
-      testcenter_down
-      backup_backend_volume
-    else
-      # Backup backend volume first ...
-      backup_backend_volume
-
-      # Dump the db second ...
-      docker compose \
-          --progress quiet \
-          --env-file "${APP_DIR}"/.env.prod \
-          --file "${APP_DIR}"/docker-compose.yml \
-          --file "${APP_DIR}"/docker-compose.prod.yml \
-        up -d testcenter-db
-      sleep 10 ## wait until testcenter-db startup is completed
-      dump_db
-      testcenter_down
-    fi
-  fi
   printf "Backup created.\n\n"
 }
 
@@ -316,7 +293,7 @@ update_files() {
   download_file "${APP_DIR}"/docker-compose.yml docker/docker-compose.yml
   download_file "${APP_DIR}"/docker-compose.prod.yml dist-src/docker-compose.prod.yml
   download_file "${APP_DIR}"/docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
-  download_file "${APP_DIR}"/scripts/make/prod.mk scripts/make/prod.mk
+  download_file "${APP_DIR}/scripts/make/${APP_NAME}.mk" scripts/make/prod.mk
 
   printf "File download done.\n\n"
 }
@@ -420,7 +397,7 @@ check_tag_exists() {
       --output /dev/null \
     $REPO_API/releases/tags/"$tag")
 
-  if test "$status_code" -eq "200"; then
+  if [ "$status_code" -eq "200" ]; then
     TAG_EXISTS=true
     #printf "  Tag '%s' exists.\n" "$tag"
   else
@@ -462,7 +439,7 @@ run_optional_migration_scripts() {
   source_tag_is_prerelease=$IS_PRERELEASE_TAG
   check_tag_exists "$SOURCE_TAG"
 
-  if test $TAG_EXISTS != true; then
+  if [ $TAG_EXISTS != true ]; then
     printf -- "- Source tag: '%s' doesn't exist!\n" "$SOURCE_TAG"
     printf "  The existence of possible migration scripts could not be determined.\n"
     printf "Optional migration scripts check done.\n\n"
@@ -478,7 +455,7 @@ run_optional_migration_scripts() {
 
   fi
 
-  if test $TAG_EXISTS = false; then
+  if [ $TAG_EXISTS = false ]; then
     printf -- "- Target tag: '%s' doesn't exist!\n" "$TARGET_TAG"
     printf "  The existence of possible migration scripts could not be determined.\n"
     printf "Optional migration scripts check done.\n\n"
@@ -544,7 +521,7 @@ run_optional_migration_scripts() {
         printf -- "- %s\n" "${migration_scripts[index]}"
       done
 
-      printf "\nWe strongly recommend the installation of the update scripts, otherwise it is very likely that "
+      printf "\nWe strongly recommend the installation of the migration scripts, otherwise it is very likely that "
       printf "errors will occur during operation of the application.\n\n"
 
       read -p "Do you want to proceed with the installation? [Y/n] " -er -n 1 continue
@@ -564,8 +541,8 @@ run_optional_migration_scripts() {
 
       for ((i = ${#migration_scripts[@]} - 1; i >= 0; i--)); do
         printf -- "- Executing '%s' ...\n" "${migration_scripts[$i]}"
-        bash "${APP_DIR}"/scripts/migration/"${migration_scripts[$i]}"
-        rm "${APP_DIR}"/scripts/migration/"${migration_scripts[$i]}"
+        bash "${APP_DIR}/scripts/migration/${migration_scripts[$i]}" "${TARGET_TAG}"
+        rm "${APP_DIR}/scripts/migration/${migration_scripts[$i]}"
       done
 
       printf "\nMigration scripts successfully executed.\n\n"
@@ -586,8 +563,8 @@ check_config_files_modifications() {
   # check traefik configuration files
   printf "7. Configuration template files modification check\n"
   get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
-  get_modified_file config/traefik/tls-certificates.yaml config/traefik/tls-certificates.yaml "conf-file"
-  get_modified_file config/traefik/tls-options.yaml config/traefik/tls-options.yaml "conf-file"
+  get_modified_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml "conf-file"
+  get_modified_file config/traefik/tls-options.yml config/traefik/tls-options.yml "conf-file"
 
   printf "Configuration template files modification check done.\n\n"
 }
@@ -609,8 +586,8 @@ customize_settings() {
   sed -i "s#VERSION.*#VERSION=$TARGET_TAG#" "${APP_DIR}"/.env.prod
 
   # Setup makefiles
-#  sed -i "s#TC_BASE_DIR :=.*#TC_BASE_DIR := \\$(pwd)#" "$PWD"/scripts/make/prod.mk
-  sed -i "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" "${APP_DIR}"/scripts/make/prod.mk
+#  sed -i "s#TC_BASE_DIR :=.*#TC_BASE_DIR := \\$(pwd)#" "$PWD/scripts/make/${APP_NAME}.mk"
+  sed -i "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" "${APP_DIR}/scripts/make/${APP_NAME}.mk"
 #  update_makefile
 }
 

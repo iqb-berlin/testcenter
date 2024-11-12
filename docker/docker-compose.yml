@@ -2,7 +2,7 @@
 # For concrete images check the environment specific override files.
 
 x-restart-policy: &restart-policy
-  restart: "${RESTART_POLICY:-no}"
+  restart: "${RESTART_POLICY:-always}"
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
