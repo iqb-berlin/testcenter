@@ -83,9 +83,10 @@ function migrate_env_file() {
   if ! grep -q "DOCKERHUB_PROXY" .env.prod; then
     {
       printf "## Dockerhub Proxy\n"
-      printf "DOCKERHUB_PROXY=''\n"
+      printf "DOCKERHUB_PROXY=\n"
     } >>.env.prod
   fi
+  sed -i.bak "s|^DOCKERHUB_PROXY=''|DOCKERHUB_PROXY=|" .env.prod && rm .env.prod.bak
   sed -i.bak '/^DOCKERHUB_PROXY=.*/a \\''' .env.prod && rm .env.prod.bak
 
   sed -i.bak 's|allowed values are: no (default), always,|Allowed values are: no, always (default),|' \
@@ -115,9 +116,9 @@ function migrate_env_file() {
 }
 
 function main() {
-  declare TARGET_VERSION="15.4.0"
+  declare target_version="15.4.0"
 
-  printf "Applying patch: %s ...\n" ${TARGET_VERSION}
+  printf "Applying patch: %s ...\n" ${target_version}
 
   if check_version_gt_15.3.4; then
 
@@ -161,9 +162,9 @@ function main() {
     # Migrate docker environment file
     migrate_env_file
 
-    printf "Patch %s applied.\n" ${TARGET_VERSION}
+    printf "Patch %s applied.\n" ${target_version}
   else
-    printf "Patch %s skipped.\n" ${TARGET_VERSION}
+    printf "Patch %s skipped.\n" ${target_version}
   fi
 }
 
