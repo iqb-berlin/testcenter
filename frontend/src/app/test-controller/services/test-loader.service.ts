@@ -440,7 +440,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   private updateVariablesInUnitsWithoutCodingScheme(testData: TestData): void {
     Object.values(this.tcs.units)
       .forEach(unit => {
-        if (!testData.resources[unit.id].usesScheme?.length) this.tcs.updateVariables(unit.sequenceId);
+        if (!testData.resources[unit.id.toUpperCase()].usesScheme?.length) this.tcs.updateVariables(unit.sequenceId);
       });
     this.tcs.evaluateConditions();
   }
