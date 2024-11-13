@@ -17,9 +17,7 @@ services:
       - ./broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
       - ./common:/usr/src/testcenter/task-runner/common
       - ./definitions:/usr/src/testcenter/task-runner/definitions
-      - ./.env.prod-template:/usr/src/testcenter/task-runner/.env.prod-template
       - ./dist:/usr/src/testcenter/task-runner/dist
-      - ./docker-compose.yml:/usr/src/testcenter/task-runner/docker-compose.yml
       - ./docs:/usr/src/testcenter/task-runner/docs
       - ./frontend:/usr/src/testcenter/task-runner/frontend
       - ./package.json:/usr/src/testcenter/task-runner/package.json
