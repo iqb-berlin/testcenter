@@ -1,28 +1,40 @@
 ---
 layout: default
 ---
-## 15.3.0-alpha3
+## [next]
 ### neue Features
-* Die Navigation des SystemChecks wurde überarbeitet.
-  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
-    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
-    und Schul-ID aus.
-  * "sys-check-login" Logins können auch mit Passwort geschützt werden
-  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
-  * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
-* Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
-  * schnelles Filtern nach Person
-  * Eigene Filter können definiert werden
-  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
+* Adaptive Testen, Bonusaufgaben und Filterführung
+  * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
+    Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/
+  * Varianten verschiedener des desselben Booklets sind nun möglich in dem Ver 
+    (z. B. mit und ohne Befragung, mit Anleitung für Tablet oder mit Anleitung für PC)
+    Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/#konfiguration-in-der-testtaker-xml
+  * Filtern nach Bestimmten Bookletzuständen im Gruppenmonitor ist nun möglich.
+* "Ford only" Modus: 
+  * Booklet-Parameter `unit_navibuttons` hat nun die Option `FORWARD_ONLY`, so das nur der Vorwortknopf gezeigt wird.
+  * Neue Restriction `<LockafterLeaving>` erlaubt das automatische (und endgültige sperren) nach Verlassen der Unit,
+    um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
+    zeile, die Browsernavigation, das Seitenmenü oder andere Weise zurücknavigiert werden kann.
 
-### Bugfixes
-* Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
-  das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
+### Bugfix
+* Seitenzahl im Studienmonitor wird korrekt angezeigt.
+* In bestimmten Situationen (sehr viele zugriffe, sehr schnelle Zugriffe) wurden Units gelegentlich angelegt und 
+  tauchten als zwei Zeilen in den Ergebnisdaten auf. Dies ist behoben.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+* Über die API konnten (z. B. durch fehlerhafte angeben) Daten zu Units abgespeichert werden, die im Booklet gar nicht 
+  vorkamen - behoben.
+* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich Restriktionen zu umgehen. 
 
-### Sicherheit
-* Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
-* Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+### Verbesserungen
+* Entlastung des Servers durch deutliche Reduktion redundant Calls.
+* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder 
+  sehr schnellen Vorgängen.  
 
+### :warning: Hinweis für Administratoren
+* Das Updaten der Datenbank kann bei einer größeren vorhandenen Datenmenge an Units sehr lange dauern. 
+  Daten aus alten Studien sollten möglichst vorher entfernt werden. 
 
 ## 15.2.0
 ### neue Features
