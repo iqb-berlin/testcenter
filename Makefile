@@ -1,4 +1,4 @@
-include scripts/make/app-control.mk
+include scripts/make/dev.mk
 include scripts/make/dev-test.mk
 include scripts/make/misc.mk
 include scripts/make/prod.mk

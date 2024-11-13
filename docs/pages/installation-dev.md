@@ -60,7 +60,7 @@ under which it is reachable if `localhost` does not work.
 ## 3. Run
 ```
 make build
-make run
+make up
 ```
 
 
