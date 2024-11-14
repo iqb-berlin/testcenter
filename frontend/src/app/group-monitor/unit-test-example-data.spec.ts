@@ -13,6 +13,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
     species: 'example-species-1',
     config: new BookletConfig(),
     customTexts: {},
+    states: {},
     metadata: {
       id: '1',
       label: 'Label 1',
@@ -22,7 +23,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
       id: 'root',
       label: 'Root',
       descendantCount: 10,
-      restrictions: { if: [] },
+      restrictions: { },
       children: [
         {
           id: 'unit-1',
@@ -35,7 +36,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           label: 'Testlet-0',
           descendantCount: 0,
           blockId: 'block-1',
-          restrictions: { if: [] },
+          restrictions: { },
           children: []
         },
         {
@@ -49,7 +50,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           label: 'Testlet-1',
           descendantCount: 4,
           blockId: 'block-2',
-          restrictions: { if: [] },
+          restrictions: { },
           children: [
             {
               id: 'unit-3',
@@ -61,14 +62,14 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
               id: 'ben',
               label: 'Testlet-2',
               descendantCount: 3,
-              restrictions: { if: [] },
+              restrictions: { },
               children: [
                 { id: 'unit-4', alias: 'unit-4', label: '3-1-0', labelShort: 'unit' },
                 {
                   id: 'cara',
                   label: 'Testlet-3',
                   descendantCount: 2,
-                  restrictions: { if: [] },
+                  restrictions: { },
                   children: []
                 },
                 { id: 'unit-5', alias: 'unit-5', label: '4-2-1', labelShort: 'unit' },
@@ -76,7 +77,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
                   id: 'dolf',
                   label: 'Testlet-4',
                   descendantCount: 1,
-                  restrictions: { if: [] },
+                  restrictions: { },
                   children: [
                     { id: 'unit-6', alias: 'unit-6', label: '5-3-0', labelShort: 'unit' }
                   ]
@@ -91,7 +92,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           id: 'ellie',
           label: 'Testlet-5',
           descendantCount: 2,
-          restrictions: { if: [] },
+          restrictions: { },
           blockId: 'block-3',
           children: [
             { id: 'unit-9', alias: 'unit-9', label: '8-0-0', labelShort: 'unit' },
@@ -99,7 +100,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
               id: 'fred',
               label: 'Testlet-6',
               descendantCount: 1,
-              restrictions: { if: [] },
+              restrictions: { },
               children: [
                 { id: 'unit-10', alias: 'unit-10', label: '9-1-0', labelShort: 'unit' }
               ]
@@ -117,31 +118,32 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
       label: 'Label 2',
       description: 'Description 2'
     },
+    states: {},
     customTexts: {},
     units: {
       id: 'root',
       label: 'Root',
       descendantCount: 4,
-      restrictions: { if: [] },
+      restrictions: { },
       children: [
         {
           id: 'zoe',
           label: 'Testlet-0',
           descendantCount: 3,
           blockId: 'block-1',
-          restrictions: { if: [] },
+          restrictions: { },
           children: [
             {
               id: 'anton',
               label: 'Testlet-1',
               descendantCount: 2,
-              restrictions: { if: [] },
+              restrictions: { },
               children: [
                 {
                   id: 'berta',
                   label: 'Testlet-2',
                   descendantCount: 1,
-                  restrictions: { if: [] },
+                  restrictions: { },
                   children: [
                     { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit' }
                   ]
@@ -156,7 +158,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           label: 'Testlet-3',
           descendantCount: 0,
           blockId: 'block-2',
-          restrictions: { if: [] },
+          restrictions: { },
           children: []
         }
       ]
@@ -166,6 +168,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
     species: 'example-species-1',
     config: new BookletConfig(),
     customTexts: {},
+    states: {},
     metadata: {
       id: '3',
       label: 'Label 3',
@@ -175,14 +178,14 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
       id: 'root',
       label: 'Root',
       descendantCount: 1,
-      restrictions: { if: [] },
+      restrictions: { },
       children: [
         {
           id: 'zara',
           label: 'Testlet-0',
           descendantCount: 0,
           blockId: 'block-1',
-          restrictions: { if: [] },
+          restrictions: { },
           children: []
         },
         {
@@ -190,7 +193,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           label: 'Testlet-1',
           descendantCount: 1,
           blockId: 'block-2',
-          restrictions: { if: [] },
+          restrictions: { },
           children: [
             { id: 'unit-1', alias: 'unit-1', label: '0-0-0', labelShort: 'unit' }
           ]
@@ -297,7 +300,8 @@ export const unitTestSessionsStats: TestSessionSetStats = {
   differentBookletSpecies: 0,
   differentBooklets: 0,
   paused: 0,
-  locked: 0
+  locked: 0,
+  bookletStateLabels: {}
 };
 
 export const unitTestCheckedStats: TestSessionSetStats = {
@@ -306,7 +310,8 @@ export const unitTestCheckedStats: TestSessionSetStats = {
   differentBookletSpecies: 0,
   differentBooklets: 0,
   paused: 0,
-  locked: 0
+  locked: 0,
+  bookletStateLabels: {}
 };
 
 export const unitTestCommandResponse: CommandResponse = {

@@ -69,7 +69,7 @@ const variables: { [key: string]: IQBVariable } = {
 
 const getVar = (_: string, variableId: string): IQBVariable => variables[variableId];
 
-fdescribe('The ConditionUtil', () => {
+describe('The ConditionUtil', () => {
   it('do equal and notEqual with everything', (): void => {
     expect(ConditionUtil.isSatisfied({
       source: { type: 'Value', unitAlias, variable: 'var1', default: '' },

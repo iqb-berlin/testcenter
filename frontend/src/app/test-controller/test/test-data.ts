@@ -1,11 +1,13 @@
 import { CodingScheme } from '@iqb/responses';
 import {
+  LoadingProgress,
   TestDataResourcesMap, Testlet, TestStateKey, Unit, UnitData
 } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../shared/shared.module';
 import { WatcherLogEntry } from './watcher.util';
 import { perSequenceId } from './unit-test.util';
+import { of } from 'rxjs';
 
 export const TestBookletXML = `<Booklet>
   <Metadata>
@@ -24,24 +26,24 @@ export const TestBookletXML = `<Booklet>
       <DenyNavigationOnIncomplete presentation="OFF" response="ON"/>
       <TimeMax minutes="10" />
     </Restrictions>
-    <Unit id="u1" label="l" />
-    <Testlet id="t1">
+    <Unit id="u1" label="Unit-1" labelshort="U1" />
+    <Testlet id="t1" label="Label 1">
      <Restrictions>
        <CodeToEnter code="d" />
        <TimeMax minutes="5" />
      </Restrictions>
-     <Unit id="u2" label="l" />
+     <Unit id="u2" label="Unit-2" labelshort="U2" />
      <Testlet id="t2">
        <Restrictions>
          <CodeToEnter code="d" />
          <TimeMax minutes="3" />
          <DenyNavigationOnIncomplete presentation="ON" response="OFF"/>
        </Restrictions>
-       <Unit id="u3" label="l" />
+       <Unit id="u3" label="Unit-3" labelshort="U3" />
      </Testlet>
-     <Unit id="u4" label="l" />
+     <Unit id="u4" label="Unit-4" labelshort="U4" />
     </Testlet>
-    <Unit id="u5" label="l" />
+    <Unit id="u5" label="Unit-5" labelshort="U5" />
   </Units>
 </Booklet>`;
 
@@ -54,7 +56,7 @@ export const TestBookletXmlVariants = {
   withMissingUnitContent: TestBookletXML
 };
 
-export const TestUnits: { [unitId: string]: UnitData } = {
+export const TestUnitsFromBackend: { [unitId: string]: UnitData } = {
   u1: {
     dataParts: { all: 'data from a previous session' },
     state: {},
@@ -136,29 +138,29 @@ export const AllTestResources = {
   ...TestExternalUnitContents
 };
 
-export const TestUnitDefinitionsPerSequenceId = Object.keys(TestUnits)
+export const TestUnitDefinitionsPerSequenceId = Object.keys(TestUnitsFromBackend)
   .map(unidId => {
     const externalDefinition = TestResources[unidId.toUpperCase()].isDefinedBy;
     if (externalDefinition) {
       return TestExternalUnitContents[externalDefinition[0] as keyof typeof TestExternalUnitContents];
     }
-    return TestUnits[unidId].definition;
+    return TestUnitsFromBackend[unidId].definition;
   })
   .reduce(perSequenceId, {});
 
-export const TestUnitStateDataParts = Object.values(TestUnits)
+export const TestUnitStateDataParts = Object.values(TestUnitsFromBackend)
   .map(unitDef => unitDef.dataParts)
   .reduce(perSequenceId, {});
 
-export const TestUnitPresentationProgressStates = Object.values(TestUnits)
+export const TestUnitPresentationProgressStates = Object.values(TestUnitsFromBackend)
   .map(unitDef => unitDef.state.PRESENTATION_PROGRESS)
   .reduce(perSequenceId, {});
 
-export const TestUnitResponseProgressStates = Object.values(TestUnits)
+export const TestUnitResponseProgressStates = Object.values(TestUnitsFromBackend)
   .map(unitDef => unitDef.state.RESPONSE_PROGRESS)
   .reduce(perSequenceId, {});
 
-export const TestUnitStateCurrentPages = Object.values(TestUnits)
+export const TestUnitStateCurrentPages = Object.values(TestUnitsFromBackend)
   .map(unitDef => unitDef.state.CURRENT_PAGE_ID)
   .reduce(perSequenceId, {});
 
@@ -168,46 +170,41 @@ export const TestTestState: { [k in TestStateKey]?: string } = {
 
 const testlets: { [ key: string]: Testlet } = {
   root: {
-    id: 'BookletId',
-    label: 'Label',
+    id: '[0]',
+    label: '',
     locks: {
-      condition: false,
+      show: false,
       time: false,
       code: false,
       afterLeave: false
     },
     locked: null,
-    timerId: 'timer-1',
-    firstUnsatisfiedCondition: -1,
+    timerId: '[0]',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',
         response: 'ON'
-      },
-      if: []
+      }
     },
     blockLabel: '',
-    children: [],
-    containsConditionalTestlets: false
+    children: []
   },
   t1: {
     id: 't1',
     label: 'Label 1',
     locks: {
-      condition: false,
+      show: false,
       time: false,
       code: false,
       afterLeave: false
     },
     locked: null,
-    timerId: 'timer-1',
-    firstUnsatisfiedCondition: -1,
+    timerId: '[0]',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',
         response: 'ON'
       },
-      if: [],
       codeToEnter: {
         code: 'D',
         message: ''
@@ -217,28 +214,25 @@ const testlets: { [ key: string]: Testlet } = {
         leave: 'confirm'
       }
     },
-    blockLabel: '',
-    children: [],
-    containsConditionalTestlets: false
+    blockLabel: 'Label 1',
+    children: []
   },
   t2: {
     id: 't2',
     label: 'Label 2',
     locks: {
-      condition: false,
+      show: false,
       time: false,
       code: false,
       afterLeave: false
     },
     locked: null,
-    timerId: 'timer-2',
-    firstUnsatisfiedCondition: -1,
+    timerId: 't2',
     restrictions: {
       denyNavigationOnIncomplete: {
         presentation: 'OFF',
         response: 'ON'
       },
-      if: [],
       codeToEnter: {
         code: 'D',
         message: ''
@@ -249,8 +243,7 @@ const testlets: { [ key: string]: Testlet } = {
       }
     },
     blockLabel: '',
-    children: [],
-    containsConditionalTestlets: false
+    children: []
   }
 };
 
@@ -262,18 +255,21 @@ const units: { [key: string]: Unit } = {
     labelShort: 'U1',
     sequenceId: 1,
     parent: testlets.root,
-    localIndex: 1,
-    unitDefinitionType: 'A-PLAYER',
+    localIndex: 0,
+    unitDefinitionType: 'plaintext',
     variables: {},
     baseVariableIds: [],
     playerFileName: 'Resource/A-PLAYER.HTML',
     scheme: new CodingScheme([]),
-    responseType: '',
-    definition: '',
+    responseType: 'the-data-type',
+    definition: 'the unit (1) definition itself',
     state: {},
-    dataParts: {},
-    loadingProgress: {},
-    lockedAfterLeaving: false
+    dataParts: { all: 'data from a previous session' },
+    loadingProgress: {
+      definition: of<LoadingProgress>({ progress: 0 })
+    },
+    lockedAfterLeaving: false,
+    pageLabels: {}
   },
   u2: {
     id: 'u2',
@@ -291,9 +287,10 @@ const units: { [key: string]: Unit } = {
     responseType: '',
     definition: '',
     state: {},
-    dataParts: {},
+    dataParts: { all: 'data from a previous session' },
     loadingProgress: {},
-    lockedAfterLeaving: false
+    lockedAfterLeaving: false,
+    pageLabels: {}
   },
   u3: {
     id: 'u3',
@@ -311,9 +308,10 @@ const units: { [key: string]: Unit } = {
     responseType: '',
     definition: '',
     state: {},
-    dataParts: {},
+    dataParts: { all: 'data from a previous session' },
     loadingProgress: {},
-    lockedAfterLeaving: false
+    lockedAfterLeaving: false,
+    pageLabels: {}
   },
   u4: {
     id: 'u4',
@@ -331,9 +329,10 @@ const units: { [key: string]: Unit } = {
     responseType: '',
     definition: '',
     state: {},
-    dataParts: {},
+    dataParts: { all: 'data from a previous session' },
     loadingProgress: {},
-    lockedAfterLeaving: false
+    lockedAfterLeaving: false,
+    pageLabels: {}
   },
   u5: {
     id: 'u5',
@@ -351,11 +350,11 @@ const units: { [key: string]: Unit } = {
     responseType: '',
     definition: '',
     state: {},
-    dataParts: {},
+    dataParts: { all: 'data from a previous session' },
     loadingProgress: {},
-    lockedAfterLeaving: false
+    lockedAfterLeaving: false,
+    pageLabels: {}
   }
-
 };
 
 testlets.root.children.push(units.u1, testlets.t1, units.u5);
@@ -379,7 +378,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress.
     // total progress gets updated first , don't be confused
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
-    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
@@ -409,22 +408,22 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
 
     // unit 4
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
-    { name: 'tcs.setUnitLoadProgress$', value: [4] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [4] },
     { name: 'tcs.unitContentLoadProgress$[4]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 60 }, // unit 4 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 66.66666666666666 }, // unit 4 player (already loaded)
 
     // unit 5
     { name: 'tcs.totalLoadingProgress', value: 73.33333333333333 }, // unit 5
-    { name: 'tcs.setUnitLoadProgress$', value: [5] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [5] },
     { name: 'tcs.unitContentLoadProgress$[5]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 80 }, // unit 5 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 86.66666666666667 }, // unit 5 player (already loaded)
 
     // queue external unit contents
-    { name: 'tcs.setUnitLoadProgress$', value: [3] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [3] },
     { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
-    { name: 'tcs.setUnitLoadProgress$', value: [2] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [2] },
     { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
 
     // start here because loading is lazy
@@ -461,7 +460,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress.
     // total progress gets updated first, don't be confused
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
-    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
@@ -491,22 +490,22 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
 
     // unit 4
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
-    { name: 'tcs.setUnitLoadProgress$', value: [4] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [4] },
     { name: 'tcs.unitContentLoadProgress$[4]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 60 }, // unit 4 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 66.66666666666666 }, // unit 4 player (already loaded)
 
     // unit 5
     { name: 'tcs.totalLoadingProgress', value: 73.33333333333333 }, // unit 5
-    { name: 'tcs.setUnitLoadProgress$', value: [5] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [5] },
     { name: 'tcs.unitContentLoadProgress$[5]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 80 }, // unit 5 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 86.66666666666667 }, // unit 5 player (already loaded)
 
     // external unit contents - start with unit 3, because it's the current unit
-    { name: 'tcs.setUnitLoadProgress$', value: [3] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [3] },
     { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
-    { name: 'tcs.setUnitLoadProgress$', value: [2] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [2] },
     { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
     { name: 'tcs.totalLoadingProgress', value: 86.66666666666667 }, // 0% of unit 3 content
     { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 0 } },
@@ -537,7 +536,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 0 },
     { name: 'tcs.testStatus$', value: 'LOADING' },
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
-    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
@@ -561,7 +560,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 0 },
     { name: 'tcs.testStatus$', value: 'LOADING' },
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
-    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
     { name: 'tls.loadTest', value: '', error: 'player is missing' }
@@ -572,7 +571,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 0 },
     { name: 'tcs.testStatus$', value: 'LOADING' },
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
-    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
@@ -588,7 +587,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player
     { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player (again)
     { name: 'tcs.addPlayer', value: ['Resource/ANOTHER-PLAYER.HTML'] },
-    { name: 'tcs.totalLoadingProgress', value: 40 }, // unit 3
+    { name: 'tcs.totalLoadingProgress', value: 40 }, // unu1it 3
     { name: 'tcs.totalLoadingProgress', value: 40 }, // 0% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 43.333333333333336 }, // 50% of a-player-but-version-2
     { name: 'tcs.totalLoadingProgress', value: 45 }, // 75% of a-player-but-version-2
@@ -596,18 +595,18 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2 (again)
     { name: 'tcs.addPlayer', value: ['Resource/A-PLAYER-2.HTML'] },
     { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
-    { name: 'tcs.setUnitLoadProgress$', value: [4] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [4] },
     { name: 'tcs.unitContentLoadProgress$[4]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 60 }, // unit 4 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 66.66666666666666 }, // unit 4 player (already loaded)
     { name: 'tcs.totalLoadingProgress', value: 73.33333333333333 }, // unit 5
-    { name: 'tcs.setUnitLoadProgress$', value: [5] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [5] },
     { name: 'tcs.unitContentLoadProgress$[5]', value: { progress: 100 } },
     { name: 'tcs.totalLoadingProgress', value: 80 }, // unit 5 content (was embedded)
     { name: 'tcs.totalLoadingProgress', value: 86.66666666666667 }, // unit 5 player (already loaded)
-    { name: 'tcs.setUnitLoadProgress$', value: [3] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [3] },
     { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
-    { name: 'tcs.setUnitLoadProgress$', value: [2] },
+    // { name: 'tcs.setUnitLoadProgress$', value: [2] },
     { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } }
   ]
 };

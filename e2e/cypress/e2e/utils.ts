@@ -23,7 +23,11 @@ export const visitLoginPage = (): Chainable => cy.url()
       cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-checks)`) })
         .as('waitForConfig');
       const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
-      cy.visit(`${startPage}?testMode=true`);
+      cy.visit(`${startPage}?testMode=true`, { timeout: 30000 });
+      cy.url().then(url => {
+        cy.task('logOut', url);
+        cy.log(url);
+      });
       cy.wait('@waitForConfig');
     }
   });
@@ -88,11 +92,20 @@ export const logoutAdmin = (): Chainable => cy.url()
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
+
+    if (url === 'about:blank') {
+      cy.log('BUG OCCURED');
+      cy.task('logOut', 'BUG OCCURED, URL is: ' + url);
+      return visitLoginPage().then(logoutTestTaker);
+    }
+
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
+      cy.log('not on starter')
       cy.get('[data-cy="logo"]')
         .click();
       if (fileType === 'hot') {
+        cy.log('end test');
         cy.contains(/^Der Test ist aktiv.$/);
         cy.get('[data-cy="resumeTest-1"]');
         cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
@@ -101,18 +114,10 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
         cy.url()
           .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
         cy.wait('@waitForGetSession');
-        cy.get('[data-cy="logout"]')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-      } else if (fileType === 'demo') {
-        cy.get('[data-cy="logout"]')
-          .click();
       }
-    } else {
-      cy.get('[data-cy="logout"]')
-        .click();
     }
+    cy.get('[data-cy="logout"]')
+      .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
 
@@ -295,22 +300,25 @@ export const useTestDBSetDate = (timestamp: string) : void => {
   }).as('testClock');
 };
 
-export const convertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<string>> => {
   const regex = /[\\]/g;
 
-  const splitCSVLogin = str => str.split('\n')
+  const splitCSVFile = str => str.split('\n')
     .map(row => row.replaceAll(regex, ''));
 
+  cy.task('logOut', { fileType });
+
   if (fileType === 'responses') {
+    cy.task('logOut', 'ok');
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .then(splitCSVLogin);
+      .then(file => cy.task('logOut', { file }).then(() => splitCSVFile(file)));
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
-      .then(splitCSVLogin);
+      .then(splitCSVFile);
   }
   return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-    .then(splitCSVLogin);
+    .then(splitCSVFile);
 };
 
 export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {

@@ -163,7 +163,8 @@ describe('TestSessionManager', () => {
         differentBookletSpecies: 3,
         all: false,
         paused: 1,
-        locked: 0
+        locked: 0,
+        bookletStateLabels: {  }
       };
       expect(expectation).toEqual(result);
     });

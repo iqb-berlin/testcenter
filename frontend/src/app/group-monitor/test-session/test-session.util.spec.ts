@@ -10,7 +10,7 @@ describe('TestSessionUtil', () => {
         id,
         label: id,
         children: [],
-        restrictions: { if: [] },
+        restrictions: { },
         descendantCount: NaN
       });
       const expectations: { [unitId: string]: UnitContext } = {
