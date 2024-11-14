@@ -333,7 +333,7 @@ class XMLFileTesttakers extends XMLFile {
             'subValue' => ((string) $filterElem['subValue']) ?? null,
             'label' => ((string) $filterElem['label']) ?? "",
             'type' => ((string) $filterElem['type']) ?? "equals",
-            'not' => ((bool) $profileElem['not']) ?? false
+            'not' => (strtolower(trim((string) $filterElem['not'])) === 'true')
           ],
           $profileElem->xpath('Filter')
         ),
