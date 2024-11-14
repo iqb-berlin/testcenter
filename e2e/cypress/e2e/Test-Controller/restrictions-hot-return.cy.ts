@@ -455,7 +455,7 @@ describe('The responses-file', { testIsolation: false }, () => {
       .then(responses => {
         cy.task('logOut', 'responses');
         cy.task('logOut', responses);
-        cy.writeFile('/usr/src/testcenter/sampledata/responses.file.csv', responses.join("\n"));
+        cy.writeFile('/usr/src/testcenter/sampledata/responses.file.csv', responses.join('\n'));
         // metadata
         expect(responses[1]).to.be.match(/\brunhotret\b/);
         expect(responses[1]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
