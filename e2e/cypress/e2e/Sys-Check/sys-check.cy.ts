@@ -9,14 +9,15 @@ import {
   selectFromDropdown,
   useTestDB,
   loginSuperAdmin,
-  openSampleWorkspace1,
+  openSampleWorkspace,
   visitLoginPage,
-  logoutAdmin
-} from './utils';
+  logoutAdmin, loginTestTaker, uploadFileFromFixtureToWorkspace
+} from '../utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
   beforeEach(useTestDB);
+
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Auswahl')
@@ -31,7 +32,7 @@ describe('Sys-Check', () => {
     cy.get('[data-cy="general-sys-check"]')
       .should('not.exist');
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -96,8 +97,31 @@ describe('Sys-Check', () => {
     cy.contains('Eingabebereich: Test-Input2');
     cy.contains('Kontrollkästchen: true');
     cy.contains('Optionsfelder: Option B');
-    cy.contains('System-Check Abbrechen')
+    cy.contains('System-Check abbrechen')
       .click();
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
+  });
+});
+
+describe('System Check as Login', () => {
+  before(() => {
+    cy.clearLocalStorage();
+    cy.clearCookies();
+    resetBackendData();
+    deleteDownloadsFolder();
+  });
+  beforeEach(() => {
+    useTestDB();
+    visitLoginPage();
+  });
+
+  it('should jump right into system-check, if only one system-check exits in workspace', () => {
+    loginTestTaker('syscheck', '', 'sys-check');
+  });
+
+  it('should show the starter page if more than one system-check is available in workspace', () => {
+    uploadFileFromFixtureToWorkspace('SysCheck_correct.xml', 1);
+    loginTestTaker('syscheck', '', 'starter');
+    cy.get('[data-cy*="syscheck"').should('have.length', 2);
   });
 });

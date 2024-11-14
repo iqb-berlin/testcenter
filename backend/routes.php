@@ -191,11 +191,13 @@ $app->group('/user', function (RouteCollectorProxy $group) {
 
   $group->put('', [UserController::class, 'putUser']);
 
-  $group->patch('/{user_id}/password', [UserController::class, 'patchPassword']);
-
   $group->patch('/{user_id}/super-admin/{to_status}', [UserController::class, 'patchSuperAdminStatus']);
 })
   ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
+
+$app->patch('/user/{user_id}/password', [UserController::class, 'patchPassword'])
+  ->add(new IsSuperAdminOrSelf())
   ->add(new RequireToken('admin'));
 
 $app->get('/users', [SystemController::class, 'getUsers'])

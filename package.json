@@ -1,10 +1,10 @@
 {
   "name": "iqb-testcenter",
-  "version": "15.3.0-alpha3",
+  "version": "15.3.4",
   "iqb": {
     "release-channels": {
       "lts": "15.1",
-      "stable": "15.2"
+      "stable": "15.3"
     },
     "verona-player-api-versions": {
       "min": 2,

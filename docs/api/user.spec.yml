@@ -137,9 +137,10 @@ paths:
   /user/{user_id}/password:
     patch:
       summary: change user-password
-      description: changes the password of a given user.
+      description: changes the password of a given user. Can be called by super admin for all other admins or by the affected workspace admins themselves
       tags:
         - super admin
+        - workspace admin
       parameters:
         - in: header
           name: AuthToken

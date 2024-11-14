@@ -2,7 +2,7 @@
 # For concrete images check the environment specific override files.
 
 x-restart-policy: &restart-policy
-  restart: "${RESTART_POLICY:-no}"
+  restart: "${RESTART_POLICY:-always}"
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -17,8 +17,10 @@ services:
   traefik:
     <<: *restart-policy
     container_name: testcenter-traefik
-    image: ${DOCKERHUB_PROXY}traefik:v2.10
+    image: ${DOCKERHUB_PROXY}traefik:v2.11
     command:
+      # - "--log.level=DEBUG"
+      # - "--accesslog=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
@@ -40,9 +42,11 @@ services:
       - dbdata:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
-      interval: 5m
       start_period: 30s
-      start_interval: 10s
+      start_interval: 3s
+      interval: 5m
+      timeout: 30s
+      retries: 3
     networks:
       testcenter:
 
@@ -61,8 +65,8 @@ services:
       TLS_ENABLED: ${TLS_ENABLED:-on}
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
-      PORT: ${PORT:-80}
-      TLS_PORT: ${TLS_PORT:-443}
+      PORT_OF_REVERSE_PROXY: ${PORT:-80}
+      TLS_PORT_OF_REVERSE_PROXY: ${TLS_PORT:-443}
       SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
       SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
       OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
@@ -111,7 +115,7 @@ services:
   testcenter-cache-service:
     <<: *restart-policy
     container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
     command:
       - "bash"
       - "-c"

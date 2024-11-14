@@ -13,7 +13,7 @@ services:
     ports:
       - "${TLS_PORT}:443"
     volumes:
-      - ./tls.yml:/tls-config.yml
+      - ./tls.yml:/tls-options.yml
 
   testcenter-backend:
     image: iqbberlin/testcenter-backend:current-prod
@@ -36,8 +36,6 @@ services:
       target: prod
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
-    volumes:
-      - ../frontend/config/nginx.conf:/etc/nginx/templates/default.conf.template
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:current-prod

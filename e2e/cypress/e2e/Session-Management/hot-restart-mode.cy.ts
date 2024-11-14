@@ -2,7 +2,7 @@ import {
   getResultFileRows, convertResultsSeperatedArrays,
   deleteDownloadsFolder,
   getFromIframe, loginSuperAdmin,
-  loginTestTaker, logoutTestTaker, openSampleWorkspace1,
+  loginTestTaker, logoutTestTaker, openSampleWorkspace,
   resetBackendData,
   visitLoginPage,
   forwardTo,
@@ -88,7 +88,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
 
   it('should be a generated file (responses, logs) in the workspace with groupname: SM_HotModes', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .should('exist')
       .click();

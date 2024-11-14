@@ -1,15 +1,6 @@
 import {
-  loginSuperAdmin,
-  openSampleWorkspace1,
-  loginTestTaker,
-  resetBackendData,
-  credentialsControllerTest,
-  visitLoginPage,
-  getFromIframe,
-  forwardTo,
-  backwardsTo,
-  gotoPage,
-  disableSimplePlayersInternalDebounce
+  loginSuperAdmin, openSampleWorkspace, loginTestTaker, resetBackendData,
+  credentialsControllerTest, visitLoginPage, getFromIframe, forwardTo, backwardsTo
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -150,7 +141,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
 
   it('should be no answer file in demo-mode', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]') // TODO use data-cy
       .click();
     cy.wait(2000);

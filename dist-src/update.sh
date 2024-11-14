@@ -1,22 +1,22 @@
 #!/bin/bash
 
-REPO_URL=iqb-berlin/testcenter
+declare REPO_URL=iqb-berlin/testcenter
 
 create_backup() {
-  local backup_dir="backup/$(date '+%Y-%m-%d')"
+  declare backup_dir="backup/$(date '+%Y-%m-%d')"
   mkdir -p $backup_dir
   tar -cf - --exclude='./backup' . | tar -xf - -C $backup_dir
   printf "Backup created. Files have been moved to: %s\n" $backup_dir
 }
 
 apply_patches() {
-  wget -nv -O patch-list.json "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/tree?path=dist-src/patches&ref=master"
+  wget -nv -O patch-list.json "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/tree?path=scripts/migration&ref=master"
   grep -oP '"name":".+?"' patch-list.json | cut -d':' -f 2 | tr -d '"' > patch-list.txt
   while read p; do
     echo "checking if patch $p is applicable"
     if [[ $(echo -e "$VERSION\n$p" | sort -V | head -n1) == "$VERSION" && "$p" != "$VERSION" ]]; then
       # TODO ignore patches which are too new
-      wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/dist-src%2Fpatches%2F${p}/raw?ref=master"
+      wget -nv -O $p "https://scm.cms.hu-berlin.de/api/v4/projects/6099/repository/files/scripts%2Fmigration%2F${p}/raw?ref=master"
       bash ${p}
       rm ${p}
     fi

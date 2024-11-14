@@ -1048,7 +1048,8 @@ paths:
                       "responseType": "example-data-format"
                     }
                   ],
-                  "laststate": "{\"PRESENTATIONCOMPLETE\":\"yes\"}"
+                  "laststate": "{\"PRESENTATIONCOMPLETE\":\"yes\"}",
+                  "originalUnitId": "UNIT.SAMPLE"
                 }
               ]
         "401":
@@ -1234,6 +1235,9 @@ paths:
               example:
                 deleted:
                   - "SysCheck/SAMPLE_SYSCHECK.XML"
+                did_not_exist:
+                not_allowed:
+                was_used:
         "401":
           description: Not authenticated
         "403":

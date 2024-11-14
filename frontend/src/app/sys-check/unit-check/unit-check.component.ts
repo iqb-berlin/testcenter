@@ -115,7 +115,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         if (!('srcdoc' in this.iFrameItemplayer)) {
           this.errorText =
             'Test-Aufgabe konnte nicht angezeigt werden: Dieser Browser unterstützt das srcdoc-Attribut noch nicht.';
-          this.ds.questionnaireReport.push({
+          this.ds.questionnaireReports.push({
             id: 'srcdoc', label: 'srcDoc-Attribut', type: 'error', value: this.errorText, warning: false
           });
           return;

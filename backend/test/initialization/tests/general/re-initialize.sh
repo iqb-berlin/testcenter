@@ -1,5 +1,4 @@
 #!/bin/bash
-
 source backend/test/initialization/functions/functions.sh
 
 (
@@ -16,7 +15,7 @@ source backend/test/initialization/functions/functions.sh
   expect_init_script_ok
   expect_data_dir_equals sample_content_present
   expect_table_to_have_rows files 10
-  expect_table_to_have_rows logins 14
+  expect_table_to_have_rows logins 15
 
   echo_h2 "Delete a testtakers-file manually and sync the DB when initializing again. Files should be re-imported"
 
@@ -50,6 +49,8 @@ source backend/test/initialization/functions/functions.sh
   fi
 )
 # wrap all in subshell to catch error returns and clean up afterwards
+EXITCODE=$?
 remove_patch 7.0.0
 remove_patch 10.0.9998
 remove_patch 10.0.9999
+exit "$EXITCODE"

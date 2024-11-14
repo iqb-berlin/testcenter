@@ -1,28 +1,33 @@
 #  Compose file for production environment. Images are NOT locally built but
-#  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
+#  downloaded from Docker-Hub. This is the TLS variant using encrypted
 #  communication.
 
 services:
   traefik:
     command:
+      # - "--log.level=DEBUG"
+      # - "--accesslog=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls.options=default@file"
-      #- "--certificatesresolvers.iqbresolver.acme.tlschallenge=true"
-      ## - "--certificatesresolvers.iqbresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      #- "--certificatesresolvers.iqbresolver.acme.email=admin.name@company.com"
-      #- "--certificatesresolvers.iqbresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.acme.acme.tlschallenge=true"
+      - "--certificatesresolvers.acme.acme.caserver=${TLS_ACME_CA_SERVER}"
+      # - "--certificatesresolvers.acme.acme.eab.kid=${TLS_ACME_EAB_KID}"
+      # - "--certificatesresolvers.acme.acme.eab.hmacEncoded=${TLS_ACME_EAB_HMAC_ENCODED}"
+      - "--certificatesresolvers.acme.acme.email=${TLS_ACME_EMAIL}"
+      - "--certificatesresolvers.acme.acme.storage=/certs/acme.json"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.file.filename=/tls-config.yml"
+      - "--providers.file.filename=/tls-options.yml"
+      - "--providers.file.filename=/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
     ports:
       - "${TLS_PORT}:443"
     volumes:
-      - "./config/certs/:/certs/"
-      #- "./config/certs/:/letsencrypt"
-      - "./config/tls-config.yml:/tls-config.yml"
+      - "./config/traefik/tls-options.yml:/tls-options.yml"
+      - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
+      - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 
   testcenter-db:
     image: ${DOCKERHUB_PROXY}mysql:8.0
@@ -37,7 +42,7 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
-      #- "traefik.http.routers.testcenter-backend.tls.certResolver=iqbresolver"
+      - "traefik.http.routers.testcenter-backend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
@@ -48,9 +53,9 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
-      #- "traefik.http.routers.testcenter-frontend.tls.certResolver=iqbresolver"
-      #- "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
-      #- "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
+      - "traefik.http.routers.testcenter-frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
+      - "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
       - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
@@ -61,7 +66,7 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
-      #- "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=iqbresolver"
+      - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
@@ -70,7 +75,7 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
     labels:
       - "traefik.http.routers.testcenter-file-service.tls=true"
-      #- "traefik.http.routers.testcenter-file-service.tls.certResolver=iqbresolver"
+      - "traefik.http.routers.testcenter-file-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.middlewares.tls-security-headers-fs.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.tls-security-headers-fs.headers.stsIncludeSubdomains=true"
       - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs, tls-security-headers-fs"

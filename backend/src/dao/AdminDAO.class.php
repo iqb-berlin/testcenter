@@ -86,6 +86,7 @@ class AdminDAO extends DAO {
         users.name,
         users.email,
         users.is_superadmin,
+        users.pw_set_by_admin,
         admin_sessions.valid_until
       from users
 			inner join admin_sessions on users.id = admin_sessions.user_id
@@ -104,7 +105,8 @@ class AdminDAO extends DAO {
       $admin['name'],
       $admin['email'] ?? '',
       !!$admin['is_superadmin'],
-      $token
+      $token,
+      (bool) $admin['pw_set_by_admin']
     );
   }
 

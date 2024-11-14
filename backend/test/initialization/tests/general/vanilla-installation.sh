@@ -1,5 +1,4 @@
 #!/bin/bash
-
 source backend/test/initialization/functions/functions.sh
 
 echo_h1 "Blank installation of current Version";

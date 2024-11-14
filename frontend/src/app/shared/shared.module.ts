@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
@@ -19,11 +19,12 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { BlockConditionPipe } from './pipes/block-condition.pipe';
-import { TemplateContextDirective } from './directives/template-context.directive';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
 import { AutofocusDirective } from './directives/autofocus.directive';
+import { NewPasswordComponent } from './components/newpassword/new-password.component';
 import { TrustPipe } from './pipes/trust.pipe';
+import { BlockConditionPipe } from './pipes/block-condition.pipe';
+import { TemplateContextDirective } from './directives/template-context.directive';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { TrustPipe } from './pipes/trust.pipe';
     MatInputModule,
     HttpClientModule,
     MatTooltipModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    ReactiveFormsModule
   ],
   declarations: [
     ConfirmDialogComponent,
@@ -53,7 +55,8 @@ import { TrustPipe } from './pipes/trust.pipe';
     PageNavBarComponent,
     TrustPipe,
     PageNavBarComponent,
-    AutofocusDirective
+    AutofocusDirective,
+    NewPasswordComponent
   ],
   exports: [
     ConfirmDialogComponent,
@@ -67,7 +70,8 @@ import { TrustPipe } from './pipes/trust.pipe';
     PageNavBarComponent,
     TrustPipe,
     PageNavBarComponent,
-    AutofocusDirective
+    AutofocusDirective,
+    NewPasswordComponent
   ],
   providers: [
     BackendService
@@ -84,6 +88,7 @@ export { AlertComponent } from './components/alert/alert.component';
 export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
 export { MainDataService } from './services/maindata/maindata.service';
+export { PasswordChangeService } from './services/password-change/password-change.service';
 export { BugReportService } from './services/bug-report.service';
 export { UserAgentService } from './services/user-agent/user-agent.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';

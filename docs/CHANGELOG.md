@@ -1,16 +1,17 @@
 ---
 layout: default
 ---
+
 ## [next]
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
   * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
     Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/
-  * Varianten verschiedener des desselben Booklets sind nun möglich in dem Ver 
+  * Varianten verschiedener des desselben Booklets sind nun möglich in dem Ver
     (z. B. mit und ohne Befragung, mit Anleitung für Tablet oder mit Anleitung für PC)
     Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/#konfiguration-in-der-testtaker-xml
   * Filtern nach Bestimmten Bookletzuständen im Gruppenmonitor ist nun möglich.
-* "Ford only" Modus: 
+* "Ford only" Modus:
   * Booklet-Parameter `unit_navibuttons` hat nun die Option `FORWARD_ONLY`, so das nur der Vorwortknopf gezeigt wird.
   * Neue Restriction `<LockafterLeaving>` erlaubt das automatische (und endgültige sperren) nach Verlassen der Unit,
     um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
@@ -18,23 +19,88 @@ layout: default
 
 ### Bugfix
 * Seitenzahl im Studienmonitor wird korrekt angezeigt.
-* In bestimmten Situationen (sehr viele zugriffe, sehr schnelle Zugriffe) wurden Units gelegentlich angelegt und 
+* In bestimmten Situationen (sehr viele zugriffe, sehr schnelle Zugriffe) wurden Units gelegentlich angelegt und
   tauchten als zwei Zeilen in den Ergebnisdaten auf. Dies ist behoben.
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
   führen.
-* Über die API konnten (z. B. durch fehlerhafte angeben) Daten zu Units abgespeichert werden, die im Booklet gar nicht 
+* Über die API konnten (z. B. durch fehlerhafte angeben) Daten zu Units abgespeichert werden, die im Booklet gar nicht
   vorkamen - behoben.
-* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich Restriktionen zu umgehen. 
+* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich Restriktionen zu umgehen.
 
 ### Verbesserungen
 * Entlastung des Servers durch deutliche Reduktion redundant Calls.
-* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder 
-  sehr schnellen Vorgängen.  
+* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
+  sehr schnellen Vorgängen.
 
 ### :warning: Hinweis für Administratoren
-* Das Updaten der Datenbank kann bei einer größeren vorhandenen Datenmenge an Units sehr lange dauern. 
-  Daten aus alten Studien sollten möglichst vorher entfernt werden. 
+* Das Updaten der Datenbank kann bei einer größeren vorhandenen Datenmenge an Units sehr lange dauern.
+  Daten aus alten Studien sollten möglichst vorher entfernt werden.
+
+
+
+## 15.3.4
+### bugfixes
+* Fixes in installer und updater script
+
+## 15.3.0
+
+### neue Features
+* Workspace-Admins können nun ihr eigenes Passwort ändern. Dies ist im Startmenü nach dem Login möglich. Bei Neusetzen
+  des Passwortes wird man automatisch ausgeloggt, um das neue Passwort direkt zu testen.
+* Wenn der Super-Admin einen neuen Workspace-Admin einrichtet oder sein Passwort ändert, dann muss dieser Workspace-
+  Admin sich beim erstmaligen Einloggen ein neues Passwort geben. Dieser Aufruf tritt bei jeder Rücksetzung durch den
+  Super-Admin erneut auf.
+
+### Verbesserungen
+* Wenn ein Passwort geändert wird, sei es über den Super-Admin oder über den eigenen Workspace-Admin, dann wird das  
+  Passwort zur Sicherheit ein weiteres Mal abgefragt. Dies soll Fehler beim Schreiben des neuen Passworts verhindern.
+* Im Super-Admin wird über eine kleine Snackbar über das erfolgreiche Ändern des Passwortes informiert.
+* Neue Version des Verona Simple Player 6.0.2 in den Sampledata hinterlegt.
+
+### Bugfixes
+* Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
+  eingerichtet worden sein.)
+* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können 
+  sich mit einem gemeinsamen Systemcheck Login einloggen.
+* Der Netzwerktest innerhalb des Systemchecks wird beim Verlassen des Systemchecks zurückgesetzt und startet automatisch
+  beim Wiedereintritt neu.
+* Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
+  entsprechende Startpage für (Un-)Eingeloggte weitergeleitet.
+  
+### API Changes
+* `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
+* `DELETE /workspace/{ws_id}/sys-check/reports`:
+  * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
+* `GET /session` 
+  * gibt unter dem Admintoken nun `id: int|null` aus
+  * gibt unter dem Admintoken nun `pwSetByAdmin: boolean|null` aus
+* `PATCH /user/{user_id}/password` kann nun als Super-Admin oder Workspace-Admin (unter Vorbehalt, dass die zu ändernde
+  `{user_id}` übereinstimmt mit der user_id des Request Tokens) aufgerufen werden
+
+
+## 15.3.0-alpha3
+### neue Features
+* Die Navigation des SystemChecks wurde überarbeitet.
+  * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+    und Schul-ID aus.
+  * "sys-check-login" Logins können auch mit Passwort geschützt werden
+  * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
+  * Die Antworten, die in den SysChecks gegeben werden, sind nun auch Teil der SystemCheck-Berichte
+* Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
+  * schnelles Filtern nach Person
+  * Eigene Filter können definiert werden
+  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
+
+### Bugfixes
+* Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
+  das Login nur einen UnitBlock (Booklet) enthält bzw. nur ein SystemCheck im Workspace liegt.
+
+### Sicherheit
+* Accountsperre bei mehr als fünf falschen Passworteingaben für Adminaccounts und Monitorlogins.
+* Zusätzliche TLS cipher suites und Strict Server Name Indication aktiviert
+
 
 ## 15.2.0
 ### neue Features

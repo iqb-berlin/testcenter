@@ -101,6 +101,7 @@
             mat-raised-button
             class="starter"
             color="primary"
+            [attr.data-cy]="'syscheck-' + sc.id"
             [routerLink]="['/check', sc.workspaceId, sc.id]"
           >
             <div class="starter-title">{{sc.label}}</div>
@@ -117,6 +118,9 @@
     <mat-card-actions [style.justify-content]="'space-between'">
       <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
         Systemverwaltung
+      </button>
+      <button mat-raised-button data-cy="change-password" *ngIf="accessObjects.workspaceAdmin" color="primary" (click)="changePassword()">
+        Passwort ändern
       </button>
       <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>

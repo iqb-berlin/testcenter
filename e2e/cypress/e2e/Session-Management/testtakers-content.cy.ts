@@ -1,7 +1,7 @@
 import {
   deleteTesttakersFiles,
   loginSuperAdmin, logoutAdmin,
-  openSampleWorkspace1,
+  openSampleWorkspace,
   resetBackendData,
   useTestDB,
   visitLoginPage
@@ -12,7 +12,7 @@ describe('Check Testtakers Content', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
-  beforeEach(openSampleWorkspace1);
+  beforeEach(() => openSampleWorkspace(1));
   beforeEach(deleteTesttakersFiles);
 
   afterEach(logoutAdmin);

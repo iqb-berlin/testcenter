@@ -20,12 +20,14 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import {
+  MatProgressBarModule
+} from '@angular/material/progress-bar';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { BackendService } from './backend.service';
-import { NewPasswordComponent } from './users/newpassword/new-password.component';
 import { NewUserComponent } from './users/newuser/new-user.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
@@ -37,15 +39,11 @@ import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 import { SharedModule } from '../shared/shared.module';
-import {
-  MatProgressBarModule
-} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
     SuperadminComponent,
     UsersComponent,
-    NewPasswordComponent,
     NewUserComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,

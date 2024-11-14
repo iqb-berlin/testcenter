@@ -6,9 +6,6 @@
 .settings/
 *.sublime-workspace
 
-# IDE - JetBrains (e.g. IntelliJ IDEA, PHPStorm, WebStorm, etc.)
-.idea/google-java-format.xml
-
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
@@ -54,8 +51,8 @@
 /frontend/.angular
 
 # env
-/.env
-/docker/.env
+.env.dev
+.env.prod
 
 # cypress
 /e2e/cypress/videos

@@ -7,7 +7,7 @@ import {
   getFromIframe, gotoPage,
   loginSuperAdmin,
   loginTestTaker,
-  openSampleWorkspace1,
+  openSampleWorkspace,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -188,7 +188,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
 
   it('should exist an answer file without responses', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('RunReview')

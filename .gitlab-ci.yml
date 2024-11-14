@@ -26,9 +26,9 @@ variables:
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
   DOCKER_SERVICE_MTU: 1442
   DOCKER_TLS_CERTDIR: ''
-  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.10
+  TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.11
   DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
-  CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.0-bullseye
+  CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.4-bookworm
   TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
   PRERELEASE_SCRIPT_REGEX: ^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$
   PRERELEASE_RULES_REGEX: /^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$/
@@ -707,7 +707,7 @@ build-frontend:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Frontend build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 build-broadcasting-service:
@@ -751,7 +751,7 @@ build-broadcasting-service:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Broadcasting service build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 
@@ -862,7 +862,7 @@ build-task-runner:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Task runner build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
 
@@ -881,10 +881,10 @@ generate-docs:
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
       then
-        cp docker/default.env docker/.env &&
         docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} &&
         docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner &&
         docker compose
+            --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
             --file docker/docker-compose.dev.yml
           run --rm --no-deps testcenter-task-runner
@@ -908,7 +908,7 @@ generate-docs:
         rm -rf docs/ &&
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Generating documents is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -953,12 +953,12 @@ test-backend-unit:
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
       then
-        cp docker/default.env docker/.env &&
         chmod 0755 scripts/database/000-create-test-db.sh &&
         docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0 &&
         docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker compose
+            --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
             --file docker/docker-compose.dev.yml
           run --rm --entrypoint "" testcenter-backend php -dxdebug.mode='coverage'
@@ -970,7 +970,7 @@ test-backend-unit:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Backend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -998,18 +998,18 @@ test-frontend-unit:
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
       then
-        cp docker/default.env docker/.env &&
         cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts &&
         docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current &&
         docker compose
+            --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
             --file docker/docker-compose.dev.yml
           run testcenter-frontend npx ng test --watch=false --code-coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Frontend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -1036,18 +1036,18 @@ test-broadcasting-service-unit:
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
       then
-        cp docker/default.env docker/.env &&
         docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag
           ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current &&
         docker compose
+            --env-file docker/.env.dev-template
             --file docker/docker-compose.yml
             --file docker/docker-compose.dev.yml
           run testcenter-broadcasting-service npx jest --coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Broadcasting service unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:
@@ -1071,16 +1071,16 @@ test-backend-api:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
-    - cp docker/default.env docker/.env
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-backend
   script:
     - docker compose
+          --env-file docker/.env.dev-template
           --file docker/docker-compose.yml
           --file docker/docker-compose.dev.yml
           --file docker/docker-compose.api-test.yml
@@ -1101,17 +1101,17 @@ test-file-service-api:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
-    - cp docker/default.env docker/.env
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-service
   script:
     - docker compose
-          -f docker/docker-compose.yml
-          -f docker/docker-compose.dev.yml
-          -f docker/docker-compose.api-test.yml
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.yml
+          --file docker/docker-compose.dev.yml
+          --file docker/docker-compose.api-test.yml
         run --rm testcenter-task-runner-file-service npm run file-service:api-test
 
 test-backend-initialization:
@@ -1127,21 +1127,55 @@ test-backend-initialization:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - cp docker/default.env docker/.env
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   script:
-    - TEST_NAME=general/db-versions docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/vanilla-installation docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/no-db-but-files docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/install-db-patches docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
-    - TEST_NAME=general/re-initialize docker compose --file docker/docker-compose.initialization-test.yml
-        up --force-recreate --renew-anon-volumes --abort-on-container-exit
+    - TEST_NAME=general/db-versions
+      docker compose
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.initialization-test.yml
+        up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/vanilla-installation
+      docker compose
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.initialization-test.yml
+        up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/no-db-but-files
+      docker compose
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.initialization-test.yml
+        up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/install-db-patches
+      docker compose
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.initialization-test.yml
+        up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
+    - TEST_NAME=general/re-initialize
+      docker compose
+          --env-file docker/.env.dev-template
+          --file docker/docker-compose.initialization-test.yml
+        up
+          --force-recreate
+          --renew-anon-volumes
+          --abort-on-container-exit
+          --exit-code-from=testcenter-initialization-test-backend
 
 test-e2e:
   stage: test
@@ -1164,12 +1198,11 @@ test-e2e:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
-    - cp docker/default.env docker/.env
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
-    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.10
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
     - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
-    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.0-bullseye
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1184,6 +1217,7 @@ test-e2e:
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-e2e
   script:
     - docker compose
+          --env-file docker/.env.dev-template
           --file docker/docker-compose.yml
           --file docker/docker-compose.dev.yml
           --file docker/docker-compose.system-test-headless.yml
@@ -1768,7 +1802,7 @@ pages:
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
-        printf 'Backend build is not necessary.\n' &&
+        printf 'Pages deployment is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   artifacts:

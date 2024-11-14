@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG REGISTRY_PATH=""
-ARG NODE_VERSION=20.17-bookworm
+ARG NODE_VERSION=20.18-bookworm
 
 
 FROM ${REGISTRY_PATH}node:${NODE_VERSION} AS base
@@ -44,7 +44,7 @@ CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--
 
 FROM ${REGISTRY_PATH}nginx:1.26 AS prod
 COPY --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
-COPY ./frontend/config/nginx.conf /etc/nginx/templates/default.conf.template
+COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 

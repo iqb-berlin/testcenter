@@ -19,8 +19,6 @@ services:
 
   testcenter-frontend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
-    volumes:
-      - ./config/nginx.conf:/etc/nginx/templates/default.conf.template
 
   testcenter-broadcasting-service:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
