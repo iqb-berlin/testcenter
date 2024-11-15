@@ -523,7 +523,6 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     if (!defaultOption) {
       throw new Error(`Invalid booklet: state ${stateDef.id} hat no default option`);
     }
-    console.log(stateDef.id, this.presetBookletStates[stateDef.id]);
     return Object.assign(stateDef, {
       current: defaultOption.id,
       default: defaultOption.id,

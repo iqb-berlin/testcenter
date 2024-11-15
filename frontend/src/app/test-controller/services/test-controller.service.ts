@@ -129,15 +129,6 @@ export class TestControllerService {
   }
 
   setupUnitDataPartsBuffer(): void {
-    // console.log('setupUnitDataPartsBuffer');
-    // const start = Date.now();
-    // const timeleft = () => Date.now() - start;
-    // this.bufferEventBus$.subscribe(be => console.log(`[${timeleft()}] BUFFER EVENT | ${be.type} ${be.event} ${be.id}`));
-    // this.testStateBuffer$
-    //   .subscribe(bu => {
-    //     console.log(`:: ${bu.testId}/${bu.unitAlias}: ${bu.state.map(s => `${s.key} : ${s.content}`).join()}`);
-    //   });
-
     this.destroySubscription('unitDataPartsBuffer'); // important when called from unit-test with fakeAsync
 
     const closingSignal = this.createClosingSignal('unit_responses_buffer_time');

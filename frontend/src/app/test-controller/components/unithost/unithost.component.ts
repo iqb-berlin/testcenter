@@ -515,7 +515,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private updatePlayerConfig(navigationState: NavigationState): void {
-    console.log('!! updatePlayerConfig', navigationState);
     if (!this.playerSessionId) {
       return;
     }
