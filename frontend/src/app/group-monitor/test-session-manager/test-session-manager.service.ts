@@ -242,12 +242,12 @@ export class TestSessionManager {
             return apply(session.current?.ancestor?.label || '', nextFilter);
           case 'testState': {
             if (Array.isArray(nextFilter.value)) return false;
-            if (typeof session.data.testState[nextFilter.value] === 'undefined') return false;
+            if (typeof session.data.testState[nextFilter.value] === 'undefined') return nextFilter.not;
             return apply(session.data.testState[nextFilter.value], nextFilter);
           }
           case 'bookletStates': {
             if (Array.isArray(nextFilter.value)) return false;
-            if (!session.bookletStates || typeof session.bookletStates[nextFilter.value] === 'undefined') return false;
+            if (!session.bookletStates || typeof session.bookletStates[nextFilter.value] === 'undefined') return nextFilter.not;
             return apply(session.bookletStates[nextFilter.value], nextFilter);
           }
           case 'state': {
