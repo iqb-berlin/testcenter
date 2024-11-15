@@ -48,6 +48,7 @@ replacements:
 | Key       | Used for     | Default     |
 | :------------- | :---------- | :----------- |
 |booketlet_continueButtonLockedUnit|Label für den Button um bei gesperrten Units weiter zuklicken|Weiter|
+|booklet_blockLockedByAfterLeave|Block kann nicht noch einmal betreten werden|Block kann nicht noch einmal betreten werden|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
 |booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|
@@ -68,6 +69,7 @@ Funktioniert auch nicht? Dann...
 |booklet_loadingBlock|Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde|Aufgabenblock wird geladen|
 |booklet_loadingUnit|Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde|Aufgabe wird geladen|
 |booklet_lockedBlock|Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen|Aufgabenzeit ist abgelaufen|
+|booklet_lockedByAfterLeave|Aufgabe kann nicht noch einmal betreten werden|Aufgabe kann nicht noch einmal betreten werden|
 |booklet_msgNavigationDeniedText_presentationIncomplete|Text der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig gesehen worden ist.|Es müssen erst alle Audio-Dateien vollständig abgespielt werden und auf allen Seiten bis ganz nach unten gescrollt werden.|
 |booklet_msgNavigationDeniedText_responsesIncomplete|Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet worden ist.|Es müssen erst alle Teilaufgaben bearbeitet werden.|
 |booklet_msgNavigationDeniedTitle|Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.|Aufgabe darf nicht verlassen werden|
@@ -81,8 +83,8 @@ Funktioniert auch nicht? Dann...
 |booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|geladen|
 |booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|in der Warteschleife|
 |booklet_unitLoadingUnknownProgress|Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt|wird geladen|
-|booklet_warningLeaveTextPrompt-testlet|Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
-|booklet_warningLeaveTextPrompt-unit|Test für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
+|booklet_warningLeaveTextPrompt-testlet|Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
+|booklet_warningLeaveTextPrompt-unit|Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTextPrompt|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTitle|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
 |booklet_warningLeaveTitle-testlet|Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Aufgabenbereich verlassen?|
@@ -116,6 +118,7 @@ Funktioniert auch nicht? Dann...
 |gm_filter_target_bookletId|Benutzerdefinierter Filter: Ziel - TestheftId|Booklet-Id|
 |gm_filter_target_bookletLabel|Benutzerdefinierter Filter: Ziel - Testhefttitel|Booklettitel|
 |gm_filter_target_bookletSpecies|Benutzerdefinierter Filter: Ziel -Testhefttyp|Testhefttyp|
+|gm_filter_target_bookletStates|Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand|Testheft-Zustand|
 |gm_filter_target_groupName|Benutzerdefinierter Filter: Ziel - Gruppe|Gruppe|
 |gm_filter_target_mode|Benutzerdefinierter Filter: Ziel - Modus|Durchführungsmodus|
 |gm_filter_target_personLabel|Benutzerdefinierter Filter: Ziel - Teilnehmer|Teilnehmer|

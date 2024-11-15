@@ -162,16 +162,16 @@
   "unit_responses_buffer_time": {
     "label": "Speicherfrequenz für Antworten in Ms.",
     "options": {},
-    "defaultvalue": "12000"
+    "defaultvalue": "5000"
   },
   "unit_state_buffer_time": {
     "label": "Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.",
     "options": {},
-    "defaultvalue": "21000"
+    "defaultvalue": "6000"
   },
   "test_state_buffer_time": {
     "label": "Speicherfrequenz für Test-Zustände in Ms.",
     "options": {},
-    "defaultvalue": "700"
+    "defaultvalue": "1000"
   }
 }

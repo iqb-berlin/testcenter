@@ -130,12 +130,12 @@ Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
 
 ### unit_responses_buffer_time
 Speicherfrequenz für Antworten in Ms.
- * **12000**
+ * **5000**
 
 ### unit_state_buffer_time
 Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
- * **21000**
+ * **6000**
 
 ### test_state_buffer_time
 Speicherfrequenz für Test-Zustände in Ms.
- * **700**
+ * **1000**
