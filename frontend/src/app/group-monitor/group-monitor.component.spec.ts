@@ -33,6 +33,9 @@ import {
   unitTestExampleSessions,
   unitTestCommandResponse
 } from './unit-test-example-data.spec';
+import { TemplateContextDirective } from '../shared/directives/template-context.directive';
+import { TimeLeftPipe } from './test-session/timeleft.pipe';
+import { PositionPipe } from './test-session/position.pipe';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -91,7 +94,10 @@ describe('GroupMonitorComponent', () => {
         GroupMonitorComponent,
         TestSessionComponent,
         CustomtextPipe,
-        AlertComponent
+        AlertComponent,
+        TemplateContextDirective,
+        TimeLeftPipe,
+        PositionPipe
       ],
       imports: [
         MatIconModule,

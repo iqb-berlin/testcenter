@@ -5,6 +5,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TestSessionComponent } from './test-session.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
 import { unitTestExampleSessions } from '../unit-test-example-data.spec';
+import { TemplateContextDirective } from '../../shared/directives/template-context.directive';
+import { PositionPipe } from './position.pipe';
 
 describe('TestViewComponent', () => {
   let component: TestSessionComponent;
@@ -12,7 +14,7 @@ describe('TestViewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [TestSessionComponent],
+      declarations: [TestSessionComponent, TemplateContextDirective, PositionPipe],
       imports: [MatIconModule, MatTooltipModule, MatCheckboxModule]
     })
       .compileComponents();

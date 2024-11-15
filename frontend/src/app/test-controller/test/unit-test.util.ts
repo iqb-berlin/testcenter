@@ -1,38 +1,26 @@
-// from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value
-const getCircularReplacer = () => {
-  const ancestors: unknown[] = [];
-  const cycles: unknown[] = [];
-  return function (key: unknown, value: unknown) {
-    if (typeof value !== "object" || value === null) {
+import { isObservable } from 'rxjs';
+import { isTestlet, Testlet, Unit } from '../interfaces/test-controller.interfaces';
+
+export function flattenTestlet(ob: unknown): unknown {
+  return JSON.parse(JSON.stringify(ob, (key: string, value: unknown) => {
+    if (typeof value !== 'object' || value === null) {
       return value;
     }
-    // @ts-ignore
-    while (ancestors.length > 0 && ancestors.at(-1) !== this) {
-      ancestors.pop();
+    if (['parent', 'through'].includes(key)) {
+      const id = ('id' in value) ? value.id : '--';
+      return `[Ref #${id}]`;
     }
-    if (ancestors.includes(value)) {
-      const id = cycles.indexOf(value);
-      return `[Circular Ref #${id}]`;
+    if (isObservable(value)) {
+      return `[Observable ${key}]`;
     }
-    cycles.push(value);
-    ancestors.push(value);
     return value;
-  };
-};
-
-const sortReplacer =  (key: unknown, value: unknown) => {
-  if (typeof value === "object" && value) {
-    return Object.fromEntries(Object.entries(value as object).sort());
-  }
-  return value;
-};
-
-export function json(ob: unknown): unknown {
-  return JSON.parse(JSON.stringify(ob, getCircularReplacer()));
+  }));
 }
 
-export const perSequenceId = <T>(agg: { [index: number]: T }, stuff: T, index: number): { [index: number]: T } => {
-  agg[index + 1] = stuff;
-  return agg;
+export const showStructure = (node: Testlet | Unit | undefined, indent: number = 0): void => {
+  // eslint-disable-next-line no-console
+  console.log(`${Array.from({ length: indent }).map(_ => '---').join('')} ${node?.id || 'undefined'}`);
+  if (node && isTestlet(node)) {
+    node.children.forEach(child => showStructure(child, indent + 1));
+  }
 };
-

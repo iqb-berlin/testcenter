@@ -1,32 +1,28 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// eslint-disable-next-line max-classes-per-file
 import { TestBed } from '@angular/core/testing';
-import { lastValueFrom, Observable, of } from 'rxjs';
+import { lastValueFrom, of } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { TestLoaderService } from './test-loader.service';
 import {
   TestLoadingProtocols,
-  TestBooklet,
-  TestBookletConfig,
+  getTestBookletConfig,
   TestBookletXmlVariants,
-  TestUnitDefinitionsPerSequenceId,
-  TestPlayers,
-  TestUnitStateDataParts,
-  TestUnitPresentationProgressStates,
-  TestUnitResponseProgressStates,
-  TestUnitStateCurrentPages
+  TestPlayers, getTestData
 } from '../test/test-data';
-import { json } from '../test/unit-test.util';
+import { flattenTestlet } from '../test/unit-test.util';
 import { Watcher } from '../test/watcher.util';
 import { MockBackendService } from '../test/mock-backend.service';
 import { MessageService } from '../../shared/services/message.service';
-import { LoadingProgress } from '../interfaces/test-controller.interfaces';
 import { MockMainDataService } from '../test/mock-mds.service';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { ComponentType } from '@angular/cdk/overlay';
+
+const TestBookletConfig = getTestBookletConfig();
+const TestBookletRoot = getTestData().Testlets.root;
 
 const MockCustomtextService = {
   addCustomTexts: () => undefined
@@ -46,6 +42,7 @@ class MockMessageService {
 }
 
 class MockMatDialog {
+  // eslint-disable-next-line class-methods-use-this
   open() {
     return {
       afterClosed: () => of([])
@@ -97,18 +94,9 @@ describe('TestLoaderService', () => {
   });
 
   describe('(loadTest)', () => {
-    it('should load and parse the booklet', async () => {
+    it('should load and parse the booklet, load the units, their definitions and players', async () => {
       await service.loadTest();
-      console.log(json(service.tcs.booklet?.units));
-      console.log('--');
-      console.log(json(TestBooklet));
-      expect(json(service.tcs.booklet?.units)).toEqual(json(TestBooklet));
-      expect(service.tcs.booklet?.config).toEqual(TestBookletConfig);
-    });
-
-    it('should load the units, their definitions and their players', async () => {
-      await service.loadTest();
-      expect(service.tcs.units).toEqual(TestUnitDefinitionsPerSequenceId);
+      expect(flattenTestlet(service.tcs.booklet?.units)).toEqual(flattenTestlet(TestBookletRoot));
       expect(service.tcs.booklet?.config).toEqual(TestBookletConfig);
       expect(service.tcs['players']).toEqual(TestPlayers);
     });
@@ -119,10 +107,6 @@ describe('TestLoaderService', () => {
         service.tcs.testId = testId;
         watcher = new Watcher();
         watcher.watchObservable('tcs.testStatus$', service.tcs.state$);
-        // watcher.watchMethod('tcs', service.tcs, 'setUnitLoadProgress$', { 1: null })
-        //   .subscribe((args: [number, Observable<LoadingProgress>]) => {
-        //     watcher.watchObservable(`tcs.unitContentLoadProgress$[${args[0]}]`, args[1]);
-        //   });
         const everythingLoaded = lastValueFrom(
           watcher.watchProperty('tcs', service.tcs, 'totalLoadingProgress')
             .pipe(takeWhile(p => p < 100))
@@ -173,7 +157,7 @@ describe('TestLoaderService', () => {
         // we have to set up the global error handler here, because what is thrown from inside loadUnit
         // can not be caught otherwise
         window.onerror = message => {
-          expect(message).toEqual('Uncaught Error: resource is missing');
+          expect(message).toContain('resource is missing');
           expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnitContent);
           window.onerror = null;
           done();

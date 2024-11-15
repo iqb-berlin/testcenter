@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Observable, Subject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { AppError } from '../../app.interfaces';
 
 export interface WatcherLogEntry {
   name: string,
@@ -112,8 +113,15 @@ export class Watcher {
         return value;
       })
       .catch(
-        (error: Error | string) => {
-          const errMsg = error instanceof Error ? error.message : error;
+        (error: Error | string | AppError) => {
+          let errMsg: string;
+          if (error instanceof AppError) {
+            errMsg = error.description;
+          } else if (error instanceof Error) {
+            errMsg = error.message;
+          } else {
+            errMsg = error;
+          }
           this.addLog({ name: watcherName, value: '', error: errMsg });
           throw error instanceof Error ? error : new Error(errMsg);
         }

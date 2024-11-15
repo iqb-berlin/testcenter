@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import { MainDataService } from './maindata.service';
 import { BackendService } from '../backend.service';
 
@@ -14,6 +16,12 @@ describe('MainDataService', () => {
         {
           provide: BackendService,
           useValue: new MockBackendService()
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParams: of({})
+          }
         }
       ]
     });
