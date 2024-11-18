@@ -99,6 +99,34 @@ describe('Sys-Check', () => {
       .click();
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
   });
+
+  it('required fields have to be given to save report', () => {
+    cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
+    cy.contains('System-Check Beispiel')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+    cy.get('#syscheck-next-step')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
+    cy.contains('Netzwerk')
+      .should('exist');
+    cy.get('#syscheck-previous-step')
+      .should('be.visible');
+    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.',
+      { timeout: 60000 });
+    cy.get('#syscheck-next-step')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);
+    cy.contains('Bitte prüfen Sie die folgenden Aufgaben-Elemente');
+    cy.get('#syscheck-next-step')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/q`);
+
+    cy.get('#syscheck-next-step')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/r`);
+    cy.contains('Bitte prüfen Sie die Eingaben (unvollständig)');
+  });
 });
 
 describe('System Check as Login', () => {
