@@ -148,7 +148,13 @@ class DAO {
   }
 
   public function beginTransaction(): void {
-    $this->pdoDBhandle->beginTransaction();
+    if (!$this->pdoDBhandle->beginTransaction()) {
+      throw new Exception('PDO: Could not begin Transaction');
+    }
+  }
+
+  public function commitTransaction(): void {
+    $this->pdoDBhandle->commit();
   }
 
   public function rollBack(): void {
