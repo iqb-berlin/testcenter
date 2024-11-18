@@ -51,8 +51,8 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
               type: element.type,
               label: element.prompt,
               value: formControl.value,
-              warning: (['string', 'select', 'radio', 'text']
-                .indexOf(element.type) > -1) && (formControl.value === '') && (element.required)
+              warning: (['string', 'select', 'radio', 'text', 'check']
+                .indexOf(element.type) > -1) && ((formControl.value === '') || (formControl.value === false)) && (element.required)
             });
           }
         }
