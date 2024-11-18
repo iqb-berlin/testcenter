@@ -48,6 +48,18 @@ class InitDAO extends SessionDAO {
       'Sample Booklet 1'
     );
     $testDAO->setTestRunning($test->id);
+    $testDAO->updateUnitState(
+      $test->id,
+      "UNIT.SAMPLE",
+      [
+        [
+          "key" => "PRESENTATIONCOMPLETE",
+          "timeStamp" => 1000,
+          "content" => "yes"
+        ]
+      ],
+      "UNIT.SAMPLE"
+    );
     $testDAO->addTestReview(
       $test->id,
       1,
@@ -75,8 +87,16 @@ class InitDAO extends SessionDAO {
       "example-data-format",
       $timestamp
     );
-    $testDAO->updateUnitState($test->id, "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
-    $testDAO->updateTestState($test->id, ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
+    $testDAO->updateTestState(
+      $test->id,
+      [
+        [
+          "key" => "CURRENT_UNIT_ID",
+          "timeStamp" => 1001,
+          "content" => "UNIT.SAMPLE"
+        ]
+      ]
+    );
     $test2 = $testDAO->createTest(
       $personSession->getPerson()->getId(),
       new TestName('BOOKLET.SAMPLE-3'),
