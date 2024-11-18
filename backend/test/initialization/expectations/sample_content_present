@@ -6,6 +6,7 @@
   |  |  |-SAMPLE_BOOKLET3.XML
   |  |-Resource
   |  |  |-SAMPLE_UNITCONTENTS.HTM
+  |  |  |-coding-scheme.vocs.json
   |  |  |-sample_resource_package
   |  |  |-sample_resource_package.itcr.zip
   |  |  |  |-file.text
