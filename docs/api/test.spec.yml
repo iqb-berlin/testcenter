@@ -141,7 +141,7 @@ paths:
         - in: path
           name: unit_name
           description: unit-name (or alias) as defined in booklet
-          example: 1
+          example: UNIT.SAMPLE
           required: true
           schema:
             type: string
@@ -423,7 +423,7 @@ paths:
         - in: path
           name: unit_name
           description: unit-name (or alias) as defined in booklet
-          example: 1
+          example: UNIT.SAMPLE
           required: true
           schema:
             type: string

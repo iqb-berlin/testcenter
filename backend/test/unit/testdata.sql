@@ -75,17 +75,17 @@ values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1',1, '', 0, 'second test label', 1,
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
 values ('BOOKLET.SAMPLE-1#bookletstate=isset', 'BOOKLET.SAMPLE-1', 5, null, 0, 'review test label', 1, '2022-01-24 09:01:00');
 
-insert into units (name, booklet_id, laststate, original_unit_id)
+insert into units (name, test_id, laststate, original_unit_id)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}', 'UNIT_1');
 
-insert into units (name, booklet_id, laststate, original_unit_id)
+insert into units (name, test_id, laststate, original_unit_id)
 values ('UNIT.SAMPLE', 1, '{"PRESENTATIONCOMPLETE":"yes"}', 'UNIT.SAMPLE');
 
-insert into units (name, booklet_id, laststate, original_unit_id)
+insert into units (name, test_id, laststate, original_unit_id)
 values ('UNIT_1', 3, null, 'UNIT_1');
 
-insert into unit_logs (unit_id, logentry, timestamp)
-values (2, 'sample unit log', '1597903000');
+insert into unit_logs (unit_name, test_id, logentry, timestamp)
+values ('UNIT.SAMPLE', 1, 'sample unit log', '1597903000');
 
 insert into test_logs (booklet_id, logentry, timestamp)
 values (1, 'sample log entry', 1597903000);
@@ -93,17 +93,17 @@ values (1, 'sample log entry', 1597903000);
 insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent)
 values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review', '');
 
-insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent)
-values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review', null, null, '');
+insert into unit_reviews (unit_name, test_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent)
+values ('UNIT_1', 3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review', null, null, '');
 
-insert into unit_data (unit_id, part_id, content, ts, response_type)
-values (1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
+insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
+values ('UNIT_1', 1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
 
-insert into unit_data (unit_id, part_id, content, ts, response_type)
-values (2, 'all', '{"name":"Elias Example","age":35}', 1597903000, 'the-response-type');
+insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
+values ('UNIT.SAMPLE', 1, 'all', '{"name":"Elias Example","age":35}', 1597903000, 'the-response-type');
 
-insert into unit_data (unit_id, part_id, content, ts, response_type)
-values (2, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');
+insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
+values ('UNIT.SAMPLE', 1, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');
 
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp)
