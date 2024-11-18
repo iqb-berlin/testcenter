@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden vieler Dateitypen nun schneller.
+
 ## 15.3.4
 ### bugfixes
 * Fixes in installer und updater script
