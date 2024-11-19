@@ -3,16 +3,14 @@ import {
   deleteFilesSampleWorkspace,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace,
+  openSampleWorkspace, reload,
   resetBackendData,
-  useTestDB,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-files', () => {
   beforeEach(deleteDownloadsFolder);
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
   beforeEach(() => openSampleWorkspace(1));
@@ -162,7 +160,7 @@ describe('Workspace-Admin-files', () => {
       .selectFile('../sampledata/SysCheck.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
-    cy.reload(true);
+    reload();
     cy.get('mat-table >mat-row button >span')
       .contains('SysCheck.xml')
       .should('exist');
@@ -178,18 +176,26 @@ describe('Workspace-Admin-files', () => {
       .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('not.exist');
+
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-6.0"]')
       .should('exist');
+
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
       .should('exist');
+
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('../sampledata/sample_resource_package.itcr.zip', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
@@ -202,7 +208,8 @@ describe('Workspace-Admin-files', () => {
       .selectFile([
         '../sampledata/Unit.xml',
         '../sampledata/verona-player-simple-6.0.html',
-        '../sampledata/SAMPLE_UNITCONTENTS.HTM'
+        '../sampledata/SAMPLE_UNITCONTENTS.HTM',
+        '../sampledata/sample_resource_package.itcr.zip'
       ],
       { force: true }
       );
@@ -251,6 +258,10 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('exist');
     cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('../sampledata/coding-scheme.vocs.json', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit2.xml', { force: true });
     cy.get('[data-cy="close-upload-report"]')
       .click();
@@ -290,6 +301,10 @@ describe('Workspace-Admin-files', () => {
       .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('exist');
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile('../sampledata/coding-scheme.vocs.json', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit2.xml', { force: true });
     cy.get('[data-cy="close-upload-report"]')

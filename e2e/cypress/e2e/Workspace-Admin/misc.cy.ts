@@ -3,13 +3,11 @@ import {
   loginWorkspaceAdmin,
   resetBackendData,
   userData,
-  useTestDB,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin Login', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginWorkspaceAdmin);
 

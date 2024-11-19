@@ -7,7 +7,6 @@ import {
   deleteDownloadsFolder,
   resetBackendData,
   selectFromDropdown,
-  useTestDB,
   loginSuperAdmin,
   openSampleWorkspace,
   visitLoginPage,
@@ -16,7 +15,6 @@ import {
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
 
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
@@ -110,10 +108,7 @@ describe('System Check as Login', () => {
     resetBackendData();
     deleteDownloadsFolder();
   });
-  beforeEach(() => {
-    useTestDB();
-    visitLoginPage();
-  });
+  beforeEach(visitLoginPage);
 
   it('should jump right into system-check, if only one system-check exits in workspace', () => {
     loginTestTaker('syscheck', '', 'sys-check');
