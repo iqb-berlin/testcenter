@@ -65,7 +65,9 @@ After installation two logins are prepared:
 **It is strongly advised to at least change the password under "System-Admin".**
 
 ## Configuration
-Settings can be manipulated in the file `.env`.
+Settings can be manipulated in the file `.env.prod`.
+Check after every update of the testcenter version, whether new configurations have been added to the 
+`.env.prod-template` file, and consider adding them to your `.env.prod` file.
 
 ### TLS
 TLS Certificates can be managed manually or via a ACME provider like "Let's Encrypt" or "Sectigo".

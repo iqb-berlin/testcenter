@@ -46,15 +46,15 @@ Most importantly use your own passwords!
 
 The important configuration files are:
 
-* `.env` - This file contains sensitive information about database access
+* `.env.dev` - This file contains sensitive information about database access
 and user logins
 
 * `testcenter-frontend/src/environments/environment.ts` - Here information about accessing the backend is kept for 
 the frontend component
 
-There is one important setting to be made in the generated file `docker/.env`.
+There is one important setting to be made in the generated file `.env.dev`.
 On the first line, set the variable _HOSTNAME_ to either the IP, or the hostname of the machine
-under which it is reachable if `localhost` does not work.
+under which it is reachable, in case `localhost` does not work.
 
 
 ## 3. Run
@@ -70,3 +70,11 @@ make up
 git pull
 make build
 ```
+
+# Login
+
+After installation two logins are prepared:
+
+- Username `super` and password `user123` as admin user
+
+- Username `test` and password `user123` and code `xxx` as test-taker
