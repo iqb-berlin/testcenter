@@ -19,23 +19,18 @@ layout: default
 
 ### Bugfix
 * Seitenzahl im Studienmonitor wird korrekt angezeigt.
-* In bestimmten Situationen (sehr viele zugriffe, sehr schnelle Zugriffe) wurden Units gelegentlich angelegt und
-  tauchten als zwei Zeilen in den Ergebnisdaten auf. Dies ist behoben.
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
   führen.
-* Über die API konnten (z. B. durch fehlerhafte angeben) Daten zu Units abgespeichert werden, die im Booklet gar nicht
-  vorkamen - behoben.
-* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich Restriktionen zu umgehen.
+* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
 
 ### Verbesserungen
 * Entlastung des Servers durch deutliche Reduktion redundant Calls.
 * Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
   sehr schnellen Vorgängen.
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden vieler Dateitypen nun schneller.  
 
-### :warning: Hinweis für Administratoren
-* Das Updaten der Datenbank kann bei einer größeren vorhandenen Datenmenge an Units sehr lange dauern.
-  Daten aus alten Studien sollten möglichst vorher entfernt werden.
+
 
 
 
