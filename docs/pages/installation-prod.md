@@ -29,28 +29,28 @@ bash install.sh
 
 ## Usage
 ### Start & Stop
-Run application
+Run application in background
 ```
-make run
+make testcenter-up
 ```
-Run application without blocking the console
+Run application with log infos in foreground
 ```
-make run-detached
+make testcenter-up-fg
 ```
 Stop application
 ```
-make stop
+make testcenter-stop
 ```
 Show log output
 ```
-make logs
+make testcenter-logs
 ```
 
 ### Update
 
 To update your installation to the lastest release, run
 ```
-bash update.sh
+make testcenter-update
 ```
 from the installation directory.
 
@@ -65,7 +65,9 @@ After installation two logins are prepared:
 **It is strongly advised to at least change the password under "System-Admin".**
 
 ## Configuration
-Settings can be manipulated in the file `.env`.
+Settings can be manipulated in the file `.env.prod`.
+Check after every update of the testcenter version, whether new configurations have been added to the 
+`.env.prod-template` file, and consider adding them to your `.env.prod` file.
 
 ### TLS
 TLS Certificates can be managed manually or via a ACME provider like "Let's Encrypt" or "Sectigo".

@@ -87,11 +87,6 @@ const updateVersionInFiles = gulp.parallel(
     `${rootPath}/docs/CHANGELOG.md`,
     /## \[next]/g,
     '## $VERSION'
-  ),
-  replaceInFiles(
-    `${rootPath}/dist-src/.env.prod-template`,
-    /VERSION=\d+.\d+.\d+(-\S+)?/g,
-    'VERSION=$VERSION'
   )
 );
 

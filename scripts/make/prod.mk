@@ -1,47 +1,22 @@
-include .env.prod
+TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
+
+include $(TC_BASE_DIR)/.env.prod
 
 ## prevents collisions of make target names with possible file names
-.PHONY: run run-detached down start stop restart status logs config system-prune volumes-prune images-clean connect-db \
-	dump-all restore-all dump-db restore-db dump-db-data-only restore-db-data-only export-backend-vol import-backend-vol \
-	update
+.PHONY: testcenter-up testcenter-up-fg testcenter-down testcenter-start testcenter-stop testcenter-restart\
+ 	testcenter-status testcenter-logs testcenter-config testcenter-system-prune testcenter-volumes-prune\
+ 	testcenter-images-clean testcenter-connect-db testcenter-dump-all testcenter-restore-all testcenter-dump-db\
+ 	testcenter-restore-db testcenter-dump-db-data-only testcenter-restore-db-data-only testcenter-export-backend-vol\
+ 	testcenter-import-backend-vol testcenter-update
 
 ## disables printing the recipe of a make target before executing it
-.SILENT: images-clean
-
-## Pull newest images, create and start docker containers in foreground
-run:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
-		echo "Starting with TLS";\
-		docker compose\
-				--env-file .env.prod\
-				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
-				--file docker-compose.prod.tls.yml\
-			pull;\
-		docker compose\
-				--env-file .env.prod\
-				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
-				--file docker-compose.prod.tls.yml\
-			up --abort-on-container-exit;\
-	else\
-		echo "Starting without TLS";\
-		docker compose\
-				--env-file .env.prod\
-				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
-			pull;\
-		docker compose\
-				--env-file .env.prod\
-				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
-			up --abort-on-container-exit;\
-	fi
+.SILENT: testcenter-images-clean
 
 ## Pull newest images, create and start docker containers in background
-run-detached:
+testcenter-up:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
 		echo "Starting with TLS";\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -56,6 +31,7 @@ run-detached:
 			up --detach;\
 	else\
 		echo "Starting without TLS";\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -66,11 +42,44 @@ run-detached:
 				--file docker-compose.yml\
 				--file docker-compose.prod.yml\
 			up --detach;\
+	fi
+
+## Pull newest images, create and start docker containers in foreground
+testcenter-up-fg:
+	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		echo "Starting with TLS";\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+				--file docker-compose.prod.tls.yml\
+			pull;\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+				--file docker-compose.prod.tls.yml\
+			up --abort-on-container-exit;\
+	else\
+		echo "Starting without TLS";\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+			pull;\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+			up --abort-on-container-exit;\
 	fi
 
 ## Stop and remove docker containers
-down:
+testcenter-down:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -78,6 +87,7 @@ down:
 				--file docker-compose.prod.tls.yml\
 			down;\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -86,9 +96,10 @@ down:
 	fi
 
 ## Start docker containers
-# Param (optional): SERVICE - Start the specified service only, e.g. `make start SERVICE=testcenter-db`
-start:
+# Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=testcenter-db`
+testcenter-start:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -96,6 +107,7 @@ start:
 				--file docker-compose.prod.tls.yml\
 			start $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -104,9 +116,10 @@ start:
 	fi
 
 ## Stop docker containers
-# Param (optional): SERVICE - Stop the specified service only, e.g. `make stop SERVICE=testcenter-db`
-stop:
+# Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=testcenter-db`
+testcenter-stop:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -114,6 +127,7 @@ stop:
 				--file docker-compose.prod.tls.yml\
 			stop $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -122,9 +136,10 @@ stop:
 	fi
 
 ## Restart docker containers
-# Param (optional): SERVICE - Restart the specified service only, e.g. `make start SERVICE=testcenter-db`
-restart:
+# Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=testcenter-db`
+testcenter-restart:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -132,6 +147,7 @@ restart:
 				--file docker-compose.prod.tls.yml\
 			restart $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -140,9 +156,10 @@ restart:
 	fi
 
 ## Show status of containers
-# Param (optional): SERVICE - Show status of the specified service only, e.g. `make status SERVICE=testcenter-db`
-status:
+# Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=testcenter-db`
+testcenter-status:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -150,6 +167,7 @@ status:
 				--file docker-compose.prod.tls.yml\
 			ps -a $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -158,9 +176,10 @@ status:
 	fi
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make logs SERVICE=testcenter-db`
-logs:
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=testcenter-db`
+testcenter-logs:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -168,6 +187,7 @@ logs:
 				--file docker-compose.prod.tls.yml\
 			logs -f $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -176,9 +196,10 @@ logs:
 	fi
 
 ## Show services configuration
-# Param (optional): SERVICE - Show config of the specified service only, e.g. `make config SERVICE=testcenter-db`
-config:
+# Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=testcenter-db`
+testcenter-config:
 	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -186,6 +207,7 @@ config:
 				--file docker-compose.prod.tls.yml\
 			config $(SERVICE);\
 	else\
+		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
@@ -194,74 +216,75 @@ config:
 	fi
 
 ## Remove unused dangling images, containers, networks, etc. Data volumes will stay untouched!
-system-prune:
+testcenter-system-prune:
 	docker system prune
 
 ## Remove all anonymous local volumes not used by at least one container.
-volumes-prune:
+testcenter-volumes-prune:
 	docker volume prune
 
 ## Remove all unused (not just dangling) images!
-images-clean:
+testcenter-images-clean:
 	if test "$(shell docker images -f reference=iqbberlin/testcenter-* -q)";\
 		then docker rmi $(shell docker images -f reference=iqbberlin/testcenter-* -q);\
 	fi
 
 ## Open DB console
-connect-db:
+testcenter-connect-db:
 	docker exec -it testcenter-db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
 
 ## Extract all databases into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-sql-format.html)
-dump-all:
+testcenter-dump-all:
 	docker exec testcenter-db mysqldump --verbose --all-databases --add-drop-database --user=root\
-		--password=$(MYSQL_ROOT_PASSWORD) >backup/temp/all-databases.sql
+		--password=$(MYSQL_ROOT_PASSWORD) >$(TC_BASE_DIR)/backup/temp/all-databases.sql
 
 ## Mysql interactive terminal reads commands from the dump file all-databases.sql
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
-restore-all:
-	sed -i 's/\/\*!40000 DROP DATABASE IF EXISTS `mysql`\*\/;/ /g' backup/temp/all-databases.sql
+testcenter-restore-all:
+	sed -i 's/\/\*!40000 DROP DATABASE IF EXISTS `mysql`\*\/;/ /g' $(TC_BASE_DIR)/backup/temp/all-databases.sql
 	docker exec -i testcenter-db mysql --verbose --user=root --password=$(MYSQL_ROOT_PASSWORD)\
-		<backup/temp/all-databases.sql
+		<$(TC_BASE_DIR)/backup/temp/all-databases.sql
 
 ## Extract a database into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-sql-format.html)
-dump-db:
+testcenter-dump-db:
 	docker exec testcenter-db mysqldump --verbose --add-drop-database --user=$(MYSQL_USER)\
-		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >backup/temp/$(MYSQL_DATABASE).sql
+		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
 
 ## Restore a database from a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
-restore-db:
+testcenter-restore-db:
 	docker exec -i testcenter-db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
-		<backup/temp/$(MYSQL_DATABASE).sql
+		<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
 
 ## Extract a database data into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-definition-data-dumps.html)
-dump-db-data-only:
+testcenter-dump-db-data-only:
 	docker exec testcenter-db mysqldump --verbose --no-create-info --user=$(MYSQL_USER)\
-		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >backup/temp/$(MYSQL_DATABASE)-data.sql
+		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
 
 ## Restore a database data from a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
-restore-db-data-only:
+testcenter-restore-db-data-only:
 	docker exec -i testcenter-db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
-		<backup/temp/$(MYSQL_DATABASE)-data.sql
+		<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
 
 ## Creates a gzip'ed tarball in temporary backup directory from backend data (backend has to be up!)
-export-backend-vol:
+testcenter-export-backend-vol:
 	docker run --rm\
 			--volumes-from testcenter-backend\
-			--volume $(CUR_DIR)/backup/temp:/tmp\
+			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
 		busybox tar cvzf /tmp/backend_vo_data.tar.gz /var/www/testcenter/data
 
 ## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (backend has to be up!)
-import-backend-vol:
-	docker run --rm \
+testcenter-import-backend-vol:
+	docker run --rm\
 			--volumes-from testcenter-backend\
-			--volume $(CUR_DIR)/backup/temp:/tmp\
-		busybox sh -c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vo_data.tar.gz --strip-components 4"
+			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
+		busybox sh\
+			-c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vo_data.tar.gz --strip-components 4"
 
 # Start testcenter update procedure
-update:
-	bash scripts/update.sh
+testcenter-update:
+	bash $(TC_BASE_DIR)/scripts/update.sh
