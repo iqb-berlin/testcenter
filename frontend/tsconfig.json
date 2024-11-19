@@ -13,6 +13,11 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict":true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": false, // enable this with ts 5.5, when tyype narrowing is improved
+    "strictFunctionTypes": true,
+    "noImplicitOverride": true,
     "target": "es2022",
     "typeRoots": [
       "node_modules/@types"
@@ -37,6 +42,9 @@
       ]
     },
     "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
   },
   "exclude": [
     "node_modules",

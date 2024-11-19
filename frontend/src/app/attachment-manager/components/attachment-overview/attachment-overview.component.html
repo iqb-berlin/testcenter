@@ -4,7 +4,7 @@
       <button
         *ngIf="sidenav.opened"
         mat-icon-button
-        [matTooltip]="'Seiteleiste' | customtext:'am_sidebar_button' | async"
+        [matTooltip]="('Seiteleiste' | customtext:'am_sidebar_button' | async) || ''"
         matTooltipPosition="above"
         (click)="sidebarClick()"
       >
@@ -117,7 +117,7 @@
         <button
             *ngIf="!sidenav.opened && (this.selectedAttachmentIndex === -1)"
             mat-icon-button
-            [matTooltip]="'Anhang hinzufügen' | customtext:'am_add_button' | async"
+            [matTooltip]="('Anhang hinzufügen' | customtext:'am_add_button' | async) || ''"
             matTooltipPosition="above"
             (click)="addClick()"
         >

@@ -42,6 +42,7 @@ class Version {
     ];
   }
 
+  /** @return (string|int)[] */
   static function split(string $versionString): array {
     $objectVersionParts = preg_split("/[.-]/", $versionString);
 

@@ -1,128 +1,117 @@
 <div [class]="{
-  'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
-  'with-title': tcs.bookletConfig.unit_title === 'ON',
-  'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-  'is-waiting': currentUnit?.unitDef?.lockedByTime || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
-  <div *ngIf="tcs.bookletConfig.unit_title === 'ON'" class="unit-title">
-    <h2 data-cy="unit-title">{{currentUnit?.unitDef?.title}}</h2>
+  'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF',
+  'with-title': tcs.booklet?.config?.unit_title === 'ON',
+  'with-footer': tcs.booklet?.config?.page_navibuttons === 'SEPARATE_BOTTOM',
+  'is-waiting': (tcs.currentUnit && tcs.currentUnit.parent.locked) || ((resourcesLoading$ | async) || []).length
+}">
+  <div *ngIf="tcs.booklet?.config?.unit_title === 'ON'" class="unit-title">
+    <h2 data-cy="unit-title">{{tcs.currentUnit ? tcs.currentUnit.label : ''}}</h2>
     <mat-divider></mat-divider>
   </div>
 
   <div #iframeHost id="iframe-host"></div>
 
-  <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-    <div id="waiting-room"  *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.lockedByTime || codeRequiringTestlets.length">
-      <mat-card appearance="raised">
-        <mat-card-header>
-          <mat-card-title data-cy="unit-block-dialog-title">
-            {{(loadingUnits.list.length > 1 || currentUnit.codeRequiringTestlets.length) ? currentUnit?.testletLabel : currentUnit?.unitDef?.title}}
-          </mat-card-title>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
-            {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="loadingUnits.list.length === 1">
-            {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit?.unitDef?.lockedByTime">
-            {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
-          </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="currentUnit.codeRequiringTestlets.length && !currentUnit?.unitDef?.lockedByTime">
-            {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
-          </mat-card-subtitle>
-        </mat-card-header>
+  <ng-container *ngIf="tcs.currentUnit as unit">
+    <ng-container *ngIf="resourcesLoading$ | async as loadingResources">
+      <div id="waiting-room" *ngIf="loadingResources.length || unit.parent.locked">
+        <mat-card appearance="raised">
+          <mat-card-header>
+            <mat-card-title data-cy="unit-block-dialog-title">
+              {{(loadingResources.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
+            </mat-card-title>
+            <mat-card-subtitle *ngIf="loadingResources.length > 1">
+              {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="loadingResources.length === 1">
+              {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'time'">
+              {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'code'">
+              {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'show'">
+              {{'Aufgabenblock steht nicht zur Verfügung' | customtext:'booklet_blockConditionNotSatisfied' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'afterLeave'">
+              {{'Aufgabenblock kann nur einmal betreten werden' | customtext:'booklet_blockLockedByAfterLeave' | async}}
+            </mat-card-subtitle>
+            <mat-card-subtitle *ngIf="unit.lockedAfterLeaving">
+              {{'Aufgabe kann nur einmal betreten werden' | customtext:'booklet_lockedByAfterLeave' | async}}
+            </mat-card-subtitle>
+          </mat-card-header>
 
-          <mat-card-content *ngIf="codeRequiringTestlets.length">
-            <ng-container *ngFor="let testlet of codeRequiringTestlets">
-              <mat-form-field appearance="outline" style="display: block" >
-                <input
-                  matInput
-                  type="text"
-                  [(ngModel)]="clearCodes[testlet.id]"
-                  style="text-transform:uppercase"
-                  (keydown)="onKeydownInClearCodeInput($event)"
-                  data-cy="unlockUnit"
-                  matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
-                >
-              </mat-form-field>
-              <tc-alert
-                level="info"
-                *ngIf="!testlet.codePrompt"
-                customtext="booklet_codeToEnterPrompt"
-                text="Bitte Freigabewort eingeben!"
-              ></tc-alert>
-              <tc-alert
-                level="info"
-                *ngIf="testlet.codePrompt"
-                [text]="testlet.codePrompt"
-              ></tc-alert>
-              <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
-            </ng-container>
+          <mat-card-content *ngIf="unit.parent.locked?.by === 'code'">
+            <mat-form-field appearance="outline" style="display: block" >
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="clearCode"
+                style="text-transform:uppercase"
+                (keydown)="onKeydownInClearCodeInput($event)"
+                data-cy="unlockUnit"
+              >
+            </mat-form-field>
+            <tc-alert
+              level="info"
+              *ngIf="!unit.parent.locked?.through?.restrictions?.codeToEnter"
+              customtext="booklet_codeToEnterPrompt"
+              text="Bitte Freigabewort eingeben!"
+            ></tc-alert>
+            <tc-alert level="warning" customtext="booklet_codeToEnterWarning"></tc-alert>
           </mat-card-content>
+
           <mat-card-content>
-            <ng-container *ngFor="let loading of loadingUnits.list; let index = index">
+            <ng-container *ngFor="let loading of loadingResources; let index = index">
               <mat-progress-bar
                 color="primary"
-                [mode]="({'UNKNOWN': 'indeterminate', 'PENDING': 'query'})[loading.progress] || 'determinate'"
+                [mode]="loading | progressbarmode"
                 [value]="loading.progress"
               >
               </mat-progress-bar>
-            <p class="progress-bar-sub-text">
-              {{unitsToLoadLabels[index]}}
-              <ng-container [ngSwitch]="loading.progress">
-                <span *ngSwitchCase="'UNKNOWN'">
-                  ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
-                </span>
-                <span *ngSwitchCase="'PENDING'">
-                  ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
-                </span>
-                <span *ngSwitchDefault>
-                  ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
-                </span>
-              </ng-container>
-            </p>
-          </ng-container>
-        </mat-card-content>
-        <mat-card-actions [style.justify-content]="'space-between'">
-          <button
-            *ngIf="codeRequiringTestlets.length"
-            mat-raised-button
-            color="primary"
-            [disabled]="(clearCodes | keyvalue)?.length < codeRequiringTestlets.length"
-            (click)="verifyCodes()"
-            data-cy="unit-block-dialog-submit"
-          >
-            {{'Weiter' | customtext:'booklet_continueButtonLockedUnit' | async}}
-          </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId === 0"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück"
-          >
-            <i class="material-icons">chevron_left</i>
-          </button>
-          <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
-          >
-            <i class="material-icons">chevron_right</i>
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
+              <p class="progress-bar-sub-text">
+                {{resourcesToLoadLabels[index]}}
+                <ng-container [ngSwitch]="loading.progress">
+                  <span *ngSwitchCase="'UNKNOWN'">
+                    ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
+                  </span>
+                  <span *ngSwitchCase="'PENDING'">
+                    ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
+                  </span>
+                  <span *ngSwitchDefault>
+                    ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
+                  </span>
+                </ng-container>
+              </p>
+            </ng-container>
+          </mat-card-content>
+
+          <mat-card-actions [style.justify-content]="'space-between'">
+            <button
+              *ngIf="tcs.currentUnit && unit.parent.locked?.by == 'code'"
+              mat-raised-button
+              color="primary"
+              [disabled]="!clearCode.length"
+              (click)="verifyCodes()"
+              data-cy="unit-block-dialog-submit"
+            >
+              OK
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </ng-container>
   </ng-container>
 
-
   <div
-    *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'
-      && pageLabels && pageLabels.length && (pageLabels.length > 1)"
-    class="page-navigation">
+    *ngIf="tcs.booklet?.config?.page_navibuttons === 'SEPARATE_BOTTOM' && pageLabels && pageLabels.length && (pageLabels.length > 1)"
+    class="page-navigation"
+  >
     <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
       <tc-page-nav
         [pageLabels]="pageLabels"
-        [currentPageIndex]="this.tcs.currentPageIndex"
+        [currentPageIndex]="this.currentPageIndex"
         (navToPage)="gotoPage($event)"
         (navPrevious)="gotoPreviousPage()"
         (navNext)="gotoNextPage()">

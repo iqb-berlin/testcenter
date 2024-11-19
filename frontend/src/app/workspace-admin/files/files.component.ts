@@ -75,6 +75,10 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
 
+  IQBFileContext?: {
+    $implicit: IQBFile
+  };
+
   constructor(
     private bs: BackendService,
     public wds: WorkspaceDataService,

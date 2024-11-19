@@ -56,6 +56,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
+    bookletStatesColumns: [],
     highlightSpecies: false,
     manualChecking: false
   };
@@ -67,6 +68,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   quickFilterBoxOpen: boolean = false;
 
   messages: UIMessage[] = [];
+
+  bookletStates: { [p: string]: string } = {};
 
   private subscriptions: Subscription[] = [];
 
@@ -147,6 +150,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!this.tsm.checkingOptions.enableAutoCheckAll) {
       this.displayOptions.manualChecking = true;
     }
+
+    this.bookletStates = stats.bookletStateLabels;
   }
 
   private onCheckedChange(stats: TestSessionSetStats): void {
@@ -167,8 +172,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
     if (Object.keys(this.displayOptions).includes(option)) {
-      (this.displayOptions as { [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey] })[option] = value;
+      (this.displayOptions as {
+        [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey]
+      })[option] = value;
     }
+  }
+
+  toggleBookletStatesColumn(column: string): void {
+    this.displayOptions.bookletStatesColumns =
+      (this.displayOptions.bookletStatesColumns.includes(column)) ?
+        this.displayOptions.bookletStatesColumns.filter(c => c !== column) :
+        [...this.displayOptions.bookletStatesColumns, column].sort();
   }
 
   scrollDown(): void {
@@ -380,13 +394,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         this.tsm.filterOptions[filter.id] = { selected: true, filter, source: 'profile' };
       });
 
+    this.displayOptions.bookletStatesColumns = (p.settings.bookletStatesColumns || '').split(/[\W,]+/);
+
     Object.entries(p.filtersEnabled || [])
       .forEach(([f, onOff]) => {
         if (this.tsm.filterOptions[f]) {
           this.tsm.filterOptions[f].selected = ['1', 'true', 'on', 'yes'].includes(onOff);
         }
       });
-
     this.tsm.refreshFilters();
   }
 }

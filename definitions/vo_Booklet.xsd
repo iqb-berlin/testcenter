@@ -31,6 +31,24 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="States" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="State" type="StateDefinitionType" minOccurs="0" maxOccurs="unbounded">
+                <xs:unique name="stateOptionId">
+                  <xs:selector xpath="./Option|./DefaultOption" />
+                  <xs:field xpath="@id" />
+                </xs:unique>
+
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+          <xs:unique name="stateId">
+            <xs:selector xpath=".//State" />
+            <xs:field xpath="@id" />
+          </xs:unique>
+        </xs:element>
+
         <xs:element name="Units" type="FirstTestletType">
           <xs:unique name="unitId">
             <xs:selector xpath=".//Unit" />
@@ -42,16 +60,63 @@
             <xs:field xpath="@id" />
           </xs:unique>
         </xs:element>
-
       </xs:all>
     </xs:complexType>
+
+    <xs:key name="StateIdKey"  >
+      <xs:selector xpath="./States/State" />
+      <xs:field xpath="@id" />
+    </xs:key>
+    <xs:keyref name="StateIdReference" refer="StateIdKey">
+      <xs:selector xpath=".//Restrictions/Show" />
+      <xs:field xpath="@if" />
+    </xs:keyref>
   </xs:element>
+
+  <xs:simpleType name="stateId">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-z\d-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="StateDefinitionType">
+    <xs:sequence>
+      <xs:element name="Option" type="OptionType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="id" type="stateId" use="required" />
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="BaseOptionType">
+    <xs:attribute name="id" type="stateId" use="required"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="OptionType">
+    <xs:complexContent>
+      <xs:extension base="BaseOptionType">
+        <xs:sequence>
+          <xs:element name="If" type="Condition" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DefaultOptionType">
+    <xs:complexContent>
+      <xs:extension base="BaseOptionType">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 
   <xs:complexType name="TestletRestrictionsType">
     <xs:sequence>
       <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
       <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+      <xs:element name="Show" type="ShowRestrictionType" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
+      <xs:element name="LockAfterLeaving" type="LockAfterLeavingRestrictionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
@@ -90,6 +155,107 @@
         <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="response" />
       </xs:extension>
     </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="LockAfterLeavingRestrictionType">
+    <xs:attribute type="xs:boolean" name="confirm" />
+    <xs:attribute type="LockAfterLeavingRestrictionScopeType" name="scope" />
+  </xs:complexType>
+
+  <xs:simpleType name="LockAfterLeavingRestrictionScopeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unit" />
+      <xs:enumeration value="testlet" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ShowRestrictionType">
+    <xs:complexContent>
+      <xs:restriction base="xs:anyType">
+        <xs:attribute name="if" type="xs:string" />
+        <xs:attribute name="is" type="xs:string" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ValueType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="CodeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ScoreType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of" use="required" />
+        <xs:attribute type="xs:string" name="from" use="required" />
+        <xs:attribute type="xs:float" name="or" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="StatusType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="of"/>
+        <xs:attribute type="xs:string" name="from"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ConditionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:float" name="lowerThan"/>
+        <xs:attribute type="xs:float" name="greaterThan"/>
+        <xs:attribute type="xs:string" name="equal"/>
+        <xs:attribute type="xs:string" name="notEqual"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="Condition">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element type="ValueType" name="Value"/>
+        <xs:element type="StatusType" name="Status"/>
+        <xs:element type="CodeType" name="Code"/>
+        <xs:element type="ScoreType" name="Score"/>
+        <xs:element type="VariableAggregation" name="Sum" />
+        <xs:element type="VariableAggregation" name="Median" />
+        <xs:element type="VariableAggregation" name="Mean" />
+        <xs:element type="ConditionAggregation" name="Count" />
+      </xs:choice>
+      <xs:element type="ConditionType" name="Is"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="VariableAggregation">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element type="ValueType" name="Value" minOccurs="2" maxOccurs="unbounded"/>
+        <xs:element type="CodeType" name="Code" minOccurs="2" maxOccurs="unbounded"/>
+        <xs:element type="ScoreType" name="Score" minOccurs="2" maxOccurs="unbounded"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConditionAggregation">
+    <xs:sequence>
+      <xs:element type="Condition" name="If" minOccurs="2" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="FirstRestrictionsType">

@@ -179,7 +179,7 @@ final class AdminDAOTest extends TestCase {
         'groupname' => 'review_group',
         'loginname' => 'test-review',
         'code' => '',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
+        'bookletname' => 'BOOKLET.SAMPLE-1#bookletstate=isset',
         'unitname' => 'UNIT_1',
         'priority' => 1,
         'categories' => '',
@@ -194,7 +194,7 @@ final class AdminDAOTest extends TestCase {
         'groupname' => 'review_group',
         'loginname' => 'test-review',
         'code' => '',
-        'bookletname' => 'BOOKLET.SAMPLE-1',
+        'bookletname' =>  'BOOKLET.SAMPLE-1#bookletstate=isset',
         'unitname' => '',
         'priority' => 1,
         'categories' => '',
@@ -289,9 +289,7 @@ final class AdminDAOTest extends TestCase {
     $this->assertSame($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
-    $this->dbc->_(
-      "insert into tests (name, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')"
-    );
+    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
     $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 4)");
 
     $expectation = [

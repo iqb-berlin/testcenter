@@ -1,24 +1,31 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// eslint-disable-next-line max-classes-per-file
 import { TestBed } from '@angular/core/testing';
-import { lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom, of } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { CustomtextService } from '../../shared/shared.module';
+import { MatDialog } from '@angular/material/dialog';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { TestLoaderService } from './test-loader.service';
 import {
-  TestLoadingProtocols, TestBooklet, TestBookletConfig, TestBookletXmlVariants, TestPlayers,
-  TestUnitDefinitionsPerSequenceId, TestUnitPresentationProgressStates, TestUnitResponseProgressStates,
-  TestUnitStateCurrentPages, TestUnitStateDataParts
-} from '../unit-test-data/test-data';
-import { LoadingProgress } from '../interfaces/test-controller.interfaces';
-import { json } from '../unit-test-data/unit-test.util';
-import { Watcher } from '../unit-test-data/watcher.util';
-import { MockBackendService } from '../unit-test-data/mock-backend.service';
+  TestLoadingProtocols,
+  getTestBookletConfig,
+  TestBookletXmlVariants,
+  TestPlayers, getTestData
+} from '../test/test-data';
+import { flattenTestlet } from '../test/unit-test.util';
+import { Watcher } from '../test/watcher.util';
+import { MockBackendService } from '../test/mock-backend.service';
 import { MessageService } from '../../shared/services/message.service';
+import { MockMainDataService } from '../test/mock-mds.service';
+
+const TestBookletConfig = getTestBookletConfig();
+const TestBookletRoot = getTestData().Testlets.root;
 
 const MockCustomtextService = {
+  addCustomTexts: () => undefined
 };
 
 const MockRouter = {
@@ -34,6 +41,15 @@ class MockMessageService {
   showError(text: string): void {}
 }
 
+class MockMatDialog {
+  // eslint-disable-next-line class-methods-use-this
+  open() {
+    return {
+      afterClosed: () => of([])
+    };
+  }
+}
+
 let service: TestLoaderService;
 
 describe('TestLoaderService', () => {
@@ -42,6 +58,10 @@ describe('TestLoaderService', () => {
       providers: [
         TestLoaderService,
         TestControllerService,
+        {
+          provide: MatDialog,
+          useValue: new MockMatDialog()
+        },
         {
           provide: BackendService,
           useValue: new MockBackendService()
@@ -57,6 +77,10 @@ describe('TestLoaderService', () => {
         {
           provide: MessageService,
           useValue: MockMessageService
+        },
+        {
+          provide: MainDataService,
+          useValue: new MockMainDataService()
         }
       ]
     });
@@ -70,25 +94,11 @@ describe('TestLoaderService', () => {
   });
 
   describe('(loadTest)', () => {
-    it('should load and parse the booklet', async () => {
+    it('should load and parse the booklet, load the units, their definitions and players', async () => {
       await service.loadTest();
-      expect(json(service.tcs.rootTestlet)).toEqual(json(TestBooklet));
-      expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
-    });
-
-    it('should load the units, their definitions and their players', async () => {
-      await service.loadTest();
-      expect(service.tcs['unitDefinitions']).toEqual(TestUnitDefinitionsPerSequenceId);
-      expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
+      expect(flattenTestlet(service.tcs.booklet?.units)).toEqual(flattenTestlet(TestBookletRoot));
+      expect(service.tcs.booklet?.config).toEqual(TestBookletConfig);
       expect(service.tcs['players']).toEqual(TestPlayers);
-    });
-
-    it('should restore previous unit-states when loading test', async () => {
-      await service.loadTest();
-      expect(service.tcs['unitStateDataParts']).toEqual(TestUnitStateDataParts);
-      expect(service.tcs['unitPresentationProgressStates']).toEqual(TestUnitPresentationProgressStates);
-      expect(service.tcs['unitResponseProgressStates']).toEqual(TestUnitResponseProgressStates);
-      expect(service.tcs['unitStateCurrentPages']).toEqual(TestUnitStateCurrentPages);
     });
 
     describe('should load booklet, units, unit-contents and players in the right order and track progress', () => {
@@ -96,11 +106,7 @@ describe('TestLoaderService', () => {
       const loadTestWatched = async (testId: keyof typeof TestBookletXmlVariants) => {
         service.tcs.testId = testId;
         watcher = new Watcher();
-        watcher.watchObservable('tcs.testStatus$', service.tcs.testStatus$);
-        watcher.watchMethod('tcs', service.tcs, 'setUnitLoadProgress$', { 1: null })
-          .subscribe((args: [number, Observable<LoadingProgress>]) => {
-            watcher.watchObservable(`tcs.unitContentLoadProgress$[${args[0]}]`, args[1]);
-          });
+        watcher.watchObservable('tcs.testStatus$', service.tcs.state$);
         const everythingLoaded = lastValueFrom(
           watcher.watchProperty('tcs', service.tcs, 'totalLoadingProgress')
             .pipe(takeWhile(p => p < 100))
@@ -151,7 +157,7 @@ describe('TestLoaderService', () => {
         // we have to set up the global error handler here, because what is thrown from inside loadUnit
         // can not be caught otherwise
         window.onerror = message => {
-          expect(message).toEqual('Uncaught Error: resource is missing');
+          expect(message).toContain('resource is missing');
           expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnitContent);
           window.onerror = null;
           done();

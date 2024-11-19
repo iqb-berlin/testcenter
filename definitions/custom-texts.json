@@ -11,6 +11,30 @@
     "label" : "Schalterbeschriftung für 'Zurück zum Test'",
     "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
   },
+  "booklet_warningLeaveTitle-testlet" : {
+    "label" : "Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Aufgabenbereich verlassen?"
+  },
+  "booklet_warningLeaveTitle-unit" : {
+    "label" : "Titel für Warnung (Dialogbox) einer nur einmal betretbaren Aufgabe.",
+    "defaultvalue" : "Aufgabe verlassen?"
+  },
+  "booklet_warningLeaveTextPrompt-testlet" : {
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_warningLeaveTextPrompt-unit" : {
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_blockLockedByAfterLeave" : {
+    "label": "Block kann nicht noch einmal betreten werden",
+    "defaultvalue": "Block kann nicht noch einmal betreten werden"
+  },
+  "booklet_lockedByAfterLeave" : {
+    "label": "Aufgabe kann nicht noch einmal betreten werden",
+    "defaultvalue": "Aufgabe kann nicht noch einmal betreten werden"
+  },
   "login_bookletSelectPromptNull" : {
     "label" : "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
     "defaultvalue" : "Beendet. Es können keine weiteren Testhefte gestartet werden."
@@ -195,6 +219,10 @@
     "label" : "Spalte: Aufgabe",
     "defaultvalue" : "Aufgabe"
   },
+  "gm_col_states" : {
+    "label" : "Spalte: Booklet-Zustände",
+    "defaultvalue" : "Zustände"
+  },
   "gm_view_full" : {
     "label" : "Ansicht: Vollständig",
     "defaultvalue" : "Vollständig"
@@ -322,6 +350,10 @@
   "gm_filter_target_testState": {
     "label": "Benutzerdefinierter Filter: Ziel - detaillierter Teststatus",
     "defaultvalue": "detaillierter Teststatus"
+  },
+  "gm_filter_target_bookletStates": {
+    "label": "Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand",
+    "defaultvalue": "Testheft-Zustand"
   },
   "gm_filter_type_equal": {
     "label": "Benutzerdefinierter Filter: Typ - gleicht",

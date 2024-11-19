@@ -10,10 +10,12 @@ describe('TestSessionUtil', () => {
         id,
         label: id,
         children: [],
+        restrictions: { },
         descendantCount: NaN
       });
       const expectations: { [unitId: string]: UnitContext } = {
         'unit-1': {
+          unit: undefined,
           indexGlobal: 0,
           indexAncestor: 0,
           indexLocal: 0,
@@ -21,6 +23,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('root')
         },
         'unit-2': {
+          unit: undefined,
           indexGlobal: 1,
           indexAncestor: 1,
           indexLocal: 1,
@@ -28,6 +31,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('root')
         },
         'unit-3': {
+          unit: undefined,
           indexGlobal: 2,
           indexAncestor: 0,
           indexLocal: 0,
@@ -35,6 +39,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('alf')
         },
         'unit-4': {
+          unit: undefined,
           indexGlobal: 3,
           indexAncestor: 1,
           indexLocal: 0,
@@ -42,6 +47,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('alf')
         },
         'unit-5': {
+          unit: undefined,
           indexGlobal: 4,
           indexAncestor: 2,
           indexLocal: 1,
@@ -49,6 +55,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('alf')
         },
         'unit-6': {
+          unit: undefined,
           indexGlobal: 5,
           indexAncestor: 3,
           indexLocal: 0,
@@ -56,6 +63,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('alf')
         },
         'unit-7': {
+          unit: undefined,
           indexGlobal: 6,
           indexAncestor: 4,
           indexLocal: 1,
@@ -63,6 +71,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('alf')
         },
         'unit-8': {
+          unit: undefined,
           indexGlobal: 7,
           indexAncestor: 2,
           indexLocal: 2,
@@ -70,6 +79,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('root')
         },
         'unit-9': {
+          unit: undefined,
           indexGlobal: 8,
           indexAncestor: 0,
           indexLocal: 0,
@@ -77,6 +87,7 @@ describe('TestSessionUtil', () => {
           ancestor: fakeTestlet('ellie')
         },
         'unit-10': {
+          unit: undefined,
           indexGlobal: 9,
           indexAncestor: 1,
           indexLocal: 0,

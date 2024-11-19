@@ -20,8 +20,14 @@ export const deleteDownloadsFolder = (): void => {
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
-      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-checks)`) }).as('waitForConfig');
-      cy.visit(url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`);
+      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-checks)`) })
+        .as('waitForConfig');
+      const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
+      cy.visit(`${startPage}?testMode=true`, { timeout: 30000 });
+      cy.url().then(url => {
+        cy.task('logOut', url);
+        cy.log(url);
+      });
       cy.wait('@waitForConfig');
     }
   });
@@ -33,9 +39,28 @@ export const resetBackendData = (): void => {
   })
     .its('status').should('eq', 200);
   cy.request({
-    url: `${Cypress.env('urls').backend}/flush-broadcasting-service`
+    url: `${Cypress.env('urls').backend}/flush-broadcasting-service`,
+    headers: { TestMode: 'integration' }
   })
     .its('status').should('eq', 200);
+};
+
+export const disableSimplePlayersInternalDebounce = (): void => {
+  const playerSettings = '?debounceStateMessages=0&debounceKeyboardEvents=0';
+  cy.intercept(
+    {
+      url: `${Cypress.env('urls').fileService}/file/static:group:runhotret/ws_1/Resource/verona-player-simple-6.0.html`
+    },
+    req => {
+      req.headers.TestMode = 'integration';
+      req.reply(res => {
+        res.body = res.body.replace(
+          /const overridePlayerSettings = (location\.search);/,
+          `const overridePlayerSettings = "${playerSettings}"`
+        );
+      });
+    }
+  );
 };
 
 export const insertCredentials = (username: string, password = ''): void => {
@@ -67,48 +92,34 @@ export const logoutAdmin = (): Chainable => cy.url()
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
+
+    if (url === 'about:blank') {
+      cy.log('BUG OCCURED');
+      cy.task('logOut', 'BUG OCCURED, URL is: ' + url);
+      return visitLoginPage().then(logoutTestTaker);
+    }
+
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
-      // we don't know which calls the testcontroller have left (unit state, test state etc.) so waiting for a time
-      // seems to be the least bad solution
+      cy.log('not on starter')
       cy.get('[data-cy="logo"]')
-        .should('exist')
         .click();
       if (fileType === 'hot') {
+        cy.log('end test');
         cy.contains(/^Der Test ist aktiv.$/);
-        cy.get('[data-cy="resumeTest-1"]')
-          .should('exist');
+        cy.get('[data-cy="resumeTest-1"]');
         cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
-          .should('exist')
           .click();
         cy.url()
           .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
         cy.wait('@waitForGetSession');
-        cy.get('[data-cy="logout"]')
-          .should('exist')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-      } else if (fileType === 'demo') {
-        cy.get('[data-cy="logout"]')
-          .should('exist')
-          .click();
       }
-    } else {
-      cy.get('[data-cy="logout"]')
-        .should('exist')
-        .click();
     }
+    cy.get('[data-cy="logout"]')
+      .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
-
-export const hardLogOut = (): void => {
-  // this might replace logoutTestTaker once
-  cy.clearLocalStorage();
-  cy.clearCookies();
-  cy.reload(true);
-};
 
 export const openSampleWorkspace = (workspace: number): void => {
   cy.get(`[data-cy="workspace-${workspace}"]`)
@@ -116,6 +127,14 @@ export const openSampleWorkspace = (workspace: number): void => {
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/admin/${workspace}/files`);
+};
+
+export const openSampleWorkspace2 = (): void => {
+  cy.get('[data-cy="workspace-2"]')
+    .should('exist')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/admin/2/files`);
 };
 
 export const loginSuperAdmin = (): void => {
@@ -160,7 +179,7 @@ export const loginTestTaker =
     // eslint-disable-next-line default-case
     switch (expectedView) {
       case 'test-hot':
-        cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
+        cy.wait(['@commands']);
       // eslint-disable-next-line no-fallthrough
       case 'test':
         cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
@@ -289,34 +308,31 @@ export const deleteTesttakersFiles = (): void => {
     .should('not.exist');
 };
 
-export const useTestDB = () : void => {
-  cy.intercept(new RegExp(`(${Cypress.env('urls').backend}|${Cypress.env('urls').fileService})/.*`), req => {
-    req.headers.TestMode = 'integration';
-  }).as('testMode');
-};
-
 export const useTestDBSetDate = (timestamp: string) : void => {
   cy.intercept(new RegExp(`${Cypress.env('urls').backend}/.*`), req => {
     req.headers.TestClock = timestamp;
   }).as('testClock');
 };
 
-export const convertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<string>> => {
   const regex = /[\\]/g;
 
-  const splitCSVLogin = str => str.split('\n')
+  const splitCSVFile = str => str.split('\n')
     .map(row => row.replaceAll(regex, ''));
 
+  cy.task('logOut', { fileType });
+
   if (fileType === 'responses') {
+    cy.task('logOut', 'ok');
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .then(splitCSVLogin);
+      .then(file => cy.task('logOut', { file }).then(() => splitCSVFile(file)));
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
-      .then(splitCSVLogin);
+      .then(splitCSVFile);
   }
   return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-    .then(splitCSVLogin);
+    .then(splitCSVFile);
 };
 
 export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
@@ -336,13 +352,18 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
   throw new Error(`Unknown filetype: ${fileType}`);
 };
 
-export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => cy.get('iframe')
-  .its('0.contentDocument.body')
-  .should('be.visible')
-  .then(cy.wrap)
-  .find(selector);
+export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {
+  cy.get('iframe')
+    .its('0.contentDocument.body')
+    .as('iframeBody')
+    .should('be.visible');
+  return cy.get('@iframeBody')
+    .find(selector);
+};
 
 export const forwardTo = (expectedLabel: string): void => {
+  cy.get('[data-cy="unit-navigation-forward"]')
+    .should('not.have.class', 'marked');
   cy.get('[data-cy="unit-navigation-forward"]')
     .click();
   cy.get('[data-cy="unit-title"]')
@@ -358,6 +379,13 @@ export const backwardsTo = (expectedLabel: string): void => {
     .should('exist')
     .contains(new RegExp(`^${expectedLabel}$`))
     .should('exist');
+};
+
+export const gotoPage = (pageIndex: number): void => {
+  cy.get(`[data-cy="page-navigation-${pageIndex}"]`)
+    .click();
+  cy.get(`[data-cy="page-navigation-${pageIndex}"]`)
+    .should('have.class', 'selected-value');
 };
 
 export const readBlockTime = (): Promise <number> => new Promise(resolve => {

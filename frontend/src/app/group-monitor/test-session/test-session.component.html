@@ -33,7 +33,7 @@
   (click)="deselect($event)"
   (contextmenu)="deselectForce($event)"
 >
-  <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
+  <ng-container *ngIf="isBooklet(testSession.booklet); else: noBooklet">
     <div class="vertical-align-middle" [matTooltip]="testSession.booklet.metadata.label">
       {{testSession.booklet.metadata.label}}
     </div>
@@ -48,8 +48,8 @@
     {{current.parent.label || current.parent.blockId || current.parent.id}}
     <mat-icon
       class="unit-badge"
-      *ngIf="testSession.timeLeft && (testSession?.timeLeft[current.parent.id] !== undefined)"
-      matBadge="{{testSession?.timeLeft[current.parent.id] | number: '1.0-0'}}"
+      *ngIf="testSession | timeleft : current.parent as timeLeft"
+      matBadge="{{timeLeft | number: '1.0-0'}}"
       matBadgeColor="accent"
       matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async}}"
     >schedule
@@ -58,7 +58,7 @@
 </td>
 
 <td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-  <ng-container *ngIf="!testSession?.booklet?.error; else: noBookletReason">
+  <ng-container *ngIf="isBooklet(testSession.booklet); else: noBookletReason">
     <div
       *ngIf="testSession.booklet.units as testlet"
       class="units-container"
@@ -87,82 +87,92 @@
   </ng-container>
 
   <ng-template #noBookletReason>
-    <span *ngIf="testSession.booklet.error == 'missing-id'">
-      {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
-      {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
-      {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
-    </span>
-    <span *ngIf="testSession.booklet.error == 'general'" class="warning">
-      {{'Fehler beim Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
-    </span>
+    <ng-container *ngIf="!isBooklet(testSession.booklet)">
+      <span *ngIf="testSession.booklet.error == 'missing-id'">
+        {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
+        {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
+        {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
+      </span>
+      <span *ngIf="testSession.booklet.error == 'general'" class="warning">
+        {{'Fehler beim Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
+      </span>
+    </ng-container>
   </ng-template>
 </td>
 
-<ng-template #testletFull let-testlet>
-  <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testlet }"></ng-container>
+<ng-template #testletFull let-testlet [appTemplateContext]="testletContext">
 
-  <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
+  <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testlet }"></ng-container>
+
+    <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
+      <span
+        *ngIf="!isTestlet(testletOrUnit)"
+        [class]="{
+          unit: true,
+          current: testSession.current?.unit?.alias === testletOrUnit.alias
+        }"
+        matTooltip="{{testletOrUnit.label}}"
+        matTooltipPosition="above"
+      >
+        {{testletOrUnit.labelShort || "&nbsp;"}}
+      </span>
+
+      <ng-container *ngIf="isTestlet(testletOrUnit)">
+        <ng-container *ngIf="testSession | testletvisible : testletOrUnit">
+          <span
+            [class]="{
+              testlet: true,
+              selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+              marked: isMarked(testletOrUnit) && testletOrUnit.blockId
+            }"
+            (mouseenter)="mark(testletOrUnit)"
+            (click)="select($event, testletOrUnit)"
+            matTooltip="{{testletOrUnit.label}}"
+          >
+            <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
+          </span>
+        </ng-container>
+      </ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #bookletMedium let-testlet [appTemplateContext]="testletContext">
+  <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {$implicit: testlet}">
+  </ng-container>
+</ng-template>
+
+<ng-template #testletTemplateMedium let-testlet [appTemplateContext]="testletContext">
+
+  <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits">
+
     <span
-      *ngSwitchCase="'unit'"
-      [class]="{
-        unit: true,
-        current: testSession.data.unitName === testletOrUnit.id
-      }"
-      matTooltip="{{testletOrUnit.label}}"
-      matTooltipPosition="above"
-    >
-      {{testletOrUnit.labelShort || "&nbsp;"}}
-    </span>
-
-    <span *ngSwitchCase="'testlet'"
-      [class]="{
-        testlet: true,
-        selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
-        marked: isMarked(testletOrUnit) && testletOrUnit.blockId
-      }"
-      (mouseenter)="mark(testletOrUnit)"
-      (click)="select($event, testletOrUnit)"
-      matTooltip="{{testletOrUnit.label}}"
-    >
-      <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
-    </span>
-  </ng-container>
-</ng-template>
-
-
-<ng-template #bookletMedium let-testlet>
-  <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet}">
-  </ng-container>
-</ng-template>
-
-
-<ng-template #testletTemplateMedium let-testlet="testlet">
-
-  <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
-
-    <span *ngSwitchCase="'unit'"
-      [class]="(testSession.data.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
+      *ngIf="!isTestlet(testletOrUnit)"
+      [class]="(testSession.data.unitName === testletOrUnit.alias) ? 'unit current': 'unit'"
       matTooltip="{{testletOrUnit.label}}"
       matTooltipPosition="above"
     >·
     </span>
 
     <span
-      *ngSwitchCase="'testlet'"
+      *ngIf="isTestlet(testletOrUnit)"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
-      [class]="{ 'timeup' : testletOrUnit.restrictions?.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession?.timeLeft[testletOrUnit.id] === 0 }"
+      [class]="{
+        timeup: testletOrUnit.restrictions.timeMax &&
+          testSession.timeLeft &&
+          testSession.timeLeft.hasOwnProperty(testletOrUnit.id) &&
+          testSession.timeLeft[testletOrUnit.id] === 0
+      }"
     >
 
-      <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testletOrUnit }"></ng-container>
+      <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testletOrUnit }"></ng-container>
 
-      <ng-container *ngIf="testSession.current; else: unFeaturedTestlet">
+      <ng-container *ngIf="testSession.current && (testSession.current.ancestor.id === testletOrUnit.id); else: unFeaturedTestlet">
         <span
-          *ngIf="testSession.current.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
           [class]="{
             unit: true,
             aggregated: true,
@@ -170,12 +180,12 @@
             selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
             marked: isMarked(testletOrUnit) && testletOrUnit.blockId
           }"
-          matTooltip="{{testSession.current.unit.label}}"
+          matTooltip="{{testSession.current.unit?.label}}"
           matTooltipPosition="above"
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
         >
-          {{testSession.current.indexAncestor + 1}} / {{testSession.current.ancestor.descendantCount}}
+          {{testSession | position : testletOrUnit}}
         </span>
       </ng-container>
 
@@ -189,9 +199,9 @@
           }"
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
-        >{{testletOrUnit.descendantCount}}</span>
+        >{{testSession | position : testletOrUnit}}</span>
       </ng-template>
-  </span>
+    </span>
   </ng-container>
 </ng-template>
 
@@ -199,25 +209,26 @@
 <ng-template #bookletSmall let-testlet>
   <span
     class="testlet" *ngIf="testSession.current; else: unFeaturedTestlet"
-    matTooltip="{{testSession.current.parent?.label}}"
+    matTooltip="{{testSession.current.parent.label}}"
   >
     <span
+      *ngIf="isBooklet(testSession.booklet)"
       class="unit current aggregated"
-      matTooltip="{{testSession.current.unit.label}}"
+      matTooltip="{{testSession.current.unit?.label}}"
       matTooltipPosition="above"
     >
-      {{testSession.current.indexGlobal + 1}} / {{testSession.booklet.units.descendantCount}}
+      {{testSession | position : testlet}}
     </span>
   </span>
 
   <ng-template #unFeaturedTestlet>
     <span class="testlet" >
-      <span class="unit aggregated">{{testlet.descendantCount}}</span>
+      <span class="unit aggregated">{{testSession | position : testlet}}</span>
     </span>
   </ng-template>
 </ng-template>
 
-<ng-template #restrictions let-testlet="testlet">
+<ng-template #restrictions let-testlet [appTemplateContext]="testletContext">
   <span
     *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
     class="unit restriction"
@@ -225,7 +236,7 @@
     matTooltipPosition="above"
   >
     <mat-icon>
-      {{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}
+      {{(testSession | iscodeclear : testlet) ? 'lock_open' : 'lock'}}
     </mat-icon>
   </span>
 
@@ -257,7 +268,7 @@
 
 <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-    <h2 matTooltip="{{current.unit.label}}">{{current.unit.id}}</h2>
+    <h2 matTooltip="{{current.unit?.label}}">{{current.unit?.id}}</h2>
     <mat-icon
       class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'PRESENTATION_PROGRESS', 'complete')"
@@ -279,3 +290,25 @@
     </mat-icon>
   </div>
 </td>
+
+<ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+  <td
+    class="booklet-states"
+    (click)="deselect($event)"
+    (contextmenu)="deselectForce($event)"
+    *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)"
+  >
+    <div class="vertical-align-middle">
+      <ng-container *ngIf="isBooklet(testSession.booklet)">
+        <ng-container *ngIf="testSession.bookletStates && testSession.bookletStates[bookletState.key]; else defaultOption">
+          {{testSession.booklet.states[bookletState.key].options[testSession.bookletStates[bookletState.key]].label}}
+        </ng-container>
+        <ng-template #defaultOption>
+          <ng-container *ngIf="testSession.booklet.states[bookletState.key]">
+            {{testSession.booklet.states[bookletState.key].options[testSession.booklet.states[bookletState.key].default].label}}
+          </ng-container>
+        </ng-template>
+      </ng-container>
+    </div>
+  </td>
+</ng-container>

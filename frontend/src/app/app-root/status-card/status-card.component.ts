@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../../shared/shared.module';
-import { AuthData } from '../../app.interfaces';
 
 @Component({
   selector: 'tc-status-card',

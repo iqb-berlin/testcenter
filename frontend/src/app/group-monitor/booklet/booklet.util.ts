@@ -1,24 +1,31 @@
 import {
-  Booklet, isTestlet, isUnit, Testlet, Unit
+  Booklet, isTestlet, isUnit, Testlet
 } from '../group-monitor.interfaces';
+import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 export class BookletUtil {
-  static getFirstUnit(testletOrUnit: Testlet | Unit): Unit | null {
-    while (!isUnit(testletOrUnit)) {
-      if (!testletOrUnit.children.length) {
-        return null;
-      }
-      // eslint-disable-next-line no-param-reassign,prefer-destructuring
-      testletOrUnit = testletOrUnit.children[0];
-    }
-    return testletOrUnit;
+  static getFirstUnit(
+    testletOrUnit: Testlet | UnitDef,
+    ignoreTestlet: (tetslet: Testlet) => boolean = () => false
+  ): UnitDef | null {
+    if (isUnit(testletOrUnit)) return testletOrUnit;
+    if (ignoreTestlet(testletOrUnit)) return null;
+    return testletOrUnit.children
+      .reduce((firstUnit: UnitDef | null, child: Testlet | UnitDef) => {
+        if (firstUnit) return firstUnit;
+        return (isUnit(child) ? child : BookletUtil.getFirstUnit(child, ignoreTestlet));
+      }, null);
   }
 
-  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): Unit | null {
+  static getFirstUnitOfBlock(
+    blockId: string,
+    booklet: Booklet,
+    ignoreTestlet: (testlet: Testlet) => boolean = () => false
+  ): UnitDef | null {
     for (let i = 0; i < booklet.units.children.length; i++) {
       const child = booklet.units.children[i];
       if (!isUnit(child) && (child.blockId === blockId)) {
-        return BookletUtil.getFirstUnit(child);
+        return BookletUtil.getFirstUnit(child, ignoreTestlet);
       }
     }
     return null;

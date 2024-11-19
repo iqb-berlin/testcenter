@@ -1,21 +1,16 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmDialogComponent,
   CustomtextService,
-  MainDataService,
-  MessageDialogComponent, MessageDialogData,
+  MainDataService, MessageDialogComponent, MessageDialogData,
   PasswordChangeService
 } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   templateUrl: './starter.component.html',
@@ -115,8 +110,6 @@ export class StarterComponent implements OnInit, OnDestroy {
               });
             });
           }
-        } else {
-          this.reloadTestList();
         }
       });
     });

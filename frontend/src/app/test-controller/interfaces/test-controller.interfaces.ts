@@ -1,29 +1,41 @@
-// used everywhere
-import { VeronaProgress } from './verona.interfaces';
+import { Observable } from 'rxjs';
+import { CodingScheme } from '@iqb/responses';
+import {
+  BookletDef,
+  BookletStateDef,
+  BookletStateOptionDef,
+  TestletDef,
+  UnitDef
+} from '../../shared/interfaces/booklet.interfaces';
+import { IQBVariable } from './iqb.interfaces';
+import { VeronaNavigationTarget, VeronaNavigationTargetValues, VeronaProgress } from './verona.interfaces';
+
+export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
 export interface LoadingQueueEntry {
   sequenceId: number;
-  definitionFile: string;
+  file: string;
+  type: LoadingQueueEntryTypeType
 }
 
 export interface KeyValuePairString {
   [K: string]: string;
 }
 
-export enum WindowFocusState {
-  PLAYER = 'PLAYER',
-  HOST = 'HOST',
-  UNKNOWN = 'UNKNOWN'
-}
+export type WindowFocusState =
+  | 'PLAYER'
+  | 'HOST'
+  | 'UNKNOWN';
 
 export type UnitData = {
   dataParts: KeyValuePairString;
   unitResponseType: string;
-  state: { [k in UnitStateKey]?: string };
+  state: UnitState;
   definition : string;
+  definitionType: string;
 };
 
-export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer';
+export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer' | 'usesScheme';
 
 export interface TestDataResourcesMap {
   [unitId: string]: {
@@ -38,91 +50,87 @@ export interface TestData {
   resources: TestDataResourcesMap;
   firstStart: boolean;
   workspaceId: number;
+  presetBookletStates: { [ k :string]: string };
 }
 
-export enum TestStateKey {
-  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-  FOCUS = 'FOCUS',
-  CONTROLLER = 'CONTROLLER',
-  CONNECTION = 'CONNECTION'
-}
+export type TestControllerState =
+  | 'INIT'
+  | 'LOADING'
+  | 'RUNNING'
+  | 'TERMINATED'
+  | 'TERMINATED_PAUSED'
+  | 'PAUSED'
+  | 'ERROR';
 
-/**
- * TestState.state
- * In what state is the whole controller?
- */
-export enum TestControllerState {
-  INIT = 'INIT',
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING',
-  TERMINATED = 'TERMINATED',
-  TERMINATED_PAUSED = 'TERMINATED_PAUSED',
-  FINISHED = 'FINISHED',
-  PAUSED = 'PAUSED',
-  ERROR = 'ERROR'
-}
+export type AppFocusState =
+  | 'HAS'
+  | 'HAS_NOT';
 
-/**
- * TestState.FOCUS
- * Do the application-window has focus or not (because another window or tab has it)?
- */
-export enum AppFocusState {
-  HAS = 'HAS',
-  HAS_NOT = 'HAS_NOT',
-  DEAD = 'DEAD'
-}
+export type TestStateConnectionValue =
+  | 'WEBSOCKET'
+  | 'POLLING';
 
-/**
- * TestState.CONNECTION
- * What kind of connection to the server do we have to receive possible commands from a group-monitor?
- * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
- */
-export enum TestStateConnectionValue {
-  WEBSOCKET = 'WEBSOCKET',
-  POLLING = 'POLLING'
-}
+export type TestLogEntryKey =
+  | 'LOADCOMPLETE';
 
-export enum TestLogEntryKey {
-  LOADCOMPLETE = 'LOADCOMPLETE'
-}
+export type UnitPlayerState =
+  | 'LOADING'
+  | 'RUNNING';
 
-export interface StateReportEntry {
-  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
-  timeStamp: number;
-  content: string;
-}
+export type TestState = {
+  CURRENT_UNIT_ID: string;
+  TESTLETS_TIMELEFT: string;
+  TESTLETS_CLEARED_CODE: string;
+  TESTLETS_LOCKED_AFTER_LEAVE: string;
+  BOOKLET_STATES: { [state: string]: string };
+  UNITS_LOCKED_AFTER_LEAVE: string;
+  FOCUS: AppFocusState;
+  CONTROLLER: UnitPlayerState;
+  CONNECTION: TestStateConnectionValue;
+};
+
+export type UnitState = {
+  PRESENTATION_PROGRESS?: VeronaProgress;
+  RESPONSE_PROGRESS?: VeronaProgress;
+  CURRENT_PAGE_ID?: string;
+  CURRENT_PAGE_NR?: number;
+  PAGE_COUNT?: number;
+  PLAYER?: string;
+};
+
+export type TestStateKey = keyof TestState;
+
+export type UnitStateKey =
+  | 'PRESENTATION_PROGRESS'
+  | 'RESPONSE_PROGRESS'
+  | 'CURRENT_PAGE_ID'
+  | 'CURRENT_PAGE_NR'
+  | 'PAGE_COUNT'
+  | 'PLAYER';
 
 export interface UnitDataParts {
-  unitDbKey: string;
+  testId: string;
+  unitAlias: string;
   dataParts: KeyValuePairString;
   unitStateDataType: string;
 }
 
-export enum UnitPlayerState {
-  LOADING = 'LOADING',
-  RUNNING = 'RUNNING',
-  PAGE_NAVIGATING = 'PAGE_NAVIGATING'
+export interface StateReportEntry<StateType extends string> {
+  key: StateType
+  timeStamp: number;
+  content: string;
 }
 
-export enum UnitStateKey {
-  PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
-  RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
-  CURRENT_PAGE_ID = 'CURRENT_PAGE_ID',
-  CURRENT_PAGE_NR = 'CURRENT_PAGE_NR',
-  PAGE_COUNT = 'PAGE_COUNT',
-  PLAYER = 'PLAYER'
+export interface StateUpdate<StateType extends string> {
+  state: StateReportEntry<StateType>[];
+  testId: string;
+  unitAlias: string;
 }
 
-export interface UnitStateUpdate {
-  unitDbKey: string;
-  state: StateReportEntry[]
-}
+export type TestStateUpdate = StateUpdate<TestStateKey>;
+export type UnitStateUpdate = StateUpdate<UnitStateKey>;
 
-// for testcontroller service ++++++++++++++++++++++++++++++++++++++++
-
-export enum MaxTimerDataType {
+export enum MaxTimerEvent {
   STARTED = 'STARTED',
   STEP = 'STEP',
   CANCELLED = 'CANCELLED',
@@ -130,48 +138,13 @@ export enum MaxTimerDataType {
   ENDED = 'ENDED'
 }
 
-export interface UnitNaviButtonData {
-  sequenceId: number;
-  disabled: boolean;
-  shortLabel: string;
-  longLabel: string;
-  testletLabel: string;
-  isCurrent: boolean;
-}
-
-// for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export interface PageData {
-  index: number;
-  id: string;
-  type: '#next' | '#previous' | '#goto';
-  disabled: boolean;
-}
-
 export interface ReviewDialogData {
   loginname: string;
   bookletname: string;
-  unitDbKey: string;
+  unitAlias: string;
   unitTitle: string;
   currentPageIndex: number;
   currentPageLabel: string;
-}
-
-export enum NoUnitFlag {
-  END = 'end',
-  ERROR = 'error'
-}
-
-export interface PendingUnitData {
-  playerId: string;
-  unitDefinition: string;
-  currentPage: string | null;
-  unitDefinitionType: string;
-  unitState: {
-    unitStateDataType: string;
-    dataParts: KeyValuePairString;
-    presentationProgress: VeronaProgress;
-    responseProgress: VeronaProgress;
-  }
 }
 
 export interface KeyValuePairNumber {
@@ -195,6 +168,7 @@ export const commandKeywords = [
   'resume',
   'debug'
 ];
+
 export type CommandKeyword = (typeof commandKeywords)[number];
 export function isKnownCommand(keyword: string): keyword is CommandKeyword {
   return (commandKeywords as readonly string[]).includes(keyword);
@@ -207,20 +181,18 @@ export interface Command {
   timestamp: number;
 }
 
+type CommandFunction = (args: string[]) => void;
+
+export type TcPublicApi = Record<CommandKeyword, CommandFunction>;
+
 export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'ALWAYS';
 export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
-  return ['ON', 'OFF', 'ALWAYS'].indexOf(s) > -1;
+  return ['ON', 'OFF', 'ALWAYS'].includes(s);
 }
-
-
-export const maxTimeLeaveValues = ['confirm', 'forbidden'];
-export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
 
 export interface LoadingProgress {
   progress: number | 'UNKNOWN' | 'PENDING';
 }
-
-// export type LoadingProgress = LoadingProgressSpecial | LoadingProgressRegular;
 
 export interface LoadedFile {
   content: string;
@@ -230,4 +202,85 @@ export type LoadingFile = LoadingProgress | LoadedFile;
 
 export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is LoadedFile {
   return 'content' in loadingFile;
+}
+
+export interface Unit extends UnitDef {
+  readonly sequenceId: number;
+  readonly parent: Testlet;
+  readonly localIndex: number;
+  unitDefinitionType: string;
+  variables: { [variableId: string]: IQBVariable };
+  baseVariableIds: string[];
+  playerFileName: string;
+  scheme: CodingScheme;
+  responseType: string | undefined;
+  definition: string;
+  state: UnitState;
+  dataParts: KeyValuePairString; // in never versions of verona dataParts is part of state.
+  // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
+  loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };
+  lockedAfterLeaving: boolean;
+  pageLabels: { [id: string]: string };
+}
+
+export const TestletLockTypes = ['show', 'time', 'code', 'afterLeave'] as const;
+
+export type TestletLockType = typeof TestletLockTypes[number];
+
+export interface Testlet extends TestletDef<Testlet, Unit> {
+  readonly blockLabel: string;
+  locks: Required<{ [ type in TestletLockType ]: boolean }>
+  locked: {
+    by: TestletLockType;
+    through: Testlet;
+  } | null;
+  timerId: string | null;
+
+}
+
+export interface BookletStateOption extends BookletStateOptionDef {
+  firstUnsatisfiedCondition: number;
+}
+
+export interface BookletState extends BookletStateDef<BookletStateOption> {
+  override: string | undefined;
+  current: string;
+  default: string;
+}
+
+export type Booklet = BookletDef<Testlet, BookletState>;
+
+export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
+  return !('children' in testletOrUnit);
+}
+
+export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
+  return !isUnit(testletOrUnit);
+}
+
+export type NavigationTargets = Readonly<Record<VeronaNavigationTarget, number | null>>;
+export const navigationDirections = ['forward', 'backward'] as const;
+export type NavigationDirection = typeof navigationDirections[number];
+export type NavigationDirectionValue = 'yes' | 'no' | 'markedNo';
+export type NavigationDirections = Readonly<Record<NavigationDirection, NavigationDirectionValue>>;
+export interface NavigationState {
+  readonly targets: NavigationTargets;
+  readonly directions: NavigationDirections;
+}
+
+export const isEqualNavigation = (a: NavigationState, b: NavigationState): boolean => [
+  ...VeronaNavigationTargetValues
+    .map(target => (a.targets[target] === b.targets[target])),
+  ...navigationDirections
+    .map(direction => (a.directions[direction] === b.directions[direction]))
+].filter(x => x).length > 0;
+
+export const bufferTypes = ['testState', 'unitState', 'unitData'] as const;
+export type BufferType = typeof bufferTypes[number];
+export const bufferEventTypes = ['closed', 'saved'] as const;
+export type BufferEventType = typeof bufferEventTypes[number];
+export interface BufferEvent {
+  event: BufferEventType;
+  type: BufferType;
+  id: string;
 }

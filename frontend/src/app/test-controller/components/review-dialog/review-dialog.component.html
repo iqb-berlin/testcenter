@@ -17,11 +17,10 @@
           <mat-radio-button value="b" [matTooltip]="data.bookletname" data-cy="comment-diag-currentBklt">
             aktuelles Testheft "{{ data.bookletname }}"
           </mat-radio-button>
-          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey"
-                            data-cy="comment-diag-currentUnit">
-            aktuelle Aufgabe "{{ data.unitTitle }}"
+          <mat-radio-button value="u" [disabled]="data.unitAlias.length === 0" [matTooltip]="data.unitAlias" data-cy="comment-diag-currentUnit">
+            aktuelle Aufgabe/Seite "{{ data.unitTitle }}"
           </mat-radio-button>
-          <mat-radio-button value="p" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.currentPageLabel"
+          <mat-radio-button value="p" [disabled]="data.unitAlias.length === 0" [matTooltip]="data.currentPageLabel"
                             data-cy="comment-diag-currentPage">
             folgende Teilaufgabe:
           </mat-radio-button>

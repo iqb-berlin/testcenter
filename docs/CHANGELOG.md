@@ -1,9 +1,38 @@
 ---
 layout: default
 ---
+
 ## [next]
+### neue Features
+* Adaptive Testen, Bonusaufgaben und Filterführung
+  * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
+    Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/
+  * Varianten verschiedener des desselben Booklets sind nun möglich in dem Ver
+    (z. B. mit und ohne Befragung, mit Anleitung für Tablet oder mit Anleitung für PC)
+    Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/#konfiguration-in-der-testtaker-xml
+  * Filtern nach Bestimmten Bookletzuständen im Gruppenmonitor ist nun möglich.
+* "Ford only" Modus:
+  * Booklet-Parameter `unit_navibuttons` hat nun die Option `FORWARD_ONLY`, so das nur der Vorwortknopf gezeigt wird.
+  * Neue Restriction `<LockafterLeaving>` erlaubt das automatische (und endgültige sperren) nach Verlassen der Unit,
+    um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
+    zeile, die Browsernavigation, das Seitenmenü oder andere Weise zurücknavigiert werden kann.
+
+### Bugfix
+* Seitenzahl im Studienmonitor wird korrekt angezeigt.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
+
 ### Verbesserungen
-* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden vieler Dateitypen nun schneller.
+* Entlastung des Servers durch deutliche Reduktion redundant Calls.
+* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
+  sehr schnellen Vorgängen.
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden vieler Dateitypen nun schneller.  
+
+
+
+
 
 ## 15.3.4
 ### bugfixes

@@ -38,7 +38,7 @@ const routes: Routes = [
       },
       {
         path: 'login',
-        redirectTo: 'route-dispatcher',
+        component: LoginComponent,
         pathMatch: 'full'
       },
       {
@@ -117,7 +117,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {})],
+  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
   exports: [RouterModule],
   providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard,
     CodeInputComponentActivateGuard, AdminComponentActivateGuard,

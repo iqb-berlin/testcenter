@@ -42,7 +42,11 @@ class InitDAO extends SessionDAO {
     $loginSession = $sessionDAO->createLoginSession($testLogin);
 
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
-    $test = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', 'Sample Booklet 1');
+    $test = $testDAO->createTest(
+      $personSession->getPerson()->getId(),
+      new TestName('BOOKLET.SAMPLE-1'),
+      'Sample Booklet 1'
+    );
     $testDAO->setTestRunning($test->id);
     $testDAO->addTestReview(
       $test->id,
@@ -73,7 +77,11 @@ class InitDAO extends SessionDAO {
     );
     $testDAO->updateUnitState($test->id, "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
     $testDAO->updateTestState($test->id, ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
-    $test2 = $testDAO->createTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', 'Sample Booklet 2');
+    $test2 = $testDAO->createTest(
+      $personSession->getPerson()->getId(),
+      new TestName('BOOKLET.SAMPLE-2'),
+      'Sample Booklet 2'
+    );
     $testDAO->lockTest($test2->id);
     $testDAO->setTestRunning($test2->id);
   }

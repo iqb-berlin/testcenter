@@ -19,6 +19,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
@@ -30,6 +31,13 @@ import { UnitActivateGuard } from './routing/unit-activate.guard';
 import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
 import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
 import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
+import { DebugPaneComponent } from './components/debug-pane/debug-pane.component';
+import { PogressBarModePipe } from './pipes/progress-bar-mode.pipe';
+import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
+import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
+import { PropertiesPipe } from './pipes/properties.pipe';
+import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
+import { MatSelectModule } from '@angular/material/select';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -57,14 +65,22 @@ export { TestControllerService } from './services/test-controller.service';
     FormsModule,
     MatSidenavModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatAutocompleteModule,
+    MatSelectModule
   ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,
     ReviewDialogComponent,
     TestStatusComponent,
-    UnitMenuComponent
+    UnitMenuComponent,
+    DebugPaneComponent,
+    PogressBarModePipe,
+    UnitInaccessiblePipe,
+    UnitNavBarComponent,
+    PropertiesPipe,
+    SchemeAsTextPipe
   ],
   providers: [
     UnitActivateGuard,

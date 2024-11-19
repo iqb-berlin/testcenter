@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode
 } from '../../../shared/shared.module';
@@ -17,20 +17,19 @@ import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
 import { TestControllerComponent } from './test-controller.component';
 import {
-  Command, TestControllerState, TestData, UnitNaviButtonData, WindowFocusState
+  Command, TestControllerState, TestData, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
-import { MaxTimerData } from '../../classes/test-controller.classes';
-import { UnitMenuComponent } from '../unit-menu/unit-menu.component';
+import { TimerData } from '../../classes/test-controller.classes';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
 const connectionStatus$ = new Subject<ConnectionStatus>();
 const appWindowHasFocus$ = new Subject<WindowFocusState>();
 const appError$ = new Subject<AppError>();
-const testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.ERROR);
-const maxTimeTimer$ = new Subject<MaxTimerData>();
+const testStatus$ = new BehaviorSubject<TestControllerState>('ERROR');
+const maxTimeTimer$ = new Subject<TimerData>();
 const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
 
@@ -39,7 +38,7 @@ const currentUnitSequenceId$ = new Subject<number>();
   selector: 'tc-unit-menu'
 })
 class MockUnitMenuComponent {
-  @Input() menu: Array<UnitNaviButtonData | string> = [];
+  // @Input() menu: Array<UnitNaviButtonData | string> = [];
 }
 
 const MockBackendService = {
@@ -63,7 +62,6 @@ const MockTestControllerService = {
   currentUnitSequenceId$,
   testMode: new TestMode(),
   bookletConfig: new BookletConfig(),
-  testStatusEnum: TestControllerState,
   setUnitNavigationRequest: () => {},
   resetDataStore: () => {}
 };

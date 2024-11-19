@@ -15,7 +15,7 @@
           "lang": "en"
         }
       ],
-      "version": "6.0.2",
+      "version": "6.0.4",
       "specVersion": "6.0",
       "description": [
         {
@@ -209,8 +209,8 @@
         opacity: 1;
       }
     }
-  </style>
-  <style id="print-styles" media="print">
+</style>
+<style id="print-styles" media="print">
     @page {
       size: A4 landscape;
       margin: 15pt;
@@ -243,7 +243,7 @@
     #unit {
       margin: 0;
     }
-  </style>
+</style>
 </head>
 <body>
 
@@ -450,7 +450,6 @@
       }
 
       _send = msg => {
-        console.log(msg);
         window.parent.postMessage(msg, '*');
         document.dispatchEvent(new CustomEvent('sent:' + msg.type, {detail: msg}));
       }
@@ -503,14 +502,21 @@
     receive = (type, data) => {
       if (type === "vopStartCommand") {
         Unit.start(data);
+        document.dispatchEvent(new CustomEvent(type, { detail: data }));
       } else if (sessionId && (data.sessionId !== sessionId)) {
         throw new VspRuntimeError('wrong-session-id', `Wrong Session-Id: '${sessionId}' (was: '${sessionId}').`);
+      } else if (sessionId) {
+        document.dispatchEvent(new CustomEvent(type, { detail: data }));
+      } else {
+        console.warn(`Message before first vopStartCommand, ignored: ${type}`, data);
       }
-      document.dispatchEvent(new CustomEvent(type, {detail: data}));
     };
   }
 
   const Unit = new class {
+    presentationProgress = 'none';
+    responseProgress = 'none';
+
     dataPartsCollectors = {
       answers: () => Answers.get()
     };
@@ -521,6 +527,13 @@
         some: () => Object.values(Pages.seenPages).filter(p => p.enter || p.bottom).length > 0
       }
     };
+
+    responseProgressFactors = {
+      elements: {
+        complete: () => Answers.countValid() === Answers.countAll(),
+        some: () => Answers.countValid() > 0,
+      }
+    }
 
     start = data => {
       if (!data.sessionId) {
@@ -550,12 +563,14 @@
         );
       }
 
-
       this._setUnit(data.unitDefinition);
       this._setPlayerConfig(data.playerConfig || {});
 
       Answers.prepare();
       this._setUnitData(data.unitState || {});
+
+      this.presentationProgress = data.unitState?.presentationProgress || 'none';
+      this.responseProgress = data.unitState?.responseProgress || 'none';
 
       PlayerUI.togglePrintMode();
       PlayerUI.toggleUnitNavButtons();
@@ -571,16 +586,33 @@
         }, {});
 
     getPresentationProgress = () =>
-      Object.keys(this.presentationProgressFactors)
-        .reduce((carry, key) => {
-          if ((carry === 'complete') && this.presentationProgressFactors[key].complete()) {
-            return 'complete';
-          } else if ((carry !== 'none') || this.presentationProgressFactors[key].some()) {
-            return 'some';
-          } else {
-            return 'none'
-          }
-        }, 'complete');
+      this.presentationProgress = this._highestProgress([
+        this.presentationProgress,
+        this._mergeProgressFactors(this.presentationProgressFactors)
+      ]);
+
+    getResponseProgress = () =>
+      this.responseProgress = this._highestProgress([
+        this.responseProgress,
+        this._mergeProgressFactors(this.responseProgressFactors)
+      ]);
+
+    _highestProgress = progressValues => {
+      return progressValues.includes('complete') ? 'complete' : (progressValues.includes('some') ? 'some' : 'none');
+    }
+
+    _mergeProgressFactors = progressFactors => Object.values(progressFactors)
+      .map(factor => {
+        if (factor.complete()) return 'complete';
+        if (factor.some()) return 'some'
+        return 'none';
+      })
+      .reduce((a, p) => {
+        if (!a) return p;
+        if ((a === 'complete') && (p === 'complete')) return 'complete';
+        if ((a === 'none') && (p === 'none')) return 'none';
+        return 'some';
+      }, null);
 
     updatePlayerConfig = newConfig => {
       Object.assign(playerConfig, newConfig);
@@ -589,32 +621,6 @@
       PlayerUI.toggleUnitNavButtons();
       PlayerUI.togglePageNavButtons();
     }
-
-    // TODO make extensible like PresentationProgress
-    getResponseProgress = () => {
-      const elements =  [...document.querySelectorAll(PlayerUI.itemElements)];
-      const allCount = elements.length;
-      let validCount = 0;
-
-      elements.forEach(item => {
-        if (!item.isContentEditable) {
-          validCount += (!isDefined(item.validity) || item.validity.valid) ? 1 : 0;
-        } else {
-          validCount += (Unit.elementIsRequired(item) && !item.innerText.trim()) ? 0 : 1;
-        }
-      });
-
-      if (allCount === validCount) {
-        return 'complete'
-      } else if (validCount) {
-        return 'some'
-      } else {
-        // Verona3 wants invalid answers to be ignored. Since semantic validity in the simple player is equivalent
-        // to validity in the HTML-sense, empty text-items count always as valid. As a side effect, the responseProgress
-        // of 'none' is impossible as long the unit have non-required text-items.
-        return 'none';
-      }
-    };
 
     selectDataPartFromUnitState = (unitState, partName) => {
       if (!unitState.dataParts) {
@@ -669,8 +675,27 @@
         Array.isArray(answer.value)
           ? answer.value.forEach((value, index) => this._setAnswer(answer.id, value, index))
           : this._setAnswer(answer.id, answer.value)
-      })
+      });
     };
+
+    countValid = () => {
+      const elements =  [...document.querySelectorAll(PlayerUI.itemElements)];
+      let validCount = 0;
+
+      elements.forEach(item => {
+        if (!item.isContentEditable) {
+          validCount += (!isDefined(item.validity) || item.validity.valid) ? 1 : 0;
+        } else {
+          validCount += (Unit.elementIsRequired(item) && !item.innerText.trim()) ? 0 : 1;
+        }
+      });
+      // Verona3 wants invalid answers to be ignored. Since semantic validity in the simple player is equivalent
+      // to validity in the HTML-sense, empty text-items count always as valid. As a side effect, the responseProgress
+      // of 'none' is impossible as long the unit have non-required text-items.
+      return validCount;
+    };
+
+    countAll = () => [...document.querySelectorAll(PlayerUI.itemElements)].length;
 
     _getAnswersFromEditableElements = () => ([...document.querySelectorAll('form [contenteditable]')] || [])
       .reduce((carry, element) => {

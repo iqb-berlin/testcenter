@@ -1,10 +1,9 @@
 import {
-  convertResultsLoginRows, convertResultsSeperatedArrays,
+  getResultFileRows, convertResultsSeperatedArrays,
   deleteDownloadsFolder,
   getFromIframe, loginSuperAdmin,
   loginTestTaker, logoutTestTaker, openSampleWorkspace,
   resetBackendData,
-  useTestDB,
   visitLoginPage,
   forwardTo,
   logoutAdmin
@@ -22,7 +21,6 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
     deleteDownloadsFolder();
   });
   beforeEach(() => {
-    useTestDB();
     visitLoginPage();
   });
 
@@ -115,7 +113,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
   });
 
   it('should be saved recent replies from first login: hres1 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+    getResultFileRows('responses')
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhres1\b/);
         expect(responses[1]).to.be.match(/\bUNIT.SAMPLE-101\b/);
@@ -128,7 +126,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
   });
 
   it('should be saved recent replies from second login: hres1 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+    getResultFileRows('responses')
       .then(responses => {
         expect(responses[3]).to.be.match(/\bhres1\b/);
         expect(responses[3]).to.be.match(/\bUNIT.SAMPLE-101\b/);

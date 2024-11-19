@@ -105,7 +105,7 @@ class WorkspaceDAO extends DAO {
           $login->getName(),
           $login->getMode(),
           $this->workspaceId,
-          json_encode($login->getBooklets()),
+          json_encode($login->testNames()),
           $login->getGroupName(),
           $login->getGroupLabel(),
           json_encode($login->getCustomTexts()),

@@ -69,7 +69,7 @@
                         <tc-alert [level]="'warning'" [text]="element.type + ' is never used.'"></tc-alert>
                       </div>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
-                        <div *ngFor="let message of element.report[level]">
+                        <div *ngFor="let message of element.report?.[level]">
                           <tc-alert [level]="level" [text]="message"></tc-alert>
                         </div>
                       </ng-container>
@@ -126,7 +126,7 @@
         (click)="hiddenfileinput.click()"
         matTooltip="Dateien hochladen/aktualisieren"
         matTooltipPosition="above"
-        [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files?.length)"
+        [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files.length)"
         data-cy="upload-files"
       >
         <mat-icon>cloud_upload</mat-icon>

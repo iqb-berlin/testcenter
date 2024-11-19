@@ -1,6 +1,7 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
-// eslint-disable-next-line import/extensions
-import { BookletConfig } from '../shared/shared.module';
+import {
+  BookletDef, BookletStateDef, BookletStateOptionDef, TestletDef, UnitDef
+} from '../shared/shared.module';
 
 export interface GroupMonitorConfig {
   checkForIdleInterval: number;
@@ -13,67 +14,15 @@ export interface TestSession {
   readonly state: TestSessionSuperState;
   readonly current: UnitContext | null;
   readonly booklet: Booklet | BookletError;
-  readonly clearedCodes: Record<string, unknown> | null;
-  readonly timeLeft: Record<string, string> | null;
+  readonly clearedCodes: string[] | null;
+  readonly timeLeft: Record<string, number> | null;
+  readonly bookletStates: { [state: string]: string } | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
   'controller_terminated', 'connection_lost', 'paused', 'focus_lost', 'idle',
   'connection_websocket', 'connection_polling', 'ok'] as const;
 export type TestSessionSuperState = typeof TestSessionsSuperStates[number];
-
-export interface Booklet {
-  metadata: BookletMetadata;
-  config: BookletConfig;
-  restrictions?: Restrictions;
-  units: Testlet;
-  species: string;
-}
-
-export interface BookletError {
-  error: 'xml' | 'missing-id' | 'missing-file' | 'general';
-  species: null;
-}
-
-export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
-  return bookletOrError && !('error' in bookletOrError);
-}
-
-export interface BookletMetadata {
-  id: string;
-  label: string;
-  description: string;
-  owner?: string;
-  lastchange?: string;
-  status?: string;
-  project?: string;
-}
-
-export interface Testlet {
-  id: string;
-  label: string;
-  restrictions?: Restrictions;
-  children: (Unit | Testlet)[];
-  descendantCount: number;
-  blockId?: string;
-  nextBlockId?: string;
-}
-
-export interface Unit {
-  id: string;
-  label: string;
-  labelShort: string;
-}
-
-export interface Restrictions {
-  codeToEnter?: {
-    code: string;
-    message: string;
-  };
-  timeMax?: {
-    minutes: number
-  };
-}
 
 export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
@@ -93,7 +42,8 @@ export const testSessionFilterTargetLists = {
     'personLabel',
     'state',
     'blockLabel',
-    'unitLabel'
+    'unitLabel',
+    'bookletStates'
   ]
 } as const;
 
@@ -133,12 +83,21 @@ export const isTestSessionFilter = (obj: object): obj is TestSessionFilter => ('
   (testSessionFilterTypes as readonly string[]).includes(obj.type) &&
   (testSessionFilterTargets as readonly string[]).includes(obj.target);
 
+export const isAdvancedTestSessionFilterTarget =
+  (target: TestSessionFilterTarget): boolean => (testSessionFilterTargetLists.advanced)
+    .some(t => t === target);
+
+export const isAdvancedTestSessionFilterType =
+  (type: TestSessionFilterType): boolean => testSessionFilterTypeLists.advanced
+    .some(t => t === type);
+
 export interface MonitorProfileTestViewDisplayOptions {
   blockColumn: ColumnOption;
   unitColumn: ColumnOption;
   view: ViewOption;
   groupColumn: ColumnOption;
   bookletColumn: ColumnOption;
+  bookletStatesColumns: string[];
 }
 
 export type ColumnOption = 'show' | 'hide';
@@ -179,18 +138,10 @@ export interface CheckingOptions {
   autoCheckAll: boolean;
 }
 
-export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
-  return !('children' in testletOrUnit);
-}
-
-export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
-  return !isUnit(testletOrUnit);
-}
-
 export interface UnitContext {
-  unit?: Unit;
-  parent?: Testlet;
-  ancestor?: Testlet;
+  unit: UnitDef | undefined;
+  parent: Testlet;
+  ancestor: Testlet;
   indexGlobal: number;
   indexLocal: number;
   indexAncestor: number;
@@ -210,6 +161,7 @@ export interface TestSessionSetStats {
   differentBookletSpecies: number;
   paused: number;
   locked: number;
+  bookletStateLabels: { [bookletStateId: string]: string }
 }
 
 export interface UIMessage {
@@ -225,8 +177,41 @@ export interface CommandResponse {
 }
 
 export interface GotoCommandData {
-  [bookletName: string]: {
-    testIds: number[],
-    firstUnitId: string
-  }
+  [firstUnitId: string]: number[];
 }
+
+export type Unit = UnitDef;
+
+export interface Booklet extends BookletDef<Testlet, BookletState> {
+  species: string;
+}
+
+export interface Testlet extends TestletDef<Testlet, Unit> {
+  descendantCount: number;
+  blockId?: string;
+  nextBlockId?: string;
+}
+
+export type BookletStateOption = BookletStateOptionDef;
+export interface BookletState extends BookletStateDef<BookletStateOption> {
+  default: string;
+}
+
+export function isUnit(testletOrUnit: Testlet | UnitDef): testletOrUnit is UnitDef {
+  return !('children' in testletOrUnit);
+}
+
+export function isTestlet(testletOrUnit: Testlet | UnitDef): testletOrUnit is Testlet {
+  return !isUnit(testletOrUnit);
+}
+
+export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
+  return bookletOrError && !('error' in bookletOrError);
+}
+
+export interface BookletError {
+  error: 'xml' | 'missing-id' | 'missing-file' | 'general';
+  species: null;
+}
+
+export type TestSessionFilterSubValueSelect = BookletStateDef<BookletStateOption>;

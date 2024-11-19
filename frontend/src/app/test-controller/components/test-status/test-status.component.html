@@ -1,12 +1,12 @@
-<div [ngSwitch]="(tcs.testStatus$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
+<div [ngSwitch]="(tcs.state$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
   <mat-card appearance="raised" class="mat-card-box" *ngSwitchDefault>
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
       <p><b>{{tcs.testMode.modeLabel}}</b></p>
-      <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
+      <p *ngIf="(tcs.state$ | async) === 'RUNNING'" style="color: chocolate">
         <b>Der Test ist aktiv.</b>
       </p>
     </mat-card-content>
@@ -20,9 +20,9 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card appearance="raised" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
+  <mat-card appearance="raised" class="mat-card-box" *ngSwitchCase="'PAUSED'">
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -34,21 +34,21 @@
   </mat-card>
 
   <error
-    *ngSwitchCase="tcs.testStatusEnum.ERROR"
+    *ngSwitchCase="'ERROR'"
     [onClose]="reloadPage.bind(this)"
-    [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
+    [closeCaption]="('Neu Laden' | customtext:'booklet_reload' | async) || ''"
     [additionalReport]="{
       login: loginName,
-      booklet: tcs.rootTestlet?.title,
+      booklet: tcs.booklet?.metadata?.label || tcs.booklet?.metadata?.id || '',
       mode: tcs.testMode.modeLabel
     }"
   >
     <p style="white-space: pre-wrap">{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }}</p>
   </error>
 
-  <mat-card appearance="raised" *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
+  <mat-card appearance="raised" *ngSwitchCase="'LOADING'" class="progress-bar">
     <mat-card-header>
-      <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
+      <mat-card-title>{{ tcs.booklet?.metadata?.label || 'Test' }}</mat-card-title>
       <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
@@ -58,6 +58,12 @@
         [value]="tcs.totalLoadingProgress">
       </mat-progress-bar>
       {{tcs.totalLoadingProgress.toFixed(2)}}%
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngSwitchCase="'TERMINATED'">
+    <mat-card-content>
+      <tc-alert level="info" text="Test wird beendet"></tc-alert>
     </mat-card-content>
   </mat-card>
 </div>

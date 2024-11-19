@@ -65,14 +65,14 @@ values ('', 5, '2032-01-02 10:00:00', 'person-of-future-login-token', '');
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
 values ('', 7, '2032-01-02 10:00:00', 'person-of-review-group-token', '');
 
-insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
-values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, '2022-01-24 09:01:00');
+insert into tests (name, tests.file_id, person_id, laststate, locked, label, running, timestamp_server)
+values ('first sample test', 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, '2022-01-24 09:01:00');
 
-insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1', 1, '', 0, 'second test label', 1, '2022-01-24 09:01:00');
+insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
+values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1',1, '', 0, 'second test label', 1, '2022-01-24 09:01:00');
 
-insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1', 5, null, 0, 'review test label', 1, '2022-01-24 09:01:00');
+insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
+values ('BOOKLET.SAMPLE-1#bookletstate=isset', 'BOOKLET.SAMPLE-1', 5, null, 0, 'review test label', 1, '2022-01-24 09:01:00');
 
 insert into units (name, booklet_id, laststate)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');

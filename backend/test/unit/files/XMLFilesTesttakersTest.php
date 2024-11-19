@@ -3,8 +3,8 @@
 use PHPUnit\Framework\TestCase;
 
 class XMLFileTesttakersExposed extends XMLFileTesttakers {
-  public static function collectBookletsPerCode(SimpleXMLElement $element): array {
-    return parent::collectBookletsPerCode($element);
+  public static function collectTestNamesPerCode(SimpleXMLElement $element): array {
+    return parent::collectTestNamesPerCode($element);
   }
 
   public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
@@ -120,7 +120,7 @@ END;
 </Login>
 END;
 
-    $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
+    $result = XMLFileTesttakersExposed::collectTestNamesPerCode(new SimpleXMLElement($xml));
 
     //print_r($result);
 
@@ -150,7 +150,7 @@ END;
 </Login>
 END;
 
-    $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
+    $result = XMLFileTesttakersExposed::collectTestNamesPerCode(new SimpleXMLElement($xml));
 
     //print_r($result);
 
@@ -297,6 +297,7 @@ END;
               'view' => 'full',
               'groupColumn' => 'show',
               'bookletColumn' => 'show',
+              'bookletStatesColumns' => 'level bonus'
             ],
             'filters' => [],
             'filtersEnabled' => [
@@ -313,6 +314,7 @@ END;
               'view' => 'small',
               'groupColumn' => 'hide',
               'bookletColumn' => 'hide',
+              'bookletStatesColumns' => ''
             ],
             'filters' => [
               [
@@ -320,7 +322,8 @@ END;
                 'value' => 'Reduced Booklet',
                 'label' => 'Reduced Booklet',
                 'type' => 'equal',
-                'not' => false
+                'not' => false,
+                'subValue' => ''
               ],
             ],
             'filtersEnabled' => [
@@ -364,7 +367,11 @@ END;
         'run-review',
         'review_group',
         'A Group of Reviewers',
-        ['' => ["BOOKLET.SAMPLE-1"]],
+        ['' => [
+          "BOOKLET.SAMPLE-1",
+          'BOOKLET.SAMPLE-2#bonus:yes',
+          'BOOKLET.SAMPLE-2#bonus:no'
+        ]],
         -1,
         0,
         0,

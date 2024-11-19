@@ -6,6 +6,7 @@ enum FileRelationshipType {
     case hasBooklet;
     case containsUnit;
     case usesPlayer;
+    case usesScheme;
     case usesPlayerResource;
     case isDefinedBy;
     case unknown;

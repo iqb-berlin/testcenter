@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { CustomtextService, MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
-import { UnitAndPlayerContainer } from './sys-check.interfaces';
 import { AppError } from '../app.interfaces';
 
 @Component({

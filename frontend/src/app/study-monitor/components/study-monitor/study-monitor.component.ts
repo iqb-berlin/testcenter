@@ -16,7 +16,7 @@ export class StudyMonitorComponent {
     'groupName', 'bookletsStarted', 'numUnitsMin', 'numUnitsMax', 'numUnitsAvg', 'lastChange'
   ];
 
-  resultDataSource: MatTableDataSource<ResultData> | null = new MatTableDataSource<ResultData>([]);
+  resultDataSource: MatTableDataSource<ResultData> = new MatTableDataSource<ResultData>([]);
 
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
@@ -56,7 +56,7 @@ export class StudyMonitorComponent {
   }
 
   updateTable(wsId: number): void {
-    this.resultDataSource = null;
+    this.resultDataSource.data = [];
     this.backendService.getResults(wsId)
       .subscribe((resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);

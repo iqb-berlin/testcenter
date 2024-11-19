@@ -3,13 +3,13 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  Testlet, Unit, TestViewDisplayOptions,
-  isUnit, Selected, TestSession, TestSessionSuperState
+  Testlet, TestViewDisplayOptions, Selected, TestSession, TestSessionSuperState, isBooklet, isTestlet
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { superStates } from './super-states';
+import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
 
 interface IconData {
   icon: string,
@@ -29,6 +29,7 @@ export class TestSessionComponent {
   @Input() marked: Selected | null = null;
   @Input() selected: Selected | null = null;
   @Input() checked: boolean = false;
+  @Input() bookletStates: { [p: string]: string } = {};
 
   @Output() markedElement$ = new EventEmitter<Selected>();
   @Output() selectedElement$ = new EventEmitter<Selected>();
@@ -36,15 +37,15 @@ export class TestSessionComponent {
 
   superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
 
+  // TODO use pipes for the following functions
   stateString = TestSessionUtil.stateString;
-
   hasState = TestSessionUtil.hasState;
-
+  isBooklet = isBooklet;
+  isTestlet = isTestlet;
   // eslint-disable-next-line class-methods-use-this
-  getTestletType = (testletOrUnit: Unit | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
+  trackUnits = (index: number, testlet: Testlet | UnitDef): string => testlet.id || index.toString();
 
-  // eslint-disable-next-line class-methods-use-this
-  trackUnits = (index: number, testlet: Testlet | Unit): string => testlet.id || index.toString();
+  testletContext?: { $implicit: Testlet };
 
   mark(testletOrNull: Testlet | null = null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
@@ -122,4 +123,6 @@ export class TestSessionComponent {
       inversion
     };
   }
+
+  protected readonly parseInt = parseInt;
 }

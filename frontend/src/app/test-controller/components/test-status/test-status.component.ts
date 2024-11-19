@@ -31,7 +31,7 @@ export class TestStatusComponent implements OnInit {
   }
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
 

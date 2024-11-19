@@ -3,11 +3,8 @@ import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
-  KeyValuePairString,
-  LoadingFile,
-  StateReportEntry,
-  TestData,
-  UnitData
+  UnitData, TestData, StateReportEntry, LoadingFile,
+  KeyValuePairString, UnitStateUpdate, TestStateUpdate
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
@@ -24,7 +21,7 @@ export class BackendService {
 
   saveReview(
     testId: string,
-    unitName: string | null,
+    unitAlias: string | null,
     page: number | null,
     pagelabel: string | null,
     priority: number,
@@ -34,7 +31,7 @@ export class BackendService {
     originalUnitId: string
   ): Observable<void> {
     return this.http.put<void>(
-      `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
+      `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review`,
       {
         priority, categories, entry, page, pagelabel, userAgent, originalUnitId
       }
@@ -49,22 +46,27 @@ export class BackendService {
     return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
-  updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.backendUrl}test/${testId}/state`, newState).subscribe();
+  patchTestState(patch: TestStateUpdate): Observable<string> {
+    return this.http.patch<string>(`${this.backendUrl}test/${patch.testId}/state`, patch.state);
   }
 
-  addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
+  addTestLog(testId: string, logEntries: StateReportEntry<string>[]): Subscription {
     return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
-  updateUnitState(testId: string, unitName: string, originalUnitId: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, {
-      newState,
-      originalUnitId
-    }).subscribe();
+  patchUnitState(stateUpdate: UnitStateUpdate, originalUnitId: string): Observable<void> {
+    return this.http.patch<void>(
+      `${this.backendUrl}test/${stateUpdate.testId}/unit/${stateUpdate.unitAlias}/state`,
+      { newState: stateUpdate.state, originalUnitId }
+    );
   }
 
-  addUnitLog(testId: string, unitName: string, originalUnitId:string, logEntries: StateReportEntry[]): Subscription {
+  addUnitLog(
+    testId: string,
+    unitName: string,
+    originalUnitId: string,
+    logEntries: StateReportEntry<string>[]
+  ): Subscription {
     return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, {
       logEntries,
       originalUnitId
@@ -82,19 +84,22 @@ export class BackendService {
     }
   }
 
-  updateDataParts(testId: string, unitId: string, originalUnitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
+  updateDataParts(
+    testId: string,
+    unitAlias: string,
+    originalUnitId: string,
+    dataParts: KeyValuePairString,
+    responseType: string
+  ): Observable<void> {
     const timeStamp = Date.now();
-    return this.http
-      .put(`${this.backendUrl}test/${testId}/unit/${unitId}/response`, {
-        timeStamp, dataParts, originalUnitId, responseType
-      })
-      .subscribe();
+    return this.http.put<void>(`${this.backendUrl}test/${testId}/unit/${unitAlias}/response`, {
+      timeStamp, dataParts, originalUnitId, responseType
+    });
   }
 
-  lockTest(testId: string, timeStamp: number, message: string): Subscription {
+  lockTest(testId: string, timeStamp: number, message: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(`${this.backendUrl}test/${testId}/lock`, { timeStamp, message })
-      .subscribe();
+      .patch<boolean>(`${this.backendUrl}test/${testId}/lock`, { timeStamp, message });
   }
 
   getResource(workspaceId: number, path: string): Observable<LoadingFile> {

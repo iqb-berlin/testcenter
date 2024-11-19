@@ -100,7 +100,7 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->put('/{test_id}/log', [TestController::class, 'putLog'])
     ->add(new IsTestWritable());
 
-  $group->patch('/{test_id}/unit/{unit_name}/state', [TestController::class, 'putUnitState'])
+  $group->patch('/{test_id}/unit/{unit_name}/state', [TestController::class, 'patchUnitState'])
     ->add(new IsTestWritable());
 
   $group->put('/{test_id}/unit/{unit_name}/log', [TestController::class, 'putUnitLog'])

@@ -4,7 +4,7 @@
     <div class="corner-menu" *ngIf="sidenav.opened">
       <button
           mat-icon-button
-          [matTooltip]="'Seiteleiste' | customtext:'am_sidebar_button' | async"
+          [matTooltip]="('Seiteleiste' | customtext:'am_sidebar_button' | async) || ''"
           matTooltipPosition="above"
           (click)="sidenav.toggle()"
       >
@@ -57,7 +57,7 @@
     <div class="corner-menu" *ngIf="!sidenav.opened">
       <button
         mat-icon-button
-        [matTooltip]="'Einstellungen' | customtext:'gm_settings_tooltip' | async"
+        [matTooltip]="('Einstellungen' | customtext:'gm_settings_tooltip' | async) || ''"
         matTooltipPosition="above"
         (click)="sidenav.toggle()"
       >

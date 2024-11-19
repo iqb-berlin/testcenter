@@ -1,7 +1,7 @@
 import { Observable, of, Subscription } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import {
-  TestBookletXmlVariants, AllTestResources, TestTestState, TestUnits, TestResources
+  TestBookletXmlVariants, AllTestResources, TestTestState, TestUnitsFromBackend, TestResources
 } from './test-data';
 import { LoadingFile, TestData, UnitData } from '../interfaces/test-controller.interfaces';
 
@@ -14,13 +14,14 @@ export class MockBackendService {
       laststate: TestTestState,
       resources: TestResources,
       firstStart: false,
-      workspaceId: Object.keys(TestBookletXmlVariants).indexOf(testId)
+      workspaceId: Object.keys(TestBookletXmlVariants).indexOf(testId),
+      presetBookletStates: { }
     });
   }
 
   // eslint-disable-next-line class-methods-use-this
   getUnitData(testId: keyof typeof TestBookletXmlVariants, unitid: string): Observable<UnitData | boolean> {
-    return of(TestUnits[unitid] || false);
+    return of(TestUnitsFromBackend[unitid] || false);
   }
 
   // eslint-disable-next-line class-methods-use-this

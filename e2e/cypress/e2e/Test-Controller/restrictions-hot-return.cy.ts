@@ -1,7 +1,17 @@
 import {
-  loginTestTaker, resetBackendData,
-  useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder, getFromIframe, forwardTo,
-  backwardsTo, readBlockTime, loginSuperAdmin, openSampleWorkspace, convertResultsLoginRows, hardLogOut
+  loginTestTaker,
+  resetBackendData,
+  credentialsControllerTest,
+  visitLoginPage,
+  deleteDownloadsFolder,
+  getFromIframe,
+  forwardTo,
+  backwardsTo,
+  readBlockTime,
+  loginSuperAdmin,
+  openSampleWorkspace1,
+  getResultFileRows,
+  disableSimplePlayersInternalDebounce, logoutTestTaker, gotoPage
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret
@@ -22,27 +32,27 @@ let startTime: number;
 let endTime: number;
 let elapsed: number;
 
-describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-logo', { testIsolation: false }, () => {
+describe('TestController with login1', { testIsolation: false }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
-    useTestDB();
+    disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker(TesttakerName1, TesttakerPassword1, mode);
   });
 
-  beforeEach(useTestDB);
+  beforeEach(disableSimplePlayersInternalDebounce);
 
-  it('should be possible to start a hot-return-test without booklet selection', () => {
+  it('should start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
       .contains('Testung Controller');
   });
 
-  it('should be not possible to enter the block if a incorrect password is entered', () => {
+  it('should not enter the block if a incorrect code is entered', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-block-dialog-title"]')
@@ -52,26 +62,27 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .type('Hund');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.contains(/Freigabewort.+stimmt nicht/)
-;
+    cy.contains(/Freigabewort.+stimmt nicht/);
   });
 
-  it('should be possible to enter the block if a correct password is entered', () => {
+  it('should enter the block if the correct code is entered', () => {
     cy.get('[data-cy="unit-block-dialog-title"]')
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('contain', '')
       .type('Hase');
-    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response101-1-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait('@response101-1-1');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy;
+    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/); // TODO use data-cy;
   });
 
-  it('should be not possible to navigate to next unit without responses/presentation complete', () => {
+  it('should not navigate to next unit without responses/presentation complete', () => {
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('have.class', 'marked');
+    cy.get('[data-cy="unit-nav-item:UNIT.SAMPLE-102"]')
+      .should('have.class', 'marked');
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -84,11 +95,12 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .contains('Aufgabe1');
   });
 
-  it('should be not possible to navigate to the next unit without responses complete', () => {
-    cy.get('[data-cy="page-navigation-1"]')
-      .click();
+  it('should not navigate away without responses complete', () => {
+    gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('have.class', 'marked');
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -99,32 +111,24 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
   });
 
-  it('should be possible to navigate with presentation and response complete to the next unit', () => {
-    cy.get('[data-cy="page-navigation-0"]')
-      .click();
-    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response101-1-2');
+  it('should navigate with presentation and response complete to the next unit', () => {
+    gotoPage(0);
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.wait('@response101-1-2');
     forwardTo('Aufgabe2');
   });
 
-  it('should be possible to complete the test and leave the block with a warning message', () => {
-    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('response102-1-1');
+  it('should complete the test and leave the block with a warning message', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
-      .click()
-      .should('be.checked');
-    cy.wait('@response102-1-1');
+      .click();
     forwardTo('Aufgabe3');
-    cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-103/response`).as('response103-1-1');
-    getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
-      .click()
-      .should('be.checked');
-    cy.wait('@response103-1-1');
+    getFromIframe('[data-cy="TestController-radio1-Aufg3"]').as('radio1-Aufg3');
+    cy.get('@radio1-Aufg3')
+      .click();
   });
 
-  it('should be not possible to leave the time restricted block forward without a message', () => {
+  it('should not leave the time restricted block forward without a message', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -132,10 +136,9 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="dialog-confirm"]');
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    cy.wait(3000);
   });
 
-  it('should be possible to navigate backwards and verify that the last answer is there', () => {
+  it('should navigate backwards and verify that the last answer is there', () => {
     backwardsTo('Aufgabe2');
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .should('be.checked');
@@ -144,7 +147,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .should('be.checked');
   });
 
-  it('should be not possible to leave the time restricted block backward without a message', () => {
+  it('should not leave the time restricted block backward without a message', () => {
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -154,14 +157,12 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
   });
 
-  it('should be not possible to leave the time restricted block in unit-menu without a message', () => {
+  it('should not leave the time restricted block in unit-menu without a message', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.get('[data-cy="page-navigation-1"]')
-      .click();
+    gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
-    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="endTest"]')
@@ -171,11 +172,12 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="dialog-confirm"]');
     cy.get('[data-cy="dialog-cancel"]')
       .click();
+    cy.get('.mat-drawer-backdrop')
+      .click();
   });
 
-  it('should not stop the time while the exit block message is displayed', () => {
-    cy.get('[data-cy="page-navigation-0"]')
-      .click();
+  it('should not stop the time while the exit-confirmation-message is displayed', () => {
+    gotoPage(0);
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {
@@ -200,7 +202,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       });
   });
 
-  it('should be not possible to enter the block again after leaving (continue test)', () => {
+  it('should not enter the timed block again after leaving the test entirely', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -213,32 +215,33 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Startseite');
-    cy.get('[data-cy="unit-navigation-forward"]')
+      .contains('Endseite');
+    cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Endseite');
+      .contains('Startseite');
   });
+
+  after(() => logoutTestTaker('hot'));
 });
 
-describe('Login2: Resp/Pres complete, leave the block and end the test with unit-navigation', { testIsolation: false }, () => {
+describe('TestController with login2', { testIsolation: false }, () => {
   before(() => {
-    useTestDB();
-    hardLogOut();
+    disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker(TesttakerName2, TesttakerPassword2, mode);
   });
 
-  beforeEach(useTestDB);
+  beforeEach(disableSimplePlayersInternalDebounce);
 
-  it('should be possible to start a hot-return-test without booklet selection', () => {
+  it('should start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
       .contains('Testung Controller');
   });
 
-  it('should be possible to enter the block if a correct password is entered', () => {
+  it('should enter the block if the correct password is entered', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-block-dialog-title"]')
@@ -246,41 +249,31 @@ describe('Login2: Resp/Pres complete, leave the block and end the test with unit
     cy.get('[data-cy="unlockUnit"]')
       .should('contain', '')
       .type('Hase');
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response101-2-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait('@response101-2-1');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
 
-  it('should be possible to complete the test', () => {
-    cy.get('[data-cy="page-navigation-1"]')
-      .click();
+  it('should complete the test', () => {
+    gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
-    cy.get('[data-cy="page-navigation-0"]')
-      .click();
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response101-2-2');
+    gotoPage(0);
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.wait('@response101-2-2');
     forwardTo('Aufgabe2');
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/response`).as('response102-2-1');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click()
       .should('be.checked');
-    cy.wait('@response102-2-1');
     forwardTo('Aufgabe3');
-    cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-103/response`).as('response103-2-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click()
       .should('be.checked');
-    cy.wait('@response103-2-1');
   });
 
-  it('should be possible to leave the block, after which the block will be locked', () => {
+  it('should leave the block and lock it afterwards', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
@@ -294,28 +287,27 @@ describe('Login2: Resp/Pres complete, leave the block and end the test with unit
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
   });
+
+  after(() => logoutTestTaker('hot'));
 });
 
-describe('Login3: Resp/Pres complete, leave the block and end the test with unit-menu', { testIsolation: false }, () => {
+describe('TestController with login3', { testIsolation: false }, () => {
   before(() => {
-    useTestDB();
-    hardLogOut();
+    disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker(TesttakerName3, TesttakerPassword3, mode);
   });
 
-  beforeEach(useTestDB);
+  beforeEach(disableSimplePlayersInternalDebounce);
 
-  it('should be possible to start a hot-return-test without booklet selection', () => {
+  it('should start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
-
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
-      .contains('Testung Controller')
-;
+      .contains('Testung Controller');
   });
 
-  it('should be possible to enter the block if a correct password is entered', () => {
+  it('should enter the block if the correct password is entered', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-block-dialog-title"]')
@@ -323,41 +315,31 @@ describe('Login3: Resp/Pres complete, leave the block and end the test with unit
     cy.get('[data-cy="unlockUnit"]')
       .should('contain', '')
       .type('Hase');
-    cy.intercept(`${Cypress.env('urls').backend}/test/5/unit/UNIT.SAMPLE-101/response`).as('response101-3-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait('@response101-3-1');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
 
-  it('should be possible to complete the test', () => {
-    cy.get('[data-cy="page-navigation-1"]')
-      .click();
+  it('should complete the test', () => {
+    gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
-    cy.get('[data-cy="page-navigation-0"]')
-      .click();
-    cy.intercept(`${Cypress.env('urls').backend}/test/5/unit/UNIT.SAMPLE-101/response`).as('response101-3-2');
+    gotoPage(0);
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.wait('@response101-3-2');
     forwardTo('Aufgabe2');
-    cy.intercept(`${Cypress.env('urls').backend}/test/5/unit/UNIT.SAMPLE-102/response`).as('response102-3-1');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click()
       .should('be.checked');
-    cy.wait('@response102-3-1');
     forwardTo('Aufgabe3');
-    cy.intercept(`${Cypress.env('urls').backend}/test/5/unit/UNIT.SAMPLE-103/response`).as('response103-3-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click()
       .should('be.checked');
-    cy.wait('@response103-3-1');
   });
 
-  it('should be possible to leave the block, after which the block will be locked', () => {
+  it('should leave the block and lock it afterwards', () => {
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="endTest"]')
@@ -370,79 +352,71 @@ describe('Login3: Resp/Pres complete, leave the block and end the test with unit
       .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Startseite');
-    cy.get('[data-cy="unit-navigation-forward"]')
+      .contains('Endseite');
+    cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Endseite');
+      .contains('Startseite');
   });
+
+  after(() => logoutTestTaker('hot'));
 });
 
-describe('Login4: Resp/Pres complete, leave the block after time is up', { testIsolation: false }, () => {
+describe('TestController with login4', { testIsolation: false }, () => {
   before(() => {
-    useTestDB();
-    hardLogOut();
+    disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker(TesttakerName4, TesttakerPassword4, mode);
   });
-  beforeEach(useTestDB);
 
-  it('should be possible to start a hot-return-test without booklet selection', () => {
+  beforeEach(disableSimplePlayersInternalDebounce);
+
+  it('should start a hot-return-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.url()
       .should('include', '/u/1');
   });
 
-  it('should be possible to enter the block if a correct password is entered', () => {
+  it('should enter the block if a correct code is entered', () => {
     forwardTo('Aufgabe1');
     cy.get('[data-cy="unit-block-dialog-title"]')
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('contain', '')
       .type('Hase');
-    cy.intercept(`${Cypress.env('urls').backend}/test/6/unit/UNIT.SAMPLE-101/response`).as('response101-4-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait('@response101-4-1')
-      .then(() => {
-        startTime = new Date().getTime();
-      });
+    startTime = new Date().getTime();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
 
-  it('should be possible to complete the test', () => {
-    cy.get('[data-cy="page-navigation-1"]')
-      .click();
+  it('should complete the test', () => {
+    gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
-    cy.get('[data-cy="page-navigation-0"]')
-      .click();
-    cy.intercept(`${Cypress.env('urls').backend}/test/6/unit/UNIT.SAMPLE-101/response`).as('response101-4-2');
+    gotoPage(0);
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.wait('@response101-4-2');
     forwardTo('Aufgabe2');
-    cy.intercept(`${Cypress.env('urls').backend}/test/6/unit/UNIT.SAMPLE-102/response`).as('response102-4-1');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click()
       .should('be.checked');
-    cy.wait('@response102-4-1');
     forwardTo('Aufgabe3');
-    cy.intercept(`${Cypress.env('urls').backend}/test/6/unit/UNIT.SAMPLE-103/response`).as('response103-4-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click()
       .should('be.checked');
-    cy.wait('@response103-4-1');
   });
 
-  it('should be not possible to enter the block after time is up', () => {
+  it('should not enter the block after time is up', () => {
     // Wait for remaining time of restricted area
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
+
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
+
     cy.contains(/Die Bearbeitung des Abschnittes ist beendet./); // TODO use data-cy
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
@@ -451,20 +425,18 @@ describe('Login4: Resp/Pres complete, leave the block after time is up', { testI
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
   });
+
+  after(() => logoutTestTaker('hot'));
 });
 
-describe('Check responses and logs', { testIsolation: false }, () => {
+describe('The responses-file', { testIsolation: false }, () => {
   before(() => {
-    useTestDB();
-    hardLogOut();
     visitLoginPage();
   });
 
-  beforeEach(useTestDB);
-
-  it('should be possible to download a responses/log file in the workspace with groupname: RunHotReturn', () => {
+  it('should be downloaded from the workspace with groupname: RunHotReturn', () => {
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openSampleWorkspace1();
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('RunHotReturn');
@@ -478,9 +450,12 @@ describe('Check responses and logs', { testIsolation: false }, () => {
       .click();
   });
 
-  it('should be saved recent replies and metadata from login: hret1 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+  it('should contain recent replies and metadata from login: hret1', () => {
+    getResultFileRows('responses')
       .then(responses => {
+        cy.task('logOut', 'responses');
+        cy.task('logOut', responses);
+        cy.writeFile('/usr/src/testcenter/sampledata/responses.file.csv', responses.join('\n'));
         // metadata
         expect(responses[1]).to.be.match(/\brunhotret\b/);
         expect(responses[1]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
@@ -504,8 +479,8 @@ describe('Check responses and logs', { testIsolation: false }, () => {
       });
   });
 
-  it('should be saved recent replies and metadata from login: hret2 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+  it('should contain recent replies and metadata from login: hret2', () => {
+    getResultFileRows('responses')
       .then(responses => {
         // metadata
         expect(responses[6]).to.be.match(/\brunhotret\b/);
@@ -530,8 +505,8 @@ describe('Check responses and logs', { testIsolation: false }, () => {
       });
   });
 
-  it('should be saved recent replies and metadata from login: hret3 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+  it('should contain recent replies and metadata from login: hret3', () => {
+    getResultFileRows('responses')
       .then(responses => {
         // metadata
         expect(responses[11]).to.be.match(/\brunhotret\b/);
@@ -556,8 +531,8 @@ describe('Check responses and logs', { testIsolation: false }, () => {
       });
   });
 
-  it('should be saved recent replies and metadata from login: hret4 in downloaded response file', () => {
-    convertResultsLoginRows('responses')
+  it('should contain recent replies and metadata from login: hret4', () => {
+    getResultFileRows('responses')
       .then(responses => {
         // metadata
         expect(responses[16]).to.be.match(/\brunhotret\b/);
@@ -581,4 +556,6 @@ describe('Check responses and logs', { testIsolation: false }, () => {
         expect(responses[19]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
       });
   });
+
+  // TODO also check for log-File!
 });

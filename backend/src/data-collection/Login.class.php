@@ -3,62 +3,44 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
+// TODO make class readonly and remove getters
+
 class Login extends DataCollectionTypeSafe {
-
-  protected $name = "";
-  protected $_password = "";
-  protected $mode = "";
-  protected $groupName = "";
-  protected $groupLabel = "";
-  protected $booklets = [];
-  protected $workspaceId = 0;
-
-  protected $validFrom = 0;
-  protected $validTo = 0;
-  protected $validForMinutes = 0;
-  protected $customTexts;
-  protected array $profiles;
-
-
+  protected object $customTexts;
+  protected int $validForMinutes;
+  /** @param string[][] $testNames */
   function __construct(
-    string $name,
-    string $password,
-    string $mode,
-    string $groupName,
-    string $groupLabel,
-    array $booklets,
-    int $workspaceId,
-    ?int $validTo = 0,
-    ?int $validFrom = 0,
-    ?int $validForMinutes = 0,
-    $customTexts = null,
-    $profiles = []
+    protected string $name,
+    protected string $_password,
+    protected string $mode,
+    protected string $groupName,
+    protected string $groupLabel,
+    protected array $testNames,
+    protected int $workspaceId = 0,
+    protected int $validTo = 0,
+    protected int $validFrom = 0,
+    int | null $validForMinutes = 0,
+    object | null $customTexts = null,
+    protected array $profiles = []
   ) {
-    $this->name = $name;
-    $this->_password = $password;
-    $this->mode = $mode;
-    $this->groupName = $groupName;
-    $this->groupLabel = $groupLabel;
-    $this->booklets = $booklets;
-    $this->workspaceId = $workspaceId;
-    $this->validFrom = $validFrom ?? 0;
-    $this->validTo = $validTo ?? 0;
     $this->validForMinutes = $validForMinutes ?? 0;
     $this->customTexts = $customTexts ?? new stdClass();
-    $this->profiles = $profiles;
   }
 
   public function getName(): string {
     return $this->name;
   }
 
+
   public function getPassword(): string {
     return $this->_password;
   }
 
+
   public function getMode(): string {
     return $this->mode;
   }
+
 
   public function getGroupName(): string {
     return $this->groupName;
@@ -68,8 +50,10 @@ class Login extends DataCollectionTypeSafe {
     return $this->groupLabel;
   }
 
-  public function getBooklets(): array {
-    return $this->booklets;
+
+  /** @return string[][] */
+  public function testNames(): array {
+    return $this->testNames;
   }
 
   public function getWorkspaceId(): int {
@@ -93,15 +77,14 @@ class Login extends DataCollectionTypeSafe {
   }
 
   public function isCodeRequired(): bool {
-    return (array_keys($this->booklets) != ['']);
+    return (array_keys($this->testNames) != ['']);
   }
-
 
   public function getProfiles(): array {
     return $this->profiles;
   }
-  
+
   public function codeExists(string $code): bool {
-    return array_key_exists($code, $this->booklets);
+    return array_key_exists($code, $this->testNames);
   }
 }

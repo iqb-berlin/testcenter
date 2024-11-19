@@ -22,6 +22,9 @@ import { BackendService } from './services/backend.service';
 import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { NewPasswordComponent } from './components/newpassword/new-password.component';
+import { TrustPipe } from './pipes/trust.pipe';
+import { BlockConditionPipe } from './pipes/block-condition.pipe';
+import { TemplateContextDirective } from './directives/template-context.directive';
 
 @NgModule({
   imports: [
@@ -45,8 +48,12 @@ import { NewPasswordComponent } from './components/newpassword/new-password.comp
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
+    BlockConditionPipe,
     AlertComponent,
     ErrorComponent,
+    TemplateContextDirective,
+    PageNavBarComponent,
+    TrustPipe,
     PageNavBarComponent,
     AutofocusDirective,
     NewPasswordComponent
@@ -56,8 +63,12 @@ import { NewPasswordComponent } from './components/newpassword/new-password.comp
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
+    BlockConditionPipe,
     AlertComponent,
     ErrorComponent,
+    TemplateContextDirective,
+    PageNavBarComponent,
+    TrustPipe,
     PageNavBarComponent,
     AutofocusDirective,
     NewPasswordComponent
@@ -84,3 +95,4 @@ export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
 export { BookletConfig } from './classes/booklet-config.class';
 export { TestMode } from './classes/test-mode.class';
 export { customTextDefaults } from './objects/customTextDefaults';
+export * from './interfaces/booklet.interfaces';

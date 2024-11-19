@@ -17,7 +17,7 @@ import {
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
-  Command, CommandKeyword, commandKeywords, isKnownCommand, TestControllerState
+  Command, CommandKeyword, commandKeywords, isKnownCommand, TcPublicApi, TestControllerState
 } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
 import { WebsocketBackendService } from '../../shared/shared.module';
@@ -44,13 +44,11 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
     @Inject('BACKEND_URL') serverUrl: string,
-    protected http: HttpClient
+    protected override http: HttpClient
   ) {
     super(serverUrl, http);
 
-    if (!this.isProductionMode) {
-      this.setUpGlobalCommandsForDebug();
-    }
+    this.setUpGlobalCommandsForDebug();
 
     // as services don't have a OnInit Hook (see: https://v9.angular.io/api/core/OnInit) we subscribe here
     this.subscribeReceivedCommands();
@@ -62,10 +60,10 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private static testStartedOrStopped(testStatus: TestControllerState): TestStartedOrStopped {
-    if ((testStatus === TestControllerState.RUNNING) || (testStatus === TestControllerState.PAUSED)) {
+    if (['RUNNING', 'PAUSED'].includes(testStatus)) {
       return 'started';
     }
-    if ((testStatus === TestControllerState.FINISHED) || (testStatus === TestControllerState.ERROR)) {
+    if (['TERMINATED_PAUSED', 'TERMINATED', 'ERROR'].includes(testStatus)) {
       return 'terminated';
     }
     return '';
@@ -74,7 +72,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   // services are normally meant to live forever, so unsubscription *should* be unnecessary
   // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
   // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     if (this.commandSubscription) {
       this.commandSubscription.unsubscribe();
     }
@@ -104,7 +102,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       this.testStartedSubscription?.unsubscribe();
     }
 
-    this.testStartedSubscription = this.tcs.testStatus$
+    this.testStartedSubscription = this.tcs.state$
       .pipe(
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),
@@ -124,7 +122,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private setUpGlobalCommandsForDebug() {
-    (window as any).tc =
+    (window as { tc: TcPublicApi } & Window & typeof globalThis).tc =
       commandKeywords
         .reduce((acc, keyword) => {
           acc[keyword] = args => { this.commandFromTerminal(keyword, args); };
@@ -133,9 +131,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private commandFromTerminal(keyword: string, args: string[]): void {
-    if (this.isProductionMode) {
-      return;
-    }
     const newArgs = (typeof args === 'undefined') ? [] : args;
     const id = Math.round(Math.random() * -10000000);
     const command = {

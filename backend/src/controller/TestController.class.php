@@ -24,8 +24,10 @@ class TestController extends Controller {
 
     if (!$test) {
       $workspace = new Workspace($authToken->getWorkspaceId());
-      $bookletLabel = $workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
-      $test = self::testDAO()->createTest($authToken->getId(), $body['bookletName'], $bookletLabel);
+      $testName = TestName::fromString($body['bookletName']);
+      $bookletLabel = $workspace->getFileById('Booklet', $testName->bookletFileId)->getLabel();
+
+      $test = self::testDAO()->createTest($authToken->getId(), $testName, $bookletLabel);
     }
 
     if ($test->locked) {
@@ -52,14 +54,15 @@ class TestController extends Controller {
     }
 
     $workspace = new Workspace($authToken->getWorkspaceId());
-    $bookletFile = $workspace->getFileById('Booklet', $test->bookletId); // 3
+    $bookletFile = $workspace->getFileById('Booklet', $test->bookletFileId);
+    $testName = TestName::fromString($test->name);
 
     // TODO check for Mode::hasCapability('monitorable'))
 
     if (!$test->running) {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $message = SessionChangeMessage::session($test->id, $personSession);
-      $message->setTestState((array) $test->state, $test->bookletId);
+      $message->setTestState((array) $test->state, $test->name);
       self::testDAO()->setTestRunning($test->id);
     } else {
       $message = SessionChangeMessage::testState(
@@ -67,7 +70,7 @@ class TestController extends Controller {
         $authToken->getId(),
         $test->id,
         (array) $test->state,
-        $test->bookletId
+        $test->name
       );
     }
     BroadcastService::sessionChange($message);
@@ -78,7 +81,8 @@ class TestController extends Controller {
       'xml' => $bookletFile->getContent(),
       'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()),
       'firstStart' => !$test->running,
-      'workspaceId' => $workspace->getId()
+      'workspaceId' => $workspace->getId(),
+      'presetBookletStates' => $testName->states
     ]);
   }
 
@@ -107,7 +111,8 @@ class TestController extends Controller {
       'state' => $unitState,
       'dataParts' => (object) $unitData['dataParts'],
       'unitResponseType' => $unitData['dataType'],
-      'definition' => $unitFile->getDefinition()
+      'definition' => $unitFile->getDefinition(),
+      'definitionType' => $unitFile->getDefinitionType()
     ]);
   }
 
@@ -269,7 +274,7 @@ class TestController extends Controller {
     return $response->withStatus(201);
   }
 
-  public static function putUnitState(Request $request, Response $response): Response {
+  public static function patchUnitState(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
 
@@ -278,7 +283,8 @@ class TestController extends Controller {
 
     // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-    if (!is_array(JSON::decode($request->getBody()->getContents()))) {
+    $body = JSON::decode($request->getBody()->getContents());
+    if (!is_array($body)) {
       // 'not being an array' is the new format
       $stateData = RequestBodyParser::getElementsFromArray(
         $request,
@@ -287,10 +293,11 @@ class TestController extends Controller {
           'content' => 'REQUIRED',
           'timeStamp' => 'REQUIRED'
         ],
-        'newState');
-
+        'newState'
+      );
       $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
+      // deprecated
       $stateData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
         'content' => 'REQUIRED',

@@ -23,6 +23,8 @@ export class AppConfig {
   version = '';
   veronaPlayerApiVersionMin: number = 0;
   veronaPlayerApiVersionMax: number = 0;
+  iqbStandardResponseTypeMin: number = 0;
+  iqbStandardResponseTypeMax: number = 0;
   mainLogo = DEFAULT_LOGO;
   appTitle = 'IQB-Testcenter';
   backgroundBody: string = '';
@@ -64,6 +66,8 @@ export class AppConfig {
       this.version = sysConfig.version;
       this.veronaPlayerApiVersionMin = sysConfig.veronaPlayerApiVersionMin;
       this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
+      this.iqbStandardResponseTypeMin = sysConfig.iqbStandardResponseTypeMin;
+      this.iqbStandardResponseTypeMax = sysConfig.iqbStandardResponseTypeMax;
       this.broadcastingServiceUri = sysConfig.broadcastingServiceUri;
       this.fileServiceUri = sysConfig.fileServiceUri;
     } else {

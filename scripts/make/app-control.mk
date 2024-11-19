@@ -73,6 +73,9 @@ logs:
 			--file docker/docker-compose.dev.yml\
 		logs --follow $(service)
 
+run-fast:
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
+
 # Build all images of the project or a specified one as prod-images.
 # Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
 build-prod-local:

@@ -1,48 +1,63 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { UnitWithContext } from '../classes/test-controller.classes';
+import {
+  ActivatedRouteSnapshot, CanActivate, Router, UrlTree
+} from '@angular/router';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
+import { Unit } from '../interfaces/test-controller.interfaces';
 
 @Injectable()
-export class UnitActivateGuard {
+export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
     private router: Router,
     private messageService: MessageService
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+  async canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
     const targetUnitSequenceId: number = Number(route.params.u);
-    if (this.tcs.rootTestlet === null) {
+    const booklet = this.tcs.booklet;
+    if (!booklet) {
       // unit-route got called before test is loaded. This happens on page-reload (F5).
       const testId = Number(route.parent?.params.t);
       if (!testId) {
-        this.router.navigate(['/']);
-        return false;
+        return this.router.parseUrl('/');
       }
       // ignore unit-id from route, because test will get last opened unit ID from testStatus.CURRENT_UNIT_ID
-      this.router.navigate([`/t/${testId}`]);
-      return false;
+      return this.router.parseUrl(`/t/${testId}`);
     }
-    const newUnit: UnitWithContext = this.tcs.getUnitWithContext(targetUnitSequenceId);
-    if (!newUnit) {
-      // a unit-nr was entered in the URl which does not exist
-      this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
-      return false;
-    }
-    if (this.tcs.getUnitIsLocked(newUnit)) {
-      // a unitId of a locked unit was inserted
-      const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.unitDef.sequenceId, true);
-      if (!previousUnlockedUnit) {
-        return true; // there is no alterntaive where to navigate, so we navigate on the locked one
-      }
-      if (previousUnlockedUnit !== targetUnitSequenceId) {
-        this.router.navigate([`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`]);
+
+    let targetUnit: Unit | undefined;
+
+    try {
+      targetUnit = this.tcs.getUnit(targetUnitSequenceId);
+    } catch (e) {
+      // a unit-nr was entered in the URL which does not exist
+      this.messageService.show(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
+      // looking for alternatives where to go
+      const navigation = await this.tcs.closeBuffer('canActivate');
+      if (this.tcs.currentUnit && !TestControllerService.unitIsInaccessible(this.tcs.currentUnit)) {
+        // current unit is accessible, so we just stay here
         return false;
       }
+      if (navigation.targets.previous) {
+        // a previous unit is accessible, so we can go there
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${navigation.targets.previous}`);
+      }
+      // we stay anyway
+      return false;
     }
+
+    if (targetUnit && TestControllerService.unitIsInaccessible(targetUnit)) {
+      // we navigate to a locked unit. example: we leave timed block to status and return.
+      const navigation = this.tcs.getNavigationState(targetUnitSequenceId);
+      if (navigation.targets.next) {
+        // a later unit is accessible, so we go there
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${navigation.targets.next}`);
+      }
+    }
+
+    // new unit is accessible, or we didn't have a good alternative where to go
     return true;
   }
 }

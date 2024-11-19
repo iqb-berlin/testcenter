@@ -18,6 +18,7 @@
         unitColumn="hide"
         groupColumn="hide"
         bookletColumn="hide"
+        bookletStatesColumns=""
         view="small"
         filterLocked="yes"
         filterPending="yes"
@@ -31,6 +32,7 @@
         unitColumn="show"
         groupColumn="show"
         bookletColumn="show"
+        bookletStatesColumns="level bonus"
         view="full"
         filterLocked="no"
         filterPending="no"
@@ -63,6 +65,8 @@
   <Group id="review_group" label="A Group of Reviewers">
     <Login mode="run-review" name="test-review" pw="user123">
       <Booklet>BOOKLET.SAMPLE-1</Booklet>
+      <Booklet state="bonus:yes">BOOKLET.SAMPLE-2</Booklet>
+      <Booklet state="bonus:no">BOOKLET.SAMPLE-2</Booklet>
     </Login>
   </Group>
 

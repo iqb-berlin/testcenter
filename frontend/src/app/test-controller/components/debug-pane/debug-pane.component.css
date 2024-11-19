@@ -1,0 +1,268 @@
+.tab,
+.tabs {
+  color: orange;
+  position: absolute;
+  background: black;
+  z-index: 99; /* below mat tooltip at leat */
+  padding: 3px;
+  box-shadow: 0 1px 14px 2px black;
+  cursor: move;
+  max-height: 90%;
+  overflow-x: auto;
+  border-radius: 3px;
+  border: 1px solid white;
+  margin: 2px;
+}
+
+.tabs {
+  top: 0;
+  left: 120px;
+}
+
+.btn,
+.tabs div {
+  border: 1px solid orange;
+  border-radius: 3px;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tabs div:hover {
+  background: white;
+  color: black;
+  border-color: white;
+}
+
+.tabs div {
+  padding: 3px;
+  margin: 6px;
+}
+
+.tabs div.active {
+  background: orange;
+  color: black;
+}
+
+/* they are all movable, but may have somehow useful starting positions */
+.tab-main {
+  top: 70px;
+}
+
+.tab-config {
+  top: 216px
+}
+
+.tab-testmode {
+  top: 630px;
+}
+
+.tab-booklet {
+  top: 65px;
+  right: 50%;
+}
+
+.tab-unit {
+  bottom: 0;
+  left: 350px;
+}
+
+.tab-customtexts {
+  top: 0;
+  left: 800px;
+}
+
+.tab-system {
+  top:0;
+  left: 1125px
+}
+
+.tab-variables {
+  left: 0;
+  top: 65px;
+}
+
+.tab-states {
+  left: 0;
+  bottom: 0;
+}
+
+.tab-unit .more-btn {
+  display: none;
+}
+
+.tab h1 {
+  background: white;
+  color: black;
+  font-size: small;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+  padding-left: 3px;
+  position: relative;
+}
+
+.tab h1 .close {
+  right: 0;
+  position: absolute;
+  margin-right: 0.2em;
+  bottom: 0;
+  cursor: pointer;
+}
+
+.tab-customtexts input {
+  width: 300px;
+  margin: 3px 0;
+}
+
+table tbody tr td:first-child,
+b {
+  color: white;
+  font-weight: normal;
+}
+
+.testlet {
+  padding-left: 1em;
+}
+
+table {
+  padding: 3px;
+  width: 100%;
+}
+
+thead tr:first-child td {
+  border-top: 24px solid black;
+}
+
+thead:first-child tr:first-child td {
+  border-top: 8px solid black;
+}
+
+tbody tr:last-child td {
+  border-bottom: 24px solid black;
+}
+
+tbody:last-child tr:last-child td {
+  border-bottom: none;
+}
+
+
+.tab-variables table,
+.tab-states table {
+  border-collapse: collapse;
+}
+
+.tab-states table tbody tr td:first-child {
+  color: white;
+}
+
+.tab-states table tbody tr.current td:first-child {
+  background: orange;
+  color: black;
+}
+
+.tab-states table tbody tr .badge {
+  border-color: orange;
+  color: orange;
+}
+
+.tab-states table tbody tr.current .badge {
+  border-color: black;
+  color: black;
+}
+
+
+.tab-states td,
+.tab-variables td {
+  border-right: 1px solid orange;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
+.tab-states td:first-child,
+.tab-variables td:first-child {
+  padding-left: 0;
+}
+
+.tab-states td:last-child,
+.tab-variables td:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.tab-booklet .current .title,
+thead td {
+  background: white;
+  color: black;
+}
+
+
+
+.tab-booklet .current .title b {
+  color: black;
+}
+
+.tab-booklet .current .title .more-btn {
+  color: white;
+}
+
+.tab-booklet table {
+  border-left: 2px solid orange;
+  padding-left: 1px;
+  margin-left: 4px;
+}
+
+
+.more-btn {
+  cursor: pointer;
+  float:right
+}
+
+.more-btn:hover {
+  color: white;
+}
+
+ul {
+  margin: 0;
+  padding: 0 1.2em;
+}
+
+mat-icon {
+  font-size: 15px;
+  height: 15px;
+  width: 15px;
+}
+
+.badge {
+  height: 14px;
+  width: 14px;
+  font-size: 10px;
+  padding: 2px 2px 0;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-content: center;
+  border-radius: 7.5px;
+  border: 1px solid orange;
+  text-align: center;
+  margin: 0 2px 0 0;
+}
+
+.badge.active {
+  background: orange;
+  color: black;
+}
+
+sourcetext {
+  color: white;
+  font-family: monospace;
+  white-space: pre;
+}
+
+.condition {
+  font-size: x-small;
+  color: white;
+}
+
+.condition.satisfied {
+  color: orange;
+}

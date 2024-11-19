@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData
+  MessageDialogData, PasswordChangeService
 } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
@@ -14,7 +14,6 @@ import {
 } from '../superadmin-password-request/superadmin-password-request.component';
 import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
-import { PasswordChangeService } from '../../shared/services/password-change/password-change.service';
 
 @Component({
   templateUrl: './users.component.html',

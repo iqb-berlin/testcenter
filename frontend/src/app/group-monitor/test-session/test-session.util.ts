@@ -32,8 +32,9 @@ export class TestSessionUtil {
       state: TestSessionUtil.getSuperState(session),
       current: current && current.unit ? current : null,
       booklet,
-      timeLeft: TestSessionUtil.parseJsonState(session.testState, 'TESTLETS_TIMELEFT'),
-      clearedCodes: TestSessionUtil.parseJsonState(session.testState, 'TESTLETS_CLEARED_CODE')
+      timeLeft: TestSessionUtil.parseJsonState<{ [timerId: string]: number }>(session.testState, 'TESTLETS_TIMELEFT'),
+      clearedCodes: TestSessionUtil.parseJsonState<string[]>(session.testState, 'TESTLETS_CLEARED_CODE'),
+      bookletStates: TestSessionUtil.parseJsonState<{ [state: string]: string }>(session.testState, 'BOOKLET_STATES')
     };
   }
 
@@ -87,7 +88,7 @@ export class TestSessionUtil {
     return (Date.now() - testSession.timestamp * 1000) / (1000 * 60);
   }
 
-  private static parseJsonState(testStateObject: Record<string, string>, key: string): Record<string, string> | null {
+  private static parseJsonState<T>(testStateObject: Record<string, string>, key: string): T | null {
     if (typeof testStateObject[key] === 'undefined') {
       return null;
     }
@@ -124,7 +125,7 @@ export class TestSessionUtil {
         result.indexAncestor += 1;
         result.indexGlobal += 1;
 
-        if (child.id === searchUnitId) {
+        if (child.alias === searchUnitId) {
           result.unit = child;
           return result;
         }

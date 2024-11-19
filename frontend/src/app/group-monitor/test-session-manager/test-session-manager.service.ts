@@ -19,7 +19,7 @@ import {
   TestSessionsSuperStates,
   CommandResponse,
   GotoCommandData,
-  GroupMonitorConfig, TestSessionFilterList
+  GroupMonitorConfig, TestSessionFilterList, Testlet
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -213,15 +213,16 @@ export class TestSessionManager {
     const apply = (subject: string, filter: TestSessionFilter, inverted: boolean = false): boolean => {
       if (filter.not && !inverted) return !apply(subject, filter, true);
       if (Array.isArray(filter.value)) return filter.value.includes(subject);
+      const object = filter.subValue ? filter.subValue : filter.value;
       switch (filter.type) {
-        case 'substring': return subject.includes(filter.value);
-        case 'equal': return subject === filter.value;
-        case 'regex': return regexTest(filter.value, subject);
+        case 'substring': return subject.includes(object);
+        case 'equal': return subject === object;
+        case 'regex': return regexTest(object, subject);
         default: return false;
       }
     };
     const filterOut: TestSessionFilter | undefined = filters
-      .find((nextFilter: TestSessionFilter) => {
+      .find((nextFilter: TestSessionFilter): boolean => {
         switch (nextFilter.target) {
           case 'groupName':
           case 'personLabel':
@@ -240,11 +241,14 @@ export class TestSessionManager {
           case 'blockLabel':
             return apply(session.current?.ancestor?.label || '', nextFilter);
           case 'testState': {
-            if (Array.isArray(nextFilter.value)) return filterOut;
-            const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
-            const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
-            const testStateMatching = (typeof nextFilter.subValue !== 'undefined') ? valueMatches : keyExists;
-            return (nextFilter.not ? !testStateMatching : testStateMatching);
+            if (Array.isArray(nextFilter.value)) return false;
+            if (typeof session.data.testState[nextFilter.value] === 'undefined') return nextFilter.not;
+            return apply(session.data.testState[nextFilter.value], nextFilter);
+          }
+          case 'bookletStates': {
+            if (Array.isArray(nextFilter.value)) return false;
+            if (!session.bookletStates || typeof session.bookletStates[nextFilter.value] === 'undefined') return nextFilter.not;
+            return apply(session.bookletStates[nextFilter.value], nextFilter);
           }
           case 'state': {
             return apply(session.state, nextFilter);
@@ -266,6 +270,7 @@ export class TestSessionManager {
         number: 0,
         differentBookletSpecies: 0,
         differentBooklets: 0,
+        bookletStateLabels: {},
         paused: 0,
         locked: 0
       }
@@ -326,6 +331,16 @@ export class TestSessionManager {
           const s2currentUnit = session2.current?.unit?.label ?? 'zzzzzzzzzz';
           return s1currentUnit.localeCompare(s2currentUnit) * sortDirectionFactor;
         }
+        if (sort.active.startsWith('bookletState:')) {
+          const bookletState = sort.active.replace('bookletState:', '');
+          const a = session1.bookletStates && isBooklet(session1.booklet) ?
+            session1.booklet.states[bookletState].options[session1.bookletStates[bookletState]].label :
+            'zzzzzzzzzz';
+          const b = session2.bookletStates && isBooklet(session2.booklet) ?
+            session2.booklet.states[bookletState].options[session2.bookletStates[bookletState]].label :
+            'zzzzzzzzzz';
+          return a.localeCompare(b) * sortDirectionFactor;
+        }
         let valA = session1.data[sort.active as keyof typeof session1.data] ?? 'zzzzzzzzzz';
         let valB = session2.data[sort.active as keyof typeof session2.data] ?? 'zzzzzzzzzz';
         if (typeof valA === 'number') {
@@ -369,10 +384,11 @@ export class TestSessionManager {
   }
 
   testCommandGoto(selection: Selected): Observable<true> {
-    const gfd = TestSessionManager.groupForGoto(this.checked, selection);
+    const gfg = TestSessionManager.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
     return zip(
-      ...Object.keys(gfd).map(key => this.bs.command('goto', ['id', gfd[key].firstUnitId], gfd[key].testIds))
+      Object.keys(gfg)
+        .map(unitAlias => this.bs.command('goto', ['id', unitAlias], gfg[unitAlias]))
     ).pipe(
       tap(() => {
         this._commandResponses$.next({
@@ -385,28 +401,23 @@ export class TestSessionManager {
   }
 
   private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
-    const groupedByBooklet: GotoCommandData = {};
+    const groupedByTargetUnitAlias: GotoCommandData = {};
     sessionsSet.forEach(session => {
-      if (
-        session.data.bookletName &&
-        !Object.keys(groupedByBooklet).includes(session.data.bookletName) &&
-        isBooklet(session.booklet)
-      ) {
-        const firstUnit = selection.element?.blockId ?
-          BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet) :
-          null;
-        if (firstUnit) {
-          groupedByBooklet[session.data.bookletName] = {
-            testIds: [],
-            firstUnitId: firstUnit.id
-          };
-        }
-      }
-      if (session.data.bookletName && Object.keys(groupedByBooklet).includes(session.data.bookletName)) {
-        groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
+      if (!session.data.bookletName || !isBooklet(session.booklet)) return;
+      const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
+        !!session.bookletStates &&
+        (session.bookletStates[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
+      const firstUnit = selection.element?.blockId ?
+        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
+        null;
+      if (!firstUnit) return;
+      if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {
+        groupedByTargetUnitAlias[firstUnit.alias] = [session.data.testId];
+      } else {
+        groupedByTargetUnitAlias[firstUnit.alias].push(session.data.testId);
       }
     });
-    return groupedByBooklet;
+    return groupedByTargetUnitAlias;
   }
 
   testCommandUnlock(): void {
@@ -527,6 +538,7 @@ export class TestSessionManager {
   private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStats {
     const booklets = new Set();
     const bookletSpecies = new Set();
+    const bookletStateLabels: { [key: string]: string } = {};
     let paused = 0;
     let locked = 0;
 
@@ -534,6 +546,10 @@ export class TestSessionManager {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
+        Object.values(isBooklet(session.booklet) ? session.booklet?.states : {})
+          .forEach(state => {
+            bookletStateLabels[state.id] = state.label;
+          });
         if (TestSessionUtil.isPaused(session)) paused += 1;
         if (TestSessionUtil.isLocked(session)) locked += 1;
       });
@@ -543,6 +559,7 @@ export class TestSessionManager {
       differentBooklets: booklets.size,
       differentBookletSpecies: bookletSpecies.size,
       all: (all === sessionSet.length),
+      bookletStateLabels,
       paused,
       locked
     };

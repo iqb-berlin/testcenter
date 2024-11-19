@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/broadcasting-service/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/common" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/e2e/cypress" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/frontend/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/backend/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/data-main" />
+      <excludeFolder url="file://$MODULE_DIR$/data-master" />
+      <excludeFolder url="file://$MODULE_DIR$/dist-src" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/data-master" />
+      <excludeFolder url="file://$MODULE_DIR$/testcenter-scripts" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

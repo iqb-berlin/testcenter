@@ -49,6 +49,7 @@ Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
 Navigationsbuttons für die Navigation zwischen den Aufgaben
  * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
  * "ARROWS_ONLY" - Nur die Buttons für 'Weiter' und 'Zurück' anzeigen
+ * "FORWARD_ONLY" - Nur der Vorwärtsbutton soll gezeigt werden
  * **"FULL" - Buttons für 'Weiter' und 'Zurück' und dazwischen kleine Buttons für jede Aufgabe anzeigen**
 
 ### unit_menu
@@ -126,3 +127,15 @@ Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehe
 Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
  * "ON" - Ja.
  * **"OFF" - Nein.**
+
+### unit_responses_buffer_time
+Speicherfrequenz für Antworten in Ms.
+ * **5000**
+
+### unit_state_buffer_time
+Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
+ * **6000**
+
+### test_state_buffer_time
+Speicherfrequenz für Test-Zustände in Ms.
+ * **1000**

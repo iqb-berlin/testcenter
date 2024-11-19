@@ -7,6 +7,7 @@ import { BackendService as RootBackendService } from '../../../backend.service';
 import { UploadReport, UploadStatus } from '../files.interfaces';
 import { WorkspaceDataService } from '../../workspacedata.service';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
+import { AlertLevel, isAlertLevel } from '../../../shared/interfaces/alert.interfaces';
 
 @Component({
   selector: 'tc-files-upload',
@@ -120,4 +121,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       this.fileUploadSubscription.unsubscribe();
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  readonly isAlertLevel = (key: unknown): key is AlertLevel => isAlertLevel(String(key));
 }

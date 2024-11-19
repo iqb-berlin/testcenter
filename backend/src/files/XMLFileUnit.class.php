@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 class XMLFileUnit extends XMLFile {
-  const type = 'Unit';
-  const canBeRelationSubject = true;
-  const canBeRelationObject = true;
+  const string type = 'Unit';
+  const true canBeRelationSubject = true;
+  const true canBeRelationObject = true;
 
-  const deprecatedElements = [
+  const array deprecatedElements = [
     '/Unit/Definition/@type',
     '/Unit/Metadata/Lastchange',
     '/Unit/Dependencies/file'
@@ -21,17 +21,17 @@ class XMLFileUnit extends XMLFile {
     $this->getPlayerIfExists($workspaceCache);
   }
 
-  public function getPlayerIfExists(WorkspaceCache $validator): ?ResourceFile {
+  public function getPlayerIfExists(WorkspaceCache $workspaceCache): ?ResourceFile {
     if (!$this->isValid()) {
       return null;
     }
 
     $playerId = $this->readPlayerId();
 
-    $resource = $validator->getResource($playerId);
+    $resource = $workspaceCache->getResource($playerId);
 
     if ($resource != null) {
-      $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
+      $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), FileRelationshipType::usesPlayer, $resource, $playerId));
     } else {
       $this->report('error', "Player not found `$playerId`.");
     }
@@ -39,26 +39,47 @@ class XMLFileUnit extends XMLFile {
     return $resource;
   }
 
-  private function checkIfResourcesExist(WorkspaceCache $validator): void {
-    $definitionRef = $this->getDefinitionRef();
-
-    $resources = $this->readPlayerDependencies();
-
-    if ($definitionRef) {
-      $resources['definition'] = $definitionRef;
+  private function getSchemeRef(): string {
+    if (!$this->isValid()) {
+      return '';
     }
 
-    foreach ($resources as $key => $resourceName) {
-      $resourceId = strtoupper($resourceName);
-      $resource = $validator->getResource($resourceId);
+    $reference = $this->getXml()->xpath('/Unit/CodingSchemeRef');
 
-      if ($resource != null) {
-        $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
-        $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
+    $schemeIdRaw = count($reference) ? (string) $reference[0] : '';
 
-      } else {
-        $this->report('error', "Resource `$resourceName` not found");
-      }
+    // TODO X check if schemer & scheme type is supported
+
+    return $schemeIdRaw;
+  }
+
+  private function checkIfResourcesExist(WorkspaceCache $cache): void {
+    $this->addDependency($cache, FileRelationshipType::isDefinedBy, $this->getDefinitionRef());
+    $this->addDependency($cache, FileRelationshipType::usesScheme, $this->getSchemeRef());
+
+    $resources = $this->readPlayerDependencies();
+    foreach ($resources as $dependency) {
+      $this->addDependency($cache, FileRelationshipType::usesPlayerResource, $dependency);
+    }
+  }
+
+  private function addDependency(
+    WorkspaceCache $cache,
+    FileRelationshipType $relationshipType,
+    string $resourceName
+  ): void {
+    if (!$resourceName) {
+      return;
+    }
+
+    $resourceId = strtoupper($resourceName);
+    $resource = $cache->getResource($resourceId);
+
+    if ($resource != null) {
+      $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
+      $this->contextData['totalSize'] += $resource->getSize();
+    } else {
+      $this->report('error', "Resource `$resourceName` not found");
     }
   }
 
@@ -69,7 +90,11 @@ class XMLFileUnit extends XMLFile {
 
     $definition = $this->getXml()->xpath('/Unit/Definition | /Unit/DefinitionRef');
 
-    $playerIdRaw = count($definition) ? (string) $definition[0]['player'] : null;
+    $playerIdRaw = null;
+
+    if (count($definition)) {
+      $playerIdRaw = (string) $definition[0]['player'] ?? (string) $definition[0]['type'];
+    }
 
     if (!$playerIdRaw) {
       return '';
@@ -127,5 +152,20 @@ class XMLFileUnit extends XMLFile {
     }
 
     return $requestedAttachments;
+  }
+
+  public function getDefinitionType(): string {
+    // at one point we decided to deprecated the type-attribute in <DefinitionRef> or <Definition>, and said, that the
+    // type is always indicated by the player. This might change again in the future.
+    if (count($this->relations)) {
+      foreach ($this->relations as $relation) {
+        /* @var FileRelation $relation */
+        if ($relation->getRelationshipType() === FileRelationshipType::usesPlayer) {
+          return strtolower(FileID::normalize($relation->getTargetName()));
+        }
+      }
+      return '';
+    }
+    return strtolower($this->readPlayerId());
   }
 }

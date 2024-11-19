@@ -164,7 +164,7 @@ class AccessSet extends DataCollectionTypeSafe {
     $bookletsData = array_map(
       function (TestData $testData): AccessObject {
         return new AccessObject(
-          $testData->bookletId,
+          $testData->name,
           AccessObjectType::TEST,
           $testData->label,
           [

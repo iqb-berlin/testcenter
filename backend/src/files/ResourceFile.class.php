@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 class ResourceFile extends File {
-  const type = 'Resource';
-  const canBeRelationSubject = false;
-  const canBeRelationObject = true;
+  const string type = 'Resource';
+  const bool canBeRelationSubject = false;
+  const bool canBeRelationObject = true;
 
   protected function validate(): void {
     parent::validate();
@@ -26,8 +26,8 @@ class ResourceFile extends File {
     return FileExt::has($this->getPath(), 'ITCR.ZIP');
   }
 
-  // player is not it's own class, because player and other resources are stores in the same dir
-  private function readVeronaMetaData() {
+  // player is not it's own class, because player and other resources are stored in the same dir
+  private function readVeronaMetaData(): void {
     if ($this->isValid() and $this->getContent()) {
       $document = new DOMDocument();
       $document->loadHTML($this->getContent(), LIBXML_NOERROR);

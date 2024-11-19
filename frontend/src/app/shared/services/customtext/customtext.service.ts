@@ -58,4 +58,8 @@ export class CustomtextService {
     }
     return this.customTexts[key].getValue() ?? '';
   }
+
+  getCustomTextKeys(): Array<string> {
+    return Object.keys(this.customTexts);
+  }
 }

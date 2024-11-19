@@ -5,7 +5,7 @@
     <span *ngIf="connectionStatus$ | async as connectionStatus">
 
       <span [class]="connectionStatus + ' connection-status'" style="color:white">
-        <mat-icon style="height: auto">
+        <mat-icon>
           {{connectionStatus === 'error' ? 'error' : ''}}
           {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
           {{connectionStatus === 'polling-sleep' ? 'loop' : ''}}
@@ -78,6 +78,12 @@
     <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
     <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
   </button>
+  <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+    <button mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)">
+      <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)">check</mat-icon>
+      <span>{{'Zustände' | customtext:'gm_col_states' | async}} {{bookletState.value}}</span>
+    </button>
+  </ng-container>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
@@ -186,7 +192,7 @@
           [text]="m.text"
           [level]="m.level"
           customtext="m.customtext"
-          [replacements]="m.replacements"
+          [replacements]="m.replacements || []"
         ></tc-alert>
       </div>
 
@@ -282,6 +288,14 @@
                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
                   {{'Aufgabe' | customtext:'gm_col_unit' | async}}
                 </td>
+
+                <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
+                  <td
+                    *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)"
+                    mat-sort-header="bookletState:{{bookletState.key}}">
+                    {{ bookletState.value }}
+                  </td>
+                </ng-container>
               </tr>
             </thead>
 
@@ -296,6 +310,7 @@
                 [checked]="tsm.isChecked(session)"
                 (checked$)="toggleChecked($event, session)"
                 [ngStyle]="{background: getSessionColor(session)}"
+                [bookletStates]="bookletStates"
               >
               </tc-test-session>
             </ng-container>

@@ -1,64 +1,31 @@
-<div class="debug-pane" *ngIf="debugPane" cdkDrag>
-  <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
-  <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
-  <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
-  <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
-  <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
-  <div><b>CONFIG:</b> <pre>{{tcs.bookletConfig | json}}</pre></div>
-  <div><b>TESTMODE:</b> <pre>{{tcs.testMode | json}}</pre></div>
-</div>
+<tc-debug-pane *ngIf="debugPane" />
 
-<div *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'"
-     class="header flex-row" [style.align-items]="'center'">
-  <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+<div *ngIf="tcs.booklet?.config?.unit_screenheader !== 'OFF'" class="header flex-row">
+  <ng-container *ngIf="tcs.currentUnit && tcs.booklet">
+    <h1 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_UNIT_TITLE'">{{tcs.currentUnit.label}}</h1>
+    <h1 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_BOOKLET_TITLE'">{{tcs.booklet.metadata.label || ''}}</h1>
+    <h1 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_BLOCK_TITLE'">{{tcs.currentUnit.parent.blockLabel || ''}}</h1>
+  </ng-container>
 
-  <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')"
-     [style.margin-left]="'auto'" data-cy="time-value">
-    {{timerValue?.timeLeftString}}
-  </p>
-
-  <div *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-       class="flex-row" [style.align-items]="'safe center'" [style.max-height.%]="100" [style.margin-left]="'auto'">
-    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
-       mat-fab matTooltip="Zurück" data-cy="unit-navigation-backward"
-       [disabled]="tcs.currentUnitSequenceId <= 1"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
-      <i class="material-icons">chevron_left</i>
-    </a>
-    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-       mat-flat-button matTooltip="Zurück" data-cy="unit-navigation-backward"
-       [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId <= 1"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)">
-      <i class="material-icons">chevron_left</i>
-    </a>
-
-    <div *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="unit-nav flex-row">
-      <ng-container *ngFor="let u of unitNavigationList">
-        <a *ngIf="u.sequenceId"
-           mat-flat-button class="unit-nav-item" [class.unit-nav-item-selected]="u.isCurrent"
-           [attr.aria-label]="u.longLabel" [attr.data-cy]="u.shortLabel"
-           [disabled]="u.disabled"
-           (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
-          {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
-        </a>
-      </ng-container>
-    </div>
-
-    <a *ngIf="tcs.bookletConfig.controller_design === '2018'"
-       mat-fab matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
-      <i class="material-icons">chevron_right</i>
-    </a>
-    <a *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-       mat-flat-button matTooltip="Weiter" data-cy="unit-navigation-forward"
-       [style.border-radius]="0"
-       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
-      <i class="material-icons">chevron_right</i>
-    </a>
+  <div class="divider">
+    <p *ngIf="tcs.testMode.showTimeLeft || (tcs.booklet?.config?.unit_show_time_left === 'ON')" data-cy="time-value">
+      {{timerValue?.timeLeftString}}
+    </p>
   </div>
+
+  <ng-container *ngIf="tcs.navigation$ | async as navigation">
+    <tc-unit-nav-bar
+      *ngIf="(tcs.booklet?.config?.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === 'RUNNING')"
+      [booklet]="tcs.booklet"
+      [prevButtonVisible]="tcs.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY'"
+      [nextButtonVisible]="true"
+      [prevButtonEnabled]="!!navigation.targets.previous"
+      [nextButtonEnabled]="!!navigation.targets.next"
+      [forwardAllowed]="navigation.directions.forward"
+      [backwardAllowed]="navigation.directions.backward"
+      [retardedDesign]="tcs.booklet?.config?.controller_design === '2018'"
+    />
+  </ng-container>
 
   <button
     mat-button
@@ -71,7 +38,7 @@
   <button
     mat-button
     (click)="toggleFullScreen()"
-    *ngIf="tcs.bookletConfig.show_fullscreen_button !== 'OFF'"
+    *ngIf="tcs.booklet?.config?.show_fullscreen_button !== 'OFF'"
     matTooltip="Vollbild"
     data-cy="fullscreen">
     <mat-icon>{{mainDataService.isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
@@ -79,7 +46,7 @@
   <button
     mat-button
     (click)="unitMenu.toggle(true)"
-    *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+    *ngIf="(tcs.booklet?.config?.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
     matTooltip="Zur Aufgabenliste"
     data-cy="unit-menu">
     <mat-icon>menu</mat-icon>
@@ -87,19 +54,19 @@
 </div>
 
 <mat-sidenav-container
-  [class]="{'tc-body': true, 'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF'}"
+  [class]="{'tc-body': true, 'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF'}"
   hasBackdrop="true"
 >
   <mat-sidenav
     #unitMenu
-    (click)="unitMenu.toggle(false)"
     mode="over"
     class="sidebar"
     fixedInViewport="true"
     fixedTopGap="55"
     position="end"
+    opened="false"
   >
-    <tc-unit-menu [menu]="unitNavigationList"></tc-unit-menu>
+    <tc-unit-menu (close)="unitMenu.close()"></tc-unit-menu>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

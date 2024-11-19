@@ -40,3 +40,4 @@ test like a testtaker.
 |Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.|  |  |  |  |  |X |X |  |  |
 |Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.|  |  |  |  |  |X |X |  |  |
 |Kann aus dem Gruppen-Monitor aus gesteuert werden|  |  |  |X |X |  |  |  |  |
+|In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab.|X |X |X |  |  |X |X |  |  |

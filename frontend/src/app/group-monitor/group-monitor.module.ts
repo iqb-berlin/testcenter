@@ -31,12 +31,23 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
 import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
 import { GroupMonitorConfig } from './group-monitor.interfaces';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import { IsCodeClearPipe } from './test-session/is-code-clear.pipe';
+import { TimeLeftPipe } from './test-session/timeleft.pipe';
+import { PositionPipe } from './test-session/position.pipe';
+import { BookletStatesPipe } from './test-session/bookletstates.pipe';
+import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
 
 @NgModule({
   declarations: [
     GroupMonitorComponent,
     TestSessionComponent,
-    AddFilterDialogComponent
+    AddFilterDialogComponent,
+    TestSessionComponent,
+    IsCodeClearPipe,
+    TimeLeftPipe,
+    PositionPipe,
+    BookletStatesPipe,
+    TestletvisiblePipe
   ],
   imports: [
     CommonModule,

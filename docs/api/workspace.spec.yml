@@ -334,114 +334,131 @@ paths:
               example: # TODO add schema
                 Booklet:
                   - name: SAMPLE_BOOKLET.XML
-                    size: 1397
-                    modificationTime: 1673525827
+                    size: 1353
+                    modificationTime: 1627545600
                     type: Booklet
                     id: BOOKLET.SAMPLE-1
-                    report: []
-                    dependencies: []
+                    report: [ ]
+                    dependencies: [ ]
                     info:
                       label: Sample booklet
                       description: This a sample booklet for testing/development/showcase purposes.
                   - name: SAMPLE_BOOKLET2.XML
-                    size: 557
-                    modificationTime: 1673525827
+                    size: 3155
+                    modificationTime: 1627545600
                     type: Booklet
                     id: BOOKLET.SAMPLE-2
-                    report: []
-                    dependencies: []
+                    report: [ ]
+                    dependencies: [ ]
                     info:
-                      label: Reduced Booklet
-                      description: ''
+                      label: Adaptive Booklet
+                      description: This Booklet demonstrates the adaptivity features.
                   - name: SAMPLE_BOOKLET3.XML
-                    size: 1277
-                    modificationTime: 1673525827
+                    size: 1284
+                    modificationTime: 1627545600
                     type: Booklet
                     id: BOOKLET.SAMPLE-3
-                    report: []
-                    dependencies: []
+                    report: [ ]
+                    dependencies: [ ]
                     info:
                       label: Similar Booklet to Sample 1
-                      description: some description
+                      description: "\n      This booklet has the same species as sample Booklet 1. The
+                      term booklet species indicates that both booklets can\n      be controlled by
+                      the group-monitor as if they where the same.\n      The species is currently
+                      defined as having the same number of testlets on the first level (called blocks).
+                      This\n      definition may change later.\n    "
                 SysCheck:
                   - name: SAMPLE_SYSCHECK.XML
                     size: 1232
                     modificationTime: 1673525827
                     type: SysCheck
                     id: SYSCHECK.SAMPLE
-                    report: []
+                    report: [ ]
+                    dependencies: [ ]
                     info:
-                      label: An example SysCheck definition
-                      description: An example SysCheck definition with long description
+                      label: System-Check Beispiel
+                      description: Beschreibungstext für den Systemcheck
                 Testtakers:
                   - name: SAMPLE_TESTTAKERS.XML
-                    size: 2173
-                    modificationTime: 1673525827
+                    size: 3631
+                    modificationTime: 1627545600
                     type: Testtakers
                     id: SAMPLE_TESTTAKERS.XML
-                    report: []
-                    dependencies: []
+                    report: [ ]
+                    dependencies: [ ]
                     info:
                       label: ''
-                      description: This file contains some logins for testing and works a a sample for developers.
-                      testtakers: 10
+                      description: This file contains some logins for testing and works a sample for
+                        developers.
+                      testtakers: 15
                 Unit:
                   - name: SAMPLE_UNIT.XML
-                    size: 1278
-                    modificationTime: 1673525827
+                    size: 1543
+                    modificationTime: 1627545600
                     type: Unit
                     id: UNIT.SAMPLE
                     report:
                       info:
                         - "`1` attachment(s) requested."
-                    dependencies: []
+                    dependencies: [ ]
                     info:
                       label: A sample unit
                       description: This is a sample unit showing the possibilities of the sample player.
                   - name: SAMPLE_UNIT2.XML
-                    size: 1394
-                    modificationTime: 1673525827
+                    size: 2188
+                    modificationTime: 1627545600
                     type: Unit
                     id: UNIT.SAMPLE-2
                     report:
                       warning:
                         - Element `/Unit/Definition/@type` is deprecated.
-                    dependencies: []
+                    dependencies: [ ]
                     info:
                       label: A sample unit
                       description: This is an Unit
                 Resource:
                   - name: SAMPLE_UNITCONTENTS.HTM
-                    size: 14195
-                    modificationTime: 1673525827
+                    size: 15746
+                    modificationTime: 1627545600
                     type: Resource
                     id: SAMPLE_UNITCONTENTS.HTM
-                    report: []
-                    dependencies: []
+                    report: [ ]
+                    dependencies: [ ]
+                    info:
+                      label: ''
+                      description: ''
+                  - name: coding-scheme.vocs.json
+                    size: 5187
+                    modificationTime: 1627545600
+                    type: Resource
+                    id: CODING-SCHEME.VOCS.JSON
+                    report: [ ]
+                    dependencies: [ ]
                     info:
                       label: ''
                       description: ''
                   - name: sample_resource_package.itcr.zip
                     size: 412
-                    modificationTime: 1673525827
+                    modificationTime: 1627545600
                     type: Resource
                     id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
                     report:
                       info:
                         - Contains 0 files.
-                    dependencies: []
+                    dependencies: [ ]
                     info:
                       label: ''
                       description: ''
-                  - name: verona-player-simple-4.0.0.html
-                    size: 34864
-                    modificationTime: 1673525827
+                  - name: verona-player-simple-6.0.html
+                    size: 38845
+                    modificationTime: 1627545600
                     type: Resource
-                    id: VERONA-PLAYER-SIMPLE-4.0.0.HTML
+                    id: VERONA-PLAYER-SIMPLE-6.0
                     report:
                       info:
-                        - 'Verona-Version: 4.0'
-                    dependencies: []
+                        - 'Verona-Version: 6.0'
+                      warning: [ ]
+                    dependencies: [ ]
                     info:
                       label: Simple HTML Player
                       description: This is a simple, dependency-less, vanilla-js-written, but full-featured
@@ -451,8 +468,9 @@ paths:
                         as HTML. Just give some names to the form element, and the player does the rest.
                         Use some special Ids for some special buttons.
                       veronaModuleType: player
-                      veronaVersion: '4.0'
-                      version: 4.0.0
+                      veronaVersion: '6.0'
+                      version: 6.0.0
+
         "401":
           description: Not authenticated
         "403":

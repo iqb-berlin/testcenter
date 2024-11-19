@@ -4,7 +4,7 @@ export class BookletConfigData {
   logPolicy: 'disabled' | 'lean' | 'rich' | 'debug' = 'rich';
   pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap' = 'separate';
   page_navibuttons: 'OFF' | 'SEPARATE_BOTTOM' = 'SEPARATE_BOTTOM';
-  unit_navibuttons: 'OFF' | 'ARROWS_ONLY' | 'FULL' = 'FULL';
+  unit_navibuttons: 'OFF' | 'ARROWS_ONLY' | 'FORWARD_ONLY' | 'FULL' = 'FULL';
   unit_menu: 'OFF' | 'FULL' = 'OFF';
   force_presentation_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
   force_response_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
@@ -19,4 +19,7 @@ export class BookletConfigData {
   lock_test_on_termination: 'ON' | 'OFF' = 'OFF';
   ask_for_fullscreen: 'ON' | 'OFF' = 'OFF';
   show_fullscreen_button: 'ON' | 'OFF' = 'OFF';
+  unit_responses_buffer_time: string = '5000';
+  unit_state_buffer_time: string = '6000';
+  test_state_buffer_time: string = '1000';
 }

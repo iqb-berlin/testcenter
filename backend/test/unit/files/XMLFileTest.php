@@ -2,6 +2,22 @@
 
 use PHPUnit\Framework\TestCase;
 
+class XMLFileExposed extends XMLFile {
+  public function validateConstraint(string $desc, string $query1, string $query2, string $compare): bool {
+    return parent::validateConstraint($desc, $query1, $query2, $compare);
+  }
+
+  static function customConstraintComparisonFunction(
+    string | SimpleXMLElement | null $item1,
+    string | SimpleXMLElement | null $item2,
+    array $results1,
+    array $results2,
+    SimpleXMLElement $doc
+  ) {
+    return substr($item1, 0, 1) === substr($item2, 0, 1);
+  }
+}
+
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
@@ -19,7 +35,7 @@ class XMLFileTest extends TestCase {
   }
 
   private function getErrorString(File $file): string {
-    return implode(', ', $file->getValidationReport()['error']);
+    return implode(', ', $file->getValidationReport()['error'] ?? []);
   }
 
   function test_loadFromFile() {
@@ -60,7 +76,6 @@ class XMLFileTest extends TestCase {
     $this->assertEquals(59, $xf->getSize());
     $this->assertEquals('a', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals('Invalid root-tag: `a`', $this->getErrorString($xf));
   }
 
   function test_loadFromBogus() {
@@ -113,6 +128,34 @@ class XMLFileTest extends TestCase {
     $this->assertEquals(85, $xf->getSize());
     $this->assertEquals('Booklet', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, Units ).", $this->getErrorString($xf));
+    $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Units ).", $this->getErrorString($xf));
+  }
+
+  function test_validateConstraint() {
+    $xml = '<root>
+      <A min="6" max="3" />
+      <A min="7" max="2" />
+      <A min="1" />
+      <box>
+        <B somestr="hello" />
+        <C somestr="hello" />
+      </box>
+      <D somestr="hallo" />
+    </root>';
+    $this->testValidateConstraint($xml, 'compare numerical attributes with <=', '//A/@min', '//@max','<=',  false);
+    $this->testValidateConstraint($xml, 'compare numerical attributes with >=', '//A/@min', '//@max', '>=');
+    $this->testValidateConstraint($xml, 'compare strings with !=', '//B/@somestr', '//D/@somestr','!=');
+    $this->testValidateConstraint($xml, 'compare strings with ==', '//B/@somestr',  '//D/@somestr', '==', false);
+    $this->testValidateConstraint($xml, 'compare identity of nodes (1)', '//B',  '//C','==', false);
+    $this->testValidateConstraint($xml, 'compare identity of nodes (2)', '//B',  '//box/B','==');
+    $this->testValidateConstraint($xml, 'compare identity of nodes (3)', '//B',  '//C','!=');
+    $this->testValidateConstraint($xml, 'use selector which selects nothing', '//NOTHING',  '//box/B','==', false);
+    $this->testValidateConstraint($xml, 'custom assertion comparison function', '//*[@somestr]',  '//*[@somestr]','customConstraintComparisonFunction');
+  }
+
+  private function testValidateConstraint(string $xml, string $desc, string $q1, string $q2, string $comp, bool $expect = true): void {
+    $xf = XMLFileExposed::fromString($xml);
+    $result = $xf->validateConstraint($desc, $q1, $q2, $comp);
+    $this->assertEquals($expect, $result, $desc);
   }
 }

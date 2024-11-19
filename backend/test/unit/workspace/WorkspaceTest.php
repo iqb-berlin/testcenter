@@ -127,6 +127,7 @@ class WorkspaceTest extends TestCase {
       '.',
       '..',
       'SAMPLE_UNITCONTENTS.HTM',
+      'coding-scheme.vocs.json',
       'sample_resource_package.itcr.zip',
       'verona-player-simple-6.0.html'
     ];
@@ -221,7 +222,7 @@ class WorkspaceTest extends TestCase {
       "SysCheck" => 1,
       "Booklet" => 4,
       "Unit" => 2,
-      "Resource" => 3
+      "Resource" => 4
     ];
 
     $result = $workspace->countFilesOfAllSubFolders();

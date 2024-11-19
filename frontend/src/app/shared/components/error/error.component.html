@@ -10,7 +10,7 @@
       mat-icon-button
       class="main-alert-close-button"
       (click)="closeClick()"
-      [matTooltip]="closeCaption ?? defaultCloseCaption ?? 'Schließen'"
+      [matTooltip]="closeCaption || defaultCloseCaption || 'Schließen'"
     >
       <!-- this button was an explicit requirement, because people couldn't finde the button with the text "close" -->
       <mat-icon>close</mat-icon>
@@ -58,9 +58,9 @@
       <p *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</p>
       <p><b>Zeitpunkt:</b> {{timestamp | date:'medium'}}</p>
       <p><b>Url: </b>{{url}}</p>
-      <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
-      <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
-      <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
+      <p><b>Browser: </b>{{browser?.browser?.name}} {{browser?.browser?.version}}</p>
+      <p><b>Betriebssystem: </b>{{browser?.os?.name}} {{browser?.os?.version}}</p>
+      <p><b>Gerät: </b>{{browser?.device?.type}} {{browser?.device?.vendor}} {{browser?.device?.model}}</p>
       <p *ngFor="let item of additionalReport | keyvalue">
         <b>{{item.key}}: </b>{{item.value}}
       </p>

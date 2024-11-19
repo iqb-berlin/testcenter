@@ -1,0 +1,327 @@
+<div class="tabs" cdkDrag>
+  <div
+    *ngFor="let tab of windows"
+    (click)="toggleWindow(tab)"
+    [class]="{'active': activeWindows.includes(tab)}"
+  >
+    {{ tab }}
+  </div>
+</div>
+
+<div class="tab tab-main" *ngIf="activeWindows.includes('main')" cdkDrag>
+  <h1>
+    Main
+    <mat-icon class="close" (click)="closeWindow('main')">close</mat-icon>
+  </h1>
+  <div><b>STATUS:</b> {{tcs.state$ | async}}</div>
+  <div>
+    <b>TIMER:</b>
+    <ul>
+      <li *ngFor="let timer of tcs.timers | keyvalue">
+        <b>{{timer.key}}</b>: {{timer.value | number:'1.0-2'}}
+      </li>
+    </ul>
+  </div>
+  <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
+  <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
+  <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
+  <div *ngIf="auth"><b>USER:</b>{{auth.displayName}}</div>
+</div>
+
+<div class="tab tab-config" *ngIf="activeWindows.includes('config')" cdkDrag>
+  <h1>
+    Booklet-Config
+    <mat-icon class="close" (click)="closeWindow('config')">close</mat-icon>
+  </h1>
+  <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
+</div>
+
+<div class="tab tab-testmode" *ngIf="activeWindows.includes('testmode')" cdkDrag>
+  <h1>
+    Test-Mode
+    <mat-icon class="close" (click)="closeWindow('testmode')">close</mat-icon>
+  </h1>
+  <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
+</div>
+
+<div class="tab tab-booklet" *ngIf="activeWindows.includes('booklet')" cdkDrag>
+  <h1>
+    Booklet
+    <mat-icon class="close" (click)="closeWindow('booklet')">close</mat-icon>
+  </h1>
+  <ng-container *ngIf="tcs.booklet as booklet">
+    <ng-container *ngIf="tcs.booklet.units as units">
+      <ng-container  [ngTemplateOutlet]="testletTemplate" [ngTemplateOutletContext]="{item: units}"></ng-container>
+    </ng-container>
+  </ng-container>
+
+</div>
+
+<div class="tab tab-unit" *ngIf="activeWindows.includes('unit')" cdkDrag>
+  <h1>
+    Current Unit
+    <mat-icon class="close" (click)="closeWindow('unit')">close</mat-icon>
+  </h1>
+  <ng-container [ngTemplateOutlet]="unitTemplate" [ngTemplateOutletContext]="{item: tcs.currentUnit, single: true}">
+  </ng-container>
+</div>
+
+<div class="tab tab-customtexts" *ngIf="activeWindows.includes('customtexts')" cdkDrag>
+  <h1>
+    Customtexts
+    <mat-icon class="close" (click)="closeWindow('customtexts')">close</mat-icon>
+  </h1>
+  <input type="text" matInput [(ngModel)]="searchCustomText" placeholder="insert custom text token" [matAutocomplete]="auto">
+  <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
+
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option *ngFor="let option of customTextKeys" [value]="option">
+      {{ option }}
+    </mat-option>
+  </mat-autocomplete>
+
+</div>
+
+<div class="tab tab-variables" *ngIf="activeWindows.includes('variables')" cdkDrag (click)="res()">
+  <h1>
+    Tracked Variables
+    <mat-icon class="close" (click)="closeWindow('variables')">close</mat-icon>
+  </h1>
+  <table>
+    <thead>
+      <tr>
+        <td>ID</td>
+        <td>status</td>
+        <td>value</td>
+        <td>code</td>
+        <td>score</td>
+      </tr>
+    </thead>
+    <ng-container *ngFor="let unit of tcs.units | keyvalue">
+      <thead *ngIf="(unit.value.variables | properties).length">
+        <tr>
+          <td colspan="5">{{unit.value.alias}}</td>
+        </tr>
+      </thead>
+      <tbody *ngIf="(unit.value.variables | properties).length">
+        <tr *ngFor="let uvar of unit.value.variables | keyvalue">
+          <td>{{uvar.value.id}}{{!unit.value.baseVariableIds.includes(uvar.value.id) ? ' *' : ''}}</td>
+          <td>{{uvar.value.status}}</td>
+          <td [matTooltip]="stringValue(uvar.value.value)">{{stringValue(uvar.value.value, true)}}</td>
+          <td>{{uvar.value.code}}</td>
+          <td>{{uvar.value.score}}</td>
+        </tr>
+      </tbody>
+    </ng-container>
+  </table>
+</div>
+
+<div class="tab tab-states" *ngIf="activeWindows.includes('states')" cdkDrag>
+  <h1>
+    Booklet States
+    <mat-icon class="close" (click)="closeWindow('states')">close</mat-icon>
+  </h1>
+  <table *ngIf="tcs.booklet?.states as bookletStates">
+    <ng-container *ngFor="let state of bookletStates | keyvalue">
+      <thead>
+        <tr>
+          <td colspan="2">{{state.value.id}} ({{state.value.label}})</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let option of state.value.options | keyvalue"
+          [class.current]="option.value.id === (state.value.override || state.value.current)"
+        >
+          <td>{{option.value.id}} ({{option.value.label}})
+            <span
+              class="badge"
+              *ngIf="option.value.id === state.value.default"
+              matTooltip="default value"
+            >D</span>
+            <span
+              class="badge"
+              *ngIf="option.value.id === state.value.current && option.value.id !== state.value.default && state.value.override && state.value.override !== state.value.current"
+              matTooltip="would be automatically selected"
+            >A</span>
+          </td>
+          <td>
+            <div
+              *ngFor="let cond of option.value.conditions; let conditionIndex = index"
+              class="condition"
+              [class.satisfied]="conditionIndex < option.value.firstUnsatisfiedCondition || option.value.firstUnsatisfiedCondition < 0"
+            >
+             {{cond | blockcondition}}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </ng-container>
+  </table>
+</div>
+
+<div class="tab tab-system" *ngIf="activeWindows.includes('system')" cdkDrag>
+  <h1>
+    System-Status
+    <mat-icon class="close" (click)="closeWindow('system')">close</mat-icon>
+  </h1>
+  <div><b>broadcastingService: </b>{{mds.sysStatus.broadcastingService}}</div>
+  <div><b>cacheService: </b>{{mds.sysStatus.cacheService}}</div>
+  <div><b>fileService: </b>{{mds.sysStatus.fileService}}</div>
+  <div class='btn' (click)="mds.refreshSysStatus()">Refresh</div>
+</div>
+
+<div class="tab tab-system" *ngIf="activeWindows.includes('tools')" cdkDrag>
+  <h1>
+    Tools
+    <mat-icon class="close" (click)="closeWindow('tools')">close</mat-icon>
+  </h1>
+  <h2>Test Condition</h2>
+  <p>Insert condition like '&lt;If&gt;&lt;Score of="03" from=&lt;D22S013&gt;/>&lt;Is lowerThan="627.5"/&gt;&lt;/If&gt;'</p>
+  <textarea [(ngModel)]="testingCondition" (ngModelChange)="evaluateTestingCondition()" style="min-width: 400px; width:100%; height: 300px">
+  </textarea>
+  <ul>
+    <li *ngFor="let result of testingConditionResults"><pre [innerHTML]="result | trust"></pre></li>
+  </ul>
+</div>
+
+<ng-template #testletTemplate let-testlet="item" [appTemplateContext]="TestletContext">
+  {{testlet.id || '&lt;units&gt;'}}
+
+  <span
+    class='badge'
+    [class]="{active: (testlet.locked && testlet.locked.by === 'time' && testlet.locked.through.id === testlet.id)}"
+    *ngIf="testlet.restrictions.timeMax"
+    [matTooltip]="testlet.restrictions.timeMax.minutes + 'min'"
+  >T</span>
+
+  <span
+    class='badge'
+    [class]="{active: (testlet.locked && testlet.locked.by === 'code' && testlet.locked.through.id === testlet.id)}"
+    *ngIf="testlet.restrictions.codeToEnter"
+  >C</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ON'"
+    matTooltip="denyNavigation on presentation ON"
+  >p</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.presentation == 'ALWAYS'"
+    matTooltip="denyNavigation on presentation ALWAYS"
+  >P</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ON'"
+    matTooltip="denyNavigation on response ON"
+  >r</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.denyNavigationOnIncomplete?.response == 'ALWAYS'"
+    matTooltip="denyNavigation on response ALWAYS"
+  >R</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'testlet'"
+    matTooltip="lockAfterLeaving"
+  >L</span>
+
+  <span
+    class='badge'
+    *ngIf="testlet.restrictions.lockAfterLeaving?.scope === 'unit'"
+    matTooltip="lockUnitAfterLeaving"
+  >U</span>
+
+  <span
+    class='badge'
+    [class]="{ active: !testlet.locks.show }"
+    *ngIf="testlet.restrictions.show"
+    matTooltip="SHOW IF {{testlet.restrictions.show.if}} IS {{testlet.restrictions.show.is}}"
+  >I</span>
+
+  <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
+    {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
+  </mat-icon>
+
+  <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
+    <ng-container *ngFor="let prop of testlet | properties">
+      <tr *ngIf="!['id', 'children', 'locks', 'restrictions', 'locked'].includes(prop.key)">
+        <td>{{prop.key}}</td>
+        <td>{{prop.value}}</td>
+      </tr>
+    </ng-container>
+
+    <tr *ngFor="let lock of testlet.locks | properties">
+      <td>locks.{{lock.key}}</td>
+      <td>{{lock.value}}</td>
+    <tr>
+
+    <tr *ngFor="let restriction of testlet.restrictions | properties">
+      <td>restrictions.{{restriction.key}}</td>
+      <td>{{restriction.value | json}}</td>
+    </tr>
+
+    <tr>
+      <td>locked</td>
+      <td *ngIf="testlet.locked">BY {{testlet.locked.by}} THROUGH {{testlet.locked.through.id}}</td>
+      <td *ngIf="!testlet.locked">NO</td>
+    </tr>
+  </table>
+
+  <div *ngFor="let child of testlet.children" class="testlet">
+    <ng-container
+      [ngTemplateOutlet]="isTestlet(child) ? testletTemplate : unitTemplate"
+      [ngTemplateOutletContext]="{item: child}"
+    ></ng-container>
+  </div>
+</ng-template>
+<ng-template #unitTemplate let-unit="item" let-single="single" [appTemplateContext]="unitContext">
+  <div class="unit" *ngIf="unit" [class]="{current: unit.sequenceId === tcs.currentUnitSequenceId}">
+    <span class="title">
+      {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
+      <mat-icon class='more-btn' (click)="toggleMore(unit.alias)" *ngIf="!single">
+        {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
+      </mat-icon>
+    </span>
+    <table *ngIf="openPanes.includes(unit.alias) || single">
+
+      <ng-container *ngFor="let prop of unit | properties">
+        <tr *ngIf="!['parent', 'definition', 'state', 'variables', 'dataParts', 'loadingProgress', 'scheme'].includes(prop.key)">
+          <td>{{prop.key}}</td>
+          <td>{{prop.value}}</td>
+        </tr>
+      </ng-container>
+
+      <tr>
+        <td>parent</td>
+        <td>{{unit.parent.id}}</td>
+      </tr>
+
+      <tr>
+        <td>definition</td>
+        <td>{{unit.definition | slice:0:20 }} ...</td>
+      </tr>
+
+      <tr *ngFor="let stateEntry of unit.state | keyvalue">
+        <td>state.{{stateEntry.key}}</td>
+        <td>{{stateEntry.value}}</td>
+      </tr>
+
+      <tr *ngFor="let lp of unit.loadingProgress | keyvalue">
+        <td>loadingProgress: {{lp.key}}</td>
+        <td>{{(lp.value | async)?.progress}}</td>
+      </tr>
+
+      <tr>
+        <td>scheme</td>
+        <td>{{unit.scheme | schemeastext}}</td>
+      </tr>
+    </table>
+
+  </div>
+</ng-template>

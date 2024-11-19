@@ -345,3 +345,26 @@
   </select>
   <button onclick="raiseError(); return false">Raise runtime error</button>
 </fieldset>
+
+<fieldset>
+  <![CDATA[
+  <div class="container">
+    <h1>Sample Unit calling external File</h1>
+    <p id="sample-unit-message">This unit can fetch some data dynamically.</p>
+  </div>
+  <script>
+    document.addEventListener('vopStartCommand', event => {
+      if (!playerConfig.directDownloadUrl) {
+        document.querySelector("#sample-unit-message").innerHTML = "Fetching external content is not supported by host";
+        return;
+      }
+      fetch(`${playerConfig.directDownloadUrl}/sample_resource_package/file.text`)
+        .then(
+          async res => {
+            document.querySelector("#unit").innerHTML += await res.text();
+          });
+    });
+  </script>
+
+  ]]>
+</fieldset>

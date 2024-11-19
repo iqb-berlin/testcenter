@@ -1,14 +1,13 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
-import { combineLatest, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import UAParser from 'ua-parser-js';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -16,14 +15,8 @@ import {
   MainDataService, UserAgentService
 } from '../../../shared/shared.module';
 import {
-  AppFocusState,
-  Command,
-  MaxTimerDataType,
+  Command, MaxTimerEvent,
   ReviewDialogData,
-  StateReportEntry,
-  TestControllerState,
-  TestStateKey,
-  UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
@@ -32,7 +25,7 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
-import { MaxTimerData } from '../../classes/test-controller.classes';
+import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
 
@@ -52,12 +45,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     connectionStatus: null
   };
 
-  timerValue: MaxTimerData | null = null;
-  unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: Array<UnitNaviButtonData | string> = [];
+  timerValue: TimerData | null = null;
+
   debugPane = false;
-  unitScreenHeader: string = '';
-  uaParser: UAParser = new UAParser();
 
   constructor(
     public mainDataService: MainDataService,
@@ -65,7 +55,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
     public cmd: CommandService,
@@ -82,13 +71,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
 
-      this.subscriptions.testStatus = this.tcs.testStatus$
+      this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())
-        .subscribe(status => this.logTestControllerStatusChange(status));
+        .subscribe(status => this.tcs.setTestState('CONTROLLER', status));
 
       this.subscriptions.appWindowHasFocus = this.mainDataService.appWindowHasFocus$
         .subscribe(hasFocus => {
-          this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
+          this.tcs.windowFocusState$.next(hasFocus ? 'HOST' : 'UNKNOWN');
         });
 
       this.subscriptions.command = this.cmd.command$
@@ -115,28 +104,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
-          this.setUnitScreenHeader();
           await this.requestFullScreen();
         });
 
-      this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
-        .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
+      this.subscriptions.maxTimer = this.tcs.timers$
+        .subscribe(maxTimerEvent => this.handleTimer(maxTimerEvent));
 
-      this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
-        .subscribe(() => {
-          this.refreshUnitMenu();
-          this.setUnitScreenHeader();
-        });
+      if (!this.isProductionMode) {
+        this.debugPane = !!localStorage.getItem('tc-debug');
+      }
     });
   }
-
-  private logTestControllerStatusChange = (testControllerState: TestControllerState): void => {
-    if (this.tcs.testMode.saveResponses) {
-      this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-        key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
-      }]);
-    }
-  };
 
   private startAppFocusLogging() {
     if (!this.tcs.testMode.saveResponses) {
@@ -148,17 +126,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.subscriptions.appFocus = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
-      if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+      if (['ERROR', 'TERMINATED'].includes(this.tcs.state$.getValue())) {
         return;
       }
-      if (newState === WindowFocusState.UNKNOWN) {
-        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-          key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS_NOT
-        }]);
+      if (newState === 'UNKNOWN') {
+        this.tcs.setTestState('FOCUS', 'HAS_NOT');
       } else {
-        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-          key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS
-        }]);
+        this.tcs.setTestState('FOCUS', 'HAS');
       }
     });
   }
@@ -170,33 +144,24 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
-        if (this.tcs.testMode.saveResponses) {
-          this.bs.updateTestState(this.tcs.testId, [{
-            key: TestStateKey.CONNECTION,
-            content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
-            timeStamp: Date.now()
-          }]);
-        }
+        this.tcs.setTestState('CONNECTION', isWsConnected ? 'WEBSOCKET' : 'POLLING');
       });
   }
 
   showReviewDialog(): void {
     const authData = this.mainDataService.getAuthData();
-    if (this.tcs.rootTestlet === null) {
-      this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
-    } else if (!authData) {
-      throw new AppError({ description: '', label: 'Nicht Angemeldet!' });
+    if (!authData) {
+      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // necessary?!
     } else {
-      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
-        data: <ReviewDialogData>{
-          loginname: authData.displayName,
-          bookletname: this.tcs.rootTestlet.title,
-          unitTitle: this.tcs.currentUnitTitle,
-          unitDbKey: this.tcs.currentUnitDbKey,
-          currentPageIndex: this.tcs.currentPageIndex,
-          currentPageLabel: this.tcs.currentPageLabel
-        }
-      });
+      const dialogData = <ReviewDialogData>{
+        loginname: authData.displayName,
+        bookletname: this.tcs.booklet?.metadata.label,
+        unitTitle: this.tcs.currentUnit?.label,
+        unitAlias: this.tcs.currentUnit?.alias,
+        currentPageIndex: this.tcs.currentUnit?.state.CURRENT_PAGE_NR,
+        currentPageLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])
+      };
+      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, { data: dialogData });
 
       dialogRef.afterClosed().subscribe(result => {
         if (!result) {
@@ -205,14 +170,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         ReviewDialogComponent.savedName = result.sender;
         this.bs.saveReview(
           this.tcs.testId,
-          (result.target === 'u' || result.target === 'p') ? this.tcs.currentUnitDbKey : null,
-          (result.target === 'p') ? this.tcs.currentPageIndex : null,
-          (result.target === 'p') ? result.targetLabel : null,
+          (result.target === 'u' || result.target === 'p') ? dialogData.unitAlias : null,
+          (result.target === 'p') ? dialogData.currentPageIndex : null,
+          (result.target === 'p') ? dialogData.currentPageLabel : null,
           result.priority,
           dialogRef.componentInstance.getSelectedCategories(),
           result.sender ? `${result.sender}: ${result.entry}` : result.entry,
           UserAgentService.outputWithOs(),
-          this.tcs.rootTestlet?.getUnitAt(this.tcs.currentUnitSequenceId)?.unitDef.id ?? ''
+          this.tcs.currentUnit?.id || ''
         ).subscribe(() => {
           this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
         });
@@ -220,183 +185,111 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCommand(commandName: string, params: string[]): void {
+  handleCommand(commandName: string, params: string[]): Promise<boolean> {
     switch (commandName.toLowerCase()) {
       case 'debug':
-        this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
-        if (this.debugPane) {
-          // eslint-disable-next-line no-console
-          console.log('select (focus) app window to see the debugPane');
-        }
-        break;
-      case 'destroy':
-        this.tcs.rootTestlet = null;
-        break;
+        return this.toggleDebugPane(params);
       case 'pause':
-        this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
-        this.tcs.pause();
-        break;
+        return this.tcs.pause();
       case 'resume':
-        // eslint-disable-next-line no-case-declarations
-        const navTarget =
-          (this.tcs.resumeTargetUnitSequenceId > 0) ?
-            this.tcs.resumeTargetUnitSequenceId.toString() :
-            UnitNavigationTarget.FIRST;
-        this.tcs.testStatus$.next(TestControllerState.RUNNING);
-        this.tcs.setUnitNavigationRequest(navTarget, true);
-        break;
+        return this.tcs.resume();
       case 'terminate':
-        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
-        break;
+        return this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
       case 'goto':
-        this.tcs.testStatus$.next(TestControllerState.RUNNING);
-        // eslint-disable-next-line no-case-declarations
-        let gotoTarget: string = '';
-        if ((params.length === 2) && (params[0] === 'id')) {
-          gotoTarget = (this.tcs.allUnitIds.indexOf(params[1]) + 1).toString(10);
-        } else if (params.length === 1) {
-          gotoTarget = params[0];
-        }
-        if (gotoTarget && gotoTarget !== '0') {
-          this.tcs.resumeTargetUnitSequenceId = 0;
-          const targetUnit = this.tcs.getUnitWithContext(parseInt(gotoTarget, 10));
-          if (targetUnit) {
-            const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
-            if (targetUnit.maxTimerRequiringTestlet?.id !== currentUnit?.maxTimerRequiringTestlet?.id) {
-              this.tcs.cancelMaxTimer();
-            }
-            targetUnit.codeRequiringTestlets
-              .forEach(testlet => {
-                this.tcs.addClearedCodeTestlet(testlet.id);
-              });
-          }
-
-          this.tcs.setUnitNavigationRequest(gotoTarget, true);
-        }
-        break;
+        return this.goto(params);
       default:
+        return Promise.reject();
     }
   }
 
-  private handleMaxTimer(maxTimerData: MaxTimerData): void {
-    if (!this.tcs.rootTestlet) {
-      throw new AppError({ description: '', label: 'Roottestlet used to early' });
+  private goto(params: string[]): Promise<boolean> {
+    this.tcs.state$.next('RUNNING');
+    // eslint-disable-next-line no-case-declarations
+    let gotoTarget: string = '';
+    if ((params.length === 2) && (params[0] === 'id')) {
+      gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
+    } else if (params.length === 1) {
+      gotoTarget = params[0];
     }
-    const minute = maxTimerData.timeLeftSeconds / 60;
-    switch (maxTimerData.type) {
-      case MaxTimerDataType.STARTED:
+    if (gotoTarget && gotoTarget !== '0') {
+      const targetUnit = this.tcs.units[parseInt(gotoTarget, 10)];
+      if (targetUnit) {
+        if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
+          this.tcs.cancelTimer();
+        }
+        this.tcs.clearTestlet(targetUnit.parent.id);
+      }
+      return this.tcs.setUnitNavigationRequest(gotoTarget, true);
+    }
+    return Promise.reject();
+  }
+
+  private toggleDebugPane(params: string[]): Promise<boolean> {
+    this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
+    if (this.debugPane) {
+      localStorage.setItem('tc-debug', '["main"]');
+    } else {
+      localStorage.removeItem('tc-debug');
+    }
+    return Promise.resolve(true);
+  }
+
+  private async handleTimer(timer: TimerData): Promise<boolean> {
+    const minute = timer.timeLeftSeconds / 60;
+    switch (timer.type) {
+      case MaxTimerEvent.STARTED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
-          maxTimerData.timeLeftMinString, '', { duration: 5000 });
-        this.timerValue = maxTimerData;
-        break;
-      case MaxTimerDataType.ENDED:
+          timer.timeLeftMinString, '', { duration: 5000 });
+        this.timerValue = timer;
+        this.tcs.updateLocks();
+        return true;
+      case MaxTimerEvent.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
-        this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
-        if (this.tcs.testMode.saveResponses) {
-          this.bs.updateTestState(
-            this.tcs.testId,
-            [<StateReportEntry>{
-              key: TestStateKey.TESTLETS_TIMELEFT,
-              timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.maxTimeTimers)
-            }]
-          );
-        }
+        this.tcs.timers[timer.id] = 0;
+        // attention: TODO store timer as well in localStorage to prevent F5-cheating
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
+        if (this.tcs.currentUnit) {
+          this.tcs.currentUnit.parent.locks.time = true;
+          this.tcs.updateLocks();
+        }
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-          const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
-        }
-        break;
-      case MaxTimerDataType.CANCELLED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
-        if (this.tcs.testMode.saveResponses) {
-          this.bs.updateTestState(
-            this.tcs.testId,
-            [<StateReportEntry>{
-              key: TestStateKey.TESTLETS_TIMELEFT,
-              timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.maxTimeTimers)
-            }]
+          return this.tcs.setUnitNavigationRequest(
+            UnitNavigationTarget.NEXT ?? UnitNavigationTarget.END,
+            true
           );
         }
+        return true;
+      case MaxTimerEvent.CANCELLED:
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
+        this.tcs.timers[timer.id] = 0;
+        // attention: TODO store timer as well in localStorage to prevent F5-cheating
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
-        break;
-      case MaxTimerDataType.INTERRUPTED:
+        if (this.tcs.currentUnit) {
+          this.tcs.currentUnit.parent.locks.time = true;
+          this.tcs.updateLocks();
+        }
+        return true;
+      case MaxTimerEvent.INTERRUPTED:
         this.timerValue = null;
-        break;
-      case MaxTimerDataType.STEP:
-        this.timerValue = maxTimerData;
-        this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
-        if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
-          if (this.tcs.testMode.saveResponses) {
-            this.bs.updateTestState(
-              this.tcs.testId,
-              [<StateReportEntry>{
-                key: TestStateKey.TESTLETS_TIMELEFT,
-                timeStamp: Date.now(),
-                content: JSON.stringify(this.tcs.maxTimeTimers)
-              }]
-            );
-          }
+        this.tcs.updateLocks();
+        return true;
+      case MaxTimerEvent.STEP:
+        this.timerValue = timer;
+        this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
+        if ((timer.timeLeftSeconds % 15) === 0) {
+          this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
+          // attention: TODO store timer as well in localStorage to prevent F5-cheating
+          this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }
         if (this.tcs.timerWarningPoints.includes(minute)) {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
           this.snackBar.open(text, '', { duration: 5000 });
         }
-        break;
+        return true;
       default:
-    }
-  }
-
-  private refreshUnitMenu(): void {
-    this.unitNavigationList = [];
-    if (!this.tcs.rootTestlet) {
-      return;
-    }
-    let previousBlockLabel: string | null = null;
-    const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
-    for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
-      const unitData = this.tcs.getUnitWithContext(sequenceId);
-
-      const blockLabel = unitData.testletLabel || '';
-      if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
-        this.unitNavigationList.push(blockLabel);
-      }
-      previousBlockLabel = blockLabel;
-
-      this.unitNavigationList.push({
-        sequenceId,
-        shortLabel: unitData.unitDef.naviButtonLabel,
-        longLabel: unitData.unitDef.title,
-        testletLabel: unitData.testletLabel,
-        disabled: this.tcs.getUnitIsLocked(unitData),
-        isCurrent: sequenceId === this.tcs.currentUnitSequenceId
-      });
-    }
-  }
-
-  private setUnitScreenHeader(): void {
-    if (!this.tcs.rootTestlet || !this.tcs.currentUnitSequenceId) {
-      this.unitScreenHeader = '';
-      return;
-    }
-    switch (this.tcs.bookletConfig.unit_screenheader) {
-      case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).unitDef.title;
-        break;
-      case 'WITH_BOOKLET_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.title;
-        break;
-      case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).testletLabel;
-        break;
-      default:
-        this.unitScreenHeader = '';
+        return true;
     }
   }
 
@@ -407,7 +300,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionKey]?.unsubscribe();
         this.subscriptions[subscriptionKey] = null;
       });
-    this.tls.reset();
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }
@@ -451,7 +343,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   async requestFullScreen(): Promise<void> {
-    if (this.tcs.bookletConfig.ask_for_fullscreen === 'OFF') {
+    if (this.tcs.booklet?.config.ask_for_fullscreen === 'OFF') {
       return;
     }
     if (this.mainDataService.isFullScreen) {

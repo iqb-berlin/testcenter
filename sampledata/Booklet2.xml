@@ -2,11 +2,86 @@
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.4/definitions/vo_Booklet.xsd">
   <Metadata>
     <Id>BOOKLET.SAMPLE-2</Id>
-    <Label>Reduced Booklet</Label>
+    <Label>Adaptive Booklet</Label>
+    <Description>This Booklet demonstrates the adaptivity features.</Description>
   </Metadata>
 
+  <BookletConfig>
+    <Config key="pagingMode">separate</Config>
+    <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
+    <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
+    <Config key="unit_menu">FULL</Config>
+    <Config key="unit_navibuttons">FULL</Config>
+  </BookletConfig>
+
+  <States>
+    <State id="level" label="Schwierigkeitsstufe">
+      <Option id="professionell" label="schwer">
+        <If>
+          <Count>
+            <If><Value of="derived_var" from="decision-unit" /><Is greaterThan="150" /></If>
+            <If>
+              <Sum>
+                <Value of="var3" from="decision-unit" />
+                <Value of="var4" from="decision-unit" />
+                <Value of="var5" from="decision-unit" />
+              </Sum>
+              <Is greaterThan="2" />
+            </If>
+          </Count>
+          <Is greaterThan="0" />
+        </If>
+      </Option>
+      <Option id="advanced" label="mittel">
+        <If><Value of="derived_var" from="decision-unit" /><Is greaterThan="99" /></If>
+      </Option>
+      <Option id="beginner" label="leicht "/>
+    </State>
+    <State id="bonus" label="Bonusmaterial">
+      <Option id="no" label="nein" />
+      <Option id="yes" label="ja" />
+    </State>
+  </States>
+
   <Units>
-     <Unit id="UNIT.SAMPLE" label="A Sample Unit to demonstrate the SamplePlayer2" labelshort="Sample Unit" />
-     <Unit id="UNIT.SAMPLE-2" label="A very Simple Sample Unit" labelshort="2nd Sample Unit" />
+    <Unit id="UNIT.SAMPLE-2" label="Decision Unit" labelshort="D" alias="decision-unit" />
+
+    <Testlet id="stage1">
+      <Testlet id="stage1-professionell" label="Stage ① Block Ⓒ">
+        <Restrictions>
+          <Show if="level" is="professionell" />
+        </Restrictions>
+
+        <Unit id="UNIT.SAMPLE-2" label="Ⓒ Professionell Unit" labelshort="Ⓒ" alias="professionell-unit" />
+        <!--
+          To go to the advanced block enter "a" to var1 and anything other than "a" or "b" to var2
+          To go to the professionell block enter "a" or "b" to var1 (or add some numbers to var3, var4 and var5)
+        -->
+      </Testlet>
+
+      <Testlet id="stage1-advanced" label="Stage ① Block Ⓑ">
+        <Restrictions>
+          <Show if="level" is="advanced" />
+        </Restrictions>
+
+        <Unit id="UNIT.SAMPLE-2" label="Ⓑ Advanced Unit" labelshort="Ⓑ" alias="advanced-unit" />
+      </Testlet>
+
+      <Testlet id="stage1-beginner" label="Stage ① Block Ⓐ">
+        <Restrictions>
+          <Show if="level" is="beginner" />
+        </Restrictions>
+
+        <Unit id="UNIT.SAMPLE-2" label="Ⓐ Beginner Unit" labelshort="Ⓐ" alias="beginner-unit" />
+      </Testlet>
+    </Testlet>
+
+    <Testlet id="optional-block" label="Bonus Units">
+      <Restrictions>
+        <Show if="bonus" is="yes" />
+      </Restrictions>
+
+      <Unit id="UNIT.SAMPLE-2" label="Ⓧ Bonus Unit" labelshort="Ⓧ" alias="bonus-unit" />
+    </Testlet>
   </Units>
 </Booklet>

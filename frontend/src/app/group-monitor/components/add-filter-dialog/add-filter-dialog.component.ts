@@ -4,10 +4,17 @@ import {
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   isBooklet,
-  TestSessionFilter, TestSessionFilterTarget,
-  testSessionFilterTargets, testSessionFilterTargetLists, testSessionFilterTypeLists,
+  TestSessionFilter,
+  TestSessionFilterTarget,
+  testSessionFilterTargets,
+  testSessionFilterTargetLists,
+  testSessionFilterTypeLists,
   testSessionFilterTypes,
-  TestSessionSuperState, isTestSessionFilter
+  TestSessionSuperState,
+  isTestSessionFilter,
+  isAdvancedTestSessionFilterTarget,
+  isAdvancedTestSessionFilterType,
+  TestSessionFilterSubValueSelect
 } from '../../group-monitor.interfaces';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -73,8 +80,13 @@ export class AddFilterDialogComponent implements OnInit {
     state: [],
     testState: [],
     unitLabel: [],
-    unitId: []
+    unitId: [],
+    bookletStates: []
   };
+
+  readonly subValueLists:
+  Partial<{ [field in TestSessionFilterTarget] : { [value: string] : TestSessionFilterSubValueSelect } }> =
+      { bookletStates: {} };
 
   isValid: boolean = true;
   advancedMode: boolean = false;
@@ -88,12 +100,23 @@ export class AddFilterDialogComponent implements OnInit {
       .forEach(session => {
         pushUnique(this.lists.groupName, session.data.groupName);
         pushUnique(this.lists.bookletId, session.data.bookletName || '');
-        if (isBooklet(session.booklet)) pushUnique(this.lists.bookletLabel, session.booklet.metadata.label);
         pushUnique(this.lists.blockId, session.current?.ancestor?.blockId || '');
         pushUnique(this.lists.blockLabel, session.current?.ancestor?.blockId || '');
         pushUnique(this.lists.bookletSpecies, session.booklet.species || '');
         pushUnique(this.lists.unitId, session.current?.unit?.id || '');
         pushUnique(this.lists.unitLabel, session.current?.unit?.label || '');
+        if (!isBooklet(session.booklet)) return;
+        pushUnique(this.lists.bookletLabel, session.booklet.metadata.label);
+        Object.entries(session.booklet.states)
+          .forEach(([stateId, state]) => {
+            pushUnique(this.lists.bookletStates, stateId);
+            if (!this.subValueLists.bookletStates) return;
+            this.subValueLists.bookletStates[stateId] = {
+              id: stateId,
+              label: state.label, //!
+              options: { ...state.options }
+            };
+          });
       });
 
     this.lists.mode = Object.keys(TestMode.modes).map(mode => mode.toLowerCase());
@@ -116,16 +139,52 @@ export class AddFilterDialogComponent implements OnInit {
   }
 
   updateFilterId(): void {
-    if (!this.filter.value) return;
-    this.filter.id = this.originalId ||
-      `${this.filter.target}_${this.filter.not ? 'not_' : ''}${this.filter.type}_${this.filter.value}`;
-    this.filter.label = [
-      this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
-      this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
-      this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
-      this.filter.value.length > 15 ? `${this.filter.value.slice(0, 14)}...` : this.filter.value
+    if (['state'].includes(this.filter.target) && !this.isStringArray(this.filter.value)) {
+      this.filter.value = [];
+    }
+    if (!['bookletStates', 'testState'].includes(this.filter.target)) {
+      this.filter.subValue = undefined;
+    }
+    const newId = [
+      this.filter.target,
+      this.filter.not ? 'not_' : '',
+      this.filter.type,
+      ...(this.isStringArray(this.filter.value) ? this.filter.value : [this.filter.value]),
+      this.filter.subValue
     ]
+      .filter(t => !!t)
+      .join('_');
+    this.filter.id = this.originalId || newId;
+
+    const label = {
+      target: this.cts.getCustomText(`gm_filter_target_${this.filter.target}`) || this.filter.target,
+      type: this.cts.getCustomText(`gm_filter_type_${this.filter.type}`) || this.filter.type,
+      not: this.filter.not ? (this.cts.getCustomText('gm_filter_not') ?? 'not') : '',
+      value: '',
+      subValue: ''
+    };
+    if (this.isStringArray(this.filter.value)) {
+      label.value = this.filter.value.join(', ');
+    } else if (this.filter.subValue) {
+      label.value = this.subValueLists?.[this.filter.target]?.[this.filter.value]?.label || this.filter.value;
+      label.subValue =
+        this.subValueLists?.[this.filter.target]?.[this.filter.value]?.options[this.filter.subValue]?.label ||
+          this.filter.subValue;
+    } else {
+      label.value = this.filter.value;
+    }
+    this.filter.label = (
+      this.filter.subValue ?
+        [label.target, label.value, label.type, label.not, label.subValue] :
+        [label.target, label.type, label.not, label.value]
+    )
       .filter(a => !!a)
       .join(' ');
   }
+
+  protected readonly isAdvancedTestSessionFilterTarget = isAdvancedTestSessionFilterTarget;
+  protected readonly isAdvancedTestSessionFilterType = isAdvancedTestSessionFilterType;
+
+  // eslint-disable-next-line class-methods-use-this
+  protected readonly isStringArray = (s : string | string[]): s is string[] => Array.isArray(s);
 }

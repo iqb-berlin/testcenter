@@ -32,7 +32,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   url: string = '';
   restartTimer$: Observable<number> | null = null;
   waitUnitAutomaticRestartSeconds: number = 30;
-  sendingResult: BugReportResult | null = null;
+  sendingResult: BugReportResult = { message: '', success: false };
   timestamp: number = -1;
   private appErrorSubscription: Subscription | null = null;
   private restartTimerSubscription: Subscription | null = null;

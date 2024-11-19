@@ -1,0 +1,52 @@
+.unit-nav {
+  margin: 0 5px 0 auto;
+  flex-wrap: wrap;
+  z-index: 2;
+  max-height: 100%;
+  align-items: safe center;
+}
+
+.unit-nav-item {
+  font-size: 12px;
+  border-radius: 0;
+  height: 30px;
+  white-space: normal;
+  line-height: normal;
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+  text-align: center;
+  overflow: clip;
+  width: 30px;
+  padding: 0;
+  min-width: unset;
+}
+
+.marked {
+  color: silver;
+}
+
+.testlet {
+  display: inline;
+}
+
+a:not(:last-child) {
+  border-right: lightgray 1px solid;
+}
+
+.unit-nav-item-selected {
+  background-color: var(--accent) !important;
+}
+
+.unit-nav-item-selected[disabled="true"] {
+  color: black;
+}
+
+.mdc-fab[disabled="true"],
+.mdc-button[disabled="true"] {
+  background-color: darkgray;
+}
+
+.mat-mdc-button.mat-unthemed {
+  color: white;
+}
