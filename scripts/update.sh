@@ -290,9 +290,9 @@ download_file() {
 update_files() {
   printf "4. File download\n"
 
-  download_file "${APP_DIR}"/docker-compose.yml docker/docker-compose.yml
-  download_file "${APP_DIR}"/docker-compose.prod.yml dist-src/docker-compose.prod.yml
-  download_file "${APP_DIR}"/docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
+  download_file "${APP_DIR}"/docker-compose.yml docker-compose.yml
+  download_file "${APP_DIR}"/docker-compose.prod.yml docker-compose.prod.yml
+  download_file "${APP_DIR}"/docker-compose.prod.tls.yml docker-compose.prod.tls.yml
   download_file "${APP_DIR}/scripts/make/${APP_NAME}.mk" scripts/make/prod.mk
 
   printf "File download done.\n\n"
@@ -382,7 +382,7 @@ get_modified_file() {
 check_environment_file_modifications() {
   # check environment file
   printf "5. Environment template file modification check\n"
-  get_modified_file .env.prod-template dist-src/.env.prod-template "env-file"
+  get_modified_file .env.prod-template .env.prod-template "env-file"
   printf "Environment template file modification check done.\n\n"
 }
 
@@ -586,8 +586,8 @@ customize_settings() {
   sed -i "s#VERSION.*#VERSION=$TARGET_TAG#" "${APP_DIR}"/.env.prod
 
   # Setup makefiles
-#  sed -i "s#TC_BASE_DIR :=.*#TC_BASE_DIR := \\$(pwd)#" "$PWD/scripts/make/${APP_NAME}.mk"
-  sed -i "s#scripts/update.sh#scripts/update_${APP_NAME}.sh#" "${APP_DIR}/scripts/make/${APP_NAME}.mk"
+  sed -i "s|TC_BASE_DIR :=.*|TC_BASE_DIR := \\$(pwd)|" "$PWD/scripts/make/${APP_NAME}.mk"
+  sed -i "s|scripts/update.sh|scripts/update_${APP_NAME}.sh|" "${APP_DIR}/scripts/make/${APP_NAME}.mk"
 #  update_makefile
 }
 
@@ -616,7 +616,7 @@ finalize_update() {
     fi
 
     printf "When your files are checked for modification, you could restart the application with "
-    printf "'make run-detached' at the command line to put the update into effect.\n\n"
+    printf "'make testcenter-up' at the command line to put the update into effect.\n\n"
 
     printf "'%s' update script finished.\n" $APP_NAME
     exit 0
@@ -638,7 +638,7 @@ application_reload() {
     read -p "Do you want to reload $APP_NAME now? [Y/n] " -er -n 1 reload
 
     if [[ ! $reload =~ [nN] ]]; then
-      make run-detached
+      make testcenter-up
 
     else
       printf "'%s' update script finished.\n" $APP_NAME
@@ -658,8 +658,8 @@ application_restart() {
     read -p "Do you want to restart $APP_NAME now? [Y/n] " -er -n 1 restart
 
     if [[ ! $restart =~ [nN] ]]; then
-      make down
-      make run-detached
+      make testcenter-down
+      make testcenter-up
     else
       printf "'%s' update script finished.\n" $APP_NAME
       exit 0

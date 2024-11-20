@@ -11,7 +11,7 @@ layout: default
     (z. B. mit und ohne Befragung, mit Anleitung für Tablet oder mit Anleitung für PC)
     Siehe: https://iqb-berlin.github.io/tba-info/Testcenter/Adaptives_Testen/#konfiguration-in-der-testtaker-xml
   * Filtern nach Bestimmten Bookletzuständen im Gruppenmonitor ist nun möglich.
-* "Ford only" Modus:
+* "Forward only" Modus:
   * Booklet-Parameter `unit_navibuttons` hat nun die Option `FORWARD_ONLY`, so das nur der Vorwortknopf gezeigt wird.
   * Neue Restriction `<LockafterLeaving>` erlaubt das automatische (und endgültige sperren) nach Verlassen der Unit,
     um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
@@ -28,11 +28,10 @@ layout: default
 * Entlastung des Servers durch deutliche Reduktion redundant Calls.
 * Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
   sehr schnellen Vorgängen.
-* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden vieler Dateitypen nun schneller.  
-
-
-
-
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden 
+  vieler Dateitypen nun schneller.  
+* Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
+  wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
 
 ## 15.3.4
 ### bugfixes

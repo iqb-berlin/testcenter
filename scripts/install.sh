@@ -170,10 +170,10 @@ download_file() {
 download_files() {
   printf "4. Downloading files:\n"
 
-  download_file docker-compose.yml docker/docker-compose.yml
-  download_file docker-compose.prod.yml dist-src/docker-compose.prod.yml
-  download_file docker-compose.prod.tls.yml dist-src/docker-compose.prod.tls.yml
-  download_file .env.prod-template dist-src/.env.prod-template
+  download_file docker-compose.yml docker-compose.yml
+  download_file docker-compose.prod.yml docker-compose.prod.yml
+  download_file docker-compose.prod.tls.yml docker-compose.prod.tls.yml
+  download_file .env.prod-template .env.prod-template
   download_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml
   download_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml
   download_file config/traefik/tls-options.yml config/traefik/tls-options.yml
@@ -229,8 +229,8 @@ customize_settings() {
   fi
 
   # Setup makefiles
-  #sed -i.bak "s|TC_BASE_DIR :=.*|TC_BASE_DIR := \\$TARGET_DIR|" scripts/make/${APP_NAME}.mk &&
-  # rm scripts/make/${APP_NAME}.mk.bak
+  sed -i.bak "s|TC_BASE_DIR :=.*|TC_BASE_DIR := \\$TARGET_DIR|" scripts/make/${APP_NAME}.mk &&
+    rm scripts/make/${APP_NAME}.mk.bak
   sed -i.bak "s|scripts/update.sh|scripts/update_${APP_NAME}.sh|" scripts/make/${APP_NAME}.mk &&
     rm scripts/make/${APP_NAME}.mk.bak
   printf "include %s/scripts/make/$APP_NAME.mk\n" "$TARGET_DIR" >"$TARGET_DIR"/Makefile
@@ -246,7 +246,7 @@ application_start() {
     read -p "Do you want to start $APP_NAME now? [Y/n] " -er -n 1 is_start_now
     printf '\n'
     if [[ ! $is_start_now =~ [nN] ]]; then
-      make run-detached
+      make testcenter-up
     else
       printf "'%s' installation script finished.\n" $APP_NAME
       exit 0

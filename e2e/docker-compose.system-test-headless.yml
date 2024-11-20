@@ -1,0 +1,31 @@
+services:
+  testcenter-e2e:
+    container_name: testcenter-e2e
+    depends_on:
+      testcenter-backend:
+        condition: service_healthy
+    build:
+      dockerfile: e2e/Dockerfile
+    environment:
+      - CYPRESS_baseUrl=http://testcenter-frontend:4200
+    command: "npx cypress run --browser chrome --spec=/usr/src/testcenter/e2e/cypress/e2e/${SPEC:-**/*}.cy.ts"
+    volumes:
+      - ./e2e/cypress:/usr/src/testcenter/e2e/cypress
+      - ./e2e/cypress.e2e.config.js:/usr/src/testcenter/e2e/cypress.config.js
+      - ./sampledata:/usr/src/testcenter/sampledata
+    networks:
+      - testcenter
+
+  testcenter-broadcasting-service:
+    environment:
+      DEV_MODE: false # loglevel
+
+  testcenter-backend:
+    environment:
+      OVERRIDE_CONFIG: |
+        [fileService]
+        external=testcenter-file-service/
+        [broadcastingService]
+        external=testcenter-broadcasting-service:3000/
+  testcenter-frontend:
+    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"

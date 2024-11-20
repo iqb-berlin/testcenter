@@ -1,0 +1,137 @@
+# Base compose file defining services and their settings
+# For concrete images check the environment specific override files.
+
+x-restart-policy: &restart-policy
+  restart: "${RESTART_POLICY:-always}"
+
+x-env-mysql: &env-mysql
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+x-env-logging-conf: &env-logging-conf
+  max-size: "200m"
+  max-file: "10"
+
+services:
+  traefik:
+    <<: *restart-policy
+    container_name: testcenter-traefik
+    image: ${DOCKERHUB_PROXY}traefik:v2.11
+    ports:
+      - "${PORT:-80}:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      testcenter:
+
+  testcenter-broadcasting-service:
+    <<: *restart-policy
+    container_name: testcenter-broadcasting-service
+    image: iqbberlin/testcenter-broadcasting-service:current
+    logging:
+      options:
+        <<: *env-logging-conf
+    networks:
+      testcenter:
+
+  testcenter-frontend:
+    <<: *restart-policy
+    container_name: testcenter-frontend
+    image: iqbberlin/testcenter-frontend:current
+    logging:
+      options:
+        <<: *env-logging-conf
+    networks:
+      testcenter:
+
+  testcenter-cache-service:
+    <<: *restart-policy
+    container_name: testcenter-cache-service
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    command:
+      - "bash"
+      - "-c"
+      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
+    networks:
+      testcenter:
+
+  testcenter-file-service:
+    <<: *restart-policy
+    container_name: testcenter-file-service
+    image: iqbberlin/testcenter-file-service:current
+    environment:
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
+    volumes:
+      - testcenter_backend_vo_data:/var/www/html/
+    networks:
+      testcenter:
+
+  testcenter-backend:
+    <<: *restart-policy
+    container_name: testcenter-backend
+    image: iqbberlin/testcenter-backend:current
+    environment:
+      <<: *env-mysql
+      MYSQL_HOST: testcenter-db
+      MYSQL_PORT: 3306
+      PASSWORD_SALT: ${PASSWORD_SALT}
+      BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
+      FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
+      HOSTNAME: ${HOSTNAME}
+      TLS_ENABLED: ${TLS_ENABLED:-on}
+      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
+      PORT_OF_REVERSE_PROXY: ${PORT:-80}
+      TLS_PORT_OF_REVERSE_PROXY: ${TLS_PORT:-443}
+      SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
+      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
+      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
+      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
+    logging:
+      options:
+        <<: *env-logging-conf
+    depends_on:
+      testcenter-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      start_period: 60s
+      start_interval: 3s
+      interval: 5m
+      timeout: 30s
+      retries: 3
+    networks:
+      testcenter:
+
+  testcenter-db:
+    <<: *restart-policy
+    container_name: testcenter-db
+    image: ${DOCKERHUB_PROXY}mysql:8.0
+    environment:
+      <<: *env-mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_INITDB_SKIP_TZINFO: 'true'
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+      start_period: 30s
+      start_interval: 3s
+      interval: 5m
+      timeout: 30s
+      retries: 3
+    networks:
+      testcenter:
+
+volumes:
+  dbdata:
+  testcenter_backend_vo_data:
+
+networks:
+  testcenter:
+    name: testcenter
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}

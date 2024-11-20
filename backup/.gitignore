@@ -3,4 +3,5 @@
 
 # Except this file
 !.gitignore
-!traefik/certs/acme/.gitignore
+!release/
+!temp/
