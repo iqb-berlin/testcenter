@@ -75,8 +75,9 @@ RUN chown -R www-data:www-data /var/www
 VOLUME /var/www/testcenter/data
 EXPOSE 80
 
-COPY backend/entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY backend/entrypoint-initializer.sh /entrypoint-initializer.sh
+COPY backend/entrypoint-backend.sh /entrypoint-backend.sh
+ENTRYPOINT ["./entrypoint-backend.shd"]
 
 
 FROM base AS dev

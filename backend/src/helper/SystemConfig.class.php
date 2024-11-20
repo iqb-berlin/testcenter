@@ -35,7 +35,7 @@ class SystemConfig {
   public static function read(): void {
     $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
     if (!$config) {
-      throw new Exception('Application config file is missing!');
+      throw new Exception('Application config file is missing (' . ROOT_DIR . '/backend/config/config.ini)!');
     }
     self::apply($config);
   }
