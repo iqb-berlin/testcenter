@@ -37,12 +37,13 @@ variables:
 
 
 include:
-  # - template: Jobs/Dependency-Scanning.gitlab-ci.yml        # commits
+  # - template: Jobs/Dependency-Scanning.gitlab-ci.yml      # commits
   - template: Jobs/Dependency-Scanning.latest.gitlab-ci.yml # pull requests
 
 
 .backend-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -53,6 +54,7 @@ include:
 
 .broadcasting-service-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -62,6 +64,7 @@ include:
 
 .common-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -71,6 +74,7 @@ include:
 
 .definitions-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -80,6 +84,7 @@ include:
 
 .e2e-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -89,6 +94,7 @@ include:
 
 .file-service-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -98,6 +104,7 @@ include:
 
 .frontend-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -107,6 +114,7 @@ include:
 
 .task-runner-feature-rules:
   rules:
+    - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
         ($CI_COMMIT_BRANCH != "master") &&
         ($CI_COMMIT_BRANCH != "release/lts") &&
@@ -146,6 +154,8 @@ check-config:
   allow_failure: true
   rules:
     - if: "$CI_PIPELINE_SOURCE == 'external_pull_request_event'"
+    - if: "$CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH != 'master')"
+      when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: "$CI_COMMIT_BRANCH"
     - if: "$CI_COMMIT_TAG"
   script:
@@ -622,10 +632,10 @@ build-backend:
   stage: build
   needs: []
   rules:
-    - !reference [ .backend-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
-    - !reference [ .task-runner-feature-rules, rules ]
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -668,10 +678,10 @@ build-frontend:
   stage: build
   needs: []
   rules:
-    - !reference [ .frontend-feature-rules, rules ]
-    - !reference [ .common-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .frontend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -714,9 +724,9 @@ build-broadcasting-service:
   stage: build
   needs: []
   rules:
-    - !reference [ .broadcasting-service-feature-rules, rules ]
-    - !reference [ .common-feature-rules, rules ]
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .broadcasting-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -759,9 +769,9 @@ build-file-service:
   stage: build
   needs: []
   rules:
-    - !reference [ .file-service-feature-rules, rules ]
-    - !reference [ .task-runner-feature-rules, rules ]
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -793,7 +803,7 @@ build-e2e:
   stage: build
   needs: []
   rules:
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -825,10 +835,10 @@ build-task-runner:
   stage: build
   needs: []
   rules:
-    - !reference [ .task-runner-feature-rules, rules ]
-    - !reference [ .backend-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
-    - !reference [ .file-service-feature-rules, rules ]
+    # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -939,8 +949,8 @@ test-backend-unit:
   needs:
     - build-backend
   rules:
-    - !reference [ .backend-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
+    # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -983,9 +993,9 @@ test-frontend-unit:
   needs:
     - build-frontend
   rules:
-    - !reference [ .frontend-feature-rules, rules ]
-    - !reference [ .common-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
+    # - !reference [ .frontend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -1022,8 +1032,8 @@ test-broadcasting-service-unit:
   needs:
     - build-broadcasting-service
   rules:
-    - !reference [ .broadcasting-service-feature-rules, rules ]
-    - !reference [ .common-feature-rules, rules ]
+    # - !reference [ .broadcasting-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -1061,9 +1071,9 @@ test-backend-api:
     - build-backend
     - build-task-runner
   rules:
-    - !reference [ .backend-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
-    - !reference [ .task-runner-feature-rules, rules ]
+    # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -1092,8 +1102,8 @@ test-file-service-api:
     - build-file-service
     - build-task-runner
   rules:
-    - !reference [ .file-service-feature-rules, rules ]
-    - !reference [ .task-runner-feature-rules, rules ]
+    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -1119,8 +1129,8 @@ test-backend-initialization:
   needs:
     - build-backend
   rules:
-    - !reference [ .backend-feature-rules, rules ]
-    - !reference [ .definitions-feature-rules, rules ]
+    # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -1187,7 +1197,7 @@ test-e2e:
     - build-file-service
     - build-e2e
   rules:
-    - !reference [ .e2e-feature-rules, rules ]
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
@@ -1811,6 +1821,8 @@ pages:
 
 push-release:
   stage: deploy
+  needs:
+    - pages
   rules:
     - !reference [ .release_rules, rules ]
   variables:
