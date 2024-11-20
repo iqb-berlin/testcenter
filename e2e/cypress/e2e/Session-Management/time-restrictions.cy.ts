@@ -2,7 +2,6 @@ import {
   insertCredentials,
   logoutTestTaker,
   resetBackendData,
-  useTestDB,
   useTestDBSetDate,
   visitLoginPage
 } from '../utils';
@@ -11,7 +10,6 @@ describe('Check logins with time restrictions', () => {
   // find the current time and dates restrictions in /sampledata/system-test/CY_Test_Logins.xml
   describe('Check valid from restrictions', () => {
     beforeEach(resetBackendData);
-    beforeEach(useTestDB);
     beforeEach(visitLoginPage);
 
     it('should be not possible to login before the valid-from-date: 01.06.2023 10:00 related to time.', () => {
@@ -67,7 +65,6 @@ describe('Check logins with time restrictions', () => {
 
   describe('Check valid to restrictions', () => {
     beforeEach(resetBackendData);
-    beforeEach(useTestDB);
     beforeEach(visitLoginPage);
 
     it('should be not possible to login after the valid-to-date: 01.06.2023 10:00 related to time.', () => {
@@ -127,7 +124,6 @@ describe('Check logins with time restrictions', () => {
       cy.clearCookies();
       resetBackendData();
     });
-    beforeEach(useTestDB);
     beforeEach(visitLoginPage);
 
     it('should be possible a first login with for-time-restriction.', () => {

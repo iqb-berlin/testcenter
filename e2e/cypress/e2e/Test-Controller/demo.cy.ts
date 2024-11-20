@@ -1,6 +1,15 @@
 import {
-  loginSuperAdmin, openSampleWorkspace, loginTestTaker, resetBackendData,
-  credentialsControllerTest, visitLoginPage, getFromIframe, forwardTo, backwardsTo
+  loginSuperAdmin,
+  openSampleWorkspace,
+  loginTestTaker,
+  resetBackendData,
+  credentialsControllerTest,
+  visitLoginPage,
+  getFromIframe,
+  forwardTo,
+  backwardsTo,
+  disableSimplePlayersInternalDebounce,
+  gotoPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -40,7 +49,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-block-dialog-title"]')
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
-      .should('have.value', 'HASE');
+      .should('have.value', 'Hase');
     // Time restricted area has been entered. Start the timer
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .then(() => {

@@ -1,10 +1,9 @@
 import {
-  insertCredentials, resetBackendData, useTestDB, visitLoginPage
+  insertCredentials, resetBackendData, visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
 
   it('should not be possible to log in with a name and without an existing password', () => {
