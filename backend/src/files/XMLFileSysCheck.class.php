@@ -81,7 +81,7 @@ class XMLFileSysCheck extends XMLFile {
         'id' => (string) $questionNode['id'],
         'type' => (string) $questionNode['type'],
         'prompt' => (string) $questionNode['prompt'],
-        'required' => (boolean) $questionNode['required'],
+        'required' => (boolean) $questionNode['required'] && $questionNode['required'] == "true",
         'options' => strlen((string) $questionNode) ? explode('#', (string) $questionNode) : []
       ];
     }

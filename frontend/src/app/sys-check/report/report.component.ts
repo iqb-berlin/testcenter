@@ -97,21 +97,11 @@ export class ReportComponent implements OnInit {
       this.dataService.setNewCurrentStep('r');
       this.questionnaireDataWarnings = [];
       if (this.dataService.checkConfig && this.dataService.checkConfig.questions.length > 0) {
-        if (this.dataService.questionnaireReports.length > 0) {
-          this.dataService.questionnaireReports.forEach(re => {
-            if (re.warning) {
-              this.questionnaireDataWarnings.push(re);
-            }
-          });
-        } else {
-          this.questionnaireDataWarnings.push({
-            id: 'tütü', // TODO fix this WTF
-            type: 'yoyo',
-            label: 'keine Antworten registriert',
-            value: 'naja',
-            warning: true
-          });
-        }
+        this.dataService.questionnaireReports.forEach(re => {
+          if (re.warning) {
+            this.questionnaireDataWarnings.push(re);
+          }
+        });
       }
     });
   }

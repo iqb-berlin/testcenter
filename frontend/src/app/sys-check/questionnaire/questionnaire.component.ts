@@ -24,6 +24,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
       .forEach(reportEntry => {
         this.form.controls[reportEntry.id].setValue(reportEntry.value);
       });
+    this.updateReport();
     this.valueChangesSubscription = this.form.valueChanges.subscribe(() => { this.updateReport(); });
   }
 
@@ -51,8 +52,9 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
               type: element.type,
               label: element.prompt,
               value: formControl.value,
-              warning: (['string', 'select', 'radio', 'text']
-                .indexOf(element.type) > -1) && (formControl.value === '') && (element.required)
+              warning: (['string', 'select', 'radio', 'text', 'check'].indexOf(element.type) > -1) &&
+                ((formControl.value === '') || (formControl.value === false)) &&
+                (element.required)
             });
           }
         }

@@ -33,6 +33,9 @@ layout: default
 * Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
   wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
 
+### Bugfixes
+* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher wurde die Existenz des Attributs als `true` interpretiert.
+
 ## 15.3.4
 ### bugfixes
 * Fixes in installer und updater script
