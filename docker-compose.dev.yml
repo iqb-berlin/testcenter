@@ -80,6 +80,28 @@ services:
     networks:
       - testcenter
 
+  testcenter-initializer:
+    build:
+      dockerfile: backend/Dockerfile
+      target: dev
+    volumes:
+      - ./backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./backend/initialize.php:/var/www/testcenter/backend/initialize.php
+      - ./backend/src:/var/www/testcenter/backend/src
+      - ./backend/test:/var/www/testcenter/backend/test
+      - ./data:/var/www/testcenter/data
+      - ./definitions:/var/www/testcenter/definitions
+      - ./package.json:/var/www/testcenter/package.json
+      - ./sampledata:/var/www/testcenter/sampledata
+      - ./scripts/database:/var/www/testcenter/scripts/database
+    environment:
+      TLS_ENABLED: ${TLS_ENABLED:-off}
+    ports:
+      - 9005:9003
+    networks:
+      - testcenter
+
   testcenter-backend:
     labels:
       - "traefik.enable=true"
@@ -99,16 +121,12 @@ services:
       - ./backend/config/no-cors.htaccess/:/var/www/testcenter/.htaccess
       - ./backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
       - ./backend/index.php:/var/www/testcenter/backend/index.php
-      - ./backend/initialize.php:/var/www/testcenter/backend/initialize.php
       - ./backend/routes.php:/var/www/testcenter/backend/routes.php
       - ./backend/src:/var/www/testcenter/backend/src
       - ./backend/test:/var/www/testcenter/backend/test
       - ./data:/var/www/testcenter/data
       - ./definitions:/var/www/testcenter/definitions
-      - ./docs/dist:/docs/dist
-      - ./package.json:/var/www/testcenter/package.json
-      - ./sampledata:/var/www/testcenter/sampledata
-      - ./scripts/database:/var/www/testcenter/scripts/database
+      - ./docs/dist:/docs/dist # ???
     environment:
       TLS_ENABLED: ${TLS_ENABLED:-off}
     ports:

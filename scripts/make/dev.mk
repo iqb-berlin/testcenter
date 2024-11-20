@@ -120,7 +120,14 @@ composer-refresh-autoload:
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
+		cd $(TC_BASE_DIR) &&\
+			docker container rm -f testcenter-initializer 2> /dev/null || true &&\
+  		docker compose\
+  				--env-file .env.dev\
+  				--file docker-compose.yml\
+  				--file docker-compose.dev.yml\
+  			run --name=testcenter-initializer testcenter-initializer \
+  				php initialize.php
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
