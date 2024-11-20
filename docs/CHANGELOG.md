@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [next]
+## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
   * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
