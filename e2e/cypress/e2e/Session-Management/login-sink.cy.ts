@@ -1,13 +1,11 @@
 import {
   insertCredentials,
   resetBackendData,
-  useTestDB,
   visitLoginPage
 } from '../utils';
 
 describe('The login-sink', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
 
   const loginAttempt = (type: 'admin' | 'user', user: string, expectedCode: number, pw: string = 'wrongpassword') => {

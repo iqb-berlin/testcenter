@@ -3,13 +3,11 @@ import {
   loginSuperAdmin, logoutAdmin,
   openSampleWorkspace,
   resetBackendData,
-  useTestDB,
   visitLoginPage
 } from '../utils';
 
 describe('Check Testtakers Content', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
   beforeEach(() => openSampleWorkspace(1));

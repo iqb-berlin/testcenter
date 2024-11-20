@@ -1,12 +1,11 @@
 import {
-  clickSuperadmin, insertCredentials, useTestDB, resetBackendData,
+  clickSuperadmin, insertCredentials, resetBackendData,
   loginSuperAdmin, logoutAdmin, addWorkspaceAdmin, visitLoginPage, loginWorkspaceAdmin,
   userData
 } from '../utils';
 
 describe('Usermanagement (user-tab)', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);

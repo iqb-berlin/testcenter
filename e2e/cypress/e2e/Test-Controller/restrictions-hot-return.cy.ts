@@ -9,9 +9,8 @@ import {
   backwardsTo,
   readBlockTime,
   loginSuperAdmin,
-  openSampleWorkspace1,
   getResultFileRows,
-  disableSimplePlayersInternalDebounce, logoutTestTaker, gotoPage
+  disableSimplePlayersInternalDebounce, logoutTestTaker, gotoPage, openSampleWorkspace
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret
@@ -436,7 +435,7 @@ describe('The responses-file', { testIsolation: false }, () => {
 
   it('should be downloaded from the workspace with groupname: RunHotReturn', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('RunHotReturn');
@@ -453,9 +452,6 @@ describe('The responses-file', { testIsolation: false }, () => {
   it('should contain recent replies and metadata from login: hret1', () => {
     getResultFileRows('responses')
       .then(responses => {
-        cy.task('logOut', 'responses');
-        cy.task('logOut', responses);
-        cy.writeFile('/usr/src/testcenter/sampledata/responses.file.csv', responses.join('\n'));
         // metadata
         expect(responses[1]).to.be.match(/\brunhotret\b/);
         expect(responses[1]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);

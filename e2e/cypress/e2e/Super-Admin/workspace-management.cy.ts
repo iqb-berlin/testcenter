@@ -1,13 +1,11 @@
 import {
-  clickSuperadmin, insertCredentials, useTestDB, resetBackendData,
-  loginSuperAdmin, logoutAdmin, addWorkspaceAdmin, visitLoginPage, loginWorkspaceAdmin,
-  userData
+  clickSuperadmin, resetBackendData,
+  loginSuperAdmin, logoutAdmin, visitLoginPage, loginWorkspaceAdmin
 } from '../utils';
 
 describe('Management Workspaces (workspace-tab)', () => {
   beforeEach(visitLoginPage);
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 

@@ -4,13 +4,11 @@ import {
   logoutAdmin,
   openSampleWorkspace,
   resetBackendData,
-  useTestDB,
   visitLoginPage
 } from '../utils';
 
 describe('Check Testtakers Duplicates in workspaces', () => {
   beforeEach(resetBackendData);
-  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
 

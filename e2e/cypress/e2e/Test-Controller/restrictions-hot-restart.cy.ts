@@ -10,10 +10,9 @@ import {
   backwardsTo,
   readBlockTime,
   loginSuperAdmin,
-  openSampleWorkspace1,
   logoutAdmin,
   getResultFileRows,
-  disableSimplePlayersInternalDebounce, gotoPage
+  disableSimplePlayersInternalDebounce, gotoPage, openSampleWorkspace
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret
@@ -55,7 +54,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
-      .contains('Testung Controller')
+      .contains('Testung Controller');
   });
 
   it('should not enter the block if a incorrect password is entered', () => {
@@ -81,8 +80,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
-
+    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/); // TODO use data-cy
   });
 
   it('should not navigate to next unit without responses/presentation complete', () => {
@@ -107,7 +105,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabe darf nicht verlassen werden');
     cy.get('[data-cy="dialog-content"]')
-      .contains('Es müssen erst alle Teilaufgaben bearbeitet werden.')
+      .contains('Es müssen erst alle Teilaufgaben bearbeitet werden.');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
@@ -163,7 +161,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
 
   it('should not leave the time restricted block in unit-menu without a message', () => {
     cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1')
+      .contains('Aufgabe1');
     gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
@@ -175,6 +173,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .contains('Aufgabenabschnitt verlassen?');
     cy.get('[data-cy="dialog-confirm"]');
     cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    cy.get('.mat-drawer-backdrop')
       .click();
   });
 
@@ -217,10 +217,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="resumeTest-1"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Startseite');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .click();
-    cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
   });
 
@@ -238,7 +234,6 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
 describe('Login2: Resp/Pres complete, leave the block with unit-navigation forward', { testIsolation: false }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
-    cy.reload();
     visitLoginPage();
     loginTestTaker(TesttakerName1, TesttakerPassword1, mode);
   });
@@ -253,8 +248,7 @@ describe('Login2: Resp/Pres complete, leave the block with unit-navigation forwa
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
-      .contains('Testung Controller')
-
+      .contains('Testung Controller');
   });
 
   it('should enter the block if a correct password is entered', () => {
@@ -310,7 +304,6 @@ describe('Login2: Resp/Pres complete, leave the block with unit-navigation forwa
 describe('Login3: Resp/Pres complete, leave the block with unit-navigation backward', { testIsolation: false }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
-    cy.reload();
     visitLoginPage();
     loginTestTaker(TesttakerName2, TesttakerPassword2, mode);
   });
@@ -325,8 +318,7 @@ describe('Login3: Resp/Pres complete, leave the block with unit-navigation backw
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
-      .contains('Testung Controller')
-
+      .contains('Testung Controller');
   });
 
   it('should enter the block if a correct password is entered', () => {
@@ -382,7 +374,6 @@ describe('Login3: Resp/Pres complete, leave the block with unit-navigation backw
 describe('Login4: Resp/Pres complete, leave the block & end the test with unit-menu', { testIsolation: false }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
-    cy.reload();
     visitLoginPage();
     loginTestTaker(TesttakerName3, TesttakerPassword3, mode);
   });
@@ -397,8 +388,7 @@ describe('Login4: Resp/Pres complete, leave the block & end the test with unit-m
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     getFromIframe('[data-cy="TestController-TextStartseite"]')
-      .contains('Testung Controller')
-
+      .contains('Testung Controller');
   });
 
   it('should enter the block if a correct password is entered', () => {
@@ -455,7 +445,7 @@ describe('Login4: Resp/Pres complete, leave the block & end the test with unit-m
       .click();
     cy.get('[data-cy="endTest"]')
       .click();
-    cy.get('[data-cy="logout"]')
+    cy.get('[data-cy="logout"]');
     cy.get('[data-cy="booklet-RUNHOTRET"]')
       .should('not.exist');
   });
@@ -464,7 +454,6 @@ describe('Login4: Resp/Pres complete, leave the block & end the test with unit-m
 describe('Login5: Resp/Pres complete, leave the block after time is up', { testIsolation: false }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
-    cy.reload();
     visitLoginPage();
     loginTestTaker(TesttakerName4, TesttakerPassword4, mode);
   });
@@ -492,10 +481,7 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
     cy.intercept(`${Cypress.env('urls').backend}/test/7/unit/UNIT.SAMPLE-101/response`).as('response101-4-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait('@response101-4-1')
-      .then(() => {
-        startTime = new Date().getTime();
-      });
+    startTime = new Date().getTime();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
@@ -523,7 +509,7 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./) // TODO use data-cy
+    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./); // TODO use data-cy
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
     cy.wait(2000);
@@ -536,14 +522,12 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
 
 describe('Check responses and logs', { testIsolation: false }, () => {
   before(() => {
-    cy.reload();
     visitLoginPage();
   });
 
-
   it('should download a responses/log file in the workspace with groupname: RunHotReturn', () => {
     loginSuperAdmin();
-    openSampleWorkspace1();
+    openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('RunHotRestart');

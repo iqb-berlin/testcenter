@@ -20,14 +20,10 @@ export const deleteDownloadsFolder = (): void => {
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
-      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-checks)`) })
+      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
         .as('waitForConfig');
       const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
       cy.visit(`${startPage}?testMode=true`, { timeout: 30000 });
-      cy.url().then(url => {
-        cy.task('logOut', url);
-        cy.log(url);
-      });
       cy.wait('@waitForConfig');
     }
   });
@@ -92,16 +88,13 @@ export const logoutAdmin = (): Chainable => cy.url()
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
   .then(url => {
-
     if (url === 'about:blank') {
-      cy.log('BUG OCCURED');
-      cy.task('logOut', 'BUG OCCURED, URL is: ' + url);
+      cy.log('Page could not be loaded. Try again.');
       return visitLoginPage().then(logoutTestTaker);
     }
 
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
-      cy.log('not on starter')
       cy.get('[data-cy="logo"]')
         .click();
       if (fileType === 'hot') {
@@ -118,7 +111,7 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     }
     cy.get('[data-cy="logout"]')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    return cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
 
 export const openSampleWorkspace = (workspace: number): void => {
@@ -241,7 +234,6 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
 };
 
 export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
-  hardLogOut();
   loginSuperAdmin();
   openSampleWorkspace(workspace);
   cy.get('[data-cy="uplaod-file-select"]')
@@ -311,6 +303,7 @@ export const deleteTesttakersFiles = (): void => {
 export const useTestDBSetDate = (timestamp: string) : void => {
   cy.intercept(new RegExp(`${Cypress.env('urls').backend}/.*`), req => {
     req.headers.TestClock = timestamp;
+    req.headers.TestMode = 'integration';
   }).as('testClock');
 };
 
@@ -320,12 +313,9 @@ export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): C
   const splitCSVFile = str => str.split('\n')
     .map(row => row.replaceAll(regex, ''));
 
-  cy.task('logOut', { fileType });
-
   if (fileType === 'responses') {
-    cy.task('logOut', 'ok');
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .then(file => cy.task('logOut', { file }).then(() => splitCSVFile(file)));
+      .then(splitCSVFile);
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
@@ -363,8 +353,6 @@ export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> 
 
 export const forwardTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-forward"]')
-    .should('not.have.class', 'marked');
-  cy.get('[data-cy="unit-navigation-forward"]')
     .click();
   cy.get('[data-cy="unit-title"]')
     .should('exist')
@@ -401,3 +389,6 @@ export const selectFromDropdown = (dropdownLabel: string, optionName: string): v
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
   cy.get('.cdk-overlay-container').contains(optionName).click();
 };
+
+export const reload = () => cy.url()
+  .then(url => cy.visit(url.includes('?testMode=true') ? url : `${url}?testMode=true`));

@@ -1,5 +1,5 @@
 import {
-  deleteDownloadsFolder, loginStudyMonitor, resetBackendData, useTestDB, visitLoginPage
+  deleteDownloadsFolder, loginStudyMonitor, resetBackendData, visitLoginPage
 } from './utils';
 
 describe('Study-Monitor User', () => {
@@ -10,7 +10,6 @@ describe('Study-Monitor User', () => {
     deleteDownloadsFolder();
   });
   beforeEach(() => {
-    useTestDB();
     visitLoginPage();
   });
 
