@@ -23,12 +23,13 @@ const DATA_DIR = ROOT_DIR . '/data';
 
 require_once "vendor/autoload.php";
 
+
 try {
   SystemConfig::readVersion();
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     throw new InvalidArgumentException("Initialize is already running.");
   }
   if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
@@ -38,7 +39,6 @@ try {
     CLI::warning("Trying again:");
   }
   file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
-
   $opt = CLI::getOpt();
   $args = [
     'overwrite_existing_installation' => isset($opt['overwrite_existing_installation']),
@@ -135,8 +135,11 @@ try {
   $initializer = new WorkspaceInitializer();
 
   if ($args['overwrite_existing_installation']) {
-    foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
-      $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
+    foreach (
+      Workspace::getAll() as /* @var $workspace Workspace */
+      $workspace
+    ) {
+      $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function ($carry, $item) {
         return $carry + $item;
       }, 0);
 
@@ -149,7 +152,10 @@ try {
 
   $workspaceIds = [];
 
-  foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+  foreach (
+    Workspace::getAll() as /* @var $workspace Workspace */
+    $workspace
+  ) {
     $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
     $workspaceIds[] = $workspaceData['id'];
     CLI::h3("Workspace `{$workspaceData['name']}`");
@@ -170,7 +176,7 @@ try {
           ", ",
           array_filter(
             array_map(
-              function($key, $value) {
+              function ($key, $value) {
                 return $value ? "$key: $value" : null;
               },
               array_keys($stats['valid']),
@@ -241,18 +247,18 @@ try {
   CLI::warning($e->getMessage());
   exit(0);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     unlink(ROOT_DIR . '/backend/config/init.lock');
   }
   file_put_contents(ROOT_DIR . '/backend/config/error.lock', $e->getMessage());
   exit(1);
 }
 
-if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
   unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
