@@ -38,6 +38,8 @@ spec:
     contentTypeNosniff: true
     customFrameOptionsValue: "SAMEORIGIN"
     referrerPolicy: "no-referrer"
+    stsIncludeSubdomains: true
+    stsSeconds: 31536000
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -80,4 +82,7 @@ spec:
         - name: testcenter-broadcasting-service
           port: 3000
   tls:
-    secretName: tls-secret
+    certResolver: acme
+    options:
+      name: default
+      namespace: default
