@@ -44,7 +44,6 @@ spec:
     - name: http-service
       port: 80 #interner port innerhalb von cluster
       targetPort: http-container
-  type: NodePort
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -66,8 +65,8 @@ spec:
       services:
         - name: fe-service
           port: 80
-  tls:
-    certResolver: acme
-    options:
-      name: default
-      namespace: default
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+#      namespace: default

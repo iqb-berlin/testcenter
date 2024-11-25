@@ -12,9 +12,9 @@ metadata:
 data:
   VERSION: "15.3.4"
   HOSTNAME: "minikube-ip-defined-in-hosts.example"
-  PORT: "30607" #this needs to be configured
-  TLS_PORT: "30527" #this needs to be configured
-  TLS_ENABLED: "on"
+  PORT: "31011" #this needs to be configured
+  TLS_PORT: "32532" #this needs to be configured
+  TLS_ENABLED: "off"
   MYSQL_DATABASE: "iqb_tba_testcenter"
   MYSQL_USER: "iqb_tba_db_user"
   BROADCAST_SERVICE_ENABLED: "true"
