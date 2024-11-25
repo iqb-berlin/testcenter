@@ -81,8 +81,8 @@ spec:
       services:
         - name: testcenter-broadcasting-service
           port: 3000
-  tls:
-    certResolver: acme
-    options:
-      name: default
-      namespace: default
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+#      namespace: default
