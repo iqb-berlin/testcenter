@@ -40,13 +40,3 @@ stringData:
   PASSWORD_SALT: "t"
   MYSQL_ROOT_PASSWORD: "o8en6jSGLyVKNZUN"
   MYSQL_PASSWORD: "fEaU5COJYXv2atau"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: tls-secret
-  namespace: tc
-type: kubernetes.io/tls
-data:
-  tls.crt: ""
-  tls.key: ""

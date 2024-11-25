@@ -67,4 +67,7 @@ spec:
         - name: fe-service
           port: 80
   tls:
-    secretName: tls-secret
+    certResolver: acme
+    options:
+      name: default
+      namespace: default
