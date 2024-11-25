@@ -115,6 +115,14 @@ export class TestControllerService {
   private readonly testStateBuffer$ = new Subject<TestStateUpdate>();
   private readonly subscriptions: { [key: string]: Subscription } = {};
 
+  readonly currentPlayer: {
+    fileName: string;
+    veronaVersion: string;
+  } = {
+      fileName: 'none',
+      veronaVersion: 'none'
+    };
+
   constructor(
     private router: Router,
     private bs: BackendService,
