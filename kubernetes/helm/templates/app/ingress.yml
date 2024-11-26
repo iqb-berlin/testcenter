@@ -1,0 +1,94 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexbe
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+    prefixes:
+      - "/api"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexfs
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+      prefixes:
+      - "/fs"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexbs
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+      prefixes:
+      - "/bs/public"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: securityheaders
+  namespace: {{ .Values.namespace }}
+spec:
+  headers:
+    contentTypeNosniff: true
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "no-referrer"
+    stsIncludeSubdomains: true
+    stsSeconds: 31536000
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Chart.Name }}-path-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  entryPoints:
+      - web
+      - websecure
+  routes:
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
+      middlewares:
+        - name: stripregexbe
+          namespace: {{ .Values.namespace }}
+        - name: securityheaders
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: {{ .Chart.Name }}-backend-service
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
+      middlewares:
+        - name: stripregexfs
+          namespace: {{ .Values.namespace }}
+        - name: securityheaders
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: testcenter-file-service #hard coded in application as internal address
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
+      middlewares:
+        - name: stripregexbs
+          namespace: {{ .Values.namespace }}
+        - name: securityheaders
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: testcenter-broadcasting-service #hard coded in application as internal address
+          port: 3000
+#  tls: {} #dev-deploy: use this line for self signed certs
+#wip for acme
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+#      namespace: default

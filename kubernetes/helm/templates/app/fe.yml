@@ -1,0 +1,79 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexfe
+  namespace: {{ .Values.namespace }}
+spec:
+  redirectRegex:
+    regex: ^http(s?)://www\.(.*)
+    replacement: http${1}://${2}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-fe-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  {{- if .Values.frontend.strategy }}
+  strategy:
+    {{- .Values.frontend.strategy | toYaml | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-fe-pod
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-fe-pod
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-fe-container
+          image: iqbberlin/testcenter-frontend:{{ .Chart.Version }}
+          ports:
+            - name: http-container
+              containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-fe-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}-fe-pod
+  ports:
+    - name: http-service
+      port: 80
+      targetPort: http-container
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Chart.Name }}-fe-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
+      kind: Rule
+      middlewares:
+        - name: securityheaders
+          namespace: {{ .Values.namespace }}
+        - name: stripregexfe
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: {{ .Chart.Name }}-fe-service
+          port: 80
+#  tls: {} #dev-deploy: use this line for self signed certs
+#wip for acme
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+#      namespace: tc

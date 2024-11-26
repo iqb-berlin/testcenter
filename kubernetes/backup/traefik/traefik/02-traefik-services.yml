@@ -10,6 +10,7 @@ spec:
   selector:
     app: traefik-pod
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,6 +23,7 @@ spec:
   selector:
     app: traefik-pod
 ---
+
 apiVersion: v1
 kind: Service
 metadata:

@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.traefik.name }}-deployment
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+  labels:
+    app: {{ .Values.traefik.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.traefik.name }}-pod
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.traefik.name }}-pod
+    spec:
+      serviceAccountName: {{ .Values.traefik.name }}-account
+      containers:
+        - name: traefik
+          image:
+            traefik:{{ .Values.traefik.image.tag }}
+          args:
+            {{- if eq .Values.environment "dev" }}
+            - --api.insecure=true
+            {{- end }}
+            - --providers.kubernetesingress
+            - --providers.kubernetescrd
+            - --entrypoints.web.address=:{{ .Values.traefik.port.http }}
+            - --entrypoints.websecure.address=:{{ .Values.traefik.port.https }}
+          #            - --entrypoints.web.http.redirections.entryPoint.to=websecure
+          #            - --entrypoints.web.http.redirections.entryPoint.scheme=https
+          #            - --certificatesresolvers.acme.acme.tlschallenge=true
+          #            - --certificatesresolvers.myresolver.acme.email=your-email@example.com
+          #            - --certificatesresolvers.acme.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+          #            - --certificatesresolvers.acme.acme.storage=/certs/acme.json
+          ports:
+            - name: web
+              containerPort: {{ .Values.traefik.port.http }}
+            - name: websecure
+              containerPort: {{ .Values.traefik.port.https }}
+            {{- if eq .Values.environment "dev" }}
+            - name: dashboard
+              containerPort: {{ .Values.traefik.port.dashboard }}
+            {{- end }}

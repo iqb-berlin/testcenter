@@ -1,0 +1,15 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.traefik.name }}-role-binding
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.traefik.name }}-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.traefik.name }}-account
+    namespace: {{ .Values.namespace }}

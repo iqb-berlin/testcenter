@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.traefik.name }}-dashboard-service
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+spec:
+  type: {{ .Values.traefik.serviceKind }}
+  ports:
+    - port: {{ .Values.traefik.port.dashboard }}
+      targetPort: dashboard
+  selector:
+    app: {{ .Values.traefik.name }}-pod
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.traefik.name }}-web-service
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+spec:
+  type: {{ .Values.traefik.serviceKind }}
+  ports:
+    - targetPort: web
+      port: {{ .Values.traefik.port.http }}
+  selector:
+    app: {{ .Values.traefik.name }}-pod
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.traefik.name }}-web-secure-service
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+spec:
+  type: {{ .Values.traefik.serviceKind }}
+  ports:
+    - targetPort: websecure
+      port: {{ .Values.traefik.port.https }}
+  selector:
+    app: {{ .Values.traefik.name }}-pod
