@@ -25,7 +25,7 @@ class XMLFileBooklet extends XMLFile {
     ],
     [
       'description' => 'units or alias in from-attribute must be defined',
-      'xpath1' => '//States/State/Option/If/*/@from',
+      'xpath1' => '//States/State/Option/If//*//@from',
       'compare' => 'assertEveryReferredUnitMustBeDefined'
     ]
   ];
@@ -129,10 +129,10 @@ class XMLFileBooklet extends XMLFile {
     array $results2,
     SimpleXMLElement $doc
   ): true | string {
-    $xp = "//Unit[@id = '$unitId'] | //Unit[@alias = '$unitId']";
+    $xp = "//Unit[@id = '$unitId'][not(@alias)] | //Unit[@alias = '$unitId']";
     $findUnit = $doc->xpath($xp);
     if (!$findUnit or !count($findUnit)) {
-      return "No Unit with id or alias `$unitId` defined.";
+      return "No unit with id or alias `$unitId` defined or the id is not unique.";
     }
     return true;
   }
