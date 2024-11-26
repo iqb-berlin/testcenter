@@ -4,7 +4,6 @@ metadata:
   name: traefik-deployment
   labels:
     app: traefik
-
 spec:
   replicas: 1
   selector:

@@ -1,0 +1,92 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.ingress.middleware.stripregex.be }}
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+    prefixes:
+      - "/api"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.ingress.middleware.stripregex.fs }}
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+      prefixes:
+      - "/fs"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.ingress.middleware.stripregex.bs }}
+  namespace: {{ .Values.namespace }}
+spec:
+  stripPrefix:
+      prefixes:
+      - "/bs/public"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.ingress.middleware.security.name}}
+  namespace: {{ .Values.namespace }}
+spec:
+  headers:
+    contentTypeNosniff: true
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "no-referrer"
+    stsIncludeSubdomains: true
+    stsSeconds: 31536000
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Chart.Name }}-path-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  entryPoints:
+      - web
+      - websecure
+  routes:
+    - kind: Rule
+      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/api`)
+      middlewares:
+        - name: {{ .Values.ingress.middleware.stripregex.be }}
+          namespace: {{ .Values.namespace }}
+        - name: {{ .Values.ingress.middleware.security.name }}
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: {{ .Chart.Name }}-{{ .Values.backend.name }}-service
+          port: {{ .Values.backend.port }}
+    - kind: Rule
+      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/fs`)
+      middlewares:
+        - name: {{ .Values.ingress.middleware.stripregex.fs }}
+          namespace: {{ .Values.namespace }}
+        - name: {{ .Values.ingress.middleware.security.name }}
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: testcenter-file-service #hard coded in application as internal address
+          port: {{ .Values.fileService.port }}
+    - kind: Rule
+      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/bs/public`)
+      middlewares:
+        - name: {{ .Values.ingress.middleware.stripregex.bs }}
+          namespace: {{ .Values.namespace }}
+        - name: {{ .Values.ingress.middleware.security.name }}
+          namespace: {{ .Values.namespace }}
+      services:
+        - name: testcenter-broadcasting-service #hard coded in application as internal address
+          port: {{ .Values.broadcastingService.port }}
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+#      namespace: default
