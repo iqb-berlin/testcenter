@@ -9,3 +9,8 @@
 </div>
 
 <router-outlet></router-outlet>
+
+<div
+  style="background: red; position: fixed; bottom: 4px; right: 4px; height: 4px; width: 4px; border-radius: 2px"
+  *ngIf="mainDataService.isTestingMode"
+></div>
