@@ -1,0 +1,15 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: {{ .Values.traefik.tlsOption.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- include "traefik.annotations" . | nindent 4 }}
+spec:
+  minVersion: {{ .Values.traefik.tlsOption.minVersion }}
+  cipherSuites:
+  {{ range .Values.traefik.tlsOption.cipherSuites }}
+    - {{ . }}
+  {{ end }}
+  sniStrict: {{ .Values.traefik.tlsOption.sniStrict }}
