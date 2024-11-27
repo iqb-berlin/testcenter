@@ -392,3 +392,9 @@ export const selectFromDropdown = (dropdownLabel: string, optionName: string): v
 
 export const reload = () => cy.url()
   .then(url => cy.visit(url.includes('?testMode=true') ? url : `${url}?testMode=true`));
+
+export const expectUnitMenuToBe = (expectations: string[]) =>
+  cy.get('[data-cy*="unit-nav-item"]')
+    .each((item, index) =>
+      cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`)
+    );
