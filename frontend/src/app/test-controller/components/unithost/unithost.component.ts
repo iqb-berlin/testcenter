@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { distinctUntilChanged } from 'rxjs/operators';
 import {
   Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
 } from '../../interfaces/test-controller.interfaces';
@@ -21,7 +22,6 @@ import {
   VeronaPlayerRuntimeErrorCodes, VeronaUnitState, VopStartCommand
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
-import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -154,8 +154,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.tcs.currentPlayer.veronaVersion = playerApiVersion;
+
     this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]);
 
+    return this.startUnit();
+  }
+
+  private async startUnit(): Promise<void> {
     if (!this.tcs.currentUnit) {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
@@ -297,9 +303,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error(`No such unit: ${unitSequenceId}`);
     }
 
-    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
-      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
-    }
+    this.unloadPlayerIfNecessary();
 
     this.currentPageIndex = -1;
     this.pages = {};
@@ -327,7 +331,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitsToLoadIds = [this.tcs.currentUnitSequenceId];
     }
 
-    // STAND: statt getUnit this.tcs.units[sequenceId] - warum geht das überhaupt?
     const resourcesToLoad = unitsToLoadIds
       .flatMap(sequenceId => Object.values(this.tcs.getUnit(sequenceId).loadingProgress));
 
@@ -352,32 +355,28 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
   }
 
-  private prepareUnit(): void {
-    if (!this.tcs.currentUnit) {
-      throw new Error('Unit not loaded');
-    }
+  private async prepareUnit(): Promise<void> {
+    if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
+
     this.resourcesLoading$.next([]);
 
     this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
-    this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
 
     if (this.tcs.testMode.presetCode) {
       this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';
     }
 
-    this.runUnit();
+    return this.startUnitPlayer();
   }
 
-  private runUnit(): void {
-    if (this.tcs.currentUnit && this.tcs.currentUnit.parent.locked) {
-      return;
-    }
-
+  private async startUnitPlayer(): Promise<void> {
+    if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
+    if (this.tcs.currentUnit.parent.locked) return;
+    if (this.switchPlayer()) this.loadPlayer(this.tcs.currentUnit.playerFileName);
     this.startTimerIfNecessary();
-    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.leaveWarning = false;
-    this.prepareIframe();
     this.tcs.updateNavigationState();
+    if (!this.switchPlayer()) await this.startUnit();
   }
 
   private startTimerIfNecessary(): void {
@@ -392,23 +391,34 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.startTimer(this.tcs.testlets[this.tcs.currentUnit.parent.timerId]);
   }
 
-  private prepareIframe(): void {
-    if (!this.tcs.currentUnit) {
-      return;
-    }
+  private loadPlayer(playerFileName: string): void {
+    this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
+    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mds.appError = new AppError({
+      throw new AppError({
         label: 'Veralteter Browser',
-        description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
+        description: 'Ihr Browser is veraltet oder inkompatibel mit dieser Anwendung!',
         type: 'general'
       });
-      return;
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(playerFileName));
+    this.tcs.currentPlayer.fileName = playerFileName;
+  }
+
+  private unloadPlayerIfNecessary(): void {
+    if (!this.switchPlayer()) return;
+    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
+    }
+  }
+
+  private switchPlayer(): boolean {
+    return (this.tcs.currentUnit && (this.tcs.currentUnit.playerFileName !== this.tcs.currentPlayer.fileName)) ||
+      ((parseInt(this.tcs.currentPlayer.veronaVersion.split('.')[0], 10)) <= 4);
   }
 
   private adjustIframeSize(): void {
@@ -497,7 +507,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (requiredCode === givenCode) {
       this.tcs.clearTestlet(this.tcs.currentUnit.parent.locked.through.id);
-      this.runUnit();
+      this.startUnitPlayer();
     } else {
       this.snackBar.open(
         `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
