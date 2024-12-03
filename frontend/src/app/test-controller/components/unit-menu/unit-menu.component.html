@@ -36,10 +36,15 @@
     <div *ngFor="let state of (tcs.booklet?.states || {}) | keyvalue">
       <mat-form-field>
         <mat-label>{{state.value.label}}</mat-label>
-        <mat-select [(value)]="state.value.override" (selectionChange)="tcs.onStateOptionChanged()">
+        <mat-select
+          [(value)]="state.value.override"
+          (selectionChange)="tcs.onStateOptionChanged()"
+          [attr.data-cy]="'select-booklet-state:' + state.value.id"
+        >
           <mat-option
             *ngFor="let stateOption of state.value.options | keyvalue"
             value="{{stateOption.value.id}}"
+            [attr.data-cy]="'select-booklet-state:' + state.key + ':' + stateOption.value.id"
           >
             <div [class.current-option]="stateOption.value.id === state.value.current">
               {{stateOption.value.label}}

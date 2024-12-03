@@ -16,7 +16,7 @@
 
   <States>
     <State id="level" label="Schwierigkeitsstufe">
-      <Option id="professionell" label="schwer">
+      <Option id="professional" label="schwer">
         <If>
           <Count>
             <If><Value of="derived_var" from="decision-unit" /><Is greaterThan="150" /></If>
@@ -47,15 +47,15 @@
     <Unit id="UNIT.SAMPLE-2" label="Decision Unit" labelshort="D" alias="decision-unit" />
 
     <Testlet id="stage1">
-      <Testlet id="stage1-professionell" label="Stage ① Block Ⓒ">
+      <Testlet id="stage1-professional" label="Stage ① Block Ⓒ">
         <Restrictions>
-          <Show if="level" is="professionell" />
+          <Show if="level" is="professional" />
         </Restrictions>
 
-        <Unit id="UNIT.SAMPLE-2" label="Ⓒ Professionell Unit" labelshort="Ⓒ" alias="professionell-unit" />
+        <Unit id="UNIT.SAMPLE-2" label="Ⓒ Professional Unit" labelshort="Ⓒ" alias="professional-unit" />
         <!--
           To go to the advanced block enter "a" to var1 and anything other than "a" or "b" to var2
-          To go to the professionell block enter "a" or "b" to var1 (or add some numbers to var3, var4 and var5)
+          To go to the professional block enter "a" or "b" to var1 (or add some numbers to var3, var4 and var5)
         -->
       </Testlet>
 

@@ -33,7 +33,7 @@
           class="unit-nav-item"
           [class.unit-nav-item-selected]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
           [attr.aria-label]="testletOrUnit.label"
-          [attr.data-cy]="'unit-nav-item:' + testletOrUnit.id"
+          [attr.data-cy]="'unit-nav-item:' + testletOrUnit.alias"
           [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : forwardAllowed !== 'no' : backwardAllowed !== 'no'"
           [class.marked]="(forwardAllowed === 'markedNo' && testletOrUnit.sequenceId > tcs.currentUnitSequenceId) || (backwardAllowed === 'markedNo' && testletOrUnit.sequenceId < tcs.currentUnitSequenceId)"
           (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
