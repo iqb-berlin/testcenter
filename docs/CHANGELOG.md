@@ -2,6 +2,15 @@
 layout: default
 ---
 
+## [next]
+
+### Verbesserungen
+* Gruppen-Monitor:
+  * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
+    navigiert. Handelt es sich um einen zeitgesteuertes Testlet und verblieb noch Restzeit, so läuft diese weiter. 
+    Wird ein zeitgesteuertes Testlet entsperrt, dessen Zeit bereits vollständig abgelaufen war, beginnt die Zeit wieder
+    von vorn.
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung

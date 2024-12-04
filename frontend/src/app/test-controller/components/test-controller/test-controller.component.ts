@@ -216,7 +216,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (targetUnit) {
         if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
           this.tcs.cancelTimer();
+          this.tcs.restoreTime(targetUnit.parent);
         }
+        targetUnit.parent.locks.afterLeave = false;
+        targetUnit.lockedAfterLeaving = false;
         this.tcs.clearTestlet(targetUnit.parent.id);
       }
       return this.tcs.setUnitNavigationRequest(gotoTarget, true);
@@ -279,7 +282,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         if ((timer.timeLeftSeconds % 15) === 0) {
-          this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
           // attention: TODO store timer as well in localStorage to prevent F5-cheating
           this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }

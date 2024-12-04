@@ -51,7 +51,7 @@
       *ngIf="testSession | timeleft : current.parent as timeLeft"
       matBadge="{{timeLeft | number: '1.0-0'}}"
       matBadgeColor="accent"
-      matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async}}"
+      matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip':timeLeft:(current.parent.restrictions.timeMax?.minutes || 0) | async}}"
     >schedule
     </mat-icon>
   </div>
@@ -165,7 +165,7 @@
         timeup: testletOrUnit.restrictions.timeMax &&
           testSession.timeLeft &&
           testSession.timeLeft.hasOwnProperty(testletOrUnit.id) &&
-          testSession.timeLeft[testletOrUnit.id] === 0
+          testSession.timeLeft[testletOrUnit.id] <= 0
       }"
     >
 
@@ -248,6 +248,11 @@
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] === 0"
         matTooltip="{{'Zeit abgelaufen' | customtext:'gm_timeup_tooltip' | async}}"
+        matTooltipPosition="above"
+      >timer_off</mat-icon>
+      <mat-icon
+        *ngIf="testSession.timeLeft[testlet.id] < 0"
+        matTooltip="{{'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]*-1:timeMax.minutes | async}}"
         matTooltipPosition="above"
       >timer_off</mat-icon>
       <mat-icon
