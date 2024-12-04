@@ -1,5 +1,5 @@
 import {
-  bufferWhen, concatMap, last, map, scan, switchMap, takeUntil, takeWhile, withLatestFrom
+  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, forkJoin, from, interval, lastValueFrom, merge, Observable, of, Subject, Subscription, timer
@@ -521,8 +521,9 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-      case UnitNavigationTarget.ERROR:
       case UnitNavigationTarget.PAUSE:
+      case UnitNavigationTarget.ERROR:
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
         navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
