@@ -23,10 +23,12 @@ export class RouteDispatcherActivateGuard {
       this.router.navigate(['/r/login', '']);
       return false;
     }
+
     if (authData.flags.indexOf('codeRequired') >= 0) {
       this.router.navigate(['/r/code-input']);
       return false;
     }
+
     if (
       authData.claims &&
       Object.keys(authData.claims).length === 1 &&
@@ -38,11 +40,22 @@ export class RouteDispatcherActivateGuard {
         .subscribe(testId => {
           this.router.navigate(['/t', testId]);
         });
-    } else {
-      this.router.navigate(['/r/starter'], this.router.getCurrentNavigation()?.extras);
       return false;
     }
-    return true;
+
+    if (
+      authData.claims &&
+      Object.keys(authData.claims).length === 1 &&
+      authData.claims.sysCheck &&
+      authData.claims.sysCheck.length === 1 &&
+      this.router.getCurrentNavigation()?.previousNavigation === null
+    ) {
+      this.router.navigate([`/check/${authData.claims.sysCheck[0].workspaceId}/${authData.claims.sysCheck[0].id}`]);
+      return false;
+    }
+
+    this.router.navigate(['/r/starter'], this.router.getCurrentNavigation()?.extras);
+    return false;
   }
 }
 
@@ -65,24 +78,6 @@ export class DirectLoginActivateGuard {
         .pipe(
           map((authDataResponse: AuthData) => {
             this.mds.setAuthData(authDataResponse as AuthData);
-            if (!authDataResponse.flags.includes('codeRequired')) {
-              if (
-                authDataResponse.claims &&
-                Object.keys(authDataResponse.claims).length === 1 &&
-                authDataResponse.claims.test &&
-                authDataResponse.claims.test.length === 1
-              ) {
-                this.bs.startTest(authDataResponse.claims.test[0].id)
-                  .subscribe(testId => {
-                    this.router.navigate(['/t', testId]);
-                    return false;
-                  });
-              }
-              if (authDataResponse.claims.sysCheck && authDataResponse.claims.sysCheck.length === 1) {
-                this.router.navigate([`/check/${authDataResponse.claims.sysCheck[0].workspaceId}/${authDataResponse.claims.sysCheck[0].id}`]);
-                return false;
-              }
-            }
             this.router.navigate(['/r']);
             return false;
           })
