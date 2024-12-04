@@ -85,7 +85,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
         )
         .subscribe((command: Command) => {
-          this.handleCommand(command.keyword, command.arguments);
+          this.handleCommand(command.keyword, command.arguments)
+            .then(() => {
+              this.bs.addTestLog(this.tcs.testId, [{
+                key: 'command executed',
+                timeStamp: Date.now(),
+                content: CommandService.commandToString(command)
+              }])
+            });
         });
 
       this.subscriptions.routing = this.route.params
