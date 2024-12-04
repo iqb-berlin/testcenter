@@ -66,7 +66,12 @@ export class DirectLoginActivateGuard {
           map((authDataResponse: AuthData) => {
             this.mds.setAuthData(authDataResponse as AuthData);
             if (!authDataResponse.flags.includes('codeRequired')) {
-              if (authDataResponse.claims.test && authDataResponse.claims.test.length === 1) {
+              if (
+                authDataResponse.claims &&
+                Object.keys(authDataResponse.claims).length === 1 &&
+                authDataResponse.claims.test &&
+                authDataResponse.claims.test.length === 1
+              ) {
                 this.bs.startTest(authDataResponse.claims.test[0].id)
                   .subscribe(testId => {
                     this.router.navigate(['/t', testId]);
