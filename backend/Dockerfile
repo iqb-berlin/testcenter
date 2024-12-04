@@ -77,7 +77,8 @@ EXPOSE 80
 
 COPY backend/entrypoint-initializer.sh /entrypoint-initializer.sh
 COPY backend/entrypoint-backend.sh /entrypoint-backend.sh
-ENTRYPOINT ["./entrypoint-backend.shd"]
+RUN  chmod +x /entrypoint-initializer.sh /entrypoint-backend.sh
+ENTRYPOINT ["./entrypoint-backend.sh"]
 
 
 FROM base AS dev
