@@ -28,7 +28,7 @@ import {
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption
+  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption, isYesNoOption
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -58,7 +58,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     unitColumn: 'hide',
     bookletStatesColumns: [],
     highlightSpecies: false,
-    manualChecking: false
+    manualChecking: false,
+    autoselectNextBlock: true
   };
 
   isScrollable = false;
@@ -272,12 +273,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private selectNextBlock(): void {
-    if (!this.selectedElement) {
-      return;
-    }
-    if (!isBooklet(this.selectedElement.originSession.booklet)) {
-      return;
-    }
+    if (!this.displayOptions.autoselectNextBlock) return;
+    if (!this.selectedElement) return;
+    if (!isBooklet(this.selectedElement.originSession.booklet)) return;
     this.selectedElement = {
       element: this.selectedElement.element?.nextBlockId ?
         BookletUtil.getBlockById(
@@ -387,6 +385,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (isColumnOption(p.settings.groupColumn)) this.displayOptions.groupColumn = p.settings.groupColumn;
     if (isColumnOption(p.settings.bookletColumn)) this.displayOptions.bookletColumn = p.settings.bookletColumn;
     if (isViewOption(p.settings.view)) this.displayOptions.view = p.settings.view;
+    if (isYesNoOption(p.settings.autoselectNextBlock))
+      this.displayOptions.autoselectNextBlock = p.settings.autoselectNextBlock !== 'no';
 
     (p.filters || [])
       .forEach((filter: TestSessionFilter, index: number) => {

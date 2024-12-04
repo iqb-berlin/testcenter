@@ -12,6 +12,8 @@ layout: default
     von vorn.
   * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
     Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
+  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, gibt wird automatisch der nächste Block abgewählt.
+    Dies ist nun optional durch eine neue Einstellung im Gruppen-Monitor-Profil abwählbar `autoselectNextBlock="no"`.
 
 ### Bugfix
 * Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
