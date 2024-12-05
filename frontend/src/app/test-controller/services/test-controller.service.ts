@@ -1,5 +1,5 @@
 import {
-  bufferWhen, concatMap, last, map, scan, switchMap, takeUntil, takeWhile, withLatestFrom
+  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, forkJoin, from, interval, lastValueFrom, merge, Observable, of, Subject, Subscription, timer
@@ -427,11 +427,28 @@ export class TestControllerService {
     return unit;
   }
 
+  restoreTime(testlet: Testlet): void {
+    console.log('restoreTime', testlet, this.timers);
+    if (!testlet.restrictions?.timeMax) return;
+    if (typeof this.timers[testlet.id] === 'undefined') return;
+    if (this.timers[testlet.id] > 0) return;
+    if (this.timers[testlet.id] === 0) {
+      console.log('restoreTime::', testlet.id);
+      this.timers[testlet.id] = testlet.restrictions.timeMax.minutes;
+    }
+    if (this.timers[testlet.id] < 0) {
+      this.timers[testlet.id] = this.timers[testlet.id] * -1;
+    }
+    console.log('restoreTimeD', testlet, this.timers);
+    testlet.locks.time = false;
+  }
+
   startTimer(testlet: Testlet): void {
+    console.log('startTimer', testlet.id)
     if (!testlet.restrictions?.timeMax) {
       return;
     }
-    const timeLeftMinutes = (this.timers[testlet.id]) ?
+    const timeLeftMinutes = (this.timers[testlet.id] && (this.timers[testlet.id] > 0)) ?
       Math.min(this.timers[testlet.id], testlet.restrictions.timeMax.minutes) :
       testlet.restrictions.timeMax.minutes;
     if (this.timerIntervalSubscription !== null) {
@@ -439,6 +456,7 @@ export class TestControllerService {
     }
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
+    console.log('startTimerD', timeLeftMinutes)
     this.timerIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
@@ -454,27 +472,31 @@ export class TestControllerService {
         },
         complete: () => {
           this.timers$.next(new TimerData(0, testlet.id, MaxTimerEvent.ENDED));
-          this.currentTimerId = '';
+          this.finishTimer();
         }
       });
   }
 
-  cancelTimer(): void {
+  private finishTimer() {
     if (this.timerIntervalSubscription !== null) {
       this.timerIntervalSubscription.unsubscribe();
-      this.timerIntervalSubscription = null;
-      this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.CANCELLED));
     }
+    this.timerIntervalSubscription = null;
     this.currentTimerId = '';
   }
 
+  cancelTimer(): void {
+    if (this.currentTimerId) {
+      this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.CANCELLED));
+    }
+    this.finishTimer();
+  }
+
   interruptTimer(): void {
-    if (this.timerIntervalSubscription !== null) {
-      this.timerIntervalSubscription.unsubscribe();
-      this.timerIntervalSubscription = null;
+    if (this.currentTimerId) {
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.INTERRUPTED));
     }
-    this.currentTimerId = '';
+    this.finishTimer();
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
@@ -499,8 +521,9 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-      case UnitNavigationTarget.ERROR:
       case UnitNavigationTarget.PAUSE:
+      case UnitNavigationTarget.ERROR:
+        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
         navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);

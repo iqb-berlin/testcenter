@@ -297,7 +297,8 @@ END;
               'view' => 'full',
               'groupColumn' => 'show',
               'bookletColumn' => 'show',
-              'bookletStatesColumns' => 'level bonus'
+              'bookletStatesColumns' => 'level bonus',
+              'autoselectNextBlock' => 'no'
             ],
             'filters' => [],
             'filtersEnabled' => [
@@ -314,7 +315,8 @@ END;
               'view' => 'small',
               'groupColumn' => 'hide',
               'bookletColumn' => 'hide',
-              'bookletStatesColumns' => ''
+              'bookletStatesColumns' => '',
+              'autoselectNextBlock' => 'yes'
             ],
             'filters' => [
               [

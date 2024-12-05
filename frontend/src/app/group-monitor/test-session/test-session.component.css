@@ -109,7 +109,7 @@ h2 {
 }
 
 .locked .testlet,
-.pending .testlet{
+.pending .testlet {
   cursor: default;
 }
 
@@ -135,6 +135,7 @@ h2 {
   color: #333333;
 }
 
+.timeup .unit.current,
 .pending .unit.current,
 .locked .unit.current {
   background: #b2b2b2;
@@ -196,12 +197,6 @@ h2 {
 
 .locked .testlet {
   border-color: #333333;
-}
-
-.featured-unit {
-  display: inline-flex;
-  vertical-align: middle;
-  align-items: center;
 }
 
 .vertical-align-middle {

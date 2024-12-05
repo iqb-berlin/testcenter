@@ -36,6 +36,7 @@
         view="full"
         filterLocked="no"
         filterPending="no"
+        autoselectNextBlock="no"
       >
       </Profile>
     </GroupMonitor>
