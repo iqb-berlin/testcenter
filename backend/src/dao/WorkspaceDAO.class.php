@@ -45,7 +45,7 @@ class WorkspaceDAO extends DAO {
         union
         select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source, workspace_id
       ) as globalIds
-      left join workspaces on workspace_id
+      left join workspaces on globalIds.workspace_id = workspaces.id
       ",
       [],
       true
