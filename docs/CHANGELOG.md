@@ -11,6 +11,17 @@ layout: default
 * Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
   vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
 
+## [next]
+### Bugfix
+* Units konnten unter besteimmten extrem-Bendingungen doppelt angelegt werden, was zu doppelten Zeilen in den Ergebnisdaten führte
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+### :warning: Hinweis für Administratoren
+* Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen erst sämtliche Studien zu
+  beenden und die Daten zu löschen bevor geupdatet wird.
+  
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
@@ -28,9 +39,6 @@ layout: default
 
 ### Bugfix
 * Seitenzahl im Studienmonitor wird korrekt angezeigt.
-* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
-  in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
-  führen.
 * Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
 
 ### Verbesserungen

@@ -290,7 +290,7 @@ final class AdminDAOTest extends TestCase {
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
     $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
-    $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 4)");
+    $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
 
     $expectation = [
       [
