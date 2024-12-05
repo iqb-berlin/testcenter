@@ -6,6 +6,11 @@ layout: default
 * Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
   den Monitor nicht erreichen.
 
+## [next]
+### Bugfixes
+* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
+  vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
