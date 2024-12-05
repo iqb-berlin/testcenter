@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Bugfixes
+* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
+  den Monitor nicht erreichen.
 
 ## 15.4.0-beta
 ### neue Features
