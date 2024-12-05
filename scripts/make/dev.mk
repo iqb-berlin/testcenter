@@ -76,6 +76,7 @@ logs:
 		logs --follow $(service)
 
 composer-install:
+	docker container rm -f testcenter-initializer testcenter-backend 2> /dev/null || true &&\
 	docker run --rm --interactive --tty\
 			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
 			--volume $(TC_BASE_DIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock\
@@ -91,6 +92,7 @@ composer-install:
 	cd $(TC_BASE_DIR) && make build service=testcenter-backend
 
 composer-update:
+	docker container rm -f testcenter-initializer testcenter-backend 2> /dev/null || true &&\
 	docker run --rm --interactive --tty\
 			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
 			--volume $(TC_BASE_DIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock\
@@ -107,6 +109,7 @@ composer-update:
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.
 composer-refresh-autoload:
+	docker container rm -f testcenter-initializer testcenter-backend 2> /dev/null || true &&\
 	docker run --rm --interactive --tty\
 			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json:ro\
 			--volume $(TC_BASE_DIR)/backend/composer.lock:/usr/src/testcenter/backend/composer.lock:ro\
@@ -116,7 +119,6 @@ composer-refresh-autoload:
 			--volume $(HOME)/.composer:/tmp/cache\
 		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
 	cd $(TC_BASE_DIR) && make build service=testcenter-backend
-	cd $(TC_BASE_DIR) && make up service=testcenter-backend
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
