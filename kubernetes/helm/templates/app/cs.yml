@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.cacheService.name }}-deployment
+  name: {{ .Chart.Name }}-cs-deployment
   namespace: {{ .Values.namespace}}
 spec:
   replicas: {{ .Values.cacheService.replicas }}
@@ -11,14 +11,14 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.cacheService.name }}-pod
+      app: {{ .Chart.Name }}-cs-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.cacheService.name }}-pod
+        app: {{ .Chart.Name }}-cs-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-{{ .Values.cacheService.name }}-container
+        - name: {{ .Chart.Name }}-cs-container
           image: redis:7.0-bullseye
           command:
             - bash
@@ -39,7 +39,7 @@ spec:
       volumes:
         - name: lv-storage
           persistentVolumeClaim:
-            claimName: {{ .Values.volume.cache.name }}
+            claimName: redis-pvc
 
 ---
 apiVersion: v1
@@ -49,17 +49,17 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.cacheService.name }}-pod
+    app: {{ .Chart.Name }}-cs-pod
   ports:
     - name: http-service
-      port: {{ .Values.cacheService.port }}
+      port: 6379
       targetPort: http-container
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.volume.cache.name }}
+  name: redis-pvc
   namespace: {{ .Values.namespace }}
 spec:
   accessModes:

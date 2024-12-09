@@ -3,7 +3,6 @@ environment: dev
 
 traefik:
   name: traefik
-  namespace: default
   image:
     tag: v2.11
   port:
@@ -11,21 +10,6 @@ traefik:
     https: 443
     dashboard: 8080
   serviceKind: LoadBalancer
-  tlsOption:
-    name: default
-    minVersion: VersionTLS12
-    cipherSuites:
-      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-      - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
-      - TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA
-      - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
-      - TLS_ECDHE_ECDSA_WITH_RC4_128_SHA
-      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-    sniStrict: true
 
 config:
   hostname: minikube-ip-defined-in-hosts.example
@@ -53,14 +37,10 @@ secret:
   mysqlPassword: fEaU5COJYXv2atau
 
 backend:
-  name: backend
   replicas: 1
-  port: 80
 
 broadcastingService:
-  name: bs
   replicas: 1
-  port: 3000
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -68,60 +48,37 @@ broadcastingService:
       maxUnavailable: 0
 
 cacheService:
-  name: cs
   replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
-  port: 6379
 
 database:
-  name: db
   replicas: 1
-  port: 3306
 
 frontend:
-  name: fe
   replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
-  port: 80
 
 fileService:
-  name: fs
   replicas: 1
-  port: 80
-  configmap:
-    name: nginx-fs-config-configmap
 
 volume:
   vodata:
-    name: testcenter-backend-vo-data
     storageClassName: standard
     accessMode: ReadWriteOnce
     size: 2Gi
   dbdata:
-    name: dbdata
     storageClassName: standard
     accessMode: ReadWriteOnce
     size: 2Gi
   cache:
-    name: redis-pvc
     storageClassName: standard
     accessMode: ReadWriteOnce
     size: 5Gi
-
-ingress:
-  middleware:
-    stripregex:
-      fe: stripregexfe
-      be: stripregexbe
-      fs: stripregexfs
-      bs: stripregexbs
-    security:
-      name: securityheaders

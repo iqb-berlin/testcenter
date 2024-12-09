@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ .Values.ingress.middleware.stripregex.fe }}
+  name: stripregexfe
   namespace: {{ .Values.namespace }}
 spec:
   redirectRegex:
@@ -12,7 +12,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.frontend.name }}-deployment
+  name: {{ .Chart.Name }}-fe-deployment
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.frontend.replicas }}
@@ -22,14 +22,14 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.frontend.name }}-pod
+      app: {{ .Chart.Name }}-fe-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.frontend.name }}-pod
+        app: {{ .Chart.Name }}-fe-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-{{ .Values.frontend.name }}-container
+        - name: {{ .Chart.Name }}-fe-container
           image: iqbberlin/testcenter-frontend:{{ .Chart.Version }}
           ports:
             - name: http-container
@@ -39,37 +39,37 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.frontend.name }}-service
+  name: {{ .Chart.Name }}-fe-service
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.frontend.name }}-pod
+    app: {{ .Chart.Name }}-fe-pod
   ports:
     - name: http-service
-      port: {{ .Values.frontend.port }}
+      port: 80
       targetPort: http-container
 
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.frontend.name }}-ingress
+  name: {{ .Chart.Name }}-fe-ingress
   namespace: {{ .Values.namespace }}
 spec:
   entryPoints:
     - web
     - websecure
   routes:
-    - match: Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)
+    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
       kind: Rule
       middlewares:
-        - name: {{ .Values.ingress.middleware.security.name }}
+        - name: securityheaders
           namespace: {{ .Values.namespace }}
-        - name: {{ .Values.ingress.middleware.stripregex.fe }}
+        - name: stripregexfe
           namespace: {{ .Values.namespace }}
       services:
-        - name: {{ .Chart.Name }}-{{ .Values.frontend.name }}-service
-          port: {{ .Values.frontend.port }}
+        - name: {{ .Chart.Name }}-fe-service
+          port: 80
 #  tls:
 #    certResolver: acme
 #    options:
