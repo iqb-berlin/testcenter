@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.backend.name }}-deployment
+  name: {{ .Chart.Name }}-backend-deployment
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.backend.replicas }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.backend.name }}
+      app: {{ .Chart.Name }}-backend
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/app/config/configmap.yaml") . | sha256sum }}
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.backend.name }}
+        app: {{ .Chart.Name }}-backend
     spec:
       initContainers:
         - name: wait-for-db
           image: busybox:1.28
-          command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db {{ .Values.database.port }}; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
       containers:
-        - name: {{ .Chart.Name }}-{{ .Values.backend.name }}-container
+        - name: {{ .Chart.Name }}-backend-container
           image: iqbberlin/testcenter-backend:{{ .Chart.Version }}
           env:
           - name: MYSQL_DATABASE
@@ -130,18 +130,18 @@ spec:
       volumes:
         - name: backend-data
           persistentVolumeClaim:
-            claimName: {{ .Values.volume.vodata.name }}
+            claimName: testcenter-backend-vo-data
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.backend.name }}-service
+  name: {{ .Chart.Name }}-backend-service
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.backend.name }}
+    app: {{ .Chart.Name }}-backend
   ports:
     - protocol: TCP
-      port: {{ .Values.backend.port }}
+      port: 80
       targetPort: 80

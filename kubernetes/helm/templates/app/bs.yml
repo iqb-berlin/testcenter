@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.broadcastingService.name }}-deployment
+  name: {{ .Chart.Name }}-bs-deployment
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.broadcastingService.replicas }}
@@ -11,14 +11,14 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.broadcastingService.name }}-pod
+      app: {{ .Chart.Name }}-bs-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.broadcastingService.name }}-pod
+        app: {{ .Chart.Name }}-bs-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-{{ .Values.broadcastingService.name }}-container
+        - name: {{ .Chart.Name }}-bs-container
           image: iqbberlin/testcenter-broadcasting-service:{{ .Chart.Version }}
           ports:
             - name: http-container
@@ -32,8 +32,8 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.broadcastingService.name }}-pod
+    app: {{ .Chart.Name }}-bs-pod
   ports:
     - name: http-service
-      port: {{ .Values.broadcastingService.port }}
+      port: 3000
       targetPort: http-container

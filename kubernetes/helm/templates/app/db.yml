@@ -2,20 +2,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.database.name }}-deployment
+  name: {{ .Chart.Name }}-db-deployment
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.database.replicas }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.database.name }}
+      app: {{ .Chart.Name }}-db
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.database.name }}
+        app: {{ .Chart.Name }}-db
     spec:
       containers:
-      - name: {{ .Chart.Name }}-{{ .Values.database.name }}-container
+      - name: {{ .Chart.Name }}-db-container
         image: mysql:8.0
         env:
           - name: MYSQL_DATABASE
@@ -84,17 +84,17 @@ spec:
       volumes:
         - name: mysql-data
           persistentVolumeClaim:
-            claimName: {{ .Values.volume.dbdata.name }}
+            claimName: dbdata
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.database.name }}
+  name: {{ .Chart.Name }}-db
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.database.name }}
+    app: {{ .Chart.Name }}-db
   ports:
     - protocol: TCP
-      port: {{ .Values.database.port }}
+      port: 3306
       targetPort: mysql-container

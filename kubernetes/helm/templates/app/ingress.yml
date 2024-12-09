@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ .Values.ingress.middleware.stripregex.be }}
+  name: stripregexbe
   namespace: {{ .Values.namespace }}
 spec:
   stripPrefix:
@@ -12,7 +12,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ .Values.ingress.middleware.stripregex.fs }}
+  name: stripregexfs
   namespace: {{ .Values.namespace }}
 spec:
   stripPrefix:
@@ -23,7 +23,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ .Values.ingress.middleware.stripregex.bs }}
+  name: stripregexbs
   namespace: {{ .Values.namespace }}
 spec:
   stripPrefix:
@@ -34,7 +34,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: {{ .Values.ingress.middleware.security.name}}
+  name: securityheaders
   namespace: {{ .Values.namespace }}
 spec:
   headers:
@@ -56,35 +56,35 @@ spec:
       - websecure
   routes:
     - kind: Rule
-      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/api`)
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
       middlewares:
-        - name: {{ .Values.ingress.middleware.stripregex.be }}
+        - name: stripregexbe
           namespace: {{ .Values.namespace }}
-        - name: {{ .Values.ingress.middleware.security.name }}
+        - name: securityheaders
           namespace: {{ .Values.namespace }}
       services:
-        - name: {{ .Chart.Name }}-{{ .Values.backend.name }}-service
-          port: {{ .Values.backend.port }}
+        - name: {{ .Chart.Name }}-backend-service
+          port: 80
     - kind: Rule
-      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/fs`)
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
       middlewares:
-        - name: {{ .Values.ingress.middleware.stripregex.fs }}
+        - name: stripregexfs
           namespace: {{ .Values.namespace }}
-        - name: {{ .Values.ingress.middleware.security.name }}
+        - name: securityheaders
           namespace: {{ .Values.namespace }}
       services:
         - name: testcenter-file-service #hard coded in application as internal address
-          port: {{ .Values.fileService.port }}
+          port: 80
     - kind: Rule
-      match: (Host(`www.minikube-ip-defined-in-hosts.example`) || Host(`minikube-ip-defined-in-hosts.example`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
       middlewares:
-        - name: {{ .Values.ingress.middleware.stripregex.bs }}
+        - name: stripregexbs
           namespace: {{ .Values.namespace }}
-        - name: {{ .Values.ingress.middleware.security.name }}
+        - name: securityheaders
           namespace: {{ .Values.namespace }}
       services:
         - name: testcenter-broadcasting-service #hard coded in application as internal address
-          port: {{ .Values.broadcastingService.port }}
+          port: 3000
 #  tls:
 #    certResolver: acme
 #    options:

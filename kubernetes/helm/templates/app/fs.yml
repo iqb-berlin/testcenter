@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-{{ .Values.fileService.name }}-deployment
+  name: {{ .Chart.Name }}-fs-deployment
   namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.fileService.replicas }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-{{ .Values.fileService.name }}
+      app: {{ .Chart.Name }}-fs
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-{{ .Values.fileService.name }}
+        app: {{ .Chart.Name }}-fs
     spec:
       containers:
-      - name: {{ .Chart.Name }}-{{ .Values.fileService.name }}-container
+      - name: {{ .Chart.Name }}-fs-container
         image: iqbberlin/testcenter-file-service:{{ .Chart.Version }}
         env:
         - name: CACHE_SERVICE_INCLUDE_FILES
@@ -36,10 +36,10 @@ spec:
       volumes:
       - name: backend-data
         persistentVolumeClaim:
-          claimName: {{ .Values.volume.vodata.name }}
+          claimName: testcenter-backend-vo-data
       - name: nginx-config-volume
         configMap:
-          name: {{ .Values.fileService.configmap.name }}
+          name: nginx-fs-config-configmap
           items:
           - key: config.nginx.conf
             path: nginx.conf-in-volume
@@ -52,17 +52,17 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   selector:
-    app: {{ .Chart.Name }}-{{ .Values.fileService.name }}
+    app: {{ .Chart.Name }}-fs
   ports:
     - protocol: TCP
-      port: {{ .Values.fileService.port }}
+      port: 80
       targetPort: 80
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.fileService.configmap.name }}
+  name: nginx-fs-config-configmap
   namespace: {{ .Values.namespace }}
 data:
   config.nginx.conf: |
