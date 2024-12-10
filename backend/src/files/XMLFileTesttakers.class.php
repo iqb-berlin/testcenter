@@ -324,7 +324,8 @@ class XMLFileTesttakers extends XMLFile {
           'view' => ((string) $profileElem['view']) ?? "middle",
           'groupColumn' => ((string) $profileElem['groupColumn']) ?? "hide",
           'bookletColumn' => ((string) $profileElem['bookletColumn']) ?? "show",
-          'bookletStatesColumns' => ((string) $profileElem['bookletStatesColumns']) ?? ''
+          'bookletStatesColumns' => ((string) $profileElem['bookletStatesColumns']) ?? '',
+          'autoselectNextBlock' => ((string) $profileElem['autoselectNextBlock'] === 'no') ? 'no' : 'yes'
         ],
         'filters' => array_map(
           fn (SimpleXMLElement $filterElem): array => [

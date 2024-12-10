@@ -62,7 +62,9 @@ class TestController extends Controller {
     if (!$test->running) {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $message = SessionChangeMessage::session($test->id, $personSession);
-      $message->setTestState((array) $test->state, $test->name);
+      $testState = (array) $test->state;
+      $testState['status'] = 'running';
+      $message->setTestState($testState, $test->name);
       self::testDAO()->setTestRunning($test->id);
     } else {
       $message = SessionChangeMessage::testState(
