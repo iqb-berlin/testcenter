@@ -174,17 +174,17 @@ h2 {
 
 .unit.marked::before,
 .testlet.marked::before {
-  background: rgba(178, 200, 160, 0.5);
+  background: rgba(150, 200, 255, 0.5);
 }
 
 .unit.selected::before,
 .testlet.selected::before {
-  background: rgba(178, 200, 160, 0.7);
+  background: rgba(255, 128, 0, 0.5);
 }
 
 .unit.marked.selected::before,
 .testlet.marked.selected::before {
-  background: rgba(178, 200, 160, 0.9);
+  background: rgba(255, 128, 0, 0.5);
 }
 
 .testlet.timeup {
