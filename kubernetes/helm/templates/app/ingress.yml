@@ -85,6 +85,8 @@ spec:
       services:
         - name: testcenter-broadcasting-service #hard coded in application as internal address
           port: 3000
+#  tls: {} #dev-deploy: use this line for self signed certs
+#wip for acme
 #  tls:
 #    certResolver: acme
 #    options:

@@ -70,8 +70,10 @@ spec:
       services:
         - name: {{ .Chart.Name }}-fe-service
           port: 80
+#  tls: {} #dev-deploy: use this line for self signed certs
+#wip for acme
 #  tls:
 #    certResolver: acme
 #    options:
 #      name: default
-#      namespace: default
+#      namespace: tc
