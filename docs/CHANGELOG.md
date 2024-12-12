@@ -2,6 +2,11 @@
 layout: default
 ---
 
+## [next]
+### Bugfixes
+* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem Login verändert wurde, konnte
+  dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id aktualisiert.
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung

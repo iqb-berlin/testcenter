@@ -4,6 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 class SessionDAOExposed extends SessionDAO {
+  /** @return LoginSession[] */
   public function getLoginSessions(array $filters = []): array {
     return parent::getLoginSessions($filters);
   }
@@ -460,6 +461,62 @@ class SessionDAOTest extends TestCase {
     $this->assertEquals(8, $this->countTableRows('login_sessions'));
   }
 
+  public function test_createLoginSession_groupIdChanged(): void {
+    $this->dbc->createLoginSession(new Login(
+      "test",
+      "user123",
+      "hot-run-restart",
+      "sample_group",
+      "Sample Group",
+      ['' => ['A.BOOKLET']],
+      1
+    ));
+
+    $this->dbc->_("delete from logins;");
+    $this->dbc->_('
+      insert into logins (
+        name,
+        password,
+        mode,
+        workspace_id,
+        codes_to_booklets,
+        source, 
+        valid_from,
+        valid_to,
+        valid_for,
+        group_name,
+        group_label
+      ) values (
+        \'test\',
+        \'pw_hash\',
+        \'run-hot-return\',
+        1,
+        \'{"xxx":["BOOKLET.SAMPLE-1"]}\',
+        \'unit test\',
+        null,
+        \'2030-01-02 10:00:00\',
+        null,
+        \'new_id\', -- this can happen as result of a re-upload of a TT.xml with changed group-id
+        \'Sample Group\'
+      );'
+    );
+
+    $this->dbc->createLoginSession(new Login(
+      "test",
+      "user123",
+      "hot-run-restart",
+      "new_id",
+      "Sample Group",
+      ['' => ['A.BOOKLET']],
+      1
+    ));
+
+    $sessions = $this->dbc->getLoginSessions();
+    $this->assertCount(1, $sessions);
+    $this->assertEquals('test', $sessions[0]->getLogin()->getName());
+    $this->assertEquals('new_id', $sessions[0]->getLogin()->getGroupName());
+  }
+
   public function test_getLogin_okay(): void {
     $result = $this->dbc->getLogin("test", "pw_hash");
     $this->assertEquals($this->testDataLoginSessions[0]->getLogin(), $result);
@@ -548,7 +605,6 @@ class SessionDAOTest extends TestCase {
 
     $this->assertEquals($t1->await(), $t2->await());
   }
-
 
   private function countTableRows(string $tableName): int {
     return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
