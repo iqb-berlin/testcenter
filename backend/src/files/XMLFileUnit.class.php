@@ -77,7 +77,6 @@ class XMLFileUnit extends XMLFile {
 
     if ($resource != null) {
       $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
-      $this->contextData['totalSize'] += $resource->getSize();
     } else {
       $this->report('error', "Resource `$resourceName` not found");
     }
