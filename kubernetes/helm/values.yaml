@@ -13,9 +13,9 @@ traefik:
 
 config:
   hostname: minikube-ip-defined-in-hosts.example
-  port: 30632
-  tlsPort: 32532
-  tlsEnabled: off
+  port: 32121
+  tlsPort: 31297
+  tlsEnabled: on
   mysqlDatabase: iqb_tba_testcenter
   mysqlUser: iqb_tba_db_user
   broadcastServiceEnabled: true

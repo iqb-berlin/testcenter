@@ -26,22 +26,28 @@ spec:
             {{- if eq .Values.environment "dev" }}
             - --api.insecure=true
             {{- end }}
+            - --log.level=INFO
+            - --accesslog=false
             - --providers.kubernetesingress
             - --providers.kubernetescrd
-            - --entrypoints.web.address=:{{ .Values.traefik.port.http }}
-            - --entrypoints.websecure.address=:{{ .Values.traefik.port.https }}
-          #            - --entrypoints.web.http.redirections.entryPoint.to=websecure
-          #            - --entrypoints.web.http.redirections.entryPoint.scheme=https
-          #            - --certificatesresolvers.acme.acme.tlschallenge=true
-          #            - --certificatesresolvers.myresolver.acme.email=your-email@example.com
-          #            - --certificatesresolvers.acme.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-          #            - --certificatesresolvers.acme.acme.storage=/certs/acme.json
+            - --entrypoints.web.address=:80
+            {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+            - --entrypoints.websecure.address=:443
+            - --entrypoints.web.http.redirections.entrypoint.to=:{{ .Values.config.tlsPort }}
+            - --entrypoints.web.http.redirections.entrypoint.scheme=https
+            #            - --certificatesresolvers.acme.acme.tlschallenge=true
+            #            - --certificatesresolvers.myresolver.acme.email=your-email@example.com
+            #            - --certificatesresolvers.acme.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+            #            - --certificatesresolvers.acme.acme.storage=/certs/acme.json
+            {{- end }}
           ports:
             - name: web
-              containerPort: {{ .Values.traefik.port.http }}
+              containerPort: 80
+            {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
             - name: websecure
-              containerPort: {{ .Values.traefik.port.https }}
+              containerPort: 443
+            {{- end }}
             {{- if eq .Values.environment "dev" }}
             - name: dashboard
-              containerPort: {{ .Values.traefik.port.dashboard }}
+              containerPort: 8080
             {{- end }}

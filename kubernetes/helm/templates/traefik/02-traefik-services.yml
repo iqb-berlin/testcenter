@@ -1,46 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.traefik.name }}-dashboard-service
+  name: {{ .Values.traefik.name }}-service
   namespace: {{ .Values.namespace }}
   annotations:
     {{- include "traefik.annotations" . | nindent 4 }}
 spec:
   type: {{ .Values.traefik.serviceKind }}
   ports:
-    - port: {{ .Values.traefik.port.dashboard }}
+    - name: web
+      port: 80
+      targetPort: web
+    {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+    - name: websecure
+      port: 443
+      targetPort: websecure
+    {{- end }}
+    {{- if eq .Values.environment "dev" }}
+    - name: dashboard
+      port: 8080
       targetPort: dashboard
-  selector:
-    app: {{ .Values.traefik.name }}-pod
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.traefik.name }}-web-service
-  namespace: {{ .Values.namespace }}
-  annotations:
-    {{- include "traefik.annotations" . | nindent 4 }}
-spec:
-  type: {{ .Values.traefik.serviceKind }}
-  ports:
-    - targetPort: web
-      port: {{ .Values.traefik.port.http }}
-  selector:
-    app: {{ .Values.traefik.name }}-pod
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.traefik.name }}-web-secure-service
-  namespace: {{ .Values.namespace }}
-  annotations:
-    {{- include "traefik.annotations" . | nindent 4 }}
-spec:
-  type: {{ .Values.traefik.serviceKind }}
-  ports:
-    - targetPort: websecure
-      port: {{ .Values.traefik.port.https }}
+    {{- end }}
   selector:
     app: {{ .Values.traefik.name }}-pod
