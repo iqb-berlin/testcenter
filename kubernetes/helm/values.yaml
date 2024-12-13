@@ -5,11 +5,7 @@ traefik:
   name: traefik
   image:
     tag: v2.11
-  port:
-    http: 80
-    https: 443
-    dashboard: 8080
-  serviceKind: LoadBalancer
+  serviceKind: NodePort
 
 config:
   hostname: minikube-ip-defined-in-hosts.example
