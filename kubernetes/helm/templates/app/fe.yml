@@ -1,13 +1,3 @@
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: stripregexfe
-  namespace: {{ .Values.namespace }}
-spec:
-  redirectRegex:
-    regex: ^http(s?)://www\.(.*)
-    replacement: http${1}://${2}
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,32 +38,3 @@ spec:
     - name: http-service
       port: 80
       targetPort: http-container
-
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: {{ .Chart.Name }}-fe-ingress
-  namespace: {{ .Values.namespace }}
-spec:
-  entryPoints:
-    - web
-    - websecure
-  routes:
-    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
-      kind: Rule
-      middlewares:
-        - name: securityheaders
-          namespace: {{ .Values.namespace }}
-        - name: stripregexfe
-          namespace: {{ .Values.namespace }}
-      services:
-        - name: {{ .Chart.Name }}-fe-service
-          port: 80
-#  tls: {} #dev-deploy: use this line for self signed certs
-#wip for acme
-#  tls:
-#    certResolver: acme
-#    options:
-#      name: default
-#      namespace: tc

@@ -18,4 +18,4 @@ else
 fi
 
 echo -e "Installing Testcenter v2.11 via Helm..."
-helm install testcenter ./kubernetes/helm
+helm install testcenter .
