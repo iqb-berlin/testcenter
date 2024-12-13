@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-backend-pod
+  template:
+    metadata:
+      annotations:
+        checksum/backendconfig: {{ include (print $.Template.BasePath "/app/backend/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/app/config/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/app/config/secret.yaml") . | sha256sum }}
+      labels:
+        app: {{ .Chart.Name }}-backend-pod
+    spec:
+      initContainers:
+        - name: wait-for-db-initcontainer
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
+      containers:
+        - name: {{ .Chart.Name }}-backend-container
+          image: iqbberlin/testcenter-backend:{{ .Chart.Version }}
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-config
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-config
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secrets
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_HOST
+              value: "{{ .Chart.Name }}-db"
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secrets
+                  key: PASSWORD_SALT
+            - name: BROADCAST_SERVICE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: BROADCAST_SERVICE_ENABLED
+            - name: FILE_SERVICE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: FILE_SERVICE_ENABLED
+            - name: HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: HOSTNAME
+            - name: TLS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: TLS_ENABLED
+            - name: CACHE_SERVICE_INCLUDE_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: CACHE_SERVICE_INCLUDE_FILES
+            - name: CACHE_SERVICE_RAM
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: CACHE_SERVICE_RAM
+            - name: PORT_OF_REVERSE_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: PORT_OF_REVERSE_PROXY
+            - name: TLS_PORT_OF_REVERSE_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: TLS_PORT_OF_REVERSE_PROXY
+            - name: SKIP_READ_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: SKIP_READ_FILES
+            - name: SKIP_DB_INTEGRITY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: SKIP_DB_INTEGRITY
+            - name: OVERWRITE_INSTALLATION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: OVERWRITE_INSTALLATION
+            - name: NO_SAMPLE_DATA
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Chart.Name }}-backend-config
+                  key: NO_SAMPLE_DATA
+          volumeMounts:
+            - name: backend-data
+              mountPath: /var/www/testcenter/data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 5
+            timeoutSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+      volumes:
+        - name: backend-data
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-backend-vo-data
+

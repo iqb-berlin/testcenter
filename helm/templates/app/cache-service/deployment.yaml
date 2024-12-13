@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-cache-service
+spec:
+  replicas: {{ .Values.cacheService.replicas }}
+  {{- if .Values.cacheService.strategy }}
+  strategy:
+    {{- .Values.cacheService.strategy | toYaml | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-cache-service-pod
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-cache-service-pod
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-cache-service-container
+          image: redis:7.0-bullseye
+          command:
+            - bash
+          args:
+            - "-c"
+            - "redis-server"
+            - "--maxmemory"
+            - "111Mi"
+            - "--maxmemory-policy"
+            - "volatile-lru"
+          ports:
+            - name: http-container
+              containerPort: 6379
+          # vielleicht nur der Volume mount benötigt
+          volumeMounts:
+            - name: lv-storage
+              mountPath: /data
+      volumes:
+        - name: lv-storage
+          persistentVolumeClaim:
+            claimName: cache-service-pvc

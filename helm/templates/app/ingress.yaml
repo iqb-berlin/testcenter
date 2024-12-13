@@ -1,0 +1,167 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexfe
+spec:
+  redirectRegex:
+    regex: ^http(s?)://www\.(.*)
+    replacement: http${1}://${2}
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexbe
+spec:
+  stripPrefix:
+    prefixes:
+      - "/api"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexfs
+spec:
+  stripPrefix:
+      prefixes:
+      - "/fs"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stripregexbs
+spec:
+  stripPrefix:
+      prefixes:
+      - "/bs/public"
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: securityheaders
+spec:
+  headers:
+    contentTypeNosniff: true
+    customFrameOptionsValue: "SAMEORIGIN"
+    referrerPolicy: "no-referrer"
+    stsIncludeSubdomains: true
+    stsSeconds: 31536000
+
+---
+# First, define a RedirectScheme middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+spec:
+  redirectScheme:
+    scheme: https
+    port: "{{ .Values.config.tlsPort }}"
+    permanent: true
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Chart.Name }}-path-ingress-http
+spec:
+  entryPoints:
+      - web
+  routes:
+    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
+      kind: Rule
+      middlewares:
+        - name: securityheaders
+        - name: stripregexfe
+        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - name: {{ .Chart.Name }}-frontend-service
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
+      middlewares:
+        - name: stripregexbe
+        - name: securityheaders
+        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - name: {{ .Chart.Name }}-backend-service
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
+      middlewares:
+        - name: stripregexfs
+        - name: securityheaders
+        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - name: testcenter-file-service #hard coded in application as internal address
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
+      middlewares:
+        - name: stripregexbs
+        - name: securityheaders
+        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - name: testcenter-broadcasting-service #hard coded in application as internal address
+          port: 3000
+
+{{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Chart.Name }}-path-ingress-https
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
+      kind: Rule
+      middlewares:
+        - name: securityheaders
+        - name: stripregexfe
+      services:
+        - name: {{ .Chart.Name }}-frontend-service
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
+      middlewares:
+        - name: stripregexbe
+        - name: securityheaders
+      services:
+        - name: {{ .Chart.Name }}-backend-service
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
+      middlewares:
+        - name: stripregexfs
+        - name: securityheaders
+      services:
+        - name: testcenter-file-service #hard coded in application as internal address
+          port: 80
+    - kind: Rule
+      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
+      middlewares:
+        - name: stripregexbs
+        - name: securityheaders
+      services:
+        - name: testcenter-broadcasting-service #hard coded in application as internal address
+          port: 3000
+  tls: {} #dev-deploy: use this line for self signed certs
+#wip for acme
+#  tls:
+#    certResolver: acme
+#    options:
+#      name: default
+{{- end }}
