@@ -11,6 +11,12 @@ layout: default
 * Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
   vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
 
+## [next]
+### Verbesserungen
+* Wenn von einer Unit zu einer anderen navigiert wird, die den gleichen Player (in der gleichen Version) verwendet,
+  wird dieser nicht neu geladen. Dies hat zur Folge, dass z. B. auch GeoGebra nicht neu geladen werden muss, wenn es in
+  zwei Units hintereinander verwendet wird.
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
