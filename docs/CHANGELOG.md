@@ -2,14 +2,8 @@
 layout: default
 ---
 ## [next]
-### Bugfixes
-* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
-  den Monitor nicht erreichen.
-
-## [next]
-### Bugfixes
-* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
-  vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
 
 ## 15.4.0-beta
 ### neue Features
