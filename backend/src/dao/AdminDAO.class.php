@@ -112,7 +112,7 @@ class AdminDAO extends DAO {
 
   public function deleteResultData(int $workspaceId, string $groupName): void {
     $this->_(
-      "delete from login_sessions where group_name = :group_name and workspace_id = :workspace_id",
+      "delete from login_session_groups where group_name = :group_name and workspace_id = :workspace_id",
       [
         ':workspace_id' => $workspaceId,
         ':group_name' => $groupName

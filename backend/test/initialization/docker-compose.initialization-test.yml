@@ -80,7 +80,7 @@ services:
       - "85:80"
 
   testcenter-initialization-test-db:
-    image: ${DOCKERHUB_PROXY}mysql:8.0
+    image: ${DOCKERHUB_PROXY}mysql:8.4
     command:
       - "--explicit-defaults-for-timestamp=TRUE"
       - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
