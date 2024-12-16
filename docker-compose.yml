@@ -121,7 +121,7 @@ services:
   testcenter-db:
     <<: *restart-policy
     container_name: testcenter-db
-    image: ${DOCKERHUB_PROXY}mysql:8.0
+    image: ${DOCKERHUB_PROXY}mysql:8.4
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

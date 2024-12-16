@@ -6,8 +6,8 @@ class DAO {
   const tables = [ // because we use different types of DB is difficult to get table list by command
     'users',
     'workspaces',
-    'login_sessions',
     'login_session_groups',
+    'login_sessions',
     'person_sessions',
     'tests',
     'units',

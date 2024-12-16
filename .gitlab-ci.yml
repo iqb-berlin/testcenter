@@ -29,7 +29,7 @@ variables:
   DOCKER_SERVICE_MTU: 1392
   DOCKER_TLS_CERTDIR: ''
   TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.11
-  DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
+  DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.4
   CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.4-bookworm
   TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
   JEKYLL_PAGES_IMAGE: "jekyll"
@@ -1001,7 +1001,7 @@ test-backend-unit:
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
       then
         chmod 0755 scripts/database/000-create-test-db.sh &&
-        docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0 &&
+        docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4 &&
         docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker compose
@@ -1119,7 +1119,7 @@ test-backend-api:
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
     - chmod 0755 scripts/database/000-create-test-db.sh
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1174,7 +1174,7 @@ test-backend-initialization:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   script:
@@ -1249,7 +1249,7 @@ test-e2e-group-monitor:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
