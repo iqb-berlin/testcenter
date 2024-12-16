@@ -116,6 +116,9 @@ layout: default
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
 
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
+
 ## 16.0.0-alpha
 ### Kubernetes
 * Erste kubernetes-Deployment via Helm möglich. Im Github Release kann das Installationsskript `helm-install-tc.sh` genutzt werden, um die Helm Charts im Kubernetes-Cluster zu installieren.
