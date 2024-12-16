@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Values.traefik.name }}-account
-  namespace: {{ .Values.namespace }}
-  annotations:
-    {{- include "traefik.annotations" . | nindent 4 }}
