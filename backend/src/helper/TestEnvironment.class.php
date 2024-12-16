@@ -145,7 +145,14 @@ class TestEnvironment {
     $initDAO = new InitDAO();
     $initDAO->clearDB();
     $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
-    $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
+    $report = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
+    if (count($report['errors'])) {
+      $errors = [];
+      foreach ($report['errors'] as $patch => $error) {
+        $errors[] = "Patch $patch failed with: `$error`";
+      }
+      throw new Exception(implode("; ", $errors));
+    }
 
     $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
