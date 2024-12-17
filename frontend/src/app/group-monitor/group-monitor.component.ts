@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import {
-  interval, Observable, Subscription
+  interval, Observable, of, Subscription
 } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
@@ -266,10 +266,35 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         customtext: 'gm_test_command_no_selected_block',
         text: 'Kein Zielblock ausgewählt'
       });
-    } else {
-      this.tsm.testCommandGoto(this.selectedElement)
-        .subscribe(() => this.selectNextBlock());
+      return;
     }
+    (this.tsm.checked
+      .some(testSession =>
+        isBooklet(testSession.booklet)
+          && this.selectedElement?.element
+          && testSession.timeLeft
+          && (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
+      ) ?
+        this.dialog.open(
+          ConfirmDialogComponent, {
+            width: 'auto',
+            data: <ConfirmDialogData>{
+              title:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
+              content:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
+              confirmbuttonlabel: 'OK',
+              showcancel: true
+            }
+          }
+        ).afterClosed()
+        : of(true)
+    )
+      .subscribe((ok: boolean) => {
+        if (!ok || !this.selectedElement) return;
+        this.tsm.testCommandGoto(this.selectedElement)
+          .subscribe(() => this.selectNextBlock());
+      });
   }
 
   private selectNextBlock(): void {

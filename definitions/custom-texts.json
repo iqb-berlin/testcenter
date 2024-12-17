@@ -263,6 +263,14 @@
     "label" : "Control: Entsperren",
     "defaultvalue" : "Test Entsperren"
   },
+  "gm_control_goto_unlock_blocks_confirm_text" : {
+    "label" : "Control: Springe zu Block - soll Zeit wiederhergestellt werden?",
+    "defaultvalue" : "Zeit wiederherstellen bei Sprung in zeitgesteuerten Block?"
+  },
+  "gm_control_goto_unlock_blocks_confirm_headline" : {
+    "label" : "Control: Springe zu Block - soll Zeit wiederhergestellt werden? - Überschrift",
+    "defaultvalue" : "Sprung bestätigen"
+  },
   "gm_control_unlock_success_warning" : {
     "label" : "Wird angezeigt, wenn Tests entsperrt wurden",
     "defaultvalue" : "ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden."

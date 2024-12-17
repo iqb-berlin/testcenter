@@ -428,23 +428,16 @@ export class TestControllerService {
   }
 
   restoreTime(testlet: Testlet): void {
-    console.log('restoreTime', testlet, this.timers);
     if (!testlet.restrictions?.timeMax) return;
     if (typeof this.timers[testlet.id] === 'undefined') return;
     if (this.timers[testlet.id] > 0) return;
-    if (this.timers[testlet.id] === 0) {
-      console.log('restoreTime::', testlet.id);
+    if (this.timers[testlet.id] <= 0) {
       this.timers[testlet.id] = testlet.restrictions.timeMax.minutes;
     }
-    if (this.timers[testlet.id] < 0) {
-      this.timers[testlet.id] = this.timers[testlet.id] * -1;
-    }
-    console.log('restoreTimeD', testlet, this.timers);
     testlet.locks.time = false;
   }
 
   startTimer(testlet: Testlet): void {
-    console.log('startTimer', testlet.id)
     if (!testlet.restrictions?.timeMax) {
       return;
     }
@@ -456,7 +449,6 @@ export class TestControllerService {
     }
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
-    console.log('startTimerD', timeLeftMinutes)
     this.timerIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
