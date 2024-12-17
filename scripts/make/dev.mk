@@ -143,12 +143,13 @@ update-docs:
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 .run-task-runner:
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file test/docker-compose.api-test.yml\
-		run --rm --no-deps testcenter-task-runner\
-			npm run $(task)
+	cd $(TC_BASE_DIR) &&\
+		docker compose\
+				--env-file .env.dev\
+				--file docker-compose.yml\
+				--file test/docker-compose.api-test.yml\
+			run --rm --no-deps testcenter-task-runner\
+				npm run $(task)
 
 docs-frontend-compodoc:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=frontend:update-compodoc
