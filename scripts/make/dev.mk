@@ -125,31 +125,31 @@ re-init-backend:
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
 	cd $(TC_BASE_DIR) &&\
-		docker container rm -f testcenter-task-runner 2> /dev/null || true &&\
-		docker compose\
-				--env-file .env.dev\
-				--file docker-compose.yml\
-				--file test/docker-compose.api-test.yml\
-			run --name=testcenter-task-runner testcenter-task-runner\
-				npx --yes update-browserslist-db@latest && npm run create-interfaces
+	docker container rm -f testcenter-task-runner 2> /dev/null || true &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file test/docker-compose.api-test.yml\
+		run --name=testcenter-task-runner testcenter-task-runner\
+			npx --yes update-browserslist-db@latest && npm run create-interfaces
 
 update-docs:
 	cd $(TC_BASE_DIR) &&\
-		make docs-frontend-compodoc &&\
-		make docs-broadcasting-service-compodoc &&\
-		make docs-api-specs &&\
-		make docs-user
+	make docs-frontend-compodoc &&\
+	make docs-broadcasting-service-compodoc &&\
+	make docs-api-specs &&\
+	make docs-user
 
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 .run-task-runner:
 	cd $(TC_BASE_DIR) &&\
-		docker compose\
-				--env-file .env.dev\
-				--file docker-compose.yml\
-				--file test/docker-compose.api-test.yml\
-			run --rm --no-deps testcenter-task-runner\
-				npm run $(task)
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file test/docker-compose.api-test.yml\
+		run --rm --no-deps testcenter-task-runner\
+			npm run $(task)
 
 docs-frontend-compodoc:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=frontend:update-compodoc
@@ -167,10 +167,10 @@ docs-user:
 
 new-version:
 	cd $(TC_BASE_DIR) &&\
-			docker compose\
-					--env-file .env.dev\
-					--file docker-compose.yml\
-					--file docker-compose.dev.yml\
-				run --rm --entrypoint="" testcenter-backend\
-					php /var/www/testcenter/backend/test/update-sql-scheme.php &&\
-			make .run-task-runner task="new-version $(version)"
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		run --rm --entrypoint="" testcenter-backend\
+			php /var/www/testcenter/backend/test/update-sql-scheme.php &&\
+	make .run-task-runner task="new-version $(version)"
