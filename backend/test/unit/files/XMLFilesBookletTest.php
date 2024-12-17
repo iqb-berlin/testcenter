@@ -194,7 +194,7 @@ EOT;
             <If>
               <Median>
                 <Score of="var1" from="i-am-also-not-defined" />
-                <Code of="var2" from="alias" />
+                <Score of="var2" from="alias" />
               </Median>
               <Is greaterThan="50" />
             </If>
