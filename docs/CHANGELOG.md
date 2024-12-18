@@ -1,28 +1,7 @@
 ---
 layout: default
 ---
-## [next]
-### Verbesserungen
-* Gruppen-Monitor:
-  * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
-    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, dessen Zeit bereits vollständig abgelaufen ist, 
-    beginnt die Zeit wieder von vorn. In diesem Fall muss die Bewegung vom Gruppen-Monitor bestätigt werden. 
-  * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
-    Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
-  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird automatisch der nächste Block abgewählt.
-    Dies ist nun optional durch eine neue Einstellung im Gruppen-Monitor-Profil abwählbar `autoselectNextBlock="no"`.
-
-### Bugfix
-* Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
-  werden.
-* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
-  den Monitor nicht erreichen.
-* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
-  vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
-* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem Login verändert wurde, konnte
-  dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id aktualisiert.
-
-## 15.4.0-beta
+## 15.4.0
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
   * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
@@ -37,24 +16,46 @@ layout: default
     um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
     zeile, die Browsernavigation, das Seitenmenü oder andere Weise zurücknavigiert werden kann.
 
+### Verbesserungen
+* Entlastung des Servers durch deutliche Reduktion von redundanten Calls.
+* Überarbeiteter Testcontroller reduziert fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
+  sehr schnellen Vorgängen im laufenden Test.
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File-Service komprimiert. Dadurch wird das Laden 
+  vieler Dateitypen nun schneller.  
+* Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
+  wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
+* Gruppen-Monitor:
+  * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
+    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, beginnt die Zeit wieder von vorn. In diesem Fall muss 
+    die Bewegung vom Testleiter bestätigt werden.  
+  * Neue custom texts: 'gm_control_goto_unlock_blocks_confirm_headline' und 'gm_control_goto_unlock_blocks_confirm_text'
+  * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
+    Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
+  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird die Auswahl der Testteilnehmer nicht mehr für den 
+    folgenden Block beibehalten. Dieses Verhalten kann durch eine neue Einstellung in der Testtakers.xml im Gruppen-
+    Monitor-Profil ausgewählt werden `autoselectNextBlock="no"`.
+  * Diverse visuelle Verbesserungen
+
 ### Bugfix
+* Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
+  werden.
+* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses Booklet automatisch gestartet, statt
+  dass der Monitor erreicht wird.
+* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
+  vergeben sind, werden die bereits bestehenden Logins und Workspace korrekt in der Fehlermeldung benannt.
+* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem bestehenden Login verändert wurde, 
+  konnte dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id bestehender Logins aktualisiert.
 * Seitenzahl im Studienmonitor wird korrekt angezeigt.
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
   führen.
 * Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
-
-### Verbesserungen
-* Entlastung des Servers durch deutliche Reduktion redundant Calls.
-* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
-  sehr schnellen Vorgängen.
-* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden 
-  vieler Dateitypen nun schneller.  
-* Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
-  wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
-
-### Bugfixes
-* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher wurde die Existenz des Attributs als `true` interpretiert.
+* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher 
+  wurde die Existenz des Attributs als `true` interpretiert.
+* Unit-XML Validierung: Wird beim `from` Attribut eine Unit-ID einer nicht einzigartigen Unit angegeben, die mehrfach 
+  genutzt wird, so ist dies richtigerweise ein Fehler. Dieser Fehler wird nun bereits während der Validierung beim 
+  Hochladen angezeigt, und nicht erst beim Abspielen der Unit. Referenzierungen in geschachtelten Bedingungen werden 
+  nun auch besser validiert.
 
 ## 15.3.4
 ### bugfixes
