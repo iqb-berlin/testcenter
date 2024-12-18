@@ -109,7 +109,7 @@ h2 {
 }
 
 .locked .testlet,
-.pending .testlet{
+.pending .testlet {
   cursor: default;
 }
 
@@ -135,6 +135,7 @@ h2 {
   color: #333333;
 }
 
+.timeup .unit.current,
 .pending .unit.current,
 .locked .unit.current {
   background: #b2b2b2;
@@ -173,17 +174,17 @@ h2 {
 
 .unit.marked::before,
 .testlet.marked::before {
-  background: rgba(178, 200, 160, 0.5);
+  background: rgba(150, 200, 255, 0.5);
 }
 
 .unit.selected::before,
 .testlet.selected::before {
-  background: rgba(178, 200, 160, 0.7);
+  background: rgba(255, 128, 0, 0.5);
 }
 
 .unit.marked.selected::before,
 .testlet.marked.selected::before {
-  background: rgba(178, 200, 160, 0.9);
+  background: rgba(255, 128, 0, 0.5);
 }
 
 .testlet.timeup {
@@ -196,12 +197,6 @@ h2 {
 
 .locked .testlet {
   border-color: #333333;
-}
-
-.featured-unit {
-  display: inline-flex;
-  vertical-align: middle;
-  align-items: center;
 }
 
 .vertical-align-middle {

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import {
-  interval, Observable, Subscription
+  interval, Observable, of, Subscription
 } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
@@ -28,7 +28,7 @@ import {
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption
+  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption, isYesNoOption
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -58,7 +58,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     unitColumn: 'hide',
     bookletStatesColumns: [],
     highlightSpecies: false,
-    manualChecking: false
+    manualChecking: false,
+    autoselectNextBlock: true
   };
 
   isScrollable = false;
@@ -265,19 +266,41 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         customtext: 'gm_test_command_no_selected_block',
         text: 'Kein Zielblock ausgewählt'
       });
-    } else {
-      this.tsm.testCommandGoto(this.selectedElement)
-        .subscribe(() => this.selectNextBlock());
+      return;
     }
+    (this.tsm.checked
+      .some(testSession =>
+        isBooklet(testSession.booklet)
+          && this.selectedElement?.element
+          && testSession.timeLeft
+          && (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
+      ) ?
+        this.dialog.open(
+          ConfirmDialogComponent, {
+            width: 'auto',
+            data: <ConfirmDialogData>{
+              title:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
+              content:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
+              confirmbuttonlabel: 'OK',
+              showcancel: true
+            }
+          }
+        ).afterClosed()
+        : of(true)
+    )
+      .subscribe((ok: boolean) => {
+        if (!ok || !this.selectedElement) return;
+        this.tsm.testCommandGoto(this.selectedElement)
+          .subscribe(() => this.selectNextBlock());
+      });
   }
 
   private selectNextBlock(): void {
-    if (!this.selectedElement) {
-      return;
-    }
-    if (!isBooklet(this.selectedElement.originSession.booklet)) {
-      return;
-    }
+    if (!this.displayOptions.autoselectNextBlock) return;
+    if (!this.selectedElement) return;
+    if (!isBooklet(this.selectedElement.originSession.booklet)) return;
     this.selectedElement = {
       element: this.selectedElement.element?.nextBlockId ?
         BookletUtil.getBlockById(
@@ -387,6 +410,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (isColumnOption(p.settings.groupColumn)) this.displayOptions.groupColumn = p.settings.groupColumn;
     if (isColumnOption(p.settings.bookletColumn)) this.displayOptions.bookletColumn = p.settings.bookletColumn;
     if (isViewOption(p.settings.view)) this.displayOptions.view = p.settings.view;
+    if (isYesNoOption(p.settings.autoselectNextBlock))
+      this.displayOptions.autoselectNextBlock = p.settings.autoselectNextBlock !== 'no';
 
     (p.filters || [])
       .forEach((filter: TestSessionFilter, index: number) => {

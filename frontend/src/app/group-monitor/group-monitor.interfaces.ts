@@ -98,13 +98,16 @@ export interface MonitorProfileTestViewDisplayOptions {
   groupColumn: ColumnOption;
   bookletColumn: ColumnOption;
   bookletStatesColumns: string[];
+  autoselectNextBlock: boolean;
 }
 
 export type ColumnOption = 'show' | 'hide';
 export type ViewOption = 'full' | 'medium' | 'small';
+export type YesNoOption = 'yes' | 'no';
 
 export const isColumnOption = (v: string): v is ColumnOption => ['show', 'hide'].includes(v);
 export const isViewOption = (v: string): v is ViewOption => ['full', 'medium', 'small'].includes(v);
+export const isYesNoOption = (v: string): v is YesNoOption => ['yes', 'no'].includes(v);
 
 export interface TestViewDisplayOptions extends MonitorProfileTestViewDisplayOptions {
   highlightSpecies: boolean;

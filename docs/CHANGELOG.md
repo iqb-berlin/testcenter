@@ -16,6 +16,22 @@ layout: default
 * Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem Login verändert wurde, konnte
   dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id aktualisiert.
 
+## [next]
+
+### Verbesserungen
+* Gruppen-Monitor:
+  * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
+    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, dessen Zeit bereits vollständig abgelaufen ist, 
+    beginnt die Zeit wieder von vorn. In diesem Fall muss die Bewegung vom Gruppen-Monitor bestätigt werden. 
+  * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
+    Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
+  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird automatisch der nächste Block abgewählt.
+    Dies ist nun optional durch eine neue Einstellung im Gruppen-Monitor-Profil abwählbar `autoselectNextBlock="no"`.
+
+### Bugfix
+* Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
+  werden.
+
 ## 15.4.0-beta
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
