@@ -2,17 +2,6 @@
 layout: default
 ---
 ## [next]
-### Bugfixes
-* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
-  den Monitor nicht erreichen.
-
-## [next]
-### Bugfixes
-* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
-  vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
-
-## [next]
-
 ### Verbesserungen
 * Gruppen-Monitor:
   * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
@@ -26,6 +15,12 @@ layout: default
 ### Bugfix
 * Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
   werden.
+* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses automatisch gestartet und man konnte
+  den Monitor nicht erreichen.
+* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
+  vergeben sind, wie dieser korrekt in der Fehlermeldung benannt.
+* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem Login verändert wurde, konnte
+  dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id aktualisiert.
 
 ## 15.4.0-beta
 ### neue Features
