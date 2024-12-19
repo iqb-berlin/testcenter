@@ -457,7 +457,7 @@ class SessionDAO extends DAO {
     );
 
     if (!isset($res['token'])) {
-      throw new Exception("Could not retrieve group token for `{$login->getGroupName()}`.");
+      throw new Exception("Could not retrieve group token for `{$groupName}`.");
     }
 
     return $res['token'];
