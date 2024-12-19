@@ -1,4 +1,3 @@
--- update/mysql
 -- the patch 15.0.0 contained a command, which does not work with MySQL > 8.4
 -- the following procedure would delete this deprecated kind fo key
 
@@ -22,16 +21,4 @@ drop procedure if exists clean_pre_mysql_8_4_key;
 alter table login_sessions
   add constraint login_session_groups_fk
     foreign key (workspace_id, group_name) references login_session_groups (workspace_id, group_name)
-      on delete cascade;
-
-
--- other
-alter table login_session_groups
-  drop foreign key login_sessions_fk;
-
-alter table login_session_groups
-  add constraint login_sessions_fk
-    foreign key (workspace_id, group_name) references login_sessions (workspace_id, group_name)
       on update cascade on delete cascade;
-
-
