@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+## [next]
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
+
+
 ## 15.4.0
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
