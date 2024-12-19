@@ -159,7 +159,8 @@ class SessionDAO extends DAO {
 
     $this->_(
       'insert ignore into login_sessions (token, name, workspace_id, group_name)
-            values(:token, :name, :ws, :group_name)',
+            values(:token, :name, :ws, :group_name)
+            on duplicate key update group_name = :group_name',
       [
         ':token' => $loginToken,
         ':name' => $login->getName(),
@@ -679,6 +680,7 @@ class SessionDAO extends DAO {
     };
   }
 
+  /** @return LoginSession[] */
   protected function getLoginSessions(array $filters = []): array {
     $logins = [];
 
@@ -690,6 +692,7 @@ class SessionDAO extends DAO {
       $filterSQL[] = "$filter = $filterName";
     }
     $filterSQL = implode(' and ', $filterSQL);
+    $filterSQL = $filterSQL !== '' ? $filterSQL : ' 1 = 1';
 
     $sql = "select
       logins.name,

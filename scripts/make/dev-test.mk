@@ -40,6 +40,7 @@ test-backend-api:
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
 # Example: `make test-backend-initialization test=general/db-versions`
 test-backend-initialization:
+	cd $(TC_BASE_DIR) &&\
 	TEST_NAME=$(test) \
 	docker compose\
 			--env-file .env.dev\
@@ -128,9 +129,10 @@ test-system-headless:
 			--exit-code-from=testcenter-e2e
 
 test-system:
+	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 		up -d
-	bash e2e/run-e2e.sh
+	cd $(TC_BASE_DIR) && bash e2e/run-e2e.sh

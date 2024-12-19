@@ -55,8 +55,8 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     this.subscribeTestStarted();
   }
 
-  private static commandToString(command: Command): string {
-    return `[${command.id}] ${command.keyword} ${command.arguments.join(' ')}`;
+  static commandToString(command: Command): string {
+    return [command.keyword, ...command.arguments].join(' ');
   }
 
   private static testStartedOrStopped(testStatus: TestControllerState): TestStartedOrStopped {

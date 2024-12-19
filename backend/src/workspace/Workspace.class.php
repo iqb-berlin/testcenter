@@ -415,11 +415,14 @@ class Workspace {
 
     $workspaceCache->validate();
 
+    $reports = [];
+
     foreach ($workspaceCache->getFiles(true) as $file) {
       /* @var File $file */
 
       if (!$file->isValid()) {
         $invalidCount++;
+        $reports[$file->getType() . '/' . $file->getId()] = $file->getValidationReport()['error'];
       }
 
       $this->workspaceDAO->storeFile($file);
@@ -436,7 +439,8 @@ class Workspace {
     return [
       'valid' => $typeStats,
       'invalid' => $invalidCount,
-      'logins' => $loginStats
+      'logins' => $loginStats,
+      'reports' => $reports
     ];
   }
 
