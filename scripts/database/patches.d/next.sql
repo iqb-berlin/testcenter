@@ -21,7 +21,4 @@ drop procedure if exists clean_pre_mysql_8_4_key;
 alter table login_sessions
   add constraint login_session_groups_fk
     foreign key (workspace_id, group_name) references login_session_groups (workspace_id, group_name)
-      on delete cascade;
-
-
-
+      on update cascade on delete cascade;
