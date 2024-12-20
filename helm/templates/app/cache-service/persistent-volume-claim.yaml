@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-service-pvc
+spec:
+  accessModes:
+    - {{ .Values.volume.cache.accessMode }}
+  storageClassName: {{ .Values.volume.cache.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.cache.size }}

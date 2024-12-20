@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-backend-vo-data
+spec:
+  accessModes:
+    - {{ .Values.volume.vodata.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.volume.vodata.size }}
+  storageClassName: {{ .Values.volume.vodata.storageClassName }}
