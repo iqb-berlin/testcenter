@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: testcenter-cache-service #hard coded in application as internal address
+spec:
+  selector:
+    app: {{ .Chart.Name }}-cache-service-pod
+  ports:
+    - name: http-service
+      port: 6379
+      targetPort: http-container

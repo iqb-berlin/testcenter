@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-broadcasting-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-broadcasting-service-pod
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-broadcasting-service-pod
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-broadcasting-service-container
+          image: iqbberlin/testcenter-broadcasting-service:{{ .Values.version }}
+          ports:
+            - name: http-container
+              containerPort: 3000
