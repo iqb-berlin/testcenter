@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-db
 spec:
-  replicas: {{ .Values.database.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ .Chart.Name }}-db-pod

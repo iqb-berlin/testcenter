@@ -5,7 +5,7 @@ metadata:
   annotations:
     {{- include "config.annotations" . | nindent 4 }}
 data:
-  VERSION: {{ .Chart.Version | quote }}
+  VERSION: {{ .Values.version | quote }}
   HOSTNAME: {{ .Values.config.hostname | quote }}
   PORT_OF_REVERSE_PROXY: {{ .Values.config.port | quote }}
   TLS_PORT_OF_REVERSE_PROXY: {{ .Values.config.tlsPort | quote }}

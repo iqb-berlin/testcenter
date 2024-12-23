@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-frontend-container
-          image: iqbberlin/testcenter-frontend:{{ .Chart.Version }}
+          image: iqbberlin/testcenter-frontend:{{ .Values.version }}
           ports:
             - name: http-container
               containerPort: 80

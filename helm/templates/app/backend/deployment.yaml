@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-backend
 spec:
-  replicas: {{ .Values.backend.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ .Chart.Name }}-backend-pod
@@ -22,7 +22,7 @@ spec:
           command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
       containers:
         - name: {{ .Chart.Name }}-backend-container
-          image: iqbberlin/testcenter-backend:{{ .Chart.Version }}
+          image: iqbberlin/testcenter-backend:{{ .Values.version }}
           env:
             - name: MYSQL_DATABASE
               valueFrom:
@@ -132,4 +132,3 @@ spec:
         - name: backend-data
           persistentVolumeClaim:
             claimName: {{ .Chart.Name }}-backend-vo-data
-

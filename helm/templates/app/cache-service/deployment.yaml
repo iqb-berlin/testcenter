@@ -3,11 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-cache-service
 spec:
-  replicas: {{ .Values.cacheService.replicas }}
-  {{- if .Values.cacheService.strategy }}
-  strategy:
-    {{- .Values.cacheService.strategy | toYaml | nindent 4 }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ .Chart.Name }}-cache-service-pod

@@ -3,11 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-broadcasting-service
 spec:
-  replicas: {{ .Values.broadcastingService.replicas }}
-  {{- if .Values.broadcastingService.strategy }}
-  strategy:
-  {{- .Values.broadcastingService.strategy | toYaml | nindent 4 }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ .Chart.Name }}-broadcasting-service-pod
@@ -18,7 +14,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-broadcasting-service-container
-          image: iqbberlin/testcenter-broadcasting-service:{{ .Chart.Version }}
+          image: iqbberlin/testcenter-broadcasting-service:{{ .Values.version }}
           ports:
             - name: http-container
               containerPort: 3000

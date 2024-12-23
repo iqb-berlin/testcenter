@@ -4,6 +4,10 @@ metadata:
   name: {{ .Chart.Name }}-file-service
 spec:
   replicas: {{ .Values.fileService.replicas }}
+  {{- if .Values.fileService.strategy }}
+  strategy:
+    {{- .Values.fileService.strategy | toYaml | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}-file-service-pod
@@ -16,7 +20,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-file-service-container
-          image: iqbberlin/testcenter-file-service:{{ .Chart.Version }}
+          image: iqbberlin/testcenter-file-service:{{ .Values.version }}
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
