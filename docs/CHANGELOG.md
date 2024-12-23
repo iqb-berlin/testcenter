@@ -1,6 +1,14 @@
 ---
 layout: default
 ---
+## 16.0.0-alpha
+### Kubernetes
+* Erste kubernetes-Deployment via Helm möglich. Im Github Release kann das Installationsskript `helm-install-tc.sh` genutzt werden, um die Helm Charts im Kubernetes-Cluster zu installieren.
+  * Vorasussetzungen:
+    * Ein Kubernetes-Cluster
+    * Zugriff via `kubectl` auf den Cluster
+    * Helm 3
+
 ## 15.4.0
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
