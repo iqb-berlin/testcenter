@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
+
 ## 16.0.0-alpha
 ### Kubernetes
 * Erste kubernetes-Deployment via Helm möglich. Im Github Release kann das Installationsskript `helm-install-tc.sh` genutzt werden, um die Helm Charts im Kubernetes-Cluster zu installieren.

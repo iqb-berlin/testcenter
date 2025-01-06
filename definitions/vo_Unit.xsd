@@ -49,6 +49,8 @@
       <xs:enumeration value="number"/>
       <xs:enumeration value="boolean"/>
       <xs:enumeration value="attachment"/>
+      <xs:enumeration value="json"/>
+      <xs:enumeration value="no-value"/>
     </xs:restriction>
   </xs:simpleType>
 
