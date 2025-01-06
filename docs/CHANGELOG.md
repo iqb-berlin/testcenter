@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 15.3.5
+### neue Features
+* Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
+
 ## 15.3.4
 ### bugfixes
 * Fixes in installer und updater script
