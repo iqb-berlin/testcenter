@@ -37,7 +37,7 @@ else
 fi
 
 printf "Now installing Testcenter via Helm...\n"
-helm install testcenter ./testcenter-15.4.0.tgz --create-namespace --namespace tc -f ./values.yaml
+helm install testcenter ./testcenter-16.0.0-alpha.tgz --create-namespace --namespace tc -f ./values.yaml
 if [[ $? -ne 0 ]];then
   printf "Testcenter installation failed. Exiting...\n"
   exit 1
