@@ -1,25 +1,23 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip } from 'rxjs';
 import { Sort } from '@angular/material/sort';
-import {
-  delay, filter, flatMap, map, startWith, switchMap, tap
-} from 'rxjs/operators';
+import { delay, filter, flatMap, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { BookletService } from '../booklet/booklet.service';
 import { TestSessionUtil } from '../test-session/test-session.util';
 import {
-  isBooklet,
-  Selected,
   CheckingOptions,
-  TestSession,
-  TestSessionFilter,
-  TestSessionSetStats,
-  TestSessionsSuperStates,
   CommandResponse,
   GotoCommandData,
-  GroupMonitorConfig, TestSessionFilterList, Testlet
+  GroupMonitorConfig,
+  isBooklet,
+  Selected,
+  Testlet,
+  TestSession,
+  TestSessionFilter,
+  TestSessionFilterList,
+  TestSessionSetStats,
+  TestSessionsSuperStates
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
@@ -71,7 +69,7 @@ export class TestSessionManager {
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
-  static readonly basicFilters : TestSessionFilterList = {
+  static readonly basicFilters: TestSessionFilterList = {
     locked: {
       selected: false,
       source: 'base',
@@ -215,10 +213,14 @@ export class TestSessionManager {
       if (Array.isArray(filter.value)) return filter.value.includes(subject);
       const object = filter.subValue ? filter.subValue : filter.value;
       switch (filter.type) {
-        case 'substring': return subject.includes(object);
-        case 'equal': return subject === object;
-        case 'regex': return regexTest(object, subject);
-        default: return false;
+        case 'substring':
+          return subject.includes(object);
+        case 'equal':
+          return subject === object;
+        case 'regex':
+          return regexTest(object, subject);
+        default:
+          return false;
       }
     };
     const filterOut: TestSessionFilter | undefined = filters
@@ -528,7 +530,9 @@ export class TestSessionManager {
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
     const newCheckedSessions: { [testId: string]: TestSession } = {};
     sessionsToCheck
-      .forEach(session => { newCheckedSessions[session.data.testId] = session; });
+      .forEach(session => {
+        newCheckedSessions[session.data.testId] = session;
+      });
     this._checked = newCheckedSessions;
     this.onCheckedChanged();
   }
