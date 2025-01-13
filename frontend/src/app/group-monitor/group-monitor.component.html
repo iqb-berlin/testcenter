@@ -23,20 +23,20 @@
 </div>
 
 <mat-menu #rootMenu="matMenu">
-  <button mat-menu-item [matMenuTriggerFor]="filters">
+  <button mat-menu-item [matMenuTriggerFor]="filters" data-cy="GM_filter_button">
     {{'Sitzungen ausblenden' | customtext:'gm_menu_filter' | async}}
   </button>
-  <button mat-menu-item [matMenuTriggerFor]="group">
+  <button mat-menu-item [matMenuTriggerFor]="group" data-cy="GM_columns_button">
     {{'Spalten' | customtext:'gm_menu_cols' | async}}
   </button>
-  <button mat-menu-item [matMenuTriggerFor]="activity">
+  <button mat-menu-item [matMenuTriggerFor]="activity" data-cy="GM_activity_button">
     {{'Aktivität' | customtext:'gm_menu_activity' | async}}
   </button>
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <ng-container *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries">
-    <button mat-menu-item *ngIf="fo.value.source !== 'quick'" (click)="tsm.switchFilter(fo.key)">
+  <ng-container *ngFor="let fo of tsm.filterOptions | keyvalue : sortFilterMenuEntries let i = index">
+    <button mat-menu-item *ngIf="fo.value.source !== 'quick'" (click)="tsm.switchFilter(fo.key)" [attr.data-cy]="'GM_filter_option_button-' + i">
       <mat-icon
         *ngIf="fo.value.selected"
         class="in-menu-icon"
@@ -55,48 +55,50 @@
     </button>
   </ng-container>
   <hr>
-  <button mat-menu-item (click)="addFilter()">
+  <button mat-menu-item (click)="addFilter()" data-cy="GM_add_filter_button">
     <mat-icon>add</mat-icon>
     <span>{{'Eigenen Filter hinzufügen' | customtext:'gm_add_custom_filter' | async}}</span>
   </button>
 </mat-menu>
 
 <mat-menu #group="matMenu">
-  <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')">
-    <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_group_button">
+    <mat-icon *ngIf="displayOptions.groupColumn === 'show'" data-cy="GM_columns_checked_group">check</mat-icon>
     <span>{{'Gruppe' | customtext:'gm_col_group' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')">
-    <mat-icon *ngIf="displayOptions.bookletColumn === 'show'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_booklet_button">
+    <mat-icon *ngIf="displayOptions.bookletColumn === 'show'" data-cy="GM_columns_checked_booklet">check </mat-icon>
     <span>{{'Testheft' | customtext:'gm_col_booklet' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')">
-    <mat-icon *ngIf="displayOptions.blockColumn === 'show'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_block_button">
+    <mat-icon *ngIf="displayOptions.blockColumn === 'show'" data-cy="GM_columns_checked_block">check</mat-icon>
     <span>{{'Block' | customtext:'gm_col_testlet' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')">
-    <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_unit_button">
+    <mat-icon *ngIf="displayOptions.unitColumn === 'show'" data-cy="GM_columns_checked_unit">check</mat-icon>
     <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
   </button>
-  <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
-    <button mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)">
-      <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)">check</mat-icon>
+  <ng-container *ngFor="let bookletState of bookletStates | keyvalue; let i = index">
+    <button 
+      mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)" 
+      [attr.data-cy]="'GM_columns_state_button-' + i" > 
+      <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)" [attr.data-cy]="'GM_columns_checked_state-' + i">check</mat-icon>
       <span>{{'Zustände' | customtext:'gm_col_states' | async}} {{bookletState.value}}</span>
     </button>
   </ng-container>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
-  <button mat-menu-item (click)="setDisplayOption('view', 'full')">
-    <mat-icon *ngIf="displayOptions.view === 'full'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('view', 'full')" data-cy="GM_display_option_full">
+    <mat-icon *ngIf="displayOptions.view === 'full'" data-cy="GM_view_checked_full">check</mat-icon>
     <span>{{'Vollständig' | customtext:'gm_view_full' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('view', 'medium')">
-    <mat-icon *ngIf="displayOptions.view === 'medium'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('view', 'medium')" data-cy="GM_display_option_medium">
+    <mat-icon *ngIf="displayOptions.view === 'medium'" data-cy="GM_view_checked_medium">check</mat-icon>
     <span>{{'Nur Blöcke' | customtext:'gm_view_medium' | async}}</span>
   </button>
-  <button mat-menu-item (click)="setDisplayOption('view', 'small')">
-    <mat-icon *ngIf="displayOptions.view === 'small'">check</mat-icon>
+  <button mat-menu-item (click)="setDisplayOption('view', 'small')" data-cy="GM_display_option_short">
+    <mat-icon *ngIf="displayOptions.view === 'small'" data-cy="GM_view_checked_small">check</mat-icon>
     <span>{{'Kurz' | customtext:'gm_view_small' | async}}</span>
   </button>
 </mat-menu>
@@ -111,6 +113,7 @@
       <div class="toolbar-section" *ngIf="tsm.sessionsStats$ | async as sessionsStats">
         <mat-slide-toggle
             color="accent"
+            data-cy="GM_control_all_tests"
             (change)="toggleAlwaysCheckAll($event)"
             [disabled]="!tsm.checkingOptions.enableAutoCheckAll"
             [checked]="tsm.checkingOptions.autoCheckAll"
@@ -148,12 +151,12 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="tsm.testCommandResume()">
+        <button mat-raised-button class="control" data-cy="GM_forward_button" color="primary" (click)="tsm.testCommandResume()">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" color="primary" (click)="tsm.testCommandPause()">
+        <button mat-raised-button class="control" data-cy="GM_pause_button" color="primary" (click)="tsm.testCommandPause()">
           <mat-icon>pause</mat-icon>
           {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
@@ -163,6 +166,7 @@
         <button
           mat-raised-button
           class="control"
+          data-cy="GM_jump_button"
           color="primary"
           (click)="testCommandGoto()"
           matTooltip="{{selectedElement?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
@@ -177,6 +181,7 @@
         <button
           mat-raised-button
           class="control"
+          data-cy="GM_lock_button"
           color="primary"
           (click)="unlockCommand()"
           matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
@@ -198,7 +203,7 @@
 
       <div class="toolbar-section-bottom">
         <div class="toolbar-section">
-          <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
+          <button mat-raised-button class="control" data-cy="GM_end_button" color="primary" (click)="finishEverythingCommand()">
             <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
           </button>
         </div>
@@ -225,6 +230,7 @@
 
           <button
             class="search-button"
+            data-cy="GM_search_button"
             mat-icon-button
             (click)="toggleQuickFilterBox()"
             matTooltip="{{'Suche Teilnehmer' | customtext:'gm_search_testtaker' | async}}"
@@ -234,6 +240,7 @@
           </button>
           <button
             class="settings-button"
+            data-cy="GM_setting_button"
             mat-icon-button
             [matMenuTriggerFor]="rootMenu"
             matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"

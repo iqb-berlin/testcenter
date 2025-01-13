@@ -40,11 +40,11 @@
 
         <h4 *ngIf="accessObjects.testGroupMonitor">Test-Gruppen Überwachung</h4>
         <button
-          *ngFor="let accessObject of accessObjects.testGroupMonitor"
+          *ngFor="let accessObject of accessObjects.testGroupMonitor let i = index"
           mat-raised-button color="primary"
           class="starter"
           [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
-          [attr.data-cy]="'GM-' + accessObject.id"
+          [attr.data-cy]="'GM-' + accessObject.id +'-' + i"
           (click)="buttonGotoMonitor(accessObject)"
         >
           <div class="starter-title">{{accessObject.label}}</div>
