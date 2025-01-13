@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 // TODO unit tests !
 
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
@@ -96,10 +97,14 @@ class MonitorController extends Controller {
     $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
 
     foreach ($testIds as $testId) {
-      // TODO check if test is in group
-      self::testDAO()->unlockTest((int) $testId);
-
       $testSession = self::testDAO()->getTestSession($testId);
+
+      if ($testSession['group_name'] !== $groupName) {
+        throw new HttpBadRequestException($request, "Test `$testId` not found in group `$groupName`");
+      }
+
+      self::testDAO()->unlockTest($testId);
+
       BroadcastService::sessionChange(
         SessionChangeMessage::testState(
           $groupName,
@@ -121,10 +126,14 @@ class MonitorController extends Controller {
     $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
 
     foreach ($testIds as $testId) {
-      // TODO check if test is in group
-      self::testDAO()->locktTest((int) $testId);
-
       $testSession = self::testDAO()->getTestSession($testId);
+
+      if ($testSession['group_name'] !== $groupName) {
+        throw new HttpBadRequestException($request, "Test `$testId` not found in group `$groupName`");
+      }
+
+      self::testDAO()->locktTest($testId);
+
       self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
       BroadcastService::sessionChange(
         SessionChangeMessage::testState(
