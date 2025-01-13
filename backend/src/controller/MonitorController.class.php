@@ -97,7 +97,7 @@ class MonitorController extends Controller {
 
     foreach ($testIds as $testId) {
       // TODO check if test is in group
-      self::testDAO()->changeTestLockStatus((int) $testId);
+      self::testDAO()->unlockTest((int) $testId);
 
       $testSession = self::testDAO()->getTestSession($testId);
       BroadcastService::sessionChange(
@@ -122,7 +122,7 @@ class MonitorController extends Controller {
 
     foreach ($testIds as $testId) {
       // TODO check if test is in group
-      self::testDAO()->changeTestLockStatus((int) $testId, false);
+      self::testDAO()->locktTest((int) $testId);
 
       $testSession = self::testDAO()->getTestSession($testId);
       self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());

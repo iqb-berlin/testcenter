@@ -424,10 +424,12 @@ export class TestSessionManager {
     const testIds = this.checked
       .filter(TestSessionUtil.isLocked)
       .map(session => session.data.testId);
+
     if (!testIds.length) {
       this._commandResponses$.next({ commandType: 'unlock', testIds });
       return;
     }
+
     this.bs.unlock(this.groupName, testIds).subscribe(
       response => this._commandResponses$.next(response)
     );
