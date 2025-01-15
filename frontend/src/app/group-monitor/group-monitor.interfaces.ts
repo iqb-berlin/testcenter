@@ -180,7 +180,12 @@ export interface CommandResponse {
 }
 
 export interface GotoCommandData {
-  [firstUnitId: string]: number[];
+  [firstUnitId: string]: UnitInformation;
+}
+
+interface UnitInformation {
+  ids: number[];
+  isClosed?: boolean;
 }
 
 export type Unit = UnitDef;
