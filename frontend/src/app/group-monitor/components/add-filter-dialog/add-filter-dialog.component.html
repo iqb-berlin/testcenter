@@ -15,7 +15,7 @@
 
   <mat-form-field appearance="outline">
     <mat-label>Feld</mat-label>
-    <mat-select [(ngModel)]="filter.target" (ngModelChange)="updateFilterId()">
+    <mat-select [(ngModel)]="filter.target" (ngModelChange)="updateFilterId()" data-cy = "GM_filtersetting_field">
       <ng-container *ngFor="let target of targets.all">
         <mat-option [value]="target" *ngIf="advancedMode || !isAdvancedTestSessionFilterTarget(target) || target == filter.target">
           {{target | customtext : 'gm_filter_target_' + target | async}}
@@ -26,8 +26,8 @@
 
   <mat-form-field appearance="outline" *ngIf="filter.target !== 'state'">
     <mat-label>Filtertyp</mat-label>
-    <mat-select [(ngModel)]="filter.type" (ngModelChange)="validate(); updateFilterId()">
-      <ng-container *ngFor="let type of filterTypes.all">
+    <mat-select [(ngModel)]="filter.type" (ngModelChange)="validate(); updateFilterId()" data-cy = "GM_filtersetting_type">
+      <ng-container *ngFor="let type of filterTypes.all" >
         <mat-option [value]="type" *ngIf="advancedMode || !isAdvancedTestSessionFilterType(type) || type == filter.type">
           {{type | customtext : 'gm_filter_type_' + type | async}}
         </mat-option>

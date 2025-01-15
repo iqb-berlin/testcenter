@@ -1,5 +1,5 @@
 import {
-  deleteDownloadsFolder, loginStudyMonitor, resetBackendData, visitLoginPage
+  deleteDownloadsFolder, loginMonitor, resetBackendData, visitLoginPage
 } from './utils';
 
 describe('Study-Monitor User', () => {
@@ -14,7 +14,7 @@ describe('Study-Monitor User', () => {
   });
 
   it('should be able to enter the site with study monitor', () => {
-    loginStudyMonitor('tsm', '401');
+    loginMonitor('tsm', '401');
 
     cy.get('[data-cy="SM-1"]')
       .should('exist')
