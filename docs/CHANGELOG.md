@@ -5,6 +5,9 @@ layout: default
 ### neue Features
 * Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
 
+### Verbesserung
+* Wenn die Testleiterkonsole ein SuS über die `Springe zu BLOCK` Funktion in einen zeitgesteuerten Block schiebt, der bereits geschlossen war, so wird dies in den Logs nun mit einem zusätzlichen Hinweis `(closed timeblock reopened)` versehen
+
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
 
