@@ -65,8 +65,8 @@ export class BookletService extends BookletParserService<Unit, Testlet, BookletS
   override toTestlet(testletDef: TestletDef<Testlet, Unit>, e: Element, context: ContextInBooklet<Testlet>): Testlet {
     return Object.assign(testletDef, {
       descendantCount: this.xmlCountChildrenOfTagNames(e, ['Unit']),
-      blockId: `block ${context.localTestletIndex + 1}`,
-      nextBlockId: `block ${context.localTestletIndex + 2}`
+      blockId: `${context.localTestletIndex + 1}`,
+      nextBlockId: `${context.localTestletIndex + 2}`
     });
   }
 

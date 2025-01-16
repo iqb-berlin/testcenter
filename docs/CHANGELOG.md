@@ -8,6 +8,9 @@ layout: default
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
 
+### Verbesserungen
+* Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
+
 ## 16.0.0-alpha
 ### Kubernetes
 * Erste kubernetes-Deployment via Helm möglich. Im Github Release kann das Installationsskript `helm-install-tc.sh` genutzt werden, um die Helm Charts im Kubernetes-Cluster zu installieren.
