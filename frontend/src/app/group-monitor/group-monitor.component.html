@@ -173,7 +173,7 @@
         >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
-          <span class="emph">{{selectedElement?.element?.blockId}}</span>
+          <span class="emph" *ngIf="selectedElement?.element?.blockId">{{'Block' | customtext:'gm_col_testlet' | async}} {{selectedElement?.element?.blockId}}</span>
         </button>
       </div>
 
