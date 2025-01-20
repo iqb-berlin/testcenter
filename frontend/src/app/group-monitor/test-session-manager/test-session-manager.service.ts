@@ -424,7 +424,7 @@ export class TestSessionManager {
 
   testCommandUnlock(): void {
     const testIds = this.checked
-      .filter(TestSessionUtil.isLocked)
+      .filter(session => TestSessionUtil.isLocked(session))
       .map(session => session.data.testId);
 
     if (!testIds.length) {
