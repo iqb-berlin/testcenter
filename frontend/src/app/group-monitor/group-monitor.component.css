@@ -175,8 +175,19 @@ mat-sidenav {
   left: 0;
   bottom: 0;
   right: 0;
-  animation: fade 6s forwards;
-  z-index: 100000;
+  animation: fade 4s forwards;
+  z-index: 1000;
+}
+
+#shield-child {
+  position: fixed;
+  inset: 0px;
+  width: 12rem;
+  height: 5rem;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: auto;
+  z-index: 1001;
 }
 
 .menu-entry {

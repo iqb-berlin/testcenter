@@ -36,6 +36,7 @@ import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
 import { BookletStatesPipe } from './test-session/bookletstates.pipe';
 import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
     MatSelectModule,
     MatFormFieldModule,
     MatAutocompleteModule,
-    A11yModule
+    A11yModule,
+    MatCardModule
   ],
   providers: [
     BackendService,
