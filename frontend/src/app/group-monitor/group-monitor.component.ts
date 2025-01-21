@@ -214,7 +214,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       case 'paused':
         return hsl(h, colorful ? 45 : 0, 90);
       case 'pending':
-        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(h, 0, 98));
       case 'locked':
         return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 0, 92));
       case 'error':

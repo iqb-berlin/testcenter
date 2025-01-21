@@ -29,6 +29,10 @@ mat-sidenav {
   padding-left: 5px;
 }
 
+.pending {
+  opacity: 0.5;
+}
+
 .connection-status {
   text-transform: uppercase;
   color: white;

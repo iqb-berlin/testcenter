@@ -301,6 +301,7 @@
 
             <ng-container *ngFor="let session of tsm.sessions$ | async; trackBy: trackSession">
               <tc-test-session
+                [class]="session.state"
                 [testSession]="session"
                 [displayOptions]="displayOptions"
                 [marked]="markedElement"
