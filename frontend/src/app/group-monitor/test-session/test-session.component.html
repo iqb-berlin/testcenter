@@ -3,6 +3,7 @@
     *ngIf="testSession.data.testId >= 0"
     (change)="check($event)"
     (contextmenu)="invertSelection()"
+    [attr.data-cy]="'GM-tt-checkbox'"
     [checked]="checked"
     [disabled]="['pending'].includes(testSession.state)"
   >
