@@ -23,6 +23,7 @@ import {
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
+import { TestSessionByDataTestId } from './test-session-manager.interfaces';
 
 @Injectable()
 export class TestSessionManager {
@@ -286,7 +287,7 @@ export class TestSessionManager {
       this.checkingOptions.autoCheckAll = false;
     }
 
-    const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
+    const newCheckedSessions: TestSessionByDataTestId = {};
     sessions
       .forEach(session => {
         if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.data.testId] !== 'undefined')) {
@@ -465,7 +466,7 @@ export class TestSessionManager {
     }
     let toCheck: TestSession[] = [];
     if (selected.element) {
-      if (!selected.spreading) {
+      if (!selected.isBeingDoubleClicked) {
         toCheck = [...this.checked, selected.originSession];
       } else {
         toCheck = this._sessions$.getValue()
@@ -504,9 +505,7 @@ export class TestSessionManager {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }
-    if (this.isChecked(session)) {
-      delete this._checked[session.data.testId];
-    }
+    delete this._checked[session.data.testId];
     this.onCheckedChanged();
   }
 
@@ -524,7 +523,7 @@ export class TestSessionManager {
   }
 
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
-    const newCheckedSessions: { [testId: string]: TestSession } = {};
+    const newCheckedSessions: TestSessionByDataTestId = {};
     sessionsToCheck
       .forEach(session => { newCheckedSessions[session.data.testId] = session; });
     this._checked = newCheckedSessions;

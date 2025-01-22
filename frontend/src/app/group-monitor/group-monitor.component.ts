@@ -47,8 +47,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   groupLabel = '';
 
-  selectedElement: Selected | null = null;
-  markedElement: Selected | null = null;
+  currentlySelected: Selected | null = null;
+  CurrentlyMarked: Selected | null = null;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'medium',
@@ -157,7 +157,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private onCheckedChange(stats: TestSessionSetStats): void {
     if (stats.differentBookletSpecies > 1) {
-      this.selectedElement = null;
+      this.currentlySelected = null;
     }
   }
 
@@ -225,12 +225,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   markElement(marking: Selected): void {
-    this.markedElement = marking;
+    this.CurrentlyMarked = marking;
   }
 
   selectElement(selected: Selected): void {
     this.tsm.checkSessionsBySelection(selected);
-    this.selectedElement = selected;
+    this.currentlySelected = selected;
   }
 
   finishEverythingCommand(): void {
@@ -260,7 +260,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto(): void {
-    if (!this.selectedElement?.element?.blockId) {
+    if (!this.currentlySelected?.element?.blockId) {
       this.messages.push({
         level: 'warning',
         customtext: 'gm_test_command_no_selected_block',
@@ -271,9 +271,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     (this.tsm.checked
       .some(testSession =>
         isBooklet(testSession.booklet)
-          && this.selectedElement?.element
+          && this.currentlySelected?.element
           && testSession.timeLeft
-          && (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
+          && (testSession.timeLeft[this.currentlySelected?.element?.id] <= 0)
       ) ?
         this.dialog.open(
           ConfirmDialogComponent, {
@@ -291,25 +291,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         : of(true)
     )
       .subscribe((ok: boolean) => {
-        if (!ok || !this.selectedElement) return;
-        this.tsm.testCommandGoto(this.selectedElement)
+        if (!ok || !this.currentlySelected) return;
+        this.tsm.testCommandGoto(this.currentlySelected)
           .subscribe(() => this.selectNextBlock());
       });
   }
 
   private selectNextBlock(): void {
     if (!this.displayOptions.autoselectNextBlock) return;
-    if (!this.selectedElement) return;
-    if (!isBooklet(this.selectedElement.originSession.booklet)) return;
-    this.selectedElement = {
-      element: this.selectedElement.element?.nextBlockId ?
+    if (!this.currentlySelected) return;
+    if (!isBooklet(this.currentlySelected.originSession.booklet)) return;
+    this.currentlySelected = {
+      element: this.currentlySelected.element?.nextBlockId ?
         BookletUtil.getBlockById(
-          this.selectedElement.element.nextBlockId,
-          this.selectedElement.originSession.booklet
+          this.currentlySelected.element.nextBlockId,
+          this.currentlySelected.originSession.booklet
         ) : null,
       inversion: false,
-      originSession: this.selectedElement.originSession,
-      spreading: this.selectedElement.spreading
+      originSession: this.currentlySelected.originSession,
+      isBeingDoubleClicked: this.currentlySelected.isBeingDoubleClicked
     };
   }
 
@@ -317,10 +317,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.tsm.testCommandUnlock();
   }
 
-  toggleChecked(checked: boolean, session: TestSession): void {
+  toggleChecked(session: TestSession): void {
     if (!this.tsm.isChecked(session)) {
       this.tsm.checkSession(session);
     } else {
+      if (session.data.testId === this.currentlySelected?.originSession?.data?.testId) {
+        this.currentlySelected = null;
+      }
       this.tsm.uncheckSession(session);
     }
   }
@@ -340,7 +343,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.checkNone();
       this.displayOptions.manualChecking = true;
       this.tsm.checkingOptions.autoCheckAll = false;
-      this.selectedElement = null;
+      this.currentlySelected = null;
     }
   }
 
@@ -349,7 +352,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.checkAll();
     } else {
       this.tsm.checkNone();
-      this.selectedElement = null;
+      this.currentlySelected = null;
     }
   }
 

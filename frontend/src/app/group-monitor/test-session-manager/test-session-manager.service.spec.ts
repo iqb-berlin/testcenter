@@ -301,7 +301,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        isBeingDoubleClicked: false
       };
       const sessions = [...unitTestExampleSessions, ...additionalUnitTestExampleSessions];
       // eslint-disable-next-line @typescript-eslint/dot-notation
@@ -322,7 +322,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        isBeingDoubleClicked: true
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
 
@@ -330,7 +330,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
         inversion: false,
         originSession: unitTestExampleSessions[1],
-        spreading: true
+        isBeingDoubleClicked: true
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([2]);
     });
@@ -340,14 +340,14 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        isBeingDoubleClicked: false
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1]);
       service.checkSessionsBySelection({
         element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
         inversion: false,
         originSession: additionalUnitTestExampleSessions[0],
-        spreading: false
+        isBeingDoubleClicked: false
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
     });
@@ -357,7 +357,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        isBeingDoubleClicked: true
       });
       // nothing is checked, inversion checks all possible
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
@@ -366,7 +366,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        isBeingDoubleClicked: true
       });
       // all possible where checked, so nothing remains
       expect(service.checked.map(s => s.data.testId)).toEqual([]);
@@ -378,7 +378,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        isBeingDoubleClicked: true
       });
       // test 1 and test 33 where checked, so 4 will be the inversion
       expect(service.checked.map(s => s.data.testId)).toEqual([34]);
@@ -391,7 +391,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        isBeingDoubleClicked: false
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
     });

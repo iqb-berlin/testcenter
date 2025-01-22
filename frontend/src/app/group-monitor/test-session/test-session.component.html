@@ -1,7 +1,7 @@
 <td class="selected" *ngIf="displayOptions.manualChecking">
   <mat-checkbox
     *ngIf="testSession.data.testId >= 0"
-    (change)="check($event)"
+    (change)="toggleCheckbox($event)"
     (contextmenu)="invertSelection()"
     [attr.data-cy]="'GM-tt-checkbox'"
     [checked]="checked"
@@ -126,7 +126,7 @@
           <span
             [class]="{
               testlet: true,
-              selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+              selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked && testletOrUnit.blockId,
               marked: isMarked(testletOrUnit) && testletOrUnit.blockId
             }"
             (mouseenter)="mark(testletOrUnit)"
@@ -177,7 +177,7 @@
             unit: true,
             aggregated: true,
             current: true,
-            selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+            selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked && testletOrUnit.blockId,
             marked: isMarked(testletOrUnit) && testletOrUnit.blockId
           }"
           matTooltip="{{testSession.current.unit?.label}}"
@@ -194,7 +194,7 @@
           [class]="{
             unit: true,
             aggregated: true,
-            selected: isSelected(testletOrUnit) && checked,
+            selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked,
             marked: isMarked(testletOrUnit)
           }"
           (mouseenter)="mark(testletOrUnit)"
