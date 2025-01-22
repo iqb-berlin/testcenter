@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-file-service-container
-          image: iqbberlin/testcenter-file-service:{{ .Values.version }}
+          image: iqbberlin/testcenter-file-service:{{ .Chart.AppVersion }}
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:

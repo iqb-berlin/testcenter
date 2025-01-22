@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-broadcasting-service-container
-          image: iqbberlin/testcenter-broadcasting-service:{{ .Values.version }}
+          image: iqbberlin/testcenter-broadcasting-service:{{ .Chart.AppVersion }}
           ports:
             - name: http-container
               containerPort: 3000

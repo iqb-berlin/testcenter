@@ -22,7 +22,7 @@ spec:
           command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
       containers:
         - name: {{ .Chart.Name }}-backend-container
-          image: iqbberlin/testcenter-backend:{{ .Values.version }}
+          image: iqbberlin/testcenter-backend:{{ .Chart.AppVersion }}
           env:
             - name: MYSQL_DATABASE
               valueFrom:
