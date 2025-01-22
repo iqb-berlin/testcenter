@@ -10,7 +10,7 @@
   </mat-checkbox>
 </td>
 
-<td class="super-state" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="super-state" (contextmenu)="deselectForce($event)">
   <div class="vertical-align-middle" *ngIf="superStateIcons[testSession.state] as iconData">
     <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
       {{iconData.icon}}
@@ -18,11 +18,11 @@
   </div>
 </td>
 
-<td class="group" *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="group" *ngIf="displayOptions.groupColumn === 'show'" (contextmenu)="deselectForce($event)">
   <div class="vertical-align-middle">{{testSession.data.groupLabel}}</div>
 </td>
 
-<td class="user" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="user" (contextmenu)="deselectForce($event)">
   <div class="vertical-align-middle">
     <h1>{{testSession.data.personLabel}}</h1>
   </div>
@@ -31,7 +31,6 @@
 <td
   class="booklet"
   *ngIf="displayOptions.bookletColumn === 'show'"
-  (click)="deselect($event)"
   (contextmenu)="deselectForce($event)"
 >
   <ng-container *ngIf="isBooklet(testSession.booklet); else: noBooklet">
@@ -44,7 +43,7 @@
   </ng-template>
 </td>
 
-<td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
+<td class="block" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
     {{current.parent.label || current.parent.blockId || current.parent.id}}
     <mat-icon
@@ -58,7 +57,7 @@
   </div>
 </td>
 
-<td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="test" (contextmenu)="deselectForce($event)">
   <ng-container *ngIf="isBooklet(testSession.booklet); else: noBookletReason">
     <div
       *ngIf="testSession.booklet.units as testlet"
@@ -272,7 +271,7 @@
   </span>
 </ng-template>
 
-<td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
+<td class="current-unit" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
     <h2 matTooltip="{{current.unit?.label}}">{{current.unit?.id}}</h2>
     <mat-icon
@@ -300,7 +299,6 @@
 <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
   <td
     class="booklet-states"
-    (click)="deselect($event)"
     (contextmenu)="deselectForce($event)"
     *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)"
   >
