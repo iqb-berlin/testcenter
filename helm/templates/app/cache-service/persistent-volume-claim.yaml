@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: cache-service-pvc
+  name: cache-server-pvc
 spec:
   accessModes:
     - {{ .Values.volume.cache.accessMode }}

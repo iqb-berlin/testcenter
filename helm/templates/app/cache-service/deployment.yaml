@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-cache-service
+  name: {{ .Chart.Name }}-cache-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-cache-service-pod
+      app: {{ .Chart.Name }}-cache-server-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-cache-service-pod
+        app: {{ .Chart.Name }}-cache-server-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-cache-service-container
+        - name: {{ .Chart.Name }}-cache-server-container
           image: redis:7.0-bullseye
           command:
             - bash
@@ -34,4 +34,4 @@ spec:
       volumes:
         - name: lv-storage
           persistentVolumeClaim:
-            claimName: cache-service-pvc
+            claimName: cache-server-pvc
