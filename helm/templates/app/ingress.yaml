@@ -76,7 +76,7 @@ spec:
       middlewares:
         - name: securityheaders
         - name: stripregexfe
-        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        {{- if .Values.config.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
@@ -87,7 +87,7 @@ spec:
       middlewares:
         - name: stripregexbe
         - name: securityheaders
-        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        {{- if .Values.config.tlsEnabled }}
         - name: https-redirect
         {{- end }}
       services:
@@ -98,7 +98,7 @@ spec:
       middlewares:
         - name: stripregexfs
         - name: securityheaders
-        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        {{- if .Values.config.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
@@ -109,14 +109,14 @@ spec:
       middlewares:
         - name: stripregexbs
         - name: securityheaders
-        {{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+        {{- if .Values.config.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
         - name: testcenter-broadcasting-service #hard coded in application as internal address
           port: 3000
 
-{{- if or (eq (toString .Values.config.tlsEnabled) "true") (eq (toString .Values.config.tlsEnabled) "on") (eq (toString .Values.config.tlsEnabled) "yes")  }}
+{{- if .Values.config.tlsEnabled }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

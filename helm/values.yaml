@@ -2,7 +2,7 @@ config:
   baseDomain: app.domain.tld
   port: 80
   tlsPort: 443
-  tlsEnabled: off
+  tlsEnabled: true
   mysqlDatabase: iqb_tba_testcenter
   mysqlUser: iqb_tba_db_user
   broadcastServiceEnabled: true
