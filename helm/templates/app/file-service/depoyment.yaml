@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-file-service
+  name: {{ .Chart.Name }}-file-server
 spec:
   replicas: {{ .Values.fileService.replicas }}
   {{- if .Values.fileService.strategy }}
@@ -10,16 +10,16 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-file-service-pod
+      app: {{ .Chart.Name }}-file-server-pod
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/app/file-service/configmap.yaml") . | sha256sum }}
       labels:
-        app: {{ .Chart.Name }}-file-service-pod
+        app: {{ .Chart.Name }}-file-server-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-file-service-container
+        - name: {{ .Chart.Name }}-file-server-container
           image: iqbberlin/testcenter-file-service:{{ .Chart.AppVersion }}
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
@@ -30,7 +30,7 @@ spec:
             - name: CACHE_SERVICE_ADDRESS_FOR_LUA
               valueFrom:
                 configMapKeyRef:
-                  name: nginx-fs-config-configmap
+                  name: file-server-config
                   key: CACHE_SERVICE_ADDRESS_FOR_LUA
           volumeMounts:
             - name: backend-data
@@ -44,7 +44,7 @@ spec:
             claimName: {{ .Chart.Name }}-backend-vo-data
         - name: nginx-config-volume
           configMap:
-            name: nginx-fs-config-configmap
+            name: file-server-config
             items:
               - key: config.nginx.conf
                 path: nginx.conf-in-volume
