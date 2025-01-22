@@ -349,6 +349,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.checkAll();
     } else {
       this.tsm.checkNone();
+      this.selectedElement = null;
     }
   }
 
