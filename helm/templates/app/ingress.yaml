@@ -24,7 +24,7 @@ metadata:
   name: stripregexfs
 spec:
   stripPrefix:
-      prefixes:
+    prefixes:
       - "/fs"
 
 ---
@@ -34,7 +34,7 @@ metadata:
   name: stripregexbs
 spec:
   stripPrefix:
-      prefixes:
+    prefixes:
       - "/bs/public"
 
 ---
@@ -69,9 +69,9 @@ metadata:
   name: {{ .Chart.Name }}-path-ingress-http
 spec:
   entryPoints:
-      - web
+    - web
   routes:
-    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
+    - match: Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)
       kind: Rule
       middlewares:
         - name: securityheaders
@@ -83,7 +83,7 @@ spec:
         - name: {{ .Chart.Name }}-frontend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/api`)
       middlewares:
         - name: stripregexbe
         - name: securityheaders
@@ -94,7 +94,7 @@ spec:
         - name: {{ .Chart.Name }}-backend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/fs`)
       middlewares:
         - name: stripregexfs
         - name: securityheaders
@@ -105,7 +105,7 @@ spec:
         - name: testcenter-file-service #hard coded in application as internal address
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/bs/public`)
       middlewares:
         - name: stripregexbs
         - name: securityheaders
@@ -126,7 +126,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)
+    - match: Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)
       kind: Rule
       middlewares:
         - name: securityheaders
@@ -135,7 +135,7 @@ spec:
         - name: {{ .Chart.Name }}-frontend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/api`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/api`)
       middlewares:
         - name: stripregexbe
         - name: securityheaders
@@ -143,7 +143,7 @@ spec:
         - name: {{ .Chart.Name }}-backend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/fs`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/fs`)
       middlewares:
         - name: stripregexfs
         - name: securityheaders
@@ -151,7 +151,7 @@ spec:
         - name: testcenter-file-service #hard coded in application as internal address
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.hostname }}`) || Host(`{{ .Values.config.hostname }}`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/bs/public`)
       middlewares:
         - name: stripregexbs
         - name: securityheaders

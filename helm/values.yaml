@@ -1,5 +1,5 @@
 config:
-  hostname: 192.168.49.2
+  baseDomain: app.domain.tld
   port: 80
   tlsPort: 443
   tlsEnabled: off
