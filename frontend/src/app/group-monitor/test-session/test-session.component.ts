@@ -18,6 +18,11 @@ interface IconData {
   description?: string
 }
 
+interface TestletContext {
+  $implicit: Testlet,
+  recursionLevel: number
+}
+
 @Component({
   selector: 'tc-test-session',
   templateUrl: './test-session.component.html',
@@ -45,7 +50,7 @@ export class TestSessionComponent {
   // eslint-disable-next-line class-methods-use-this
   trackUnits = (index: number, testlet: Testlet | UnitDef): string => testlet.id || index.toString();
 
-  testletContext?: { $implicit: Testlet };
+  testletContext?: TestletContext;
 
   mark(testletOrNull: Testlet | null = null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
@@ -88,7 +93,6 @@ export class TestSessionComponent {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
       return;
     }
-    $event.stopPropagation();
     this.applySelection(testletOrNull);
   }
 
@@ -112,9 +116,6 @@ export class TestSessionComponent {
   }
 
   toggleCheckbox($event: MatCheckboxChange): void {
-    console.log('this.checked ', this.checked);
-    console.log('this.checked$ ', this.checked$);
-    console.log('event.checked ', $event.checked);
     this.checked$.emit($event.checked);
   }
 
@@ -134,6 +135,4 @@ export class TestSessionComponent {
       inversion
     };
   }
-
-  protected readonly parseInt = parseInt;
 }

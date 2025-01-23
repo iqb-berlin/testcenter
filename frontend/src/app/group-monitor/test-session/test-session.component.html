@@ -60,7 +60,7 @@
 <td class="test" (contextmenu)="deselectForce($event)">
   <ng-container *ngIf="isBooklet(testSession.booklet); else: noBookletReason">
     <div
-      *ngIf="testSession.booklet.units as testlet"
+      *ngIf="testSession.booklet.units as units"
       class="units-container"
       [class]="{
         locked: hasState(testSession.data.testState, 'status', 'locked'),
@@ -73,15 +73,15 @@
       (click)="deselect($event)"
     >
       <div class="units full" *ngSwitchCase="'full'" >
-        <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}"></ng-container>
+        <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: units, recursionLevel: 0}"></ng-container>
       </div>
 
       <div class="units medium" *ngSwitchCase="'medium'" >
-        <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}"></ng-container>
+        <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: units}"></ng-container>
       </div>
 
       <div class="units small" *ngSwitchCase="'small'" >
-        <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}"></ng-container>
+        <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: units}"></ng-container>
       </div>
     </div>
   </ng-container>
@@ -104,11 +104,12 @@
   </ng-template>
 </td>
 
-<ng-template #testletFull let-testlet [appTemplateContext]="testletContext">
+<ng-template #testletFull let-units let-recursionLevel="recursionLevel" [appTemplateContext]="testletContext">
 
-  <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testlet }"></ng-container>
+  <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: units }"></ng-container>
 
-    <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits">
+    <ng-container *ngFor="let testletOrUnit of units.children; trackBy: trackUnits">
+      {{ '' // the testlets themselves }}
       <span
         *ngIf="!isTestlet(testletOrUnit)"
         [class]="{
@@ -122,18 +123,19 @@
       </span>
 
       <ng-container *ngIf="isTestlet(testletOrUnit)">
-        <ng-container *ngIf="testSession | testletvisible : testletOrUnit">
+        <ng-container *ngIf="testSession | testletvisible: testletOrUnit">
+          {{ '' // the borders around the testlets }}
           <span
             [class]="{
               testlet: true,
-              selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked && testletOrUnit.blockId,
-              marked: isMarked(testletOrUnit) && testletOrUnit.blockId
+              selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked && testletOrUnit.blockId && recursionLevel === 0,
+              marked: isMarked(testletOrUnit) && testletOrUnit.blockId && recursionLevel === 0
             }"
             (mouseenter)="mark(testletOrUnit)"
             (click)="select($event, testletOrUnit)"
             matTooltip="{{testletOrUnit.label}}"
           >
-            <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
+            <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit, recursionLevl: 1}"></ng-container>
           </span>
         </ng-container>
       </ng-container>
@@ -171,7 +173,8 @@
 
       <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: testletOrUnit }"></ng-container>
 
-      <ng-container *ngIf="testSession.current && (testSession.current.ancestor.id === testletOrUnit.id); else: unFeaturedTestlet">
+      {{ '' // this block shows the current block (.current css class) }}
+      <ng-container *ngIf="testSession.current && (testSession.current.ancestor.id === testletOrUnit.id); else: notCurrentTestlet">
         <span
           [class]="{
             unit: true,
@@ -189,7 +192,7 @@
         </span>
       </ng-container>
 
-      <ng-template #unFeaturedTestlet>
+      <ng-template #notCurrentTestlet>
         <span
           [class]="{
             unit: true,
@@ -208,7 +211,7 @@
 
 <ng-template #bookletSmall let-testlet>
   <span
-    class="testlet" *ngIf="testSession.current; else: unFeaturedTestlet"
+    class="testlet" *ngIf="testSession.current; else: notCurrentTestlet"
     matTooltip="{{testSession.current.parent.label}}"
   >
     <span
@@ -221,7 +224,7 @@
     </span>
   </span>
 
-  <ng-template #unFeaturedTestlet>
+  <ng-template #notCurrentTestlet>
     <span class="testlet" >
       <span class="unit aggregated">{{testSession | position : testlet}}</span>
     </span>
