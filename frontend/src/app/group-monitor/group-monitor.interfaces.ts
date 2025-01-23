@@ -153,7 +153,7 @@ export interface UnitContext {
 export interface Selected {
   element: Testlet | null;
   originSession: TestSession;
-  isBeingDoubleClicked: boolean;
+  nthClick: 'first' | 'second' | 'third';
   inversion: boolean;
 }
 

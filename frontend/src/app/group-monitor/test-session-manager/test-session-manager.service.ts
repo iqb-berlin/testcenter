@@ -466,13 +466,15 @@ export class TestSessionManager {
     }
     let toCheck: TestSession[] = [];
     if (selected.element) {
-      if (!selected.isBeingDoubleClicked) {
+      if (selected.nthClick === 'first') {
         toCheck = [...this.checked, selected.originSession];
-      } else {
+      } else if (selected.nthClick === 'second') {
         toCheck = this._sessions$.getValue()
           .filter(session => (!['pending', 'locked'].includes(session.state)))
           .filter(session => (session.booklet.species === selected.originSession.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
+      } else if (selected.nthClick === 'third') {
+        toCheck = [];
       }
     }
 

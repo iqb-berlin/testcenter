@@ -309,7 +309,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         ) : null,
       inversion: false,
       originSession: this.currentlySelected.originSession,
-      isBeingDoubleClicked: this.currentlySelected.isBeingDoubleClicked
+      nthClick: this.currentlySelected.nthClick
     };
   }
 

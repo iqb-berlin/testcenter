@@ -64,9 +64,17 @@ export class TestSessionComponent {
       (this.selected?.originSession.booklet.species === this.testSession.booklet.species); // is nowselected same species as parentselection (is it the same block 1? == same col)
   }
 
-  isSelectionTheSameBlockAndSessionAsParentSelection(testletOrNull: Testlet | null = null): boolean {
-    return this.isSelectionTheSameBlockAsParentSelection(testletOrNull) &&
+  returnClicks(testletOrNull: Testlet | null = null): 'first' | 'second' | 'third' {
+    const isSelectionInSameSession = this.isSelectionTheSameBlockAsParentSelection(testletOrNull) &&
       (this.selected?.originSession.data.testId === this.testSession.data.testId); // is the nowSelection the same Session (row in Table)
+
+    if (isSelectionInSameSession && this.selected?.nthClick === 'first') {
+      return 'second';
+    }
+    if (isSelectionInSameSession && this.selected?.nthClick === 'second') {
+      return 'third';
+    }
+    return 'first';
   }
 
   isMarked(testletOrNull: Testlet | null = null): boolean {
@@ -122,7 +130,7 @@ export class TestSessionComponent {
     return {
       element: testletOrNull,
       originSession: this.testSession,
-      isBeingDoubleClicked: this.isSelectionTheSameBlockAndSessionAsParentSelection(testletOrNull) ? !(this.selected?.isBeingDoubleClicked) : !testletOrNull,
+      nthClick: this.returnClicks(testletOrNull),
       inversion
     };
   }
