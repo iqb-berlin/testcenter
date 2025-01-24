@@ -33,6 +33,10 @@ import {
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import {
+  TimeRestrictionDialogComponent,
+  TimeRestrictionDialogData
+} from './time-restriction-dialog/time-restriction-dialog.component';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -267,6 +271,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       });
       return;
     }
+
     (this.tsm.checked
       .some(testSession => isBooklet(testSession.booklet) &&
           this.selectedElement?.element &&
@@ -274,15 +279,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
           (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
       ) ?
       this.dialog.open(
-        ConfirmDialogComponent, {
+        TimeRestrictionDialogComponent, {
           width: 'auto',
-          data: <ConfirmDialogData>{
+          data: <TimeRestrictionDialogData>{
             title:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
             content:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
             confirmbuttonlabel: 'OK',
-            showcancel: true
+            showcancel: true,
+            remainingTime: 20
           }
         }
       ).afterClosed() :
