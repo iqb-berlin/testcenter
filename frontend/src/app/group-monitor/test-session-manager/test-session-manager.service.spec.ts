@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats, TestSessionSuperState
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStat, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -157,13 +157,13 @@ describe('TestSessionManager', () => {
     it('should fetch correct stats from sessions', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['getSessionSetStats'](unitTestExampleSessions, 2);
-      const expectation: TestSessionSetStats = {
-        number: 3,
+      const expectation: TestSessionSetStat = {
+        numberOfSessions: 3,
         differentBooklets: 3,
         differentBookletSpecies: 3,
-        all: false,
-        paused: 1,
-        locked: 0,
+        allChecked: false,
+        pausedSessions: 1,
+        lockedSessions: 0,
         bookletStateLabels: { }
       };
       expect(expectation).toEqual(result);

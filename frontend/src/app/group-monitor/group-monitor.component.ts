@@ -22,7 +22,7 @@ import {
   TestViewDisplayOptionKey,
   Selected,
   TestSession,
-  TestSessionSetStats,
+  TestSessionSetStat,
   CommandResponse,
   UIMessage,
   isBooklet,
@@ -149,7 +149,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
-  private onSessionsUpdate(stats: TestSessionSetStats): void {
+  private onSessionsUpdate(stats: TestSessionSetStat): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
     if (!this.tsm.checkingOptions.enableAutoCheckAll) {
@@ -159,7 +159,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.bookletStates = stats.bookletStateLabels;
   }
 
-  private onCheckedChange(stats: TestSessionSetStats): void {
+  private onCheckedChange(stats: TestSessionSetStat): void {
     if (stats.differentBookletSpecies > 1) {
       this.selectedElement = null;
     }

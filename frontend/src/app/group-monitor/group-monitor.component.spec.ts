@@ -22,7 +22,7 @@ import { AlertComponent, CustomtextPipe, MainDataService } from '../shared/share
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   CheckingOptions, CommandResponse,
-  TestSession, TestSessionData, TestSessionSetStats
+  TestSession, TestSessionData, TestSessionSetStat
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
 import { TestSessionComponent } from './test-session/test-session.component';
