@@ -214,7 +214,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       case 'paused':
         return hsl(h, colorful ? 45 : 0, 90);
       case 'pending':
-        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(h, 0, 98));
       case 'locked':
         return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 0, 92));
       case 'error':
@@ -253,7 +252,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             throw err;
           }))
           .subscribe(() => {
-            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
+            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 2000);
           });
       }
     });
@@ -269,26 +268,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       return;
     }
     (this.tsm.checked
-      .some(testSession =>
-        isBooklet(testSession.booklet)
-          && this.selectedElement?.element
-          && testSession.timeLeft
-          && (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
+      .some(testSession => isBooklet(testSession.booklet) &&
+          this.selectedElement?.element &&
+          testSession.timeLeft &&
+          (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
       ) ?
-        this.dialog.open(
-          ConfirmDialogComponent, {
-            width: 'auto',
-            data: <ConfirmDialogData>{
-              title:
+      this.dialog.open(
+        ConfirmDialogComponent, {
+          width: 'auto',
+          data: <ConfirmDialogData>{
+            title:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
-              content:
+            content:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
-              confirmbuttonlabel: 'OK',
-              showcancel: true
-            }
+            confirmbuttonlabel: 'OK',
+            showcancel: true
           }
-        ).afterClosed()
-        : of(true)
+        }
+      ).afterClosed() :
+      of(true)
     )
       .subscribe((ok: boolean) => {
         if (!ok || !this.selectedElement) return;
@@ -410,8 +408,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (isColumnOption(p.settings.groupColumn)) this.displayOptions.groupColumn = p.settings.groupColumn;
     if (isColumnOption(p.settings.bookletColumn)) this.displayOptions.bookletColumn = p.settings.bookletColumn;
     if (isViewOption(p.settings.view)) this.displayOptions.view = p.settings.view;
-    if (isYesNoOption(p.settings.autoselectNextBlock))
-      this.displayOptions.autoselectNextBlock = p.settings.autoselectNextBlock !== 'no';
+    if (isYesNoOption(p.settings.autoselectNextBlock)) this.displayOptions.autoselectNextBlock = p.settings.autoselectNextBlock !== 'no';
 
     (p.filters || [])
       .forEach((filter: TestSessionFilter, index: number) => {
