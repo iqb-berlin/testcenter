@@ -67,7 +67,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
     return this.http
       .post(`${this.serverUrl}monitor/group/${groupName}/tests/lock`, { testIds })
       .pipe(
-        map(() => ({ commandType: 'unlock', testIds }))
+        map(() => ({ commandType: 'lock', testIds }))
       );
   }
 

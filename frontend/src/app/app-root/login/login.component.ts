@@ -65,8 +65,13 @@ export class LoginComponent implements OnInit, OnDestroy {
           });
         } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
           if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
-              this.router.navigate(['/t', testId]);
+            this.backendService.startTest(authData.claims.test[0].id).subscribe({
+              next: testId => {
+                this.router.navigate(['/t', testId]);
+              },
+              error: () => {
+                this.router.navigate(['/r/starter']);
+              }
             });
           } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
             this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
