@@ -308,6 +308,7 @@
 
             <ng-container *ngFor="let session of tsm.sessions$ | async; trackBy: trackSession">
               <tc-test-session
+                [class]="session.state"
                 [testSession]="session"
                 [displayOptions]="displayOptions"
                 [marked]="CurrentlyMarked"
@@ -351,3 +352,8 @@
 </div>
 
 <div id="shield" *ngIf="isClosing"></div>
+<mat-card id="shield-child" appearance="raised" *ngIf="isClosing">
+  <mat-card-content>
+    Alle Tests werden beendet. Bitte warten...
+  </mat-card-content>
+</mat-card>

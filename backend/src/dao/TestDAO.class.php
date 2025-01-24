@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class TestDAO extends DAO {
   // TODO unit test
-  public function getTestByPerson(int $personId, string $testName): TestData | null {
+  public function getTestByPerson(int $personId, string $testName): TestData|null {
     $test = $this->_(
       'select tests.locked, tests.name, tests.id, tests.file_id, tests.laststate, tests.label, tests.running from tests
             where tests.person_id=:personId and tests.name=:testname',
@@ -220,7 +220,12 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function updateUnitState(int $testId, string $unitName, array $statePatch, string $originalUnitId = ''): array {
+  public function updateUnitState(
+    int $testId,
+    string $unitName,
+    array $statePatch,
+    string $originalUnitId = ''
+  ): array {
     $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
 
     $unitData = $this->_(
@@ -258,17 +263,25 @@ class TestDAO extends DAO {
   }
 
   // TODO unit test
-  public function changeTestLockStatus(int $testId, bool $unlock = true): void {
+  public function unlockTest(int $testId): void {
+    $this->changeTestLockStatus($testId, false);
+  }
+
+  // TODO unit test
+  public function locktTest(int $testId): void {
+    $this->changeTestLockStatus($testId, true);
+  }
+
+  private function changeTestLockStatus(int $testId, bool $shouldLock): void {
     $this->_(
       'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
-        ':locked' => $unlock ? '0' : '1',
+        ':locked' => $shouldLock ? '1' : '0',
         ':id' => $testId,
         ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
   }
-
 
   // TODO unit test
   // todo reduce nr of queries by using replace...into syntax
@@ -337,7 +350,14 @@ class TestDAO extends DAO {
     ];
   }
 
-  public function updateDataParts(int $testId, string $unitName, array $dataParts, string $type, int $timestamp, string $originalUnitId = ''): void {
+  public function updateDataParts(
+    int $testId,
+    string $unitName,
+    array $dataParts,
+    string $type,
+    int $timestamp,
+    string $originalUnitId = ''
+  ): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
     foreach ($dataParts as $partId => $content) {
       $this->_(
