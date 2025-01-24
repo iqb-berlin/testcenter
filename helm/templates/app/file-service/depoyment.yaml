@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-file-server
 spec:
-  replicas: {{ .Values.fileService.replicas }}
-  {{- if .Values.fileService.strategy }}
+  replicas: {{ .Values.deployment.fileServer.replicas }}
+  {{- if .Values.deployment.fileServer.strategy }}
   strategy:
-    {{- .Values.fileService.strategy | toYaml | nindent 4 }}
+    {{- .Values.deployment.fileServer.strategy | toYaml | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-file-server-container
-          image: iqbberlin/testcenter-file-service:{{ .Chart.AppVersion }}
+          image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
@@ -33,15 +33,15 @@ spec:
                   name: file-server-config
                   key: CACHE_SERVICE_ADDRESS_FOR_LUA
           volumeMounts:
-            - name: backend-data
+            - name: backend-volume
               mountPath: /var/www/html/
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf-in-volume
       volumes:
-        - name: backend-data
+        - name: backend-volume
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-backend-vo-data
+            claimName: {{ .Chart.Name }}-backend-pvc
         - name: nginx-config-volume
           configMap:
             name: file-server-config

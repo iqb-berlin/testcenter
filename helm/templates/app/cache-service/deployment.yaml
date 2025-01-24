@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-cache-server-container
-          image: redis:7.0-bullseye
+          image: "{{ .Values.image.cacheServer.registryPath }}redis:{{ .Values.image.cacheServer.tag }}"
           command:
             - bash
           args:
@@ -34,4 +34,4 @@ spec:
       volumes:
         - name: lv-storage
           persistentVolumeClaim:
-            claimName: cache-server-pvc
+            claimName: {{ .Chart.Name }}-cache-server-pvc

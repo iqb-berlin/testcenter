@@ -1,53 +1,89 @@
+image:
+  ## Image Registry Path
+  # Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH value empty!
+  # Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
+  # GitLab:           scm.cms.hu-berlin.de:4567/iqb/studio-lite/
+  broadcasting:
+    registryPath: ""
+    tag: ""
+
+  frontend:
+    registryPath: ""
+    tag: ""
+
+  cacheServer:
+    registryPath: ""
+    tag: "7.4-bookworm"
+
+  fileServer:
+    registryPath: ""
+    tag: ""
+
+  backend:
+    registryPath: ""
+    tag: ""
+
+  db:
+    registryPath: ""
+    tag: "8.0"
+
+  busybox:
+    registryPath: ""
+    tag: "1.28"
+
 config:
-  baseDomain: app.domain.tld
-  port: 80
-  tlsPort: 443
-  tlsEnabled: true
-  mysqlDatabase: iqb_tba_testcenter
-  mysqlUser: iqb_tba_db_user
-  broadcastServiceEnabled: true
-  fileServiceEnabled: true
-  cacheServiceRam: 1073741824
-  cacheServiceIncludeFiles: false
-  dockerDaemonMtu: 1500
-  dockerhubProxy: ''
-  restartPolicy: always
-  overwriteInstallation: no
-  skipReadFiles: no
-  skipDbIntegrity: no
-  noSampleData: no
+  backend:
+    broadcastServiceEnabled: true
+    fileServiceEnabled: true
+    cacheServiceRam: 1073741824
+    cacheServiceIncludeFiles: false
 
 secret:
-  passwordSalt: t
-  mysqlRootPassword: o8en6jSGLyVKNZUN
-  mysqlPassword: fEaU5COJYXv2atau
+  common:
+    mysqlUser: iqb_tba_db_user
+    mysqlPassword: change_me
 
-frontend:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+  backend:
+    passwordSalt: change_me
 
-fileService:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+  db:
+    mysqlRootPassword: change_me
 
-volume:
-  vodata:
-    storageClassName: standard
-    accessMode: ReadWriteOnce
-    size: 2Gi
-  dbdata:
-    storageClassName: standard
-    accessMode: ReadWriteOnce
-    size: 2Gi
-  cache:
+ingress:
+  baseDomain: app.domain.tld
+  tlsEnabled: true
+  port: 80
+  tlsPort: 443
+
+deployment:
+  frontend:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+
+  fileServer:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+
+persistence:
+  cacheServer:
     storageClassName: standard
     accessMode: ReadWriteOnce
     size: 5Gi
+
+  backend:
+    storageClassName: standard
+    accessMode: ReadWriteOnce
+    size: 2Gi
+
+  db:
+    storageClassName: standard
+    accessMode: ReadWriteOnce
+    size: 2Gi

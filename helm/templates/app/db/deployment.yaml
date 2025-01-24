@@ -10,35 +10,31 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/app/config/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/app/config/secret.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/app/db/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Chart.Name }}-db-pod
     spec:
       containers:
         - name: {{ .Chart.Name }}-db-container
-          image: mysql:8.0
+          image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
           env:
-            - name: MYSQL_DATABASE
+            - name: MYSQL_ROOT_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-config
-                  key: MYSQL_DATABASE
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-db-secrets
+                  key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_USER
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-config
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-db-secrets
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-secrets
+                  name: {{ .Chart.Name }}-db-secrets
                   key: MYSQL_PASSWORD
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Chart.Name }}-secrets
-                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: "iqb_tba_testcenter"
             - name: MYSQL_INITDB_SKIP_TZINFO
               value: "true"
           args: [
@@ -52,7 +48,7 @@ spec:
             - name: mysql-container
               containerPort: 3306
           volumeMounts:
-            - name: mysql-data
+            - name: db-volume
               mountPath: /var/lib/mysql
           readinessProbe:
             exec:
@@ -83,6 +79,6 @@ spec:
             successThreshold: 1
             failureThreshold: 3
       volumes:
-        - name: mysql-data
+        - name: db-volume
           persistentVolumeClaim:
-            claimName: dbdata
+            claimName: {{ .Chart.Name }}-db-pvc

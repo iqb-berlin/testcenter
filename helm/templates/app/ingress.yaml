@@ -59,7 +59,7 @@ metadata:
 spec:
   redirectScheme:
     scheme: https
-    port: "{{ .Values.config.tlsPort }}"
+    port: "{{ .Values.ingress.tlsPort }}"
     permanent: true
 
 ---
@@ -71,52 +71,52 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)
+    - match: Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)
       kind: Rule
       middlewares:
         - name: securityheaders
         - name: stripregexfe
-        {{- if .Values.config.tlsEnabled  }}
+        {{- if .Values.ingress.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
         - name: {{ .Chart.Name }}-frontend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/api`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
       middlewares:
         - name: stripregexbe
         - name: securityheaders
-        {{- if .Values.config.tlsEnabled }}
+        {{- if .Values.ingress.tlsEnabled }}
         - name: https-redirect
         {{- end }}
       services:
         - name: {{ .Chart.Name }}-backend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/fs`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/fs`)
       middlewares:
         - name: stripregexfs
         - name: securityheaders
-        {{- if .Values.config.tlsEnabled  }}
+        {{- if .Values.ingress.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
         - name: testcenter-file-service #hard coded in application as internal address
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/bs/public`)
       middlewares:
         - name: stripregexbs
         - name: securityheaders
-        {{- if .Values.config.tlsEnabled  }}
+        {{- if .Values.ingress.tlsEnabled  }}
         - name: https-redirect
         {{- end }}
       services:
         - name: testcenter-broadcasting-service #hard coded in application as internal address
           port: 3000
 
-{{- if .Values.config.tlsEnabled }}
+{{- if .Values.ingress.tlsEnabled }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -126,7 +126,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)
+    - match: Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)
       kind: Rule
       middlewares:
         - name: securityheaders
@@ -135,7 +135,7 @@ spec:
         - name: {{ .Chart.Name }}-frontend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/api`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
       middlewares:
         - name: stripregexbe
         - name: securityheaders
@@ -143,7 +143,7 @@ spec:
         - name: {{ .Chart.Name }}-backend-service
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/fs`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/fs`)
       middlewares:
         - name: stripregexfs
         - name: securityheaders
@@ -151,17 +151,21 @@ spec:
         - name: testcenter-file-service #hard coded in application as internal address
           port: 80
     - kind: Rule
-      match: (Host(`www.{{ .Values.config.baseDomain }}`) || Host(`{{ .Values.config.baseDomain }}`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/bs/public`)
       middlewares:
         - name: stripregexbs
         - name: securityheaders
       services:
         - name: testcenter-broadcasting-service #hard coded in application as internal address
           port: 3000
-  tls: {} #dev-deploy: use this line for self signed certs
+#  tls: {} #dev-deploy: use this line for self signed certs
 #wip for acme
-#  tls:
-#    certResolver: acme
+  tls:
 #    options:
 #      name: default
+    certResolver: letsencrypt
+    domains:
+      - main: {{ .Values.ingress.baseDomain }}
+        sans:
+          - www.{{ .Values.ingress.baseDomain }}
 {{- end }}

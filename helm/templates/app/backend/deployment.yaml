@@ -10,34 +10,30 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/backendconfig: {{ include (print $.Template.BasePath "/app/backend/configmap.yaml") . | sha256sum }}
-        checksum/config: {{ include (print $.Template.BasePath "/app/config/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/app/config/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/app/backend/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/app/backend/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Chart.Name }}-backend-pod
     spec:
       initContainers:
         - name: wait-for-db-initcontainer
-          image: busybox:1.28
-          command: ['sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;']
+          image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
+          command: [ 'sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;' ]
       containers:
         - name: {{ .Chart.Name }}-backend-container
-          image: iqbberlin/testcenter-backend:{{ .Chart.AppVersion }}
+          image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
           env:
             - name: MYSQL_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-config
-                  key: MYSQL_DATABASE
+              value: "iqb_tba_testcenter"
             - name: MYSQL_USER
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-config
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-backend-secrets
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-secrets
+                  name: {{ .Chart.Name }}-backend-secrets
                   key: MYSQL_PASSWORD
             - name: MYSQL_HOST
               value: "{{ .Chart.Name }}-db"
@@ -46,7 +42,7 @@ spec:
             - name: PASSWORD_SALT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-secrets
+                  name: {{ .Chart.Name }}-backend-secrets
                   key: PASSWORD_SALT
             - name: BROADCAST_SERVICE_ENABLED
               valueFrom:
@@ -89,27 +85,15 @@ spec:
                   name: {{ .Chart.Name }}-backend-config
                   key: TLS_PORT_OF_REVERSE_PROXY
             - name: SKIP_READ_FILES
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
-                  key: SKIP_READ_FILES
+              value: "no"
             - name: SKIP_DB_INTEGRITY
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
-                  key: SKIP_DB_INTEGRITY
+              value: "no"
             - name: OVERWRITE_INSTALLATION
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
-                  key: OVERWRITE_INSTALLATION
+              value: "no"
             - name: NO_SAMPLE_DATA
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
-                  key: NO_SAMPLE_DATA
+              value: "no"
           volumeMounts:
-            - name: backend-data
+            - name: backend-volume
               mountPath: /var/www/testcenter/data
           readinessProbe:
             httpGet:
@@ -129,6 +113,6 @@ spec:
             successThreshold: 1
             failureThreshold: 3
       volumes:
-        - name: backend-data
+        - name: backend-volume
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-backend-vo-data
+            claimName: {{ .Chart.Name }}-backend-pvc

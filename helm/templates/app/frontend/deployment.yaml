@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-frontend
 spec:
-  replicas: {{ .Values.frontend.replicas }}
-  {{- if .Values.frontend.strategy }}
+  replicas: {{ .Values.deployment.frontend.replicas }}
+  {{- if .Values.deployment.frontend.strategy }}
   strategy:
-    {{- .Values.frontend.strategy | toYaml | nindent 4 }}
+    {{- .Values.deployment.frontend.strategy | toYaml | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-frontend-container
-          image: iqbberlin/testcenter-frontend:{{ .Chart.AppVersion }}
+          image: "{{ .Values.image.frontend.registryPath }}iqbberlin/testcenter-frontend:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
           ports:
             - name: http-container
               containerPort: 80
