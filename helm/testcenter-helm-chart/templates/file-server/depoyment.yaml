@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/app/file-service/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/file-server/configmap.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:

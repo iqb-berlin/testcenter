@@ -1,3 +1,7 @@
+# Default values for testcenter-helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 image:
   ## Image Registry Path
   # Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH value empty!

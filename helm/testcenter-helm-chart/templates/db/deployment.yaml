@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/secret: {{ include (print $.Template.BasePath "/app/db/secret.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/db/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-db-pod
     spec:

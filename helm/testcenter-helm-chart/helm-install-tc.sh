@@ -33,7 +33,7 @@ if [[ $is_continue =~ ^[yY]$ ]] || [[ -z $is_continue ]]; then
   fi
   printf "Traefik Ingress Controller installed successfully in namespace 'tc'\n"
 else
-  printf "If you are using an Ingress Controller other than Traefik, make sure to manually migrate the templates/app/ingress.yaml to fit the needs of your Ingress Controller\n"
+  printf "If you are using an Ingress Controller other than Traefik, make sure to manually migrate the templates/ingress.yaml to fit the needs of your Ingress Controller\n"
 fi
 
 printf "Now installing Testcenter via Helm...\n"
