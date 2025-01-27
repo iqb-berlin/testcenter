@@ -4,7 +4,7 @@ metadata:
   name: testcenter-file-server-service # !!! hard coded in application as internal address !!!
 spec:
   selector:
-    app: {{ .Chart.Name }}-file-server-pod
+    app: {{ .Release.Name }}-file-server-pod
   ports:
     - protocol: TCP
       port: 80

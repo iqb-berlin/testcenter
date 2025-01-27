@@ -1,37 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-db
+  name: {{ .Release.Name }}-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-db-pod
+      app: {{ .Release.Name }}-db-pod
   template:
     metadata:
       annotations:
         checksum/secret: {{ include (print $.Template.BasePath "/app/db/secret.yaml") . | sha256sum }}
       labels:
-        app: {{ .Chart.Name }}-db-pod
+        app: {{ .Release.Name }}-db-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-db-container
+        - name: {{ .Release.Name }}-db-container
           image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secrets
                   key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secrets
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secrets
                   key: MYSQL_PASSWORD
             - name: MYSQL_DATABASE
               value: "iqb_tba_testcenter"
@@ -81,4 +81,4 @@ spec:
       volumes:
         - name: db-volume
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-db-pvc
+            claimName: {{ .Release.Name }}-db-pvc

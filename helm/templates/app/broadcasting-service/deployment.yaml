@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-broadcasting
+  name: {{ .Release.Name }}-broadcasting
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-broadcasting-pod
+      app: {{ .Release.Name }}-broadcasting-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-broadcasting-pod
+        app: {{ .Release.Name }}-broadcasting-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-broadcasting-container
+        - name: {{ .Release.Name }}-broadcasting-container
           image: "{{ .Values.image.broadcasting.registryPath }}iqbberlin/testcenter-broadcasting-service:{{ .Values.image.broadcasting.tag | default .Chart.AppVersion }}"
           ports:
             - name: http-container

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-backend-config
+  name: {{ .Release.Name }}-backend-config
 data:
   BROADCAST_SERVICE_ENABLED: {{ .Values.config.backend.broadcastServiceEnabled | quote }}
   FILE_SERVICE_ENABLED: {{ .Values.config.backend.fileServiceEnabled | quote }}

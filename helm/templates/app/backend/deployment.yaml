@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-backend
+  name: {{ .Release.Name }}-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-backend-pod
+      app: {{ .Release.Name }}-backend-pod
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/app/backend/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/app/backend/secret.yaml") . | sha256sum }}
       labels:
-        app: {{ .Chart.Name }}-backend-pod
+        app: {{ .Release.Name }}-backend-pod
     spec:
       initContainers:
         - name: wait-for-db-initcontainer
           image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
-          command: [ 'sh', '-c', 'until nc -z {{ .Chart.Name }}-db 3306; do echo waiting for {{ .Chart.Name }}-db; sleep 2; done;' ]
+          command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
       containers:
-        - name: {{ .Chart.Name }}-backend-container
+        - name: {{ .Release.Name }}-backend-container
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
           env:
             - name: MYSQL_DATABASE
@@ -28,61 +28,61 @@ spec:
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secrets
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secrets
                   key: MYSQL_PASSWORD
             - name: MYSQL_HOST
-              value: "{{ .Chart.Name }}-db"
+              value: "{{ .Release.Name }}-db"
             - name: MYSQL_PORT
               value: "3306"
             - name: PASSWORD_SALT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secrets
                   key: PASSWORD_SALT
             - name: BROADCAST_SERVICE_ENABLED
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: BROADCAST_SERVICE_ENABLED
             - name: FILE_SERVICE_ENABLED
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: FILE_SERVICE_ENABLED
             - name: HOSTNAME
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: HOSTNAME
             - name: TLS_ENABLED
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: TLS_ENABLED
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: CACHE_SERVICE_INCLUDE_FILES
             - name: CACHE_SERVICE_RAM
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: CACHE_SERVICE_RAM
             - name: PORT_OF_REVERSE_PROXY
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: PORT_OF_REVERSE_PROXY
             - name: TLS_PORT_OF_REVERSE_PROXY
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Chart.Name }}-backend-config
+                  name: {{ .Release.Name }}-backend-config
                   key: TLS_PORT_OF_REVERSE_PROXY
             - name: SKIP_READ_FILES
               value: "no"
@@ -115,4 +115,4 @@ spec:
       volumes:
         - name: backend-volume
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-backend-pvc
+            claimName: {{ .Release.Name }}-backend-pvc

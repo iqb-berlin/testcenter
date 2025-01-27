@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-backend-service
+  name: {{ .Release.Name }}-backend-service
 spec:
   selector:
-    app: {{ .Chart.Name }}-backend-pod
+    app: {{ .Release.Name }}-backend-pod
   ports:
     - protocol: TCP
       port: 80

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-frontend
+  name: {{ .Release.Name }}-frontend
 spec:
   replicas: {{ .Values.deployment.frontend.replicas }}
   {{- if .Values.deployment.frontend.strategy }}
@@ -10,14 +10,14 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-frontend-pod
+      app: {{ .Release.Name }}-frontend-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-frontend-pod
+        app: {{ .Release.Name }}-frontend-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-frontend-container
+        - name: {{ .Release.Name }}-frontend-container
           image: "{{ .Values.image.frontend.registryPath }}iqbberlin/testcenter-frontend:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
           ports:
             - name: http-container

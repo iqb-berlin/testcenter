@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Chart.Name }}-cache-server-pvc
+  name: {{ .Release.Name }}-cache-server-pvc
 spec:
   accessModes:
     - {{ .Values.persistence.cacheServer.accessMode }}

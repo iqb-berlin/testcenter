@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-cache-server
+  name: {{ .Release.Name }}-cache-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}-cache-server-pod
+      app: {{ .Release.Name }}-cache-server-pod
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}-cache-server-pod
+        app: {{ .Release.Name }}-cache-server-pod
     spec:
       containers:
-        - name: {{ .Chart.Name }}-cache-server-container
+        - name: {{ .Release.Name }}-cache-server-container
           image: "{{ .Values.image.cacheServer.registryPath }}redis:{{ .Values.image.cacheServer.tag }}"
           command:
             - bash
@@ -34,4 +34,4 @@ spec:
       volumes:
         - name: lv-storage
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-cache-server-pvc
+            claimName: {{ .Release.Name }}-cache-server-pvc

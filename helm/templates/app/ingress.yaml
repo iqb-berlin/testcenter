@@ -66,7 +66,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Chart.Name }}-path-ingress-http
+  name: {{ .Release.Name }}-path-ingress-http
 spec:
   entryPoints:
     - web
@@ -80,7 +80,7 @@ spec:
         - name: https-redirect
         {{- end }}
       services:
-        - name: {{ .Chart.Name }}-frontend-service
+        - name: {{ .Release.Name }}-frontend-service
           port: 80
     - kind: Rule
       match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
@@ -91,7 +91,7 @@ spec:
         - name: https-redirect
         {{- end }}
       services:
-        - name: {{ .Chart.Name }}-backend-service
+        - name: {{ .Release.Name }}-backend-service
           port: 80
     - kind: Rule
       match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/fs`)
@@ -121,7 +121,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Chart.Name }}-path-ingress-https
+  name: {{ .Release.Name }}-path-ingress-https
 spec:
   entryPoints:
     - websecure
@@ -132,7 +132,7 @@ spec:
         - name: securityheaders
         - name: stripregexfe
       services:
-        - name: {{ .Chart.Name }}-frontend-service
+        - name: {{ .Release.Name }}-frontend-service
           port: 80
     - kind: Rule
       match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
@@ -140,7 +140,7 @@ spec:
         - name: stripregexbe
         - name: securityheaders
       services:
-        - name: {{ .Chart.Name }}-backend-service
+        - name: {{ .Release.Name }}-backend-service
           port: 80
     - kind: Rule
       match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/fs`)
