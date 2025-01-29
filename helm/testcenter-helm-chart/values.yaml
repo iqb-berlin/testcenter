@@ -77,17 +77,21 @@ deployment:
         maxUnavailable: 0
 
 persistence:
+  longhorn:
+    enable: true
+    uiSubdomain: longhorn
+
   cacheServer:
-    storageClassName: standard
+    storageClassName: longhorn-single
     accessMode: ReadWriteOnce
     size: 5Gi
 
   backend:
-    storageClassName: standard
-    accessMode: ReadWriteOnce
+    storageClassName: longhorn
+    accessMode: ReadWriteMany
     size: 2Gi
 
   db:
-    storageClassName: standard
+    storageClassName: longhorn-single
     accessMode: ReadWriteOnce
     size: 2Gi
