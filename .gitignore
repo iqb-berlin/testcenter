@@ -62,5 +62,8 @@
 /e2e/.nyc_output
 /e2e/.coverage
 
+# helm
+custom-values.yaml
+
 # additional scripts
 /testcenter-scripts
