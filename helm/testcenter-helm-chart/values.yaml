@@ -1,0 +1,93 @@
+# Default values for testcenter-helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  ## Image Registry Path
+  # Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH value empty!
+  # Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
+  # GitLab:           scm.cms.hu-berlin.de:4567/iqb/studio-lite/
+  broadcasting:
+    registryPath: ""
+    tag: ""
+
+  frontend:
+    registryPath: ""
+    tag: ""
+
+  cacheServer:
+    registryPath: ""
+    tag: "7.4-bookworm"
+
+  fileServer:
+    registryPath: ""
+    tag: ""
+
+  backend:
+    registryPath: ""
+    tag: ""
+
+  db:
+    registryPath: ""
+    tag: "8.0"
+
+  busybox:
+    registryPath: ""
+    tag: "1.28"
+
+config:
+  backend:
+    broadcastServiceEnabled: true
+    fileServiceEnabled: true
+    cacheServiceRam: 1073741824
+    cacheServiceIncludeFiles: false
+
+secret:
+  common:
+    mysqlUser: iqb_tba_db_user
+    mysqlPassword: change_me
+
+  backend:
+    passwordSalt: change_me
+
+  db:
+    mysqlRootPassword: change_me
+
+ingress:
+  baseDomain: app.domain.tld
+  tlsEnabled: true
+  port: 80
+  tlsPort: 443
+
+deployment:
+  frontend:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+
+  fileServer:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
+
+persistence:
+  cacheServer:
+    storageClassName: standard
+    accessMode: ReadWriteOnce
+    size: 5Gi
+
+  backend:
+    storageClassName: standard
+    accessMode: ReadWriteOnce
+    size: 2Gi
+
+  db:
+    storageClassName: standard
+    accessMode: ReadWriteOnce
+    size: 2Gi
