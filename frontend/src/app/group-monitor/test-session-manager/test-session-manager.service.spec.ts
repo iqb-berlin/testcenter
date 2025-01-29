@@ -307,8 +307,8 @@ describe('TestSessionManager', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['groupForGoto'](sessions, selection);
       expect(result).toEqual({
-        'unit-3': [1, 33],
-        'unit-1': [34]
+        'unit-3': { ids: [1, 33], isClosed: undefined },
+        'unit-1': { ids: [34], isClosed: undefined }
       });
       // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
       // where it is empty , so there is no place to go. Session 34 with example_booklet_3 has the block,
