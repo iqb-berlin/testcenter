@@ -13,13 +13,25 @@ const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
 const getStatus = statusRequest => new Promise(resolve => {
-  request(
-    statusRequest,
-    (error, response) => (error ? resolve(error) : resolve(response))
+  const startTime = Date.now();
+  request(statusRequest, (error, response, body) => {
+    if (error) {
+      console.log(`ConfirmTestConfig: The StatusRequest errored after ${Date.now() - startTime}ms`);
+      console.log('Requested status results in error: ', error);
+      console.log('Requested status: ', statusRequest);
+      console.log('Body of errored request: ', body);
+      resolve(error);
+    } else {
+      console.log(`ConfirmTestConfig: The StatusRequest got a response back after ${Date.now() - startTime}ms`);
+      resolve(response);
+    }
+  }
   );
 });
 
-const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
+const sleep = ms => new Promise(resolve => {
+  setTimeout(resolve, ms);
+});
 
 const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
   if (!serviceUrl) {
@@ -32,18 +44,22 @@ const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
   let statusCode = 0;
   // eslint-disable-next-line no-plusplus
   while ((statusCode !== 200) && retries--) {
-    // eslint-disable-next-line no-await-in-loop
-    const response = await getStatus(statusRequest);
-    statusCode = response.statusCode;
-    if (statusCode === 200) {
-      return done();
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await getStatus(statusRequest);
+      statusCode = response.statusCode;
+      if (statusCode === 200) {
+        return done();
+      }
+      console.log(`Response has a statuscode ${statusCode} (${retries} retries left): `);
+      console.log(response.body);
+      console.log('request tried: ');
+      console.log(statusRequest);
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(5000);
+    } catch (e) {
+      await sleep(5000);
     }
-    console.log(`Connection attempt failed with ${statusCode} (${retries} retries left): `);
-    console.log(response.body);
-    console.log('request tried: ');
-    console.log(statusRequest);
-    // eslint-disable-next-line no-await-in-loop
-    await sleep(3000);
   }
 
   throw new Error(cliPrint.get.error(`Could not connect to ${serviceUrl}`));
@@ -142,7 +158,8 @@ const runDredd = serviceUrl => (async done => {
     hookfiles: ['hooks.js'],
     output: [`${tmpDir}/report.html`], // TODO do something with it
     reporter: ['html'],
-    names: false // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
+    names: false, // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
+    'inline-errors': true
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
@@ -169,7 +186,8 @@ exports.runDreddTest = gulp.series(
       url: `${testConfig.backend_url}/system/config?XDEBUG_SESSION_START=IDEA`,
       headers: {
         TestMode: 'prepare'
-      }
+      },
+      timeout: 1000 * 60 * 5 // 5 minutes
     }
   ),
   clearTmpDir,
@@ -182,7 +200,8 @@ exports.runDreddTestFs = gulp.series(
   confirmTestConfig(
     testConfig.file_service_url,
     {
-      url: `${testConfig.file_service_url}/health`
+      url: `${testConfig.file_service_url}/health`,
+      timeout: 1000 * 60 * 5 // 5 minutes
     }
   ),
   clearTmpDir,
