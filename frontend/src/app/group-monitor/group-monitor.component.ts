@@ -269,9 +269,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
     (this.tsm.checked
       .some(testSession => isBooklet(testSession.booklet) &&
-          this.selectedElement?.element &&
+          this.currentlySelected?.element &&
           testSession.timeLeft &&
-          (testSession.timeLeft[this.selectedElement?.element?.id] <= 0)
+          (testSession.timeLeft[this.currentlySelected?.element?.id] <= 0)
       ) ?
       this.dialog.open(
         ConfirmDialogComponent, {
