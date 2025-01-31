@@ -153,7 +153,7 @@ export interface UnitContext {
 export interface Selected {
   element: Testlet | null;
   originSession: TestSession;
-  spreading: boolean;
+  nthClick: 'first' | 'second' | 'third';
   inversion: boolean;
 }
 

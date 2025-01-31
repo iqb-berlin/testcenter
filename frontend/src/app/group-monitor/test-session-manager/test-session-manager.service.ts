@@ -21,6 +21,7 @@ import {
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
 import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
+import { TestSessionByDataTestId } from './test-session-manager.interfaces';
 
 @Injectable()
 export class TestSessionManager {
@@ -288,7 +289,7 @@ export class TestSessionManager {
       this.checkingOptions.autoCheckAll = false;
     }
 
-    const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
+    const newCheckedSessions: TestSessionByDataTestId = {};
     sessions
       .forEach(session => {
         if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.data.testId] !== 'undefined')) {
@@ -469,13 +470,15 @@ export class TestSessionManager {
     }
     let toCheck: TestSession[] = [];
     if (selected.element) {
-      if (!selected.spreading) {
+      if (selected.nthClick === 'first') {
         toCheck = [...this.checked, selected.originSession];
-      } else {
+      } else if (selected.nthClick === 'second') {
         toCheck = this._sessions$.getValue()
           .filter(session => (!['pending', 'locked'].includes(session.state)))
           .filter(session => (session.booklet.species === selected.originSession.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
+      } else if (selected.nthClick === 'third') {
+        toCheck = [];
       }
     }
 
@@ -508,9 +511,7 @@ export class TestSessionManager {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }
-    if (this.isChecked(session)) {
-      delete this._checked[session.data.testId];
-    }
+    delete this._checked[session.data.testId];
     this.onCheckedChanged();
   }
 
@@ -528,7 +529,7 @@ export class TestSessionManager {
   }
 
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
-    const newCheckedSessions: { [testId: string]: TestSession } = {};
+    const newCheckedSessions: TestSessionByDataTestId = {};
     sessionsToCheck
       .forEach(session => {
         newCheckedSessions[session.data.testId] = session;

@@ -10,6 +10,13 @@ layout: default
 
 ### Verbesserungen
 * Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
+* Änderungen an der Navigation in der Testleitungskonsole:
+  * Mehrere Klicks auf denselben Block in der `Vollständig` und `Nur Blöcke` hat nun folgendes Verhalten
+    * 1 Klick - Nur der Block wird ausgesucht
+    * 2 Klicks - Alle Blöcke von derselben Art werden ausgesucht
+    * 3 Klicks - Die bisherige Auswahl wird aufgehoben
+  * Deselektierung aller Blöcke passiert nicht mehr mit einem Klick auf einen beliebigen Punkt in der angezeigten Tabelle
+  * Das Auswählen aller Blöcke bei einem einmaligen Klick sollte nun viel weniger auftreten
 
 ## 16.0.0-alpha
 ### Kubernetes
