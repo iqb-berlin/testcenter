@@ -55,9 +55,9 @@ secret:
 
 ingress:
   baseDomain: app.domain.tld
-  tlsEnabled: true
   port: 80
   tlsPort: 443
+  tlsEnabled: true
 
 deployment:
   frontend:

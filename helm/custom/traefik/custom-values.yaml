@@ -1,9 +1,3 @@
-ingress:
-  baseDomain: app.domain.tld
-  tlsEnabled: true
-  port: 80
-  tlsPort: 443
-
 deployment:
   replicas: 3
 #  initContainers:
@@ -60,11 +54,14 @@ globalArguments:
   - "--global.sendanonymoususage=false"
 
 ports:
-  #  traefik:
-  #    expose:
-  #      default: true
-  #  web:
-  #    redirectTo: websecure
+#  traefik:
+#    expose:
+#      default: true
+#  web:
+#    redirections:
+#      entryPoint:
+#        to: websecure
+#        scheme: https
   websecure:
     tls:
       certResolver: letsencrypt
@@ -133,7 +130,11 @@ persistence:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: sven.wolter@hu-berlin.de
+      email: admin.name@organisation.org
+#      httpChallenge:
+#        # used during the challenge
+#        entryPoint: web
+#      tlsChallenge: true
 #      dnsChallenge:
 #        # also add the provider's required configuration under env
 #        # or expand then from secrets/configmaps with envfrom
@@ -145,9 +146,6 @@ certificatesResolvers:
 #        resolvers:
 #          - 141.20.1.3
 #          - 141.20.2.3
-      tlsChallenge: true
-#      httpChallenge:
-#        entryPoint: "web"
       storage: /data/acme.json
 #  sectigo:
 #    acme:
