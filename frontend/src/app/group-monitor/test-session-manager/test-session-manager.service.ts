@@ -476,15 +476,20 @@ export class TestSessionManager {
   getMaxTimeAcrossAllSessions(selected: Selected): number {
     const sessions = this.sessions;
     let lowestTime: number = 0;
-    console.log(this.sessions)
     sessions.forEach(session => {
-      console.log()
-      if (lowestTime === 0 && selected.element?.id && session.timeLeft) {
-        lowestTime = session.timeLeft[selected.element.id];
-        return;
+      let maxTime;
+      if ('units' in session.booklet) {
+        const blocks = session.booklet.units.children.filter(testletOrUnit => testletOrUnit.id === selected.element?.id
+        );
+        if (blocks.length > 0 && 'restrictions' in blocks[0]) {
+          maxTime = blocks[0].restrictions.timeMax?.minutes;
+        }
       }
-      if ((selected.element?.id && session.timeLeft) && session.timeLeft[selected.element.id] < lowestTime) {
-        lowestTime = session.timeLeft[selected.element.id];
+      if (maxTime && lowestTime === 0) {
+        lowestTime = maxTime;
+      }
+      if (maxTime && maxTime < lowestTime) {
+        lowestTime = maxTime;
       }
     });
 

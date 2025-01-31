@@ -77,7 +77,8 @@ import { TimeRestrictionDialogComponent } from './time-restriction-dialog/time-r
     MatFormFieldModule,
     MatAutocompleteModule,
     A11yModule,
-    MatCardModule
+    MatCardModule,
+    MatInputModule
   ],
   providers: [
     BackendService,
