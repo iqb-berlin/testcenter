@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: testcenter-cache-server-service #hard coded in application as internal address
+  name: testcenter-cache-service # !!! Hard coded in application as internal address !!! @TODO: Should be '{{ .Release.Name }}-cache-server-service'
 spec:
   selector:
     app: {{ .Release.Name }}-cache-server-pod
