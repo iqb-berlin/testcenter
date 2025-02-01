@@ -7,12 +7,10 @@
   <p>
     Die maximale Zeit deiner aktuellen Auswahl beträgt: {{ dialogData.remainingTime }}
   </p>
-  <input matInput matNativeControl type="number" id="setTimer" min="0"  [value]="dialogData.remainingTime" [max]="dialogData.remainingTime" [formControl]="setTime">
+  <input matInput type="number" id="setTimer" min="1"  [max]="dialogData.remainingTime" [formControl]="setTime">
 </mat-dialog-content>
 
-
-
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" [mat-dialog-close]="true">{{ dialogData.confirmbuttonlabel }}</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="setTime.value">{{ dialogData.confirmbuttonlabel }}</button>
   <button mat-raised-button [mat-dialog-close]="false">{{ dialogData.cancelbuttonlabel }}</button>
 </mat-dialog-actions>

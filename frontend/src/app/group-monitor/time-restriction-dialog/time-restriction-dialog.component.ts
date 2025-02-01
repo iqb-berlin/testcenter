@@ -18,7 +18,7 @@ export interface TimeRestrictionDialogData {
 })
 export class TimeRestrictionDialogComponent implements OnInit {
   showcancel: boolean = true;
-  setTime = new FormControl(0);
+  setTime = new FormControl(this.dialogData.remainingTime);
 
   constructor(@Inject(MAT_DIALOG_DATA) public dialogData: TimeRestrictionDialogData) {}
 

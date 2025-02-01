@@ -427,12 +427,12 @@ export class TestControllerService {
     return unit;
   }
 
-  restoreTime(testlet: Testlet): void {
+  restoreTime(testlet: Testlet, timeGivenByGm: number): void {
     if (!testlet.restrictions?.timeMax) return;
     if (typeof this.timers[testlet.id] === 'undefined') return;
     if (this.timers[testlet.id] > 0) return;
     if (this.timers[testlet.id] <= 0) {
-      this.timers[testlet.id] = testlet.restrictions.timeMax.minutes;
+      this.timers[testlet.id] = timeGivenByGm;
     }
     testlet.locks.time = false;
   }

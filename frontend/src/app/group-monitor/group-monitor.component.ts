@@ -288,15 +288,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
             confirmbuttonlabel: 'OK',
             showcancel: true,
-            remainingTime: this.tsm.getMaxTimeAcrossAllSessions(this.selectedElement)
+            remainingTime: this.tsm.getMaxTimeAcrossAllSessions(this.currentlySelected)
           }
         }
       ).afterClosed() :
-      of(true)
+      of(1) // 1 as in 'true'
     )
-      .subscribe((ok: boolean) => {
-        if (!ok || !this.currentlySelected) return;
-        this.tsm.testCommandGoto(this.currentlySelected)
+      .subscribe((confirmed?: number | boolean) => {
+        if (!confirmed || confirmed === 0 || !this.currentlySelected) return;
+        const newTimeLeft = confirmed as number;
+        this.tsm.testCommandGoto(this.currentlySelected, newTimeLeft)
           .subscribe(() => this.selectNextBlock());
       });
   }

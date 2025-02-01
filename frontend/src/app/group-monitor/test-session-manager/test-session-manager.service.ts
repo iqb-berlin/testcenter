@@ -294,12 +294,16 @@ export class TestSessionManager {
     );
   }
 
-  testCommandGoto(selection: Selected): Observable<true> {
+  testCommandGoto(selection: Selected, newTimeLeft: number): Observable<true> {
     const gfg = TestSessionManager.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
     return zip(
       Object.keys(gfg)
-        .map(unitAlias => this.bs.command('goto', ['id', unitAlias], gfg[unitAlias]))
+        .map(unitAlias => this.bs.command(
+          'goto',
+          ['id', unitAlias, gfg[unitAlias].isClosed ? `| closed timeblock reopened - new remaining time ${newTimeLeft}` : ''],
+          gfg[unitAlias].ids)
+        )
     ).pipe(
       tap(() => {
         this._commandResponses$.next({
@@ -500,6 +504,7 @@ export class TestSessionManager {
     const groupedByTargetUnitAlias: GotoCommandData = {};
     sessionsSet.forEach(session => {
       if (!session.data.bookletName || !isBooklet(session.booklet)) return;
+
       const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
         !!session.bookletStates &&
         (session.bookletStates[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
@@ -507,10 +512,15 @@ export class TestSessionManager {
         BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
         null;
       if (!firstUnit) return;
+
       if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {
-        groupedByTargetUnitAlias[firstUnit.alias] = [session.data.testId];
+        groupedByTargetUnitAlias[firstUnit.alias] = { ids: [session.data.testId], isClosed: undefined };
       } else {
-        groupedByTargetUnitAlias[firstUnit.alias].push(session.data.testId);
+        groupedByTargetUnitAlias[firstUnit.alias].ids.push(session.data.testId);
+      }
+
+      if (session.timeLeft && selection.element && Object.keys(session.timeLeft).includes(selection.element.id)) {
+        groupedByTargetUnitAlias[firstUnit.alias].isClosed = true;
       }
     });
     return groupedByTargetUnitAlias;
