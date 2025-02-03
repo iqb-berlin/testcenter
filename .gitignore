@@ -63,7 +63,7 @@
 /e2e/.coverage
 
 # helm
-custom-values.yaml
+helm/testcenter-helm-chart/custom-values.yaml
 
 # additional scripts
 /testcenter-scripts

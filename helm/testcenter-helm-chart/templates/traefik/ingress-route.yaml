@@ -1,0 +1,131 @@
+# Broadcasting
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-broadcasting-ingress
+  namespace: tc
+spec:
+  entryPoints:
+    {{- if .Values.ingress.tlsEnabled }}
+    - websecure
+    {{- else }}
+    - web
+    {{- end }}
+  routes:
+    - kind: Rule
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/bs/public`)
+      middlewares:
+        - name: security-headers
+        - name: stripregex-bs
+        {{- if .Values.ingress.tlsEnabled }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - kind: Service
+          name: testcenter-broadcasting-service # !!! hard coded in application as internal address !!!
+          port: 3000
+  {{- if .Values.ingress.tlsEnabled }}
+  tls:
+    certResolver: letsencrypt
+  {{- end }}
+---
+
+# Frontend
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-frontend-ingress
+  namespace: tc
+spec:
+  entryPoints:
+    {{- if .Values.ingress.tlsEnabled }}
+    - websecure
+    {{- else }}
+    - web
+    {{- end }}
+  routes:
+    - kind: Rule
+      match: Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)
+      middlewares:
+        - name: security-headers
+        - name: stripregex-fe
+        {{- if .Values.ingress.tlsEnabled }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - kind: Service
+          name: {{ .Release.Name }}-frontend-service
+          port: 80
+  {{- if .Values.ingress.tlsEnabled }}
+  tls:
+    certResolver: letsencrypt
+    domains:
+      - main: {{ .Values.ingress.baseDomain }}
+        sans:
+          - www.{{ .Values.ingress.baseDomain }}
+  {{- end }}
+---
+
+# File Server
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-file-server-ingress
+  namespace: tc
+spec:
+  entryPoints:
+    {{- if .Values.ingress.tlsEnabled }}
+    - websecure
+    {{- else }}
+    - web
+    {{- end }}
+  routes:
+    - kind: Rule
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/fs`)
+      middlewares:
+        - name: security-headers
+        - name: stripregex-fs
+        {{- if .Values.ingress.tlsEnabled }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - kind: Service
+          name: testcenter-file-service # !!! hard coded in application as internal address !!!
+          port: 80
+  {{- if .Values.ingress.tlsEnabled }}
+  tls:
+    certResolver: letsencrypt
+  {{- end }}
+---
+
+# Backend
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-backend-ingress
+  namespace: tc
+spec:
+  entryPoints:
+    {{- if .Values.ingress.tlsEnabled }}
+    - websecure
+    {{- else }}
+    - web
+    {{- end }}
+  routes:
+    - kind: Rule
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
+      middlewares:
+        - name: stripregex-be
+        - name: security-headers
+        {{- if .Values.ingress.tlsEnabled }}
+        - name: https-redirect
+        {{- end }}
+      services:
+        - kind: Service
+          name: {{ .Release.Name }}-backend-service
+          port: 80
+  {{- if .Values.ingress.tlsEnabled }}
+  tls:
+    certResolver: letsencrypt
+  {{- end }}
+---
