@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>{{ dialogData.title }}</h1>
+
+<mat-dialog-content>
+  <p>
+    {{ dialogData.content }}
+  </p>
+  <p>
+    Die maximale Zeit deiner aktuellen Auswahl beträgt: {{ dialogData.remainingTime }}
+  </p>
+  <input matInput type="number" id="setTimer" min="1"  [max]="dialogData.remainingTime" [formControl]="setTime">
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" [mat-dialog-close]="setTime.value">{{ dialogData.confirmbuttonlabel }}</button>
+  <button mat-raised-button [mat-dialog-close]="false">{{ dialogData.cancelbuttonlabel }}</button>
+</mat-dialog-actions>

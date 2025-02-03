@@ -22,7 +22,7 @@ import {
   TestViewDisplayOptionKey,
   Selected,
   TestSession,
-  TestSessionSetStats,
+  TestSessionSetStat,
   CommandResponse,
   UIMessage,
   isBooklet,
@@ -33,6 +33,10 @@ import {
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import {
+  TimeRestrictionDialogComponent,
+  TimeRestrictionDialogData
+} from './time-restriction-dialog/time-restriction-dialog.component';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -145,7 +149,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
-  private onSessionsUpdate(stats: TestSessionSetStats): void {
+  private onSessionsUpdate(stats: TestSessionSetStat): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
     if (!this.tsm.checkingOptions.enableAutoCheckAll) {
@@ -155,7 +159,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.bookletStates = stats.bookletStateLabels;
   }
 
-  private onCheckedChange(stats: TestSessionSetStats): void {
+  private onCheckedChange(stats: TestSessionSetStat): void {
     if (stats.differentBookletSpecies > 1) {
       this.currentlySelected = null;
     }
@@ -267,6 +271,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       });
       return;
     }
+
     (this.tsm.checked
       .some(testSession => isBooklet(testSession.booklet) &&
           this.currentlySelected?.element &&
@@ -274,23 +279,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
           (testSession.timeLeft[this.currentlySelected?.element?.id] <= 0)
       ) ?
       this.dialog.open(
-        ConfirmDialogComponent, {
+        TimeRestrictionDialogComponent, {
           width: 'auto',
-          data: <ConfirmDialogData>{
+          data: <TimeRestrictionDialogData>{
             title:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
             content:
                 this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
             confirmbuttonlabel: 'OK',
-            showcancel: true
+            showcancel: true,
+            remainingTime: this.tsm.getMaxTimeAcrossAllSessions(this.currentlySelected)
           }
         }
       ).afterClosed() :
-      of(true)
+      of(1) // 1 as in 'true'
     )
-      .subscribe((ok: boolean) => {
-        if (!ok || !this.currentlySelected) return;
-        this.tsm.testCommandGoto(this.currentlySelected)
+      .subscribe((confirmed?: number | boolean) => {
+        if (!confirmed || confirmed === 0 || !this.currentlySelected) return;
+        const newTimeLeft = confirmed as number;
+        this.tsm.testCommandGoto(this.currentlySelected, newTimeLeft)
           .subscribe(() => this.selectNextBlock());
       });
   }

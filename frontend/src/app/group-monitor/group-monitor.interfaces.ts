@@ -157,14 +157,14 @@ export interface Selected {
   inversion: boolean;
 }
 
-export interface TestSessionSetStats {
-  all: boolean;
-  number: number;
+export interface TestSessionSetStat {
+  allChecked: boolean;
+  numberOfSessions: number;
   differentBooklets: number;
   differentBookletSpecies: number;
-  paused: number;
-  locked: number;
-  bookletStateLabels: { [bookletStateId: string]: string }
+  pausedSessions: number;
+  lockedSessions: number;
+  bookletStateLabels: { [bookletStateId: string]: string };
 }
 
 export interface UIMessage {
@@ -180,7 +180,12 @@ export interface CommandResponse {
 }
 
 export interface GotoCommandData {
-  [firstUnitId: string]: number[];
+  [firstUnitId: string]: CommandParameter;
+}
+
+interface CommandParameter {
+  ids: number[];
+  isClosed?: boolean;
 }
 
 export type Unit = UnitDef;
@@ -196,6 +201,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
 }
 
 export type BookletStateOption = BookletStateOptionDef;
+
 export interface BookletState extends BookletStateDef<BookletStateOption> {
   default: string;
 }

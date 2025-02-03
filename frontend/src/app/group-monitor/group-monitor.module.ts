@@ -21,6 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { A11yModule } from '@angular/cdk/a11y';
+import { MatCardModule } from '@angular/material/card';
 import { SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
@@ -36,7 +37,7 @@ import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
 import { BookletStatesPipe } from './test-session/bookletstates.pipe';
 import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
-import { MatCardModule } from '@angular/material/card';
+import { TimeRestrictionDialogComponent } from './time-restriction-dialog/time-restriction-dialog.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { MatCardModule } from '@angular/material/card';
     TimeLeftPipe,
     PositionPipe,
     BookletStatesPipe,
-    TestletvisiblePipe
+    TestletvisiblePipe,
+    TimeRestrictionDialogComponent
   ],
   imports: [
     CommonModule,
@@ -75,7 +77,8 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatAutocompleteModule,
     A11yModule,
-    MatCardModule
+    MatCardModule,
+    MatInputModule
   ],
   providers: [
     BackendService,

@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip } from 'rxjs';
+import {
+  BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip
+} from 'rxjs';
 import { Sort } from '@angular/material/sort';
-import { delay, filter, flatMap, map, startWith, switchMap, tap } from 'rxjs/operators';
+import {
+  delay, filter, flatMap, map, startWith, switchMap, tap
+} from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { BookletService } from '../booklet/booklet.service';
 import { TestSessionUtil } from '../test-session/test-session.util';
@@ -16,7 +20,7 @@ import {
   TestSession,
   TestSessionFilter,
   TestSessionFilterList,
-  TestSessionSetStats,
+  TestSessionSetStat,
   TestSessionsSuperStates
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
@@ -25,51 +29,6 @@ import { TestSessionByDataTestId } from './test-session-manager.interfaces';
 
 @Injectable()
 export class TestSessionManager {
-  sortBy$: Subject<Sort>;
-  filters$: Subject<TestSessionFilter[]>;
-
-  checkingOptions: CheckingOptions = {
-    enableAutoCheckAll: false,
-    autoCheckAll: false
-  };
-
-  private groupName: string = '';
-
-  get sessions$(): Observable<TestSession[]> {
-    return this._sessions$.asObservable();
-  }
-
-  get sessions(): TestSession[] {
-    return this._sessions$.getValue();
-  }
-
-  get checked(): TestSession[] { // this is intentionally not an observable
-    return Object.values(this._checked);
-  }
-
-  get sessionsStats$(): Observable<TestSessionSetStats> {
-    return this._sessionsStats$.asObservable();
-  }
-
-  get checkedStats$(): Observable<TestSessionSetStats> {
-    return this._checkedStats$.asObservable();
-  }
-
-  get commandResponses$(): Observable<CommandResponse> {
-    return this._commandResponses$
-      .pipe(
-        filter(c => !!c)
-      );
-  }
-
-  private monitor$: Observable<TestSession[]> = new Observable<TestSession[]>();
-  private _sessions$: BehaviorSubject<TestSession[]> = new BehaviorSubject<TestSession[]>([]);
-  private _checked: { [sessionTestSessionId: number]: TestSession } = {};
-  private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
-  private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
-  private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
-  private _clock$: Observable<number>;
-
   static readonly basicFilters: TestSessionFilterList = {
     locked: {
       selected: false,
@@ -112,21 +71,63 @@ export class TestSessionManager {
     }
   };
 
+  sortBy$: Subject<Sort>;
+  filters$: Subject<TestSessionFilter[]>;
   filterOptions: TestSessionFilterList = {};
+  checkingOptions: CheckingOptions = {
+    enableAutoCheckAll: false,
+    autoCheckAll: false
+  };
+
+  private groupName: string = '';
+  private monitor$: Observable<TestSession[]> = new Observable<TestSession[]>();
+  private _sessions$: BehaviorSubject<TestSession[]> = new BehaviorSubject<TestSession[]>([]);
+  private _checked: { [sessionTestSessionId: number]: TestSession } = {};
+  private _checkedStats$: BehaviorSubject<TestSessionSetStat>;
+  private _sessionsStats$: BehaviorSubject<TestSessionSetStat>;
+  private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
+  private _clock$: Observable<number>;
 
   constructor(
     private bs: BackendService,
     private bookletService: BookletService,
     @Inject(GROUP_MONITOR_CONFIG) private readonly groupMonitorConfig: GroupMonitorConfig
   ) {
-    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
-    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
+    this._checkedStats$ = new BehaviorSubject<TestSessionSetStat>(TestSessionManager.getEmptyStats());
+    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStat>(TestSessionManager.getEmptyStats());
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
     this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
       interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
       of(0);
     this.resetFilters();
+  }
+
+  get sessions$(): Observable<TestSession[]> {
+    return this._sessions$.asObservable();
+  }
+
+  get sessions(): TestSession[] {
+    return this._sessions$.getValue();
+  }
+
+  get checked(): TestSession[] { // this is intentionally not an observable
+    return Object.values(this._checked);
+  }
+
+  get sessionsStats$(): Observable<TestSessionSetStat> {
+    return this._sessionsStats$.asObservable();
+  }
+
+  get checkedStats$(): Observable<TestSessionSetStat> {
+    return this._checkedStats$.asObservable();
+  }
+
+  get commandResponses$(): Observable<CommandResponse> {
+    return this._commandResponses$
+      .pipe(
+        filter(c => !!c)
+      );
   }
 
   connect(groupName: string): void {
@@ -144,11 +145,11 @@ export class TestSessionManager {
 
     this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(
-        switchMap(sessions => zip(
-          ...sessions
-            .map(session => combineLatest([this.bookletService.getBooklet(session.bookletName), this._clock$])
+        switchMap(sessionChanges => zip(
+          ...sessionChanges
+            .map(sessionChange => combineLatest([this.bookletService.getBooklet(sessionChange.bookletName), this._clock$])
               .pipe(
-                map(([booklet]) => TestSessionUtil.analyzeTestSession(session, booklet))
+                map(([booklet]) => TestSessionUtil.analyzeTestSession(sessionChange, booklet))
               )
             )
         ))
@@ -266,40 +267,89 @@ export class TestSessionManager {
     return typeof filterOut !== 'undefined';
   }
 
-  private static getEmptyStats(): TestSessionSetStats {
-    return {
-      ...{
-        all: false,
-        number: 0,
-        differentBookletSpecies: 0,
-        differentBooklets: 0,
-        bookletStateLabels: {},
-        paused: 0,
-        locked: 0
-      }
-    };
+  testCommandPause(): void {
+    const testIds = this.checked
+      .filter(session => !TestSessionUtil.isPaused(session))
+      .filter(session => !['pending', 'locked'].includes(session.state))
+      .map(session => session.data.testId);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'pause', testIds });
+      return;
+    }
+    this.bs.command('pause', [], testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
   }
 
-  private synchronizeChecked(sessions: TestSession[]): void {
-    const sessionsStats = TestSessionManager.getSessionSetStats(sessions);
+  testCommandResume(): void {
+    const testIds = this.checked
+      .filter(session => !['pending', 'locked'].includes(session.state))
+      .map(session => session.data.testId);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'resume', testIds });
+      return;
+    }
+    this.bs.command('resume', [], testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
+  }
 
-    this.checkingOptions.enableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
+  testCommandGoto(selection: Selected, newTimeLeft: number): Observable<true> {
+    const gfg = TestSessionManager.groupForGoto(this.checked, selection);
+    const allTestIds = this.checked.map(s => s.data.testId);
+    return zip(
+      Object.keys(gfg)
+        .map(unitAlias => this.bs.command(
+          'goto',
+          ['id', unitAlias, gfg[unitAlias].isClosed ? `| closed timeblock reopened - new remaining time ${newTimeLeft}` : ''],
+          gfg[unitAlias].ids)
+        )
+    ).pipe(
+      tap(() => {
+        this._commandResponses$.next({
+          commandType: 'goto',
+          testIds: allTestIds
+        });
+      }),
+      map(() => true)
+    );
+  }
 
-    if (!this.checkingOptions.enableAutoCheckAll) {
-      this.checkingOptions.autoCheckAll = false;
+  testCommandUnlock(): void {
+    const testIds = this.checked
+      .filter(session => TestSessionUtil.isLocked(session))
+      .map(session => session.data.testId);
+
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'unlock', testIds });
+      return;
     }
 
-    const newCheckedSessions: TestSessionByDataTestId = {};
-    sessions
-      .forEach(session => {
-        if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.data.testId] !== 'undefined')) {
-          newCheckedSessions[session.data.testId] = session;
-        }
-      });
-    this._checked = newCheckedSessions;
+    this.bs.unlock(this.groupName, testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
+  }
 
-    this._checkedStats$.next(TestSessionManager.getSessionSetStats(Object.values(this._checked), sessions.length));
-    this._sessionsStats$.next(sessionsStats);
+  // todo unit test
+  commandFinishEverything(): Observable<CommandResponse> {
+    const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
+      .filter(session => !['pending', 'locked'].includes(session.state) &&
+        !TestSessionUtil.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
+        (TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
+          TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
+      .map(session => session.data.testId);
+    const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
+      .filter(session => session.data.testId > 0)
+      .filter(session => !['pending', 'locked'].includes(session.state))
+      .map(session => session.data.testId);
+
+    this.filters$.next([]);
+
+    return this.bs.command('terminate', ['lock'], getUnlockedConnectedTestIds())
+      .pipe(
+        delay(1500),
+        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
+      );
   }
 
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
@@ -357,107 +407,6 @@ export class TestSessionManager {
         }
         return valA.localeCompare(valB) * sortDirectionFactor;
       });
-  }
-
-  testCommandPause(): void {
-    const testIds = this.checked
-      .filter(session => !TestSessionUtil.isPaused(session))
-      .filter(session => !['pending', 'locked'].includes(session.state))
-      .map(session => session.data.testId);
-    if (!testIds.length) {
-      this._commandResponses$.next({ commandType: 'pause', testIds });
-      return;
-    }
-    this.bs.command('pause', [], testIds).subscribe(
-      response => this._commandResponses$.next(response)
-    );
-  }
-
-  testCommandResume(): void {
-    const testIds = this.checked
-      .filter(session => !['pending', 'locked'].includes(session.state))
-      .map(session => session.data.testId);
-    if (!testIds.length) {
-      this._commandResponses$.next({ commandType: 'resume', testIds });
-      return;
-    }
-    this.bs.command('resume', [], testIds).subscribe(
-      response => this._commandResponses$.next(response)
-    );
-  }
-
-  testCommandGoto(selection: Selected): Observable<true> {
-    const gfg = TestSessionManager.groupForGoto(this.checked, selection);
-    const allTestIds = this.checked.map(s => s.data.testId);
-    return zip(
-      Object.keys(gfg)
-        .map(unitAlias => this.bs.command('goto', ['id', unitAlias], gfg[unitAlias]))
-    ).pipe(
-      tap(() => {
-        this._commandResponses$.next({
-          commandType: 'goto',
-          testIds: allTestIds
-        });
-      }),
-      map(() => true)
-    );
-  }
-
-  private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
-    const groupedByTargetUnitAlias: GotoCommandData = {};
-    sessionsSet.forEach(session => {
-      if (!session.data.bookletName || !isBooklet(session.booklet)) return;
-      const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
-        !!session.bookletStates &&
-        (session.bookletStates[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
-      const firstUnit = selection.element?.blockId ?
-        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
-        null;
-      if (!firstUnit) return;
-      if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {
-        groupedByTargetUnitAlias[firstUnit.alias] = [session.data.testId];
-      } else {
-        groupedByTargetUnitAlias[firstUnit.alias].push(session.data.testId);
-      }
-    });
-    return groupedByTargetUnitAlias;
-  }
-
-  testCommandUnlock(): void {
-    const testIds = this.checked
-      .filter(session => TestSessionUtil.isLocked(session))
-      .map(session => session.data.testId);
-
-    if (!testIds.length) {
-      this._commandResponses$.next({ commandType: 'unlock', testIds });
-      return;
-    }
-
-    this.bs.unlock(this.groupName, testIds).subscribe(
-      response => this._commandResponses$.next(response)
-    );
-  }
-
-  // todo unit test
-  commandFinishEverything(): Observable<CommandResponse> {
-    const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => !['pending', 'locked'].includes(session.state) &&
-        !TestSessionUtil.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
-        (TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
-          TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
-      .map(session => session.data.testId);
-    const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => session.data.testId > 0)
-      .filter(session => !['pending', 'locked'].includes(session.state))
-      .map(session => session.data.testId);
-
-    this.filters$.next([]);
-
-    return this.bs.command('terminate', ['lock'], getUnlockedConnectedTestIds())
-      .pipe(
-        delay(1500),
-        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
-      );
   }
 
   isChecked(session: TestSession): boolean {
@@ -528,21 +477,70 @@ export class TestSessionManager {
     this.replaceCheckedSessions([]);
   }
 
-  private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
-    const newCheckedSessions: TestSessionByDataTestId = {};
-    sessionsToCheck
-      .forEach(session => {
-        newCheckedSessions[session.data.testId] = session;
-      });
-    this._checked = newCheckedSessions;
-    this.onCheckedChanged();
+  getMaxTimeAcrossAllSessions(selected: Selected): number {
+    const sessions = this.sessions;
+    let lowestTime: number = 0;
+    sessions.forEach(session => {
+      let maxTime;
+      if ('units' in session.booklet) {
+        const blocks = session.booklet.units.children.filter(testletOrUnit => testletOrUnit.id === selected.element?.id
+        );
+        if (blocks.length > 0 && 'restrictions' in blocks[0]) {
+          maxTime = blocks[0].restrictions.timeMax?.minutes;
+        }
+      }
+      if (maxTime && lowestTime === 0) {
+        lowestTime = maxTime;
+      }
+      if (maxTime && maxTime < lowestTime) {
+        lowestTime = maxTime;
+      }
+    });
+
+    return lowestTime;
   }
 
-  private onCheckedChanged(): void {
-    this._checkedStats$.next(TestSessionManager.getSessionSetStats(this.checked, this.sessions.length));
+  private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
+    const groupedByTargetUnitAlias: GotoCommandData = {};
+    sessionsSet.forEach(session => {
+      if (!session.data.bookletName || !isBooklet(session.booklet)) return;
+
+      const ignoreTestlet = (testlet: Testlet) => !!testlet.restrictions.show &&
+        !!session.bookletStates &&
+        (session.bookletStates[testlet.restrictions.show.if] !== testlet.restrictions.show.is);
+      const firstUnit = selection.element?.blockId ?
+        BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet, ignoreTestlet) :
+        null;
+      if (!firstUnit) return;
+
+      if (!Object.keys(groupedByTargetUnitAlias).includes(firstUnit.alias)) {
+        groupedByTargetUnitAlias[firstUnit.alias] = { ids: [session.data.testId], isClosed: undefined };
+      } else {
+        groupedByTargetUnitAlias[firstUnit.alias].ids.push(session.data.testId);
+      }
+
+      if (session.timeLeft && selection.element && Object.keys(session.timeLeft).includes(selection.element.id)) {
+        groupedByTargetUnitAlias[firstUnit.alias].isClosed = true;
+      }
+    });
+    return groupedByTargetUnitAlias;
   }
 
-  private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStats {
+  private static getEmptyStats(): TestSessionSetStat {
+    return {
+      ...{
+        allChecked: false,
+        numberOfSessions: 0,
+        differentBookletSpecies: 0,
+        differentBooklets: 0,
+        bookletStateLabels: {},
+        pausedSessions: 0,
+        lockedSessions: 0
+      }
+    };
+  }
+
+  private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStat {
     const booklets = new Set();
     const bookletSpecies = new Set();
     const bookletStateLabels: { [key: string]: string } = {};
@@ -562,13 +560,49 @@ export class TestSessionManager {
       });
 
     return {
-      number: sessionSet.length,
+      numberOfSessions: sessionSet.length,
       differentBooklets: booklets.size,
       differentBookletSpecies: bookletSpecies.size,
-      all: (all === sessionSet.length),
+      allChecked: (all === sessionSet.length),
       bookletStateLabels,
-      paused,
-      locked
+      pausedSessions: paused,
+      lockedSessions: locked
     };
+  }
+
+  private synchronizeChecked(sessions: TestSession[]): void {
+    const sessionsStats = TestSessionManager.getSessionSetStats(sessions);
+
+    this.checkingOptions.enableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
+
+    if (!this.checkingOptions.enableAutoCheckAll) {
+      this.checkingOptions.autoCheckAll = false;
+    }
+
+    const newCheckedSessions: TestSessionByDataTestId = {};
+    sessions
+      .forEach(session => {
+        if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.data.testId] !== 'undefined')) {
+          newCheckedSessions[session.data.testId] = session;
+        }
+      });
+    this._checked = newCheckedSessions;
+
+    this._checkedStats$.next(TestSessionManager.getSessionSetStats(Object.values(this._checked), sessions.length));
+    this._sessionsStats$.next(sessionsStats);
+  }
+
+  private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
+    const newCheckedSessions: TestSessionByDataTestId = {};
+    sessionsToCheck
+      .forEach(session => {
+        newCheckedSessions[session.data.testId] = session;
+      });
+    this._checked = newCheckedSessions;
+    this.onCheckedChanged();
+  }
+
+  private onCheckedChanged(): void {
+    this._checkedStats$.next(TestSessionManager.getSessionSetStats(this.checked, this.sessions.length));
   }
 }

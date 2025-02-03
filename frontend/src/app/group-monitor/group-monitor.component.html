@@ -131,14 +131,14 @@
         <ng-container *ngIf="displayOptions.manualChecking">
           <ng-container *ngIf="tsm.checkedStats$ | async as checkedStats">
             <tc-alert
-              *ngIf="checkedStats.number; else noCheckedSession"
+              *ngIf="checkedStats.numberOfSessions; else noCheckedSession"
               level="info"
               customtext="gm_selection_info"
               text="%s %s Test%s mit %s Testheft%s ausgewählt."
               [replacements]="[
-                (checkedStats.all ? ' Alle' : ''),
-                checkedStats.number.toString(10),
-                (checkedStats.number !== 1 ? 's' : ''),
+                (checkedStats.allChecked ? ' Alle' : ''),
+                checkedStats.numberOfSessions.toString(10),
+                (checkedStats.numberOfSessions !== 1 ? 's' : ''),
                 checkedStats.differentBooklets.toString(10),
                 (checkedStats.differentBooklets !== 1 ? 'en' : '')
               ]"
@@ -270,7 +270,7 @@
                     *ngIf="tsm.checkedStats$ | async as checkedStats"
                     (click)="$event.stopPropagation()"
                     (change)="toggleCheckAll($event)"
-                    [checked]="checkedStats.all"
+                    [checked]="checkedStats.allChecked"
                     (contextmenu)="invertChecked($event)"
                   ></mat-checkbox>
                 </td>

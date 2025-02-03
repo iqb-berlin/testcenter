@@ -213,7 +213,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.tcs.state$.next('RUNNING');
     // eslint-disable-next-line no-case-declarations
     let gotoTarget: string = '';
-    if ((params.length === 2) && (params[0] === 'id')) {
+    if ((params.length > 1) && (params[0] === 'id')) {
       gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
     } else if (params.length === 1) {
       gotoTarget = params[0];
@@ -223,7 +223,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (targetUnit) {
         if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
           this.tcs.cancelTimer();
-          this.tcs.restoreTime(targetUnit.parent);
+          this.tcs.restoreTime(targetUnit.parent, parseInt(params[2].slice(-1), 10));
         }
         targetUnit.parent.locks.afterLeave = false;
         targetUnit.lockedAfterLeaving = false;

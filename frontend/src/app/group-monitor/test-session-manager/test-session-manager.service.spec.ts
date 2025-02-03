@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats, TestSessionSuperState
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStat, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -157,13 +157,13 @@ describe('TestSessionManager', () => {
     it('should fetch correct stats from sessions', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['getSessionSetStats'](unitTestExampleSessions, 2);
-      const expectation: TestSessionSetStats = {
-        number: 3,
+      const expectation: TestSessionSetStat = {
+        numberOfSessions: 3,
         differentBooklets: 3,
         differentBookletSpecies: 3,
-        all: false,
-        paused: 1,
-        locked: 0,
+        allChecked: false,
+        pausedSessions: 1,
+        lockedSessions: 0,
         bookletStateLabels: { }
       };
       expect(expectation).toEqual(result);
@@ -307,8 +307,8 @@ describe('TestSessionManager', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['groupForGoto'](sessions, selection);
       expect(result).toEqual({
-        'unit-3': [1, 33],
-        'unit-1': [34]
+        'unit-3': { ids: [1, 33], isClosed: undefined },
+        'unit-1': { ids: [34], isClosed: undefined }
       });
       // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
       // where it is empty , so there is no place to go. Session 34 with example_booklet_3 has the block,
