@@ -842,15 +842,16 @@ export class TestControllerService {
       data: <ConfirmDialogData>{
         title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
         content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-        confirmbuttonlabel: 'Trotzdem weiter',
+        confirmbuttonlabel: 'Hier bleiben',
         confirmbuttonreturn: true,
+        cancelbuttonlabel: 'Trotzdem weiter',
         showcancel: true
       }
     });
     return dialogCDRef.afterClosed()
       .pipe(
         map(cdresult => {
-          if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
             return false;
           }
           this.cancelTimer(); // does locking the block
@@ -931,15 +932,16 @@ export class TestControllerService {
         data: <ConfirmDialogData>{
           title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
           content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
-          confirmbuttonlabel: 'Trotzdem weiter',
+          confirmbuttonlabel: 'Hier bleiben',
           confirmbuttonreturn: true,
+          cancelbuttonlabel: 'Trotzdem weiter',
           showcancel: true
         }
       });
       return dialogCDRef.afterClosed()
         .pipe(
           map(cdresult => {
-            if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+            if ((typeof cdresult === 'undefined') || (cdresult === true)) {
               return false;
             }
             leaveLock();
