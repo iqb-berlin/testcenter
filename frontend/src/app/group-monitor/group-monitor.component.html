@@ -169,11 +169,11 @@
           data-cy="GM_jump_button"
           color="primary"
           (click)="testCommandGoto()"
-          matTooltip="{{selectedElement?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
+          matTooltip="{{currentlySelected?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
         >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
-          <span class="emph" *ngIf="selectedElement?.element?.blockId">{{'Block' | customtext:'gm_col_testlet' | async}} {{selectedElement?.element?.blockId}}</span>
+          <span class="emph" *ngIf="currentlySelected?.element?.blockId">{{'Block' | customtext:'gm_col_testlet' | async}} {{currentlySelected?.element?.blockId}}</span>
         </button>
       </div>
 
@@ -311,12 +311,12 @@
                 [class]="session.state"
                 [testSession]="session"
                 [displayOptions]="displayOptions"
-                [marked]="markedElement"
+                [marked]="CurrentlyMarked"
                 (markedElement$)="markElement($event)"
-                [selected]="selectedElement"
+                [selected]="currentlySelected"
                 (selectedElement$)="selectElement($event)"
                 [checked]="tsm.isChecked(session)"
-                (checked$)="toggleChecked($event, session)"
+                (checked$)="toggleChecked(session)"
                 [ngStyle]="{background: getSessionColor(session)}"
                 [bookletStates]="bookletStates"
               >
