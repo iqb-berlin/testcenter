@@ -43,14 +43,14 @@ config:
     cacheServiceIncludeFiles: false
 
 secret:
-  common:
-    mysqlUser: iqb_tba_db_user
-    mysqlPassword: change_me
-
   backend:
+    mysqlUser: &dbUser iqb_tba_db_user
+    mysqlPassword: &dbUserPassword change_me
     passwordSalt: change_me
 
   db:
+    mysqlUser: *dbUser
+    mysqlPassword: *dbUserPassword
     mysqlRootPassword: change_me
 
 ingress:
