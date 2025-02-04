@@ -1,85 +1,37 @@
+baseDomain: testcenter.domain.tld
+httpPort: &httpPort 80
+httpsPort: &httpsPort 443
+tlsEnabled: &tlsEnabled false
+
 deployment:
-  replicas: 3
-#  initContainers:
-#  # The "volume-permissions" init container is required if you run into permission issues.
-#  # Related issue: https://github.com/traefik/traefik-helm-chart/issues/396
-#    - name: volume-permissions
-#      image: busybox:latest
-#      command: ["sh", "-c", "touch /data/acme.json; chmod -v 600 /data/acme.json"]
-#      securityContext:
-#        runAsNonRoot: true
-#        runAsGroup: 65532
-#        runAsUser: 65532
-#      volumeMounts:
-#        - name: data
-#          mountPath: /data
-
-ingressRoute:
-  dashboard:
-    enabled: true
-    matchRule: Host(`traefik.testcenter-k3.iqb.hu-berlin.de`)
-    entryPoints:
-      - web
-      - websecure
-
-logs:
-  general:
-    # -- By default, the logs use a text format (common), but you can
-    # also ask for the json format in the format option
-    # format: json
-    # By default, the level is set to ERROR.
-    # -- Alternative logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
-    level: INFO
-
-metrics:
-  ## -- Prometheus is enabled by default.
-  ## -- It can be disabled by setting "prometheus: null"
-  prometheus:
-    # -- Entry point used to expose metrics.
-    entryPoint: metrics
-    ## Enable metrics on entry points. Default=true
-    # addEntryPointsLabels: false
-    ## Enable metrics on routers. Default=false
-    # addRoutersLabels: true
-    ## Enable metrics on services. Default=true
-    # addServicesLabels: false
-    ## Buckets for latency metrics. Default="0.1,0.3,1.2,5.0"
-    # buckets: "0.5,1.0,2.5"
-    ## When manualRouting is true, it disables the default internal router in
-    ## order to allow creating a custom router for prometheus@internal service.
-    # manualRouting: true
+  replicas: 1
+  # -- Additional initContainers (e.g. for setting file permission as shown below)
+  initContainers: []
+  # The "volume-permissions" init container is required if you run into permission issues.
+  # Related issue: https://github.com/traefik/traefik-helm-chart/issues/396
+  # - name: volume-permissions
+  #   image: busybox:latest
+  #   command: ["sh", "-c", "touch /data/acme.json; chmod -v 600 /data/acme.json"]
+  #   volumeMounts:
+  #     - name: data
+  #       mountPath: /data
 
 globalArguments:
   - "--global.checknewversion=false"
   - "--global.sendanonymoususage=false"
 
 ports:
-#  traefik:
-#    expose:
-#      default: true
-#  web:
+  web:
+    exposedPort: *httpPort
 #    redirections:
 #      entryPoint:
 #        to: websecure
 #        scheme: https
   websecure:
+    exposedPort: *httpsPort
     tls:
-      certResolver: letsencrypt
+      enabled: *tlsEnabled
 
-# -- TLS Options are created as TLSOption CRDs
-# https://doc.traefik.io/traefik/https/tls/#tls-options
-# When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
-# Example:
-# tlsOptions:
-#   default:
-#     labels: {}
-#     sniStrict: true
-#     preferServerCipherSuites: true
-#   custom-options:
-#     labels: {}
-#     curvePreferences:
-#       - CurveP521
-#       - CurveP384
 tlsOptions:
   default:
     sniStrict: false # set false to use self-signed certificates
@@ -99,65 +51,11 @@ tlsOptions:
 persistence:
   enabled: true
   name: data
-  accessMode: ReadWriteMany
+  accessMode: ReadWriteOnce
   size: 128Mi
-#  storageClass: local-path
-  storageClass: longhorn
+  storageClass: standard
   path: /data
   annotations: {}
-
-# Traefik v2.x.x
-#certResolvers:
-#  letsencrypt:
-#    caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-#    email: sven.wolter@hu-berlin.de
-#    dnsChallenge:
-#     # also add the provider's required configuration under env
-#     # or expand then from secrets/configmaps with envfrom
-#     # cf. https://doc.traefik.io/traefik/https/acme/#providers
-#     provider: manual
-#     # add futher options for the dns challenge as needed
-#     # cf. https://doc.traefik.io/traefik/https/acme/#dnschallenge
-#     delayBeforeCheck: 300
-#     resolvers:
-#       - 141.20.1.3
-#       - 141.20.2.3
-#    tlsChallenge: false
-#    # httpChallenge:
-#    #   entryPoint: "web"
-#    storage: /data/acme.json
-
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: admin.name@organisation.org
-#      httpChallenge:
-#        # used during the challenge
-#        entryPoint: web
-#      tlsChallenge: true
-#      dnsChallenge:
-#        # also add the provider's required configuration under env
-#        # or expand then from secrets/configmaps with envfrom
-#        # cf. https://doc.traefik.io/traefik/https/acme/#providers
-#        provider: manual
-#        # add futher options for the dns challenge as needed
-#        # cf. https://doc.traefik.io/traefik/https/acme/#dnschallenge
-#        delayBeforeCheck: 300
-#        resolvers:
-#          - 141.20.1.3
-#          - 141.20.2.3
-      storage: /data/acme.json
-#  sectigo:
-#    acme:
-#      caserver: https://acme.sectigo.com/v2/OV
-#      eab:
-#        kid: qYRgfClscKBwq2787j_vkg
-#        hmacEncoded: FOs_-8M96HGE160nkfKbsuaWKCb7lpXj3oza09a-0OwVTgFlZMDsRsV05KIhB_dqeYTHzUqocCgByAM2roTlfA
-#      email: sven.wolter@hu-berlin.de
-#      tlsChallenge: true
-#      #     httpChallenge:
-#      #       entryPoint: "web"
-#      storage: /data/acme.json
 
 podSecurityContext:
   # /!\ When setting fsGroup, Kubernetes will recursively change ownership and
@@ -166,9 +64,3 @@ podSecurityContext:
   fsGroup: 65532
   # -- Specifies the policy for changing ownership and permissions of volume contents to match the fsGroup.
   fsGroupChangePolicy: "OnRootMismatch"
-  # -- The ID of the group for all containers in the pod to run as.
-  runAsGroup: 65532
-  # -- Specifies whether the containers should run as a non-root user.
-  runAsNonRoot: true
-  # -- The ID of the user for all containers in the pod to run as.
-  runAsUser: 65532

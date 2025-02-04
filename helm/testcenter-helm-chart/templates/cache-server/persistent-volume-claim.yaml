@@ -4,8 +4,8 @@ metadata:
   name: {{ .Release.Name }}-cache-server-pvc
 spec:
   accessModes:
-    - {{ .Values.persistence.cacheServer.accessMode }}
-  storageClassName: {{ .Values.persistence.cacheServer.storageClassName }}
+    - {{ .Values.persistence.cacheServerPvcAccessMode }}
+  storageClassName: {{ .Values.persistence.cacheServerPvcStorageClassName }}
   resources:
     requests:
-      storage: {{ .Values.persistence.cacheServer.size }}
+      storage: {{ .Values.persistence.cacheServerPvcSize }}

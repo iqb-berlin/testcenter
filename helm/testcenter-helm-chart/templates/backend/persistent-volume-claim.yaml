@@ -4,8 +4,8 @@ metadata:
   name: {{ .Release.Name }}-backend-pvc
 spec:
   accessModes:
-    - {{ .Values.persistence.backend.accessMode }}
+    - {{ .Values.persistence.backendPvcAccessMode }}
   resources:
     requests:
-      storage: {{ .Values.persistence.backend.size }}
-  storageClassName: {{ .Values.persistence.backend.storageClassName }}
+      storage: {{ .Values.persistence.backendPvcSize }}
+  storageClassName: {{ .Values.persistence.backendPvcStorageClassName }}

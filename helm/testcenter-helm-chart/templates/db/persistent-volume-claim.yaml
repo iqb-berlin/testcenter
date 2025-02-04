@@ -4,8 +4,8 @@ metadata:
   name: {{ .Release.Name }}-db-pvc
 spec:
   accessModes:
-    - {{ .Values.persistence.db.accessMode }}
+    - {{ .Values.persistence.dbPvcAccessMode }}
   resources:
     requests:
-      storage: {{ .Values.persistence.db.size }}
-  storageClassName: {{ .Values.persistence.db.storageClassName }}
+      storage: {{ .Values.persistence.dbPvcSize }}
+  storageClassName: {{ .Values.persistence.dbPvcStorageClassName }}
