@@ -90,7 +90,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe</mat-header-cell>
               <mat-cell *matCellDef="let element" style="white-space: nowrap;">
                 <mat-spinner *ngIf="!enableInteraction; else showSize" [diameter]="25" ></mat-spinner>
-                <ng-template #showSize>{{ element.info.totalSize | bytes }}</ng-template>
+                <ng-template #showSize>{{ ((element.info.totalSize | bytes) !== '-') ? (element.info.totalSize | bytes) : 'nicht berechnet' }}</ng-template>
               </mat-cell>
             </ng-container>
 

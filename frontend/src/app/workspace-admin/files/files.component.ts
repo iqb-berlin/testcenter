@@ -196,16 +196,20 @@ export class FilesComponent implements OnInit, OnDestroy {
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
 
-          this.bs.getFilesWithDependencies(this.wds.workspaceId, ...IQBFileTypes.map(typehere => fileList[typehere]?.map(file => file.name)).flat())
-            .subscribe(withDependencies => {
-              const withDependenciesWithFileSize = FilesComponent.calculateFileSize(withDependencies);
-              IQBFileTypes
-                .forEach(type => {
-                  this.files[type] = new MatTableDataSource(withDependenciesWithFileSize[type]);
-                });
-
-              this.enableInteraction = true;
-            });
+          const files = IQBFileTypes.map(typehere => fileList[typehere]?.map(file => file.name)).flat();
+          if (files.length <= 1000) {
+            this.bs.getFilesWithDependencies(this.wds.workspaceId, ...files)
+              .subscribe(withDependencies => {
+                const withDependenciesWithFileSize = FilesComponent.calculateFileSize(withDependencies);
+                IQBFileTypes
+                  .forEach(type => {
+                    this.files[type] = new MatTableDataSource(withDependenciesWithFileSize[type]);
+                  });
+                this.enableInteraction = true;
+              });
+          } else {
+            this.enableInteraction = true;
+          }
         });
     }
   }
@@ -329,6 +333,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  // TODO: Either this algorithm or the whole this.files datastructure could be reworked to allow more files per workspace
   private static calculateFileSize(fileList: GetFileResponseData) {
     const needsToCalculate = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
 
