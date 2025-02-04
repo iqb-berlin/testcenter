@@ -28,7 +28,7 @@ spec:
           port: 3000
   {{- if .Values.ingress.tlsEnabled }}
   tls:
-    certResolver: letsencrypt
+    certResolver: {{ .Values.ingress.tlsCertResolver }}
   {{- end }}
 ---
 
@@ -60,7 +60,7 @@ spec:
           port: 80
   {{- if .Values.ingress.tlsEnabled }}
   tls:
-    certResolver: letsencrypt
+    certResolver: {{ .Values.ingress.tlsCertResolver }}
     domains:
       - main: {{ .Values.ingress.baseDomain }}
         sans:
@@ -96,7 +96,7 @@ spec:
           port: 80
   {{- if .Values.ingress.tlsEnabled }}
   tls:
-    certResolver: letsencrypt
+    certResolver: {{ .Values.ingress.tlsCertResolver }}
   {{- end }}
 ---
 
@@ -128,7 +128,7 @@ spec:
           port: 80
   {{- if .Values.ingress.tlsEnabled }}
   tls:
-    certResolver: letsencrypt
+    certResolver: {{ .Values.ingress.tlsCertResolver }}
   {{- end }}
 ---
 
