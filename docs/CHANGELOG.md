@@ -21,6 +21,7 @@ layout: default
     * 3 Klicks - Die bisherige Auswahl wird aufgehoben
   * Deselektierung aller Blöcke passiert nicht mehr mit einem Klick auf einen beliebigen Punkt in der angezeigten Tabelle
   * Das Auswählen aller Blöcke bei einem einmaligen Klick sollte nun viel weniger auftreten
+* Die Buttons des Dialogfelds, das erscheint bevor man einen Block zu sperrenden Block verlässt, wurden farblich und textlich verändert, sodass der Default Button nun die Aktion 'Auf der Seite bleiben' darstellt.
 
 ## 16.0.0-alpha
 ### Kubernetes
