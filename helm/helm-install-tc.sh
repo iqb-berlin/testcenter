@@ -141,26 +141,26 @@ install_testcenter() {
     if ${ENABLE_LONGHORN}; then
       printf "Configure Testcenter 'custom-values' for 'longhorn persistent volumes' ...\n"
       sed -i.bak "s|longhornEnabled:.*|longhornEnabled: true|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|cacheServerPvcStorageClassName:.*|cacheServerPvcStorageClassName: longhorn-single|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|cacheServerPvcAccessMode:.*|cacheServerPvcAccessMode: ReadWriteOnce|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|backendPvcStorageClassName:.*|backendPvcStorageClassName: longhorn|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|backendPvcAccessMode:.*|backendPvcAccessMode: ReadWriteMany|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|dbPvcStorageClassName:.*|dbPvcStorageClassName: longhorn-single|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|dbPvcAccessMode:.*|dbPvcAccessMode: ReadWriteOnce|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       printf "Testcenter 'custom-values' configuration for 'longhorn persistent volumes' done.\n\n"
     fi
 
     printf "Configure Testcenter 'custom-values' ...\n"
     if ${ENABLE_TRAEFIK}; then
       sed -i.bak "s|traefikEnabled:.*|traefikEnabled: true|" \
-        testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     else
       declare traefik_env_var_name
       for traefik_env_var_name in "${TRAEFIK_ENV_VAR_ORDER[@]}"; do
@@ -179,30 +179,30 @@ install_testcenter() {
     done
 
     sed -i.bak "s|baseDomain:.*|baseDomain: ${TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|httpPort:.*|httpPort: ${TRAEFIK_ENV_VARS[HTTP_PORT]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|httpsPort:.*|httpsPort: ${TRAEFIK_ENV_VARS[HTTPS_PORT]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|tlsEnabled:.*|tlsEnabled: ${TRAEFIK_ENV_VARS[TLS_ENABLED]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
 
     sed -i.bak "s|mysqlRootPassword:.*|mysqlRootPassword: ${TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|mysqlUser: \&dbUser.*|mysqlUser: \&dbUser ${TESTCENTER_ENV_VARS[MYSQL_USER]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|mysqlPassword: \&dbUserPassword.*|mysqlPassword: \&dbUserPassword ${TESTCENTER_ENV_VARS[MYSQL_PASSWORD]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|passwordSalt:.*|passwordSalt: ${TESTCENTER_ENV_VARS[MYSQL_SALT]}|" \
-      testcenter-helm-chart/custom-values.yaml && rm testcenter-helm-chart/custom-values.yaml.bak
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     printf "Testcenter 'custom-values' configuration for Traefik Ingress Controller done.\n\n"
 
     printf "Installing 'Testcenter' in the 'tc' namespace ...\n"
-    if ! helm install testcenter ./testcenter-helm-chart \
+    if ! helm install testcenter ./testcenter \
       --namespace tc \
       --create-namespace \
-      --values ./testcenter-helm-chart/values.yaml \
-      --values ./testcenter-helm-chart/custom-values.yaml; then
+      --values ./testcenter/values.yaml \
+      --values ./testcenter/custom-values.yaml; then
 
       printf "\n'Testcenter %s' installation failed.\n" ${TESTCENTER_VERSION}
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
