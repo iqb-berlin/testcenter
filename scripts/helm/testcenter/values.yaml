@@ -1,4 +1,4 @@
-# Default values for testcenter-helm-chart.
+# Default values for testcenter helm chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -43,21 +43,22 @@ config:
     cacheServiceIncludeFiles: false
 
 secret:
-  common:
-    mysqlUser: iqb_tba_db_user
-    mysqlPassword: change_me
-
   backend:
+    mysqlUser: &dbUser iqb_tba_db_user
+    mysqlPassword: &dbUserPassword change_me
     passwordSalt: change_me
 
   db:
+    mysqlUser: *dbUser
+    mysqlPassword: *dbUserPassword
     mysqlRootPassword: change_me
 
 ingress:
-  baseDomain: app.domain.tld
-  port: 80
-  tlsPort: 443
-  tlsEnabled: true
+  traefikEnabled: false
+  baseDomain: testcenter.domain.tld
+  httpPort: 80
+  httpsPort: 443
+  tlsEnabled: false
 
 deployment:
   frontend:
@@ -77,21 +78,18 @@ deployment:
         maxUnavailable: 0
 
 persistence:
-  longhorn:
-    enable: true
-    uiSubdomain: longhorn
+  longhornEnabled: false
+  longhornUIEnabled: false
+  longhornUISubdomain: longhorn
 
-  cacheServer:
-    storageClassName: longhorn-single
-    accessMode: ReadWriteOnce
-    size: 5Gi
+  cacheServerPvcStorageClassName: standard
+  cacheServerPvcAccessMode: ReadWriteOnce
+  cacheServerPvcSize: 5Gi
 
-  backend:
-    storageClassName: longhorn
-    accessMode: ReadWriteMany
-    size: 2Gi
+  backendPvcStorageClassName: standard
+  backendPvcAccessMode: ReadWriteOnce
+  backendPvcSize: 2Gi
 
-  db:
-    storageClassName: longhorn-single
-    accessMode: ReadWriteOnce
-    size: 2Gi
+  dbPvcStorageClassName: standard
+  dbPvcAccessMode: ReadWriteOnce
+  dbPvcSize: 2Gi
