@@ -5,8 +5,8 @@ declare TRAEFIK_VERSION="v3.3.2"
 declare LONGHORN_VERSION="v1.7.2"
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")
 
-declare ENABLE_LONGHORN=false
-declare ENABLE_TRAEFIK=false
+declare LONGHORN_ENABLED=false
+declare TRAEFIK_ENABLED=false
 
 declare -A TRAEFIK_ENV_VARS
 TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]=testcenter.domain.tld
@@ -25,36 +25,45 @@ declare TESTCENTER_ENV_VAR_ORDER=(MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD 
 check_prerequisites() {
   printf "\nChecking required packages ...\n"
   declare req_package
+
   for req_package in "${REQUIRED_PACKAGES[@]}"; do
+
     if ${req_package} >/dev/null 2>&1; then
       printf -- "- '%s' is working.\n" "${req_package}"
+
     else
       printf "'%s' does not seem to work, please install the corresponding package before running the script! \n\n" \
         "${req_package}"
       printf 'Install script finished with error.\n'
       exit 1
     fi
+
   done
+
   printf "Checking required packages done.\n\n"
 }
 
 install_longhorn() {
   declare continue
   read -rep "Do you want to install 'Longhorn ${LONGHORN_VERSION}'? [Y/n] " -n 1 continue
-  if ! [[ ${continue} =~ ^[nN]$ ]]; then
-    ENABLE_LONGHORN=true
 
+  if ! [[ ${continue} =~ ^[nN]$ ]]; then
     printf "Installing 'Longhorn' in the 'longhorn-system' namespace ...\n"
+
     if ! helm install longhorn ./longhorn --namespace longhorn-system --create-namespace; then
       printf "\n'Longhorn %s' installation failed.\n" ${LONGHORN_VERSION}
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
+
       if ! [[ ${continue} =~ ^[yY]$ ]]; then
         printf 'Install script finished with error.\n\n'
         exit 1
       fi
+
     else
       printf "'Longhorn' installation done.\n"
+      LONGHORN_ENABLED=true
     fi
+
     printf "\n"
   fi
 }
@@ -62,10 +71,10 @@ install_longhorn() {
 install_traefik() {
   declare continue
   read -rep "Do you want to install 'Traefik ${TRAEFIK_VERSION}'? [Y/n] " -n 1 continue
-  if ! [[ ${continue} =~ ^[nN]$ ]]; then
-    ENABLE_TRAEFIK=true
 
-    if ${ENABLE_LONGHORN}; then
+  if ! [[ ${continue} =~ ^[nN]$ ]]; then
+
+    if ${LONGHORN_ENABLED}; then
       printf "Configure Traefik 'custom-values' for 'longhorn persistent volumes' ...\n"
       sed -i.bak "s|accessMode:.*|accessMode: ReadWriteMany|" \
         custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
@@ -80,13 +89,13 @@ install_traefik() {
 
     printf "Configure Traefik Ingress for Testcenter ...\n"
     declare traefik_env_var_name
+
     for traefik_env_var_name in "${TRAEFIK_ENV_VAR_ORDER[@]}"; do
       declare traefik_env_var_value
       read -p "${traefik_env_var_name}: " -er -i "${TRAEFIK_ENV_VARS[${traefik_env_var_name}]}" traefik_env_var_value
       TRAEFIK_ENV_VARS[${traefik_env_var_name}]=${traefik_env_var_value}
     done
-    sed -i.bak "s|testcenter.domain.tld|${TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]}|" \
-      custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
+
     sed -i.bak "s|httpPort: \&httpPort.*|httpPort: \&httpPort ${TRAEFIK_ENV_VARS[HTTP_PORT]}|" \
       custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
     sed -i.bak "s|httpsPort: \&httpsPort.*|httpsPort: \&httpsPort ${TRAEFIK_ENV_VARS[HTTPS_PORT]}|" \
@@ -96,49 +105,57 @@ install_traefik() {
     printf "Traefik Ingress configuration for Testcenter done.\n\n"
 
     printf "Installing 'Traefik' Ingress Controller in the 'kube-system' namespace ...\n"
-
     printf -- "-> 'Install Traefik-CRDs' ...\n"
+
     if ! helm install traefik-crds ./traefik-crds --namespace kube-system; then
       printf "\n-> 'Traefik-CRDs' installation failed.\n"
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
+
       if ! [[ ${continue} =~ ^[yY]$ ]]; then
         printf 'Install script finished with error.\n\n'
         exit 1
       fi
+
     else
       printf -- "-> 'Traefik-CRD' installation done.\n"
     fi
-    printf "\n"
 
-    printf -- "-> 'Install Traefik' ...\n"
+    printf "\n-> 'Install Traefik' ...\n"
+
     if ! helm install traefik ./traefik \
       --namespace kube-system \
       --values ./traefik/values.yaml \
       --values ./traefik/custom-values.yaml \
       --skip-crds; then
+
       printf "\n-> 'Traefik %s' installation failed.\n" ${TRAEFIK_VERSION}
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
+
       if ! [[ ${continue} =~ ^[yY]$ ]]; then
         printf 'Install script finished with error.\n\n'
         exit 1
+
       else
         printf "'Traefik %s' Ingress Controller installation failed.\n\n" ${TRAEFIK_VERSION}
         return
       fi
+
     else
       printf -- "-> 'Traefik' installation done.\n"
+      TRAEFIK_ENABLED=true
     fi
-    printf "\n"
 
-    printf "'Traefik %s' Ingress Controller installation done.\n\n" ${TRAEFIK_VERSION}
+    printf "\n'Traefik %s' Ingress Controller installation done.\n\n" ${TRAEFIK_VERSION}
   fi
 }
 
 install_testcenter() {
   declare continue
   read -rep "Do you want to install 'Testcenter ${TESTCENTER_VERSION}'? [Y/n] " -n 1 continue
+
   if ! [[ ${continue} =~ ^[nN]$ ]]; then
-    if ${ENABLE_LONGHORN}; then
+
+    if ${LONGHORN_ENABLED}; then
       printf "Configure Testcenter 'custom-values' for 'longhorn persistent volumes' ...\n"
       sed -i.bak "s|longhornEnabled:.*|longhornEnabled: true|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
@@ -158,19 +175,23 @@ install_testcenter() {
     fi
 
     printf "Configure Testcenter 'custom-values' ...\n"
-    if ${ENABLE_TRAEFIK}; then
+
+    if ${TRAEFIK_ENABLED}; then
       sed -i.bak "s|traefikEnabled:.*|traefikEnabled: true|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     else
       declare traefik_env_var_name
+
       for traefik_env_var_name in "${TRAEFIK_ENV_VAR_ORDER[@]}"; do
         declare traefik_env_var_value
         read -p "${traefik_env_var_name}: " -er -i "${TRAEFIK_ENV_VARS[${traefik_env_var_name}]}" traefik_env_var_value
         TRAEFIK_ENV_VARS[${traefik_env_var_name}]=${traefik_env_var_value}
       done
+
     fi
 
     declare testcenter_env_var_name
+
     for testcenter_env_var_name in "${TESTCENTER_ENV_VAR_ORDER[@]}"; do
       declare testcenter_env_var_nameenv_var_value
       read -rep "${testcenter_env_var_name}: " -i "${TESTCENTER_ENV_VARS[${testcenter_env_var_name}]}" \
@@ -198,6 +219,7 @@ install_testcenter() {
     printf "Testcenter 'custom-values' configuration for Traefik Ingress Controller done.\n\n"
 
     printf "Installing 'Testcenter' in the 'tc' namespace ...\n"
+
     if ! helm install testcenter ./testcenter \
       --namespace tc \
       --create-namespace \
@@ -206,13 +228,16 @@ install_testcenter() {
 
       printf "\n'Testcenter %s' installation failed.\n" ${TESTCENTER_VERSION}
       read -rep "Do you want to continue anyway? [y/N] " -n 1 continue
+
       if ! [[ ${continue} =~ ^[yY]$ ]]; then
         printf 'Install script finished with error.\n\n'
         exit 1
       fi
+
     else
       printf "'Testcenter' installation done.\n"
     fi
+
     printf "\n"
   fi
 }

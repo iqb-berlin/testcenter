@@ -12,13 +12,16 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`{{ .Values.persistence.longhorn.uiSubdomain }}.{{ .Values.ingress.baseDomain }}`)
+    - match: Host(`{{ .Values.persistence.longhornUISubdomain }}.{{ .Values.ingress.baseDomain }}`)
       kind: Rule
       middlewares:
         - name: svc-longhorn-headers
       services:
         - name: longhorn-frontend
           port: 80
+  tls:
+    enabled: {{ .Values.ingress.tlsEnabled }}
+    certResolver: {{ .Values.ingress.tlsCertResolver }}
 
 {{- end }}
 
