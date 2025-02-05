@@ -15,6 +15,9 @@ layout: default
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
 
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
+
 ### Verbesserungen
 * Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
 * Änderungen an der Navigation in der Testleitungskonsole:
