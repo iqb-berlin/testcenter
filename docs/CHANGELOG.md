@@ -1,22 +1,14 @@
 ---
 layout: default
 ---
-## [next]
+## 15.5.0
 ### neue Features
 * Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
 
-### Verbesserung
+### Verbesserungen
 * Wenn die Testleiterkonsole ein SuS über die `Springe zu BLOCK` Funktion in einen zeitgesteuerten Block schiebt, der bereits geschlossen war, so wird dies in den Logs nun mit einem zusätzlichen Hinweis `(closed timeblock reopened)` versehen
 * Beim Springen in einen zeitgesperrten Block muss nun auch die neue Restzeit festgelegt werden, die alle SuS bekommen. Der höchstmögliche Wert richtet sich dabei nach der höchsten eingestellten `timeMax` aller in der Selektion ausgesuchten SuS.
 * Die Testleitungskonsole zeigt nun direkt beim betreten in einen zeitbeschränkten Block dessen aktiven Status an, statt erst nach 15 Sekunden
- 
-### Bugfix
-* Sobald ein Arbeitsplatz im Adminbereich mehr als 1000 Dateien beinhaltet, werden die kumulativen Dateigrößen nicht mehr berechnet, um das Einfrieren des Browsers zu verhindern. Ein Hinweis im Frontend weist darauf hin, dass die Berechnung nicht stattgefunden hat.
-
-### Accessibility
-* Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
-
-### Verbesserungen
 * Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
 * Änderungen an der Navigation in der Testleitungskonsole:
   * Mehrere Klicks auf denselben Block in der `Vollständig` und `Nur Blöcke` hat nun folgendes Verhalten
@@ -26,6 +18,12 @@ layout: default
   * Deselektierung aller Blöcke passiert nicht mehr mit einem Klick auf einen beliebigen Punkt in der angezeigten Tabelle
   * Das Auswählen aller Blöcke bei einem einmaligen Klick sollte nun viel weniger auftreten
 * Die Buttons des Dialogfelds, das erscheint bevor man einen Block zu sperrenden Block verlässt, wurden farblich und textlich verändert, sodass der Default Button nun die Aktion 'Auf der Seite bleiben' darstellt.
+ 
+### Bugfix
+* Sobald ein Arbeitsplatz im Adminbereich mehr als 1000 Dateien beinhaltet, werden die kumulativen Dateigrößen nicht mehr berechnet, um das Einfrieren des Browsers zu verhindern. Ein Hinweis im Frontend weist darauf hin, dass die Berechnung nicht stattgefunden hat.
+
+### Accessibility
+* Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
 
 ## 16.0.0-alpha
 ### Kubernetes
