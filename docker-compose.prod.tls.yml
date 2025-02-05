@@ -4,9 +4,19 @@
 
 services:
   traefik:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.security-headers.headers.stsSeconds=63072000"
+      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.security-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.security-headers.headers.referrerPolicy=no-referrer"
     command:
-      # - "--log.level=DEBUG"
-      # - "--accesslog=true"
+      - "--log.level=INFO"
+      - "--accesslog=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
@@ -35,13 +45,8 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
       - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers-bs, tls-security-headers-bs"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
-      - "traefik.http.middlewares.security-headers-bs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-bs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-bs.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.tls-security-headers-bs.headers.stsSeconds=31536000"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
   testcenter-frontend:
@@ -52,12 +57,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
       - "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers-frontend, tls-security-headers-frontend, stripwww-fe"
-      - "traefik.http.middlewares.security-headers-frontend.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-frontend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-frontend.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsSeconds=31536000"
-      - "traefik.http.middlewares.tls-security-headers-frontend.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
@@ -68,13 +68,8 @@ services:
       - "traefik.http.routers.testcenter-file-service.tls=true"
       - "traefik.http.routers.testcenter-file-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=testcenter-file-service-stripprefix, security-headers-fs, tls-security-headers-fs"
+      - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
-      - "traefik.http.middlewares.security-headers-fs.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-fs.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-fs.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-fs.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.tls-security-headers-fs.headers.stsSeconds=31536000"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
   testcenter-backend:
@@ -83,13 +78,8 @@ services:
       - "traefik.http.routers.testcenter-backend.tls=true"
       - "traefik.http.routers.testcenter-backend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
-      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers-backend, tls-security-headers-backend"
+      - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.middlewares.security-headers-backend.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers-backend.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers-backend.headers.referrerPolicy=no-referrer"
-      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.tls-security-headers-backend.headers.stsSeconds=31536000"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
     volumes:
       - testcenter_backend_vo_data:/var/www/testcenter/data
