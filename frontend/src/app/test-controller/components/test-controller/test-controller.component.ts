@@ -251,6 +251,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
           timer.timeLeftMinString, '', { duration: 5000 });
         this.timerValue = timer;
+        this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.tcs.updateLocks();
         return true;
       case MaxTimerEvent.ENDED:
