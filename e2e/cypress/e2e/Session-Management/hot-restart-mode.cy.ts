@@ -26,63 +26,53 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
 
   it('should be possible to start a hot-restart-mode study as login: hres1', () => {
     loginTestTaker('hres1', '203', 'test-hot');
-
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
-
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
-    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
-    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
-    // Der Status kommt dummerweise allerding nicht immer.
+      // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+      // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+      // Der Status kommt dummerweise allerdings nicht immer.
       .wait(1000)
       .should('be.checked');
     cy.wait('@response-1');
-
     forwardTo('Aufgabe2');
-
     cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click()
-    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
-    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
-    // Der Status kommt dummerweise allerding nicht immer.
+      // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+      // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+      // Der Status kommt dummerweise allerdings nicht immer.
       .wait(1000)
       .should('be.checked');
     cy.wait('@response-2');
-
     logoutTestTaker('hot');
   });
 
   it('should not possible to continue the session from login: hres1, it must be start a new session', () => {
     loginTestTaker('hres1', '203', 'test-hot');
-
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
-
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-101/response`).as('response-1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
       // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
-      // Der Status kommt dummerweise allerding nicht immer.
+      // Der Status kommt dummerweise allerdings nicht immer.
       .wait(1000)
       .should('be.checked');
     cy.wait('@response-1');
-
     forwardTo('Aufgabe2');
-
     cy.intercept(`${Cypress.env('urls').backend}/test/4/unit/UNIT.SAMPLE-102/response`).as('response-2');
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .click()
-    // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
-    // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
-    // Der Status kommt dummerweise allerding nicht immer.
+      // todo: wenn nur response abgefangen wird, ist die Zeit zu kurz, die Checkbox ist nicht aktiv obwohl angeklickt.
+      // Es müsste noch auf state abgefangen werden, dann ist die Zeit etwas länger und die Checkbox ist aktiv.
+      // Der Status kommt dummerweise allerdings nicht immer.
       .wait(1000)
       .should('be.checked');
     cy.wait('@response-2');
-
     logoutTestTaker('hot');
   });
 
@@ -90,15 +80,11 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
-      .should('exist')
       .click();
-    cy.contains('SessionManagement Hot-Modes-Test Logins')
-      .should('exist');
+    cy.contains('SessionManagement Hot-Modes-Test Logins');
     cy.get('[data-cy="results-checkbox1"]')
-      .should('exist')
       .click();
     cy.get('[data-cy="download-responses"]')
-      .should('exist')
       .click();
     logoutAdmin();
   });
