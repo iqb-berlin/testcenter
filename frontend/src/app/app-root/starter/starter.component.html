@@ -133,7 +133,7 @@
         <p *ngIf="accessObjects.test.length === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
         <p *ngIf="accessObjects.test.length > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
       </div>
-      <tc-status-card></tc-status-card>
+      <tc-status-card data-cy="status-card"></tc-status-card>
     </mat-card-content>
   </mat-card>
 </div>
