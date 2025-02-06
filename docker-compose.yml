@@ -19,7 +19,7 @@ services:
     container_name: testcenter-traefik
     image: ${DOCKERHUB_PROXY}traefik:v2.11
     ports:
-      - "${PORT:-80}:80"
+      - "${HTTP_PORT:-80}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
@@ -73,22 +73,18 @@ services:
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     environment:
-      <<: *env-mysql
-      MYSQL_HOST: testcenter-db
-      MYSQL_PORT: 3306
-      PASSWORD_SALT: ${PASSWORD_SALT}
-      BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
-      FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
       HOSTNAME: ${HOSTNAME}
-      TLS_ENABLED: ${TLS_ENABLED:-on}
+      PORT_OF_REVERSE_PROXY: ${HTTP_PORT:-80}
+      TLS_PORT_OF_REVERSE_PROXY: ${HTTPS_PORT:-443}
+      TLS_ENABLED: ${TLS_ENABLED:-true}
+      BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
-      PORT_OF_REVERSE_PROXY: ${PORT:-80}
-      TLS_PORT_OF_REVERSE_PROXY: ${TLS_PORT:-443}
-      SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
-      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
-      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
-      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
+      FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
+      MYSQL_HOST: testcenter-db
+      MYSQL_PORT: 3306
+      <<: *env-mysql
+      PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
       options:
         <<: *env-logging-conf
