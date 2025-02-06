@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare TESTCENTER_VERSION="16.0.0-alpha"
+declare TESTCENTER_VERSION="16.0.0-beta"
 declare TRAEFIK_VERSION="v3.3.2"
 declare LONGHORN_VERSION="v1.7.2"
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")

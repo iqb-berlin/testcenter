@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 15.5.0
 ### neue Features
 * Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
 
