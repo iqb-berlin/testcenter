@@ -799,6 +799,7 @@ main() {
     prepare_installation_dir
     update_files
     check_environment_file_modifications
+    run_optional_migration_scripts        # @TODO: Remove this line in the version following the major version ! ! !
     check_config_files_modifications
     customize_settings
     finalize_update
