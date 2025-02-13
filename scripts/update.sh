@@ -75,7 +75,6 @@ testcenter_up() {
     if [ "$(docker compose \
           --env-file "${APP_DIR}"/.env.prod \
           --file "${APP_DIR}"/docker-compose.yml \
-          --file "${APP_DIR}"/docker-compose.prod.yml \
           --file "${APP_DIR}"/docker-compose.prod.tls.yml \
         ps -q testcenter-db testcenter-backend | wc -l)" != 2 ]; then
 
@@ -83,7 +82,6 @@ testcenter_up() {
           --progress quiet \
           --env-file "${APP_DIR}"/.env.prod \
           --file "${APP_DIR}"/docker-compose.yml \
-          --file "${APP_DIR}"/docker-compose.prod.yml \
           --file "${APP_DIR}"/docker-compose.prod.tls.yml \
         up -d testcenter-db testcenter-backend
     else
@@ -115,7 +113,6 @@ testcenter_down() {
           --progress quiet \
           --env-file "${APP_DIR}"/.env.prod \
           --file "${APP_DIR}"/docker-compose.yml \
-          --file "${APP_DIR}"/docker-compose.prod.yml \
           --file "${APP_DIR}"/docker-compose.prod.tls.yml \
         down
     else
@@ -136,7 +133,6 @@ dump_db() {
     docker compose \
         --env-file "${APP_DIR}"/.env.prod \
         --file "${APP_DIR}"/docker-compose.yml \
-        --file "${APP_DIR}"/docker-compose.prod.yml \
         --file "${APP_DIR}"/docker-compose.prod.tls.yml \
       exec testcenter-db mysqldump \
           --add-drop-database \
