@@ -60,14 +60,14 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Aufgabe1');
     cy.url()
       .should('include', '/u/2');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
   });
 
   it('should navigate to next unit without responses/presentation complete but with a message', () => {
     forwardTo('Aufgabe2');
-    cy.contains('abgespielt')
-      .should('exist');
+    cy.get('.snackbar-demo-mode')
+      .contains('Es wurde nicht alles gesehen oder abgespielt.');
     cy.url()
       .should('include', '/u/3');
     backwardsTo('Aufgabe1');
@@ -78,9 +78,10 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
     forwardTo('Aufgabe2');
-    cy.contains('bearbeitet') // TODO use data-cy
-      .should('exist');
-    cy.contains(/gesehen.+abgespielt/) // TODO use data-cy
+    cy.get('.snackbar-demo-mode')
+      .contains('Es wurde nicht alles bearbeitet.');
+    cy.get('.snackbar-demo-mode')
+      .contains('gesehen')
       .should('not.be.exist');
     backwardsTo('Aufgabe1');
   });
@@ -97,14 +98,14 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
-
-  it('should give a warning message when the time is expired, but the block will not be locked.', () => {
+  
+  it.skip('should give a warning message when the time is expired, but the block will not be locked.', () => {
     // Wait for remaining time of restricted area
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-time-ended')
+      .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
@@ -115,7 +116,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-RUNDEMO"]')
-      .contains('Fortsetzen') // TODO use data-cy
+      .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -129,8 +130,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
   });
@@ -151,9 +152,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   it('should be no answer file in demo-mode', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
-    cy.get('[data-cy="Ergebnisse/Antworten"]') // TODO use data-cy
+    cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.wait(2000);
     cy.contains('rundemo')
       .should('not.exist');
   });

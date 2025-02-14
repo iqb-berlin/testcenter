@@ -1,5 +1,5 @@
 import {
-  clickSuperadmin, resetBackendData,
+  clickSuperadminSettings, resetBackendData,
   loginSuperAdmin, visitLoginPage
 } from '../utils';
 
@@ -7,7 +7,7 @@ describe('Settings (setting-tab)', () => {
   beforeEach(visitLoginPage);
   beforeEach(resetBackendData);
   beforeEach(loginSuperAdmin);
-  beforeEach(clickSuperadmin);
+  beforeEach(clickSuperadminSettings);
 
   it('should be all settings functions visible', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')

@@ -91,7 +91,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 key: 'command executed',
                 timeStamp: Date.now(),
                 content: CommandService.commandToString(command)
-              }])
+              }]);
             });
         });
 
@@ -186,7 +186,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           UserAgentService.outputWithOs(),
           this.tcs.currentUnit?.id || ''
         ).subscribe(() => {
-          this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
+          this.snackBar.open('Kommentar gespeichert', '', {
+            duration: 5000,
+            panelClass: ['snackbar-comment-saved']
+          });
         });
       });
     }
@@ -248,15 +251,20 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     const minute = timer.timeLeftSeconds / 60;
     switch (timer.type) {
       case MaxTimerEvent.STARTED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
-          timer.timeLeftMinString, '', { duration: 5000 });
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + timer.timeLeftMinString, '', {
+          duration: 5000,
+          panelClass: ['snackbar-time-started']
+        });
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.tcs.updateLocks();
         return true;
       case MaxTimerEvent.ENDED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {
+          duration: 5000,
+          panelClass: ['snackbar-time-ended']
+        });
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
@@ -273,7 +281,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         return true;
       case MaxTimerEvent.CANCELLED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {
+          duration: 5000,
+          panelClass: ['snackbar-time-canceled']
+        });
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));

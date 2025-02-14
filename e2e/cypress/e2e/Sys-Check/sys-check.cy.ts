@@ -4,27 +4,23 @@
 // TODO test sending of a report
 
 import {
-  deleteDownloadsFolder,
   resetBackendData,
   selectFromDropdown,
   loginSuperAdmin,
   openSampleWorkspace,
   visitLoginPage,
-  logoutAdmin, loginTestTaker, uploadFileFromFixtureToWorkspace
+  loginTestTaker,
+  uploadFileFromFixtureToWorkspace,
+  insertCredentials
 } from '../utils';
 
 describe('Sys-Check', () => {
-  beforeEach(resetBackendData);
+  before(resetBackendData);
+  beforeEach(visitLoginPage);
 
-  it('should be possible to login as link and jump into test (sys-check)', () => {
-    insertCredentials('syscheck', '');
-    cy.wait(1000);
-    cy.get('[data-cy="syscheck-SYSCHECK.SAMPLE"]')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/syscheck`);
-  });
-
-  it('should be possible to login for sys-check with name and right password and start test immediately (sys-check)', () => {
+  it('should be possible to login with sys-check name and password', () => {
+    cy.get('[data-cy="general-sys-check"]')
+      .should('not.exist');
     insertCredentials('syscheck', '');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -33,17 +29,11 @@ describe('Sys-Check', () => {
 
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
-    cy.contains('System-Check Auswahl')
-      .should('exist');
-    cy.contains('Beschreibungstext für den Systemcheck')
-      .should('exist');
+    cy.contains('System-Check Auswahl');
+    cy.contains('Beschreibungstext für den Systemcheck');
   });
 
   it('should show the correct system-check button depending on the current state of testtakers.xml', () => {
-    deleteDownloadsFolder();
-    visitLoginPage();
-    cy.get('[data-cy="general-sys-check"]')
-      .should('not.exist');
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
@@ -51,24 +41,20 @@ describe('Sys-Check', () => {
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
-      .should('exist')
       .contains('Löschen von Dateien');
     cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
       .contains('Löschen')
       .click();
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
       .should('not.exist');
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Testtakers_withoutSyscheck.xml', { force: true });
-    cy.contains('Erfolgreich hochgeladen')
-      .should('exist');
-    cy.contains('Testtakers_withoutSyscheck.xml')
-      .should('exist');
-    logoutAdmin();
-    cy.wait(1000);
+    cy.contains('Erfolgreich hochgeladen');
+    cy.contains('Testtakers_withoutSyscheck.xml');
+    visitLoginPage();
     cy.get('[data-cy="general-sys-check"]')
-      .should('exist');
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
   });
 
   it('Run through the whole system-check', () => {
@@ -79,8 +65,7 @@ describe('Sys-Check', () => {
     cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
-    cy.contains('Netzwerk')
-      .should('exist');
+    cy.contains('Netzwerk');
     cy.get('#syscheck-previous-step')
       .should('be.visible');
     cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.',
@@ -123,8 +108,7 @@ describe('Sys-Check', () => {
     cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
-    cy.contains('Netzwerk')
-      .should('exist');
+    cy.contains('Netzwerk');
     cy.get('#syscheck-previous-step')
       .should('be.visible');
     cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.',
@@ -141,20 +125,6 @@ describe('Sys-Check', () => {
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/r`);
     cy.contains('Bitte prüfen Sie die Eingaben (unvollständig)');
-  });
-});
-
-describe('System Check as Login', () => {
-  before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
-    resetBackendData();
-    deleteDownloadsFolder();
-  });
-  beforeEach(visitLoginPage);
-
-  it('should jump right into system-check, if only one system-check exits in workspace', () => {
-    loginTestTaker('syscheck', '', 'sys-check');
   });
 
   it('should show the starter page if more than one system-check is available in workspace', () => {

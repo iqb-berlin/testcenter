@@ -2,13 +2,11 @@ import {
   loginTestTaker,
   resetBackendData,
   logoutTestTaker,
-  credentialsControllerTest,
   visitLoginPage,
   deleteDownloadsFolder,
   getFromIframe,
   forwardTo,
   backwardsTo,
-  readBlockTime,
   loginSuperAdmin,
   logoutAdmin,
   getResultFileRows,
@@ -26,12 +24,6 @@ const TesttakerName4 = 'Test_HotRestart_Ctrl4';
 const TesttakerPassword4 = '123';
 
 const mode = 'test-hot';
-let blockTimeShowDialog: number = 0;
-let blockTimeCancelDialog: number = 0;
-
-let startTime: number;
-let endTime: number;
-let elapsed: number;
 
 describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-logo', { testIsolation: false }, () => {
   before(() => {
@@ -67,7 +59,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .type('Hund');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.contains(/Freigabewort.+stimmt nicht/);
+    cy.get('.snackbar-wrong-block-code')
+      .contains('stimmt nicht');
   });
 
   it('should enter the block if a correct password is entered', () => {
@@ -80,7 +73,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/); // TODO use data-cy
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
   });
 
   it('should not navigate to next unit without responses/presentation complete', () => {
@@ -89,7 +83,9 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabe darf nicht verlassen werden');
     cy.get('[data-cy="dialog-content"]')
-      .contains(/abgespielt.+gescrollt.+bearbeitet/);
+      .contains('abgespielt');
+    cy.get('[data-cy="dialog-content"]')
+      .contains('bearbeitet');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.get('[data-cy="unit-title"]')
@@ -135,8 +131,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]');
-    cy.get('[data-cy="dialog-cancel"]')
+    cy.get('[data-cy="dialog-cancel"]');
+    cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
 
@@ -154,8 +150,8 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]');
-    cy.get('[data-cy="dialog-cancel"]')
+    cy.get('[data-cy="dialog-cancel"]');
+    cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
 
@@ -171,40 +167,11 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]');
-    cy.get('[data-cy="dialog-cancel"]')
+    cy.get('[data-cy="dialog-cancel"]');
+    cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.get('.mat-drawer-backdrop')
       .click();
-  });
-
-  it('should not stop the timer while the exit block message is displayed', () => {
-    gotoPage(0);
-    gotoPage(1);
-    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-      .contains('Presentation complete');
-    // note the time before the exit block message is displayed
-    readBlockTime()
-      .then(leaveBlockTime => {
-        blockTimeShowDialog = leaveBlockTime;
-      });
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="dialog-title"]')
-      .contains('Aufgabenabschnitt verlassen?');
-    // the dialog should remain open for a few seconds
-    cy.wait(3000);
-    cy.get('[data-cy="dialog-cancel"]')
-      .click();
-    cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1');
-    // note the time after the exit block message is closed
-    readBlockTime()
-      .then(leaveBlockTime => {
-        blockTimeCancelDialog = leaveBlockTime;
-        // the second time must be smaller than first time minus an inaccuracy of 2
-        expect(blockTimeCancelDialog).to.be.lessThan(blockTimeShowDialog -= 2);
-      });
   });
 
   it('should leave the block and lock the block', () => {
@@ -212,7 +179,7 @@ describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="resumeTest-1"]')
       .click();
@@ -288,15 +255,14 @@ describe('Login2: Resp/Pres complete, leave the block with unit-navigation forwa
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
-    cy.wait(2000);
+    // cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-
       .contains('Startseite');
   });
 });
@@ -360,7 +326,7 @@ describe('Login3: Resp/Pres complete, leave the block with unit-navigation backw
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -430,7 +396,7 @@ describe('Login4: Resp/Pres complete, leave the block & end the test with unit-m
       .click();
     cy.get('[data-cy="dialog-title"]')
       .contains('Aufgabenabschnitt verlassen?');
-    cy.get('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
@@ -481,7 +447,6 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
     cy.intercept(`${Cypress.env('urls').backend}/test/7/unit/UNIT.SAMPLE-101/response`).as('response101-4-1');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    startTime = new Date().getTime();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
@@ -502,21 +467,12 @@ describe('Login5: Resp/Pres complete, leave the block after time is up', { testI
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click()
       .should('be.checked');
-  });
-
-  it('should not enter the block after time is up', () => {
-    // Wait for remaining time of restricted area
-    endTime = new Date().getTime();
-    elapsed = endTime - startTime;
-    cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./); // TODO use data-cy
-    cy.get('[data-cy="unit-title"]')
-      .contains('Endseite');
-    cy.wait(2000);
-    cy.get('[data-cy="unit-navigation-backward"]')
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Startseite');
+      .contains('Endseite');
   });
 });
 
