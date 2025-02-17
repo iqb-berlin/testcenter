@@ -3,7 +3,6 @@ import {
   openSampleWorkspace,
   loginTestTaker,
   resetBackendData,
-  credentialsControllerTest,
   visitLoginPage,
   getFromIframe,
   forwardTo,
@@ -15,10 +14,6 @@ import {
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
 const TesttakerName = 'Test_Demo_Ctrl';
 const TesttakerPassword = '123';
-
-let startTime: number;
-let endTime: number;
-let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   before(() => {
@@ -50,11 +45,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'Hase');
-    // Time restricted area has been entered. Start the timer
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .then(() => {
-        startTime = new Date().getTime();
-      })
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -97,17 +88,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     backwardsTo('Aufgabe1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
-  });
-  
-  it.skip('should give a warning message when the time is expired, but the block will not be locked.', () => {
-    // Wait for remaining time of restricted area
-    endTime = new Date().getTime();
-    elapsed = endTime - startTime;
-    cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.get('.snackbar-time-ended')
-      .contains('Die Bearbeitung des Abschnittes ist beendet.');
-    cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1');
   });
 
   it('should start the booklet again after exiting the test', () => {

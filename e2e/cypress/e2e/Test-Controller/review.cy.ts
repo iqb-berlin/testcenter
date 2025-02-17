@@ -55,11 +55,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'Hase');
-    // Time restricted area has been entered. Start the timer
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .then(() => {
-        startTime = new Date().getTime();
-      })
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -131,17 +127,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     backwardsTo('Aufgabe1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
-  });
-
-  it.skip('should show a warning message when the time expires but don\'t lock the block.', () => {
-    // Wait for remaining time of restricted area
-    endTime = new Date().getTime();
-    elapsed = endTime - startTime;
-    cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./);
-    // Aufgabe1 is visible, because the block is in demo-mode not blocked
-    cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1');
   });
 
   it('should start the booklet again after exiting the test', () => {
