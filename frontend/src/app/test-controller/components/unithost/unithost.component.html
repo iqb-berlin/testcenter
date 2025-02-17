@@ -29,7 +29,7 @@
               {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
             </mat-card-subtitle>
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'code'">
-              {{'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
+              {{'Aufgabenblock ist gesperrt, Freigabewort benötigt' | customtext:'booklet_codeToEnterTitle' | async}}
             </mat-card-subtitle>
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'show'">
               {{'Aufgabenblock steht nicht zur Verfügung' | customtext:'booklet_blockConditionNotSatisfied' | async}}
