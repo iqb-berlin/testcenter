@@ -1,7 +1,6 @@
 import {
   backwardsTo,
   convertResultsSeperatedArrays,
-  credentialsControllerTest,
   deleteDownloadsFolder,
   forwardTo,
   getFromIframe, gotoPage,
@@ -16,10 +15,6 @@ import {
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
 const TesttakerName = 'Test_Review_Ctrl';
 const TesttakerPassword = '123';
-
-let startTime: number;
-let endTime: number;
-let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   before(() => {

@@ -47,7 +47,7 @@ describe('Sys-Check', () => {
       .click();
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
       .should('not.exist');
-    cy.get('[data-cy="uplaod-file-select"]')
+    cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Testtakers_withoutSyscheck.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('Testtakers_withoutSyscheck.xml');

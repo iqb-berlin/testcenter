@@ -5,6 +5,7 @@ export const userData = {
   SuperAdminPassword: 'user123',
   WorkspaceAdminName: 'workspace_admin',
   WorkspaceAdminPassword: 'anotherPassword'
+
 };
 
 export const credentialsControllerTest = {
@@ -61,7 +62,6 @@ export const disableSimplePlayersInternalDebounce = (): void => {
 
 export const insertCredentials = (username: string, password = ''): void => {
   cy.get('[formcontrolname="name"]')
-    .should('exist')
     .clear()
     .type(username);
   if (password) {
@@ -75,7 +75,6 @@ export const logoutAdmin = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
       cy.get('[data-cy="logo"]')
-        .should('exist')
         .click();
       cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
@@ -99,7 +98,8 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
         .click();
       if (fileType === 'hot') {
         cy.log('end test');
-        cy.contains(/^Der Test ist aktiv.$/);
+        cy.get('[data-cy="card-end-resume-test"]')
+          .contains('Der Test ist aktiv.');
         cy.get('[data-cy="resumeTest-1"]');
         cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
@@ -116,7 +116,6 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
 
 export const openSampleWorkspace = (workspace: number): void => {
   cy.get(`[data-cy="workspace-${workspace}"]`)
-    .should('exist')
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/admin/${workspace}/files`);
@@ -124,7 +123,6 @@ export const openSampleWorkspace = (workspace: number): void => {
 
 export const openSampleWorkspace2 = (): void => {
   cy.get('[data-cy="workspace-2"]')
-    .should('exist')
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/admin/2/files`);
@@ -135,12 +133,11 @@ export const loginSuperAdmin = (): void => {
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
-    .should('exist')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  cy.contains(userData.SuperAdminName)
-    .should('exist');
+  cy.get('[data-cy="card-login-name"]')
+    .contains(userData.SuperAdminName);
 };
 
 export const loginWorkspaceAdmin = (): void => {
@@ -148,12 +145,11 @@ export const loginWorkspaceAdmin = (): void => {
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
-    .should('exist')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  cy.contains(userData.WorkspaceAdminName)
-    .should('exist');
+  cy.get('[data-cy="card-login-name"]')
+    .contains(userData.WorkspaceAdminName);
 };
 
 export const loginTestTaker =
@@ -166,7 +162,6 @@ export const loginTestTaker =
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
     }
     cy.get('[data-cy="login-user"]')
-      .should('exist')
       .click();
 
     // eslint-disable-next-line default-case
@@ -179,8 +174,7 @@ export const loginTestTaker =
         break;
       case 'starter':
         cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-        cy.contains(name)
-          .should('exist');
+        cy.contains(name);
         break;
       case 'code-input':
         cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
@@ -196,29 +190,24 @@ export const loginMonitor =
     insertCredentials(name, password);
 
     cy.get('[data-cy="login-user"]')
-      .should('exist')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   };
 
-export const clickSuperadmin = (): void => {
-  cy.contains('Systemverwaltung')
-    .should('exist')
+export const clickSuperadminSettings = (): void => {
+  cy.get('[data-cy="goto-superadmin-settings"]')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
 };
 
 export const addWorkspaceAdmin = (username: string, password: string): void => {
   cy.get('[data-cy="superadmin-tabs:users"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="add-user"]')
     .click();
   cy.get('[formcontrolname="name"]')
-    .should('exist')
     .type(username);
   cy.get('[formcontrolname="pw"]')
-    .should('exist')
     // password < 7 characters
     .type('123456')
     .get('[type="submit"]')
@@ -229,14 +218,13 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
     .get('[type="submit"]')
     .should('be.enabled')
     .click();
-  cy.contains(username)
-    .should('exist');
+  cy.contains(username);
 };
 
 export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
   loginSuperAdmin();
   openSampleWorkspace(workspace);
-  cy.get('[data-cy="uplaod-file-select"]')
+  cy.get('[data-cy="upload-file-select"]')
     .selectFile(`cypress/fixtures/${fileName}`, { force: true });
   logoutAdmin();
   visitLoginPage();
@@ -244,32 +232,23 @@ export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: nu
 
 export const deleteFilesSampleWorkspace = (): void => {
   cy.get('[data-cy="files-checkAll-Testtakers"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Booklet"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-SysCheck"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Resource"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Unit"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="delete-files"]')
-    .should('exist')
     .click();
   cy.get('[data-cy="dialog-title"]')
-    .should('exist')
     .contains('Löschen von Dateien');
   cy.get('[data-cy="dialog-confirm"]')
-    .should('exist')
     .contains('Löschen')
     .click();
-  cy.contains('erfolgreich gelöscht.')
-    .should('exist');
+  cy.contains('erfolgreich gelöscht.');
   cy.contains('Teilnehmerlisten')
     .should('not.exist');
   cy.contains('Testhefte')
@@ -286,14 +265,11 @@ export const deleteTesttakersFiles = (): void => {
   cy.get('[data-cy="delete-files"]')
     .click();
   cy.get('[data-cy="dialog-title"]')
-    .should('exist')
     .contains('Löschen von Dateien');
   cy.get('[data-cy="dialog-confirm"]')
-    .should('exist')
     .contains('Löschen')
     .click();
-  cy.contains('1 Dateien erfolgreich gelöscht.')
-    .should('exist');
+  cy.contains('1 Dateien erfolgreich gelöscht.');
   cy.contains('1 Dateien erfolgreich gelöscht.', { timeout: 10000 })
     .should('not.exist');
   cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
@@ -331,12 +307,10 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
 
   if (fileType === 'responses') {
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist')
       .then(splitCsvID);
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
-      .should('exist')
       .then(splitCsvID);
   }
   throw new Error(`Unknown filetype: ${fileType}`);
@@ -355,18 +329,14 @@ export const forwardTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-forward"]')
     .click();
   cy.get('[data-cy="unit-title"]')
-    .should('exist')
-    .contains(new RegExp(`^${expectedLabel}$`))
-    .should('exist');
+    .contains(new RegExp(`^${expectedLabel}$`));
 };
 
 export const backwardsTo = (expectedLabel: string): void => {
   cy.get('[data-cy="unit-navigation-backward"]')
     .click();
   cy.get('[data-cy="unit-title"]')
-    .should('exist')
-    .contains(new RegExp(`^${expectedLabel}$`))
-    .should('exist');
+    .contains(new RegExp(`^${expectedLabel}$`));
 };
 
 export const gotoPage = (pageIndex: number): void => {

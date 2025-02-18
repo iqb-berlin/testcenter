@@ -4,8 +4,9 @@ import {
 } from '../utils';
 
 describe('Settings (setting-tab)', () => {
+  before(resetBackendData);
+
   beforeEach(visitLoginPage);
-  beforeEach(resetBackendData);
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadminSettings);
 

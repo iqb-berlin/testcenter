@@ -4,8 +4,9 @@ import {
 } from '../utils';
 
 describe('Workspace-Admin-results', () => {
-  beforeEach(deleteDownloadsFolder);
-  beforeEach(resetBackendData);
+  before(deleteDownloadsFolder);
+  before(resetBackendData);
+
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
   beforeEach(() => openSampleWorkspace(1));
@@ -19,8 +20,7 @@ describe('Workspace-Admin-results', () => {
       .click();
     cy.get('[data-cy="download-responses"]')
       .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
-      .should('exist');
+    cy.readFile('cypress/downloads/iqb-testcenter-responses.csv');
   });
 
   it('should download the logs of a group', () => {
@@ -30,8 +30,7 @@ describe('Workspace-Admin-results', () => {
       .click();
     cy.get('[data-cy="download-logs"]')
       .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-      .should('exist');
+    cy.readFile('cypress/downloads/iqb-testcenter-logs.csv');
   });
 
   it('should delete the results of a group', () => {
@@ -42,10 +41,8 @@ describe('Workspace-Admin-results', () => {
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
-      .should('exist')
       .contains('Löschen von Gruppendaten');
     cy.get('[data-cy="dialog-confirm"]')
-      .should('exist')
       .contains('Gruppendaten löschen')
       .click();
     cy.get('[data-cy="results-checkbox"]')

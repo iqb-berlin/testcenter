@@ -197,8 +197,8 @@ describe('Check hot-restart test-controller functionalities', { testIsolation: f
       cy.get('[data-cy="endTest-1"]')
         .click();
       cy.get('[data-cy="logout"]');
-      cy.get('[data-cy="booklet-RUNHOTRET"]')
-        .should('not.exist');
+      cy.get('[data-cy="booklet-RUNHOTRES"]')
+        .contains('gesperrt');
     });
   });
 

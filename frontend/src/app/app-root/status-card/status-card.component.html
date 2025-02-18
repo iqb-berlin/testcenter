@@ -1,5 +1,5 @@
 <div class="flex-column">
-  <div *ngIf="loginName">
+  <div *ngIf="loginName" data-cy="card-login-name">
     <p><b>Status: Angemeldet als "{{loginName}}"</b></p>
     <p style="margin-bottom: 0;">
       <b *ngIf="loginAuthority.length > 1">Berechtigungen:</b>
