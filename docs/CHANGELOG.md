@@ -5,6 +5,9 @@ layout: default
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
 
+### Bugfixes
+* `ARROWS_ONLY` innerhalb der Booklet Konfigurationen verhält sich nun wie erwartet
+
 ## 15.5.0
 ### neue Features
 * Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden

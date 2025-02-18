@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -20,6 +20,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
 import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
@@ -37,7 +38,6 @@ import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
 import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
 import { PropertiesPipe } from './pipes/properties.pipe';
 import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
-import { MatSelectModule } from '@angular/material/select';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -67,7 +67,8 @@ export { TestControllerService } from './services/test-controller.service';
     MatDividerModule,
     MatListModule,
     MatAutocompleteModule,
-    MatSelectModule
+    MatSelectModule,
+    NgIf
   ],
   declarations: [
     UnithostComponent,
