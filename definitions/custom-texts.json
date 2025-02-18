@@ -199,29 +199,33 @@
     "label" : "Meinueintrag: Spalten",
     "defaultvalue" : "Spalten"
   },
-  "gm_menu_activity" : {
-    "label" : "Meinueintrag: Aktivität",
+  "gm_menu_cols_states" : {
+    "label" : "Spalte: Booklet-Zustände",
+    "defaultvalue" : "Zustände"
+  },
+  "gm_col_personLabel" : {
+    "label" : "Spalte: Teilnehmer",
+    "defaultvalue" : "Teilnehmer"
+  },
+  "gm_col_state" : {
+    "label" : "Spalte: Aktivität",
     "defaultvalue" : "Aktivität"
   },
-  "gm_col_group" : {
+  "gm_col_groupName" : {
     "label" : "Spalte: Gruppe",
     "defaultvalue" : "Gruppe"
   },
-  "gm_col_booklet" : {
+  "gm_col_bookletLabel" : {
     "label" : "Spalte: Testheft",
     "defaultvalue" : "Testheft"
   },
-  "gm_col_testlet" : {
+  "gm_col_blockLabel" : {
     "label" : "Spalte: Block",
     "defaultvalue" : "Block"
   },
-  "gm_col_unit" : {
+  "gm_col_unitLabel" : {
     "label" : "Spalte: Aufgabe",
     "defaultvalue" : "Aufgabe"
-  },
-  "gm_col_states" : {
-    "label" : "Spalte: Booklet-Zustände",
-    "defaultvalue" : "Zustände"
   },
   "gm_view_full" : {
     "label" : "Ansicht: Vollständig",
@@ -287,14 +291,6 @@
     "label" : "Control: Ganz nach unten",
     "defaultvalue" : "Ganz nach unten"
   },
-  "gm_col_person" : {
-    "label" : "Spalte: Teilnehmer",
-    "defaultvalue" : "Teilnehmer"
-  },
-  "gm_col_activity" : {
-    "label" : "Spalte: Aktivität",
-    "defaultvalue" : "Aktivität"
-  },
   "gm_hide_controls_tooltip" : {
     "label" : "Tooltip: Test-Steuerung verbergen",
     "defaultvalue" : "Test-Steuerung verbergen"
@@ -319,37 +315,17 @@
     "label": "Benutzerdefinierter Filter: Ziel - TestheftId",
     "defaultvalue": "Booklet-Id"
   },
-  "gm_filter_target_bookletLabel": {
-    "label": "Benutzerdefinierter Filter: Ziel - Testhefttitel",
-    "defaultvalue": "Booklettitel"
-  },
   "gm_filter_target_unitId": {
     "label": "Benutzerdefinierter Filter: Ziel - Aufgaben-Id",
     "defaultvalue": "Aufgaben-Id"
-  },
-  "gm_filter_target_unitLabel": {
-    "label": "Benutzerdefinierter Filter: Ziel - Aufgabentitel",
-    "defaultvalue": "Aufgabentitel"
   },
   "gm_filter_target_blockId": {
     "label": "Benutzerdefinierter Filter: Ziel - Block-Id",
     "defaultvalue": "Block-Id"
   },
-  "gm_filter_target_blockLabel": {
-    "label": "Benutzerdefinierter Filter: Ziel - Blocktitel",
-    "defaultvalue": "Blocktitel"
-  },
-  "gm_filter_target_state": {
-    "label": "Benutzerdefinierter Filter: Ziel - Teststatus",
-    "defaultvalue": "Teststatus"
-  },
   "gm_filter_target_bookletSpecies": {
     "label": "Benutzerdefinierter Filter: Ziel -Testhefttyp",
     "defaultvalue": "Testhefttyp"
-  },
-  "gm_filter_target_personLabel": {
-    "label": "Benutzerdefinierter Filter: Ziel - Teilnehmer",
-    "defaultvalue": "Teilnehmer"
   },
   "gm_filter_target_groupName": {
     "label": "Benutzerdefinierter Filter: Ziel - Gruppe",
