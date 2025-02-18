@@ -11,6 +11,7 @@ import {
 })
 export class UnitNavBarComponent {
   @Input() booklet: Booklet | null = null;
+  @Input() showInnerBox: boolean = false;
   @Input() prevButtonVisible: boolean = false;
   @Input() nextButtonVisible: boolean = false;
   @Input() prevButtonEnabled: boolean = false;

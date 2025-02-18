@@ -50,7 +50,7 @@ replacements:
 |booketlet_continueButtonLockedUnit|Label für den Button um bei gesperrten Units weiter zuklicken|Weiter|
 |booklet_blockLockedByAfterLeave|Block kann nicht noch einmal betreten werden|Block kann nicht noch einmal betreten werden|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
-|booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes: Titel|Aufgabenblock ist noch gesperrt|
+|booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes|Aufgabenblock ist gesperrt, Freigabewort benötigt|
 |booklet_codeToEnterWarning|Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung|Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.|
 |booklet_console_warning|Warnung, die auf der Browserkonsole erscheinen soll|Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*
 Gehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben.|
@@ -94,13 +94,13 @@ Funktioniert auch nicht? Dann...
 |gm_booklet_error_missing_file|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|
 |gm_booklet_error_missing_id|Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet|Kein Testheft zugeordnet!|
 |gm_booklet_error_xml|Fehleranzeige im Gruppen monitor: Invalides XML|Konnte Testheft-Datei nicht lesen!|
-|gm_col_activity|Spalte: Aktivität|Aktivität|
-|gm_col_booklet|Spalte: Testheft|Testheft|
-|gm_col_group|Spalte: Gruppe|Gruppe|
-|gm_col_person|Spalte: Teilnehmer|Teilnehmer|
-|gm_col_states|Spalte: Booklet-Zustände|Zustände|
-|gm_col_testlet|Spalte: Block|Block|
-|gm_col_unit|Spalte: Aufgabe|Aufgabe|
+|gm_codetoenter_unlock_tooltip|Tooltip Passwort-geschützter Bereich geöffnet|Block wurde geöffnet|
+|gm_col_blockLabel|Spalte: Block|Block|
+|gm_col_bookletLabel|Spalte: Testheft|Testheft|
+|gm_col_groupName|Spalte: Gruppe|Gruppe|
+|gm_col_personLabel|Spalte: Teilnehmer|Teilnehmer|
+|gm_col_state|Spalte: Aktivität|Aktivität|
+|gm_col_unitLabel|Spalte: Aufgabe|Aufgabe|
 |gm_control_finish_everything|Control: Testung beenden|Testung beenden|
 |gm_control_goto|Control: Springe zu Block|Springe zu|
 |gm_control_goto_tooltip|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
@@ -116,25 +116,20 @@ Funktioniert auch nicht? Dann...
 |gm_filter_not|Benutzerdefinierter Filter: Nicht|nicht|
 |gm_filter_pending|Filter: nicht gestartete ausblenden|nicht gestartete|
 |gm_filter_target_blockId|Benutzerdefinierter Filter: Ziel - Block-Id|Block-Id|
-|gm_filter_target_blockLabel|Benutzerdefinierter Filter: Ziel - Blocktitel|Blocktitel|
 |gm_filter_target_bookletId|Benutzerdefinierter Filter: Ziel - TestheftId|Booklet-Id|
-|gm_filter_target_bookletLabel|Benutzerdefinierter Filter: Ziel - Testhefttitel|Booklettitel|
 |gm_filter_target_bookletSpecies|Benutzerdefinierter Filter: Ziel -Testhefttyp|Testhefttyp|
 |gm_filter_target_bookletStates|Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand|Testheft-Zustand|
 |gm_filter_target_groupName|Benutzerdefinierter Filter: Ziel - Gruppe|Gruppe|
 |gm_filter_target_mode|Benutzerdefinierter Filter: Ziel - Modus|Durchführungsmodus|
-|gm_filter_target_personLabel|Benutzerdefinierter Filter: Ziel - Teilnehmer|Teilnehmer|
-|gm_filter_target_state|Benutzerdefinierter Filter: Ziel - Teststatus|Teststatus|
 |gm_filter_target_testState|Benutzerdefinierter Filter: Ziel - detaillierter Teststatus|detaillierter Teststatus|
 |gm_filter_target_unitId|Benutzerdefinierter Filter: Ziel - Aufgaben-Id|Aufgaben-Id|
-|gm_filter_target_unitLabel|Benutzerdefinierter Filter: Ziel - Aufgabentitel|Aufgabentitel|
 |gm_filter_type_equal|Benutzerdefinierter Filter: Typ - gleicht|gleicht|
 |gm_filter_type_regex|Benutzerdefinierter Filter: Typ - Regulärer Ausdruck|matched regulären Ausdruck|
 |gm_filter_type_substring|Benutzerdefinierter Filter: Typ - enthält|enthält|
 |gm_headline|Überschrift: Gruppenmonitor|Gruppenüberwachung|
 |gm_hide_controls_tooltip|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
-|gm_menu_activity|Meinueintrag: Aktivität|Aktivität|
 |gm_menu_cols|Meinueintrag: Spalten|Spalten|
+|gm_menu_cols_states|Spalte: Booklet-Zustände|Zustände|
 |gm_menu_filter|Meinueintrag: Sitzungen ausblenden|Sitzungen ausblenden|
 |gm_multiple_booklet_species_warning|Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist| - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.|
 |gm_scroll_down|Control: Ganz nach unten|Ganz nach unten|

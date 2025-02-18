@@ -23,7 +23,9 @@
     <i class="material-icons">chevron_left</i>
   </a>
 
-  <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}" />
+  <ng-container *ngIf="showInnerBox">
+    <ng-container *ngTemplateOutlet="testletFull; context: {testlet: booklet?.units, level: 0}"/>
+  </ng-container>
 
   <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
     <ng-container *ngFor="let testletOrUnit of testlet.children">
@@ -38,13 +40,13 @@
           [class.marked]="(forwardAllowed === 'markedNo' && testletOrUnit.sequenceId > tcs.currentUnitSequenceId) || (backwardAllowed === 'markedNo' && testletOrUnit.sequenceId < tcs.currentUnitSequenceId)"
           (click)="tcs.setUnitNavigationRequest(testletOrUnit.sequenceId.toString())"
         >
-          {{testletOrUnit.labelShort || "&nbsp;"}}
+          {{ testletOrUnit.labelShort || "&nbsp;" }}
         </a>
       </ng-container>
 
       <ng-template #subTestlet>
         <ng-container *ngIf="isTestlet(testletOrUnit) && (!testletOrUnit.locks.show)">
-          <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}" />
+          <ng-container *ngTemplateOutlet="testletFull; context: {testlet: testletOrUnit, level: level + 1}"/>
         </ng-container>
       </ng-template>
     </ng-container>
