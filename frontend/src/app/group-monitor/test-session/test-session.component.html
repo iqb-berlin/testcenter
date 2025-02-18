@@ -235,7 +235,7 @@
   <span
     *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
     class="unit restriction"
-    matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
+    [matTooltip]="(testSession | iscodeclear : testlet) ? ('Block wurde geöffnet' | customtext: 'gm_codetoenter_unlock_tooltip' | async)! : (('Freigabewort' | customtext:'booklet_codeToEnterTitle' | async) + ': ' + codeToEnter.code.toUpperCase())"
     matTooltipPosition="above"
   >
     <mat-icon>
