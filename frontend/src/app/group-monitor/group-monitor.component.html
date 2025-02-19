@@ -30,7 +30,7 @@
     {{'Spalten' | customtext:'gm_menu_cols' | async}}
   </button>
   <button mat-menu-item [matMenuTriggerFor]="activity" data-cy="GM_activity_button">
-    {{'Aktivität' | customtext:'gm_menu_activity' | async}}
+    {{'Aktivität' | customtext:'gm_col_state' | async}}
   </button>
 </mat-menu>
 
@@ -64,26 +64,26 @@
 <mat-menu #group="matMenu">
   <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_group_button">
     <mat-icon *ngIf="displayOptions.groupColumn === 'show'" data-cy="GM_columns_checked_group">check</mat-icon>
-    <span>{{'Gruppe' | customtext:'gm_col_group' | async}}</span>
+    <span>{{'Gruppe' | customtext:'gm_col_groupName' | async}}</span>
   </button>
   <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_booklet_button">
     <mat-icon *ngIf="displayOptions.bookletColumn === 'show'" data-cy="GM_columns_checked_booklet">check </mat-icon>
-    <span>{{'Testheft' | customtext:'gm_col_booklet' | async}}</span>
+    <span>{{'Testheft' | customtext:'gm_col_bookletLabel' | async}}</span>
   </button>
   <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_block_button">
     <mat-icon *ngIf="displayOptions.blockColumn === 'show'" data-cy="GM_columns_checked_block">check</mat-icon>
-    <span>{{'Block' | customtext:'gm_col_testlet' | async}}</span>
+    <span>{{'Block' | customtext:'gm_col_blockLabel' | async}}</span>
   </button>
   <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')" data-cy="GM_column_unit_button">
     <mat-icon *ngIf="displayOptions.unitColumn === 'show'" data-cy="GM_columns_checked_unit">check</mat-icon>
-    <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
+    <span>{{'Aufgabe' | customtext:'gm_col_unitLabel' | async}}</span>
   </button>
   <ng-container *ngFor="let bookletState of bookletStates | keyvalue; let i = index">
     <button 
       mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)" 
       [attr.data-cy]="'GM_columns_state_button-' + i" > 
       <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)" [attr.data-cy]="'GM_columns_checked_state-' + i">check</mat-icon>
-      <span>{{'Zustände' | customtext:'gm_col_states' | async}} {{bookletState.value}}</span>
+      <span>{{'Zustände' | customtext:'gm_menu_cols_states' | async}} {{bookletState.value}}</span>
     </button>
   </ng-container>
 </mat-menu>
@@ -173,7 +173,7 @@
         >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
-          <span class="emph" *ngIf="currentlySelected?.element?.blockId">{{'Block' | customtext:'gm_col_testlet' | async}} {{currentlySelected?.element?.blockId}}</span>
+          <span class="emph" *ngIf="currentlySelected?.element?.blockId">{{'Block' | customtext:'gm_col_blockLabel' | async}} {{currentlySelected?.element?.blockId}}</span>
         </button>
       </div>
 
@@ -278,22 +278,22 @@
                   <mat-icon>person</mat-icon>
                 </td>
                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">
-                  {{'Gruppe' | customtext:'gm_col_group' | async}}
+                  {{'Gruppe' | customtext:'gm_col_groupName' | async}}
                 </td>
                 <td mat-sort-header="personLabel">
-                  {{'Teilnehmer' | customtext:'gm_col_person' | async}}
+                  {{'Teilnehmer' | customtext:'gm_col_personLabel' | async}}
                 </td>
                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
-                  {{'Testheft' | customtext:'gm_col_booklet' | async}}
+                  {{'Testheft' | customtext:'gm_col_bookletLabel' | async}}
                 </td>
                 <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">
-                  {{'Block' | customtext:'gm_col_testlet' | async}}
+                  {{'Block' | customtext:'gm_col_blockLabel' | async}}
                 </td>
                 <td mat-sort-header="timestamp">
-                  {{'Aktivität' | customtext:'gm_col_activity' | async}}
+                  {{'Aktivität' | customtext:'gm_col_state' | async}}
                 </td>
                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
-                  {{'Aufgabe' | customtext:'gm_col_unit' | async}}
+                  {{'Aufgabe' | customtext:'gm_col_unitLabel' | async}}
                 </td>
 
                 <ng-container *ngFor="let bookletState of bookletStates | keyvalue">
