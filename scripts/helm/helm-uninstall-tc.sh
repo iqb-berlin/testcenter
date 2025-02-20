@@ -31,6 +31,7 @@ uninstall_testcenter() {
         exit 1
       fi
     else
+      kubectl delete job -n tc testcenter-backend-container-init
       printf "'Testcenter' uninstallation done.\n"
     fi
     printf "\n"
