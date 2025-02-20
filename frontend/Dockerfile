@@ -42,10 +42,14 @@ EXPOSE 4200
 CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--host", "0.0.0.0"]
 
 
-FROM ${REGISTRY_PATH}nginx:1.26 AS prod
-COPY --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
-COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template
+FROM ${REGISTRY_PATH}nginxinc/nginx-unprivileged:stable AS prod
+USER root
+RUN chown -R nginx:root /usr/share/nginx/html
 
-EXPOSE 80
+USER nginx
+COPY --chown=nginx:root --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
+COPY --chown=nginx:root frontend/nginx.conf /etc/nginx/templates/default.conf.template
+
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
