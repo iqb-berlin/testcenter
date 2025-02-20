@@ -16,9 +16,12 @@ spec:
       labels:
         app: {{ .Release.Name }}-frontend-pod
     spec:
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
       containers:
         - name: {{ .Release.Name }}-frontend-container
           image: "{{ .Values.image.frontend.registryPath }}iqbberlin/testcenter-frontend:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
           ports:
             - name: http-container
-              containerPort: 80
+              containerPort: 8080
