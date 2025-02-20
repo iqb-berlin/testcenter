@@ -125,7 +125,7 @@ spec:
       services:
         - kind: Service
           name: {{ .Release.Name }}-backend-service
-          port: 80
+          port: 8080
   {{- if .Values.ingress.tlsEnabled }}
   tls:
     certResolver: {{ .Values.ingress.tlsCertResolver }}
