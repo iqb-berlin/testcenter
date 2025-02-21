@@ -62,6 +62,9 @@ ingress:
   tlsCertResolver: ""
 
 deployment:
+  backend:
+    replicas: 1
+
   frontend:
     replicas: 1
     strategy:
@@ -90,6 +93,10 @@ persistence:
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
   backendPvcSize: 2Gi
+
+  backendConfigPvcStorageClassName: standard
+  backendConfigPvcAccessMode: ReadWriteOnce
+  backendConfigPvcSize: 100Mi
 
   dbPvcStorageClassName: standard
   dbPvcAccessMode: ReadWriteOnce
