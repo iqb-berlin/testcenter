@@ -76,7 +76,7 @@ VOLUME /var/www/testcenter/data
 EXPOSE 80
 
 COPY backend/entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["apache2-foreground"]
 
 
 FROM base AS dev
