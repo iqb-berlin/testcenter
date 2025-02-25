@@ -16,6 +16,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/file-server/configmap.yaml") . | sha256sum }}
         checksum/config-nginx: {{ include (print $.Template.BasePath "/file-server/configmap-nginx.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/file-server/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:
@@ -24,9 +25,14 @@ spec:
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           env:
             - name: REDIS_HOST
-              value: "testcenter-cache-service"
+              value: "testcenter-cache-service.tc.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-file-server-secret
+                  key: REDIS_PASSWORD
             - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:

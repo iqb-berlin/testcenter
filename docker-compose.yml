@@ -7,6 +7,7 @@ x-restart-policy: &restart-policy
 x-env-redis: &env-redis
   REDIS_HOST: testcenter-cache-service
   REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
 
 x-env-mysql: &env-mysql
@@ -54,6 +55,8 @@ services:
     <<: *restart-policy
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
+    depends_on:
+      - testcenter-cache-service
     environment:
       <<: *env-redis
     volumes:
@@ -65,6 +68,11 @@ services:
     <<: *restart-policy
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
+    depends_on:
+      testcenter-db:
+        condition: service_healthy
+      testcenter-cache-service:
+        condition: service_started
     entrypoint: /entrypoint.sh
     environment:
       HOSTNAME: ${HOSTNAME}
@@ -80,9 +88,6 @@ services:
     logging:
       options:
         <<: *env-logging-conf
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost" ]
       start_period: 60s
@@ -99,6 +104,7 @@ services:
     image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
     command: [
       "bash", "-c", "redis-server",
+      "--requirepass", "${REDIS_PASSWORD}"
       "--maxmemory", "${REDIS_MEMORY_MAX:-1073741824}",
       "--maxmemory-policy", "volatile-lru"
     ]
