@@ -61,8 +61,8 @@ services:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     environment:
+      REDIS_HOST: testcenter-cache-service
       REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
-      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
     networks:
