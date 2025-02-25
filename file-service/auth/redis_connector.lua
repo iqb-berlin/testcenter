@@ -14,6 +14,12 @@ function redis_connector.connect()
     return ngx.exit(ngx.status)
   end
 
+  local res, err = red:auth(os.getenv("REDIS_PASSWORD"))
+  if not res then
+      ngx.say("Failed to authenticate: ", err)
+      return ngx.exit(ngx.status)
+  end
+
   return red
 end
 
