@@ -46,6 +46,11 @@ spec:
               value: "testcenter-cache-service"
             - name: REDIS_PORT
               value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: REDIS_PASSWORD
             - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:
@@ -60,17 +65,17 @@ spec:
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secret
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secret
                   key: MYSQL_PASSWORD
             - name: PASSWORD_SALT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secrets
+                  name: {{ .Release.Name }}-backend-secret
                   key: PASSWORD_SALT
             - name: SKIP_READ_FILES
               value: "no"

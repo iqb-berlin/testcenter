@@ -1,4 +1,5 @@
 {
+  "file_service_url": "http://testcenter-file-service",
   "backend_url": "http://testcenter-backend",
-  "file_service_url": "http://testcenter-file-service"
+  "cache_service_url": "redis://:change_me@testcenter-cache-service"
 }
