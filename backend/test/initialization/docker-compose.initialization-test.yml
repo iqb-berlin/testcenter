@@ -43,18 +43,17 @@ services:
       target: dev
     entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
-      <<: *env-mysql
-      MYSQL_HOST: testcenter-initialization-test-db
-      MYSQL_PORT: 3306
-      PASSWORD_SALT: 't'
-      BROADCAST_SERVICE_ENABLED: off
-      FILE_SERVICE_ENABLED: off
       HOSTNAME: localhost
-      TLS_ENABLED: off
-      CACHE_SERVICE_INCLUDE_FILES: off
-      CACHE_SERVICE_RAM: 1
       PORT_OF_REVERSE_PROXY: 80
       TLS_PORT_OF_REVERSE_PROXY: 443
+      TLS_ENABLED: false
+      BROADCAST_SERVICE_ENABLED: false
+      CACHE_SERVICE_INCLUDE_FILES: false
+      FILE_SERVICE_ENABLED: false
+      MYSQL_HOST: testcenter-initialization-test-db
+      MYSQL_PORT: 3306
+      <<: *env-mysql
+      PASSWORD_SALT: 't'
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../../../backend/index.php:/var/www/testcenter/backend/index.php
