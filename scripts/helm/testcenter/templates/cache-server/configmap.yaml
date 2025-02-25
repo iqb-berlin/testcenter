@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cache-server-config
+data:
+  REDIS_MEMORY_MAX: {{ .Values.config.cacheServer.redisMemoryMax | quote }}
