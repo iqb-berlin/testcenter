@@ -25,6 +25,8 @@ spec:
           env:
             - name: REDIS_HOST
               value: "testcenter-cache-service"
+            - name: REDIS_PORT
+              value: "6379"
             - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:

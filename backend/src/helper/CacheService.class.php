@@ -4,13 +4,13 @@ class CacheService {
   private static Redis|null $redis = null;
 
   private static function connect(): bool {
-    if (!SystemConfig::$cacheService_host) {
+    if (!SystemConfig::$cacheService_host or !SystemConfig::$cacheService_port) {
       return false;
     }
     if (!isset(self::$redis)) {
       try {
         self::$redis = new Redis();
-        self::$redis->connect(SystemConfig::$cacheService_host);
+        self::$redis->connect(SystemConfig::$cacheService_host, SystemConfig::$cacheService_port);
       } catch (RedisException $exception) {
         throw new Exception("Could not reach Cache-Service: " . $exception->getMessage());
       }
@@ -57,7 +57,7 @@ class CacheService {
   }
 
   static function getStatusFilesCache(): string {
-    if (!SystemConfig::$cacheService_host or !SystemConfig::$cacheService_includeFiles) {
+    if (!SystemConfig::$cacheService_host or !SystemConfig::$cacheService_port or !SystemConfig::$cacheService_includeFiles) {
       return 'off';
     }
     try {
