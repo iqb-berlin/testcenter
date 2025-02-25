@@ -93,7 +93,7 @@ class SystemConfig {
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
       $config['fileService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/fs/";
       $config['fileService']['internal'] = 'testcenter-file-service';
-      $config['cacheService']['host'] = 'testcenter-cache-service';
+      $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');
     }
 
     $config['cacheService']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
