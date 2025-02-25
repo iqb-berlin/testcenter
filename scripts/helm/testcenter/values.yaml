@@ -43,11 +43,16 @@ image:
     tag: "1.28"
 
 config:
+  fileServer:
+    redisCacheFiles: &cacheFiles false
+
   backend:
     broadcastServiceEnabled: true
     fileServiceEnabled: false
-    cacheServiceRam: 1073741824
-    cacheServiceIncludeFiles: false
+    redisCacheFiles: *cacheFiles
+
+  cacheServer:
+    redisMemoryMax: 1073741824
 
 secret:
   backend:
