@@ -194,7 +194,7 @@ const runDredd = serviceUrl => (async done => {
 
 const insertGroupTokenToCacheService = async () => {
   cliPrint.headline('Inject group-token into cache');
-  const client = redis.createClient({ url: 'redis://testcenter-cache-service' });
+  const client = redis.createClient({ url: testConfig.cache_service_url });
   await client.connect();
   await client.set('group-token:static:group:sample_group', 1, { EX: 60 });
   await client.quit();
