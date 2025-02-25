@@ -12,6 +12,7 @@ data:
     worker_cpu_affinity auto; # The optional mask parameter can be used to limit the CPUs available for automatic binding
 
     env REDIS_HOST;
+    env REDIS_PORT;
     env REDIS_CACHE_FILES;
 
     events {
@@ -36,7 +37,7 @@ data:
 
       resolver kube-dns.kube-system.svc.cluster.local; # DNS resolver for the DNS cache, will be overwritten when building the image
 
-      lua_code_cache off;
+      lua_code_cache on;
       lua_shared_dict dns_cache 12k;
       lua_package_path "/usr/share/nginx/auth/?.lua;;";
 
