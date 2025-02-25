@@ -61,7 +61,7 @@ services:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
+      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
       CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
@@ -79,8 +79,8 @@ services:
       TLS_PORT_OF_REVERSE_PROXY: ${HTTPS_PORT:-443}
       TLS_ENABLED: ${TLS_ENABLED:-true}
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
+      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
       <<: *env-mysql

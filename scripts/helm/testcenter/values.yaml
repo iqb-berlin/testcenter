@@ -39,7 +39,9 @@ config:
   backend:
     broadcastServiceEnabled: true
     fileServiceEnabled: true
-    cacheServiceIncludeFiles: false
+
+  cacheServer:
+    redisCacheFiles: false
 
 secret:
   backend:

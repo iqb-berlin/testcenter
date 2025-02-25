@@ -96,7 +96,7 @@ class SystemConfig {
       $config['cacheService']['host'] = 'testcenter-cache-service';
     }
 
-    $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
+    $config['cacheService']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

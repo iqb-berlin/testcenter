@@ -48,8 +48,8 @@ services:
       TLS_PORT_OF_REVERSE_PROXY: 443
       TLS_ENABLED: false
       BROADCAST_SERVICE_ENABLED: false
-      CACHE_SERVICE_INCLUDE_FILES: false
       FILE_SERVICE_ENABLED: false
+      REDIS_CACHE_FILES: false
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
       <<: *env-mysql
