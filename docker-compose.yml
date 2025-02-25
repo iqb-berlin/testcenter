@@ -6,6 +6,7 @@ x-restart-policy: &restart-policy
 
 x-env-redis: &env-redis
   REDIS_HOST: testcenter-cache-service
+  REDIS_PORT: 6379
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
 
 x-env-mysql: &env-mysql
