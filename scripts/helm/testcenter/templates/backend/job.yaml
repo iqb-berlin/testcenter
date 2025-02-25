@@ -43,6 +43,8 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: FILE_SERVICE_ENABLED
+            - name: REDIS_HOST
+              value: "testcenter-cache-service"
             - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:
