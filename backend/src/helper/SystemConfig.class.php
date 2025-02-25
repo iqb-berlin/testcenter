@@ -12,6 +12,7 @@ class SystemConfig {
   public static string $broadcastingService_external = "";
   public static string $broadcastingService_internal = "";
   public static string $cacheService_host = "";
+  public static int $cacheService_port;
   public static string $cacheService_includeFiles = "";
   public static string $password_salt = "t";
   public static bool $system_tlsEnabled = true;
@@ -93,9 +94,10 @@ class SystemConfig {
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
       $config['fileService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/fs/";
       $config['fileService']['internal'] = 'testcenter-file-service';
-      $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');
     }
 
+    $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');
+    $config['cacheService']['port'] = self::stringEnv('REDIS_PORT');
     $config['cacheService']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
