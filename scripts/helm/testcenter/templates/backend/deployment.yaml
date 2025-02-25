@@ -64,11 +64,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: TLS_ENABLED
-            - name: CACHE_SERVICE_INCLUDE_FILES
+            - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
-                  key: CACHE_SERVICE_INCLUDE_FILES
+                  key: REDIS_CACHE_FILES
             - name: PORT_OF_REVERSE_PROXY
               valueFrom:
                 configMapKeyRef:
