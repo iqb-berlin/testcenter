@@ -4,7 +4,7 @@ function redis_connector.connect()
   -- connect to redis
   local redis = require "resty.redis"
   local red = redis:new()
-  local ok, err = red:connect(os.getenv("REDIS_HOST"), 6379, {
+  local ok, err = red:connect(os.getenv("REDIS_HOST"), os.getenv("REDIS_PORT"), {
     pool_size = 20
   })
   if not ok then
