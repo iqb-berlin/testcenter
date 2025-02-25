@@ -4,6 +4,10 @@
 x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-always}"
 
+x-env-redis: &env-redis
+  REDIS_HOST: testcenter-cache-service
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -48,24 +52,12 @@ services:
     networks:
       testcenter:
 
-  testcenter-cache-service:
-    <<: *restart-policy
-    container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
-    command:
-      - "bash"
-      - "-c"
-      - "redis-server --maxmemory ${REDIS_MEMORY_MAX:-1073741824} --maxmemory-policy volatile-lru"
-    networks:
-      testcenter:
-
   testcenter-file-service:
     <<: *restart-policy
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     environment:
-      REDIS_HOST: testcenter-cache-service
-      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+      <<: *env-redis
     volumes:
       - testcenter-backend:ro
     networks:
@@ -82,10 +74,9 @@ services:
       TLS_ENABLED: ${TLS_ENABLED:-true}
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
-      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+      <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
-      <<: *env-mysql
       PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
       options:
@@ -102,6 +93,18 @@ services:
       retries: 3
     volumes:
       - testcenter_backend_vo_data:/var/www/testcenter/data
+    networks:
+      testcenter:
+
+  testcenter-cache-service:
+    <<: *restart-policy
+    container_name: testcenter-cache-service
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    command: [
+      "bash", "-c", "redis-server",
+      "--maxmemory", "${REDIS_MEMORY_MAX:-1073741824}",
+      "--maxmemory-policy", "volatile-lru"
+    ]
     networks:
       testcenter:
 
