@@ -7,7 +7,6 @@ data:
   FILE_SERVICE_ENABLED: {{ .Values.config.backend.fileServiceEnabled | quote }}
   HOSTNAME: {{ .Values.ingress.baseDomain | quote }}
   TLS_ENABLED: {{ .Values.ingress.tlsEnabled | quote }}
-  CACHE_SERVICE_RAM: {{ .Values.config.backend.cacheServiceRam | quote }}
   CACHE_SERVICE_INCLUDE_FILES: {{ .Values.config.backend.cacheServiceIncludeFiles | quote }}
   PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpPort | quote }}
   TLS_PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpsPort | quote }}

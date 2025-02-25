@@ -39,7 +39,6 @@ config:
   backend:
     broadcastServiceEnabled: true
     fileServiceEnabled: true
-    cacheServiceRam: 1073741824
     cacheServiceIncludeFiles: false
 
 secret:
