@@ -47,19 +47,10 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: REDIS_CACHE_FILES
-            - name: SKIP_READ_FILES
-              value: "no"
-            - name: SKIP_DB_INTEGRITY
-              value: "no"
-            - name: OVERWRITE_INSTALLATION
-              value: "no"
-            - name: NO_SAMPLE_DATA
-              value: "no"
-            - name: PASSWORD_SALT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secrets
-                  key: PASSWORD_SALT
+            - name: MYSQL_HOST
+              value: "{{ .Release.Name }}-db"
+            - name: MYSQL_PORT
+              value: "3306"
             - name: MYSQL_DATABASE
               value: "iqb_tba_testcenter"
             - name: MYSQL_USER
@@ -72,10 +63,19 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secrets
                   key: MYSQL_PASSWORD
-            - name: MYSQL_HOST
-              value: "{{ .Release.Name }}-db"
-            - name: MYSQL_PORT
-              value: "3306"
+            - name: PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secrets
+                  key: PASSWORD_SALT
+            - name: SKIP_READ_FILES
+              value: "no"
+            - name: SKIP_DB_INTEGRITY
+              value: "no"
+            - name: OVERWRITE_INSTALLATION
+              value: "no"
+            - name: NO_SAMPLE_DATA
+              value: "no"
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data
