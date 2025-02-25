@@ -13,6 +13,45 @@ spec:
           imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
           command: [ "bash", "/initialize_only.sh" ]
           env:
+            - name: HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: HOSTNAME
+            - name: PORT_OF_REVERSE_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: PORT_OF_REVERSE_PROXY
+            - name: TLS_PORT_OF_REVERSE_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: TLS_PORT_OF_REVERSE_PROXY
+            - name: TLS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: TLS_ENABLED
+            - name: BROADCAST_SERVICE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BROADCAST_SERVICE_ENABLED
+            - name: FILE_SERVICE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: FILE_SERVICE_ENABLED
+            - name: REDIS_CACHE_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: REDIS_CACHE_FILES
+            - name: MYSQL_HOST
+              value: "{{ .Release.Name }}-db"
+            - name: MYSQL_PORT
+              value: "3306"
             - name: MYSQL_DATABASE
               value: "iqb_tba_testcenter"
             - name: MYSQL_USER
@@ -25,55 +64,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secrets
                   key: MYSQL_PASSWORD
-            - name: MYSQL_HOST
-              value: "{{ .Release.Name }}-db"
-            - name: MYSQL_PORT
-              value: "3306"
             - name: PASSWORD_SALT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secrets
                   key: PASSWORD_SALT
-            - name: BROADCAST_SERVICE_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: BROADCAST_SERVICE_ENABLED
-            - name: FILE_SERVICE_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: FILE_SERVICE_ENABLED
-            - name: HOSTNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: HOSTNAME
-            - name: TLS_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: TLS_ENABLED
-            - name: CACHE_SERVICE_INCLUDE_FILES
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: CACHE_SERVICE_INCLUDE_FILES
-            - name: CACHE_SERVICE_RAM
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: CACHE_SERVICE_RAM
-            - name: PORT_OF_REVERSE_PROXY
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: PORT_OF_REVERSE_PROXY
-            - name: TLS_PORT_OF_REVERSE_PROXY
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: TLS_PORT_OF_REVERSE_PROXY
             - name: SKIP_READ_FILES
               value: "no"
             - name: SKIP_DB_INTEGRITY
