@@ -3,10 +3,10 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-backend-config
 data:
-  BROADCAST_SERVICE_ENABLED: {{ .Values.config.backend.broadcastServiceEnabled | quote }}
-  FILE_SERVICE_ENABLED: {{ .Values.config.backend.fileServiceEnabled | quote }}
   HOSTNAME: {{ .Values.ingress.baseDomain | quote }}
-  TLS_ENABLED: {{ .Values.ingress.tlsEnabled | quote }}
-  REDIS_CACHE_FILES: {{ .Values.config.cacheServer.redisCacheFiles | quote }}
   PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpPort | quote }}
   TLS_PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpsPort | quote }}
+  TLS_ENABLED: {{ .Values.ingress.tlsEnabled | quote }}
+  BROADCAST_SERVICE_ENABLED: {{ .Values.config.backend.broadcastServiceEnabled | quote }}
+  FILE_SERVICE_ENABLED: {{ .Values.config.backend.fileServiceEnabled | quote }}
+  REDIS_CACHE_FILES: {{ .Values.config.backend.redisCacheFiles | quote }}
