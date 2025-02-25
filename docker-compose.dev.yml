@@ -4,8 +4,8 @@
 services:
   traefik:
     command:
-      # - "--log.level=DEBUG"
-      # - "--accesslog=true"
+      - "--log.level=INFO"
+      - "--accesslog=false"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     networks:
@@ -110,9 +110,13 @@ services:
       - ./sampledata:/var/www/testcenter/sampledata
       - ./scripts/database:/var/www/testcenter/scripts/database
     environment:
-      TLS_ENABLED: ${TLS_ENABLED:-off}
+      TLS_ENABLED: ${TLS_ENABLED:-false}
+      SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
+      SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
+      OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
+      NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
     ports:
-      - 9005:9003
+      - "9005:9003"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

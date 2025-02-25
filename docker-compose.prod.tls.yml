@@ -23,7 +23,7 @@ services:
       - "--providers.file.filename=/tls-options.yml"
       - "--providers.file.filename=/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
     ports:
-      - "${TLS_PORT}:443"
+      - "${HTTPS_PORT}:443"
     volumes:
       - "./config/traefik/tls-options.yml:/tls-options.yml"
       - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
