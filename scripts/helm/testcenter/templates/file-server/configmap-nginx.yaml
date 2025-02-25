@@ -13,6 +13,7 @@ data:
 
     env REDIS_HOST;
     env REDIS_PORT;
+    env REDIS_PASSWORD;
     env REDIS_CACHE_FILES;
 
     events {

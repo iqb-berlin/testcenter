@@ -20,6 +20,8 @@ spec:
           args:
             - "-c"
             - "redis-server"
+            - "--requirepass"
+            - "{{ .Values.config.cacheServer.redisPassword }}"
             - "--maxmemory"
             - "{{ .Values.config.cacheServer.redisMemoryMax | default 1073741824 }}"
             - "--maxmemory-policy"
