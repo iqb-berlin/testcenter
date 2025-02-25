@@ -55,7 +55,7 @@ services:
     command:
       - "bash"
       - "-c"
-      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
+      - "redis-server --maxmemory ${REDIS_MEMORY_MAX:-1073741824} --maxmemory-policy volatile-lru"
     networks:
       testcenter:
 
@@ -64,9 +64,9 @@ services:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
-    volumes_from:
+      REDIS_HOST: testcenter-cache-service
+      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+    volumes:
       - testcenter-backend:ro
     networks:
       testcenter:
@@ -81,9 +81,8 @@ services:
       TLS_PORT_OF_REVERSE_PROXY: ${HTTPS_PORT:-443}
       TLS_ENABLED: ${TLS_ENABLED:-true}
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
+      REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
       <<: *env-mysql
