@@ -2,7 +2,12 @@
 layout: default
 ---
 ## [next]
+### Verbesserungen
+* Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
+* Die e2e Tests laufen nun schneller und sind verständlicher geschrieben 
+
 ### Bugfix
+* `ARROWS_ONLY` innerhalb der Booklet Konfigurationen verhält sich nun wie erwartet
 * Zeitgesteuerte Blöcke werden in Demo- und ähnlichen Modi wieder nicht mehr gesperrt, wie es sein soll.
 * Navigation in der Verzweigung funktionierte nicht korrekt in Kombination mit der Freigabewort-Beschränkung, wenn das
   Freigabewort in einer höheren Schachtelungstiefe als den optionalen Testlets gesetzt wurde.
