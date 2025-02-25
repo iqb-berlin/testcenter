@@ -1,4 +1,4 @@
-local includeFiles = os.getenv("CACHE_SERVICE_INCLUDE_FILES")
+local includeFiles = os.getenv("REDIS_CACHE_FILES")
 
 if (includeFiles ~= nil)
   and (includeFiles:lower() ~= 'yes')

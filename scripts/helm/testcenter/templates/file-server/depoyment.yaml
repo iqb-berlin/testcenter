@@ -17,6 +17,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/file-server/configmap.yaml") . | sha256sum }}
+        checksum/config-nginx: {{ include (print $.Template.BasePath "/file-server/configmap-nginx.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:
@@ -25,16 +26,13 @@ spec:
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
           env:
-            - name: CACHE_SERVICE_INCLUDE_FILES
+            - name: REDIS_HOST
+              value: "testcenter-cache-service"
+            - name: REDIS_CACHE_FILES
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: CACHE_SERVICE_INCLUDE_FILES
-            - name: CACHE_SERVICE_ADDRESS_FOR_LUA
-              valueFrom:
-                configMapKeyRef:
-                  name: file-server-config
-                  key: CACHE_SERVICE_ADDRESS_FOR_LUA
+                  name: {{ .Release.Name }}-file-server-config
+                  key: REDIS_CACHE_FILES
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/html/
@@ -47,7 +45,7 @@ spec:
             claimName: {{ .Release.Name }}-backend-pvc
         - name: nginx-config-volume
           configMap:
-            name: file-server-config
+            name: file-server-nginx-config
             items:
               - key: config.nginx.conf
                 path: nginx.conf-in-volume
