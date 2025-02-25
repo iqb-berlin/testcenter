@@ -22,17 +22,17 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secret
                   key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secret
                   key: MYSQL_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-db-secrets
+                  name: {{ .Release.Name }}-db-secret
                   key: MYSQL_PASSWORD
             - name: MYSQL_DATABASE
               value: "iqb_tba_testcenter"
