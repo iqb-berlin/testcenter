@@ -21,7 +21,7 @@ spec:
             - "-c"
             - "redis-server"
             - "--maxmemory"
-            - "111Mi"
+            - "{{ .Values.config.cacheServer.redisMemoryMax | default 1073741824 }}"
             - "--maxmemory-policy"
             - "volatile-lru"
           ports:
