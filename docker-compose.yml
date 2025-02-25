@@ -52,7 +52,7 @@ services:
     command:
       - "bash"
       - "-c"
-      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
+      - "redis-server --maxmemory ${REDIS_MEMORY_MAX:-1073741824} --maxmemory-policy volatile-lru"
     networks:
       testcenter:
 

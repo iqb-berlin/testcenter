@@ -41,6 +41,7 @@ config:
     fileServiceEnabled: true
 
   cacheServer:
+    redisMemoryMax: 1073741824
     redisCacheFiles: false
 
 secret:

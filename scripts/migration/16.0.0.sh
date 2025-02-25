@@ -23,6 +23,7 @@ function check_version_gt_15.3.4() {
 }
 
 function migrate_env_file() {
+  sed -i.bak "s|^CACHE_SERVICE_RAM=|REDIS_MEMORY_MAX=|" .env.prod && rm .env.prod.bak
   sed -i.bak "s|^CACHE_SERVICE_INCLUDE_FILES=|REDIS_CACHE_FILES=|" .env.prod && rm .env.prod.bak
 }
 
