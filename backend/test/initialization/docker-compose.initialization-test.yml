@@ -4,6 +4,10 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
+x-env-redis: &env-redis
+  REDIS_HOST: testcenter-cache-service
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
   MYSQL_USER: testcenter_user
@@ -49,10 +53,9 @@ services:
       TLS_ENABLED: false
       BROADCAST_SERVICE_ENABLED: false
       FILE_SERVICE_ENABLED: false
-      REDIS_CACHE_FILES: false
+      <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
-      <<: *env-mysql
       PASSWORD_SALT: 't'
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
