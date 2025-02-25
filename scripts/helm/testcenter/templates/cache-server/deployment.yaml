@@ -11,23 +11,34 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-cache-server-pod
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cache-server/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/cache-server/secret.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Release.Name }}-cache-server-container
           image: "{{ .Values.image.cacheServer.registryPath }}redis:{{ .Values.image.cacheServer.tag }}"
           imagePullPolicy: {{ .Values.image.cacheServer.imagePullPolicy }}
-          command:
-            - bash
-          args:
-            - "-c"
-            - "redis-server"
-            - "--maxmemory"
-            - "{{ .Values.config.cacheServer.redisMemoryMax | default 1073741824 }}"
-            - "--maxmemory-policy"
-            - "volatile-lru"
+          command: ["redis-server"]
+          args: [
+            "--requirepass", "$(REDIS_PASSWORD)",
+            "--maxmemory", "$(REDIS_MEMORY_MAX)",
+            "--maxmemory-policy", "volatile-lru"
+          ]
           ports:
             - name: http-container
               containerPort: 6379
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-cache-server-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_MEMORY_MAX
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-cache-server-config
+                  key: REDIS_MEMORY_MAX
           # vielleicht nur der Volume mount benötigt
           volumeMounts:
             - name: lv-storage

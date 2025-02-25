@@ -12,12 +12,13 @@ declare OPTIONAL_PACKAGES=("make -v")
 
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
+ENV_VARS[REDIS_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 ENV_VARS[MYSQL_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
 ENV_VARS[MYSQL_USER]=iqb_tba_db_user
 ENV_VARS[MYSQL_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 
-ENV_VAR_ORDER=(HOSTNAME MYSQL_ROOT_PASSWORD MYSQL_SALT MYSQL_USER MYSQL_PASSWORD)
+ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD MYSQL_ROOT_PASSWORD MYSQL_SALT MYSQL_USER MYSQL_PASSWORD)
 
 declare TARGET_TAG
 declare TARGET_DIR
@@ -194,6 +195,7 @@ customize_settings() {
   # Setup environment variables
   printf "5. Set Environment variables (default passwords are generated randomly):\n"
 
+  # Persist selected release version
   sed -i.bak "s|^VERSION=.*|VERSION=$TARGET_TAG|" .env.prod && rm .env.prod.bak
 
   declare env_var_name
