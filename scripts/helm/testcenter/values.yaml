@@ -37,21 +37,28 @@ image:
 
 config:
   fileServer:
-    redisCacheFiles: &cacheFiles false
+    redisCacheFiles: &redisCacheFiles false
 
   backend:
     broadcastServiceEnabled: true
     fileServiceEnabled: true
-    redisCacheFiles: *cacheFiles
+    redisCacheFiles: *redisCacheFiles
 
   cacheServer:
-    redisMemoryMax: 1073741824
+    redisMemoryMax: 1gb
 
 secret:
+  fileServer:
+    redisPassword: &redisPassword change_me
+
   backend:
+    redisPassword: *redisPassword
     mysqlUser: &dbUser iqb_tba_db_user
     mysqlPassword: &dbUserPassword change_me
     passwordSalt: change_me
+
+  cacheServer:
+    redisPassword: *redisPassword
 
   db:
     mysqlUser: *dbUser

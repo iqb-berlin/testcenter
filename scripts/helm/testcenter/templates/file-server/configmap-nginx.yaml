@@ -13,6 +13,7 @@ data:
 
     env REDIS_HOST;
     env REDIS_PORT;
+    env REDIS_PASSWORD;
     env REDIS_CACHE_FILES;
 
     events {
@@ -35,7 +36,7 @@ data:
       include mime.types;
       gzip on;
 
-      resolver kube-dns.kube-system.svc.cluster.local; # DNS resolver for the DNS cache, will be overwritten when building the image
+      resolver kube-dns.kube-system.svc.cluster.local;
 
       lua_code_cache on;
       lua_shared_dict dns_cache 12k;
