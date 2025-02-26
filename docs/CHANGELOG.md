@@ -7,6 +7,7 @@ layout: default
 * Navigation in der Verzweigung funktionierte nicht korrekt in Kombination mit der Freigabewort-Beschränkung, wenn das
   Freigabewort in einer höheren Schachtelungstiefe als den optionalen Testlets gesetzt wurde.
 * Verzweigung funktioniert mit Codierschemata, auch wenn Variablen umbenannt worden sind. 
+* Text im Feld von `<codeToEnter>` (Booklet.XML) wird bei der Codeeingabe angezeigt, wenn gegeben.
 
 ## 15.5.0
 ### neue Features
