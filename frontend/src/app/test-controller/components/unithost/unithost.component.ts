@@ -326,7 +326,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitsToLoadIds = [this.tcs.currentUnitSequenceId];
     }
 
-    // STAND: statt getUnit this.tcs.units[sequenceId] - warum geht das überhaupt?
     const resourcesToLoad = unitsToLoadIds
       .flatMap(sequenceId => Object.values(this.tcs.getUnit(sequenceId).loadingProgress));
 
@@ -359,16 +358,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
     this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
-
-    if (this.tcs.testMode.presetCode) {
-      this.clearCode = this.tcs.currentUnit.parent.restrictions.codeToEnter?.code || '';
-    }
-
     this.runUnit();
   }
 
   private runUnit(): void {
     if (this.tcs.currentUnit && this.tcs.currentUnit.parent.locked) {
+      if (this.tcs.testMode.presetCode) {
+        this.clearCode = this.tcs.currentUnit.parent.locked?.through.restrictions.codeToEnter?.code || '';
+      }
       return;
     }
 
@@ -496,6 +493,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (requiredCode === givenCode) {
       this.tcs.clearTestlet(this.tcs.currentUnit.parent.locked.through.id);
+      this.clearCode = '';
       this.runUnit();
     } else {
       this.snackBar.open(
@@ -506,8 +504,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
           panelClass: ['snackbar-wrong-block-code']
         }
       );
+      this.clearCode = '';
     }
-    this.clearCode = '';
   }
 
   onKeydownInClearCodeInput($event: KeyboardEvent): void {

@@ -16,8 +16,11 @@
       <div id="waiting-room" *ngIf="loadingResources.length || unit.parent.locked">
         <mat-card appearance="raised" data-cy="info-blocktime-is-up">
           <mat-card-header>
-            <mat-card-title data-cy="unit-block-dialog-title">
-              {{(loadingResources.length > 1 || unit.parent.locked) ? unit.parent.blockLabel : unit.label}}
+            <mat-card-title data-cy="unit-block-dialog-title" *ngIf="unit.parent.locked">
+              {{unit.parent.locked.through.label}}
+            </mat-card-title>
+            <mat-card-title data-cy="unit-block-dialog-title" *ngIf="loadingResources.length > 1">
+              {{unit.label}}
             </mat-card-title>
             <mat-card-subtitle *ngIf="loadingResources.length > 1">
               {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
@@ -29,7 +32,12 @@
               {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
             </mat-card-subtitle>
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'code'">
-              {{'Aufgabenblock ist gesperrt, Freigabewort benötigt' | customtext:'booklet_codeToEnterTitle' | async}}
+              <ng-container *ngIf="unit.parent.locked?.through?.restrictions?.codeToEnter?.message; else: noMessage">
+                {{ unit.parent.locked?.through?.restrictions?.codeToEnter?.message }}
+              </ng-container>
+              <ng-template #noMessage>
+                {{ 'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}
+              </ng-template>
             </mat-card-subtitle>
             <mat-card-subtitle *ngIf="unit.parent.locked?.by === 'show'">
               {{'Aufgabenblock steht nicht zur Verfügung' | customtext:'booklet_blockConditionNotSatisfied' | async}}

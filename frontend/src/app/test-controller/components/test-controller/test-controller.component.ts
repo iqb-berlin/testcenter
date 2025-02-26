@@ -258,7 +258,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
-        this.tcs.updateLocks();
         return true;
       case MaxTimerEvent.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {
@@ -269,11 +268,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
-        if (this.tcs.currentUnit) {
-          this.tcs.currentUnit.parent.locks.time = true;
-          this.tcs.updateLocks();
-        }
         if (this.tcs.testMode.forceTimeRestrictions) {
+          if (this.tcs.currentUnit) {
+            this.tcs.currentUnit.parent.locks.time = true;
+            this.tcs.updateLocks();
+          }
           return this.tcs.setUnitNavigationRequest(
             UnitNavigationTarget.NEXT ?? UnitNavigationTarget.END,
             true
@@ -289,14 +288,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
-        if (this.tcs.currentUnit) {
+        if (this.tcs.testMode.forceTimeRestrictions && this.tcs.currentUnit) {
           this.tcs.currentUnit.parent.locks.time = true;
           this.tcs.updateLocks();
         }
         return true;
       case MaxTimerEvent.INTERRUPTED:
         this.timerValue = null;
-        this.tcs.updateLocks();
         return true;
       case MaxTimerEvent.STEP:
         this.timerValue = timer;

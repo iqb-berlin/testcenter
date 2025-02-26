@@ -578,16 +578,13 @@ export class TestControllerService {
   updateLocks(): void {
     const activatedLockTypes = TestletLockTypes;
 
-    const updateLocks = (testlet: Testlet, parent: Testlet | null = null): void => {
-      testlet.locked = [parent, testlet]
-        .filter((item): item is Testlet => !!item)
-        .flatMap(item => activatedLockTypes
-          .map(lockType => ({ through: item, by: lockType }))
-        )
+    const updateLocks = (testlet: Testlet, parents: Testlet[] = []): void => {
+      testlet.locked = [...parents, testlet]
+        .flatMap(item => activatedLockTypes.map(lockType => ({ through: item, by: lockType })))
         .find(isLocked => isLocked.through.locks[isLocked.by]) || null;
       testlet.children
         .filter(isTestlet)
-        .forEach(child => updateLocks(child, testlet));
+        .forEach(child => updateLocks(child, [...parents, testlet]));
     };
 
     if (!this.booklet) {
@@ -686,7 +683,13 @@ export class TestControllerService {
   static unitIsInaccessible(unit: Unit): boolean {
     if (unit.lockedAfterLeaving) return true;
     if (!unit.parent.locked) return false;
-    if ((unit.parent.locked.by === 'code') && (unit.localIndex === 0)) return false;
+    if (
+      (unit.parent.locked.by === 'code') &&
+      (unit.localIndex === 0) &&
+      (!unit.parent.locks.show) &&
+      (!unit.parent.locks.time) &&
+      (!unit.parent.locks.afterLeave)
+    ) return false; // allow it to enter the first unit of a code-locked block to enter the code
     return true;
   }
 
