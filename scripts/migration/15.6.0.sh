@@ -115,7 +115,7 @@ function migrate_env_file() {
 }
 
 function main() {
-  declare target_version="15.4.0"
+  declare target_version="15.6.0"
 
   printf "Applying patch: %s ...\n" ${target_version}
 
