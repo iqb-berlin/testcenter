@@ -13,7 +13,7 @@ function check_version_gt_15.3.4() {
       normalized_version=$(printf '%s' "$VERSION" | cut -d'-' -f1)
     fi
 
-    # Check VERSION is less or equal than 15.3.4
+    # Check VERSION is less or equal than 15.3.4, then return 1 (false) -> dont run migration files
     if printf '%s\n%s' "$normalized_version" 15.3.4 | sort -C -V; then
       return 1
     else
@@ -115,7 +115,7 @@ function migrate_env_file() {
 }
 
 function main() {
-  declare target_version="15.4.0"
+  declare target_version="15.6.0"
 
   printf "Applying patch: %s ...\n" ${target_version}
 
