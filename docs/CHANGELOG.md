@@ -5,6 +5,8 @@ layout: default
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
 * Die e2e Tests laufen nun schneller und sind verständlicher geschrieben 
+* Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
+* Die e2e Tests laufen nun schneller und sind verständlicher geschrieben 
 
 ### Bugfix
 * `ARROWS_ONLY` innerhalb der Booklet Konfigurationen verhält sich nun wie erwartet
@@ -22,7 +24,7 @@ layout: default
 * Wenn die Testleiterkonsole ein SuS über die `Springe zu BLOCK` Funktion in einen zeitgesteuerten Block schiebt, der bereits geschlossen war, so wird dies in den Logs nun mit einem zusätzlichen Hinweis `(closed timeblock reopened)` versehen
 * Beim Springen in einen zeitgesperrten Block muss nun auch die neue Restzeit festgelegt werden, die alle SuS bekommen. Der höchstmögliche Wert richtet sich dabei nach der höchsten eingestellten `timeMax` aller in der Selektion ausgesuchten SuS.
 * Die Testleitungskonsole zeigt nun direkt beim betreten in einen zeitbeschränkten Block dessen aktiven Status an, statt erst nach 15 Sekunden
-* Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
+* Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_blockLabel)` angelegt ist
 * Änderungen an der Navigation in der Testleitungskonsole:
   * Mehrere Klicks auf denselben Block in der `Vollständig` und `Nur Blöcke` hat nun folgendes Verhalten
     * 1 Klick - Nur der Block wird ausgesucht

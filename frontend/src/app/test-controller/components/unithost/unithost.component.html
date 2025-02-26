@@ -14,7 +14,7 @@
   <ng-container *ngIf="tcs.currentUnit as unit">
     <ng-container *ngIf="resourcesLoading$ | async as loadingResources">
       <div id="waiting-room" *ngIf="loadingResources.length || unit.parent.locked">
-        <mat-card appearance="raised">
+        <mat-card appearance="raised" data-cy="info-blocktime-is-up">
           <mat-card-header>
             <mat-card-title data-cy="unit-block-dialog-title" *ngIf="unit.parent.locked">
               {{unit.parent.locked.through.label}}

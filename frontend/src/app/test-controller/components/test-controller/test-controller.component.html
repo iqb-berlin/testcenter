@@ -17,6 +17,7 @@
     <tc-unit-nav-bar
       *ngIf="(tcs.booklet?.config?.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === 'RUNNING')"
       [booklet]="tcs.booklet"
+      [showInnerBox]="tcs.booklet?.config?.unit_navibuttons !== 'ARROWS_ONLY'"
       [prevButtonVisible]="tcs.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY'"
       [nextButtonVisible]="true"
       [prevButtonEnabled]="!!navigation.targets.previous"

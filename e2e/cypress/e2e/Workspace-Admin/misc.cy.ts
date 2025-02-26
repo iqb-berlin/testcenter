@@ -25,7 +25,7 @@ describe('Workspace-Admin Login', () => {
     insertCredentials(userData.WorkspaceAdminName, 'newPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
-    cy.contains('Status: Angemeldet als "workspace_admin"')
-      .should('exist');
+    cy.get('[data-cy="card-login-name"]')
+      .contains('Status: Angemeldet als "workspace_admin"');
   });
 });

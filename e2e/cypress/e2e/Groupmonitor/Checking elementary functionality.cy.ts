@@ -6,10 +6,10 @@ describe('Check Login Possibilities', () => {
   before(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
+    resetBackendData();
   });
 
   beforeEach(() => {
-    resetBackendData();
     visitLoginPage();
     loginMonitor('test-group-monitor-2', 'user123');
   });

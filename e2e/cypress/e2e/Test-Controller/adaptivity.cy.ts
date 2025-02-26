@@ -3,6 +3,7 @@ import {
   disableSimplePlayersInternalDebounce,
   expectUnitMenuToBe, forwardTo, getFromIframe,
   loginTestTaker,
+  logoutTestTaker,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -12,13 +13,13 @@ describe('Adaptive Testcontroller', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
-    visitLoginPage();
-    loginTestTaker('test', 'user123', 'code-input');
   });
 
   beforeEach(disableSimplePlayersInternalDebounce);
 
   it('should start adaptive booklet with predefined states', () => {
+    visitLoginPage();
+    loginTestTaker('test', 'user123', 'code-input');
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
@@ -48,23 +49,15 @@ describe('Adaptive Testcontroller', { testIsolation: false }, () => {
       .clear();
     getFromIframe('#var4')
       .clear();
+    cy.wait(1000);
     forwardTo('Ⓑ Advanced Unit');
     expectUnitMenuToBe(['decision-unit', 'advanced-unit']);
   });
-});
-
-describe.only('Adaptive Testcontroller in reviewMode', { testIsolation: false }, () => {
-  before(() => {
-    resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
-    visitLoginPage();
-    loginTestTaker('test-review', 'user123', 'starter');
-  });
-
-  beforeEach(disableSimplePlayersInternalDebounce);
 
   it('should start adaptive booklet with predefined states', () => {
+    logoutTestTaker('hot');
+    visitLoginPage();
+    loginTestTaker('test-review', 'user123', 'starter');
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
       .click();
     expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);
