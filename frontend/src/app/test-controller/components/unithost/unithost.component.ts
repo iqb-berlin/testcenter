@@ -502,6 +502,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         'OK',
         { duration: 3000 }
       );
+      this.clearCode = '';
     }
   }
 
