@@ -98,13 +98,16 @@ export interface MonitorProfileTestViewDisplayOptions {
   groupColumn: ColumnOption;
   bookletColumn: ColumnOption;
   bookletStatesColumns: string[];
+  autoselectNextBlock: boolean;
 }
 
 export type ColumnOption = 'show' | 'hide';
 export type ViewOption = 'full' | 'medium' | 'small';
+export type YesNoOption = 'yes' | 'no';
 
 export const isColumnOption = (v: string): v is ColumnOption => ['show', 'hide'].includes(v);
 export const isViewOption = (v: string): v is ViewOption => ['full', 'medium', 'small'].includes(v);
+export const isYesNoOption = (v: string): v is YesNoOption => ['yes', 'no'].includes(v);
 
 export interface TestViewDisplayOptions extends MonitorProfileTestViewDisplayOptions {
   highlightSpecies: boolean;
@@ -150,18 +153,18 @@ export interface UnitContext {
 export interface Selected {
   element: Testlet | null;
   originSession: TestSession;
-  spreading: boolean;
+  nthClick: 'first' | 'second' | 'third';
   inversion: boolean;
 }
 
-export interface TestSessionSetStats {
-  all: boolean;
-  number: number;
+export interface TestSessionSetStat {
+  allChecked: boolean;
+  numberOfSessions: number;
   differentBooklets: number;
   differentBookletSpecies: number;
-  paused: number;
-  locked: number;
-  bookletStateLabels: { [bookletStateId: string]: string }
+  pausedSessions: number;
+  lockedSessions: number;
+  bookletStateLabels: { [bookletStateId: string]: string };
 }
 
 export interface UIMessage {
@@ -177,7 +180,12 @@ export interface CommandResponse {
 }
 
 export interface GotoCommandData {
-  [firstUnitId: string]: number[];
+  [firstUnitId: string]: CommandParameter;
+}
+
+interface CommandParameter {
+  ids: number[];
+  isClosed?: boolean;
 }
 
 export type Unit = UnitDef;
@@ -193,6 +201,7 @@ export interface Testlet extends TestletDef<Testlet, Unit> {
 }
 
 export type BookletStateOption = BookletStateOptionDef;
+
 export interface BookletState extends BookletStateDef<BookletStateOption> {
   default: string;
 }

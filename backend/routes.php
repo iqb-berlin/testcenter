@@ -91,13 +91,13 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->put('/{test_id}/review', [TestController::class, 'putReview'])
     ->add(new IsTestWritable());
 
-  $group->put('/{test_id}/unit/{unit_name}/response', [TestController::class, 'putUnitResponse'])
-    ->add(new IsTestWritable());
-
   $group->patch('/{test_id}/state', [TestController::class, 'patchState'])
     ->add(new IsTestWritable());
 
   $group->put('/{test_id}/log', [TestController::class, 'putLog'])
+    ->add(new IsTestWritable());
+
+  $group->put('/{test_id}/unit/{unit_name}/response', [TestController::class, 'putUnitResponse'])
     ->add(new IsTestWritable());
 
   $group->patch('/{test_id}/unit/{unit_name}/state', [TestController::class, 'patchUnitState'])

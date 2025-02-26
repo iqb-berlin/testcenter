@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.4.0-beta/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.5.0/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>This file contains some logins for testing and works a sample for developers.</Description>
@@ -36,6 +36,7 @@
         view="full"
         filterLocked="no"
         filterPending="no"
+        autoselectNextBlock="no"
       >
       </Profile>
     </GroupMonitor>

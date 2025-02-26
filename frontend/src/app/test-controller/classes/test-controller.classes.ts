@@ -46,9 +46,9 @@ export class TimerData {
     return `${Math.round(this.timeLeftSeconds / 60).toString()} min`;
   }
 
-  constructor(timeMinutes: number, tId: string, type: MaxTimerEvent) {
+  constructor(timeMinutes: number, timerId: string, type: MaxTimerEvent) {
     this.timeLeftSeconds = timeMinutes * 60;
-    this.id = tId;
+    this.id = timerId;
     this.type = type;
   }
 }

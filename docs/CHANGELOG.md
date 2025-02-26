@@ -11,9 +11,42 @@ layout: default
 ### :warning: Hinweis für Administratoren
 * Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen erst sämtliche Studien zu
   beenden und die Daten zu löschen bevor geupdatet wird.
-  
 
-## 15.4.0-beta
+
+
+## 15.5.0
+### neue Features
+* Unit.XML: <BaseVariables> -> <Variable> vom `type` 'json' und 'no-value' können beim Upload gelesen werden
+
+### Verbesserungen
+* Wenn die Testleiterkonsole ein SuS über die `Springe zu BLOCK` Funktion in einen zeitgesteuerten Block schiebt, der bereits geschlossen war, so wird dies in den Logs nun mit einem zusätzlichen Hinweis `(closed timeblock reopened)` versehen
+* Beim Springen in einen zeitgesperrten Block muss nun auch die neue Restzeit festgelegt werden, die alle SuS bekommen. Der höchstmögliche Wert richtet sich dabei nach der höchsten eingestellten `timeMax` aller in der Selektion ausgesuchten SuS.
+* Die Testleitungskonsole zeigt nun direkt beim betreten in einen zeitbeschränkten Block dessen aktiven Status an, statt erst nach 15 Sekunden
+* Der Text im `Springe zu` Button in der Testleitungskonsole zeigt nun den Text an, der im Customtext `Spalte: Block (gm_col_testlet)` angelegt ist
+* Änderungen an der Navigation in der Testleitungskonsole:
+  * Mehrere Klicks auf denselben Block in der `Vollständig` und `Nur Blöcke` hat nun folgendes Verhalten
+    * 1 Klick - Nur der Block wird ausgesucht
+    * 2 Klicks - Alle Blöcke von derselben Art werden ausgesucht
+    * 3 Klicks - Die bisherige Auswahl wird aufgehoben
+  * Deselektierung aller Blöcke passiert nicht mehr mit einem Klick auf einen beliebigen Punkt in der angezeigten Tabelle
+  * Das Auswählen aller Blöcke bei einem einmaligen Klick sollte nun viel weniger auftreten
+* Die Buttons des Dialogfelds, das erscheint bevor man einen Block zu sperrenden Block verlässt, wurden farblich und textlich verändert, sodass der Default Button nun die Aktion 'Auf der Seite bleiben' darstellt.
+ 
+### Bugfix
+* Sobald ein Arbeitsplatz im Adminbereich mehr als 1000 Dateien beinhaltet, werden die kumulativen Dateigrößen nicht mehr berechnet, um das Einfrieren des Browsers zu verhindern. Ein Hinweis im Frontend weist darauf hin, dass die Berechnung nicht stattgefunden hat.
+
+### Accessibility
+* Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
+
+## 16.0.0-alpha
+### Kubernetes
+* Erste kubernetes-Deployment via Helm möglich. Im Github Release kann das Installationsskript `helm-install-tc.sh` genutzt werden, um die Helm Charts im Kubernetes-Cluster zu installieren.
+  * Vorasussetzungen:
+    * Ein Kubernetes-Cluster
+    * Zugriff via `kubectl` auf den Cluster
+    * Helm 3
+
+## 15.4.0
 ### neue Features
 * Adaptive Testen, Bonusaufgaben und Filterführung
   * Verschiedenste Szenarien von Verzweigungen oder optionalen Aufgaben in Booklets sind nun möglich:
@@ -28,21 +61,46 @@ layout: default
     um sicherzustellen, dass in einem Szenario, in dem nur vorwärtsgegangen werden darf, auch nicht über die Address-
     zeile, die Browsernavigation, das Seitenmenü oder andere Weise zurücknavigiert werden kann.
 
-### Bugfix
-* Seitenzahl im Studienmonitor wird korrekt angezeigt.
-* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
-
 ### Verbesserungen
-* Entlastung des Servers durch deutliche Reduktion redundant Calls.
-* Überarbeiteter Testcontroller reduziert Fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
-  sehr schnellen Vorgängen.
-* Es werden viel mehr Datentypen abseits von `text/html` durch den File Service komprimiert. Dadurch wird das Laden 
+* Entlastung des Servers durch deutliche Reduktion von redundanten Calls.
+* Überarbeiteter Testcontroller reduziert fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
+  sehr schnellen Vorgängen im laufenden Test.
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File-Service komprimiert. Dadurch wird das Laden 
   vieler Dateitypen nun schneller.  
 * Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
   wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
+* Gruppen-Monitor:
+  * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
+    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, beginnt die Zeit wieder von vorn. In diesem Fall muss 
+    die Bewegung vom Testleiter bestätigt werden.  
+  * Neue custom texts: 'gm_control_goto_unlock_blocks_confirm_headline' und 'gm_control_goto_unlock_blocks_confirm_text'
+  * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
+    Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
+  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird die Auswahl der Testteilnehmer nicht mehr für den 
+    folgenden Block beibehalten. Dieses Verhalten kann durch eine neue Einstellung in der Testtakers.xml im Gruppen-
+    Monitor-Profil ausgewählt werden `autoselectNextBlock="no"`.
+  * Diverse visuelle Verbesserungen
 
-### Bugfixes
-* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher wurde die Existenz des Attributs als `true` interpretiert.
+### Bugfix
+* Das Starten eines neuen Booklets wurde nicht automatisch auf GM angezeigt, sondern der Browser musste neu geladen
+  werden.
+* Beim Einloggen über URL eines Gruppen-Monitors mit nur einem Booklet wurde dieses Booklet automatisch gestartet, statt
+  dass der Monitor erreicht wird.
+* Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
+  vergeben sind, werden die bereits bestehenden Logins und Workspace korrekt in der Fehlermeldung benannt.
+* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem bestehenden Login verändert wurde, 
+  konnte dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id bestehender Logins aktualisiert.
+* Seitenzahl im Studienmonitor wird korrekt angezeigt.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+* Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
+* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher 
+  wurde die Existenz des Attributs als `true` interpretiert.
+* Unit-XML Validierung: Wird beim `from` Attribut eine Unit-ID einer nicht einzigartigen Unit angegeben, die mehrfach 
+  genutzt wird, so ist dies richtigerweise ein Fehler. Dieser Fehler wird nun bereits während der Validierung beim 
+  Hochladen angezeigt, und nicht erst beim Abspielen der Unit. Referenzierungen in geschachtelten Bedingungen werden 
+  nun auch besser validiert.
 
 ## 15.3.4
 ### bugfixes

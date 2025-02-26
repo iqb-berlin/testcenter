@@ -2,7 +2,7 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import {
   Booklet,
-  CommandResponse, TestSession, TestSessionData, TestSessionSetStats
+  CommandResponse, TestSession, TestSessionData, TestSessionSetStat
 } from './group-monitor.interfaces';
 import { TestSessionUtil } from './test-session/test-session.util';
 import { BookletConfig } from '../shared/classes/booklet-config.class';
@@ -294,23 +294,23 @@ export const additionalUnitTestExampleSessions: TestSession[] = [
     session, unitTestExampleBooklets[session.bookletName ?? ''] || { error: 'missing-file', species: null }
   ));
 
-export const unitTestSessionsStats: TestSessionSetStats = {
-  all: false,
-  number: 0,
+export const unitTestSessionsStats: TestSessionSetStat = {
+  allChecked: false,
+  numberOfSessions: 0,
   differentBookletSpecies: 0,
   differentBooklets: 0,
-  paused: 0,
-  locked: 0,
+  pausedSessions: 0,
+  lockedSessions: 0,
   bookletStateLabels: {}
 };
 
-export const unitTestCheckedStats: TestSessionSetStats = {
-  all: false,
-  number: 0,
+export const unitTestCheckedStats: TestSessionSetStat = {
+  allChecked: false,
+  numberOfSessions: 0,
   differentBookletSpecies: 0,
   differentBooklets: 0,
-  paused: 0,
-  locked: 0,
+  pausedSessions: 0,
+  lockedSessions: 0,
   bookletStateLabels: {}
 };
 

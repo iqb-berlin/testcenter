@@ -244,6 +244,7 @@
     <xs:attribute name="view" type="GroupMonitorProfileViewSetting" />
     <xs:attribute name="filterPending" type="GroupMonitorProfileFilterSetting" />
     <xs:attribute name="filterLocked" type="GroupMonitorProfileFilterSetting" />
+    <xs:attribute name="autoselectNextBlock" type="GroupMonitorProfileFilterSetting" />
   </xs:complexType>
 
   <xs:complexType name="FilterType">

@@ -85,7 +85,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
         )
         .subscribe((command: Command) => {
-          this.handleCommand(command.keyword, command.arguments);
+          this.handleCommand(command.keyword, command.arguments)
+            .then(() => {
+              this.bs.addTestLog(this.tcs.testId, [{
+                key: 'command executed',
+                timeStamp: Date.now(),
+                content: CommandService.commandToString(command)
+              }])
+            });
         });
 
       this.subscriptions.routing = this.route.params
@@ -206,7 +213,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.tcs.state$.next('RUNNING');
     // eslint-disable-next-line no-case-declarations
     let gotoTarget: string = '';
-    if ((params.length === 2) && (params[0] === 'id')) {
+    if ((params.length > 1) && (params[0] === 'id')) {
       gotoTarget = (this.tcs.unitAliasMap[params[1]]).toString(10);
     } else if (params.length === 1) {
       gotoTarget = params[0];
@@ -216,7 +223,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (targetUnit) {
         if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
           this.tcs.cancelTimer();
+          this.tcs.restoreTime(targetUnit.parent, parseInt(params[2].slice(-1), 10));
         }
+        targetUnit.parent.locks.afterLeave = false;
+        targetUnit.lockedAfterLeaving = false;
         this.tcs.clearTestlet(targetUnit.parent.id);
       }
       return this.tcs.setUnitNavigationRequest(gotoTarget, true);
@@ -241,6 +251,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
           timer.timeLeftMinString, '', { duration: 5000 });
         this.timerValue = timer;
+        this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
+        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.tcs.updateLocks();
         return true;
       case MaxTimerEvent.ENDED:
@@ -279,7 +291,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         if ((timer.timeLeftSeconds % 15) === 0) {
-          this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
           // attention: TODO store timer as well in localStorage to prevent F5-cheating
           this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }

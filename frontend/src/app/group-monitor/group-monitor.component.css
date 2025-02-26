@@ -1,32 +1,15 @@
 .adminbackground {
-    padding-top: 0;
+  padding-top: 0;
 }
 
 mat-sidenav {
-    width: 350px;
-    min-width: 350px;
+  width: 350px;
+  min-width: 350px;
 }
 
-.test-session-table {
-  border-collapse: collapse;
-  display: table;
-  width: 100%;
-}
 
-.test-session-table thead tr td {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.test-session-table td {
-  padding-top: 15px;
-  margin-right: 1em;
-}
-
-.test-session-table td[mat-sort-header="_checked"] {
-  padding-left: 5px;
+.pending {
+  opacity: 0.5;
 }
 
 .connection-status {
@@ -43,6 +26,7 @@ mat-sidenav {
   font-size: 100%;
   padding: 0;
   top: 2px;
+  vertical-align: bottom;
 }
 
 .connection-status.error {
@@ -62,7 +46,7 @@ mat-sidenav {
 .connection-status.polling-fetch,
 .connection-status.polling-sleep {
   position: relative;
-  background-image: linear-gradient(90deg, rgba(0,146,0,1) 0%, rgba(0,199,0,1) 100%, rgba(0,146,0,1) 200%);
+  background-image: linear-gradient(90deg, rgba(0, 146, 0, 1) 0%, rgba(0, 199, 0, 1) 100%, rgba(0, 146, 0, 1) 200%);
   background-repeat: repeat-x;
   background-position: 0;
   animation-name: move-gradient;
@@ -81,13 +65,13 @@ mat-sidenav {
 
 @keyframes pulse {
   0% {
-    background: rgba(0,199,0,1);
+    background: rgba(0, 199, 0, 1);
   }
   50% {
-    background: rgba(0,146,0,1);
+    background: rgba(0, 146, 0, 1);
   }
   100% {
-    background: rgba(0,199,0,1);
+    background: rgba(0, 199, 0, 1);
   }
 }
 
@@ -126,7 +110,7 @@ mat-sidenav {
   top: 50%;
   left: 320px;
   position: fixed;
-  z-index: 10000;
+  z-index: 1000;
 }
 
 .drawer-button-close {
@@ -134,7 +118,7 @@ mat-sidenav {
   left: -12px;
   color: white;
   position: fixed;
-  z-index: 10000;
+  z-index: 1000;
 }
 
 .emph {
@@ -148,7 +132,7 @@ mat-sidenav {
 }
 
 mat-sidenav {
-    width: 350px;
+  width: 350px;
 }
 
 #message-panel alert:first-of-type {
@@ -174,8 +158,19 @@ mat-sidenav {
   left: 0;
   bottom: 0;
   right: 0;
-  animation: fade 6s forwards;
-  z-index: 100000;
+  animation: fade 4s forwards;
+  z-index: 1000;
+}
+
+#shield-child {
+  position: fixed;
+  inset: 0px;
+  width: 12rem;
+  height: 5rem;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: auto;
+  z-index: 1001;
 }
 
 .menu-entry {
@@ -194,3 +189,38 @@ mat-sidenav {
 .menu-filter-label {
   word-break: break-word;
 }
+
+.test-session-table-wrapper {
+  overflow: auto;
+  max-width: 100%;
+  height: 80vh;
+}
+
+.test-session-table {
+  border-collapse: collapse;
+  display: table;
+  width: 100%;
+
+  thead tr td {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: white;
+    padding-top: 15px;
+    padding-bottom: 10px;
+  }
+
+  td {
+    padding-left: 1em;
+  }
+
+  td[mat-sort-header="_checked"] {
+     padding-left: 5px;
+     position: sticky;
+     left: 0;
+     z-index: 3;
+     background: white;
+   }
+
+}
+

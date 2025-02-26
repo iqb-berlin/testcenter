@@ -22,7 +22,7 @@ import { AlertComponent, CustomtextPipe, MainDataService } from '../shared/share
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   CheckingOptions, CommandResponse,
-  TestSession, TestSessionData, TestSessionSetStats
+  TestSession, TestSessionData, TestSessionSetStat
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
 import { TestSessionComponent } from './test-session/test-session.component';
@@ -59,8 +59,8 @@ class MockTestSessionManagerService {
     autoCheckAll: true
   };
 
-  sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestSessionsStats);
-  checkedStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestCheckedStats);
+  sessionsStats$ = new BehaviorSubject<TestSessionSetStat>(unitTestSessionsStats);
+  checkedStats$ = new BehaviorSubject<TestSessionSetStat>(unitTestCheckedStats);
   sessions$ = new BehaviorSubject<TestSession[]>(unitTestExampleSessions);
   commandResponses$ = new BehaviorSubject<CommandResponse>(unitTestCommandResponse);
   sessions = unitTestExampleSessions;

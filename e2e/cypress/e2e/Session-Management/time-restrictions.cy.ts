@@ -9,7 +9,7 @@ import {
 describe('Check logins with time restrictions', () => {
   // find the current time and dates restrictions in /sampledata/system-test/CY_Test_Logins.xml
   describe('Check valid from restrictions', () => {
-    beforeEach(resetBackendData);
+    before(resetBackendData);
     beforeEach(visitLoginPage);
 
     it('should be not possible to login before the valid-from-date: 01.06.2023 10:00 related to time.', () => {
@@ -17,10 +17,8 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685602800');
       insertCredentials('validFrom01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.get('[data-cy="login-problem:401"]')
-        .should('exist');
+      cy.get('[data-cy="login-problem:401"]');
     });
 
     it('should be possible to login after the valid-from-date: 01.06.2023 10:00 related to time.', () => {
@@ -28,13 +26,12 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685608200');
       insertCredentials('validFrom01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNDEMO"]');
     });
 
     it('should be not possible to login before the valid-from-date: 01.06.2023 10:00 related to date.', () => {
@@ -42,10 +39,8 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685521800');
       insertCredentials('validFrom01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.get('[data-cy="login-problem:401"]')
-        .should('exist');
+      cy.get('[data-cy="login-problem:401"]');
     });
 
     it('should be possible to login after the valid-from-date: 01.06.2023 10:00 related to date.', () => {
@@ -53,18 +48,17 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685691000');
       insertCredentials('validFrom01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNDEMO"]');
     });
   });
 
   describe('Check valid to restrictions', () => {
-    beforeEach(resetBackendData);
+    before(resetBackendData);
     beforeEach(visitLoginPage);
 
     it('should be not possible to login after the valid-to-date: 01.06.2023 10:00 related to time.', () => {
@@ -72,10 +66,8 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685610000');
       insertCredentials('validTo01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.get('[data-cy="login-problem:410"]')
-        .should('exist');
+      cy.get('[data-cy="login-problem:410"]');
     });
 
     it('should be possible to login before the valid-to-date: 01.06.2023 10:00 related to time.', () => {
@@ -83,13 +75,12 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685602800');
       insertCredentials('validTo01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNDEMO"]');
     });
 
     it('should be not possible to login after the valid-to-date: 01.06.2023 10:00 related to date.', () => {
@@ -97,10 +88,8 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685691000');
       insertCredentials('validTo01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.get('[data-cy="login-problem:410"]')
-        .should('exist');
+      cy.get('[data-cy="login-problem:410"]');
     });
 
     it('should be possible to login before the valid-to-date: 01.06.2023 10:00 related to date.', () => {
@@ -108,13 +97,12 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685521800');
       insertCredentials('validTo01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNDEMO"]');
     });
   });
 
@@ -131,13 +119,12 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685521800');
       insertCredentials('validFor01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNREVIEW"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNREVIEW"]');
       logoutTestTaker('demo');
     });
 
@@ -146,13 +133,12 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685522340');
       insertCredentials('validFor01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNREVIEW"]')
-        .should('exist');
+      cy.get('[data-cy="booklet-RUNREVIEW"]');
       logoutTestTaker('demo');
     });
 
@@ -161,10 +147,8 @@ describe('Check logins with time restrictions', () => {
       useTestDBSetDate('1685522460');
       insertCredentials('validFor01', '123');
       cy.get('[data-cy="login-user"]')
-        .should('exist')
         .click();
-      cy.get('[data-cy="login-problem:410"]')
-        .should('exist');
+      cy.get('[data-cy="login-problem:410"]');
     });
   });
 });

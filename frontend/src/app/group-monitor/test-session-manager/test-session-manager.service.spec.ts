@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet, BookletError, CommandResponse, GroupMonitorConfig,
-  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats, TestSessionSuperState
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStat, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -157,13 +157,13 @@ describe('TestSessionManager', () => {
     it('should fetch correct stats from sessions', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['getSessionSetStats'](unitTestExampleSessions, 2);
-      const expectation: TestSessionSetStats = {
-        number: 3,
+      const expectation: TestSessionSetStat = {
+        numberOfSessions: 3,
         differentBooklets: 3,
         differentBookletSpecies: 3,
-        all: false,
-        paused: 1,
-        locked: 0,
+        allChecked: false,
+        pausedSessions: 1,
+        lockedSessions: 0,
         bookletStateLabels: { }
       };
       expect(expectation).toEqual(result);
@@ -301,14 +301,14 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        nthClick: 'first'
       };
       const sessions = [...unitTestExampleSessions, ...additionalUnitTestExampleSessions];
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionManager['groupForGoto'](sessions, selection);
       expect(result).toEqual({
-        'unit-3': [1, 33],
-        'unit-1': [34]
+        'unit-3': { ids: [1, 33], isClosed: undefined },
+        'unit-1': { ids: [34], isClosed: undefined }
       });
       // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
       // where it is empty , so there is no place to go. Session 34 with example_booklet_3 has the block,
@@ -322,7 +322,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        nthClick: 'second'
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
 
@@ -330,7 +330,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
         inversion: false,
         originSession: unitTestExampleSessions[1],
-        spreading: true
+        nthClick: 'second'
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([2]);
     });
@@ -340,14 +340,14 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        nthClick: 'first'
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1]);
       service.checkSessionsBySelection({
         element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
         inversion: false,
         originSession: additionalUnitTestExampleSessions[0],
-        spreading: false
+        nthClick: 'first'
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
     });
@@ -357,7 +357,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        nthClick: 'second'
       });
       // nothing is checked, inversion checks all possible
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
@@ -366,7 +366,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        nthClick: 'second'
       });
       // all possible where checked, so nothing remains
       expect(service.checked.map(s => s.data.testId)).toEqual([]);
@@ -378,7 +378,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: true
+        nthClick: 'second'
       });
       // test 1 and test 33 where checked, so 4 will be the inversion
       expect(service.checked.map(s => s.data.testId)).toEqual([34]);
@@ -391,7 +391,7 @@ describe('TestSessionManager', () => {
         element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: true,
         originSession: unitTestExampleSessions[0],
-        spreading: false
+        nthClick: 'first'
       });
       expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
     });

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import {
-  interval, Observable, Subscription
+  interval, Observable, of, Subscription
 } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
@@ -22,17 +22,21 @@ import {
   TestViewDisplayOptionKey,
   Selected,
   TestSession,
-  TestSessionSetStats,
+  TestSessionSetStat,
   CommandResponse,
   UIMessage,
   isBooklet,
   TestSessionFilter,
   TestSessionFilterListEntry,
-  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption
+  testSessionFilterListEntrySources, Profile, isColumnOption, isViewOption, isYesNoOption
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import {
+  TimeRestrictionDialogComponent,
+  TimeRestrictionDialogData
+} from './time-restriction-dialog/time-restriction-dialog.component';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -47,8 +51,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   groupLabel = '';
 
-  selectedElement: Selected | null = null;
-  markedElement: Selected | null = null;
+  currentlySelected: Selected | null = null;
+  CurrentlyMarked: Selected | null = null;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'medium',
@@ -58,7 +62,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     unitColumn: 'hide',
     bookletStatesColumns: [],
     highlightSpecies: false,
-    manualChecking: false
+    manualChecking: false,
+    autoselectNextBlock: true
   };
 
   isScrollable = false;
@@ -144,7 +149,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
-  private onSessionsUpdate(stats: TestSessionSetStats): void {
+  private onSessionsUpdate(stats: TestSessionSetStat): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
     if (!this.tsm.checkingOptions.enableAutoCheckAll) {
@@ -154,9 +159,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.bookletStates = stats.bookletStateLabels;
   }
 
-  private onCheckedChange(stats: TestSessionSetStats): void {
+  private onCheckedChange(stats: TestSessionSetStat): void {
     if (stats.differentBookletSpecies > 1) {
-      this.selectedElement = null;
+      this.currentlySelected = null;
     }
   }
 
@@ -213,7 +218,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       case 'paused':
         return hsl(h, colorful ? 45 : 0, 90);
       case 'pending':
-        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(h, 0, 98));
       case 'locked':
         return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 0, 92));
       case 'error':
@@ -224,12 +228,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   markElement(marking: Selected): void {
-    this.markedElement = marking;
+    this.CurrentlyMarked = marking;
   }
 
   selectElement(selected: Selected): void {
     this.tsm.checkSessionsBySelection(selected);
-    this.selectedElement = selected;
+    this.currentlySelected = selected;
   }
 
   finishEverythingCommand(): void {
@@ -252,41 +256,65 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             throw err;
           }))
           .subscribe(() => {
-            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
+            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 2000);
           });
       }
     });
   }
 
   testCommandGoto(): void {
-    if (!this.selectedElement?.element?.blockId) {
+    if (!this.currentlySelected?.element?.blockId) {
       this.messages.push({
         level: 'warning',
         customtext: 'gm_test_command_no_selected_block',
         text: 'Kein Zielblock ausgewählt'
       });
-    } else {
-      this.tsm.testCommandGoto(this.selectedElement)
-        .subscribe(() => this.selectNextBlock());
+      return;
     }
+
+    (this.tsm.checked
+      .some(testSession => isBooklet(testSession.booklet) &&
+          this.currentlySelected?.element &&
+          testSession.timeLeft &&
+          (testSession.timeLeft[this.currentlySelected?.element?.id] <= 0)
+      ) ?
+      this.dialog.open(
+        TimeRestrictionDialogComponent, {
+          width: 'auto',
+          data: <TimeRestrictionDialogData>{
+            title:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_headline'),
+            content:
+                this.cts.getCustomText('gm_control_goto_unlock_blocks_confirm_text'),
+            confirmbuttonlabel: 'OK',
+            showcancel: true,
+            remainingTime: this.tsm.getMaxTimeAcrossAllSessions(this.currentlySelected)
+          }
+        }
+      ).afterClosed() :
+      of(1) // 1 as in 'true'
+    )
+      .subscribe((confirmed?: number | boolean) => {
+        if (!confirmed || confirmed === 0 || !this.currentlySelected) return;
+        const newTimeLeft = confirmed as number;
+        this.tsm.testCommandGoto(this.currentlySelected, newTimeLeft)
+          .subscribe(() => this.selectNextBlock());
+      });
   }
 
   private selectNextBlock(): void {
-    if (!this.selectedElement) {
-      return;
-    }
-    if (!isBooklet(this.selectedElement.originSession.booklet)) {
-      return;
-    }
-    this.selectedElement = {
-      element: this.selectedElement.element?.nextBlockId ?
+    if (!this.displayOptions.autoselectNextBlock) return;
+    if (!this.currentlySelected) return;
+    if (!isBooklet(this.currentlySelected.originSession.booklet)) return;
+    this.currentlySelected = {
+      element: this.currentlySelected.element?.nextBlockId ?
         BookletUtil.getBlockById(
-          this.selectedElement.element.nextBlockId,
-          this.selectedElement.originSession.booklet
+          this.currentlySelected.element.nextBlockId,
+          this.currentlySelected.originSession.booklet
         ) : null,
       inversion: false,
-      originSession: this.selectedElement.originSession,
-      spreading: this.selectedElement.spreading
+      originSession: this.currentlySelected.originSession,
+      nthClick: this.currentlySelected.nthClick
     };
   }
 
@@ -294,10 +322,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.tsm.testCommandUnlock();
   }
 
-  toggleChecked(checked: boolean, session: TestSession): void {
+  toggleChecked(session: TestSession): void {
     if (!this.tsm.isChecked(session)) {
       this.tsm.checkSession(session);
     } else {
+      if (session.data.testId === this.currentlySelected?.originSession?.data?.testId) {
+        this.currentlySelected = null;
+      }
       this.tsm.uncheckSession(session);
     }
   }
@@ -317,6 +348,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.checkNone();
       this.displayOptions.manualChecking = true;
       this.tsm.checkingOptions.autoCheckAll = false;
+      this.currentlySelected = null;
     }
   }
 
@@ -325,6 +357,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.tsm.checkAll();
     } else {
       this.tsm.checkNone();
+      this.currentlySelected = null;
     }
   }
 
@@ -387,6 +420,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (isColumnOption(p.settings.groupColumn)) this.displayOptions.groupColumn = p.settings.groupColumn;
     if (isColumnOption(p.settings.bookletColumn)) this.displayOptions.bookletColumn = p.settings.bookletColumn;
     if (isViewOption(p.settings.view)) this.displayOptions.view = p.settings.view;
+    if (isYesNoOption(p.settings.autoselectNextBlock)) this.displayOptions.autoselectNextBlock = p.settings.autoselectNextBlock !== 'no';
 
     (p.filters || [])
       .forEach((filter: TestSessionFilter, index: number) => {

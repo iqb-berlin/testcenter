@@ -27,7 +27,7 @@ class ErrorHandler {
       $request = $throwable->getRequest();
       $serverParams = $request->getServerParams();
       $logHeadline[] = "on `[{$serverParams['REQUEST_METHOD']}] {$serverParams['REQUEST_URI']}`";
-    } else {
+    } else if(isset($_SERVER['REQUEST_METHOD'])) {
       $logHeadline[] = "on `[{$_SERVER['REQUEST_METHOD']}]` {$_SERVER['REQUEST_URI']}`";
     }
 

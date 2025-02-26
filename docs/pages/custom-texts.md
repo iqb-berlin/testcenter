@@ -104,6 +104,8 @@ Funktioniert auch nicht? Dann...
 |gm_control_finish_everything|Control: Testung beenden|Testung beenden|
 |gm_control_goto|Control: Springe zu Block|Springe zu|
 |gm_control_goto_tooltip|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
+|gm_control_goto_unlock_blocks_confirm_headline|Control: Springe zu Block - soll Zeit wiederhergestellt werden? - Überschrift|Sprung bestätigen|
+|gm_control_goto_unlock_blocks_confirm_text|Control: Springe zu Block - soll Zeit wiederhergestellt werden?|Zeit wiederherstellen bei Sprung in zeitgesteuerten Block?|
 |gm_control_pause|Control: pause|pause|
 |gm_control_resume|Control: weiter|weiter|
 |gm_control_unlock|Control: Entsperren|Test Entsperren|

@@ -99,8 +99,8 @@ class InitDAO extends SessionDAO {
     );
     $test2 = $testDAO->createTest(
       $personSession->getPerson()->getId(),
-      new TestName('BOOKLET.SAMPLE-2'),
-      'Sample Booklet 2'
+      new TestName('BOOKLET.SAMPLE-3'),
+      'Sample Booklet 3'
     );
     $testDAO->lockTest($test2->id);
     $testDAO->setTestRunning($test2->id);
