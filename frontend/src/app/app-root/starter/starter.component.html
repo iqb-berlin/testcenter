@@ -116,7 +116,7 @@
       ></tc-alert>
     </mat-card-content>
     <mat-card-actions [style.justify-content]="'space-between'">
-      <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
+      <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
         Systemverwaltung
       </button>
       <button mat-raised-button data-cy="change-password" *ngIf="accessObjects.workspaceAdmin" color="primary" (click)="changePassword()">

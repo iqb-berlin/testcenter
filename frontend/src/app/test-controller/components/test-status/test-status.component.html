@@ -3,7 +3,7 @@
     <mat-card-header>
       <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content data-cy="card-end-resume-test">
       <p><b>Angemeldet als "{{loginName}}"</b></p>
       <p><b>{{tcs.testMode.modeLabel}}</b></p>
       <p *ngIf="(tcs.state$ | async) === 'RUNNING'" style="color: chocolate">

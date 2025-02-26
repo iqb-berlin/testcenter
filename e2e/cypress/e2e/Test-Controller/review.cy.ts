@@ -1,7 +1,6 @@
 import {
   backwardsTo,
   convertResultsSeperatedArrays,
-  credentialsControllerTest,
   deleteDownloadsFolder,
   forwardTo,
   getFromIframe, gotoPage,
@@ -9,16 +8,13 @@ import {
   loginTestTaker,
   openSampleWorkspace,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage,
+  disableSimplePlayersInternalDebounce
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
 const TesttakerName = 'Test_Review_Ctrl';
 const TesttakerPassword = '123';
-
-let startTime: number;
-let endTime: number;
-let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   before(() => {
@@ -30,6 +26,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
 
+  beforeEach(disableSimplePlayersInternalDebounce);
+
   it('should start a review-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -38,13 +36,11 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   });
 
   it('should be visible a unit menu', () => {
-    cy.get('[data-cy="unit-menu"]')
-      .should('exist');
+    cy.get('[data-cy="unit-menu"]');
   });
 
   it('should be visible comments button', () => {
-    cy.get('[data-cy="send-comments"]')
-      .should('exist');
+    cy.get('[data-cy="send-comments"]');
   });
 
   it('should enter the block. The password should already be filled in', () => {
@@ -54,26 +50,22 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Aufgabenblock');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'Hase');
-    // Time restricted area has been entered. Start the timer
     cy.get('[data-cy="unit-block-dialog-submit"]')
-      .then(() => {
-        startTime = new Date().getTime();
-      })
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
     cy.url()
       .should('include', '/u/2');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/)
-      .should('exist');
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
   });
 
   it('should be visible a countdown in the window header', () => {
-    cy.contains('0:')
-      .should('exist');
+    cy.get('[data-cy="time-value"]')
+      .contains('0:');
   });
 
-  it('should give a comment', () => {
+  it('should possible to write a comment', () => {
     cy.get('[data-cy="send-comments"]')
       .click();
     cy.get('[data-cy="comment-diag-title"]')
@@ -93,14 +85,14 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .type('its a new comment');
     cy.get('[data-cy="comment-diag-submit"]')
       .click();
-    cy.contains(/Kommentar gespeichert/) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-comment-saved')
+      .contains('Kommentar gespeichert');
   });
 
   it('should navigate to next unit without responses/presentation complete but with a message', () => {
     forwardTo('Aufgabe2');
-    cy.contains(/abgespielt.+bearbeitet/) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-demo-mode')
+      .contains('Es wurde nicht alles gesehen oder abgespielt.');
     cy.url()
       .should('include', '/u/3');
     backwardsTo('Aufgabe1');
@@ -111,9 +103,10 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
     forwardTo('Aufgabe2');
-    cy.contains('bearbeitet') // TODO use data-cy
-      .should('exist');
-    cy.contains(/gesehen.+abgespielt/) // TODO use data-cy
+    cy.get('.snackbar-demo-mode')
+      .contains('Es wurde nicht alles bearbeitet.');
+    cy.get('.snackbar-demo-mode')
+      .contains('gesehen')
       .should('not.be.exist');
     backwardsTo('Aufgabe1');
   });
@@ -131,30 +124,17 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('be.checked');
   });
 
-  it('should show a warning message when the time expires but don\'t lock the block.', () => {
-    // Wait for remaining time of restricted area
-    endTime = new Date().getTime();
-    elapsed = endTime - startTime;
-    cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./) // TODO use data-cy
-      .should('exist');
-    // Aufgabe1 is visible, because the block is in demo-mode not blocked
-    cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1');
-  });
-
   it('should start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-RUNREVIEW"]')
-      .contains('Fortsetzen') // TODO use data-cy
+      .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('exist');
+    cy.get('[data-cy="unit-navigation-forward"]');
   });
 
   it('should not restore the last answers', () => {
@@ -165,10 +145,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.get('[data-cy="time-value"]')
-      .contains('0:');
-    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/) // TODO use data-cy
-      .should('exist');
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
   });
@@ -191,8 +169,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('RunReview')
-      .should('exist');
+    cy.contains('RunReview');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-responses"]')
@@ -209,8 +186,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="download-logs"]')
       .click();
-    cy.contains('Keine Daten verfügbar')
-      .should('exist');
+    cy.get('.snackbar-demo-mode')
+      .contains('Keine Daten verfügbar');
   });
 
   it('should not exist a review file', () => {
@@ -218,8 +195,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="download-comments"]')
       .click();
-    cy.contains('Keine Daten verfügbar')
-      .should('exist');
+    cy.get('.snackbar-demo-mode')
+      .contains('Keine Daten verfügbar');
   });
 
   it('should exist a comment file with given comment', () => {

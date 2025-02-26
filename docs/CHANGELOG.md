@@ -4,6 +4,7 @@ layout: default
 ## [next]
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
+* Die e2e Tests laufen nun schneller und sind verständlicher geschrieben 
 
 ### Bugfixes
 * `ARROWS_ONLY` innerhalb der Booklet Konfigurationen verhält sich nun wie erwartet

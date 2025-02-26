@@ -22,7 +22,6 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
 import { distinctUntilChanged } from 'rxjs/operators';
-
 @Component({
   templateUrl: './unithost.component.html',
   styleUrls: ['./unithost.component.css']
@@ -502,7 +501,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.snackBar.open(
         `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
         'OK',
-        { duration: 3000 }
+        {
+          duration: 3000,
+          panelClass: ['snackbar-wrong-block-code']
+        }
       );
     }
     this.clearCode = '';

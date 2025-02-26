@@ -124,7 +124,8 @@ describe('Group-Monitor User', () => {
       .click();
     cy.get('[data-cy="GM_filtersetting_field"]')
       .click();
-    cy.contains('Booklettitel')
+    cy.get('[data-cy="column-selection"]')
+      .contains('Testheft')
       .click();
     cy.wait(1000);
     cy.get('[data-cy="comment-diag-value"]')

@@ -1,5 +1,5 @@
 import {
-  insertCredentials, resetBackendData, visitLoginPage
+  insertCredentials, visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
