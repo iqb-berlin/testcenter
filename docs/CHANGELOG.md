@@ -5,7 +5,8 @@ layout: default
 ### Bugfix
 * Zeitgesteuerte Blöcke werden in Demo- und ähnlichen Modi wieder nicht mehr gesperrt, wie es sein soll.
 * Navigation in der Verzweigung funktionierte nicht korrekt in Kombination mit der Freigabewort-Beschränkung, wenn das
-  Freigabewort in einer höheren Schachtelungstiefe als den optionalen Testlets gesetzt wurde.    
+  Freigabewort in einer höheren Schachtelungstiefe als den optionalen Testlets gesetzt wurde.
+* Verzweigung funktioniert mit Codierschemata, auch wenn Variablen umbenannt worden sind. 
 
 ## 15.5.0
 ### neue Features
