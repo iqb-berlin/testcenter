@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-backend-pvc
+spec:
+  accessModes:
+    - {{ .Values.persistence.backendPvcAccessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backendPvcSize }}
+  storageClassName: {{ .Values.persistence.backendPvcStorageClassName }}
