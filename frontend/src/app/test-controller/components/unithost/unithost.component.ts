@@ -85,6 +85,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.postMessageTarget = messageEvent.source as Window;
     if (msgData.sessionId && (msgSessionId !== this.playerSessionId)) {
+      // TODO if the session belongs to a previous unit, still handle msg (referring to the that unit, not current)
       // eslint-disable-next-line no-console
       console.warn('wrong player session id: ', msgData.sessionId, msgData);
       return;
@@ -291,14 +292,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(unitSequenceId: number): void {
+    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
+    }
+
     this.tcs.currentUnitSequenceId = unitSequenceId;
+
     if (!this.tcs.currentUnit) {
       throw new Error(`No such unit: ${unitSequenceId}`);
     }
 
-    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
-      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
-    }
+    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+    // TODO playerSessionId should be currenUnit.unitAlias, so messages can be attached to the correct if too late
 
     this.currentPageIndex = -1;
     this.pages = {};
@@ -370,7 +375,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.startTimerIfNecessary();
-    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+
     this.leaveWarning = false;
     this.prepareIframe();
     this.tcs.updateNavigationState();
