@@ -71,7 +71,7 @@ get_new_release_version() {
     printf "\n"
   fi
 
-  while read -p '1. Name the desired version: ' -er -i "${latest_release}" TARGET_VERSION; do
+  while read -p '# Name the desired version: ' -er -i "${latest_release}" TARGET_VERSION; do  # @TODO: add numbering after release of 16.0.0
     if ! check_version_tag_exists "${TARGET_VERSION}"; then
       printf "This version tag does not exist.\n"
     else
@@ -83,7 +83,7 @@ get_new_release_version() {
 }
 
 create_app_dir_backup() {
-  printf "2. Application directory backup creation\n"
+  printf "# Application directory backup creation\n" # @TODO: add numbering after release of 16.0.0
   # Save installation directory
   mkdir -p "${APP_DIR}/backup/release/${SOURCE_VERSION}"
   tar -cf - --exclude='./backup' --exclude='acme.json' . | tar -xf - -C "${APP_DIR}/backup/release/${SOURCE_VERSION}"
@@ -118,7 +118,7 @@ validate_source_and_target_release_tag() {
 }
 
 run_optional_migration_scripts() {
-  printf "3. Optional migration scripts check\n"
+  printf "# Optional migration scripts check\n" # @TODO: add numbering after release of 16.0.0
 
   if ! validate_source_and_target_release_tag; then
     printf "  The existence of possible migration scripts could not be determined.\n"
@@ -402,7 +402,7 @@ export_backend_volume() {
 }
 
 create_data_backup() {
-  printf "4. Data backup creation\n"
+  printf "# Data backup creation\n" # @TODO: add numbering after release of 16.0.0
 
   declare backup
   read -p "  Do you want to create a data backup? [Y/n] " -er -n 1 backup
@@ -423,7 +423,7 @@ create_data_backup() {
 }
 
 run_update_script_in_selected_version() {
-  printf "5. Update script modification check\n"
+  printf "# Update script modification check\n" # @TODO: add numbering after release of 16.0.0
 
   declare current_update_script="${APP_DIR}/backup/release/${SOURCE_VERSION}/scripts/update_${APP_NAME}.sh"
   declare new_update_script="${REPO_URL}/${TARGET_VERSION}/scripts/update.sh"
@@ -497,7 +497,7 @@ download_file() {
 }
 
 update_files() {
-  printf "6. File download\n"
+  printf "# File download\n" # @TODO: add numbering after release of 16.0.0
 
   download_file docker-compose.yml docker-compose.yml
   download_file docker-compose.prod.yml docker-compose.prod.yml
@@ -587,7 +587,7 @@ get_modified_file() {
 }
 
 check_environment_file_modifications() {
-  printf "7. Environment template file modification check\n"
+  printf "# Environment template file modification check\n" # @TODO: add numbering after release of 16.0.0
 
   get_modified_file ".env.prod-template" ".env.prod-template" "env-file"
 
@@ -595,7 +595,7 @@ check_environment_file_modifications() {
 }
 
 check_config_files_modifications() {
-  printf "8. Configuration template files modification check\n"
+  printf "# Configuration template files modification check\n" # @TODO: add numbering after release of 16.0.0
 
   get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
   get_modified_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml "conf-file"
@@ -625,7 +625,7 @@ customize_settings() {
 }
 
 finalize_update() {
-  printf "9. Summary\n"
+  printf "# Summary\n" # @TODO: add numbering after release of 16.0.0
   if ${HAS_ENV_FILE_UPDATE} || ${HAS_CONFIG_FILE_UPDATE} || ${HAS_MIGRATION_FILES}; then
     if ${HAS_ENV_FILE_UPDATE} && ${HAS_CONFIG_FILE_UPDATE}; then
       printf -- '- Version, environment, and configuration update applied!\n\n'
