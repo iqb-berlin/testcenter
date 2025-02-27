@@ -182,7 +182,7 @@ run_optional_migration_scripts() {
       mkdir -p "${APP_DIR}/scripts/migration"
       declare migration_script
       for migration_script in "${migration_scripts[@]}"; do
-        download_file "${APP_DIR}/scripts/migration/${migration_script}" "scripts/migration/${migration_script}"
+        download_file "scripts/migration/${migration_script}" "scripts/migration/${migration_script}"
         chmod +x "${APP_DIR}/scripts/migration/${migration_script}"
       done
 
