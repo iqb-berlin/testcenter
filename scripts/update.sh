@@ -117,12 +117,12 @@ validate_source_and_target_release_tag() {
   return 0
 }
 
-run_optional_migration_scripts() {
-  printf "# Optional migration scripts check\n" # @TODO: add numbering after release of 16.0.0
+run_complimentary_migration_scripts() {
+  printf "# Complimentary migration scripts check\n" # @TODO: add numbering after release of 16.0.0
 
   if ! validate_source_and_target_release_tag; then
     printf "  The existence of possible migration scripts could not be determined.\n"
-    printf "Optional migration scripts check done.\n\n"
+    printf "Complimentary migration scripts check done.\n\n"
 
     return
   fi
@@ -205,7 +205,7 @@ run_optional_migration_scripts() {
         printf "  To do this, change to directory './scripts/migration' and execute the above scripts in ascending "
         printf "order!\n\n"
 
-        printf "Optional migration scripts check done.\n\n"
+        printf "Complimentary migration scripts check done.\n\n"
 
         printf "Since the migration scripts have not been executed, "
         printf "it is not recommended to proceed with the update procedure.\n"
@@ -236,7 +236,7 @@ run_optional_migration_scripts() {
 
           if [[ ${proceed} =~ ^[nN]$ ]]; then
             printf "\n  The update has failed!\n\n"
-            printf "  Up to this point, only migration scripts have been executed.\n"
+            printf "  Up to this point, only the aforementioned migration scripts have been executed.\n"
             printf "  If you want to examine the failed script, you can view it under "
             printf "'%s'.\n" "${APP_DIR}/scripts/migration/${migration_script}"
             printf "  Edit and execute it manually if necessary.\n\n"
@@ -263,7 +263,7 @@ run_optional_migration_scripts() {
 
   fi
 
-  printf "Optional migration scripts check done.\n\n"
+  printf "Complimentary migration scripts check done.\n\n"
 }
 
 load_docker_environment_variables() {
@@ -764,7 +764,7 @@ main() {
         load_docker_environment_variables
         get_new_release_version
         create_app_dir_backup
-        run_optional_migration_scripts
+        run_complimentary_migration_scripts
         create_data_backup
         run_update_script_in_selected_version
         prepare_installation_dir
@@ -799,7 +799,7 @@ main() {
     prepare_installation_dir
     update_files
     check_environment_file_modifications
-    run_optional_migration_scripts        # @TODO: Remove this line in the version following the major version ! ! !
+    run_complimentary_migration_scripts        # @TODO: Remove this line in the version following the major version ! ! !
     check_config_files_modifications
     customize_settings
     finalize_update
