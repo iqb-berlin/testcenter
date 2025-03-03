@@ -121,7 +121,7 @@ run_complimentary_migration_scripts() {
   printf "# Complimentary migration scripts check\n" # @TODO: add numbering after release of 16.0.0
 
   if ! validate_source_and_target_release_tag; then
-    printf "  The existence of possible migration scripts could not be determined.\n"
+    printf "  The existence of possible complimentary migration scripts could not be determined.\n"
     printf "Complimentary migration scripts check done.\n\n"
 
     return
@@ -159,7 +159,7 @@ run_complimentary_migration_scripts() {
   fi
 
   if [ -z "${release_tags}" ]; then
-    printf -- "- No additional migration scripts to execute.\n"
+    printf -- "- No complimentary migration scripts to execute.\n"
 
   else
     declare release_tag
@@ -174,11 +174,11 @@ run_complimentary_migration_scripts() {
     done
 
     if [ ${#migration_scripts[@]} -eq 0 ]; then
-      printf -- "- No additional migration scripts to execute.\n"
+      printf -- "- No complimentary migration scripts to execute.\n"
 
     else
-      printf -- "- Additional Migration script(s) available.\n\n"
-      printf "3.1 Migration script download\n"
+      printf -- "- Complimentary Migration script(s) available.\n\n"
+      printf "Complimentary Migration script download\n"  # @TODO: restore numbering
       mkdir -p "${APP_DIR}/scripts/migration"
       declare migration_script
       for migration_script in "${migration_scripts[@]}"; do
@@ -186,7 +186,7 @@ run_complimentary_migration_scripts() {
         chmod +x "${APP_DIR}/scripts/migration/${migration_script}"
       done
 
-      printf "\n3.2 Migration script execution\n"
+      printf "\nComplimentary Migration script execution\n" # @TODO: restore numbering
       printf "  The following migration scripts will be executed for the migration from version %s to version %s:\n" \
         "${SOURCE_VERSION}" "${TARGET_VERSION}"
       for migration_script in "${migration_scripts[@]}"; do
