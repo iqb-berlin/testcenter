@@ -55,10 +55,6 @@ services:
     networks:
       - testcenter
 
-  testcenter-cache-service:
-    ports:
-      - "6379:6379"
-
   testcenter-file-service:
     labels:
       - "traefik.enable=true"
@@ -119,6 +115,10 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - testcenter
+
+  testcenter-cache-service:
+    ports:
+      - "6379:6379"
 
   testcenter-db:
     ports:
