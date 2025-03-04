@@ -101,10 +101,13 @@ services:
     <<: *restart-policy
     container_name: testcenter-cache-service
     image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
-    command:
-      - "bash"
-      - "-c"
-      - "redis-server --requirepass ${REDIS_PASSWORD} --maxmemory ${REDIS_MEMORY_MAX:-1073741824} --maxmemory-policy volatile-lru"
+    user: redis
+    command: [
+      "redis-server",
+      "--requirepass", "${REDIS_PASSWORD}",
+      "--maxmemory", "${REDIS_MEMORY_MAX:-1073741824}",
+      "--maxmemory-policy", "volatile-lru"
+    ]
     networks:
       testcenter:
 
