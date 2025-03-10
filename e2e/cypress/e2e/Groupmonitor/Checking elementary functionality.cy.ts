@@ -14,7 +14,7 @@ describe('Check Login Possibilities', () => {
     loginMonitor('test-group-monitor-2', 'user123');
   });
 
-  it('should be possible to start a group monitor', () => {
+  it('start a group monitor', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.contains('test/xxx');
@@ -22,7 +22,7 @@ describe('Check Login Possibilities', () => {
   });
 
   // Funktion der Schalter muss geprüft werden, wenn GM-Tests ausgebaut sind
-  it('should be visible all test takers control buttons in the first group-monitor', () => {
+  it('check control buttons', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_control_all_tests"]');
@@ -34,7 +34,7 @@ describe('Check Login Possibilities', () => {
   });
 
   // Funktion der Schalter muss geprüft werden, wenn GM-Tests ausgebaut sind
-  it('should be possible to control separated TT ', () => {
+  it('control separated TT ', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_control_all_tests"]')

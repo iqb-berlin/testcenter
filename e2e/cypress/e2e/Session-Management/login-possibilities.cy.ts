@@ -12,7 +12,7 @@ describe('Check Login Possibilities', () => {
     visitLoginPage();
   });
 
-  it('should not be possible to log in with a name and without an existing password', () => {
+  it('login without existing password is not possible', () => {
     insertCredentials('with_pw', '');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -20,7 +20,7 @@ describe('Check Login Possibilities', () => {
       .contains('Anmeldedaten sind nicht gültig');
   });
 
-  it('should be not possible to login with name and wrong password', () => {
+  it('login with wrong password is not possible', () => {
     insertCredentials('with_pw', '123');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -28,7 +28,7 @@ describe('Check Login Possibilities', () => {
       .contains('Anmeldedaten sind nicht gültig');
   });
 
-  it('should be possible to login with name and right password and start test immediately', () => {
+  it('login with name and right password, the booklet start immediately', () => {
     insertCredentials('with_pw', '101');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -41,7 +41,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]');
   });
 
-  it('should be possible to login only with a name', () => {
+  it('login only with a name', () => {
     insertCredentials('without_pw', '');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -54,7 +54,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]');
   });
 
-  it('should be possible to login as link', () => {
+  it('login as link', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
     cy.wait(1000);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
@@ -62,7 +62,7 @@ describe('Check Login Possibilities', () => {
       .contains('as_link');
   });
 
-  it('should be possible to login as link and jump into test', () => {
+  it('login as link and jump into test', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
     cy.wait(1000);
     cy.get('[data-cy="booklet-RUNDEMO"]')
@@ -71,7 +71,7 @@ describe('Check Login Possibilities', () => {
       .contains('Startseite');
   });
 
-  it('should be not possible to login with wrong code', () => {
+  it('login with wrong code is not possible', () => {
     insertCredentials('as_code1', '102');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -83,7 +83,7 @@ describe('Check Login Possibilities', () => {
       .contains('Der Code ist leider nicht gültig.');
   });
 
-  it('should be possible to login with right code and password', () => {
+  it('login with right code and password', () => {
     insertCredentials('as_code1', '102');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -99,7 +99,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]');
   });
 
-  it('should be possible to login with code without password', () => {
+  it('login with code on login page', () => {
     insertCredentials('as_code2', '');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -116,7 +116,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]');
   });
 
-  it('should be possible to login with code without password', () => {
+  it('login with code via link', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_code2`);
     cy.get('[formcontrolname="code"]')
       .clear()

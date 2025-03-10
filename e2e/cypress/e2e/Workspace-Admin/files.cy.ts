@@ -18,7 +18,7 @@ describe('Workspace-Admin-files', () => {
 
   afterEach(logoutAdmin);
 
-  it('should be possible to download files', () => {
+  it('download files', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
       .click();
     cy.readFile('cypress/downloads/SAMPLE_TESTTAKERS.XML').should('exist');
@@ -36,7 +36,7 @@ describe('Workspace-Admin-files', () => {
     cy.readFile('cypress/downloads/SAMPLE_UNIT2.XML').should('exist');
   });
 
-  it('should be possible to delete the syscheck.xml file, there are no dependencies on other files.', () => {
+  it('delete the syscheck.xml file', () => {
     cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -52,7 +52,7 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('should not be possible to delete SAMPLE_BOOKLET.XML, there is a dependency in SAMPLE_TESTTAKERs.XML', () => {
+  it('delete SAMPLE_BOOKLET.XML is not possible, booklet is declared in tt-xml', () => {
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -68,7 +68,7 @@ describe('Workspace-Admin-files', () => {
       .click();
   });
 
-  it('should be possible to delete SAMPLE_BOOKLET.XML, if SAMPLE_TESTTAKERs.XML was previously deleted', () => {
+  it('delete SAMPLE_BOOKLET.XML, if tt-xml is deleted before', () => {
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -95,14 +95,14 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('should be possible to upload any file as a resource', () => {
+  it('upload any file as a resource', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/AnyResource.txt', { force: true });
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('AnyResource.txt');
   });
 
-  it('should be not possible to upload a Testtaker, Booklet, Unit or SysCheck file with the right root but w', () => {
+  it('uploading invalid files is not possible', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Testtakers_error.xml', { force: true });
     cy.contains('Abgelehnt');
@@ -125,7 +125,7 @@ describe('Workspace-Admin-files', () => {
       .click();
   });
 
-  it('should be possible to upload the file SysCheck.xml without any dependencies in other files', () => {
+  it('upload the file SysCheck.xml', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/SysCheck.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen');
@@ -134,7 +134,7 @@ describe('Workspace-Admin-files', () => {
       .contains('SysCheck.xml');
   });
 
-  it('should only be possible to upload a unit file, if the player file already exists.', () => {
+  it('upload a unit file, the player file must be exists.', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
@@ -162,7 +162,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]');
   });
 
-  it('should only be possible to upload a unit file and it\'s dependencies at once', () => {
+  it('upload resources files and unit-xml ', () => {
     cy.get('[data-cy="files-checkAll-Unit"]')
       .click();
     cy.get('[data-cy="files-checkAll-Resource"]')
@@ -191,7 +191,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]');
   });
 
-  it('should only be possible to upload a booklet file, if the declared unit files already exist', () => {
+  it('upload a booklet file, if the declared unit files already exist', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
@@ -235,7 +235,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]');
   });
 
-  it('should only be possible to upload a testtaker file, if the declared booklet files already exist', () => {
+  it('upload a tt-xml, if the declared booklet files already exist', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
@@ -294,7 +294,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-TESTTAKERS.XML"]');
   });
 
-  it('should be not possible to upload a Booklet-File with 2 Testlets and the same Testlet-Names', () => {
+  it('upload a Booklet-File with 2 Testlets and the same Testlet-Names is not possible', () => {
     // firstly delete the testtakers and booklet, because after Backend-Reset the filenames are different
     cy.get('[data-cy="files-checkAll-Testtakers"]')
       .click();
@@ -319,7 +319,7 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('should be not possible to upload a Booklet-File with 2 Units and the same Unit-IDs', () => {
+  it('upload a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
     // load a prepared Booklet-File from folder cypress/fixtures
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameUnitIDs.xml', { force: true });
@@ -329,7 +329,7 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('should be possible to upload a Booklet-File with 2 same Unit-IDs, but one of this with an alias', () => {
+  it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
     // load a prepared Booklet-File from folder cypress/fixtures
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameUnitIDs_Alias.xml', { force: true });
@@ -337,7 +337,7 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Booklet_sameUnitIDs_Alias.xml');
   });
 
-  it('should be possible to overwrite a Booklet-File with the same Bookletname and Booklet-ID', () => {
+  it('overwrite a Booklet-File with the same booklet name and booklet-ID', () => {
     cy.get('[data-cy="files-checkAll-Booklet"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -362,7 +362,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]');
   });
 
-  it('should be not possible to load a Booklet with the same name, but another ID and Testletsnames', () => {
+  it('load a Booklet with the same name, but another ID and testlet name is not possible', () => {
     // load a prepared Booklet with same name, but different ID and Testletnames from folder cypress/fixtures
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Booklet.xml', { force: true });
@@ -370,7 +370,7 @@ describe('Workspace-Admin-files', () => {
     cy.contains('did already exist');
   });
 
-  it('should be not possible to load a Booklet with different names and same Booklet-ID', () => {
+  it('load a Booklet with different names and same Booklet-ID is not possible', () => {
     // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameBookletID.xml', { force: true });

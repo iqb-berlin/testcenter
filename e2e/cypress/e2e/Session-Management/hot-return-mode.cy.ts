@@ -19,7 +19,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     visitLoginPage();
   });
 
-  it('should be possible to start a hot-return-mode study as login: hret1', () => {
+  it('start first session', () => {
     loginTestTaker('hret1', '201', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -37,14 +37,14 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
       .click();
   });
 
-  it('should possible to continue the session from login: hret1, there must be the last given answer', () => {
+  it('second login does not create a new session', () => {
     loginTestTaker('hret1', '201', 'test-hot');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
     logoutTestTaker('hot');
   });
 
-  it('should be possible to start a second hot-return-mode study as login: hret2', () => {
+  it('start a second session', () => {
     loginTestTaker('hret2', '202', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -62,14 +62,14 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
       .click();
   });
 
-  it('should possible to continue the session from login: hret2, there must be the last given answer', () => {
+  it('second login does not create a new session', () => {
     loginTestTaker('hret2', '202', 'test-hot');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
     logoutTestTaker('hot');
   });
 
-  it('should be a generated file (responses, logs) in the workspace with groupname: SM_HotModes', () => {
+  it('generated file (responses, logs) exist in workspace with session group names', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -82,7 +82,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     logoutAdmin();
   });
 
-  it('should be saved responses from login hret1 and hret2 in downloaded response file', () => {
+  it('session login must be saved in response file', () => {
     getResultFileRows('responses')
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhret1\b/);

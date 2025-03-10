@@ -9,7 +9,7 @@ describe('Management Workspaces (workspace-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadminSettings);
 
-  it('should be all buttons are visible and sample_workspace is installed in Tab:Workspaces', () => {
+  it('all buttons are visible and sample_workspace is installed', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.get('[data-cy="add-workspace"]');
@@ -18,7 +18,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.contains('sample_workspace');
   });
 
-  it('should be possible to add a new workspace', () => {
+  it('add a new workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.get('[data-cy="add-workspace"]')
@@ -37,7 +37,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.contains('ws 2');
   });
 
-  it('should be possible to change users RO access rights on workspace tab', () => {
+  it('change users RO access rights on workspace tab', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -56,7 +56,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('be.disabled');
   });
 
-  it('should be possible to change users RW access rights on workspace tab', () => {
+  it('change users RW access rights on workspace tab', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -75,7 +75,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('be.enabled');
   });
 
-  it('should be possible to rename a workspace', () => {
+  it('rename a workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -89,7 +89,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.contains('newName');
   });
 
-  it('should be possible to delete a workspace', () => {
+  it('delete a workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('newName')
