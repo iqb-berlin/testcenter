@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 class ServerTest extends TestCase {
   function test_getUrl() {
     // a scenario like most local installations with one vhost, vhost base dir is /var/www
-    $expected = 'http://localhost/a-sub-folder/another-sub-folder';
+    $expected = 'http' . (SystemConfig::$system_secureSiteScheme ? 's' : '') . '://localhost/a-sub-folder/another-sub-folder';
     $actual = Server::getUrl([
       "REDIRECT_STATUS" => "200",
       "SERVER_SOFTWARE" => "Apache/2.4.38 (Debian)",
@@ -20,7 +20,6 @@ class ServerTest extends TestCase {
       "REQUEST_SCHEME" => "http",
       "REMOTE_PORT" => "51286",
       "REDIRECT_URL" => "/a-sub-folder/another-sub-folder/system/config",
-      "SERVER_PROTOCOL" => "HTTP/1.1",
       "REQUEST_METHOD" => "GET",
       "QUERY_STRING" => "",
       "REQUEST_URI" => "/a-sub-folder/another-sub-folder/system/config",
@@ -32,7 +31,7 @@ class ServerTest extends TestCase {
 
   function test_getUrlWithRedirect() {
     // a scenario like in the docker-setup, an external proxy (traefik) does a redirection
-    $expected = 'http://testcenter.iqb.hu-berlin.de/api';
+    $expected = 'http' . (SystemConfig::$system_secureSiteScheme ? 's' : '') . '://testcenter.iqb.hu-berlin.de/api';
     $actual = Server::getUrl([
       "REDIRECT_STATUS" => "200",
       "HTTP_HOST" => "testcenter.iqb.hu-berlin.de",
@@ -40,7 +39,6 @@ class ServerTest extends TestCase {
       "HTTP_X_FORWARDED_HOST" => "testcenter.iqb.hu-berlin.de",
       "HTTP_X_FORWARDED_PORT" => "80",
       "HTTP_X_FORWARDED_PREFIX" => "/api",
-      "HTTP_X_FORWARDED_PROTO" => "http",
       "HTTP_X_FORWARDED_SERVER" => "7e128516da62",
       "HTTP_X_REAL_IP" => "5.6.7.8",
       "SERVER_NAME" => "testcenter.iqb.hu-berlin.de",
@@ -53,7 +51,6 @@ class ServerTest extends TestCase {
       "REMOTE_PORT" => "47282",
       "REDIRECT_URL" => "/system/config",
       "REDIRECT_QUERY_STRING" => "what=ever",
-      "SERVER_PROTOCOL" => "HTTP/1.1",
       "REQUEST_METHOD" => "GET",
       "QUERY_STRING" => "",
       "REQUEST_URI" => "/system/config?what=ever",
@@ -65,7 +62,7 @@ class ServerTest extends TestCase {
 
   function test_getUrlWithHTTPS() {
     // a scenario https is enabled, vhost base dir is /var/www/testcenter-dir
-    $expected = 'https://a-nice-testcenter.de';
+    $expected = 'http' . (SystemConfig::$system_secureSiteScheme ? 's' : '') . '://a-nice-testcenter.de';
     $actual = Server::getUrl([
       "CRIPT_URL" => "/index.php",
       "SCRIPT_URI" => "https://a-nice-testcenter.de/index.php",
@@ -82,7 +79,6 @@ class ServerTest extends TestCase {
       "CONTEXT_DOCUMENT_ROOT" => "/var/www/testcenter-dir",
       "SCRIPT_FILENAME" => "/var/www/testcenter-dir/index.php",
       "REMOTE_PORT" => "60952",
-      "SERVER_PROTOCOL" => "HTTP/1.1",
       "REQUEST_METHOD" => "GET",
       "QUERY_STRING" => "",
       "REQUEST_URI" => "/index.php",

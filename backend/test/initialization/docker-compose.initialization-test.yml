@@ -51,6 +51,7 @@ services:
       FILE_SERVICE_ENABLED: off
       HOSTNAME: localhost
       TLS_ENABLED: off
+      SECURE_SITE_SCHEME: false
       CACHE_SERVICE_INCLUDE_FILES: off
       CACHE_SERVICE_RAM: 1
       PORT_OF_REVERSE_PROXY: 80
