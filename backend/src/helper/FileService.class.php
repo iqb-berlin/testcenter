@@ -49,7 +49,7 @@ class FileService {
     if (!SystemConfig::$fileService_external) {
       return Server::getUrl() . '/';
     }
-    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
+    $proto = (SystemConfig::$system_secureSiteScheme ? 'https://' : 'http://');
     return $proto . SystemConfig::$fileService_external;
   }
 }

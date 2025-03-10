@@ -9,9 +9,7 @@ class Server {
 
     $ssl = (!empty($senv['HTTPS']) && $senv['HTTPS'] == 'on');
 
-    $sp = strtolower($senv['SERVER_PROTOCOL']);
-    $protocol = $senv['HTTP_X_FORWARDED_PROTO'] ??
-      substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
+    $scheme = SystemConfig::$system_secureSiteScheme ? 'https' : 'http';
 
     $port = $senv['SERVER_PORT'];
     $port = ((!$ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
@@ -22,7 +20,7 @@ class Server {
 
     $folder = str_replace('/index.php', '', $senv['SCRIPT_NAME']);
 
-    return $protocol . '://' . $host . $prefix . $folder;
+    return $scheme . '://' . $host . $prefix . $folder;
   }
 
   static function getProjectPath(array $senv = null): string {

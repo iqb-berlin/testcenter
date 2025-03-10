@@ -20,7 +20,7 @@ class BroadcastService {
     $data['token'] = $bsToken;
     $response = BroadcastService::send("$channelName/register", json_encode($data));
     $url =
-      (SystemConfig::$system_tlsEnabled ? 'wss://' : 'ws://')
+      (SystemConfig::$system_secureSiteScheme ? 'wss://' : 'ws://')
       . SystemConfig::$broadcastingService_external
       . "ws?token=$bsToken";
     return ($response !== null) ? $url : null;
@@ -75,7 +75,7 @@ class BroadcastService {
   }
 
   public static function getUri(): string {
-    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
+    $proto = (SystemConfig::$system_secureSiteScheme ? 'https://' : 'http://');
     return $proto . SystemConfig::$broadcastingService_external;
   }
 }
