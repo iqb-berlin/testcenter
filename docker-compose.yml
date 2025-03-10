@@ -39,6 +39,9 @@ services:
     <<: *restart-policy
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
+    depends_on:
+      testcenter-backend:
+        condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
@@ -86,12 +89,12 @@ services:
       MYSQL_PORT: 3306
       <<: *env-mysql
       PASSWORD_SALT: ${PASSWORD_SALT}
-    logging:
-      options:
-        <<: *env-logging-conf
     depends_on:
       testcenter-db:
         condition: service_healthy
+    logging:
+      options:
+        <<: *env-logging-conf
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost" ]
       start_period: 60s

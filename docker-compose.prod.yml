@@ -38,11 +38,6 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
 
   testcenter-file-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
   testcenter-backend:

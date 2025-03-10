@@ -1,4 +1,4 @@
 {
   "backend_url": "http://testcenter-backend",
-  "file_service_url": "http://testcenter-file-service"
+  "file_service_url": "http://testcenter-file-service:8080"
 }
