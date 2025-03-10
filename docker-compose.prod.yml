@@ -39,7 +39,7 @@ services:
 
   testcenter-file-service:
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
       - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
