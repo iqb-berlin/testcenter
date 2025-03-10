@@ -43,9 +43,8 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     cy.wait(RestrTimeVal + RestrTimeValOffset);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
-    cy.get('[data-cy="info-blocktime-is-up"]');
-    // Wenn Block nach Zeitablauf nicht mehr gesperrt wird, muss die nachfolgende Zeile wieder rein
-    // .should('not.exist');
+    cy.get('[data-cy="info-blocktime-is-up"]')
+      .should('not.exist');
     logoutTestTaker('demo');
   });
 
@@ -66,9 +65,8 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     cy.wait(RestrTimeVal + RestrTimeValOffset);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
-    cy.get('[data-cy="info-blocktime-is-up"]');
-    // Wenn Block nach Zeitablauf nicht mehr gesperrt wird, muss die nachfolgende Zeile wieder rein
-    // .should('not.exist');
+    cy.get('[data-cy="info-blocktime-is-up"]')
+      .should('not.exist');
     logoutTestTaker('demo');
   });
 });
