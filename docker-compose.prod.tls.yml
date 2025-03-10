@@ -64,7 +64,7 @@ services:
 
   testcenter-file-service:
     labels:
-      - "traefik.enable=true"
+      - "traefik.enable=false"
       - "traefik.http.routers.testcenter-file-service.tls=true"
       - "traefik.http.routers.testcenter-file-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
