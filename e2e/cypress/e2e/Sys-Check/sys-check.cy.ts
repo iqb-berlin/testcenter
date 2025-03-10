@@ -18,7 +18,7 @@ describe('Sys-Check', () => {
   before(resetBackendData);
   beforeEach(visitLoginPage);
 
-  it('should be possible to login with sys-check name and password', () => {
+  it('start a system-check session', () => {
     cy.get('[data-cy="general-sys-check"]')
       .should('not.exist');
     insertCredentials('syscheck', '');
@@ -27,13 +27,7 @@ describe('Sys-Check', () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
   });
 
-  it('should exist', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
-    cy.contains('System-Check Auswahl');
-    cy.contains('Beschreibungstext für den Systemcheck');
-  });
-
-  it('should show the correct system-check button depending on the current state of testtakers.xml', () => {
+  it('the system-check button must be visible, if there is no sc-login in TT', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
@@ -57,7 +51,7 @@ describe('Sys-Check', () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
   });
 
-  it('Run through the whole system-check', () => {
+  it('start a system-check', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Beispiel')
       .click();
@@ -100,7 +94,7 @@ describe('Sys-Check', () => {
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
   });
 
-  it('required fields have to be given to save report', () => {
+  it('to save a report all required fields must be filled out', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Beispiel')
       .click();
@@ -127,7 +121,7 @@ describe('Sys-Check', () => {
     cy.contains('Bitte prüfen Sie die Eingaben (unvollständig)');
   });
 
-  it('should show the starter page if more than one system-check is available in workspace', () => {
+  it('show the starter page if more than one system-check is available in workspace', () => {
     uploadFileFromFixtureToWorkspace('SysCheck_correct.xml', 1);
     loginTestTaker('syscheck', '', 'starter');
     cy.get('[data-cy*="syscheck"').should('have.length', 2);

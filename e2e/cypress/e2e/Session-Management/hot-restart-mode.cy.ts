@@ -14,7 +14,7 @@ import {
 let idHres1;
 let idHres2;
 
-describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
+describe('check hot-restart-mode functions', { testIsolation: false }, () => {
   before(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
@@ -25,7 +25,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
     visitLoginPage();
   });
 
-  it('should be possible to start a hot-restart session: hres1', () => {
+  it('start first session', () => {
     loginTestTaker('hres1', '203', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -43,7 +43,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
       .click();
   });
 
-  it('should not possible to continue the session from login: hres1, it must be start a new session', () => {
+  it('start a second session', () => {
     loginTestTaker('hres1', '203', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -61,7 +61,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
       .click();
   });
 
-  it('should be a generated file (responses, logs) in the workspace with groupname: SM_HotModes', () => {
+  it('generated file (responses, logs) exist in workspace with session group names', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -74,7 +74,7 @@ describe('Check hot-restart-mode functions', { testIsolation: false }, () => {
     logoutAdmin();
   });
 
-  it('should be generated a different ID/Code for each hres-login', () => {
+  it('different ID/Code must be saved for each session', () => {
     convertResultsSeperatedArrays('responses')
       .then(LoginID => {
         idHres1 = LoginID[1][2];

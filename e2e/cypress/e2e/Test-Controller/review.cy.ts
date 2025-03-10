@@ -16,7 +16,7 @@ import {
 const TesttakerName = 'Test_Review_Ctrl';
 const TesttakerPassword = '123';
 
-describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
+describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
@@ -28,22 +28,22 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
 
   beforeEach(disableSimplePlayersInternalDebounce);
 
-  it('should start a review-test without booklet selection', () => {
+  it('start a review-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.url()
       .should('include', '/u/1');
   });
 
-  it('should be visible a unit menu', () => {
+  it('booklet-config: a unit menu must be there', () => {
     cy.get('[data-cy="unit-menu"]');
   });
 
-  it('should be visible comments button', () => {
+  it('comments button must be visible', () => {
     cy.get('[data-cy="send-comments"]');
   });
 
-  it('should enter the block. The password should already be filled in', () => {
+  it('enter the block, the password should already be filled in', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-block-dialog-title"]')
@@ -60,12 +60,12 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
   });
 
-  it('should be visible a countdown in the window header', () => {
+  it('booklet-config: a countdown must be visible in the window header', () => {
     cy.get('[data-cy="time-value"]')
       .contains('0:');
   });
 
-  it('should possible to write a comment', () => {
+  it('write a comment', () => {
     cy.get('[data-cy="send-comments"]')
       .click();
     cy.get('[data-cy="comment-diag-title"]')
@@ -89,7 +89,8 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .contains('Kommentar gespeichert');
   });
 
-  it('should navigate to next unit without responses/presentation complete but with a message', () => {
+  // Hier kommt manchmal die Snackbar nicht und der Test scheitert
+  it('navigate to next unit without responses/presentation complete but with a message', () => {
     forwardTo('Aufgabe2');
     cy.get('.snackbar-demo-mode')
       .contains('Es wurde nicht alles gesehen oder abgespielt.');
@@ -98,7 +99,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     backwardsTo('Aufgabe1');
   });
 
-  it('should navigate to the next unit without responses complete but with a message', () => {
+  it('navigate to the next unit without responses complete but with a message', () => {
     gotoPage(1);
     getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
       .contains('Presentation complete');
@@ -111,20 +112,20 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     backwardsTo('Aufgabe1');
   });
 
-  it('should navigate to the next unit when required fields have been filled', () => {
+  it('navigate to the next unit when required fields have been filled', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
     forwardTo('Aufgabe2');
   });
 
-  it('should navigate backwards and verify that the last answer is there', () => {
+  it('navigate backwards and verify that the last answer is there', () => {
     backwardsTo('Aufgabe1');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
 
-  it('should start the booklet again after exiting the test', () => {
+  it('start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
@@ -137,7 +138,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-navigation-forward"]');
   });
 
-  it('should not restore the last answers', () => {
+  it('the last answers should be not visible', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]');
@@ -151,7 +152,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('not.be.checked');
   });
 
-  it('should go back to the booklet view and check out', () => {
+  it('navigate backward to the booklet view and check out', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
@@ -162,9 +163,12 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    cy.get('.snackbar-demo-mode')
+      .contains('Schließen')
+      .click();
   });
 
-  it('should exist an answer file without responses', () => {
+  it('there are no responses in the response file', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -181,25 +185,19 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       });
   });
 
-  it('should not exist a log file', () => {
+  it('there are no logs in the response file', () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-logs"]')
       .click();
     cy.get('.snackbar-demo-mode')
       .contains('Keine Daten verfügbar');
-  });
-
-  it('should not exist a review file', () => {
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
-    cy.get('[data-cy="download-comments"]')
-      .click();
     cy.get('.snackbar-demo-mode')
-      .contains('Keine Daten verfügbar');
+      .contains('Schließen')
+      .click();
   });
 
-  it('should exist a comment file with given comment', () => {
+  it('check the given comment in response file', () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-comments"]')

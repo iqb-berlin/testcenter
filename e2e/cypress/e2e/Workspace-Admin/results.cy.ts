@@ -13,7 +13,7 @@ describe('Workspace-Admin-results', () => {
 
   afterEach(logoutAdmin);
 
-  it('should download the responses of a group', () => {
+  it('download the responses of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.get('[data-cy="results-checkbox0"]')
@@ -23,7 +23,7 @@ describe('Workspace-Admin-results', () => {
     cy.readFile('cypress/downloads/iqb-testcenter-responses.csv');
   });
 
-  it('should download the logs of a group', () => {
+  it('download the logs of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.get('[data-cy="results-checkbox0"]')
@@ -33,7 +33,7 @@ describe('Workspace-Admin-results', () => {
     cy.readFile('cypress/downloads/iqb-testcenter-logs.csv');
   });
 
-  it('should delete the results of a group', () => {
+  it('delete the results of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.get('[data-cy="results-checkbox0"]')

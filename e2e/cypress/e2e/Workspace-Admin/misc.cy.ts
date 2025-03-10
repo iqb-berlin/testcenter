@@ -11,7 +11,7 @@ describe('Workspace-Admin Login', () => {
   beforeEach(visitLoginPage);
   beforeEach(loginWorkspaceAdmin);
 
-  it('should change the password, and be redirected to login page', () => {
+  it('change the password', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click()
       .get('[data-cy="change-password"]')

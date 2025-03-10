@@ -23,7 +23,7 @@ const TesttakerPassword4 = '123';
 
 const mode = 'test-hot';
 
-describe('Check hot-return test-controller functionalities', { testIsolation: false }, () => {
+describe('check hot-return test-controller functionalities', { testIsolation: false }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
@@ -40,14 +40,14 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
-    it('should start a hot-return-test without booklet selection', () => {
+    it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
     });
 
-    it('should not enter the block if a incorrect code is entered', () => {
+    it('enter the block with incorrect is not possible', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="unit-block-dialog-title"]')
@@ -61,7 +61,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('stimmt nicht');
     });
 
-    it('should enter the block if the correct code is entered', () => {
+    it('enter the block with correct code', () => {
       cy.get('[data-cy="unit-block-dialog-title"]')
         .contains('Aufgabenblock');
       cy.get('[data-cy="unlockUnit"]')
@@ -75,7 +75,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     });
 
-    it('should not navigate to next unit without responses/presentation complete', () => {
+    it('navigate to next unit without responses/presentation complete is not possible', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .should('have.class', 'marked');
       cy.get('[data-cy="unit-nav-item:UNIT.SAMPLE-102"]')
@@ -94,7 +94,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Aufgabe1');
     });
 
-    it('should not navigate away without responses complete', () => {
+    it('navigate away without responses complete is not possible', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
@@ -110,7 +110,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .click();
     });
 
-    it('should navigate with presentation and response complete to the next unit', () => {
+    it('navigate with presentation and response complete to the next unit', () => {
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -118,7 +118,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
       forwardTo('Aufgabe2');
     });
 
-    it('should possible to complete the last unit in restricted block', () => {
+    it('complete the last unit in restricted block', () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .click();
       forwardTo('Aufgabe3');
@@ -127,7 +127,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .click();
     });
 
-    it('should navigate backwards and verify that the last answer is there', () => {
+    it('navigate backwards and verify that the last answer is there', () => {
       backwardsTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .should('be.checked');
@@ -136,7 +136,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .should('be.checked');
     });
 
-    it('should not leave the time restricted block backward without a message', () => {
+    it('leave the time restricted block backward without a message is not possible', () => {
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
@@ -145,7 +145,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .click();
     });
 
-    it('should not leave the time restricted block in unit-menu without a message', () => {
+    it('leave the time restricted block in unit-menu without a message is not possible', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
       gotoPage(1);
@@ -163,7 +163,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .click();
     });
 
-    it('should not enter the timed block again after leaving the test entirely', () => {
+    it('enter the locked block is not possible', () => {
       cy.get('[data-cy="logo"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
@@ -202,7 +202,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Testung Controller');
     });
 
-    it('should enter the block if the correct password is entered', () => {
+    it('enter the block with correct password', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="unit-block-dialog-title"]')
@@ -216,7 +216,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Aufgabe1');
     });
 
-    it('should complete the test', () => {
+    it('complete the test', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
@@ -234,7 +234,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .should('be.checked');
     });
 
-    it('should leave the block and lock it afterwards', () => {
+    it('leave the block and lock it afterwards', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
@@ -261,14 +261,14 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
-    it('should start a hot-return-test without booklet selection', () => {
+    it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
     });
 
-    it('should enter the block if the correct password is entered', () => {
+    it('enter the block with correct password', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="unit-block-dialog-title"]')
@@ -282,7 +282,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Aufgabe1');
     });
 
-    it('should complete the test', () => {
+    it('complete the test', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
@@ -300,7 +300,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .should('be.checked');
     });
 
-    it('should leave the block and lock it afterwards', () => {
+    it('leave the block and lock it afterwards', () => {
       cy.get('[data-cy="unit-menu"]')
         .click();
       cy.get('[data-cy="endTest"]')
@@ -332,14 +332,14 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
-    it('should start a hot-return-test without booklet selection', () => {
+    it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       cy.url()
         .should('include', '/u/1');
     });
 
-    it('should enter the block if a correct code is entered', () => {
+    it('enter the block with correct code', () => {
       forwardTo('Aufgabe1');
       cy.get('[data-cy="unit-block-dialog-title"]')
         .contains('Aufgabenblock');
@@ -352,7 +352,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Aufgabe1');
     });
 
-    it('should complete the test', () => {
+    it('complete the test', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
@@ -388,7 +388,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
       visitLoginPage();
     });
 
-    it('should be downloaded from the workspace with groupname: RunHotReturn', () => {
+    it('download the response file with groupname: RunHotReturn', () => {
       loginSuperAdmin();
       openSampleWorkspace(1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -404,7 +404,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         .click();
     });
 
-    it('should contain recent replies and metadata from login: hret1', () => {
+    it('check the responses from first login', () => {
       getResultFileRows('responses')
         .then(responses => {
           // metadata
@@ -430,7 +430,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         });
     });
 
-    it('should contain recent replies and metadata from login: hret2', () => {
+    it('check the responses from second login', () => {
       getResultFileRows('responses')
         .then(responses => {
           // metadata
@@ -456,7 +456,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         });
     });
 
-    it('should contain recent replies and metadata from login: hret3', () => {
+    it('check the responses from third login', () => {
       getResultFileRows('responses')
         .then(responses => {
           // metadata
@@ -482,7 +482,7 @@ describe('Check hot-return test-controller functionalities', { testIsolation: fa
         });
     });
 
-    it('should contain recent replies and metadata from login: hret4', () => {
+    it('check the responses from fourth login', () => {
       getResultFileRows('responses')
         .then(responses => {
           // metadata

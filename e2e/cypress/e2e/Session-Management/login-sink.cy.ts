@@ -16,7 +16,7 @@ describe('The login-sink', () => {
       .should('exist');
   };
 
-  it('should trigger after five failed logins for the same admin user', () => {
+  it('trigger after five failed logins for the same admin user', () => {
     loginAttempt('admin', 'super', 400);
     loginAttempt('admin', 'super', 400);
     loginAttempt('admin', 'super', 400);

@@ -14,14 +14,14 @@ describe('Group-Monitor User', () => {
     loginMonitor('test-group-monitor-2', 'user123');
   });
 
-  it('should be displayed a group-monitor with 2 profiles for selection ', () => {
+  it('displayed a group-monitor with 2 profiles for selection ', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .contains('Alles zeigen');
     cy.get('[data-cy="GM-sample_group-1"]')
       .contains('Superklein');
   });
 
-  it('should be set the view that configured in the small profile', () => {
+  it('set the view that configured in the small profile', () => {
     cy.get('[data-cy="GM-sample_group-1"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
@@ -32,7 +32,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('should be only visible the configured columns in small profile', () => {
+  it('configured columns in small profile are only visible', () => {
     cy.get('[data-cy="GM-sample_group-1"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
@@ -52,7 +52,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('should be possible to set the filter from small-profile', () => {
+  it('set the filter from small-profile', () => {
     cy.get('[data-cy="GM-sample_group-1"]')
       .click();
     cy.contains('test/xxx')
@@ -66,7 +66,7 @@ describe('Group-Monitor User', () => {
     cy.contains('test/xxx');
   });
 
-  it('should be set the view that configured in the full profile', () => {
+  it('set the view that configured in the full profile', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
@@ -77,7 +77,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('should be only visible the configured columns in full profile', () => {
+  it('configured columns in full profile are only visible', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
@@ -99,7 +99,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('should not be visible the filter from small-profile', () => {
+  it('there are no filters from small-profile', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
@@ -113,7 +113,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('should be visible to greate a new  filter', () => {
+  it('greate a new  filter', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')

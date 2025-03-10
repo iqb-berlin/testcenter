@@ -8,7 +8,7 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Adaptive Testcontroller', { testIsolation: false }, () => {
+describe('check adaptive functionality', { testIsolation: false }, () => {
   before(() => {
     resetBackendData();
     cy.clearLocalStorage();
@@ -17,7 +17,7 @@ describe('Adaptive Testcontroller', { testIsolation: false }, () => {
 
   beforeEach(disableSimplePlayersInternalDebounce);
 
-  it('should start adaptive booklet with predefined states', () => {
+  it('start adaptive booklet with predefined states', () => {
     visitLoginPage();
     loginTestTaker('test', 'user123', 'code-input');
     cy.get('[formcontrolname="code"]')
@@ -54,7 +54,7 @@ describe('Adaptive Testcontroller', { testIsolation: false }, () => {
     expectUnitMenuToBe(['decision-unit', 'advanced-unit']);
   });
 
-  it('should start adaptive booklet with predefined states', () => {
+  it('start adaptive booklet with predefined states', () => {
     logoutTestTaker('hot');
     visitLoginPage();
     loginTestTaker('test-review', 'user123', 'starter');
@@ -63,7 +63,7 @@ describe('Adaptive Testcontroller', { testIsolation: false }, () => {
     expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);
   });
 
-  it('should show options to select the booklet states and overwrite calculated state', () => {
+  it('show options to select the booklet states and overwrite calculated state', () => {
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('mat-select[data-cy="select-booklet-state:bonus"]')

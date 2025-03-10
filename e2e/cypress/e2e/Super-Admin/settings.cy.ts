@@ -10,7 +10,7 @@ describe('Settings (setting-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadminSettings);
 
-  it('should be all settings functions visible', () => {
+  it('all setting options are visible', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click();
     cy.url()
@@ -23,7 +23,7 @@ describe('Settings (setting-tab)', () => {
     cy.contains('Logo');
   });
 
-  it('should be possible to set a message for maintenance works', () => {
+  it('set a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click();
     cy.get('[formcontrolname="globalWarningText"]')
