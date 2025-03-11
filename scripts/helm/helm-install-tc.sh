@@ -13,7 +13,8 @@ TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]=testcenter.domain.tld
 TRAEFIK_ENV_VARS[HTTP_PORT]=80
 TRAEFIK_ENV_VARS[HTTPS_PORT]=443
 TRAEFIK_ENV_VARS[TLS_ENABLED]=false
-declare TRAEFIK_ENV_VAR_ORDER=(TESTCENTER_BASE_DOMAIN HTTP_PORT HTTPS_PORT TLS_ENABLED)
+TRAEFIK_ENV_VARS[SECURE_SITE_SCHEME]=false
+declare TRAEFIK_ENV_VAR_ORDER=(TESTCENTER_BASE_DOMAIN HTTP_PORT HTTPS_PORT TLS_ENABLED SECURE_SITE_SCHEME)
 
 declare -A TESTCENTER_ENV_VARS
 TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
@@ -206,6 +207,8 @@ install_testcenter() {
     sed -i.bak "s|httpsPort:.*|httpsPort: ${TRAEFIK_ENV_VARS[HTTPS_PORT]}|" \
       testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|tlsEnabled:.*|tlsEnabled: ${TRAEFIK_ENV_VARS[TLS_ENABLED]}|" \
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+    sed -i.bak "s|secureSiteScheme:.*|secureSiteScheme: ${TRAEFIK_ENV_VARS[SECURE_SITE_SCHEME]}|" \
       testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
 
     sed -i.bak "s|mysqlRootPassword:.*|mysqlRootPassword: ${TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]}|" \

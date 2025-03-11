@@ -15,6 +15,7 @@ ingress:
   httpPort: 80
   httpsPort: 443
   tlsEnabled: false
+  secureSiteScheme: false
   tlsCertResolver: ""
 
 persistence:
@@ -25,6 +26,9 @@ persistence:
 
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
+
+  backendConfigPvcStorageClassName: standard
+  backendConfigPvcAccessMode: ReadWriteOnce
 
   dbPvcStorageClassName: standard
   dbPvcAccessMode: ReadWriteOnce

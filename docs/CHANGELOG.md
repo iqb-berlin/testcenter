@@ -1,6 +1,13 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* neue Env Variable eingeführt `SECURE_SITE_SCHEME`. Dieser unterscheidet sich von `TLS_ENABLED` insofern, dass TLS_ENABLED weiterhin darüber entscheidet, ob Traefik die TLS Zertifikate auflöst und an die anderen Services weiterreicht. SECURE_SITE_SCHEME hingegen gibt an, ob das Testcenter extern mit einem https oder http aufgerufen wird. Vorher waren beide Funktionalitäten hinter TLS_ENABLED verborgen. Mit den getrennten Variablen ist es nun möglich einen eigenen Load Balancer o.ä. vor das Testcenter zu schalten und dieses TLS Zertifikate auflösen zu lassen.
+  * Standard HTTPS Setup: SECURE_SITE_SCHEME=true, TLS_ENABLED=true
+  * Standard HTTP Setup: SECURE_SITE_SCHEME=false, TLS_ENABLED=false
+  * Eigener Load Balancer mit eigener TLS Auflösung Setup: SECURE_SITE_SCHEME=true, TLS_ENABLED=false
+
 ## 15.6.0
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten

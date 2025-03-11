@@ -13,9 +13,8 @@ class SystemConfig {
   public static string $broadcastingService_internal = "";
   public static string $cacheService_host = "";
   public static string $cacheService_includeFiles = "";
-  public static int $cacheService_ram = 0;
   public static string $password_salt = "t";
-  public static bool $system_tlsEnabled = true;
+  public static bool $system_secureSiteScheme = true;
   public static string $system_hostname;
   public static int $system_portOfReverseProxy;
   public static string $system_version;
@@ -79,10 +78,10 @@ class SystemConfig {
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
 
-    $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
+    $config['system']['secureSiteScheme'] = self::boolEnv('SECURE_SITE_SCHEME');
     $config['system']['hostname'] = preg_replace('#^[Ww][Ww][Ww]\.#', '', self::stringEnv('HOSTNAME'));
 
-    $portOfReverseProxy = $config['system']['portOfReverseProxy'] = $config['system']['tlsEnabled']
+    $portOfReverseProxy = $config['system']['portOfReverseProxy'] = self::boolEnv('SECURE_SITE_SCHEME')
       ? (self::stringEnv('TLS_PORT_OF_REVERSE_PROXY', '443'))
       : (self::stringEnv('PORT_OF_REVERSE_PROXY', '80'));
 
@@ -98,7 +97,6 @@ class SystemConfig {
     }
 
     $config['cacheService']['includeFiles'] = self::boolEnv('CACHE_SERVICE_INCLUDE_FILES');
-    $config['cacheService']['ram'] = (int) self::stringEnv('CACHE_SERVICE_RAM');
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

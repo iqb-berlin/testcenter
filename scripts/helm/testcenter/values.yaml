@@ -59,9 +59,13 @@ ingress:
   httpPort: 80
   httpsPort: 443
   tlsEnabled: false
+  secureSiteScheme: false
   tlsCertResolver: ""
 
 deployment:
+  backend:
+    replicas: 1
+
   frontend:
     replicas: 1
     strategy:
@@ -85,11 +89,15 @@ persistence:
 
   cacheServerPvcStorageClassName: standard
   cacheServerPvcAccessMode: ReadWriteOnce
-  cacheServerPvcSize: 5Gi
+  cacheServerPvcSize: 1Gi
 
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
   backendPvcSize: 2Gi
+
+  backendConfigPvcStorageClassName: standard
+  backendConfigPvcAccessMode: ReadWriteOnce
+  backendConfigPvcSize: 100Mi
 
   dbPvcStorageClassName: standard
   dbPvcAccessMode: ReadWriteOnce
