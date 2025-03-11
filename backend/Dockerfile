@@ -81,7 +81,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 FROM base AS dev
 # Install PHP dev extensions
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
 RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 
 # Copy dev dependencies
