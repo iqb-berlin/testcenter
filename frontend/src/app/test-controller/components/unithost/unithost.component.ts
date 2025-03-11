@@ -88,7 +88,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       // TODO if the session belongs to a previous unit, still handle msg (referring to the that unit, not current)
       // eslint-disable-next-line no-console
       console.warn('wrong player session id: ', msgData.sessionId, msgData);
-      return;
+      // return;
     }
 
     switch (msgType) {
