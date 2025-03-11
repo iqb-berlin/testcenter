@@ -203,9 +203,15 @@ customize_settings() {
     sed -i.bak "s|$env_var_name.*|$env_var_name=$env_var_value|" .env.prod && rm .env.prod.bak
   done
 
-  read -p 'Use TLS? [Y/n]: ' -r -n 1 -e TLS
+  read -p 'Use external Tool (eg. load balancer) to handle TLS? [Y/n]: ' -r -n 1 -e TLS
+  if [[ ! $TLS =~ ^[nN]$ ]]; then
+    sed -i.bak 's|TLS_ENABLED=true|TLS_ENABLED=false|' .env.prod && rm .env.prod.bak
+  fi
+
+  read -p 'Use Testcenter internal TLS service? [Y/n]: ' -r -n 1 -e TLS
   if [[ ! $TLS =~ ^[yY]$ ]]; then
     sed -i.bak 's|TLS_ENABLED=true|TLS_ENABLED=false|' .env.prod && rm .env.prod.bak
+    sed -i.bak 's|SECURE_SITE_SCHEME=true|SECURE_SITE_SCHEME=false|' .env.prod && rm .env.prod.bak
   fi
 
   read -p "Use an ACME-Provider for TLS, like 'Let's encrypt' or 'Sectigo'? [Y/n]: " -r -n 1 -e TLS
