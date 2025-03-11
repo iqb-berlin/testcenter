@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Bugfix
+* (Testleiterkonsole) Bei Öffnen eines zeitgesteuerten Blocks und Neuvergabe einer Zeit werden nun auch mehrstellige Zahlen richtigerweise erfasst.
+
 ## 15.6.0
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
