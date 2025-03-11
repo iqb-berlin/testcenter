@@ -58,11 +58,6 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: CACHE_SERVICE_INCLUDE_FILES
-            - name: CACHE_SERVICE_RAM
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-backend-config
-                  key: CACHE_SERVICE_RAM
             - name: PORT_OF_REVERSE_PROXY
               valueFrom:
                 configMapKeyRef:

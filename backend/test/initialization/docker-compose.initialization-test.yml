@@ -53,7 +53,6 @@ services:
       TLS_ENABLED: off
       SECURE_SITE_SCHEME: false
       CACHE_SERVICE_INCLUDE_FILES: off
-      CACHE_SERVICE_RAM: 1
       PORT_OF_REVERSE_PROXY: 80
       TLS_PORT_OF_REVERSE_PROXY: 443
     volumes:
