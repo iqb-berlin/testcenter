@@ -48,11 +48,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: HOSTNAME
-            - name: TLS_ENABLED
+            - name: SECURE_SITE_SCHEME
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
-                  key: TLS_ENABLED
+                  key: SECURE_SITE_SCHEME
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
                 configMapKeyRef:

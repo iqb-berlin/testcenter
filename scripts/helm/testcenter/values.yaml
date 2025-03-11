@@ -59,6 +59,7 @@ ingress:
   httpPort: 80
   httpsPort: 443
   tlsEnabled: false
+  secureSiteScheme: false
   tlsCertResolver: ""
 
 deployment:
