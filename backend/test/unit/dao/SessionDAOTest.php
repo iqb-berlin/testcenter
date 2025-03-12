@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
@@ -462,18 +462,21 @@ class SessionDAOTest extends TestCase {
   }
 
   public function test_createLoginSession_groupIdChanged(): void {
-    $this->dbc->createLoginSession(new Login(
-      "test",
-      "user123",
-      "hot-run-restart",
-      "sample_group",
-      "Sample Group",
-      ['' => ['A.BOOKLET']],
-      1
-    ));
+    $this->dbc->createLoginSession(
+      new Login(
+        "test",
+        "user123",
+        "hot-run-restart",
+        "sample_group",
+        "Sample Group",
+        ['' => ['A.BOOKLET']],
+        1
+      )
+    );
 
     $this->dbc->_("delete from logins;");
-    $this->dbc->_('
+    $this->dbc->_(
+      '
       insert into logins (
         name,
         password,
@@ -501,15 +504,17 @@ class SessionDAOTest extends TestCase {
       );'
     );
 
-    $this->dbc->createLoginSession(new Login(
-      "test",
-      "user123",
-      "hot-run-restart",
-      "new_id",
-      "Sample Group",
-      ['' => ['A.BOOKLET']],
-      1
-    ));
+    $this->dbc->createLoginSession(
+      new Login(
+        "test",
+        "user123",
+        "hot-run-restart",
+        "new_id",
+        "Sample Group",
+        ['' => ['A.BOOKLET']],
+        1
+      )
+    );
 
     $sessions = $this->dbc->getLoginSessions();
     $this->assertCount(1, $sessions);
@@ -597,6 +602,7 @@ class SessionDAOTest extends TestCase {
     $this->assertEquals($expectation, $groupToken);
   }
 
+  // @TODO: code coverage does not work with xdebug 3.4.2 and php 8.3.12
   public function test_getOrCreateGroupToken_parallel(): void {
     $worker = Amp\Parallel\Worker\createWorker();
 
