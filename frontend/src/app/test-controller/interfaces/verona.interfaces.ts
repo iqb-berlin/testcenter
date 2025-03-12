@@ -87,3 +87,25 @@ export interface VopStartCommand {
   playerConfig: Verona4PlayerConfig;
   [x: string]: unknown;
 }
+
+export interface VopStateChangedNotification {
+  type: 'vopStateChangedNotification',
+  sessionId: string;
+  playerState?: {
+    validPages?: Verona5ValidPages | Verona6ValidPages;
+    currentPage?: string;
+  },
+  unitState?: VeronaUnitState;
+  log?: {
+    timeStamp: number;
+    content: string;
+    key: string;
+  }[]
+}
+
+export interface VopRuntimeErrorNotification {
+  type: 'vopRuntimeErrorNotification',
+  sessionId: string;
+  message: string;
+  code: string;
+}
