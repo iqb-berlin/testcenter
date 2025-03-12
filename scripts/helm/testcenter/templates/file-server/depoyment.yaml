@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-file-server
+spec:
+  replicas: {{ .Values.deployment.fileServer.replicas }}
+  {{- if .Values.deployment.fileServer.strategy }}
+  strategy:
+    {{- .Values.deployment.fileServer.strategy | toYaml | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-file-server-pod
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/file-server/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ .Release.Name }}-file-server-pod
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-file-server-container
+          image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
+          env:
+            - name: CACHE_SERVICE_INCLUDE_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: CACHE_SERVICE_INCLUDE_FILES
+            - name: CACHE_SERVICE_ADDRESS_FOR_LUA
+              valueFrom:
+                configMapKeyRef:
+                  name: file-server-config
+                  key: CACHE_SERVICE_ADDRESS_FOR_LUA
+          volumeMounts:
+            - name: backend-volume
+              mountPath: /var/www/html/
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf-in-volume
+      volumes:
+        - name: backend-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-backend-pvc
+        - name: nginx-config-volume
+          configMap:
+            name: file-server-config
+            items:
+              - key: config.nginx.conf
+                path: nginx.conf-in-volume

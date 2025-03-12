@@ -226,7 +226,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (targetUnit) {
         if (targetUnit.parent.timerId !== this.tcs.currentUnit?.parent.timerId) {
           this.tcs.cancelTimer();
-          this.tcs.restoreTime(targetUnit.parent, parseInt(params[2].slice(-1), 10));
+          // parse the last word as integer
+          this.tcs.restoreTime(targetUnit.parent, parseInt(params[2].trim().split(' ').pop()!, 10));
         }
         targetUnit.parent.locks.afterLeave = false;
         targetUnit.lockedAfterLeaving = false;

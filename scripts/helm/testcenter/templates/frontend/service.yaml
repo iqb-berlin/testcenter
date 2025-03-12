@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend-service
+spec:
+  selector:
+    app: {{ .Release.Name }}-frontend-pod
+  ports:
+    - name: http-service
+      port: 80
+      targetPort: http-container
