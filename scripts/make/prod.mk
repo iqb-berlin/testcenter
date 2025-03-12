@@ -14,19 +14,17 @@ include $(TC_BASE_DIR)/.env.prod
 
 ## Pull newest images, create and start docker containers in background
 testcenter-up:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		echo "Starting with TLS";\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			pull;\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			up --detach;\
 	else\
@@ -46,19 +44,17 @@ testcenter-up:
 
 ## Pull newest images, create and start docker containers in foreground
 testcenter-up-fg:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		echo "Starting with TLS";\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			pull;\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			up --abort-on-container-exit;\
 	else\
@@ -78,12 +74,11 @@ testcenter-up-fg:
 
 ## Stop and remove docker containers
 testcenter-down:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			down;\
 	else\
@@ -98,12 +93,11 @@ testcenter-down:
 ## Start docker containers
 # Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=testcenter-db`
 testcenter-start:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if [ $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			start $(SERVICE);\
 	else\
@@ -118,12 +112,11 @@ testcenter-start:
 ## Stop docker containers
 # Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=testcenter-db`
 testcenter-stop:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			stop $(SERVICE);\
 	else\
@@ -138,12 +131,11 @@ testcenter-stop:
 ## Restart docker containers
 # Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=testcenter-db`
 testcenter-restart:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			restart $(SERVICE);\
 	else\
@@ -158,12 +150,11 @@ testcenter-restart:
 ## Show status of containers
 # Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=testcenter-db`
 testcenter-status:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			ps -a $(SERVICE);\
 	else\
@@ -178,12 +169,11 @@ testcenter-status:
 ## Show service logs
 # Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=testcenter-db`
 testcenter-logs:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			logs -f $(SERVICE);\
 	else\
@@ -198,12 +188,11 @@ testcenter-logs:
 ## Show services configuration
 # Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=testcenter-db`
 testcenter-config:
-	@if [ "$(TLS_ENABLED)" = "on" ] || [ "$(TLS_ENABLED)" = "yes" ] || [ "$(TLS_ENABLED)" = "true" ]; then\
+	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
 		docker compose\
 				--env-file .env.prod\
 				--file docker-compose.yml\
-				--file docker-compose.prod.yml\
 				--file docker-compose.prod.tls.yml\
 			config $(SERVICE);\
 	else\
