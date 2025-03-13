@@ -205,9 +205,8 @@ export class TestControllerService {
         if (!this.testMode.saveResponses) {
           this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) });
         } else {
-          forkJoin(
-            buffer
-              .map(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id))
+          from(buffer).pipe(
+            concatMap(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id))
           ).subscribe(
             {
               complete: () => this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) })
