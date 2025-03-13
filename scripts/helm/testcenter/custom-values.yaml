@@ -26,5 +26,8 @@ persistence:
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
 
+  backendConfigPvcStorageClassName: standard
+  backendConfigPvcAccessMode: ReadWriteOnce
+
   dbPvcStorageClassName: standard
   dbPvcAccessMode: ReadWriteOnce
