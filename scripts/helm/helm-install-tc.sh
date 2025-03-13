@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare TESTCENTER_VERSION="16.0.0-alpha"
+declare TESTCENTER_VERSION="16.0.0"
 declare TRAEFIK_VERSION="v3.3.2"
 declare LONGHORN_VERSION="v1.7.2"
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")
@@ -166,6 +166,10 @@ install_testcenter() {
       sed -i.bak "s|backendPvcStorageClassName:.*|backendPvcStorageClassName: longhorn|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|backendPvcAccessMode:.*|backendPvcAccessMode: ReadWriteMany|" \
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+      sed -i.bak "s|backendConfigPvcStorageClassName:.*|backendConfigPvcStorageClassName: longhorn|" \
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+      sed -i.bak "s|backendConfigPvcAccessMode:.*|backendConfigPvcAccessMode: ReadWriteMany|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|dbPvcStorageClassName:.*|dbPvcStorageClassName: longhorn-single|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak

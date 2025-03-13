@@ -10,7 +10,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-backend-container-init
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
-          command: ["/initialize_only.sh"]
+          command: [ "bash", "/initialize_only.sh" ]
           env:
             - name: MYSQL_DATABASE
               value: "iqb_tba_testcenter"
