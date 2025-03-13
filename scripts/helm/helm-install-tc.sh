@@ -167,6 +167,10 @@ install_testcenter() {
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|backendPvcAccessMode:.*|backendPvcAccessMode: ReadWriteMany|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+      sed -i.bak "s|backendConfigPvcStorageClassName:.*|backendConfigPvcStorageClassName: longhorn|" \
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+      sed -i.bak "s|backendConfigPvcAccessMode:.*|backendConfigPvcAccessMode: ReadWriteMany|" \
+        testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|dbPvcStorageClassName:.*|dbPvcStorageClassName: longhorn-single|" \
         testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
       sed -i.bak "s|dbPvcAccessMode:.*|dbPvcAccessMode: ReadWriteOnce|" \
