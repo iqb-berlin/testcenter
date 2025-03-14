@@ -10,7 +10,7 @@ describe('Usermanagement (user-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadminSettings);
 
-  it('should be that all user buttons are present', () => {
+  it('all user option buttons are visible', () => {
     cy.get('[data-cy="superadmin-tabs:users"]')
       .click();
     cy.get('[data-cy="add-user"]');
@@ -19,7 +19,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="change-superadmin"]');
   });
 
-  it('should be possible to create a new user', () => {
+  it('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
     insertCredentials('newTest', 'user123');
@@ -29,7 +29,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.contains('newTest');
   });
 
-  it('should not be possible to set admin rights for existing workspace admin without correct password', () => {
+  it('set admin rights for a workspaceadmin without correct password is not possible', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="change-superadmin"]')
@@ -42,7 +42,7 @@ describe('Usermanagement (user-tab)', () => {
       .click();
   });
 
-  it('should be possible to set admin rights for existing workspace admin with correct password', () => {
+  it('set admin rights for a workspaceadmin with correct password', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="change-superadmin"]')
@@ -58,7 +58,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="goto-superadmin-settings"]');
   });
 
-  it('should be possible change privileges of existing workspace_admin to read-only', () => {
+  it('change privileges for a workspaceadmin to read-only', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="workspace-1-role-ro"]')
@@ -77,7 +77,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]');
   });
 
-  it('should be possible to change privileges of existing workspace_admin to read-write', () => {
+  it('change privileges for a workspaceadmin to read-write', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="workspace-1-role-rw"]')
@@ -95,7 +95,7 @@ describe('Usermanagement (user-tab)', () => {
       .should('be.enabled');
   });
 
-  it('should be possible to change the password of a existing workspaceadmin', () => {
+  it('change the password for a workspaceadmin', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="change-password"]')
@@ -113,7 +113,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.contains('Status: Angemeldet als "workspace_admin"');
   });
 
-  it('should not be able to change the password, if both input fields are different', () => {
+  it('change the password for a workspaceadmin: repeated password is incorrect', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="change-password"]')
@@ -125,7 +125,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.contains('Die Kennwörter stimmen nicht überein');
   });
 
-  it('should be possible to delete a workspace admin', () => {
+  it('delete a workspace admin', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="delete-user"]')

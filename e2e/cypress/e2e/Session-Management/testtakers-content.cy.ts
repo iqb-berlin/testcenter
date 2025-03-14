@@ -11,7 +11,7 @@ describe('Check Testtakers Content', () => {
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
 
-  it('should be not possible to load a incorrect testtaker-xml with a duplicated group name)', () => {
+  it('load invalid testtaker-xml with duplicated group name is not possible)', () => {
     openSampleWorkspace(1);
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('cypress/fixtures/Testtaker_DuplicatedGroup.xml', { force: true });
@@ -25,7 +25,7 @@ describe('Check Testtakers Content', () => {
       .should('not.exist');
   });
 
-  it('should be not possible to load a incorrect testtaker-xml with a duplicated login name)', () => {
+  it('load invalid testtaker-xml with duplicated login name is not possible)', () => {
     openSampleWorkspace(1);
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('cypress/fixtures/Testtaker_DuplicatedLogin.xml', { force: true });
@@ -37,7 +37,7 @@ describe('Check Testtakers Content', () => {
       .should('not.exist');
   });
 
-  it('should be not possible to overwrite the testtaker file in ws1, if the file have the another name', () => {
+  it('overwrite the testtaker with other filename is not possible', () => {
     openSampleWorkspace(1);
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]');
     cy.get('.sidebar > input:nth-child(2)')
@@ -50,7 +50,7 @@ describe('Check Testtakers Content', () => {
       .click();
   });
 
-  it('should be possible overwrite the testtaker file in ws1, if the file have the same name', () => {
+  it('overwrite testtaker with the same file name is possible', () => {
     openSampleWorkspace(1);
     deleteTesttakersFiles();
     cy.get('.sidebar > input:nth-child(2)')
@@ -70,7 +70,7 @@ describe('Check Testtakers Content', () => {
       .click();
   });
 
-  it('should not be possible to load the same testtaker file that is already exist in ws1 to ws2', () => {
+  it('load the same testtaker that exist in ws1 to ws2 is not possible', () => {
     openSampleWorkspace(2);
     deleteTesttakersFiles();
     cy.get('.sidebar > input:nth-child(2)')

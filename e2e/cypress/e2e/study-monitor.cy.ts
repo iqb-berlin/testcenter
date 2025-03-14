@@ -13,7 +13,7 @@ describe('Study-Monitor User', () => {
     visitLoginPage();
   });
 
-  it('should be able to enter the site with study monitor', () => {
+  it('start a study monitor', () => {
     loginMonitor('tsm', '401');
 
     cy.get('[data-cy="SM-1"]')
