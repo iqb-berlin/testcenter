@@ -1,9 +1,23 @@
 ---
 layout: default
 ---
-## [next]
+## 16.0.0
+### Kubernetes
+* Die Helm Chart für das Deployment des Testcenters hat die Version 1.0.0 erreicht und stellt damit eine erste stabile Version des Deployments auf Kubernetes dar.
+
+### Deployment-Hinweis
+* Das Testcenter kann auf dem Hostsystem nur noch unter dem in der .env Datei angegebenen `HOSTNAME` und der subdomain www.`HOSTNAME` aufgerufen werden. Dies mach andere Subdomainen frei für das Hosten von zukünftigen Tools wie z.B. Grafana.
+
 ### Bugfix
 * (Testleiterkonsole) Bei Öffnen eines zeitgesteuerten Blocks und Neuvergabe einer Zeit werden nun auch mehrstellige Zahlen richtigerweise erfasst.
+* In einem Randfall flossen die Logs einer Unit in die der nächsten ein (rein additiv und nicht Datenzerstörend). Dies ist behoben.
+* In der Testleitungskonsole wird beim Aktivieren des 'Alle-auswählen' Toggles nun auch immer ALLE (inkl. noch nicht angemeldete) Testpersonen ausgewählt, zu sehen an der farblichen Markierung.
+* 'Test beenden' durch die Testleitungskonsole überstimmt die Booklet Einstellung `<TimeMax leave="forbidden">` und führt zum sofortigen Testabbruch.
+
+### Verbesserungen
+* Das Updateverhalten im Docker-Deployment wurde sowohl in den Logs als auch in der Arbeitsweise verbessert, was in Zukunft umfangreichere Migrationsskripte erlauben wird.
+* Die Testleitungskonsole trackt zuverlässiger die aktuelle Unit der einzelnen Testpersonen.
+* Befehle zum Test beenden
 
 ## 15.6.0
 ### Verbesserungen
