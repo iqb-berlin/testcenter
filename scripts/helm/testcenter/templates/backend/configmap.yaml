@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-backend-config
 data:
   BROADCAST_SERVICE_ENABLED: {{ .Values.config.backend.broadcastServiceEnabled | quote }}
-  FILE_SERVICE_ENABLED: {{ .Values.config.backend.fileServiceEnabled | quote }}
+  FILE_SERVICE_ENABLED: "false" # @TODO: Enable file-server
   HOSTNAME: {{ .Values.ingress.baseDomain | quote }}
   TLS_ENABLED: {{ .Values.ingress.tlsEnabled | quote }}
   CACHE_SERVICE_RAM: {{ .Values.config.backend.cacheServiceRam | quote }}
