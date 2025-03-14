@@ -37,6 +37,7 @@ import {
   TimeRestrictionDialogComponent,
   TimeRestrictionDialogData
 } from './time-restriction-dialog/time-restriction-dialog.component';
+import { ComponentUtilService } from '../shared/services/component-util.service';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -89,7 +90,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private router: Router,
     private cts: CustomtextService,
     public mds: MainDataService,
-    private addFilterDialog: MatDialog
+    private addFilterDialog: MatDialog,
+    private componentUtilService: ComponentUtilService
   ) {}
 
   ngOnInit(): void {
@@ -341,9 +343,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
     if (this.tsm.checkingOptions.enableAutoCheckAll && event.checked) {
-      this.tsm.checkAll();
-      this.displayOptions.manualChecking = false;
-      this.tsm.checkingOptions.autoCheckAll = true;
+      // TODO not ideal - try to reset the state properly, instead of reloading the component
+      this.componentUtilService.reloadComponent(true);
     } else {
       this.tsm.checkNone();
       this.displayOptions.manualChecking = true;
