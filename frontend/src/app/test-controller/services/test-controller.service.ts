@@ -503,7 +503,7 @@ export class TestControllerService {
       await lastValueFrom(this.bs.lockTest(this.testId, Date.now(), logEntryKey));
     }
 
-    return this.router.navigate(['/r/starter']);
+    return this.router.navigate(['/r/starter'], { state: { force: force } });
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
