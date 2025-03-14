@@ -96,3 +96,4 @@ export { BookletConfig } from './classes/booklet-config.class';
 export { TestMode } from './classes/test-mode.class';
 export { customTextDefaults } from './objects/customTextDefaults';
 export * from './interfaces/booklet.interfaces';
+export { ComponentUtilService } from './services/component-util.service';
