@@ -115,6 +115,14 @@ class TestDAO extends DAO {
     ?string $pageLabel = null,
   ): void {
     $this->_(
+      'insert ignore into units (name, test_id, original_unit_id) values(:u, :t, :o)',
+      [
+        ':u' => $unitName,
+        ':t' => $testId,
+        ':o' => $originalUnitId
+      ]
+    );
+    $this->_(
       'insert into unit_reviews (
             unit_name,
             test_id,
