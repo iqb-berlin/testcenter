@@ -75,7 +75,8 @@ paths:
                 mode: run-hot-return
                 testId: 1
                 testState:
-                  "CURRENT_UNIT_ID": "1"
+                  "CURRENT_UNIT_ID": "UNIT.SAMPLE"
+                  "status": "running"
                 bookletName: BOOKLET.SAMPLE-1
                 unitName: UNIT.SAMPLE
                 unitState:
@@ -84,23 +85,14 @@ paths:
               - personId: 1
                 groupName: "sample_group"
                 personLabel: "test/xxx"
-                groupLabel: "Sample group"
+                groupLabel: "Primary Sample group"
                 mode: "run-hot-return"
                 testId: 2,
                 testState:
                   status: "locked"
-                bookletName: "BOOKLET.SAMPLE-2"
-                unitState: []
+                bookletName: "BOOKLET.SAMPLE-3"
+                unitState: {}
                 timestamp: 1606736826
-              - personId: 3
-                groupName: sample_group
-                personLabel: test-group-monitor
-                groupLabel: Sample group
-                mode: monitor-group
-                testId: -1
-                testState: []
-                unitState: []
-                timestamp: 1596455898
         "401":
           description: Not authenticated
         "410":
@@ -145,11 +137,12 @@ paths:
                 - personId: 1
                   groupName: sample_group
                   personLabel: test/xxx
-                  groupLabel: Sample group
+                  groupLabel: Primary Sample Group
                   mode: run-hot-return
                   testId: 1
                   testState:
-                    "CURRENT_UNIT_ID": "1"
+                    "CURRENT_UNIT_ID": "UNIT.SAMPLE"
+                    "status": "running"
                   bookletName: BOOKLET.SAMPLE-1
                   unitName: UNIT.SAMPLE
                   unitState:
@@ -158,23 +151,14 @@ paths:
                 - personId: 1
                   groupName: "sample_group"
                   personLabel: "test/xxx"
-                  groupLabel: "Sample group"
+                  groupLabel: Primary Sample Group
                   mode: "run-hot-return"
                   testId: 2,
                   testState:
                     status: "locked"
-                  bookletName: "BOOKLET.SAMPLE-2"
-                  unitState: []
+                  bookletName: "BOOKLET.SAMPLE-3"
+                  unitState: {}
                   timestamp: 1606736826
-                - personId: 3
-                  groupName: sample_group
-                  personLabel: test-group-monitor
-                  groupLabel: Sample group
-                  mode: monitor-group
-                  testId: -1
-                  testState: []
-                  unitState: []
-                  timestamp: 1596455898
         "401":
           description: Not authenticated
         "410":
