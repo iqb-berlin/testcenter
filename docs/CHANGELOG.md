@@ -5,9 +5,23 @@ layout: default
 ### Breaking Changes
 * API Endpoints des Backends werden nicht mehr mit <HOSTNAME>/api aufgerufen, sondern mit <HOSTNAME>/api/; <HOSTNAME>/api gibt von nun an ein 404 error zurück
 
+### :warning: Hinweis für Administratoren
+* Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen, erst
+  sämtliche Studien zu beenden und die Daten zu löschen bevor geupdatet wird.
+
 ### Änderungen
 * Alle Container laufen ohne root-Rechte
 * Kubernetes: Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
+
+### Bugfix
+* Units konnten unter bestimmten Extrembedingungen doppelt angelegt werden, was zu doppelten Zeilen in den Ergebnisdaten
+  führte.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
 
 ## 16.2.0
 ### neue Features
