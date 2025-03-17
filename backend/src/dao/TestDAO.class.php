@@ -348,8 +348,7 @@ class TestDAO extends DAO {
           ':part_id' => $partId,
           ':content' => $content,
           ':ts' => $timestamp,
-          ':response_type' => $type,
-          ':unit_id' => $unitDbId
+          ':response_type' => $type
         ]
       );
     }
@@ -369,8 +368,7 @@ class TestDAO extends DAO {
     string $unitName,
     string $logKey,
     int $timestamp,
-    string $logContent = "",
-    string $originalUnitId = ''
+    string $logContent = ""
   ): void {
     $this->_(
       'insert into unit_logs (unit_name, test_id, logentry, timestamp) values (:unitName, :testId, :logentry, :ts)',
