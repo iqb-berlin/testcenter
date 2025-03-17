@@ -307,8 +307,7 @@ class TestController extends Controller {
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        $entry['content'],
-        $originalUnitId
+        $entry['content']
       );
     }
 
