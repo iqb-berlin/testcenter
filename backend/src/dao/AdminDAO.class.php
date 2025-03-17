@@ -268,10 +268,7 @@ class AdminDAO extends DAO {
 
       if ($currentUnitName) {
         $currentUnitState = $this->getUnitState((int) $testSession['test_id'], $currentUnitName);
-
-        if ($currentUnitState) {
-          $sessionChangeMessage->setUnitState($currentUnitName, (array) $currentUnitState);
-        }
+        $sessionChangeMessage->setUnitState($currentUnitName, $currentUnitState);
       }
 
       $sessionChangeMessages->add($sessionChangeMessage);
@@ -280,15 +277,15 @@ class AdminDAO extends DAO {
     return $sessionChangeMessages;
   }
 
-  private function getUnitState(int $testId, string $unitName): stdClass {
+  private function getUnitState(int $testId, string $unitName): array {
     $unitData = $this->_("
       select
-          laststate
+        laststate
       from
-          units
+        units
       where
-          units.test_id = :testId
-          and units.name = :unitName",
+        units.test_id = :testId
+        and units.name = :unitName",
       [
         ':testId' => $testId,
         ':unitName' => $unitName
@@ -296,12 +293,12 @@ class AdminDAO extends DAO {
     );
 
     if (!$unitData) {
-      return (object) [];
+      return [];
     }
 
-    $state = JSON::decode($unitData['laststate'], true) ?? (object) [];
+    $state = JSON::decode($unitData['laststate'], true) ?? [];
 
-    return (object) $state ?? (object) [];
+    return $state ?? [];
   }
 
   public function getResponseReportData($workspaceId, $groups): ?array {
