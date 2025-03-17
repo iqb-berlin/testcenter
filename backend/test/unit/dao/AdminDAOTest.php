@@ -368,33 +368,33 @@ final class AdminDAOTest extends TestCase {
         'unitState' => []
       ]
     ];
-    // make order-agnostic
-    usort($expectation, function ($first, $second) {
-      return $first['testId'] <=> $second['testId'];
-    });
+
+    $sessionChangeMessageArray = function(SessionChangeMessage $s): array {
+      $asArray = $s->jsonSerialize();
+      foreach ($asArray as $key => $value) {
+        if ((($key == "testState") or ($key == "unitState")) and (empty((array) $value))) {
+          $asArray[$key] = [];
+        }
+      }
+      return $asArray;
+    };
 
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
