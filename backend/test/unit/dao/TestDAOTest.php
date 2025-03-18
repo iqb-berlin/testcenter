@@ -48,9 +48,17 @@ class TestDAOTest extends TestCase {
   }
 
   function test_updateTestState() {
-    $testState = [
-      "some_entry" => 'some_content',
-      "with_encoded_json_content" => '{"a":"b"}',
+    $testStatePatch = [
+      [
+        'key' => "some_entry",
+        'content' => 'some_content',
+        'timeStamp' => 1
+      ],
+      [
+        'key' => "with_encoded_json_content",
+        'content' => '{"a":"b"}',
+        'timeStamp' => 2
+      ]
     ];
 
     $expected = [
@@ -59,15 +67,23 @@ class TestDAOTest extends TestCase {
       'with_encoded_json_content' => '{"a":"b"}'
     ];
 
-    $result = $this->dbc->updateTestState(1, $testState);
+    $result = $this->dbc->updateTestState(1, $testStatePatch);
     $this->assertEquals($expected, $result);
 
     $resultFromGet = $this->dbc->getTestState(1);
     $this->assertEquals($result, $resultFromGet);
 
     $updateState = [
-      "some_entry" => 'new_content',
-      "new_entry" => 'anything',
+      [
+        'key' => "some_entry",
+        'content' => 'new_content',
+        'timeStamp' => 3
+      ],
+      [
+        'key' => "new_entry",
+        'content' => 'anything',
+        'timeStamp' => 4
+      ]
     ];
 
     $expectedAfterUpdate = [
@@ -86,8 +102,16 @@ class TestDAOTest extends TestCase {
 
   function test_updateUnitState() {
     $testState = [
-      "some_entry" => 'some_content',
-      "with_encoded_json_content" => '{"a":"b"}',
+      [
+        'key' => "some_entry",
+        'content' => 'some_content',
+        'timeStamp' => 1
+      ],
+      [
+        'key' => "with_encoded_json_content",
+        'content' => '{"a":"b"}',
+        'timeStamp' => 2
+      ]
     ];
 
     $expected = [
@@ -96,15 +120,23 @@ class TestDAOTest extends TestCase {
       'with_encoded_json_content' => '{"a":"b"}'
     ];
 
-    $result = $this->dbc->updateUnitState(1, 'UNIT_1', $testState);
+    $result = $this->dbc->updateUnitState(1, 'UNIT_1', $testState, 'UNIT_1');
     $this->assertEquals($expected, $result);
 
     $resultFromGet = $this->dbc->getUnitState(1, 'UNIT_1');
     $this->assertEquals($result, $resultFromGet);
 
     $updateState = [
-      "some_entry" => 'new_content',
-      "new_entry" => 'anything',
+      [
+        'key' => "some_entry",
+        'content' => 'new_content',
+        'timeStamp' => 3
+      ],
+      [
+        'key' => "new_entry",
+        'content' => 'anything',
+        'timeStamp' => 4
+      ]
     ];
 
     $expectedAfterUpdate = [
@@ -114,11 +146,52 @@ class TestDAOTest extends TestCase {
       "new_entry" => 'anything',
     ];
 
-    $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState);
+    $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
     $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
 
     $resultFromGetAfterUpdate = $this->dbc->getUnitState(1, 'UNIT_1');
     $this->assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
+  }
+
+  function test_updateUnitState_confusedOrder() {
+    $updateState = [
+      [
+        'key' => "my_entry",
+        'content' => 'initial',
+        'timeStamp' => 3
+      ]
+    ];
+    $expectedAfterUpdate = [
+      'my_entry' => 'initial',
+      'SOME_STATE' => 'WHATEVER'
+    ];
+    $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
+    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+
+    $updateState = [
+      [
+        'key' => "my_entry",
+        'content' => 'ignored, because it\'s older than last update',
+        'timeStamp' => 2
+      ]
+    ];
+    $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
+    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+
+
+    $updateState = [
+      [
+        'key' => "my_entry",
+        'content' => 'applied',
+        'timeStamp' => 4
+      ]
+    ];
+    $expectedAfterUpdate = [
+      'my_entry' => 'applied',
+      'SOME_STATE' => 'WHATEVER'
+    ];
+    $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState, 'UNIT_1');
+    $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
   }
 
   function test_getCommands() {

@@ -1,6 +1,23 @@
 ---
 layout: default
 ---
+## [next]
+
+### Bugfix
+* Units konnten unter bestimmten Extrembedingungen doppelt angelegt werden, was zu doppelten Zeilen in den Ergebnisdaten
+  führte.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+
+### :warning: Hinweis für Administratoren
+* Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen, erst 
+  sämtliche Studien zu beenden und die Daten zu löschen bevor geupdatet wird.
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
+
+
 ## 16.0.0
 ### Kubernetes
 * Die Helm Chart für das Deployment des Testcenters hat die Version 1.0.0 erreicht und stellt damit eine erste stabile Version des Deployments auf Kubernetes dar.
@@ -55,6 +72,9 @@ layout: default
 
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
 
 ## 16.0.0-alpha
 ### Kubernetes
