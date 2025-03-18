@@ -71,7 +71,7 @@ get_new_release_version() {
     printf "\n"
   fi
 
-  while read -p '# Name the desired version: ' -er -i "${latest_release}" TARGET_VERSION; do  # @TODO: add numbering after release of 16.0.0
+  while read -p '1. Name the desired version: ' -er -i "${latest_release}" TARGET_VERSION; do
     if ! check_version_tag_exists "${TARGET_VERSION}"; then
       printf "This version tag does not exist.\n"
     else
@@ -83,7 +83,7 @@ get_new_release_version() {
 }
 
 create_app_dir_backup() {
-  printf "# Application directory backup creation\n" # @TODO: add numbering after release of 16.0.0
+  printf "2. Application directory backup creation\n"
   # Save installation directory
   mkdir -p "${APP_DIR}/backup/release/${SOURCE_VERSION}"
   tar -cf - --exclude='./backup' --exclude='acme.json' . | tar -xf - -C "${APP_DIR}/backup/release/${SOURCE_VERSION}"
@@ -117,12 +117,12 @@ validate_source_and_target_release_tag() {
   return 0
 }
 
-run_complimentary_migration_scripts() {
-  printf "# Complimentary migration scripts check\n" # @TODO: add numbering after release of 16.0.0
+run_complementary_migration_scripts() {
+  printf "3. Complementary migration scripts check\n"
 
   if ! validate_source_and_target_release_tag; then
-    printf "  The existence of possible complimentary migration scripts could not be determined.\n"
-    printf "Complimentary migration scripts check done.\n\n"
+    printf "  The existence of possible complemenary migration scripts could not be determined.\n"
+    printf "Complementary migration scripts check done.\n\n"
 
     return
   fi
@@ -159,7 +159,7 @@ run_complimentary_migration_scripts() {
   fi
 
   if [ -z "${release_tags}" ]; then
-    printf -- "- No complimentary migration scripts to execute.\n"
+    printf -- "- No complementary migration scripts to execute.\n"
 
   else
     declare release_tag
@@ -174,11 +174,11 @@ run_complimentary_migration_scripts() {
     done
 
     if [ ${#migration_scripts[@]} -eq 0 ]; then
-      printf -- "- No complimentary migration scripts to execute.\n"
+      printf -- "- No complementary migration scripts to execute.\n"
 
     else
-      printf -- "- Complimentary Migration script(s) available.\n\n"
-      printf "Complimentary Migration script download\n"  # @TODO: restore numbering
+      printf -- "- Complementary Migration script(s) available.\n\n"
+      printf "3.1 Complementary Migration script download\n"
       mkdir -p "${APP_DIR}/scripts/migration"
       declare migration_script
       for migration_script in "${migration_scripts[@]}"; do
@@ -186,7 +186,7 @@ run_complimentary_migration_scripts() {
         chmod +x "${APP_DIR}/scripts/migration/${migration_script}"
       done
 
-      printf "\nComplimentary Migration script execution\n" # @TODO: restore numbering
+      printf "\n3.2 Complementary Migration script execution\n"
       printf "  The following migration scripts will be executed for the migration from version %s to version %s:\n" \
         "${SOURCE_VERSION}" "${TARGET_VERSION}"
       for migration_script in "${migration_scripts[@]}"; do
@@ -205,7 +205,7 @@ run_complimentary_migration_scripts() {
         printf "  To do this, change to directory './scripts/migration' and execute the above scripts in ascending "
         printf "order!\n\n"
 
-        printf "Complimentary migration scripts check done.\n\n"
+        printf "Complementary migration scripts check done.\n\n"
 
         printf "Since the migration scripts have not been executed, "
         printf "it is not recommended to proceed with the update procedure.\n"
@@ -263,7 +263,7 @@ run_complimentary_migration_scripts() {
 
   fi
 
-  printf "Complimentary migration scripts check done.\n\n"
+  printf "Complementary migration scripts check done.\n\n"
 }
 
 load_docker_environment_variables() {
@@ -402,7 +402,7 @@ export_backend_volume() {
 }
 
 create_data_backup() {
-  printf "# Data backup creation\n" # @TODO: add numbering after release of 16.0.0
+  printf "4. Data backup creation\n"
 
   declare backup
   read -p "  Do you want to create a data backup? [Y/n] " -er -n 1 backup
@@ -423,7 +423,7 @@ create_data_backup() {
 }
 
 run_update_script_in_selected_version() {
-  printf "# Update script modification check\n" # @TODO: add numbering after release of 16.0.0
+  printf "5. Update script modification check\n"
 
   declare current_update_script="${APP_DIR}/backup/release/${SOURCE_VERSION}/scripts/update_${APP_NAME}.sh"
   declare new_update_script="${REPO_URL}/${TARGET_VERSION}/scripts/update.sh"
@@ -497,7 +497,7 @@ download_file() {
 }
 
 update_files() {
-  printf "# File download\n" # @TODO: add numbering after release of 16.0.0
+  printf "6. File download\n"
 
   download_file docker-compose.yml docker-compose.yml
   download_file docker-compose.prod.yml docker-compose.prod.yml
@@ -587,7 +587,7 @@ get_modified_file() {
 }
 
 check_environment_file_modifications() {
-  printf "# Environment template file modification check\n" # @TODO: add numbering after release of 16.0.0
+  printf "7. Environment template file modification check\n"
 
   get_modified_file ".env.prod-template" ".env.prod-template" "env-file"
 
@@ -595,7 +595,7 @@ check_environment_file_modifications() {
 }
 
 check_config_files_modifications() {
-  printf "# Configuration template files modification check\n" # @TODO: add numbering after release of 16.0.0
+  printf "8. Configuration template files modification check\n"
 
   get_modified_file config/traefik/tls-acme.yml config/traefik/tls-acme.yml "conf-file"
   get_modified_file config/traefik/tls-certificates.yml config/traefik/tls-certificates.yml "conf-file"
@@ -625,7 +625,7 @@ customize_settings() {
 }
 
 finalize_update() {
-  printf "# Summary\n" # @TODO: add numbering after release of 16.0.0
+  printf "9. Summary\n"
   if ${HAS_ENV_FILE_UPDATE} || ${HAS_CONFIG_FILE_UPDATE} || ${HAS_MIGRATION_FILES}; then
     if ${HAS_ENV_FILE_UPDATE} && ${HAS_CONFIG_FILE_UPDATE}; then
       printf -- '- Version, environment, and configuration update applied!\n\n'
@@ -764,7 +764,7 @@ main() {
         load_docker_environment_variables
         get_new_release_version
         create_app_dir_backup
-        run_complimentary_migration_scripts
+        run_complementary_migration_scripts
         create_data_backup
         run_update_script_in_selected_version
         prepare_installation_dir
@@ -799,7 +799,6 @@ main() {
     prepare_installation_dir
     update_files
     check_environment_file_modifications
-    run_complimentary_migration_scripts        # @TODO: Remove this line in the version following the major version ! ! !
     check_config_files_modifications
     customize_settings
     finalize_update
