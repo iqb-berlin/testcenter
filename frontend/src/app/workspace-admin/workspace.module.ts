@@ -58,7 +58,8 @@ import {
     SharedModule,
     MatCardModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   exports: [
     WorkspaceComponent
