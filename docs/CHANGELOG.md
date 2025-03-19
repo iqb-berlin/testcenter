@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* Testleiterkonsole ist beim ersten Aufruf immer nach der Spalte "Teilnehmer" 
+
 ## 16.0.0
 ### Kubernetes
 * Die Helm Chart für das Deployment des Testcenters hat die Version 1.0.0 erreicht und stellt damit eine erste stabile Version des Deployments auf Kubernetes dar.

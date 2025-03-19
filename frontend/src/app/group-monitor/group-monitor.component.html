@@ -262,7 +262,7 @@
         </div>
 
         <div class="test-session-table-wrapper">
-          <table class="test-session-table" matSort (matSortChange)="setTableSorting($event)">
+          <table class="test-session-table" matSort matSortActive="personLabel" matSortDirection="asc" (matSortChange)="setTableSorting($event)">
             <thead>
               <tr class="mat-sort-container">
                 <td mat-sort-header="_checked" *ngIf="displayOptions.manualChecking">
