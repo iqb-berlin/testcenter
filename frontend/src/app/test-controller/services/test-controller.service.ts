@@ -2,7 +2,18 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, forkJoin, from, interval, lastValueFrom, merge, Observable, of, Subject, Subscription, timer
+  BehaviorSubject,
+  forkJoin,
+  from,
+  fromEvent,
+  interval,
+  lastValueFrom,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription, tap,
+  timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -448,7 +459,9 @@ export class TestControllerService {
     }
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
-    this.timerIntervalSubscription = interval(1000)
+
+    let timeTicker$ = this.createTicker();
+    this.timerIntervalSubscription = timeTicker$
       .pipe(
         takeUntil(
           timer(timeLeftMinutes * 60 * 1000)
@@ -488,6 +501,47 @@ export class TestControllerService {
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.INTERRUPTED));
     }
     this.finishTimer();
+  }
+
+  // TODO import the webworker from a seperate file. At time of implementing, some SCP problems occured
+  private createTicker(): Observable<number> {
+    if (typeof Worker !== 'undefined') {
+      const workerCode = `
+        let timer;
+        let secondsPassed = 0;
+        self.onmessage = function(message) {
+          switch (message.data) {
+            case 'on':
+              postMessage(secondsPassed++);
+              timer = setInterval(() => postMessage(secondsPassed++), 1000);
+              console.log('timeTicker from webworker used');
+              break;
+            case 'off':
+              clearInterval(timer);
+          }
+        };  
+      `;
+      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      const workerTimer = new Worker(URL.createObjectURL(blob));
+      return new Observable(subscriber => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const eventHandler = (event) => {
+          subscriber.next(event.data);
+        };
+
+        workerTimer.addEventListener('message', eventHandler);
+        workerTimer.postMessage('on');
+
+        return function unsubscribe () {
+          workerTimer.postMessage('off');
+          workerTimer.removeEventListener('message', eventHandler);
+        };
+      });
+    } else {
+      return interval(1000);
+    }
+
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
