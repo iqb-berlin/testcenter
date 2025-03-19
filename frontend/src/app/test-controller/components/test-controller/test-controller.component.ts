@@ -123,6 +123,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  reload() {
+    window.location.reload();
+  }
+
   private startAppFocusLogging() {
     if (!this.tcs.testMode.saveResponses) {
       return;
