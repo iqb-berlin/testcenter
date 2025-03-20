@@ -4,7 +4,7 @@ const Dredd = require('dredd');
 const gulp = require('gulp');
 const redis = require('redis');
 const YAML = require('yamljs');
-const request = require('request');
+const axios = require('axios');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
 const testConfig = require('../config.json');
@@ -12,22 +12,28 @@ const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
-const getStatus = statusRequest => new Promise(resolve => {
+const getStatus = async statusRequest => {
   const startTime = Date.now();
-  request(statusRequest, (error, response, body) => {
-    if (error) {
-      console.log(`ConfirmTestConfig: The StatusRequest errored after ${Date.now() - startTime}ms`);
-      console.log('Requested status results in error: ', error);
-      console.log('Requested status: ', statusRequest);
-      console.log('Body of errored request: ', body);
-      resolve(error);
-    } else {
-      console.log(`ConfirmTestConfig: The StatusRequest got a response back after ${Date.now() - startTime}ms`);
-      resolve(response);
-    }
+  try {
+    const response = await axios.get(statusRequest.url, {
+      headers: statusRequest.headers,
+      timeout: statusRequest.timeout
+    });
+    console.log(`ConfirmTestConfig: The StatusRequest got a response back after ${Date.now() - startTime}ms`);
+    return {
+      body: response.data,
+      statusCode: response.status
+    };
+  } catch (error) {
+    console.log(`ConfirmTestConfig: The StatusRequest errored after ${Date.now() - startTime}ms`);
+    console.log('Requested status results in error: ', error);
+    console.log('Requested status: ', statusRequest);
+    return {
+      body: error,
+      statusCode: -1
+    };
   }
-  );
-});
+};
 
 const sleep = ms => new Promise(resolve => {
   setTimeout(resolve, ms);
@@ -58,6 +64,7 @@ const confirmTestConfig = (serviceUrl, statusRequest) => (async done => {
       // eslint-disable-next-line no-await-in-loop
       await sleep(5000);
     } catch (e) {
+      // eslint-disable-next-line no-await-in-loop
       await sleep(5000);
     }
   }
@@ -153,13 +160,24 @@ const prepareSpecsForDredd = done => {
 const runDredd = serviceUrl => (async done => {
   cliPrint.headline(`Run API-test against ${serviceUrl}`);
   new Dredd({
-    endpoint: serviceUrl,
-    path: [`${tmpDir}/transformed.specs.*.yml`],
-    hookfiles: ['hooks.js'],
-    output: [`${tmpDir}/report.html`], // TODO do something with it
-    reporter: ['html'],
-    names: false, // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
-    'inline-errors': true
+    endpoint: serviceUrl, // your URL to API endpoint the tests will run against
+    path: [`${tmpDir}/transformed.specs.*.yml`], // Required Array if Strings; filepaths to API description documents, can use glob wildcards
+    'dry-run': false, // Boolean, do not run any real HTTP transaction
+    names: false, // Boolean, Print Transaction names and finish, similar to dry-run
+    loglevel: 'warning', // String, logging level (debug, warning, error, silent)
+    only: [], // Array of Strings, run only transaction that match these names
+    header: [], // Array of Strings, these strings are then added as headers (key:value) to every transaction
+    user: null, // String, Basic Auth credentials in the form username:password
+    hookfiles: ['hooks.js'], // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
+    reporter: ['html'], // Array of possible reporters, see folder lib/reporters
+    output: [`${tmpDir}/report.html`], // Array of Strings, filepaths to files used for output of file-based reporters
+    'inline-errors': true, // Boolean, If failures/errors are display immediately in Dredd run
+    require: null, // String, When using nodejs hooks, require the given module before executing hooks
+    'hooks-worker-after-connect-wait': '1000',
+    'hooks-worker-connect-timeout': '1500',
+    color: false
+    // emitter: new EventEmitter(), // listen to test progress, your own instance of EventEmitter
+    // apiDescriptions: ['FORMAT: 1A\n# Sample API\n']
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
@@ -187,7 +205,7 @@ exports.runDreddTest = gulp.series(
       headers: {
         TestMode: 'prepare'
       },
-      timeout: 1000 * 60 * 5 // 5 minutes
+      timeout: 300000 // 5 minutes
     }
   ),
   clearTmpDir,
@@ -201,7 +219,7 @@ exports.runDreddTestFs = gulp.series(
     testConfig.file_service_url,
     {
       url: `${testConfig.file_service_url}/health`,
-      timeout: 1000 * 60 * 5 // 5 minutes
+      timeout: 300000 // 5 minutes
     }
   ),
   clearTmpDir,
