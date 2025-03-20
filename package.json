@@ -91,6 +91,7 @@
     "kind-of": ">=6.0.3",
     "minimist": ">=0.2.1",
     "multi-part": "^3.0.0",
+    "node-fetch": "^2.7.0",
     "redis": "^4.6.11",
     "stream-to-string": "^1.2.0",
     "typescript": "~5.1.6",
