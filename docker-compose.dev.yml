@@ -24,7 +24,7 @@ services:
   testcenter-broadcasting-service:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
     build:
@@ -40,7 +40,7 @@ services:
   testcenter-frontend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.testcenter-frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
       - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
@@ -62,7 +62,7 @@ services:
   testcenter-file-service:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
+      - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
       - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
     build:
@@ -84,7 +84,7 @@ services:
   testcenter-backend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.testcenter-backend.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
     build:
