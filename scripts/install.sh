@@ -194,42 +194,42 @@ customize_settings() {
   # Setup environment variables
   printf "5. Set Environment variables (default passwords are generated randomly):\n"
 
-  sed -i.bak "s|VERSION.*|VERSION=$TARGET_TAG|" .env.prod && rm .env.prod.bak
+  sed -i.bak "s|^VERSION=.*|VERSION=$TARGET_TAG|" .env.prod && rm .env.prod.bak
 
   declare env_var_name
   for env_var_name in "${ENV_VAR_ORDER[@]}"; do
     declare env_var_value
-    read -p "$env_var_name: " -er -i "${ENV_VARS[$env_var_name]}" env_var_value
-    sed -i.bak "s|$env_var_name.*|$env_var_name=$env_var_value|" .env.prod && rm .env.prod.bak
+    read -p "${env_var_name}: " -er -i "${ENV_VARS[${env_var_name}]}" env_var_value
+    sed -i.bak "s|^${env_var_name}=.*|${env_var_name}=${env_var_value}|" .env.prod && rm .env.prod.bak
   done
 
   read -p 'Use TLS? [Y/n]: ' -r -n 1 -e TLS
-  if [[ ! $TLS =~ ^[yY]$ ]]; then
-    sed -i.bak 's|TLS_ENABLED=true|TLS_ENABLED=false|' .env.prod && rm .env.prod.bak
+  if [[ $TLS =~ ^[nN]$ ]]; then
+    sed -i.bak 's|^TLS_ENABLED=true|TLS_ENABLED=false|' .env.prod && rm .env.prod.bak
   fi
 
   read -p "Use an ACME-Provider for TLS, like 'Let's encrypt' or 'Sectigo'? [Y/n]: " -r -n 1 -e TLS
-  if [[ ! $TLS =~ ^[nN]$ ]]; then
-    sed -i.bak "s|TLS_CERTIFICATE_RESOLVER.*|TLS_CERTIFICATE_RESOLVER=acme|" .env.prod && rm .env.prod.bak
+  if [[ $TLS =~ ^[nN]$ ]]; then
+    sed -i.bak "s|^TLS_CERTIFICATE_RESOLVER=.*|TLS_CERTIFICATE_RESOLVER=|" .env.prod && rm .env.prod.bak
+  else
+    sed -i.bak "s|^TLS_CERTIFICATE_RESOLVER=.*|TLS_CERTIFICATE_RESOLVER=acme|" .env.prod && rm .env.prod.bak
 
     read -p "TLS_ACME_CA_SERVER: " -er -i "${TLS_ACME_CA_SERVER}" TLS_ACME_CA_SERVER
-    sed -i.bak "s|TLS_ACME_CA_SERVER.*|TLS_ACME_CA_SERVER=${TLS_ACME_CA_SERVER}|" .env.prod && rm .env.prod.bak
+    sed -i.bak "s|^TLS_ACME_CA_SERVER=.*|TLS_ACME_CA_SERVER=${TLS_ACME_CA_SERVER}|" .env.prod && rm .env.prod.bak
 
     read -p "TLS_ACME_EAB_KID: " -er -i "${TLS_ACME_EAB_KID}" TLS_ACME_EAB_KID
-    sed -i.bak "s|TLS_ACME_EAB_KID.*|TLS_ACME_EAB_KID=${TLS_ACME_EAB_KID}|" .env.prod && rm .env.prod.bak
+    sed -i.bak "s|^TLS_ACME_EAB_KID=.*|TLS_ACME_EAB_KID=${TLS_ACME_EAB_KID}|" .env.prod && rm .env.prod.bak
 
     read -p "TLS_ACME_EAB_HMAC_ENCODED: " -er -i "${TLS_ACME_EAB_HMAC_ENCODED}" TLS_ACME_EAB_HMAC_ENCODED
-    sed -i.bak "s|TLS_ACME_EAB_HMAC_ENCODED.*|TLS_ACME_EAB_HMAC_ENCODED=${TLS_ACME_EAB_HMAC_ENCODED}|" .env.prod &&
+    sed -i.bak "s|^TLS_ACME_EAB_HMAC_ENCODED=.*|TLS_ACME_EAB_HMAC_ENCODED=${TLS_ACME_EAB_HMAC_ENCODED}|" .env.prod &&
       rm .env.prod.bak
 
     read -p "TLS_ACME_EMAIL: " -er -i "${TLS_ACME_EMAIL}" TLS_ACME_EMAIL
-    sed -i.bak "s|TLS_ACME_EMAIL.*|TLS_ACME_EMAIL=${TLS_ACME_EMAIL}|" .env.prod && rm .env.prod.bak
-  else
-    sed -i.bak "s|TLS_CERTIFICATE_RESOLVER.*|TLS_CERTIFICATE_RESOLVER=|" .env.prod && rm .env.prod.bak
+    sed -i.bak "s|^TLS_ACME_EMAIL=.*|TLS_ACME_EMAIL=${TLS_ACME_EMAIL}|" .env.prod && rm .env.prod.bak
   fi
 
   # Setup makefiles
-  sed -i.bak "s|TC_BASE_DIR :=.*|TC_BASE_DIR := \\$TARGET_DIR|" scripts/make/${APP_NAME}.mk &&
+  sed -i.bak "s|^TC_BASE_DIR :=.*|TC_BASE_DIR := \\$TARGET_DIR|" scripts/make/${APP_NAME}.mk &&
     rm scripts/make/${APP_NAME}.mk.bak
   sed -i.bak "s|scripts/update.sh|scripts/update_${APP_NAME}.sh|" scripts/make/${APP_NAME}.mk &&
     rm scripts/make/${APP_NAME}.mk.bak

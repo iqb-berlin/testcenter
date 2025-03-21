@@ -44,7 +44,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
       - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
@@ -56,7 +56,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
       - "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
       - "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
-      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.testcenter-frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
       - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
@@ -67,7 +67,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-file-service.tls=true"
       - "traefik.http.routers.testcenter-file-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-file-service.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
+      - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
       - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
       - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
@@ -77,7 +77,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.tls=true"
       - "traefik.http.routers.testcenter-backend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.testcenter-backend.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
