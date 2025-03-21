@@ -115,7 +115,8 @@ export class TestSessionService {
     return Object.values(this.testSessions)
       .reduce(
         // eslint-disable-next-line max-len
-        (allTestSessions: TestSessionChange[], groupTestSessions: { [g: string]: TestSessionChange }): TestSessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)), []
+        (allTestSessions: TestSessionChange[], groupTestSessions: { [g: string]: TestSessionChange }): TestSessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)),
+        []
       );
   }
 

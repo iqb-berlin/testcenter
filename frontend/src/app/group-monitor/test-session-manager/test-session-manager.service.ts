@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip
+  BehaviorSubject, combineLatest, interval, Observable, of, Subject, Subscription, zip
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
@@ -87,6 +87,7 @@ export class TestSessionManager {
   private _sessionsStats$: BehaviorSubject<TestSessionSetStat>;
   private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
+  private monitorSubscription: Subscription | null = null;
 
   constructor(
     private bs: BackendService,
@@ -147,7 +148,10 @@ export class TestSessionManager {
       .pipe(
         switchMap(sessionChanges => zip(
           ...sessionChanges
-            .map(sessionChange => combineLatest([this.bookletService.getBooklet(sessionChange.bookletName), this._clock$])
+            .map(sessionChange => combineLatest([
+              this.bookletService.getBooklet(sessionChange.bookletName),
+              this._clock$
+            ])
               .pipe(
                 map(([booklet]) => TestSessionUtil.analyzeTestSession(sessionChange, booklet))
               )
@@ -157,7 +161,7 @@ export class TestSessionManager {
 
     this._sessions$.next([]);
 
-    combineLatest([this.sortBy$, this.filters$, this.monitor$])
+    this.monitorSubscription = combineLatest([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
         // eslint-disable-next-line max-len
         map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, TestSessionManager.filterSessions(sessions, filters))),
@@ -168,6 +172,7 @@ export class TestSessionManager {
 
   disconnect(): void {
     this.groupName = '';
+    this.monitorSubscription?.unsubscribe();
     this.bs.cutConnection();
   }
 
