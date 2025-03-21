@@ -109,7 +109,7 @@ Funktioniert auch nicht? Dann...
 |gm_control_pause|Control: pause|pause|
 |gm_control_resume|Control: weiter|weiter|
 |gm_control_unlock|Control: Entsperren|Test Entsperren|
-|gm_control_unlock_success_warning|Wird angezeigt, wenn Tests entsperrt wurden|ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden.|
+|gm_control_unlock_success_warning|Wird angezeigt, wenn Tests entsperrt wurden|ACHTUNG! Die betreffenden Browser und diese Testleiterkonsole müssen ggf. neu gestartet werden.|
 |gm_control_unlock_tooltip|Tooltip: Freigeben|Test Freigeben|
 |gm_controls|Überschrift: Test-Steuerung|Test-Steuerung|
 |gm_filter_locked|Filter: gesperrte ausblenden|gesperrte|
