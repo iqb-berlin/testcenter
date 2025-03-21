@@ -2,6 +2,7 @@
   "name": "iqb-testcenter",
   "version": "16.0.0",
   "iqb": {
+    "testcommit": true,
     "release-channels": {
       "lts": "15.6",
       "stable": "16.0"
