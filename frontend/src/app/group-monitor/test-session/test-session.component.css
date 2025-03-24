@@ -215,6 +215,10 @@ h2 {
   font-weight: bold
 }
 
+.unit-badge {
+  margin-left: 0.2em;
+}
+
 .unit-badge.danger {
   color: #821123;
 }
