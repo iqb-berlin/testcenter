@@ -50,9 +50,8 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
     this.setUpGlobalCommandsForDebug();
 
-    // as services don't have a OnInit Hook (see: https://v9.angular.io/api/core/OnInit) we subscribe here
-    this.subscribeReceivedCommands();
-    this.subscribeTestStarted();
+    this.commandSubscription = this.subscribeReceivedCommands();
+    this.testStartedSubscription = this.subscribeTestStarted();
   }
 
   static commandToString(command: Command): string {
@@ -81,8 +80,8 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     }
   }
 
-  private subscribeReceivedCommands() {
-    this.commandSubscription = this.commandReceived$
+  private subscribeReceivedCommands(): Subscription {
+    return this.commandReceived$
       .pipe(
         filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
         // min delay between items
@@ -97,12 +96,12 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       ).subscribe(command => this.command$.next(command));
   }
 
-  private subscribeTestStarted() {
+  private subscribeTestStarted(): Subscription {
     if (typeof this.testStartedSubscription !== 'undefined') {
       this.testStartedSubscription?.unsubscribe();
     }
 
-    this.testStartedSubscription = this.tcs.state$
+    return this.tcs.state$
       .pipe(
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),

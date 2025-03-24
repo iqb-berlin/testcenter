@@ -37,12 +37,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected observeEndpointAndChannel(): Observable<T> {
     if (!this.data$) {
       this.data$ = new BehaviorSubject<T>(this.initialData);
-      this.pollNext();
+      this.pollEndpointAndSubscribeWs();
     }
     return this.data$;
   }
 
-  private pollNext(): void {
+  private pollEndpointAndSubscribeWs(): void {
     this.connectionClosed = false;
 
     this.unsubscribeFromWebsocket();
@@ -71,7 +71,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
   cutConnection(): void {
     this.unsubscribeFromWebsocket();
-    this.closeConnection();
+    this.completeConnection();
 
     if (this.pollingTimeoutId) {
       clearTimeout(this.pollingTimeoutId);
@@ -88,7 +88,9 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
     this.pollingTimeoutId = window.setTimeout(
       () => {
-        if (!this.connectionClosed) { this.pollNext(); }
+        if (!this.connectionClosed) {
+          this.pollEndpointAndSubscribeWs();
+        }
       },
       this.pollingInterval
     );
