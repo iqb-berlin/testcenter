@@ -277,7 +277,7 @@
   },
   "gm_control_unlock_success_warning" : {
     "label" : "Wird angezeigt, wenn Tests entsperrt wurden",
-    "defaultvalue" : "ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden."
+    "defaultvalue" : "ACHTUNG! Die betreffenden Browser und diese Testleiterkonsole müssen ggf. neu gestartet werden."
   },
   "gm_control_finish_everything" : {
     "label" : "Control: Testung beenden",
