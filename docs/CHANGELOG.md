@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 16.0.1
 ### Verbesserungen
 * Testleiterkonsole ist beim ersten Aufruf immer nach der Spalte "Teilnehmer".
 * Der ablaufende Timer wird nun mit einem Webworker im Browser umgesetzt. Sollte eine Testperson eine längere Zeit nicht den Fokus auf dem Testcenter-Tab haben, so läuft die Zeit nun unbeirrt weiter.
