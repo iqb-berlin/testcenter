@@ -41,22 +41,33 @@ export class WebsocketService {
           next: () => {
           },
           error: () => {
-            this.wsConnected$.next('disconnected');
+            this.errorConnection();
           },
           complete: () => {
-            this.closeConnection();
+            this.completeConnection();
           }
         });
     }
   }
 
-  protected closeConnection(): void {
+  protected completeConnection(): void {
     this.wsConnected$.next('disconnected');
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
     }
     if (this.wsSubject$) {
       this.wsSubject$.complete();
+      this.wsSubject$ = null;
+    }
+  }
+
+  protected errorConnection(): void {
+    this.wsConnected$.next('disconnected');
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    if (this.wsSubject$) {
+      this.wsSubject$.error('An error occured. The websocket connection will be closed.');
       this.wsSubject$ = null;
     }
   }
