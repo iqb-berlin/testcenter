@@ -20,7 +20,7 @@ describe('WebsocketService', () => {
     // TODO implement unit.test
   });
 
-  xit('closeConnection() should close connection', () => {
+  xit('completeConnection() should close connection', () => {
     // TODO implement unit.test
   });
 
