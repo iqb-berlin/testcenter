@@ -6,6 +6,7 @@ layout: default
 * Testleiterkonsole ist beim ersten Aufruf immer nach der Spalte "Teilnehmer" 
 * Der ablaufende Timer wird nun mit einem Webworker im Browser umgesetzt. Sollte eine Testperson eine längere Zeit nicht den Fokus auf dem Testcenter-Tab haben, so läuft die Zeit nun unbeirrt weiter.
 * Adminbereich: Die Gruppen im Tab "Ergebniss/Antworten" zeigen die einzigartige ID als Tooltip an, hilfreich wenn es das selbe Label mehrmals gibt
+* Testleiterkonsole: Das Blocklabel zeigt nun die BlockId mit 'Block 1' an, statt nur '1' (wenn kein Label für den Block gesetzt wurde)
 
 ## 16.0.0
 ### Kubernetes

@@ -45,7 +45,11 @@
 
 <td class="block" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-    {{current.parent.label || current.parent.blockId || current.parent.id}}
+    {{
+      current.parent.label ||
+      (current.parent.blockId ? ('Block' | customtext:'gm_col_blockLabel' | async)! + ' ' + current.parent.blockId : '') ||
+      current.parent.id
+    }}
     <mat-icon
       class="unit-badge"
       *ngIf="testSession | timeleft : current.parent as timeLeft"
