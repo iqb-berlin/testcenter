@@ -7,10 +7,10 @@
   <p>
     Die maximale Zeit Ihrer aktuellen Auswahl beträgt: {{ dialogData.remainingTime }} Minute(n)
   </p>
-  <input matInput type="number" (keydown)="false" id="setTimer" min="1"  [max]="dialogData.remainingTime" [formControl]="setTime"> <span> Minute(n)</span>
+  <input matInput type="number" id="setTimer" required min="1"  [max]="dialogData.remainingTime" [formControl]="setTime"> <span> Minute(n)</span>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" [mat-dialog-close]="setTime.value">{{ dialogData.confirmbuttonlabel }}</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="returnValue()">{{ dialogData.confirmbuttonlabel }}</button>
   <button mat-raised-button [mat-dialog-close]="false">{{ dialogData.cancelbuttonlabel }}</button>
 </mat-dialog-actions>

@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 
 export interface TimeRestrictionDialogData {
   title: string;
@@ -18,9 +18,11 @@ export interface TimeRestrictionDialogData {
 })
 export class TimeRestrictionDialogComponent implements OnInit {
   showcancel: boolean = true;
-  setTime = new FormControl(this.dialogData.remainingTime);
+  setTime = new FormControl(this.dialogData.remainingTime, [Validators.max(this.dialogData.remainingTime)]);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public dialogData: TimeRestrictionDialogData) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public dialogData: TimeRestrictionDialogData) {
+    console.log(dialogData.remainingTime)
+  }
 
   ngOnInit() {
     if ((typeof this.dialogData.title === 'undefined') || (this.dialogData.title.length === 0)) {
@@ -41,5 +43,12 @@ export class TimeRestrictionDialogComponent implements OnInit {
     ) {
       this.dialogData.cancelbuttonlabel = 'Abbrechen';
     }
+  }
+
+  returnValue(): boolean | number {
+    if (this.setTime.valid) {
+      return this.setTime.value!;
+    }
+    return false;
   }
 }
