@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.0.2/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>This file contains some logins for testing and works a sample for developers.</Description>
+  </Metadata>
+
+  <CustomTexts>
+    <CustomText key="somestr">string</CustomText>
+  </CustomTexts>
+
+  <Group id="my_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
+
+    <Login mode="run-hot-return" name="test" pw="user123">
+      <Booklet>booklet_L_adap</Booklet>
+    </Login>
+
+  </Group>
+</Testtakers>

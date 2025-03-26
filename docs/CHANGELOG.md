@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 16.0.2
 ### Bugfixes
 * Testleitungskonsole: Dialog für das Festlegene einer neuen Restzeit für einen zeitgesteuerten Block erlaubt jetzt die manuelle Eingabe, damit die Funktion auf allen Geräten genutzt werden kann. Eine nicht valide Zahl (kleiner als 0, größer als Maximalzeit, keine Zahl) resultiert in keinem Sprung.
 * Content Security Policy (CSP) wurde angepasst, um die Verwendung des Webworkers auf allen Browsern zu ermöglichen.
