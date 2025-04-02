@@ -153,13 +153,22 @@ const prepareSpecsForDredd = done => {
 const runDredd = serviceUrl => (async done => {
   cliPrint.headline(`Run API-test against ${serviceUrl}`);
   new Dredd({
-    endpoint: serviceUrl,
-    path: [`${tmpDir}/transformed.specs.*.yml`],
-    hookfiles: ['hooks.js'],
-    output: [`${tmpDir}/report.html`], // TODO do something with it
-    reporter: ['html'],
-    names: false, // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
-    'inline-errors': true
+    endpoint: serviceUrl, // your URL to API endpoint the tests will run against
+    path: [`${tmpDir}/transformed.specs.*.yml`], // Required Array if Strings; filepaths to API description documents, can use glob wildcards
+    'dry-run': false, // Boolean, do not run any real HTTP transaction
+    names: false, // Boolean, Print Transaction names and finish, similar to dry-run
+    loglevel: 'debug', // String, logging level (debug, warning, error, silent)
+    only: [], // Array of Strings, run only transaction that match these names
+    header: [], // Array of Strings, these strings are then added as headers (key:value) to every transaction
+    user: null, // String, Basic Auth credentials in the form username:password
+    hookfiles: ['hooks.js'], // Array of Strings, filepaths to files containing hooks (can use glob wildcards)
+    reporter: ['html'], // Array of possible reporters, see folder lib/reporters
+    output: [`${tmpDir}/report.html`], // Array of Strings, filepaths to files used for output of file-based reporters
+    'inline-errors': true, // Boolean, If failures/errors are display immediately in Dredd run
+    require: null, // String, When using nodejs hooks, require the given module before executing hooks
+    // color: false
+    // emitter: new EventEmitter(), // listen to test progress, your own instance of EventEmitter
+    // apiDescriptions: ['FORMAT: 1A\n# Sample API\n']
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
@@ -181,15 +190,15 @@ const insertGroupTokenToCacheService = async () => {
 };
 
 exports.runDreddTest = gulp.series(
-  confirmTestConfig(
-    testConfig.backend_url, {
-      url: `${testConfig.backend_url}/system/config?XDEBUG_SESSION_START=IDEA`,
-      headers: {
-        TestMode: 'prepare'
-      },
-      timeout: 1000 * 60 * 5 // 5 minutes
-    }
-  ),
+  // confirmTestConfig(
+  //   testConfig.backend_url, {
+  //     url: `${testConfig.backend_url}/system/config?XDEBUG_SESSION_START=IDEA`,
+  //     headers: {
+  //       TestMode: 'prepare'
+  //     },
+  //     timeout: 300000 // 5 minutes
+  //   }
+  // ),
   clearTmpDir,
   mergeSpecFiles('api/*.spec.yml'),
   prepareSpecsForDredd,
@@ -197,13 +206,13 @@ exports.runDreddTest = gulp.series(
 );
 
 exports.runDreddTestFs = gulp.series(
-  confirmTestConfig(
-    testConfig.file_service_url,
-    {
-      url: `${testConfig.file_service_url}/health`,
-      timeout: 1000 * 60 * 5 // 5 minutes
-    }
-  ),
+  // confirmTestConfig(
+  //   testConfig.file_service_url,
+  //   {
+  //     url: `${testConfig.file_service_url}/health`,
+  //     timeout: 300000 // 5 minutes
+  //   }
+  // ),
   clearTmpDir,
   mergeSpecFiles('api/file.spec.yml'),
   prepareSpecsForDredd,
