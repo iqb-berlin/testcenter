@@ -125,6 +125,8 @@ class WorkspaceDAO extends DAO {
 
     $this->setSysCheckModeAccordingToTT($logins);
 
+    $this->updateValidUntilInPersonSession();
+
     return count($logins->asArray());
   }
 
@@ -709,5 +711,18 @@ class WorkspaceDAO extends DAO {
     }
 
     return $this->fetchFiles($sql, $replacements);
+  }
+
+  private function updateValidUntilInPersonSession() {
+    $this->_(
+      "
+      update person_sessions ps 
+      join login_sessions ls on ps.login_sessions_id = ls.id
+      join logins l on ls.name = l.name
+      set ps.valid_until = l.valid_to
+      ",
+      [],
+      true
+    );
   }
 }
