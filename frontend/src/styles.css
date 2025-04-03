@@ -28,10 +28,9 @@ body {
 
 .root-body {
   overflow-x: auto;
-  position: absolute;
-  width: 100%;
+  position: relative;
   top: 20px;
-  bottom: 0;
+  height: calc(100dvh - 20px);
 }
 
 .spinner {
