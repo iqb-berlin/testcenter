@@ -2,8 +2,13 @@
 layout: default
 ---
 ## [next]
+### neue Features
+* Beim (Neu-)Laden des Testcenters wird ein Banner angezeigt, der auf veraltete Versionen hinweist. Dieser soll die Testleitung im Fehlerfall bei der Kommunikation des Fehlers unterstützen.
+
 ### Verbesserung
 * Testleitungskonsole: Die Testhefte werden sind nun in einem Akkordion-Element positioniert und können nach einem extra Klick angezeigt werden. Das räumt visuell das Starter-Menü auf und rückt den Fokus auf die eigentliche Funktionalität der Testleitungkonsole zurück.
+* Links zu externen Seiten wurden gelöscht, um das Navigieren auf fremde Seiten zu vermeiden, während man sich in der PWA befindet.
+* Der API Call 'system-config' zeigt nun auch die Liste der unterstützten Browser an. Diese Information kann von Konsumenten genutzt werden, um ihre eigene Logik für veraltete Browser darzustellen.
 
 ### Bugfix
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
@@ -16,9 +21,7 @@ layout: default
   * `gm_show_monitor` -> Titel für Monitorfunktion
   * `gm_show_test` -> Titel für Testüberprüfung
   * `login_subtitle` -> Titel für Starter-Seite
-
-## Verbesserungen
-* Links zu externen Seiten wurden gelöscht, um das Navigieren auf fremde Seiten zu vermeiden, während man sich in der PWA befindet.
+  * `login_unsupportedBrowserBanner` -> Inhalt für den Browser-Banner
 
 ## 16.0.2
 ### Bugfixes
