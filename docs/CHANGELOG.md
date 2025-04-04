@@ -2,6 +2,16 @@
 layout: default
 ---
 ## [next]
+### neue Features
+* Beim (Neu-)Laden des Testcenters wird ein Banner angezeigt, der auf veraltete Versionen hinweist. Dieser soll die Testleitung im Fehlerfall bei der Kommunikation des Fehlers unterstützen.
+
+### Verbesserungen
+* Der API Call 'system-config' zeigt nun auch die Liste der unterstützten Browser an. Diese Information kann von Konsumenten genutzt werden, um ihre eigene Logik für veraltete Browser darzustellen.
+
+### Custom Texts
+* neue Felder
+  * `login_unsupportedBrowserBanner` -> Inhalt für den Browser-Banner
+
 ### Bugfix
 * Wenn ein Booklet mit Adaptivität fortgesetzt wird (oder per Browser reloaded), dann wird LAZY-loading Bookletkonfiguration überschrieben. Grund ist, dass die Berechnung des adaptiven Zustands nur mit allen Ressourcen möglich ist. Beim erstmaligen Starten des adaptiven Booklets wird LAZY-loading weiterhin angewandt, da die erste Unit in keinem adaptiven Zweit sein sollte.
 
