@@ -2,14 +2,25 @@
 const { defineConfig } = require('cypress');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const logToOutput = require('cypress-log-to-output');
-const deleteFolder = require('./cypress/plugins/delete-folder');
-const waitForServer = require('./cypress/plugins/wait-for-server');
+const deleteFolder = require('./src/plugins/delete-folder');
+const waitForServer = require('./src/plugins/wait-for-server');
 
 const urls = {
   backend: 'http://testcenter-backend',
   fileService: 'http://testcenter-file-service',
   frontend: 'http://testcenter-frontend:4200',
   broadcastingService: 'http://testcenter-broadcasting-service:3000'
+};
+
+const cypressJsonConfig = {
+  fileServerFolder: '.',
+  fixturesFolder: './src/fixtures',
+  video: true,
+  videosFolder: './cypress/videos',
+  screenshotsFolder: './cypress/screenshots',
+  chromeWebSecurity: false,
+  specPattern: 'src/e2e/**/*.cy.{js,jsx,ts,tsx}',
+  supportFile: 'src/support/e2e.ts'
 };
 
 module.exports = defineConfig({
@@ -21,6 +32,10 @@ module.exports = defineConfig({
   video: true,
   screenshotOnRunFailure: true,
   e2e: {
+    ...cypressJsonConfig,
+    env: {
+      urls
+    },
     setupNodeEvents(on) {
       on('task', { deleteFolder });
       logToOutput.install(on, (type, event) => event.level === 'error' || event.type === 'error');
@@ -30,9 +45,6 @@ module.exports = defineConfig({
         await waitForServer(`${urls.fileService}/health`);
         await waitForServer(urls.frontend);
       });
-    },
-    env: {
-      urls
     },
     testIsolation: true
   }
