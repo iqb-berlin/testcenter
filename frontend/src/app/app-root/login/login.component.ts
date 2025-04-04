@@ -121,7 +121,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private checkBrowser() {
-    this.unsupportedBrowser = [];
     const ua = UserAgentService.resolveUserAgent();
     if (!UserAgentService.userAgentMatches(ua)) {
       this.unsupportedBrowser = [ua.family, ua.version];

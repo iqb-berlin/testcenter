@@ -67,6 +67,10 @@
     "label": "Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
     "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von Mozilla Firefox, Google Chrome, Microsoft Edge oder Apple Safari."
   },
+  "login_unsupportedBrowserBanner" : {
+  "label": "Warnung-Banner, wenn ein nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
+  "defaultvalue" : "Ihr Browser %s %s ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version."
+},
   "booklet_msgNavigationDeniedTitle" : {
     "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",
     "defaultvalue" : "Aufgabe darf nicht verlassen werden"
