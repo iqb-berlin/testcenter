@@ -368,22 +368,36 @@ final class AdminDAOTest extends TestCase {
         'unitState' => []
       ]
     ];
+    // make order-agnostic
+    usort($expectation, function ($first, $second) {
+      return $first['testId'] <=> $second['testId'];
+    });
+
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
     $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
+    usort($resultAsArray, function ($first, $second) {
+      return $first['testId'] <=> $second['testId'];
+    });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
     $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
+    usort($resultAsArray, function ($first, $second) {
+      return $first['testId'] <=> $second['testId'];
+    });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
     $resultAsArray = array_map(function (SessionChangeMessage $s) {
       return $s->jsonSerialize();
     }, $result->asArray());
+    usort($resultAsArray, function ($first, $second) {
+      return $first['testId'] <=> $second['testId'];
+    });
     $this->assertSame([], $resultAsArray);
   }
 

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
@@ -20,14 +21,25 @@ class TestController extends Controller {
       'bookletName' => 'REQUIRED'
     ]);
 
-    $test = self::testDAO()->getTestByPerson($authToken->getId(), $body['bookletName']);
+    for ($i = 0; $i < 5; $i++) {
+      try {
+        $test = self::testDAO()->getTestByPerson($authToken->getId(), $body['bookletName']);
 
-    if (!$test) {
-      $workspace = new Workspace($authToken->getWorkspaceId());
-      $testName = TestName::fromString($body['bookletName']);
-      $bookletLabel = $workspace->getFileById('Booklet', $testName->bookletFileId)->getLabel();
+        if (!$test) {
+          $workspace = new Workspace($authToken->getWorkspaceId());
+          $testName = TestName::fromString($body['bookletName']);
+          $bookletLabel = $workspace->getFileById('Booklet', $testName->bookletFileId)->getLabel();
 
-      $test = self::testDAO()->createTest($authToken->getId(), $testName, $bookletLabel);
+          $test = self::testDAO()->createTest($authToken->getId(), $testName, $bookletLabel);
+        }
+
+        break; // success
+
+      } catch (Exception $exception) {
+        if ($i === 4) {
+          throw new HttpInternalServerErrorException($request, 'Test Session could neither be found nor created.');
+        }
+      }
     }
 
     if ($test->locked) {

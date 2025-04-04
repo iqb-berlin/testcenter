@@ -143,13 +143,23 @@ class SessionController extends Controller {
           }
           /** @var $bookletFile XMLFileBooklet */
 
-          $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $testName->name);
-          if (!$test) {
-            $test = self::testDAO()->createTest(
-              $memberPersonSession->getPerson()->getId(),
-              $testName,
-              $bookletFile->getLabel()
-            );
+          for ($i = 0; $i < 5; $i++) {
+            try {
+              $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $testName->name);
+              if (!$test) {
+                $test = self::testDAO()->createTest(
+                  $memberPersonSession->getPerson()->getId(),
+                  $testName,
+                  $bookletFile->getLabel()
+                );
+              }
+
+              break; // success
+            } catch (Exception $e) {
+              if ($i === 4){
+                throw new Exception('Test Sessions could neither be found nor created.');
+              }
+            }
           }
 
           $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);

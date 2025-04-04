@@ -4,6 +4,7 @@ layout: default
 ## [next]
 ### Bugfix
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
+* Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.
 
 ## 16.0.2
 ### Bugfixes
