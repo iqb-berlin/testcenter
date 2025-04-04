@@ -97,29 +97,29 @@ describe('Workspace-Admin-files', () => {
 
   it('upload any file as a resource', () => {
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/AnyResource.txt', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/AnyResource.txt`, { force: true });
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('AnyResource.txt');
   });
 
   it('uploading invalid files is not possible', () => {
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Testtakers_error.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Testtakers_error.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet_error.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_error.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Unit_error.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Unit_error.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/SysCheck_error.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/SysCheck_error.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
@@ -308,9 +308,9 @@ describe('Workspace-Admin-files', () => {
       .contains('Löschen')
       .click();
     cy.contains('erfolgreich gelöscht.');
-    // load a prepared Booklet-File from folder cypress/fixtures
+    // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet_sameTestlets.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameTestlets.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.contains('testletId');
     cy.get('[data-cy="close-upload-report"]')
@@ -320,9 +320,9 @@ describe('Workspace-Admin-files', () => {
   });
 
   it('upload a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
-    // load a prepared Booklet-File from folder cypress/fixtures
+    // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet_sameUnitIDs.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.contains('Unit');
     cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
@@ -330,9 +330,9 @@ describe('Workspace-Admin-files', () => {
   });
 
   it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
-    // load a prepared Booklet-File from folder cypress/fixtures
+    // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet_sameUnitIDs_Alias.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs_Alias.xml`, { force: true });
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('Booklet_sameUnitIDs_Alias.xml');
   });
@@ -363,17 +363,17 @@ describe('Workspace-Admin-files', () => {
   });
 
   it('load a Booklet with the same name, but another ID and testlet name is not possible', () => {
-    // load a prepared Booklet with same name, but different ID and Testletnames from folder cypress/fixtures
+    // load a prepared Booklet with same name, but different ID and Testletnames from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.contains('did already exist');
   });
 
   it('load a Booklet with different names and same Booklet-ID is not possible', () => {
-    // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
+    // load a prepared Booklet with different name and same Booklet-ID from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile('cypress/fixtures/Booklet_sameBookletID.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameBookletID.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.contains('Duplicate Booklet-Id');
   });

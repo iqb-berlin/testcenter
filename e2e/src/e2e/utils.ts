@@ -225,7 +225,7 @@ export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: nu
   loginSuperAdmin();
   openSampleWorkspace(workspace);
   cy.get('[data-cy="upload-file-select"]')
-    .selectFile(`cypress/fixtures/${fileName}`, { force: true });
+    .selectFile(`${Cypress.config('fixturesFolder')}/${fileName}`, { force: true });
   logoutAdmin();
   visitLoginPage();
 };

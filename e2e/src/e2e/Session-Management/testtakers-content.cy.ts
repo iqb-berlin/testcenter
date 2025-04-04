@@ -14,7 +14,7 @@ describe('Check Testtakers Content', () => {
   it('load invalid testtaker-xml with duplicated group name is not possible)', () => {
     openSampleWorkspace(1);
     cy.get('.sidebar > input:nth-child(2)')
-      .selectFile('cypress/fixtures/Testtaker_DuplicatedGroup.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Testtaker_DuplicatedGroup.xml`, { force: true });
     cy.get('[data-cy="upload-report"]')
       .contains('Duplicate key-sequence');
     cy.get('[data-cy="upload-report"]')
@@ -28,7 +28,7 @@ describe('Check Testtakers Content', () => {
   it('load invalid testtaker-xml with duplicated login name is not possible)', () => {
     openSampleWorkspace(1);
     cy.get('.sidebar > input:nth-child(2)')
-      .selectFile('cypress/fixtures/Testtaker_DuplicatedLogin.xml', { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/Testtaker_DuplicatedLogin.xml`, { force: true });
     cy.get('[data-cy="upload-report"]')
       .contains('Duplicate key-sequence');
     cy.get('[data-cy="close-upload-report"]')

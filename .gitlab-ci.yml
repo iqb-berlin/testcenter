@@ -2,6 +2,7 @@ stages:
   - .pre
   - build
   - test
+  - test-e2e
   #  - lint
   #  - audit
   - deploy
@@ -1258,7 +1259,7 @@ test-e2e:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1269,6 +1270,7 @@ test-e2e:
   artifacts:
     when: always
     paths:
+      - e2e/cypress/downloads
       - e2e/cypress/videos/**/*.mp4
       - e2e/cypress/screenshots/**/*.png
 
