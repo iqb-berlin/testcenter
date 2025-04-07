@@ -143,17 +143,17 @@ run_complementary_migration_scripts() {
     # source < target
     if [ "${normalized_source_release_tag}" != "${normalized_target_release_tag}" ]; then
       release_tags=$(
-        curl --silent ${REPO_API}/releases?per_page=100 |                                    # get all releases in json format
-          grep tag_name |                                                                    # extract 'tag_name' key and value ("key":"value")
-          cut -d : -f 2,3 |                                                                  # cut off key and delimiter ("value")
-          tr -d \" |                                                                         # truncate quotes  (value)
-          tr -d , |                                                                          # truncate end comma
-          tr -d " " |                                                                        # truncate start space
-          grep -Po "${ALL_RELEASE_REGEX}" |                                                  # use only release and pre-release versions
-          sed -ne "/${normalized_target_release_tag}/,/${normalized_source_release_tag}/p" | # use only versions between source and target version
-          head -n -1 |                                                                       # remove source version
-          cut -d '-' -f 1 |                                                                  # cut off pre-release suffixes
-          sort -u -V                                                                         # remove duplicates and sort versions ascending
+        curl --silent ${REPO_API}/releases?per_page=100 |                                       # get all releases in json format
+          grep tag_name |                                                                       # extract 'tag_name' key and value ("key":"value")
+          cut -d : -f 2,3 |                                                                     # cut off key and delimiter ("value")
+          tr -d \" |                                                                            # truncate quotes  (value)
+          tr -d , |                                                                             # truncate end comma
+          tr -d " " |                                                                           # truncate start space
+          grep -Po "${ALL_RELEASE_REGEX}" |                                                     # use only release and pre-release versions
+          cut -d '-' -f 1 |                                                                     # cut off pre-release suffixes
+          sort -u -V |                                                                          # remove duplicates and sort versions ascending
+          sed -ne "\|${normalized_source_release_tag}|,\|${normalized_target_release_tag}|p" |  # use only versions between source and target version
+          tail -n +2                                                                            # exclude source version
       )
     fi
   fi
@@ -622,6 +622,9 @@ customize_settings() {
   sed -i.bak "s|scripts/update.sh|scripts/update_${APP_NAME}.sh|" \
     "${APP_DIR}/scripts/make/${APP_NAME}.mk" && rm "${APP_DIR}/scripts/make/${APP_NAME}.mk.bak"
   #  update_makefile
+
+  # Update environment variables
+  load_docker_environment_variables
 }
 
 finalize_update() {
