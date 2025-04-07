@@ -1,4 +1,8 @@
 {
+  "login_subtitle": {
+    "label" : "Titel für Starter-Seite",
+    "defaultvalue" : "Testauswahl"
+  },
   "login_testEndButtonLabel" : {
     "label" : "Schalterbeschriftung für 'Test beenden'",
     "defaultvalue" : "Test beenden"
