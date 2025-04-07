@@ -139,6 +139,8 @@ Funktioniert auch nicht? Dann...
 |gm_selection_text_expired|Der Text im Button bei Auswahl der Testleitungskonsole, wenn die Gruppe abgelaufen ist. $date wird gegen das Ablaufdatum ersetzt.|Gruppe abgelaufen seit %date.|
 |gm_selection_text_scheduled|Der Text im Button bei Auswahl der Testleitungskonsole, wenn die noch nicht freigegeben abgelaufen ist. $date wird gegen das Freigabedatum ersetzt.|Gruppe erst freigegeben ab %date.|
 |gm_settings_tooltip|Control: Ansicht|Ansicht|
+|gm_show_monitor|Titel für Monitorfunktion|Testgruppen-Überwachung|
+|gm_show_test|Titel für Testüberprüfung|Folgende Testhefte stehen für Sie zur Ansicht bereit:|
 |gm_timeleft_tooltip|Tooltip zeitgesteuerter Block: verbleibende Zeit. Ersetzungen (%s): Verbleibende Minuten, Minuten gesamt|Verbleibende Zeit: %s von %s Minute(n)|
 |gm_timemax_tooltip|Tooltip zeitgesteuerter Block: Noch nicht gestartet. Ersetzung (%s): Minutenzahl, |Zeitgesteuerter Block: %s Minute(n)|
 |gm_timeup_tooltip|Tooltip zeitgesteuerter Block: Zeit abgelaufen|Zeit abgelaufen|

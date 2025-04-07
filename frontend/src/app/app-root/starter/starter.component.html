@@ -38,7 +38,7 @@
         </button>
 
 
-        <h4 *ngIf="accessObjects.testGroupMonitor">Test-Gruppen Überwachung</h4>
+        <h4 *ngIf="accessObjects.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_subheadline' | async }}</h4>
         <button
           *ngFor="let accessObject of accessObjects.testGroupMonitor let i = index"
           mat-raised-button color="primary"
@@ -78,7 +78,7 @@
         </button>
 
         <h4 *ngIf="accessObjects.testGroupMonitor && accessObjects.test">
-          Folgende Testhefte stehen für Sie zur Ansicht bereit:
+          {{ 'Folgende Testhefte stehen für Sie zur Ansicht bereit:' | customtext : 'gm_show_test' | async }}
         </h4>
         <button
           *ngFor="let b of accessObjects.test"
