@@ -110,6 +110,8 @@ export class StarterComponent implements OnInit, OnDestroy {
               });
             });
           }
+        } else if ('test' in this.accessObjects) {
+          this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
         }
       });
     });

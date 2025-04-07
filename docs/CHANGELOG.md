@@ -5,11 +5,13 @@ layout: default
 ### Bugfix
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
 * Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.
+* Auf der Starterseite wird nun immer der Text des customtext `login_subtitle` angezeigt. Vorher wurde immer der Subtitle der vorher besuchten Seite angezeigt.
 
 ## Custom Texts
 * neue Felder
   * `gm_show_monitor` -> Titel für Monitorfunktion
   * `gm_show_test` -> Titel für Testüberprüfung
+  * `login_subtitle` -> Titel für Starter-Seite
 
 ## 16.0.2
 ### Bugfixes
