@@ -191,6 +191,14 @@
     "label" : "Überschrift: Gruppenmonitor",
     "defaultvalue" : "Gruppenüberwachung"
   },
+  "gm_show_monitor" : {
+    "label" : "Titel für Monitorfunktion",
+    "defaultvalue" : "Testgruppen-Überwachung"
+  },
+  "gm_show_test" : {
+    "label" : "Titel für Testüberprüfung",
+    "defaultvalue" : "Folgende Testhefte stehen für Sie zur Ansicht bereit:"
+  },
   "gm_menu_filter" : {
     "label" : "Meinueintrag: Sitzungen ausblenden",
     "defaultvalue" : "Sitzungen ausblenden"

@@ -6,6 +6,11 @@ layout: default
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
 * Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.
 
+## Custom Texts
+* neue Felder
+  * `gm_show_monitor` -> Titel für Monitorfunktion
+  * `gm_show_test` -> Titel für Testüberprüfung
+
 ## 16.0.2
 ### Bugfixes
 * Testleitungskonsole: Dialog für das Festlegene einer neuen Restzeit für einen zeitgesteuerten Block erlaubt jetzt die manuelle Eingabe, damit die Funktion auf allen Geräten genutzt werden kann. Eine nicht valide Zahl (kleiner als 0, größer als Maximalzeit, keine Zahl) resultiert in keinem Sprung.
