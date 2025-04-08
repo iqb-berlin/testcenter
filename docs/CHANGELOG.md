@@ -6,6 +6,7 @@ layout: default
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
 * Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.
 * Auf der Starterseite wird nun immer der Text des customtext `login_subtitle` angezeigt. Vorher wurde immer der Subtitle der vorher besuchten Seite angezeigt.
+* Modi mit dem Wert `forceTimeRestrictions=false` (RUN-DEMO, MONITOR-GROUP, MONITOR-STUDY, RUN-REVIEW, RUN-TRIAL, SYS-CHECK-LOGIN), sind nun korrekterweise nicht von Zeitbeschränkten Blöck in ihrer Navigation eingeschränkt.
 
 ## Custom Texts
 * neue Felder

@@ -884,13 +884,13 @@ export class TestControllerService {
     ) {
       return of(true);
     }
-    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
-      this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
-      return of(false);
-    }
     if (!this.testMode.forceTimeRestrictions) {
       this.interruptTimer();
       return of(true);
+    }
+    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
+      this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
+      return of(false);
     }
 
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
