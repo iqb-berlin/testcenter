@@ -140,7 +140,7 @@ Funktioniert auch nicht? Dann...
 |gm_selection_text_scheduled|Der Text im Button bei Auswahl der Testleitungskonsole, wenn die noch nicht freigegeben abgelaufen ist. $date wird gegen das Freigabedatum ersetzt.|Gruppe erst freigegeben ab %date.|
 |gm_settings_tooltip|Control: Ansicht|Ansicht|
 |gm_show_monitor|Titel für Monitorfunktion|Testgruppen-Überwachung|
-|gm_show_test|Titel für Testüberprüfung|Folgende Testhefte stehen für Sie zur Ansicht bereit:|
+|gm_show_test|Titel für Testüberprüfung|Testhefte anzeigen|
 |gm_timeleft_tooltip|Tooltip zeitgesteuerter Block: verbleibende Zeit. Ersetzungen (%s): Verbleibende Minuten, Minuten gesamt|Verbleibende Zeit: %s von %s Minute(n)|
 |gm_timemax_tooltip|Tooltip zeitgesteuerter Block: Noch nicht gestartet. Ersetzung (%s): Minutenzahl, |Zeitgesteuerter Block: %s Minute(n)|
 |gm_timeup_tooltip|Tooltip zeitgesteuerter Block: Zeit abgelaufen|Zeit abgelaufen|
@@ -153,6 +153,7 @@ Funktioniert auch nicht? Dann...
 |login_codeInputPrompt|Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)|Bitte Log-in eingeben, der auf dem Zettel steht!|
 |login_codeInputTitle|Titel des Eingabeformulares für den Code|Log-in eingeben|
 |login_pagesNaviPrompt|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
+|login_subtitle|Titel für Starter-Seite|Testauswahl|
 |login_testEndButtonLabel|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |login_testResumeButtonLabel|Schalterbeschriftung für 'Test fortsetzen'|Test fortsetzen|
 |login_unsupportedBrowser|Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.|Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von <a href='https://www.getfirefox.org' target='_blank'>Mozilla Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a>, <a href='https://www.microsoft.com/en-us/edge/download' target='_blank'>Microsoft Edge</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Apple Safari.</a>|

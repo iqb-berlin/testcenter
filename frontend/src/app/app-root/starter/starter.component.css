@@ -28,3 +28,21 @@ div.starter-status {
 h4 {
   margin-bottom: 0.2em;
 }
+
+mat-accordion {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+mat-expansion-panel:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+mat-expansion-panel-header {
+  padding-left: 0;
+}
+
+mat-panel-title {
+  font-size: initial;
+  font-weight: 700;
+}

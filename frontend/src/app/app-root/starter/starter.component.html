@@ -77,7 +77,7 @@
           <div class="starter-status">Anhänge Verwalten</div>
         </button>
 
-        <ng-container *ngIf="!accessObjects.testGroupMonitor && accessObjects.test; else gmTemplate">
+        <ng-container *ngIf="!accessObjects.testGroupMonitor && accessObjects.test">
           <button
             *ngFor="let b of accessObjects.test"
              mat-raised-button color="primary"
@@ -92,24 +92,31 @@
             </div>
           </button>
         </ng-container>
-        <ng-template #gmTemplate>
-          <h4 *ngIf="accessObjects.testGroupMonitor && accessObjects.test">
-            {{ 'Folgende Testhefte stehen für Sie zur Ansicht bereit:' | customtext : 'gm_show_test' | async }}
-          </h4>
-          <button
-            *ngFor="let b of accessObjects.test"
-            mat-raised-button color="primary"
-            class="starter"
-            [disabled]="!!b.flags.locked"
-            [attr.aria-label]="'Starte Testheft ' + b.label"
-            [attr.data-cy]="'booklet-' + b.id"
-            (click)="startTest(b)">
-            <div class="starter-title">{{b.label}}</div>
-            <div class="starter-status">
-              {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (accessObjects.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
-            </div>
-          </button>
-        </ng-template>
+
+        <ng-container *ngIf="accessObjects.testGroupMonitor && accessObjects.test">
+          <mat-accordion displayMode="default">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header [collapsedHeight]="'auto'" [expandedHeight]="'auto'">
+                <mat-panel-title>
+                  {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <button
+                *ngFor="let b of accessObjects.test"
+                mat-raised-button color="primary"
+                class="starter"
+                [disabled]="!!b.flags.locked"
+                [attr.aria-label]="'Starte Testheft ' + b.label"
+                [attr.data-cy]="'booklet-' + b.id"
+                (click)="startTest(b)">
+                <div class="starter-title">{{b.label}}</div>
+                <div class="starter-status">
+                  {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (accessObjects.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
+                </div>
+              </button>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </ng-container>
 
         <ng-container *ngIf="accessObjects.sysCheck">
           <h4>System-Check</h4>
@@ -125,6 +132,7 @@
             <div class="starter-status">{{sc.description}}</div>          </button>
         </ng-container>
       </div>
+
       <tc-alert
         *ngIf="(accessObjects.test && !accessObjects.test.length) || !(accessObjects | keyvalue).length"
         level="info"
@@ -132,6 +140,7 @@
         text="Für diese Anmeldung wurde kein Test gefunden."
       ></tc-alert>
     </mat-card-content>
+
     <mat-card-actions [style.justify-content]="'space-between'">
       <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
         Systemverwaltung

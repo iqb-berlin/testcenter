@@ -139,3 +139,18 @@ div.logo img {
   font-size: larger;
   font-weight: bold;
 }
+
+/* */
+/* Styles that must bridge encapsulation across multiple component-levels, thus cannot be defined within themselves */
+/* */
+
+tc-starter {
+  .mat-expansion-panel-body {
+    padding-left: 0 !important;
+
+    .starter {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+}
