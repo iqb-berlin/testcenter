@@ -22,7 +22,7 @@ const cypressJsonConfig = {
 };
 
 module.exports = defineConfig({
-  reporter: 'junit',
+  // reporter: 'junit', https://github.com/cypress-io/cypress/issues/4602
   reporterOptions: {
     mochaFile: 'cypress/results/output.xml'
   },
