@@ -2,6 +2,9 @@
 layout: default
 ---
 ## [next]
+### Verbesserung
+* Testleitungskonsole: Die Testhefte werden sind nun in einem Akkordion-Element positioniert und können nach einem extra Klick angezeigt werden. Das räumt visuell das Starter-Menü auf und rückt den Fokus auf die eigentliche Funktionalität der Testleitungkonsole zurück.
+
 ### Bugfix
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
 * Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.

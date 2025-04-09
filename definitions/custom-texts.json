@@ -201,7 +201,7 @@
   },
   "gm_show_test" : {
     "label" : "Titel für Testüberprüfung",
-    "defaultvalue" : "Folgende Testhefte stehen für Sie zur Ansicht bereit:"
+    "defaultvalue" : "Testhefte anzeigen"
   },
   "gm_menu_filter" : {
     "label" : "Meinueintrag: Sitzungen ausblenden",

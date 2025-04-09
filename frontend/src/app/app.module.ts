@@ -39,6 +39,8 @@ import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
 import { StarterComponent } from './app-root/starter/starter.component';
 import { TestModeInterceptor } from './test-mode.interceptor';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -74,7 +76,9 @@ import { TestModeInterceptor } from './test-mode.interceptor';
     HttpClientModule,
     RouterModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+    CdkAccordionModule,
+    MatExpansionModule
   ],
   providers: [
     BackendService,
