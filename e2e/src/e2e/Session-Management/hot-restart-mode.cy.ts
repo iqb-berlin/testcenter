@@ -4,11 +4,10 @@ import {
   getFromIframe,
   loginSuperAdmin,
   loginTestTaker,
+  logoutAdmin,
   openSampleWorkspace,
   resetBackendData,
-  visitLoginPage,
-  logoutAdmin
-
+  visitLoginPage
 } from '../utils';
 
 let idHres1;
@@ -16,10 +15,10 @@ let idHres2;
 
 describe('check hot-restart-mode functions', { testIsolation: false }, () => {
   before(() => {
+    deleteDownloadsFolder();
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
-    deleteDownloadsFolder();
   });
   beforeEach(() => {
     visitLoginPage();
