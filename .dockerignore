@@ -29,6 +29,8 @@
 backup
 data
 data-*
-e2e/cypress/downloads
+e2e/cypress/
+e2e/cypress-headless/
+e2e/cypress.config.js
 LICENSE
 README.md

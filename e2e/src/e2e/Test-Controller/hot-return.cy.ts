@@ -1,14 +1,17 @@
 import {
-  loginTestTaker,
-  resetBackendData,
-  visitLoginPage,
-  deleteDownloadsFolder,
-  getFromIframe,
-  forwardTo,
   backwardsTo,
-  loginSuperAdmin,
+  deleteDownloadsFolder,
+  disableSimplePlayersInternalDebounce,
+  forwardTo,
+  getFromIframe,
   getResultFileRows,
-  disableSimplePlayersInternalDebounce, logoutTestTaker, gotoPage, openSampleWorkspace
+  gotoPage,
+  loginSuperAdmin,
+  loginTestTaker,
+  logoutTestTaker,
+  openSampleWorkspace,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:runhotret

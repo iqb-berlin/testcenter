@@ -1271,9 +1271,7 @@ test-e2e-group-monitor:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-session-management:
   stage: test-e2e
@@ -1324,9 +1322,7 @@ test-e2e-session-management:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-super-admin:
   stage: test-e2e
@@ -1377,9 +1373,7 @@ test-e2e-super-admin:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-sys-check:
   stage: test-e2e
@@ -1430,9 +1424,7 @@ test-e2e-sys-check:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-test-controller:
   stage: test-e2e
@@ -1483,9 +1475,7 @@ test-e2e-test-controller:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-workspace-admin:
   stage: test-e2e
@@ -1536,9 +1526,7 @@ test-e2e-workspace-admin:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 test-e2e-misc:
   stage: test-e2e
@@ -1589,9 +1577,7 @@ test-e2e-misc:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/downloads
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
 
 
 build-backend-prod:

@@ -11,6 +11,7 @@ const urls = {
 };
 
 const cypressJsonConfig = {
+  downloadsFolder: './cypress/downloads',
   fileServerFolder: '.',
   fixturesFolder: './src/fixtures',
   video: true,

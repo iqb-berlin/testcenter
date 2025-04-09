@@ -10,9 +10,9 @@ services:
       - CYPRESS_baseUrl=http://testcenter-frontend:4200
     command: "npx cypress run --browser chrome --spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
     volumes:
-      - ./e2e/cypress:/usr/src/testcenter/e2e/cypress
+      - ./e2e/cypress-headless:/usr/src/testcenter/e2e/cypress-headless
       - ./e2e/src:/usr/src/testcenter/e2e/src
-      - ./e2e/cypress.e2e.config.js:/usr/src/testcenter/e2e/cypress.config.js
+      - ./e2e/cypress.headless.config.js:/usr/src/testcenter/e2e/cypress.config.js
       - ./e2e/tsconfig.json:/usr/src/testcenter/e2e/tsconfig.json
       - ./sampledata:/usr/src/testcenter/sampledata
     networks:

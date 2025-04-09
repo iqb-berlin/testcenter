@@ -3,14 +3,15 @@ import {
   deleteFilesSampleWorkspace,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace, reload,
+  openSampleWorkspace,
+  reload,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-files', () => {
-  before(resetBackendData);
   before(deleteDownloadsFolder);
+  before(resetBackendData);
 
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
@@ -21,19 +22,19 @@ describe('Workspace-Admin-files', () => {
   it('download files', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
       .click();
-    cy.readFile('cypress/downloads/SAMPLE_TESTTAKERS.XML').should('exist');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/SAMPLE_TESTTAKERS.XML`).should('exist');
     cy.get('[data-cy="SAMPLE_BOOKLET.XML"]')
       .click();
-    cy.readFile('cypress/downloads/SAMPLE_BOOKLET.XML').should('exist');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/SAMPLE_BOOKLET.XML`).should('exist');
     cy.get('[data-cy="SAMPLE_SYSCHECK.XML"]')
       .click();
-    cy.readFile('cypress/downloads/SAMPLE_SYSCHECK.XML').should('exist');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/SAMPLE_SYSCHECK.XML`).should('exist');
     cy.get('[data-cy="SAMPLE_UNITCONTENTS.HTM"]')
       .click();
-    cy.readFile('cypress/downloads/SAMPLE_UNITCONTENTS.HTM').should('exist');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/SAMPLE_UNITCONTENTS.HTM`).should('exist');
     cy.get('[data-cy="SAMPLE_UNIT2.XML"]')
       .click();
-    cy.readFile('cypress/downloads/SAMPLE_UNIT2.XML').should('exist');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/SAMPLE_UNIT2.XML`).should('exist');
   });
 
   it('delete the syscheck.xml file', () => {

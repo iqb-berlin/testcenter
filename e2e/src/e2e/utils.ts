@@ -290,14 +290,14 @@ export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): C
     .map(row => row.replaceAll(regex, ''));
 
   if (fileType === 'responses') {
-    return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-responses.csv`)
       .then(splitCSVFile);
   }
   if (fileType === 'reviews') {
-    return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-reviews.csv`)
       .then(splitCSVFile);
   }
-  return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
+  return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-logs.csv`)
     .then(splitCSVFile);
 };
 
@@ -306,11 +306,11 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
     .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
 
   if (fileType === 'responses') {
-    return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-responses.csv`)
       .then(splitCsvID);
   }
   if (fileType === 'reviews') {
-    return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-reviews.csv`)
       .then(splitCsvID);
   }
   throw new Error(`Unknown filetype: ${fileType}`);
