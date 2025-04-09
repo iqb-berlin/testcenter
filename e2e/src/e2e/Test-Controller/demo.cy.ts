@@ -134,7 +134,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('rundemo')
+    cy.contains('RunDemo')
       .should('not.exist');
   });
 });
