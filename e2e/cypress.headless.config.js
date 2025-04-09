@@ -13,20 +13,21 @@ const urls = {
 };
 
 const cypressJsonConfig = {
+  downloadsFolder: './cypress-headless/downloads',
   fileServerFolder: '.',
   fixturesFolder: './src/fixtures',
   video: true,
-  videosFolder: './cypress/videos',
-  screenshotsFolder: './cypress/screenshots',
+  videosFolder: './cypress-headless/videos',
+  screenshotsFolder: './cypress-headless/screenshots',
   chromeWebSecurity: false,
   specPattern: 'src/e2e/**/*.cy.{js,jsx,ts,tsx}',
   supportFile: 'src/support/e2e.ts'
 };
 
 module.exports = defineConfig({
-  reporter: 'junit',
+  // reporter: 'junit', https://github.com/cypress-io/cypress/issues/4602
   reporterOptions: {
-    mochaFile: 'cypress/results/output.xml'
+    mochaFile: 'cypress-headless/results/output.xml'
   },
   requestTimeout: 10000,
   video: true,

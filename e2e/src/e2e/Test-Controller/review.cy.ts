@@ -2,14 +2,15 @@ import {
   backwardsTo,
   convertResultsSeperatedArrays,
   deleteDownloadsFolder,
+  disableSimplePlayersInternalDebounce,
   forwardTo,
-  getFromIframe, gotoPage,
+  getFromIframe,
+  gotoPage,
   loginSuperAdmin,
   loginTestTaker,
   openSampleWorkspace,
   resetBackendData,
-  visitLoginPage,
-  disableSimplePlayersInternalDebounce
+  visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview

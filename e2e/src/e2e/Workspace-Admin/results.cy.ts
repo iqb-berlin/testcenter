@@ -1,6 +1,10 @@
 import {
-  deleteDownloadsFolder, loginSuperAdmin, openSampleWorkspace,
-  resetBackendData, logoutAdmin, visitLoginPage
+  deleteDownloadsFolder,
+  loginSuperAdmin,
+  logoutAdmin,
+  openSampleWorkspace,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-results', () => {
@@ -20,7 +24,7 @@ describe('Workspace-Admin-results', () => {
       .click();
     cy.get('[data-cy="download-responses"]')
       .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-responses.csv');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-responses.csv`);
   });
 
   it('download the logs of a group', () => {
@@ -30,7 +34,7 @@ describe('Workspace-Admin-results', () => {
       .click();
     cy.get('[data-cy="download-logs"]')
       .click();
-    cy.readFile('cypress/downloads/iqb-testcenter-logs.csv');
+    cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-logs.csv`);
   });
 
   it('delete the results of a group', () => {
