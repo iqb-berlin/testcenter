@@ -1,8 +1,12 @@
 import {
-  getResultFileRows,
   deleteDownloadsFolder,
-  getFromIframe, loginSuperAdmin,
-  loginTestTaker, logoutAdmin, logoutTestTaker, openSampleWorkspace,
+  getFromIframe,
+  getResultFileRows,
+  loginSuperAdmin,
+  loginTestTaker,
+  logoutAdmin,
+  logoutTestTaker,
+  openSampleWorkspace,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -10,10 +14,10 @@ import {
 describe('Check hot-return mode functions', { testIsolation: false }, () => {
   // TODO Testfälle bzgl. Ticket #315 erstellen
   before(() => {
+    deleteDownloadsFolder();
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
-    deleteDownloadsFolder();
   });
   beforeEach(() => {
     visitLoginPage();
