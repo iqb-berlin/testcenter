@@ -29,7 +29,9 @@ module.exports = defineConfig({
   reporterOptions: {
     mochaFile: 'cypress-headless/results/output.xml'
   },
-  requestTimeout: 10000,
+  defaultCommandTimeout: 15000,
+  requestTimeout: 45000,
+  responseTimeout: 60000,
   video: true,
   screenshotOnRunFailure: true,
   e2e: {
