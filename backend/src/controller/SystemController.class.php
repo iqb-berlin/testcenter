@@ -73,6 +73,7 @@ class SystemController extends Controller {
 
   public static function getConfig(Request $request, Response $response): Response {
     $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
+    $browsers = json_decode(file_get_contents(ROOT_DIR . '/definitions/browsers.json'));
 
     return $response->withJson(
       [
@@ -85,7 +86,8 @@ class SystemController extends Controller {
         'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,
         'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
         'fileServiceUri' => FileService::getUri(),
-        'broadcastingServiceUri' => BroadcastService::getUri()
+        'broadcastingServiceUri' => BroadcastService::getUri(),
+        'supportedBrowsers' => $browsers->browsers
       ]
     );
   }
