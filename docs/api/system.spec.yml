@@ -27,7 +27,8 @@ paths:
         - version number
         - customTexts for UI
         - uris of additional services
-        - serverTimestamp (in milliseconds)"
+        - serverTimestamp (in milliseconds)
+        - supported browsers"
       tags:
         - api info
         - super admin
@@ -56,6 +57,9 @@ paths:
                   baseUrl:
                     type: string
                     description: base url of the API
+                  supportedBrowsers:
+                    type: array
+                    description: list of supported browsers
                 required:
                   - version
                   - customTexts
@@ -65,6 +69,7 @@ paths:
                   - veronaPlayerApiVersionMin
                   - veronaPlayerApiVersionMax
                   - baseUrl
+                  - supportedBrowsers
               example:
                 version: "%%%VERSION%%%"
                 customTexts: {}
@@ -73,6 +78,8 @@ paths:
                 fileServiceUri: http://blabla
                 veronaPlayerApiVersionMin: 2
                 veronaPlayerApiVersionMax: 4
+                baseUrl: http://testcenter.de
+                supportedBrowsers: ["chrome 131", "firefox 133"]
         "500":
           description: Server Error
 
