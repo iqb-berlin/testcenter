@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 16.1.0
 ### Verbesserung
 * Testleitungskonsole: Die Testhefte werden sind nun in einem Akkordion-Element positioniert und können nach einem extra Klick angezeigt werden. Das räumt visuell das Starter-Menü auf und rückt den Fokus auf die eigentliche Funktionalität der Testleitungkonsole zurück.
 * Links zu externen Seiten wurden gelöscht, um das Navigieren auf fremde Seiten zu vermeiden, während man sich in der PWA befindet.
@@ -26,7 +26,7 @@ layout: default
 
 ## 16.0.1
 ### Verbesserungen
-* Testleiterkonsole ist beim ersten Aufruf immer nach der Spalte "Teilnehmer".
+* Testleiterkonsole ist beim ersten Aufruf immer nach der Spalte "Teilnehmer" sortiert.
 * Der ablaufende Timer wird nun mit einem Webworker im Browser umgesetzt. Sollte eine Testperson eine längere Zeit nicht den Fokus auf dem Testcenter-Tab haben, so läuft die Zeit nun unbeirrt weiter.
 * Adminbereich: Die Gruppen im Tab "Ergebniss/Antworten" zeigen die einzigartige ID als Tooltip an, hilfreich wenn es das selbe Label mehrmals gibt
 * Testleiterkonsole: Das Blocklabel zeigt nun die BlockId mit 'Block 1' an, statt nur '1' (wenn kein Label für den Block gesetzt wurde)
