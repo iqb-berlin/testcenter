@@ -1,6 +1,7 @@
+**/.bundle
 **/.classpath
 **/.dockerignore
-**/.env
+**/.env*
 **/.git
 **/.gitignore
 **/.idea
@@ -28,7 +29,6 @@
 backup
 data
 data-*
-docs
 e2e/cypress/downloads
 LICENSE
 README.md

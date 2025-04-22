@@ -20,7 +20,6 @@ variables:
   REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
   DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
   BASE_IMAGE: docker:27.3
-  PAGES_IMAGE: ruby:3.1
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
@@ -30,6 +29,7 @@ variables:
   DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
   CACHE_SERVICE_BASE_IMAGE: ${DOCKERHUB_PROXY}redis:7.4-bookworm
   TRIVY_IMAGE: ${DOCKER_HUB_PROXY}aquasec/trivy:latest
+  JEKYLL_PAGES_IMAGE: "jekyll"
   PRERELEASE_SCRIPT_REGEX: ^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$
   PRERELEASE_RULES_REGEX: /^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$/
   RELEASE_SCRIPT_REGEX: ^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$
@@ -121,6 +121,13 @@ include:
         ($CI_PIPELINE_SOURCE != "external_pull_request_event")
       changes:
         - task-runner/**/*
+
+.generate_docs_rules:
+  rules:
+    - if: $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME == "master"
+      changes:
+        - .gitlab-ci.yml
+        - docs/Dockerfile
 
 .master_pr_rules:
   rules:
@@ -628,6 +635,32 @@ check-release-rules:
       else echo "commit tag = '$CI_COMMIT_TAG', stable version = '$STABLE_VERSION', release regex = '$RELEASE_SCRIPT_REGEX'"; fi
 
 
+build-jekyll-pages-image:
+  stage: build
+  rules:
+    - !reference [ .generate_docs_rules, rules ]
+  needs: []
+  before_script:
+    - ip a | grep mtu
+    - docker network inspect bridge | grep mtu
+    - docker login -u ${CI_DEPENDENCY_PROXY_USER} -p ${CI_DEPENDENCY_PROXY_PASSWORD} ${CI_DEPENDENCY_PROXY_SERVER}
+    - echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY}
+  script:
+    - docker build
+          --progress plain
+          --pull
+          --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
+          --build-arg BASE_IMAGE=${BASE_IMAGE}
+          --build-arg BUILDKIT_INLINE_CACHE=1
+          --cache-from ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
+          -f docs/Dockerfile
+          -t ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
+        .
+    - docker push -q ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
 build-backend:
   stage: build
   needs: []
@@ -876,7 +909,7 @@ build-task-runner:
         printf 'Job finished with success.\n';
       fi
 
-generate-docs:
+build-docs:
   stage: build
   needs:
     - build-task-runner
@@ -1793,22 +1826,18 @@ pages:
     - test-backend-unit
     - test-frontend-unit
     - test-broadcasting-service-unit
-    - generate-docs
+    - build-docs
   rules:
     - !reference [ .release_rules, rules ]
-  image: ${PAGES_IMAGE}
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
   script:
     - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
       then
-        mkdir public &&
-        cd docs &&
-        gem install bundler &&
-        bundle install &&
-        jekyll build -d ../public;
+        docker run ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
