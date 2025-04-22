@@ -1762,6 +1762,7 @@ scan-cache-service-prod:
 
 push-pre-release:
   stage: deploy
+  needs: []
   rules:
     - !reference [ .pre-release_rules, rules ]
   variables:
@@ -1821,8 +1822,7 @@ pages:
 
 push-release:
   stage: deploy
-  needs:
-    - pages
+  needs: []
   rules:
     - !reference [ .release_rules, rules ]
   variables:
