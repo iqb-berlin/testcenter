@@ -3,7 +3,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 ## prevents collisions of make target names with possible file names
 .PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
 	create-interfaces update-docs docs-frontend-compodoc docs-broadcasting-service-compodoc docs-api-specs docs-user\
-	new-version
+	create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -164,6 +164,14 @@ docs-api-specs:
 # Creates some documentation-files about custom-texts, booklet-configurations and other out of the definitions.
 docs-user:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=create-docs
+
+create-pages:
+	cd $(TC_BASE_DIR) && docker build --target jekyll --tag testcenter-jekyll -f docs/Dockerfile .
+	docker run --rm testcenter-jekyll
+
+serve-pages:
+	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag testcenter-jekyll-serve -f docs/Dockerfile .
+	docker run --rm -p 4000:4000 testcenter-jekyll-serve
 
 new-version:
 	cd $(TC_BASE_DIR) &&\

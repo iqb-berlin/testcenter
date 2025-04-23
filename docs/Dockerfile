@@ -20,3 +20,11 @@ RUN bundle install
 COPY docs/ ./
 
 CMD [ "bundle", "exec", "jekyll", "build", "-d", "../public" ]
+
+
+FROM jekyll AS jekyll-serve
+
+# on every container start, check if Gemfile exists and warn if it's missing
+#ENTRYPOINT [ "docker-entrypoint.sh" ]
+
+CMD [ "bundle", "exec", "jekyll", "serve", "--force_polling", "-H", "0.0.0.0", "-P", "4000", "--baseurl", "" ]
