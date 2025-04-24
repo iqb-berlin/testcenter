@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Änderungen
+* Akkordion Element im Testleitungskonsole ist standard expanded.
+
 ## 16.1.0
 ### Verbesserung
 * Testleitungskonsole: Die Testhefte werden sind nun in einem Akkordion-Element positioniert und können nach einem extra Klick angezeigt werden. Das räumt visuell das Starter-Menü auf und rückt den Fokus auf die eigentliche Funktionalität der Testleitungkonsole zurück.

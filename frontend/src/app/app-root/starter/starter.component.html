@@ -95,7 +95,7 @@
 
         <ng-container *ngIf="accessObjects.testGroupMonitor && accessObjects.test">
           <mat-accordion displayMode="default">
-            <mat-expansion-panel>
+            <mat-expansion-panel expanded>
               <mat-expansion-panel-header [collapsedHeight]="'auto'" [expandedHeight]="'auto'">
                 <mat-panel-title>
                   {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
