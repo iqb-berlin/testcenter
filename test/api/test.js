@@ -5,6 +5,7 @@ const gulp = require('gulp');
 const redis = require('redis');
 const YAML = require('yamljs');
 const axios = require('axios');
+const http = require('http');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
 const testConfig = require('../config.json');
@@ -15,6 +16,7 @@ const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 const getStatus = async statusRequest => {
   const startTime = Date.now();
   try {
+    axios.defaults.httpAgent = new http.Agent({ keepAlive: false }); // https://github.com/axios/axios/issues/6113
     const response = await axios.get(statusRequest.url, {
       headers: statusRequest.headers,
       timeout: statusRequest.timeout
