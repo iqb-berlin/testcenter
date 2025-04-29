@@ -2,8 +2,8 @@
 const { defineConfig } = require('cypress');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const logToOutput = require('cypress-log-to-output');
-const deleteFolder = require('./cypress/plugins/delete-folder');
-const waitForServer = require('./cypress/plugins/wait-for-server');
+const deleteFolder = require('./src/plugins/delete-folder');
+const waitForServer = require('./src/plugins/wait-for-server');
 
 const urls = {
   backend: 'http://testcenter-backend',
@@ -12,15 +12,33 @@ const urls = {
   broadcastingService: 'http://testcenter-broadcasting-service:3000'
 };
 
+const cypressJsonConfig = {
+  downloadsFolder: './cypress-headless/downloads',
+  fileServerFolder: '.',
+  fixturesFolder: './src/fixtures',
+  video: true,
+  videosFolder: './cypress-headless/videos',
+  screenshotsFolder: './cypress-headless/screenshots',
+  chromeWebSecurity: false,
+  specPattern: 'src/e2e/**/*.cy.{js,jsx,ts,tsx}',
+  supportFile: 'src/support/e2e.ts'
+};
+
 module.exports = defineConfig({
-  reporter: 'junit',
+  // reporter: 'junit', https://github.com/cypress-io/cypress/issues/4602
   reporterOptions: {
-    mochaFile: 'cypress/results/output.xml'
+    mochaFile: 'cypress-headless/results/output.xml'
   },
-  requestTimeout: 10000,
+  defaultCommandTimeout: 15000,
+  requestTimeout: 45000,
+  responseTimeout: 60000,
   video: true,
   screenshotOnRunFailure: true,
   e2e: {
+    ...cypressJsonConfig,
+    env: {
+      urls
+    },
     setupNodeEvents(on) {
       on('task', { deleteFolder });
       logToOutput.install(on, (type, event) => event.level === 'error' || event.type === 'error');
@@ -30,9 +48,6 @@ module.exports = defineConfig({
         await waitForServer(`${urls.fileService}/health`);
         await waitForServer(urls.frontend);
       });
-    },
-    env: {
-      urls
     },
     testIsolation: true
   }

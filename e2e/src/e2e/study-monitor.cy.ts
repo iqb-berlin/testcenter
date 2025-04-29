@@ -1,13 +1,16 @@
 import {
-  deleteDownloadsFolder, loginMonitor, resetBackendData, visitLoginPage
+  deleteDownloadsFolder,
+  loginMonitor,
+  resetBackendData,
+  visitLoginPage
 } from './utils';
 
 describe('Study-Monitor User', () => {
   before(() => {
+    deleteDownloadsFolder();
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
-    deleteDownloadsFolder();
   });
   beforeEach(() => {
     visitLoginPage();

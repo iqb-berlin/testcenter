@@ -114,9 +114,9 @@ test-file-service-api:
 			npm run file-service:api-test
 
 # Performs some e2e tests with CyPress against real backend and services
-# Param: (optional) spec - specific spec to run (example: spec=Test-Controller/RunHotReturn), omit parameter for all.
+# Param: (optional) spec - specific spec to run (example: spec=Test-Controller/hot-return), omit parameter for all.
 test-system-headless:
-	cd $(TC_BASE_DIR) &&\
+	-cd $(TC_BASE_DIR) &&\
 	make down &&\
 	SPEC=$(spec) \
 	docker compose\
@@ -127,6 +127,14 @@ test-system-headless:
 		up\
 			--abort-on-container-exit\
 			--exit-code-from=testcenter-e2e
+	@cd $(TC_BASE_DIR) &&\
+	docker compose --progress quiet\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+			--file e2e/docker-compose.system-test-headless.yml\
+		down &&\
+	docker image rm testcenter-testcenter-e2e
 
 test-system:
 	cd $(TC_BASE_DIR) &&\
@@ -134,5 +142,11 @@ test-system:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		up -d
-	cd $(TC_BASE_DIR) && bash e2e/run-e2e.sh
+		up -d &&\
+	bash e2e/run-e2e.sh
+	@cd $(TC_BASE_DIR) &&\
+	docker compose --progress quiet\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		down

@@ -2,6 +2,7 @@ stages:
   - .pre
   - build
   - test
+  - test-e2e
   #  - lint
   #  - audit
   - deploy
@@ -1221,8 +1222,8 @@ test-backend-initialization:
           --abort-on-container-exit
           --exit-code-from=testcenter-initialization-test-backend
 
-test-e2e:
-  stage: test
+test-e2e-group-monitor:
+  stage: test-e2e
   allow_failure: true
   needs:
     - build-backend
@@ -1242,6 +1243,7 @@ test-e2e:
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
+    - export SPEC=Group-Monitor/**/*
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
@@ -1249,7 +1251,6 @@ test-e2e:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1258,7 +1259,7 @@ test-e2e:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1269,8 +1270,307 @@ test-e2e:
   artifacts:
     when: always
     paths:
-      - e2e/cypress/videos/**/*.mp4
-      - e2e/cypress/screenshots/**/*.png
+      - e2e/cypress-headless
+
+test-e2e-session-management:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Session-Management/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+test-e2e-super-admin:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Super-Admin/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+test-e2e-sys-check:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Sys-Check/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+test-e2e-test-controller:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Test-Controller/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+test-e2e-workspace-admin:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Workspace-Admin/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+test-e2e-misc:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcasting-service
+    - build-file-service
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+  script:
+    - docker compose
+          --env-file .env.dev-template
+          --file docker-compose.yml
+          --file docker-compose.dev.yml
+          --file e2e/docker-compose.system-test-headless.yml
+        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
 
 
 build-backend-prod:
