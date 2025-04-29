@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Änderungen
+* Alle Container laufen ohne root-Rechte
+
 ## 16.1.2
 ### Bugfixes
 * Doppelte Einträge von Booklets (`tests`) werden im Migrationsskript für 16.1.0 nachträglich bereinigt. Die Abhängigkeiten `test_logs`,`test_reviews`, `units` werden auf dem Eintrag der `tests` Tabelle mit der niedrigsten ID vereinigt.
