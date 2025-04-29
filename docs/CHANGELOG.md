@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.0.0
+### Änderungen
+* Alle Container laufen ohne root-Rechte
+
 ## 16.3.0
 ### neue Features
 * Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
