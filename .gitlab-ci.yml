@@ -1251,7 +1251,6 @@ test-e2e-group-monitor:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1302,7 +1301,6 @@ test-e2e-session-management:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1353,7 +1351,6 @@ test-e2e-super-admin:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1404,7 +1401,6 @@ test-e2e-sys-check:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1455,7 +1451,6 @@ test-e2e-test-controller:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1506,7 +1501,6 @@ test-e2e-workspace-admin:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
@@ -1557,7 +1551,6 @@ test-e2e-misc:
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
