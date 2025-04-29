@@ -35,6 +35,7 @@ test-backend-api:
 			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
+	docker image rm testcenter-testcenter-task-runner-backend
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)

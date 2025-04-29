@@ -1122,7 +1122,7 @@ test-backend-api:
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-backend
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-task-runner-backend
   script:
     - docker compose
           --env-file .env.dev-template
