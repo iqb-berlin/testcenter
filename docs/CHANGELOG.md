@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 17.0.0
 ### Änderungen
 * Alle Container laufen ohne root-Rechte
 
