@@ -11,6 +11,8 @@ image: ${DOCKER_HUB_PROXY}${BASE_IMAGE}
 
 services:
   - name: ${DOCKER_SERVICE}
+    variables:
+      HEALTHCHECK_TCP_PORT: "2375"
     entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]
     alias: docker
 
@@ -24,7 +26,7 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DAEMON_OPTIONS: "--mtu=${DOCKER_SERVICE_MTU}"
   DOCKER_SERVICE: ${DOCKER_HUB_PROXY}docker:27.3-dind
-  DOCKER_SERVICE_MTU: 1442
+  DOCKER_SERVICE_MTU: 1392
   DOCKER_TLS_CERTDIR: ''
   TRAEFIK_BASE_IMAGE: ${DOCKERHUB_PROXY}traefik:v2.11
   DB_BASE_IMAGE: ${DOCKERHUB_PROXY}mysql:8.0
