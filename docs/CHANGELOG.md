@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Bugfixes
+* Der Custom Text `gm_show_monitor` wird nun richtig angewandt
+
 ## 16.1.1
 ### Änderungen
 * Akkordion Element im Testleitungskonsole ist standard expanded.
