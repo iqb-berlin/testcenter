@@ -3,6 +3,7 @@ layout: default
 ---
 ## [next]
 ### Bugfixes
+* Doppelte Einträge von Booklets (`tests`) werden im Migrationsskript für 16.1.0 nachträglich bereinigt. Die Abhängigkeiten `test_logs`,`test_reviews`, `units` werden auf dem Eintrag der `tests` Tabelle mit der niedrigsten ID vereinigt.
 * Der Custom Text `gm_show_monitor` wird nun richtig angewandt
 
 ## 16.1.1
