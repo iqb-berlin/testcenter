@@ -47,7 +47,7 @@ class FileService {
 
   public static function getUri(): string {
     if (!SystemConfig::$fileService_external) {
-      return Server::getUrl() . '/';
+      return Server::getUrl() . '/api/'; # @TODO: Fix routing in general
     }
     $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
     return $proto . SystemConfig::$fileService_external;
