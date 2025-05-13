@@ -38,7 +38,7 @@ image:
 config:
   backend:
     broadcastServiceEnabled: true
-    fileServiceEnabled: true
+    fileServiceEnabled: false
     cacheServiceRam: 1073741824
     cacheServiceIncludeFiles: false
 
