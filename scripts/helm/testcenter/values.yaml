@@ -8,37 +8,44 @@ image:
   # Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
   # GitLab:           scm.cms.hu-berlin.de:4567/iqb/studio-lite/
   broadcasting:
+    imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
   frontend:
+    imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
   cacheServer:
+    imagePullPolicy: Always
     registryPath: ""
     tag: "7.4-bookworm"
 
   fileServer:
+    imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
   backend:
+    imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
   db:
+    imagePullPolicy: Always
     registryPath: ""
     tag: "8.0"
 
   busybox:
+    imagePullPolicy: Always
     registryPath: ""
     tag: "1.28"
 
 config:
   backend:
     broadcastServiceEnabled: true
-    fileServiceEnabled: true
+    fileServiceEnabled: false
     cacheServiceRam: 1073741824
     cacheServiceIncludeFiles: false
 
