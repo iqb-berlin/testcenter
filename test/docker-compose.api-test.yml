@@ -4,7 +4,7 @@ services:
       - ./sampledata:/var/www/html
       - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/html/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: off
+      CACHE_SERVICE_INCLUDE_FILES: false
 
   testcenter-task-runner:
     container_name: testcenter-task-runner
