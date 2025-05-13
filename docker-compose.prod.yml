@@ -52,8 +52,6 @@ services:
       - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
-    volumes:
-      - testcenter_backend_vo_data:/var/www/testcenter/data
 
   testcenter-db:
     image: ${DOCKERHUB_PROXY}mysql:8.0
