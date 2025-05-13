@@ -41,8 +41,8 @@ data:
       lua_package_path "/usr/share/nginx/auth/?.lua;;";
 
       map $http_testmode $root {
-        default /var/www/html;
-        integration /var/www/data-TEST;
+        default /var/www/testcenter/data;
+        integration /var/www/testcenter/data-TEST;
       }
 
       server {
