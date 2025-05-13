@@ -21,6 +21,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-file-server-container
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
