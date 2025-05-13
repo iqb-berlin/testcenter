@@ -85,8 +85,7 @@ test-frontend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-frontend\
-			npx ng test --watch=false
+		testcenter-frontend test --watch=false
 
 test-frontend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
@@ -94,8 +93,7 @@ test-frontend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-frontend\
-			npx ng test --watch=false --code-coverage
+		testcenter-frontend test --watch=false --code-coverage
 
 # Performs some integration tests with CyPress against mocked backend with Prism
 test-frontend-integration:
