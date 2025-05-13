@@ -81,11 +81,6 @@ services:
       - testcenter
 
   testcenter-backend:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-backend.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
-      - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
-      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
     build:
       dockerfile: backend/Dockerfile
       target: dev

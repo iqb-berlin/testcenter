@@ -6,7 +6,7 @@ const deleteFolder = require('./src/plugins/delete-folder');
 const waitForServer = require('./src/plugins/wait-for-server');
 
 const urls = {
-  backend: 'http://testcenter-backend',
+  backend: 'http://testcenter-backend:8080',
   fileService: 'http://testcenter-file-service',
   frontend: 'http://testcenter-frontend:4200',
   broadcastingService: 'http://testcenter-broadcasting-service:3000'
