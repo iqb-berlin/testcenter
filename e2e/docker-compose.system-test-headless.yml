@@ -7,8 +7,12 @@ services:
     build:
       dockerfile: e2e/Dockerfile
     environment:
-      - CYPRESS_baseUrl=http://testcenter-frontend:4200
-    command: "npx cypress run --browser chrome --spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
+      - CYPRESS_baseUrl=http://testcenter-frontend:8080
+    command: [
+      "npx", "cypress", "run",
+      "--browser", "chrome",
+      "--spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
+    ]
     volumes:
       - ./e2e/cypress-headless:/usr/src/testcenter/e2e/cypress-headless
       - ./e2e/src:/usr/src/testcenter/e2e/src
@@ -31,4 +35,4 @@ services:
         external=testcenter-broadcasting-service:3000/
 
   testcenter-frontend:
-    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
+    command: "serve --configuration e2e --disable-host-check --host 0.0.0.0 --port 8080"
