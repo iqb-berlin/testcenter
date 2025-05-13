@@ -15,6 +15,41 @@ deployment:
   #     - name: data
   #       mountPath: /data
 
+ingressRoute:
+  dashboard:
+    # -- Create an IngressRoute for the dashboard
+    enabled: true
+    # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
+    annotations: {}
+    # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
+    labels: {}
+    # -- The router match rule used for the dashboard ingressRoute
+    matchRule: Host(`traefik.testcenter.domain.tld`)
+    # -- The internal service used for the dashboard ingressRoute
+    services:
+      - name: api@internal
+        kind: TraefikService
+    # -- Specify the allowed entrypoints to use for the dashboard ingress route, (e.g. traefik, web, websecure).
+    # By default, it's using traefik entrypoint, which is not exposed.
+    # /!\ Do not expose your dashboard without any protection over the internet /!\
+    entryPoints: ["websecure"]
+    # -- Additional ingressRoute middlewares (e.g. for authentication)
+    middlewares: []
+    # -- TLS options (e.g. secret containing certificate)
+    tls: {}
+
+logs:
+  general:
+    # -- Set [logs format](https://doc.traefik.io/traefik/observability/logs/#format)
+    format:  # @schema enum:["common", "json", null]; type:[string, null]; default: "common"
+    # By default, the level is set to INFO.
+    # -- Alternative logging levels are TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and PANIC.
+    level: "DEBUG"  # @schema enum:[TRACE,DEBUG,INFO,WARN,ERROR,FATAL,PANIC]; default: "INFO"
+    # -- To write the logs into a log file, use the filePath option.
+    filePath: ""
+    # -- When set to true and format is common, it disables the colorized output.
+    noColor: false
+
 globalArguments:
   - "--global.checknewversion=false"
   - "--global.sendanonymoususage=false"
