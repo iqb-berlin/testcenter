@@ -63,8 +63,8 @@ services:
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
-    volumes:
-      - testcenter_backend_vo_data:/var/www/html/
+    volumes_from:
+      - testcenter-backend:ro
     networks:
       testcenter:
 
@@ -99,6 +99,8 @@ services:
       interval: 5m
       timeout: 30s
       retries: 3
+    volumes:
+      - testcenter_backend_vo_data:/var/www/testcenter/data
     networks:
       testcenter:
 
