@@ -37,12 +37,12 @@ RUN --mount=type=cache,sharing=locked,target=~/.angular/cache \
 
 
 FROM base AS dev
-EXPOSE 4200
+EXPOSE 8080
 
 COPY frontend/proxy.conf.json .
 RUN sed -i "s|localhost|testcenter-backend|" proxy.conf.json
 
-CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--host", "0.0.0.0"]
+ENTRYPOINT ["npx", "ng"]
 
 
 FROM ${REGISTRY_PATH}nginxinc/nginx-unprivileged:stable AS prod
