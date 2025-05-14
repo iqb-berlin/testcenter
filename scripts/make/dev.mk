@@ -119,6 +119,15 @@ composer-refresh-autoload:
 	cd $(TC_BASE_DIR) && make build service=testcenter-backend
 	cd $(TC_BASE_DIR) && make up service=testcenter-backend
 
+# Copies data folder from Backend Container into local, to better be able to work with files in the IDE
+data-pull:
+	cd $(TC_BASE_DIR) && docker cp testcenter-backend:/var/www/testcenter/data ./data
+
+# Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
+# from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
+data-push:
+	cd $(TC_BASE_DIR) && tar -c -f - ./data  --owner www-data --group www-data | docker cp - testcenter-backend:/var/www/testcenter
+
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
 	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
