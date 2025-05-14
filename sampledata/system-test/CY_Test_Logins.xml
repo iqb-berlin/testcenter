@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.1.1/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.0.0/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>Logins für die Cypress Controller-Tests</Description>
@@ -107,8 +107,23 @@
   </Group>
 
   <Group id="SM_syscheck" label="SessionManagement Sys-Check">
-    <Login mode="sys-check-login" name="syscheck" />
+    <Login mode="sys-check-login" name="syscheck" pw="123"/>
+    <Login mode="sys-check-login" name="123" pw="123"/>
   </Group>
 
+  <Group id="bookletConfig" label="booklet config parameter check">
+    <Login mode="run-hot-restart" name="bklConfigDefault" pw="123">
+      <Booklet>bklConfigDefaults</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="bklConfigValue1" pw="123">
+      <Booklet>bklConfigValue1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="bklConfigValue2" pw="123">
+      <Booklet>bklConfigValue2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="bklConfigValue3" pw="123">
+      <Booklet>bklConfigValue3</Booklet>
+    </Login>
+  </Group>
 
 </Testtakers>

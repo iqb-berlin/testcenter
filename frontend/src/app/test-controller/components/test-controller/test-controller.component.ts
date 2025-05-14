@@ -306,7 +306,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (this.tcs.timerWarningPoints.includes(minute)) {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
-          this.snackBar.open(text, '', { duration: 5000 });
+          this.snackBar.open(text, '', {
+            duration: 5000,
+            panelClass: ['snackbar-timerWarning']
+          });
         }
         return true;
       default:
