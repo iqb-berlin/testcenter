@@ -159,6 +159,14 @@
     },
     "defaultvalue": "OFF"
   },
+  "show_reload_button": {
+    "label": "Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?",
+    "options": {
+      "ON": "Ja.",
+      "OFF": "Nein."
+    },
+    "defaultvalue": "OFF"
+  },
   "unit_responses_buffer_time": {
     "label": "Speicherfrequenz für Antworten in Ms.",
     "options": {},
