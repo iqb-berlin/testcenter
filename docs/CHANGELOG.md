@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Neue `<BookletConfig>` in der Booklet.xml:
+  * `show_reload_button` - Man kann sich in der Applikation selbst einen Reload Button anzeigen lassen, der sich wie der normale Reload Button des Browsers verhält. Dies ist im Zusammenspiel mit dem Kiosk Modus nützlich, da hier die gesamte Browsernavigation ausgeschaltet ist, aber manchmal dennoch ein Reload gebraucht wird. Default: OFF
+
 ## 16.1.2
 ### Bugfixes
 * Doppelte Einträge von Booklets (`tests`) werden im Migrationsskript für 16.1.0 nachträglich bereinigt. Die Abhängigkeiten `test_logs`,`test_reviews`, `units` werden auf dem Eintrag der `tests` Tabelle mit der niedrigsten ID vereinigt.
