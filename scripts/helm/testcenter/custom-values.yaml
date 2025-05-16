@@ -1,8 +1,15 @@
 secret:
+  fileServer:
+    redisPassword: &redisPassword change_me
+
   backend:
+    redisPassword: *redisPassword
     mysqlUser: &dbUser iqb_tba_db_user
     mysqlPassword: &dbUserPassword change_me
     passwordSalt: change_me
+
+  cacheServer:
+    redisPassword: *redisPassword
 
   db:
     mysqlUser: *dbUser
@@ -19,9 +26,6 @@ ingress:
 
 persistence:
   longhornEnabled: false
-
-  cacheServerPvcStorageClassName: standard
-  cacheServerPvcAccessMode: ReadWriteOnce
 
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce

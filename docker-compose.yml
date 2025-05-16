@@ -4,6 +4,12 @@
 x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-always}"
 
+x-env-redis: &env-redis
+  REDIS_HOST: testcenter-cache-service
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -45,24 +51,14 @@ services:
     networks:
       testcenter:
 
-  testcenter-cache-service:
-    <<: *restart-policy
-    container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
-    command:
-      - "bash"
-      - "-c"
-      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
-    networks:
-      testcenter:
-
   testcenter-file-service:
     <<: *restart-policy
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
+    depends_on:
+      - testcenter-cache-service
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
+      <<: *env-redis
     volumes:
       - testcenter_backend_vo_data:/var/www/html/
     networks:
@@ -72,6 +68,11 @@ services:
     <<: *restart-policy
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
+    depends_on:
+      testcenter-db:
+        condition: service_healthy
+      testcenter-cache-service:
+        condition: service_started
     entrypoint: /entrypoint.sh
     environment:
       HOSTNAME: ${HOSTNAME}
@@ -79,19 +80,14 @@ services:
       TLS_PORT_OF_REVERSE_PROXY: ${HTTPS_PORT:-443}
       TLS_ENABLED: ${TLS_ENABLED:-true}
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
+      <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
-      <<: *env-mysql
       PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
       options:
         <<: *env-logging-conf
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost" ]
       start_period: 60s
@@ -99,6 +95,22 @@ services:
       interval: 5m
       timeout: 30s
       retries: 3
+    networks:
+      testcenter:
+
+  testcenter-cache-service:
+    <<: *restart-policy
+    container_name: testcenter-cache-service
+    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    user: redis
+    command: [
+      "redis-server",
+      "--requirepass", "${REDIS_PASSWORD}",
+      "--maxmemory", "${REDIS_MEMORY_MAX:-1gb}",
+      "--maxmemory-policy", "volatile-lru",
+      "--save", '""',
+      "--appendonly", "no"
+    ]
     networks:
       testcenter:
 
