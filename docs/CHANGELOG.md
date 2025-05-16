@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 16.2.0
 ### neue Features
 * Neue `<BookletConfig>` in der Booklet.xml:
   * `show_reload_button` - Man kann sich in der Applikation selbst einen Reload Button anzeigen lassen, der sich wie der normale Reload Button des Browsers verhält. Dies ist im Zusammenspiel mit dem Kiosk Modus nützlich, da hier die gesamte Browsernavigation ausgeschaltet ist, aber manchmal dennoch ein Reload gebraucht wird. Default: OFF
