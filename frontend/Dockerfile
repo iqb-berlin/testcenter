@@ -39,6 +39,9 @@ RUN --mount=type=cache,sharing=locked,target=~/.angular/cache \
 FROM base AS dev
 EXPOSE 4200
 
+COPY frontend/proxy.conf.json .
+RUN sed -i "s|localhost|testcenter-file-service|" proxy.conf.json
+
 CMD ["npx", "ng", "serve", "--configuration", "dev", "--disable-host-check", "--host", "0.0.0.0"]
 
 

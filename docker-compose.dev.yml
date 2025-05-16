@@ -60,11 +60,6 @@ services:
       - "6379:6379"
 
   testcenter-file-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
     build:
       dockerfile: file-service/Dockerfile
       args:
@@ -77,7 +72,7 @@ services:
       - ./data:/var/www/html/
       - ./file-service/nginx.conf:/etc/nginx/nginx.conf
       - ./file-service/auth/:/usr/share/nginx/auth
-      - ./file-service/no-cors.conf:/etc/nginx/conf.d/cors.conf
+      - ./file-service/cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 

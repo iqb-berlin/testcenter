@@ -1,0 +1,10 @@
+{
+  "/fs/": {
+    "target": "http://localhost:8080/",
+    "secure": false,
+    "pathRewrite": {
+      "^/fs": ""
+    },
+    "logLevel": "debug"
+  }
+}
