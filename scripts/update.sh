@@ -756,7 +756,7 @@ main() {
     printf "\n"
     printf "[1] Update '%s' application\n" "${APP_NAME}"
     #    printf "[2] Update application infrastructure\n"
-    printf "[3] Exit update script\n\n"
+    printf "[2] Exit update script\n\n"
 
     declare choice
     #    while read -p 'What do you want to do? [1-3] ' -er -n 1 choice; do
