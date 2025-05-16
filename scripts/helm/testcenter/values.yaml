@@ -105,10 +105,6 @@ persistence:
   longhornUIEnabled: false
   longhornUISubdomain: longhorn
 
-  cacheServerPvcStorageClassName: standard
-  cacheServerPvcAccessMode: ReadWriteOnce
-  cacheServerPvcSize: 1Gi
-
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
   backendPvcSize: 2Gi
