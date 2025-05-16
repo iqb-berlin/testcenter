@@ -110,8 +110,10 @@ services:
     command: [
       "redis-server",
       "--requirepass", "${REDIS_PASSWORD}",
-      "--maxmemory", "${REDIS_MEMORY_MAX:-1073741824}",
-      "--maxmemory-policy", "volatile-lru"
+      "--maxmemory", "${REDIS_MEMORY_MAX:-1gb}",
+      "--maxmemory-policy", "volatile-lru",
+      "--save", '""',
+      "--appendonly", "no"
     ]
     networks:
       testcenter:
