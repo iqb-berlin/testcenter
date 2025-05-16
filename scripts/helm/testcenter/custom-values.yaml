@@ -27,9 +27,6 @@ ingress:
 persistence:
   longhornEnabled: false
 
-  cacheServerPvcStorageClassName: standard
-  cacheServerPvcAccessMode: ReadWriteOnce
-
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
 

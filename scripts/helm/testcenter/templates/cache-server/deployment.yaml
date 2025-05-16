@@ -25,7 +25,9 @@ spec:
           args: [
             "--requirepass", "$(REDIS_PASSWORD)",
             "--maxmemory", "$(REDIS_MEMORY_MAX)",
-            "--maxmemory-policy", "volatile-lru"
+            "--maxmemory-policy", "volatile-lru",
+            "--save", '""',
+            "--appendonly", "no"
           ]
           ports:
             - name: http-container
@@ -41,11 +43,3 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-cache-server-config
                   key: REDIS_MEMORY_MAX
-          # vielleicht nur der Volume mount benötigt
-          volumeMounts:
-            - name: lv-storage
-              mountPath: /data
-      volumes:
-        - name: lv-storage
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-cache-server-pvc
