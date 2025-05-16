@@ -157,7 +157,7 @@ export class MainDataService {
       this._authData$.next(null);
       localStorage.removeItem(localStorageAuthDataKey);
     }
-    this.bs.clearCache();
+    this.bs.clearCache(); // todo this function is not called (subscribe() missing). think about consequences
     setTimeout(() => { window.location.href = '/'; }, 100);
   }
 

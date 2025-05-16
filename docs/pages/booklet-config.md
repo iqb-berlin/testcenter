@@ -128,6 +128,11 @@ Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
  * "ON" - Ja.
  * **"OFF" - Nein.**
 
+### show_reload_button
+Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?
+ * "ON" - Ja.
+ * **"OFF" - Nein.**
+
 ### unit_responses_buffer_time
 Speicherfrequenz für Antworten in Ms.
  * **5000**
