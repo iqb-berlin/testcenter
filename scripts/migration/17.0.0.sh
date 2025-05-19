@@ -1,6 +1,7 @@
 #!/bin/bash
 
 declare TARGET_VERSION="17.0.0"
+declare APP_NAME='testcenter'
 
 migrate_env_file() {
   source .env.prod
@@ -29,11 +30,23 @@ migrate_env_file() {
   sed -i.bak "/^## Cache Service/a REDIS_PASSWORD=${REDIS_PASSWORD}" .env.prod && rm .env.prod.bak
 }
 
+migrate_make_testcenter_update_cmd() {
+  if ! grep -q '.sh -s \$(VERSION)' scripts/make/${APP_NAME}.mk; then
+    sed -i.bak "s|scripts/update_${APP_NAME}.sh|scripts/update_${APP_NAME}.sh -s \$(VERSION)|" \
+      "${PWD}/scripts/make/${APP_NAME}.mk" && rm "${PWD}/scripts/make/${APP_NAME}.mk.bak"
+  fi
+
+  printf "File '%s' patched.\n" "scripts/make/${APP_NAME}.mk"
+}
+
 main() {
   printf "Applying patch: %s ...\n" ${TARGET_VERSION}
 
   # Migrate docker environment file
   migrate_env_file
+
+  # Migrate make command 'testcenter-update'
+  migrate_make_testcenter_update_cmd
 
   printf "Patch %s applied.\n" ${TARGET_VERSION}
 }
