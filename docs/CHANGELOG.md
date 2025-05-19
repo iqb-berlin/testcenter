@@ -52,7 +52,7 @@ layout: default
 * Der ablaufende Timer wird nun mit einem Webworker im Browser umgesetzt. Sollte eine Testperson eine längere Zeit nicht den Fokus auf dem Testcenter-Tab haben, so läuft die Zeit nun unbeirrt weiter.
 * Adminbereich: Die Gruppen im Tab "Ergebniss/Antworten" zeigen die einzigartige ID als Tooltip an, hilfreich wenn es das selbe Label mehrmals gibt
 * Testleiterkonsole: Das Blocklabel zeigt nun die BlockId mit 'Block 1' an, statt nur '1' (wenn kein Label für den Block gesetzt wurde)
-* Die Websocket Verbindung funktioniert nun auch weiterhin, nachdem der Broadcasting-Service neu gestartet wird.
+* Die Websocket Verbindung funktioniert nun auch weiterhin, nachdem der Broadcasting-Server neu gestartet wird.
 
 ## 16.0.0
 ### Kubernetes
@@ -485,7 +485,7 @@ layout: default
   Stattdessen sollte das Navigationsmenü in der Sidebar angeboten werden (`unit_menu` auf `FULL`).
 * Kritischer Fehler der Update-Routine von 14.3.0 zu 14.4.0 behoben.
 * Startkommando `make run` repariert.
-* Sicherheitsrelevante Header von Backend und Broadcasting-Service werden nun korrekt ausgeliefert*
+* Sicherheitsrelevante Header von Backend und Broadcasting-Server werden nun korrekt ausgeliefert*
 
 ### Für Administratoren
 * die Konfigurationsdatei hieß mal ssl-config.yml, mal tls-config.yml. Nun muss sie immer tls-config.yml heißen.
@@ -608,7 +608,7 @@ layout: default
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
 
 ### Verbesserungen
-* Veränderter Anwendungsparameter für Broadcasting-Service
+* Veränderter Anwendungsparameter für Broadcasting-Server
   - Kann nun mittels BROADCAST_SERVICE_ENABLED an- und abgeschaltet werden
   - Die zugehörigen URLs werden dynamisch anhand dieses Schalters generiert und
     tauchen nicht mehr in der Konfigurationsdatei (.env) auf
@@ -861,7 +861,7 @@ aware of it:
 
 ## Backend 12.2.3
 ### Bugfixes
-* Fix critical bug in communication between broadcasting-service and backend
+* Fix critical bug in communication between broadcasting-server and backend
 
 ## Backend 12.2.1
 Set a maximum for filenames in workspace of 120 characters.
@@ -996,7 +996,7 @@ This update contains various changes around the improved Group-Monitor.
 * A new endpoint `[GET] /system/time` was added to retrieve the server's time and time zone.
 * A new endpoint where added: `/monitor/group/{group_name}/tests/unlock`
 * A new endpoint was added: `[POST] /test/{test_id}/connection-lost`. It can be triggered by a closing browser as well
-  as from the broadcasting-service to notify a lost connection to the testController. Note: This endpoint does not
+  as from the broadcasting-server to notify a lost connection to the testController. Note: This endpoint does not
   need any credentials.
 ### Database
 * See `scripts/sql-schema/patches.mysql.d/11.0.0`

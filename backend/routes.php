@@ -16,7 +16,7 @@ $app->group('/booklet', function (RouteCollectorProxy $group) {
 })
   ->add(new RequireToken('person'));
 
-$app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
+$app->get('/flush-broadcasting-server', [SystemController::class, 'getFlushBroadcastingService']);
 
 $app->post('/clear-cache', [SystemController::class, 'postClearCache']);
 

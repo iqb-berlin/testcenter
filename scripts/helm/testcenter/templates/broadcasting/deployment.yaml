@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-broadcasting-container
-          image: "{{ .Values.image.broadcasting.registryPath }}iqbberlin/testcenter-broadcasting-service:{{ .Values.image.broadcasting.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.broadcasting.registryPath }}iqbberlin/testcenter-broadcasting-server:{{ .Values.image.broadcasting.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.broadcasting.imagePullPolicy }}
           ports:
             - name: http-container

@@ -43,9 +43,9 @@ TAG := dev
 				--no-cache\
 				--rm\
 				--target=prod\
-				--file $(TC_BASE_DIR)/broadcasting-service/Dockerfile\
-				--tag iqbberlin/testcenter-broadcasting-service:$(TAG)\
-				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-service:$(TAG)\
+				--file $(TC_BASE_DIR)/broadcasting-server/Dockerfile\
+				--tag iqbberlin/testcenter-broadcasting-server:$(TAG)\
+				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-server:$(TAG)\
 			.
 
 # Push all docker images to 'hub.docker.com'
@@ -54,7 +54,7 @@ push-dockerhub: .build
 	docker push iqbberlin/testcenter-backend:$(TAG)
 	docker push iqbberlin/testcenter-file-service:$(TAG)
 	docker push iqbberlin/testcenter-frontend:$(TAG)
-	docker push iqbberlin/testcenter-broadcasting-service:$(TAG)
+	docker push iqbberlin/testcenter-broadcasting-server:$(TAG)
 	docker logout
 
 # Push all docker images to 'scm.cms.hu-berlin.de:4567/iqb/testcenter'
@@ -63,5 +63,5 @@ push-iqb-registry: .build
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-backend:$(TAG)
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-service:$(TAG)
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-frontend:$(TAG)
-	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-service:$(TAG)
+	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-server:$(TAG)
 	docker logout

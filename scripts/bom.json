@@ -20,7 +20,7 @@
       "command": "???"
     }
   },
-  "broadcasting-service": {
+  "broadcasting-server": {
     "node": {
       "command": "node -v"
     },

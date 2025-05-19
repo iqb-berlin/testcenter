@@ -6,7 +6,7 @@ ARG NODE_VERSION=20.18-bookworm-slim
 FROM ${REGISTRY_PATH}node:${NODE_VERSION} AS base
 ENV NODE_ENV=production
 
-WORKDIR /usr/src/testcenter/broadcasting-service
+WORKDIR /usr/src/testcenter/broadcasting-server
 
 # Update npm to latest version
 RUN npm --version
@@ -15,11 +15,11 @@ RUN --mount=type=cache,sharing=locked,target=~/.npm \
 RUN npm --version
 
 COPY common ../common
-COPY broadcasting-service/package*.json .
-COPY broadcasting-service/nest-cli.json .
-COPY broadcasting-service/tsconfig.json .
-COPY broadcasting-service/tsconfig.spec.json .
-COPY broadcasting-service/src ./src
+COPY broadcasting-server/package*.json .
+COPY broadcasting-server/nest-cli.json .
+COPY broadcasting-server/tsconfig.json .
+COPY broadcasting-server/tsconfig.spec.json .
+COPY broadcasting-server/src ./src
 
 # Install dependencies
 RUN --mount=type=cache,sharing=locked,target=~/.npm \
@@ -45,7 +45,7 @@ CMD ["npx", "nest", "start", "--watch", "--preserveWatchOutput"]
 
 
 FROM base AS prod
-WORKDIR /var/www/broadcasting-service
+WORKDIR /var/www/broadcasting-server
 
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
@@ -53,8 +53,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     npm ci --omit=dev --no-fund
 
 RUN chown -R node:node /usr/src/testcenter
-COPY --chown=node:node --from=base /usr/src/testcenter/broadcasting-service/node_modules/ node_modules/
-COPY --chown=node:node --from=base /usr/src/testcenter/broadcasting-service/dist/ ./
+COPY --chown=node:node --from=base /usr/src/testcenter/broadcasting-server/node_modules/ node_modules/
+COPY --chown=node:node --from=base /usr/src/testcenter/broadcasting-server/dist/ ./
 USER node
 
 CMD ["node", "main.js"]

@@ -36,7 +36,7 @@ export const resetBackendData = (): void => {
   })
     .its('status').should('eq', 200);
   cy.request({
-    url: `${Cypress.env('urls').backend}/flush-broadcasting-service`,
+    url: `${Cypress.env('urls').backend}/flush-broadcasting-server`,
     headers: { TestMode: 'integration' }
   })
     .its('status').should('eq', 200);

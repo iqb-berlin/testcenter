@@ -31,9 +31,9 @@ services:
     networks:
       testcenter:
 
-  testcenter-broadcasting-service:
-    container_name: testcenter-broadcasting-service
-    image: iqbberlin/testcenter-broadcasting-service:current
+  broadcasting-server:
+    container_name: broadcasting-server
+    image: iqbberlin/testcenter-broadcasting-server:current
     <<: *restart-policy
     logging:
       options:

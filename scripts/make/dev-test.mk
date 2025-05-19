@@ -61,22 +61,22 @@ test-backend-initialization-general:
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/install-db-patches
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/re-initialize
 
-test-broadcasting-service-unit:
+test-broadcasting-server-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcasting-server\
 			npx jest
 
-test-broadcasting-service-unit-coverage:
+test-broadcasting-server-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcasting-server\
 			npx jest --coverage
 
 test-frontend-unit:

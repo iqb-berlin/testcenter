@@ -55,7 +55,7 @@ include:
         - backend/**/*
         - scripts/database/**/*
 
-.broadcasting-service-feature-rules:
+.broadcasting-server-feature-rules:
   rules:
     - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
@@ -63,7 +63,7 @@ include:
         ($CI_COMMIT_BRANCH != "release/lts") &&
         ($CI_PIPELINE_SOURCE != "external_pull_request_event")
       changes:
-        - broadcasting-service/**/*
+        - broadcasting-server/**/*
 
 .common-feature-rules:
   rules:
@@ -240,12 +240,12 @@ check-backend-feature-rules:
       then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
       else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
 
-check-broadcasting-service-feature-rules:
+check-broadcasting-server-feature-rules:
   stage: .pre
   interruptible: true
   allow_failure: true
   rules:
-    - !reference [ .broadcasting-service-feature-rules, rules ]
+    - !reference [ .broadcasting-server-feature-rules, rules ]
   script:
     - echo $CI_COMMIT_BRANCH
     - echo $CI_PIPELINE_SOURCE
@@ -757,17 +757,17 @@ build-frontend:
         printf 'Frontend build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
-build-broadcasting-service:
+build-broadcasting-server:
   stage: build
   needs: []
   rules:
-    # - !reference [ .broadcasting-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .broadcasting-server-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -788,7 +788,7 @@ build-broadcasting-service:
             --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
             --build-arg BUILDKIT_INLINE_CACHE=1
             --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
-            --file broadcasting-service/Dockerfile
+            --file broadcasting-server/Dockerfile
             --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
             --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:dev
           . &&
@@ -940,7 +940,7 @@ build-docs:
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps testcenter-task-runner
-            npm run broadcasting-service:update-compodoc &&
+            npm run broadcasting-server:update-compodoc &&
         docker compose
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
@@ -968,7 +968,7 @@ build-docs:
       - docs/dist/custom-texts.md
       - docs/dist/test-session-super-states.html
       - docs/dist/compodoc-frontend/*
-      - docs/dist/compodoc-broadcasting-service/*
+      - docs/dist/compodoc-broadcasting-server/*
     expire_in: 30 minutes
 
 
@@ -1064,17 +1064,17 @@ test-frontend-unit:
       - docs/dist/test-coverage-frontend-unit/*
     expire_in: 30 minutes
 
-test-broadcasting-service-unit:
+test-broadcasting-server-unit:
   stage: test
   needs:
-    - build-broadcasting-service
+    - build-broadcasting-server
   rules:
-    # - !reference [ .broadcasting-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .broadcasting-server-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
@@ -1085,12 +1085,12 @@ test-broadcasting-service-unit:
       then
         docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag
-          ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current &&
+          ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current &&
         docker compose
             --env-file .env.dev-template
             --file docker-compose.yml
             --file docker-compose.dev.yml
-          run testcenter-broadcasting-service npx jest --coverage;
+          run broadcasting-server npx jest --coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
           ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
@@ -1099,7 +1099,7 @@ test-broadcasting-service-unit:
       fi
   artifacts:
     paths:
-      - docs/dist/test-coverage-broadcasting-service-unit/*
+      - docs/dist/test-coverage-broadcasting-server-unit/*
     expire_in: 30 minutes
 
 test-backend-api:
@@ -1230,7 +1230,7 @@ test-e2e-group-monitor:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1241,7 +1241,7 @@ test-e2e-group-monitor:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1257,7 +1257,7 @@ test-e2e-group-monitor:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1280,7 +1280,7 @@ test-e2e-session-management:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1291,7 +1291,7 @@ test-e2e-session-management:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1307,7 +1307,7 @@ test-e2e-session-management:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1330,7 +1330,7 @@ test-e2e-super-admin:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1341,7 +1341,7 @@ test-e2e-super-admin:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1357,7 +1357,7 @@ test-e2e-super-admin:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1380,7 +1380,7 @@ test-e2e-sys-check:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1391,7 +1391,7 @@ test-e2e-sys-check:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1407,7 +1407,7 @@ test-e2e-sys-check:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1430,7 +1430,7 @@ test-e2e-test-controller:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1441,7 +1441,7 @@ test-e2e-test-controller:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1457,7 +1457,7 @@ test-e2e-test-controller:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1480,7 +1480,7 @@ test-e2e-workspace-admin:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1491,7 +1491,7 @@ test-e2e-workspace-admin:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1507,7 +1507,7 @@ test-e2e-workspace-admin:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1530,7 +1530,7 @@ test-e2e-misc:
   needs:
     - build-backend
     - build-frontend
-    - build-broadcasting-service
+    - build-broadcasting-server
     - build-file-service
     - build-e2e
   rules:
@@ -1541,7 +1541,7 @@ test-e2e-misc:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
@@ -1557,7 +1557,7 @@ test-e2e-misc:
     - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
     - docker pull --quiet ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
-        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-service:current
+        ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcasting-server:current
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -1634,13 +1634,13 @@ build-frontend-prod:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
 
-build-broadcasting-service-prod:
+build-broadcasting-server-prod:
   stage: build
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
   variables:
-    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server"
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -1654,7 +1654,7 @@ build-broadcasting-service-prod:
           --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
           --build-arg BUILDKIT_INLINE_CACHE=1
           --cache-from ${BROADCASTING_SERVICE_IMAGE_NAME}:latest
-          --file broadcasting-service/Dockerfile
+          --file broadcasting-server/Dockerfile
           --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
           --tag ${BROADCASTING_SERVICE_IMAGE_NAME}:latest
         .
@@ -1808,11 +1808,11 @@ scan-frontend-prod:
     reports:
       container_scanning: gl-container-scanning-report.json
 
-scan-broadcasting-service-prod:
+scan-broadcasting-server-prod:
   stage: test
   allow_failure: true
   needs:
-    - build-broadcasting-service-prod
+    - build-broadcasting-server-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
   image:
@@ -1827,7 +1827,7 @@ scan-broadcasting-service-prod:
     TRIVY_AUTH_URL: "$CI_REGISTRY"
     TRIVY_NO_PROGRESS: "true"
     TRIVY_CACHE_DIR: ".trivycache/"
-    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-service:${CI_COMMIT_SHA}"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcasting-server:${CI_COMMIT_SHA}"
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
@@ -2103,7 +2103,7 @@ push-pre-release:
   variables:
     BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
   before_script:
     - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
@@ -2128,7 +2128,7 @@ pages:
   needs:
     - test-backend-unit
     - test-frontend-unit
-    - test-broadcasting-service-unit
+    - test-broadcasting-server-unit
     - build-docs
   rules:
     - !reference [ .release_rules, rules ]
@@ -2161,7 +2161,7 @@ push-release:
   variables:
     BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
-    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-service"
+    BROADCASTING_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-broadcasting-server"
     FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)

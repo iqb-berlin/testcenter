@@ -19,12 +19,12 @@ Details: frontend/package.json
 
 Details: backend/composer.json
 
-## Broadcasting-Service
+## Broadcasting-Server
 
 * Node 20.9.0
 * NestJs 9.0.7
 
-broadcasting-service/package.json
+broadcasting-server/package.json
 
 ## File-Service
 

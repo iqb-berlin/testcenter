@@ -26,7 +26,7 @@ cd backend
 npm install
 cd ..
 
-cd broadcasting-service
+cd broadcasting-server
 npm install
 cd ..
 ```
@@ -83,7 +83,7 @@ Not that files-service and cache-service are currently not available in local in
 sudo --user=www-data php backend/initialize.php
 ```
 
-Tipp: If you don't want to use the broadcasting-service omit the last two lines.
+Tipp: If you don't want to use the broadcasting-server omit the last two lines.
 
 ## Serve Backend
 
@@ -108,10 +108,10 @@ cd frontend
 npm run start
 ```
 
-## Broadcasting-Service
+## Broadcasting-Server
 (optional)
 ```
-cd broadcasting-service
+cd broadcasting-server
 npm run start
 ```
 

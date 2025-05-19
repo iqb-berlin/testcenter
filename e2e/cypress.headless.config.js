@@ -9,7 +9,7 @@ const urls = {
   backend: 'http://testcenter-backend:8080',
   fileService: 'http://testcenter-file-service:8080',
   frontend: 'http://testcenter-frontend:8080',
-  broadcastingService: 'http://testcenter-broadcasting-service:3000'
+  broadcastingService: 'http://broadcasting-server:3000'
 };
 
 const cypressJsonConfig = {

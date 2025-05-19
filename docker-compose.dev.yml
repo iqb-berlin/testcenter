@@ -25,18 +25,18 @@ services:
     networks:
       - testcenter
 
-  testcenter-broadcasting-service:
+  broadcasting-server:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.routers.broadcasting-server.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.broadcasting-server.middlewares=security-headers, broadcasting-server-stripprefix"
+      - "traefik.http.middlewares.broadcasting-server-stripprefix.stripprefix.prefixes=/bs/public"
     build:
-      dockerfile: broadcasting-service/Dockerfile
+      dockerfile: broadcasting-server/Dockerfile
       target: dev
     volumes:
       - ./common:/usr/src/testcenter/common
-      - ./broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
+      - ./broadcasting-server/src:/usr/src/testcenter/broadcasting-server/src
       - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
