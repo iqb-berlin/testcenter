@@ -276,4 +276,4 @@ testcenter-import-backend-vol:
 
 # Start testcenter update procedure
 testcenter-update:
-	bash $(TC_BASE_DIR)/scripts/update.sh
+	bash $(TC_BASE_DIR)/scripts/update.sh -s $(VERSION)
