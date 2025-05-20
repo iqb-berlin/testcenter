@@ -67,6 +67,7 @@ spec:
           - www.{{ .Values.ingress.baseDomain }}
   {{- end }}
 ---
+{{- if .Values.config.backend.fileServiceEnabled }}
 
 # File Server
 apiVersion: traefik.io/v1alpha1
@@ -98,5 +99,7 @@ spec:
   tls:
     certResolver: {{ .Values.ingress.tlsCertResolver }}
   {{- end }}
+
+{{- end }}
 
 {{- end }}
