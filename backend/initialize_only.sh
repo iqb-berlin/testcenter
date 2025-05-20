@@ -23,7 +23,3 @@ fi
 
 # init data with conditions based on environment variables
 php /var/www/testcenter/backend/initialize.php $params
-
-# file-rights
-chown -R www-data:www-data /var/www/testcenter/data
-chown -R www-data:www-data /var/www/testcenter/backend/config
