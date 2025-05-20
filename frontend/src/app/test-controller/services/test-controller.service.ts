@@ -313,25 +313,24 @@ export class TestControllerService {
     this.currentTimerId = '';
   }
 
-  updateUnitStateDataParts(dataParts: KeyValuePairString, unitStateDataType: string): void {
-    if (!this.currentUnit) return;
+  updateUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
+    const unit = this.getUnit(unitSequenceId);
 
     const changedParts: KeyValuePairString = {};
     Object.keys(dataParts)
       .forEach(dataPartId => {
-        if (!this.currentUnit) return; // ts has forgotten we already checked this
         if (
-          !this.currentUnit.dataParts[dataPartId] ||
-          (this.currentUnit.dataParts[dataPartId] !== dataParts[dataPartId])
+          !unit.dataParts[dataPartId] ||
+          (unit.dataParts[dataPartId] !== dataParts[dataPartId])
         ) {
-          this.currentUnit.dataParts[dataPartId] = dataParts[dataPartId];
+          unit.dataParts[dataPartId] = dataParts[dataPartId];
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
     if (Object.keys(changedParts).length) {
       this.unitDataPartsBuffer$.next({
         testId: this.testId,
-        unitAlias: this.currentUnit.alias,
+        unitAlias: unit.alias,
         dataParts: changedParts,
         unitStateDataType
       });
@@ -339,29 +338,27 @@ export class TestControllerService {
     this.updateNavigationState(); // now, not after buffer is closed, because it affects forward/backward, not choice
   }
 
-  updateUnitState(unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
-    if (!this.currentUnit) return;
+  updateUnitState(unitSequenceId: number, unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
+    const unit = this.getUnit(unitSequenceId);
 
     const setUnitState = (stateKey: string, value: string): void => {
-      if (!this.currentUnit) return;
       if (stateKey === 'RESPONSE_PROGRESS' && isVeronaProgress(value)) {
-        this.currentUnit.state.RESPONSE_PROGRESS = value;
+        unit.state.RESPONSE_PROGRESS = value;
       }
 
       if (stateKey === 'PRESENTATION_PROGRESS' && isVeronaProgress(value)) {
-        this.currentUnit.state.PRESENTATION_PROGRESS = value;
+        unit.state.PRESENTATION_PROGRESS = value;
       }
 
       if (stateKey === 'CURRENT_PAGE_ID') {
-        this.currentUnit.state.CURRENT_PAGE_ID = value;
+        unit.state.CURRENT_PAGE_ID = value;
       }
     };
 
     const changedStates = unitStateUpdate
       .filter(state => !!state.content)
       .filter(changedState => {
-        if (!this.currentUnit) return false;
-        const oldState = this.currentUnit.state[changedState.key];
+        const oldState = unit.state[changedState.key];
         if (oldState) {
           return oldState !== changedState.content;
         }
@@ -371,7 +368,7 @@ export class TestControllerService {
       .forEach(changedState => setUnitState(changedState.key, changedState.content));
     if (changedStates.length) {
       this.unitStateBuffer$.next({
-        unitAlias: this.currentUnit.alias,
+        unitAlias: unit.alias,
         testId: this.testId,
         state: changedStates
       });
@@ -427,9 +424,9 @@ export class TestControllerService {
 
     if (!unit) {
       // eslint-disable-next-line no-console
-      console.log(`Unit not found:${unitSequenceId}`);
+      console.error(`Unit not found: ${unitSequenceId}`);
       throw new AppError({
-        label: `Unit not found:${unitSequenceId}`,
+        label: `Unit not found: ${unitSequenceId}`,
         description: '',
         type: 'script'
       });

@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { distinctUntilChanged } from 'rxjs/operators';
 import {
   Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
 } from '../../interfaces/test-controller.interfaces';
@@ -18,10 +19,14 @@ import {
   Verona6ValidPages,
   VeronaNavigationDeniedReason,
   VeronaPlayerConfig,
-  VeronaPlayerRuntimeErrorCodes, VeronaUnitState, VopStartCommand
+  VeronaPlayerRuntimeErrorCodes,
+  VeronaUnitState,
+  VopRuntimeErrorNotification,
+  VopStartCommand,
+  VopStateChangedNotification
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
-import { distinctUntilChanged } from 'rxjs/operators';
+
 @Component({
   templateUrl: './unithost.component.html',
   styleUrls: ['./unithost.component.css']
@@ -31,10 +36,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
-  leaveWarning = false;
-
-  private playerSessionId = '';
   private postMessageTarget: Window = window;
+  leaveWarning = false;
 
   resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   resourcesToLoadLabels: string[] = [];
@@ -79,16 +82,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     const msgData = messageEvent.data;
     const msgType = msgData.type;
-    let msgSessionId = msgData.sessionId;
-    if ((msgSessionId === undefined) || (msgSessionId === null)) {
-      msgSessionId = this.playerSessionId;
-    }
+
     this.postMessageTarget = messageEvent.source as Window;
-    if (msgData.sessionId && (msgSessionId !== this.playerSessionId)) {
-      // TODO if the session belongs to a previous unit, still handle msg (referring to the that unit, not current)
+    const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
+    if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
       // eslint-disable-next-line no-console
-      console.warn('wrong player session id: ', msgData.sessionId, msgData);
-      return;
+      console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
+      // return;
     }
 
     switch (msgType) {
@@ -109,21 +109,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         break;
 
       case 'vopRuntimeErrorNotification':
-        this.handleRuntimeError(msgData.code, msgData.message);
-        if (this.tcs.testMode.saveResponses) {
-          this.bs.addUnitLog(
-            this.tcs.testId,
-            this.tcs.currentUnit.alias,
-            this.tcs.currentUnit.id,
-            [
-              {
-                key: `Runtime Error: ${msgData.code}`,
-                content: msgData.message || '',
-                timeStamp: Date.now()
-              }
-            ]
-          );
-        }
+        this.handleRuntimeError(msgData);
         break;
 
       default:
@@ -154,11 +140,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]);
-
     if (!this.tcs.currentUnit) {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
+
+    this.tcs.updateUnitState(
+      this.tcs.currentUnit.sequenceId,
+      [{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]
+    );
 
     const unitState: VeronaUnitState = {
       dataParts: this.tcs.currentUnit.dataParts
@@ -175,7 +164,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
-      sessionId: this.playerSessionId,
+      sessionId: this.tcs.currentUnit.alias,
       unitDefinition: this.tcs.currentUnit.definition,
       unitDefinitionType: this.tcs.currentUnit.unitDefinitionType,
       unitState,
@@ -184,21 +173,22 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget.postMessage(msg, '*');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleStateChangedNotification(msgData: any): void {
-    if (msgData.playerState) {
-      const { playerState } = msgData;
+  private handleStateChangedNotification(msg: VopStateChangedNotification): void {
+    const unit = this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]);
 
-      this.readPages(playerState.validPages);
-      this.currentPageIndex = Object.keys(this.pages).indexOf(playerState.currentPage);
-      if (this.tcs.currentUnit) this.tcs.currentUnit.pageLabels = this.pages;
+    if (msg.playerState) {
+      if (unit.sequenceId === this.tcs.currentUnit?.sequenceId) {
+        this.readPages(msg.playerState.validPages || []);
+        this.currentPageIndex = Object.keys(this.pages).indexOf(msg.playerState.currentPage || '');
+        unit.pageLabels = this.pages;
+      }
 
-      if (typeof playerState.currentPage !== 'undefined') {
-        const pageId: string = String(playerState.currentPage);
+      if (typeof msg.playerState.currentPage !== 'undefined') {
+        const pageId: string = String(msg.playerState.currentPage);
         const pageNr = Object.keys(this.pages).indexOf(pageId) + 1; // human-readable in logs & group monitor
         const pageCount = Object.keys(this.pages).length;
-        if (Object.keys(this.pages).length > 1 && this.pages[playerState.currentPage]) {
-          this.tcs.updateUnitState([
+        if (Object.keys(this.pages).length > 1 && this.pages[msg.playerState.currentPage]) {
+          this.tcs.updateUnitState(unit.sequenceId, [
             { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: pageNr.toString() },
             { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: pageId },
             { key: 'PAGE_COUNT', timeStamp: Date.now(), content: pageCount.toString() }
@@ -206,29 +196,34 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       }
     }
-    if (msgData.unitState) {
-      const { unitState } = msgData;
+
+    if (msg.unitState) {
       const timeStamp = Date.now();
 
-      this.tcs.updateUnitState([
-        { key: 'PRESENTATION_PROGRESS', timeStamp, content: unitState.presentationProgress },
-        { key: 'RESPONSE_PROGRESS', timeStamp, content: unitState.responseProgress }
+      this.tcs.updateUnitState(unit.sequenceId, [
+        { key: 'PRESENTATION_PROGRESS', timeStamp, content: msg.unitState.presentationProgress || '' },
+        { key: 'RESPONSE_PROGRESS', timeStamp, content: msg.unitState.responseProgress || '' }
       ]);
 
-      if (unitState?.dataParts) {
+      if (msg.unitState.dataParts) {
         // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
         // by the player itself ot the host. To maintain backwards-compatibility we check this here.
-        Object.keys(unitState.dataParts)
-          .forEach(dataPartId => {
-            if (typeof unitState.dataParts[dataPartId] !== 'string') {
-              unitState.dataParts[dataPartId] = JSON.stringify(unitState.dataParts[dataPartId]);
+        Object.keys(msg.unitState.dataParts).forEach(dataPartId => {
+            if (!msg.unitState || !msg.unitState.dataParts) return;
+            if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
+              msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
             }
           });
-        this.tcs.updateUnitStateDataParts(unitState.dataParts, unitState.unitStateDataType);
+        this.tcs.updateUnitStateDataParts(
+          unit.sequenceId,
+          msg.unitState.dataParts,
+          msg.unitState.unitStateDataType || ''
+        );
       }
     }
-    if (msgData.log && this.tcs.currentUnit) {
-      this.bs.addUnitLog(this.tcs.testId, this.tcs.currentUnit.alias, this.tcs.currentUnit.id, msgData.log);
+
+    if (msg.log) {
+      this.bs.addUnitLog(this.tcs.testId, unit.alias, unit.id, msg.log);
     }
   }
 
@@ -256,7 +251,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       // Verona 2-5
       this.pages = validPages;
     } else {
-      // Verona > 6
+      // Verona >= 6
       // covers also some versions of aspect who send a corrupted format
       validPages
         .forEach((page, index) => {
@@ -267,7 +262,24 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private handleRuntimeError(code?: string, message?: string): void {
+  private handleRuntimeError(msg: VopRuntimeErrorNotification): void {
+    const unit = (msg.sessionId in this.tcs.unitAliasMap) ?
+      this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]) :
+      this.tcs.currentUnit;
+    if (this.tcs.testMode.saveResponses && unit) {
+      this.bs.addUnitLog(
+        this.tcs.testId,
+        unit.alias,
+        unit.id,
+        [
+          {
+            key: `Runtime Error: ${msg.code}`,
+            content: msg.message || '',
+            timeStamp: Date.now()
+          }
+        ]
+      );
+    }
     // possible reactions on runtimeErrors
     const reactions: { [key: string]: (code: string, message: string) => void } = {
       raiseError: (errorCode, errorMessage) => {
@@ -288,7 +300,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       'unit-state-type-unsupported': 'raiseError',
       'runtime-error': 'raiseError'
     };
-    reactions[runTimeErrorReactionMap[code || 'runtime-error'] || 'raiseError'](code || '', message || '');
+    reactions[runTimeErrorReactionMap[msg.code || 'runtime-error'] || 'raiseError'](msg.code || '', msg.message || '');
   }
 
   private open(unitSequenceId: number): void {
@@ -301,9 +313,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) {
       throw new Error(`No such unit: ${unitSequenceId}`);
     }
-
-    this.playerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-    // TODO playerSessionId should be currenUnit.unitAlias, so messages can be attached to the correct if too late
 
     this.currentPageIndex = -1;
     this.pages = {};
@@ -362,7 +371,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.resourcesLoading$.next([]);
 
     this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
-    this.tcs.updateUnitState([{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]);
+    this.tcs.updateUnitState(
+      this.tcs.currentUnit.sequenceId,
+      [{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]
+    );
     this.runUnit();
   }
 
@@ -468,7 +480,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   gotoPage(targetPageIndex: number): void {
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
-      sessionId: this.playerSessionId,
+      sessionId: this.tcs.currentUnit?.alias,
       target: Object.keys(this.pages)[targetPageIndex]
     }, '*');
   }
@@ -482,7 +494,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.postMessageTarget.postMessage({
       type: 'vopNavigationDeniedNotification',
-      sessionId: this.playerSessionId,
+      sessionId: this.tcs.currentUnit?.alias,
       reason: navigationDenial.reason
     }, '*');
   }
@@ -520,12 +532,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private updatePlayerConfig(navigationState: NavigationState): void {
-    if (!this.playerSessionId) {
-      return;
-    }
     this.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
-      sessionId: this.playerSessionId,
+      sessionId: this.tcs.currentUnit?.alias,
       playerConfig: this.getPlayerConfig(navigationState)
     }, '*');
   }
