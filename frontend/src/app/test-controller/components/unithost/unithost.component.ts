@@ -208,8 +208,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if (msg.unitState.dataParts) {
         // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
         // by the player itself ot the host. To maintain backwards-compatibility we check this here.
-        Object.keys(msg.unitState.dataParts)
-          .forEach(dataPartId => {
+        Object.keys(msg.unitState.dataParts).forEach(dataPartId => {
             if (!msg.unitState || !msg.unitState.dataParts) return;
             if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
               msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
