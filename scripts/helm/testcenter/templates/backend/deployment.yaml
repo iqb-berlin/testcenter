@@ -15,9 +15,6 @@ spec:
       labels:
         app: {{ .Release.Name }}-backend-pod
     spec:
-      securityContext:
-        runAsUser: 33
-        runAsGroup: 33
       containers:
         - name: {{ .Release.Name }}-backend-container
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
@@ -51,6 +48,10 @@ spec:
         - name: wait-for-db-initcontainer
           image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.image.busybox.imagePullPolicy }}
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
           command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
       volumes:
         - name: backend-volume
