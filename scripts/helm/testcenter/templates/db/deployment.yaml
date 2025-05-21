@@ -17,6 +17,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-db-container
           image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
+          imagePullPolicy: {{ .Values.image.db.imagePullPolicy }}
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:

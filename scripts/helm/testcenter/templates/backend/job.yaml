@@ -1,15 +1,16 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-backend-container-init
+  name: {{ .Release.Name }}-backend-container-seed
   annotations:
     "helm.sh/hook": post-install,post-upgrade,post-rollback
 spec:
   template:
     spec:
       containers:
-        - name: {{ .Release.Name }}-backend-container-init
+        - name: {{ .Release.Name }}-backend-container-seed
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
           command: [ "bash", "/initialize_only.sh" ]
           env:
             - name: HOSTNAME

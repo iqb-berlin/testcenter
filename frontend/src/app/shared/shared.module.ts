@@ -78,6 +78,7 @@ import { TemplateContextDirective } from './directives/template-context.directiv
   ]
 })
 export class SharedModule {}
+export { BackendService } from './services/backend.service';
 export { CustomtextService } from './services/customtext/customtext.service';
 export { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
 export { MessageDialogComponent } from './components/message-dialog/message-dialog.component';

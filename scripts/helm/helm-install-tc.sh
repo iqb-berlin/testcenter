@@ -97,6 +97,8 @@ install_traefik() {
       TRAEFIK_ENV_VARS[${traefik_env_var_name}]=${traefik_env_var_value}
     done
 
+    sed -i.bak "s|traefik.testcenter.domain.tld|traefik.${TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]}|" \
+      custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
     sed -i.bak "s|httpPort: \&httpPort.*|httpPort: \&httpPort ${TRAEFIK_ENV_VARS[HTTP_PORT]}|" \
       custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
     sed -i.bak "s|httpsPort: \&httpsPort.*|httpsPort: \&httpsPort ${TRAEFIK_ENV_VARS[HTTPS_PORT]}|" \

@@ -67,6 +67,7 @@ spec:
           - www.{{ .Values.ingress.baseDomain }}
   {{- end }}
 ---
+{{- if .Values.config.backend.fileServiceEnabled }}
 
 # File Server
 apiVersion: traefik.io/v1alpha1
@@ -98,38 +99,7 @@ spec:
   tls:
     certResolver: {{ .Values.ingress.tlsCertResolver }}
   {{- end }}
----
 
-# Backend
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: {{ .Release.Name }}-backend-ingress
-  namespace: tc
-spec:
-  entryPoints:
-    {{- if .Values.ingress.tlsEnabled }}
-    - websecure
-    {{- else }}
-    - web
-    {{- end }}
-  routes:
-    - kind: Rule
-      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/api`)
-      middlewares:
-        - name: stripregex-be
-        - name: security-headers
-        {{- if .Values.ingress.tlsEnabled }}
-        - name: https-redirect
-        {{- end }}
-      services:
-        - kind: Service
-          name: {{ .Release.Name }}-backend-service
-          port: 80
-  {{- if .Values.ingress.tlsEnabled }}
-  tls:
-    certResolver: {{ .Values.ingress.tlsCertResolver }}
-  {{- end }}
----
+{{- end }}
 
 {{- end }}

@@ -21,6 +21,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-cache-server-container
           image: "{{ .Values.image.cacheServer.registryPath }}redis:{{ .Values.image.cacheServer.tag }}"
+          imagePullPolicy: {{ .Values.image.cacheServer.imagePullPolicy }}
           command: ["redis-server"]
           args: [
             "--requirepass", "$(REDIS_PASSWORD)",
