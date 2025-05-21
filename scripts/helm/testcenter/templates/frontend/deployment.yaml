@@ -22,6 +22,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-frontend-container
           image: "{{ .Values.image.frontend.registryPath }}iqbberlin/testcenter-frontend:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.frontend.imagePullPolicy }}
           ports:
             - name: http-container
               containerPort: 8080

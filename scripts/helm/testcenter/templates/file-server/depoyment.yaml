@@ -1,3 +1,5 @@
+{{- if .Values.config.backend.fileServiceEnabled }}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +23,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}-file-server-container
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
           env:
             - name: CACHE_SERVICE_INCLUDE_FILES
               valueFrom:
@@ -48,3 +51,5 @@ spec:
             items:
               - key: config.nginx.conf
                 path: nginx.conf-in-volume
+
+{{- end }}

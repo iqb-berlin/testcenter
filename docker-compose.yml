@@ -39,6 +39,9 @@ services:
     <<: *restart-policy
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
+    depends_on:
+      testcenter-backend:
+        condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
@@ -63,8 +66,8 @@ services:
     environment:
       CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
       CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
-    volumes:
-      - testcenter_backend_vo_data:/var/www/html/
+    volumes_from:
+      - testcenter-backend:ro
     networks:
       testcenter:
 
@@ -72,7 +75,6 @@ services:
     <<: *restart-policy
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
-    entrypoint: /entrypoint.sh
     environment:
       HOSTNAME: ${HOSTNAME}
       PORT_OF_REVERSE_PROXY: ${HTTP_PORT:-80}
@@ -93,12 +95,14 @@ services:
       testcenter-db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      test: [ "CMD", "curl", "-f", "http://testcenter-backend:8080" ]
       start_period: 60s
       start_interval: 3s
       interval: 5m
       timeout: 30s
       retries: 3
+    volumes:
+      - testcenter_backend_vo_data:/var/www/testcenter/data
     networks:
       testcenter:
 
