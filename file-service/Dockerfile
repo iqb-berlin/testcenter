@@ -18,6 +18,7 @@ COPY file-service/auth/ /usr/share/nginx/auth
 
 RUN echo "" >> /etc/nginx/conf.d/cors.conf
 
-EXPOSE 80
+USER www-data
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
