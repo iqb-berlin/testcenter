@@ -16,6 +16,7 @@ RUN luarocks install lua-resty-dns
 COPY file-service/nginx.conf /etc/nginx/nginx.conf
 COPY file-service/auth/ /usr/share/nginx/auth
 
+# Enable CORS to be switched on (dev/test) and off (prod) (see nginx.conf)
 RUN echo "" >> /etc/nginx/conf.d/cors.conf
 
 USER www-data
