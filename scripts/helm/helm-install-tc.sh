@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare TESTCENTER_VERSION="16.2.0"
+declare TESTCENTER_VERSION="17.0.0"
 declare TRAEFIK_VERSION="v3.3.2"
 declare LONGHORN_VERSION="v1.7.2"
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")
@@ -16,11 +16,12 @@ TRAEFIK_ENV_VARS[TLS_ENABLED]=false
 declare TRAEFIK_ENV_VAR_ORDER=(TESTCENTER_BASE_DOMAIN HTTP_PORT HTTPS_PORT TLS_ENABLED)
 
 declare -A TESTCENTER_ENV_VARS
+TESTCENTER_ENV_VARS[REDIS_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 TESTCENTER_ENV_VARS[MYSQL_USER]=iqb_tba_db_user
 TESTCENTER_ENV_VARS[MYSQL_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 TESTCENTER_ENV_VARS[MYSQL_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
-declare TESTCENTER_ENV_VAR_ORDER=(MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD MYSQL_SALT)
+declare TESTCENTER_ENV_VAR_ORDER=(REDIS_PASSWORD MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD MYSQL_SALT)
 
 check_prerequisites() {
   printf "\nChecking required packages ...\n"
@@ -96,6 +97,8 @@ install_traefik() {
       TRAEFIK_ENV_VARS[${traefik_env_var_name}]=${traefik_env_var_value}
     done
 
+    sed -i.bak "s|traefik.testcenter.domain.tld|traefik.${TRAEFIK_ENV_VARS[TESTCENTER_BASE_DOMAIN]}|" \
+      custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
     sed -i.bak "s|httpPort: \&httpPort.*|httpPort: \&httpPort ${TRAEFIK_ENV_VARS[HTTP_PORT]}|" \
       custom/traefik/custom-values.yaml && rm custom/traefik/custom-values.yaml.bak
     sed -i.bak "s|httpsPort: \&httpsPort.*|httpsPort: \&httpsPort ${TRAEFIK_ENV_VARS[HTTPS_PORT]}|" \
@@ -212,6 +215,8 @@ install_testcenter() {
     sed -i.bak "s|tlsEnabled:.*|tlsEnabled: ${TRAEFIK_ENV_VARS[TLS_ENABLED]}|" \
       testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
 
+    sed -i.bak "s|redisPassword: \&redisPassword.*|redisPassword: \&redisPassword ${TESTCENTER_ENV_VARS[REDIS_PASSWORD]}|" \
+      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|mysqlRootPassword:.*|mysqlRootPassword: ${TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]}|" \
       testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
     sed -i.bak "s|mysqlUser: \&dbUser.*|mysqlUser: \&dbUser ${TESTCENTER_ENV_VARS[MYSQL_USER]}|" \

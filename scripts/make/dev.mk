@@ -12,7 +12,6 @@ init:
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
-	mkdir -m 777 -p $(TC_BASE_DIR)/data
 
 # Build all images of the project or a specified one as dev-images.
 # Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
@@ -117,6 +116,15 @@ composer-refresh-autoload:
 		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
 	cd $(TC_BASE_DIR) && make build service=testcenter-backend
 	cd $(TC_BASE_DIR) && make up service=testcenter-backend
+
+# Copies data folder from Backend Container into local, to better be able to work with files in the IDE
+data-pull:
+	cd $(TC_BASE_DIR) && docker cp testcenter-backend:/var/www/testcenter/data ./data
+
+# Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
+# from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
+data-push:
+	cd $(TC_BASE_DIR) && tar -c -f - ./data  --owner www-data --group www-data | docker cp - testcenter-backend:/var/www/testcenter
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:

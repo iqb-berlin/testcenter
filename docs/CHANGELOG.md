@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.0.0
+### Änderungen
+* Alle Container laufen ohne root-Rechte
+
 ## 16.2.0
 ### neue Features
 * Neue `<BookletConfig>` in der Booklet.xml:
