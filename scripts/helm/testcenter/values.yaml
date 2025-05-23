@@ -55,22 +55,22 @@ config:
     redisMemoryMax: 1gb
 
 secret:
-  fileServer:
+  db:
+    mysqlUser: &dbUser iqb_tba_db_user
+    mysqlPassword: &dbUserPassword change_me
+    mysqlRootPassword: change_me
+
+  cacheServer:
     redisPassword: &redisPassword change_me
+
+  fileServer:
+    redisPassword: *redisPassword
 
   backend:
     redisPassword: *redisPassword
-    mysqlUser: &dbUser iqb_tba_db_user
-    mysqlPassword: &dbUserPassword change_me
-    passwordSalt: change_me
-
-  cacheServer:
-    redisPassword: *redisPassword
-
-  db:
     mysqlUser: *dbUser
     mysqlPassword: *dbUserPassword
-    mysqlRootPassword: change_me
+    passwordSalt: change_me
 
 ingress:
   traefikEnabled: false
