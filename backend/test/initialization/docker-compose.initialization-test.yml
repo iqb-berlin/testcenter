@@ -4,6 +4,12 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
+x-env-redis: &env-redis
+  REDIS_HOST: testcenter-cache-service
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
   MYSQL_USER: testcenter_user
@@ -43,18 +49,16 @@ services:
       target: dev
     entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
-      <<: *env-mysql
+      HOSTNAME: localhost
+      PORT_OF_REVERSE_PROXY: 80
+      TLS_PORT_OF_REVERSE_PROXY: 443
+      TLS_ENABLED: false
+      BROADCAST_SERVICE_ENABLED: false
+      FILE_SERVICE_ENABLED: false
+      <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
       PASSWORD_SALT: 't'
-      BROADCAST_SERVICE_ENABLED: off
-      FILE_SERVICE_ENABLED: off
-      HOSTNAME: localhost
-      TLS_ENABLED: off
-      CACHE_SERVICE_INCLUDE_FILES: off
-      CACHE_SERVICE_RAM: 1
-      PORT_OF_REVERSE_PROXY: 80
-      TLS_PORT_OF_REVERSE_PROXY: 443
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../../../backend/index.php:/var/www/testcenter/backend/index.php

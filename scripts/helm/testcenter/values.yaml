@@ -43,22 +43,34 @@ image:
     tag: "1.28"
 
 config:
+  fileServer:
+    redisCacheFiles: &redisCacheFiles false
+
   backend:
     broadcastServiceEnabled: true
     fileServiceEnabled: false
-    cacheServiceRam: 1073741824
-    cacheServiceIncludeFiles: false
+    redisCacheFiles: *redisCacheFiles
+
+  cacheServer:
+    redisMemoryMax: 1gb
 
 secret:
-  backend:
+  db:
     mysqlUser: &dbUser iqb_tba_db_user
     mysqlPassword: &dbUserPassword change_me
-    passwordSalt: change_me
+    mysqlRootPassword: change_me
 
-  db:
+  cacheServer:
+    redisPassword: &redisPassword change_me
+
+  fileServer:
+    redisPassword: *redisPassword
+
+  backend:
+    redisPassword: *redisPassword
     mysqlUser: *dbUser
     mysqlPassword: *dbUserPassword
-    mysqlRootPassword: change_me
+    passwordSalt: change_me
 
 ingress:
   traefikEnabled: false
@@ -71,6 +83,11 @@ ingress:
 deployment:
   backend:
     replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 0
 
   frontend:
     replicas: 1
@@ -92,10 +109,6 @@ persistence:
   longhornEnabled: false
   longhornUIEnabled: false
   longhornUISubdomain: longhorn
-
-  cacheServerPvcStorageClassName: standard
-  cacheServerPvcAccessMode: ReadWriteOnce
-  cacheServerPvcSize: 1Gi
 
   backendPvcStorageClassName: standard
   backendPvcAccessMode: ReadWriteOnce
