@@ -41,7 +41,7 @@ EXPOSE 8080
 
 COPY frontend/proxy.conf.json .
 RUN sed -i "s|localhost|testcenter-backend|" proxy.conf.json
-
+RUN sed -i "s|localhost|testcenter-file-service|" proxy.conf.json
 ENTRYPOINT ["npx", "ng"]
 
 
