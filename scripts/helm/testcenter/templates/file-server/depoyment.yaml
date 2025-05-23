@@ -22,6 +22,9 @@ spec:
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:
+      securityContext:
+        runAsUser: 33
+        runAsGroup: 33
       containers:
         - name: {{ .Release.Name }}-file-server-container
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
