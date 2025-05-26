@@ -2,8 +2,12 @@
 layout: default
 ---
 ## 17.0.0
+### Breaking Changes
+* API Endpoints des Backends werden nicht mehr mit <HOSTNAME>/api aufgerufen, sondern mit <HOSTNAME>/api/; <HOSTNAME>/api gibt von nun an ein 404 error zurück
+
 ### Änderungen
 * Alle Container laufen ohne root-Rechte
+* Kubernetes: Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
 
 ## [next]
 ### neue Features
