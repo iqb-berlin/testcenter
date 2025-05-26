@@ -1,28 +1,10 @@
 #!/bin/bash
 
-function check_version_gt_15.3.4() {
-  declare prerelease_regex="^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$"
-  declare release_regex="^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$"
+declare TARGET_VERSION="17.0.0"
 
-  if ! [[ "$VERSION" =~ $prerelease_regex || "$VERSION" =~ $release_regex ]]; then
-    return 1
-  else
-    declare normalized_version="$VERSION"
+migrate_env_file() {
+  source .env.prod
 
-    if [[ "$VERSION" =~ $prerelease_regex ]]; then
-      normalized_version=$(printf '%s' "$VERSION" | cut -d'-' -f1)
-    fi
-
-    # Check VERSION is less or equal than 15.3.4
-    if printf '%s\n%s' "$normalized_version" 15.3.4 | sort -C -V; then
-      return 1
-    else
-      return 0
-    fi
-  fi
-}
-
-function migrate_env_file() {
   # Move 'Security' Block
   sed -i.bak '/^### Security.*/d' .env.prod && rm .env.prod.bak
   sed -i.bak '/^PASSWORD_SALT=.*/d' .env.prod && rm .env.prod.bak
@@ -47,26 +29,13 @@ function migrate_env_file() {
   sed -i.bak "/^## Cache Service/a REDIS_PASSWORD=${REDIS_PASSWORD}" .env.prod && rm .env.prod.bak
 }
 
-function main() {
-  declare target_version="16.0.0"
+main() {
+  printf "Applying patch: %s ...\n" ${TARGET_VERSION}
 
-  printf "Applying patch: %s ...\n" ${target_version}
+  # Migrate docker environment file
+  migrate_env_file
 
-  if check_version_gt_15.3.4; then
-
-    # Migrate docker environment file
-    migrate_env_file
-
-    printf "Patch %s applied.\n" ${target_version}
-  else
-    printf "Patch %s skipped.\n" ${target_version}
-  fi
+  printf "Patch %s applied.\n" ${TARGET_VERSION}
 }
-
-source .env.prod
-
-if [ -n "${1}" ]; then
-  VERSION=${1}
-fi
 
 main
