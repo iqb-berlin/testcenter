@@ -36,7 +36,7 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev
 
-RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
+RUN docker-php-ext-install -j$(nproc) pdo_mysql zip opcache
 RUN pecl install igbinary && docker-php-ext-enable igbinary
 RUN pecl install redis && docker-php-ext-enable redis
 
@@ -98,7 +98,7 @@ COPY --chown=www-data:www-data backend/test ./test
 # jq - JSON parser for bash
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
-    jq
+    jq mysqltuner
 
 USER www-data
 
