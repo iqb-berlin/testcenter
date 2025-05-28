@@ -26,7 +26,8 @@
     "ext-redis": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-zend-opcache" : "*"
   },
   "require-dev": {
     "amphp/parallel": "2.2.2",

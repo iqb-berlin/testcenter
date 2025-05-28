@@ -1,5 +1,7 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
+include $(TC_BASE_DIR)/.env.dev
+
 ## prevents collisions of make target names with possible file names
 .PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
 	create-interfaces update-docs docs-frontend-compodoc docs-broadcasting-service-compodoc docs-api-specs docs-user\
@@ -129,6 +131,10 @@ data-push:
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
 	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
+
+## Open DB console
+connect-db:
+	docker exec -it testcenter-db mysql --user=root --password=$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE)
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
