@@ -1,5 +1,7 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
+include $(TC_BASE_DIR)/.env.dev
+
 ## prevents collisions of make target names with possible file names
 .PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
 	create-interfaces update-docs docs-frontend-compodoc docs-broadcasting-service-compodoc docs-api-specs docs-user\
@@ -12,7 +14,6 @@ init:
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
-	mkdir -m 777 -p $(TC_BASE_DIR)/data
 
 # Build all images of the project or a specified one as dev-images.
 # Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
@@ -118,9 +119,22 @@ composer-refresh-autoload:
 	cd $(TC_BASE_DIR) && make build service=testcenter-backend
 	cd $(TC_BASE_DIR) && make up service=testcenter-backend
 
+# Copies data folder from Backend Container into local, to better be able to work with files in the IDE
+data-pull:
+	cd $(TC_BASE_DIR) && docker cp testcenter-backend:/var/www/testcenter/data ./data
+
+# Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
+# from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
+data-push:
+	cd $(TC_BASE_DIR) && tar -c -f - ./data  --owner www-data --group www-data | docker cp - testcenter-backend:/var/www/testcenter
+
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
 	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
+
+## Open DB console
+connect-db:
+	docker exec -it testcenter-db mysql --user=root --password=$(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE)
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
