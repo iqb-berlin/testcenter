@@ -171,7 +171,11 @@ class SystemController extends Controller {
   }
 
   public static function postClearCache(Request $request, Response $response): Response {
+    $directives = JSON::decode($request->getBody()->getContents())->directives;
     return $response
-      ->withHeader('Clear-Site-Data', '"*"');
+      ->withHeader('Clear-Site-Data',
+        !empty($directives) ?
+          implode(',', $directives) :
+          '"*"');
   }
 }

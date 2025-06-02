@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.1.1/definitions/vo_Booklet.xsd">
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.2.0/definitions/vo_Booklet.xsd">
 	<Metadata>
 		<Id>CY-Bklt_runhotret</Id>
 		<Label>Controller Mode: run-hot-return</Label>

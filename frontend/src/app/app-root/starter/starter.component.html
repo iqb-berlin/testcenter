@@ -38,7 +38,7 @@
         </button>
 
 
-        <h4 *ngIf="accessObjects.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_subheadline' | async }}</h4>
+        <h4 *ngIf="accessObjects.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_show_monitor' | async }}</h4>
         <button
           *ngFor="let accessObject of accessObjects.testGroupMonitor let i = index"
           mat-raised-button color="primary"
