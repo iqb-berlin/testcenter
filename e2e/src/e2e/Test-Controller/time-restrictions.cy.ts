@@ -98,7 +98,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
-    cy.get('[data-cy="unit-nav-item:UNIT.SAMPLE-103"]')
+    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click();
@@ -175,7 +175,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
-    cy.get('[data-cy="unit-nav-item:UNIT.SAMPLE-103"]')
+    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
       .click();

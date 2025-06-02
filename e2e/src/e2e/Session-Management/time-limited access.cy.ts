@@ -31,7 +31,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
     });
 
     it('login before date must be impossible', () => {
@@ -53,7 +53,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
     });
   });
 
@@ -80,7 +80,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
     });
 
     it('login after date must be impossible', () => {
@@ -102,7 +102,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNDEMO"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
     });
   });
 
@@ -124,7 +124,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNREVIEW"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]');
       logoutTestTaker('demo');
     });
 
@@ -138,7 +138,7 @@ describe('check valid from restrictions', () => {
         .contains('Startseite');
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="booklet-RUNREVIEW"]');
+      cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]');
       logoutTestTaker('demo');
     });
 

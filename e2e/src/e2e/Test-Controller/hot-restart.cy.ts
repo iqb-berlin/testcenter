@@ -121,12 +121,12 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     });
 
     it('complete the test and leave the block with a warning message', () => {
-      cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-102/response`).as('response102-1-1');
+      cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/CY-Unit.Sample-102/response`).as('response102-1-1');
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .click()
         .should('be.checked');
       forwardTo('Aufgabe3');
-      cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/UNIT.SAMPLE-103/response`).as('response103-1-1');
+      cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/CY-Unit.Sample-103/response`).as('response103-1-1');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
@@ -199,7 +199,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="endTest-1"]')
         .click();
       cy.get('[data-cy="logout"]');
-      cy.get('[data-cy="booklet-RUNHOTRES"]')
+      cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRES"]')
         .contains('gesperrt');
     });
   });
@@ -418,7 +418,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="endTest"]')
         .click();
       cy.get('[data-cy="logout"]');
-      cy.get('[data-cy="booklet-RUNHOTRET"]')
+      cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRES"]')
         .should('not.exist');
     });
   });
@@ -450,7 +450,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="unlockUnit"]')
         .should('contain', '')
         .type('Hase');
-      cy.intercept(`${Cypress.env('urls').backend}/test/7/unit/UNIT.SAMPLE-101/response`).as('response101-4-1');
+      cy.intercept(`${Cypress.env('urls').backend}/test/7/unit/CY-Unit.Sample-101/response`).as('response101-4-1');
       cy.get('[data-cy="unit-block-dialog-submit"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -512,23 +512,23 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
           expect(responses[1]).to.be.match(/\brunhotres\b/);
           expect(responses[1]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[1]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[1]).to.be.match(/\bUNIT.SAMPLE-100\b/);
+          expect(responses[1]).to.be.match(/\bCY-Unit.Sample-100\b/);
           expect(responses[2]).to.be.match(/\brunhotres\b/);
           expect(responses[2]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[2]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[2]).to.be.match(/\bUNIT.SAMPLE-101\b/);
+          expect(responses[2]).to.be.match(/\bCY-Unit.Sample-101\b/);
           expect(responses[3]).to.be.match(/\brunhotres\b/);
           expect(responses[3]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[3]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[3]).to.be.match(/\bUNIT.SAMPLE-102\b/);
+          expect(responses[3]).to.be.match(/\bCY-Unit.Sample-102\b/);
           expect(responses[4]).to.be.match(/\brunhotres\b/);
           expect(responses[4]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[4]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[4]).to.be.match(/\bUNIT.SAMPLE-103\b/);
+          expect(responses[4]).to.be.match(/\bCY-Unit.Sample-103\b/);
           expect(responses[5]).to.be.match(/\brunhotres\b/);
           expect(responses[5]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[5]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[5]).to.be.match(/\bUNIT.SAMPLE-104\b/);
+          expect(responses[5]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[2]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
           expect(responses[3]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -543,23 +543,23 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
           expect(responses[6]).to.be.match(/\brunhotres\b/);
           expect(responses[6]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[6]).to.be.match(/\bva4dg-jc\b/);
-          expect(responses[6]).to.be.match(/\bUNIT.SAMPLE-100\b/);
+          expect(responses[6]).to.be.match(/\bCY-Unit.Sample-100\b/);
           expect(responses[7]).to.be.match(/\brunhotres\b/);
           expect(responses[7]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[7]).to.be.match(/\bva4dg-jc\b/);
-          expect(responses[7]).to.be.match(/\bUNIT.SAMPLE-101\b/);
+          expect(responses[7]).to.be.match(/\bCY-Unit.Sample-101\b/);
           expect(responses[8]).to.be.match(/\brunhotres\b/);
           expect(responses[8]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[8]).to.be.match(/\bva4dg-jc\b/);
-          expect(responses[8]).to.be.match(/\bUNIT.SAMPLE-102\b/);
+          expect(responses[8]).to.be.match(/\bCY-Unit.Sample-102\b/);
           expect(responses[9]).to.be.match(/\brunhotres\b/);
           expect(responses[9]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[9]).to.be.match(/\bva4dg-jc\b/);
-          expect(responses[9]).to.be.match(/\bUNIT.SAMPLE-103\b/);
+          expect(responses[9]).to.be.match(/\bCY-Unit.Sample-103\b/);
           expect(responses[10]).to.be.match(/\brunhotres\b/);
           expect(responses[10]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[10]).to.be.match(/\bva4dg-jc\b/);
-          expect(responses[10]).to.be.match(/\bUNIT.SAMPLE-104\b/);
+          expect(responses[10]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[7]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
           expect(responses[8]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -575,23 +575,23 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
           expect(responses[11]).to.be.match(/\brunhotres\b/);
           expect(responses[11]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[11]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[11]).to.be.match(/\bUNIT.SAMPLE-100\b/);
+          expect(responses[11]).to.be.match(/\bCY-Unit.Sample-100\b/);
           expect(responses[12]).to.be.match(/\brunhotres\b/);
           expect(responses[12]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[12]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[12]).to.be.match(/\bUNIT.SAMPLE-101\b/);
+          expect(responses[12]).to.be.match(/\bCY-Unit.Sample-101\b/);
           expect(responses[13]).to.be.match(/\brunhotres\b/);
           expect(responses[13]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[13]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[13]).to.be.match(/\bUNIT.SAMPLE-102\b/);
+          expect(responses[13]).to.be.match(/\bCY-Unit.Sample-102\b/);
           expect(responses[14]).to.be.match(/\brunhotres\b/);
           expect(responses[14]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[14]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[14]).to.be.match(/\bUNIT.SAMPLE-103\b/);
+          expect(responses[14]).to.be.match(/\bCY-Unit.Sample-103\b/);
           expect(responses[15]).to.be.match(/\brunhotres\b/);
           expect(responses[15]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[15]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[15]).to.be.match(/\bUNIT.SAMPLE-104\b/);
+          expect(responses[15]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[12]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
           expect(responses[13]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -607,23 +607,23 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
           expect(responses[16]).to.be.match(/\brunhotres\b/);
           expect(responses[16]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[16]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[16]).to.be.match(/\bUNIT.SAMPLE-100\b/);
+          expect(responses[16]).to.be.match(/\bCY-Unit.Sample-100\b/);
           expect(responses[17]).to.be.match(/\brunhotres\b/);
           expect(responses[17]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[17]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[17]).to.be.match(/\bUNIT.SAMPLE-101\b/);
+          expect(responses[17]).to.be.match(/\bCY-Unit.Sample-101\b/);
           expect(responses[18]).to.be.match(/\brunhotres\b/);
           expect(responses[18]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[18]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[18]).to.be.match(/\bUNIT.SAMPLE-102\b/);
+          expect(responses[18]).to.be.match(/\bCY-Unit.Sample-102\b/);
           expect(responses[19]).to.be.match(/\brunhotres\b/);
           expect(responses[19]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[19]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[19]).to.be.match(/\bUNIT.SAMPLE-103\b/);
+          expect(responses[19]).to.be.match(/\bCY-Unit.Sample-103\b/);
           expect(responses[20]).to.be.match(/\brunhotres\b/);
           expect(responses[20]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[20]).to.be.match(/\bh5ki-bd\b/);
-          expect(responses[20]).to.be.match(/\bUNIT.SAMPLE-104\b/);
+          expect(responses[20]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[17]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
           expect(responses[18]).to.be.match((/\bid"":""radio2"",""status"":""VALUE_CHANGED"",""value"":""true\b/));

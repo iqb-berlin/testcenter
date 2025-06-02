@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.0.0/definitions/vo_Booklet.xsd">
 	<Metadata>
-		<Id>bklConfigValue3</Id>
+		<Id>CY-BkltConfigValue-3</Id>
 		<Label>Test Bklt Configs value-3</Label>
 		<Description>Testen der dritten Werte</Description>
 	</Metadata>
@@ -22,7 +22,6 @@
 		<Config key="restore_current_page_on_return">ON</Config>
 		<Config key="allow_player_to_terminate_test">LAST_UNIT</Config>
 		<Config key="lock_test_on_termination">ON</Config>
-		<Config key="loading_mode">EAGER</Config>
 		<Config key="ask_for_fullscreen">ON</Config>
 		<Config key="show_fullscreen_button">ON</Config>
 		<Config key="unit_screenheader">WITH_BLOCK_TITLE</Config>
@@ -37,10 +36,10 @@
 			<Restrictions>
 				<TimeMax minutes="2"/>
 			</Restrictions>
-			<Unit id="UNIT.SAMPLE-101" label="Aufgabe1" labelshort="1"/>
-			<Unit id="UNIT.SAMPLE-102" label="Aufgabe2" labelshort="2"/>
+			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+			<Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
 		</Testlet>
 		
-		<Unit id="UNIT.SAMPLE-104" label="Endseite" labelshort="3"/>
+		<Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
 	</Units>
 </Booklet>

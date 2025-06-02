@@ -131,7 +131,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.get('[data-cy="booklet-RUNREVIEW"]')
+    cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]')
       .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
