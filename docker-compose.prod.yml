@@ -38,22 +38,10 @@ services:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
 
   testcenter-file-service:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-file-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
-      - "traefik.http.routers.testcenter-file-service.middlewares=security-headers, testcenter-file-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-file-service-stripprefix.stripprefix.prefixes=/fs"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
   testcenter-backend:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-backend.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
-      - "traefik.http.routers.testcenter-backend.middlewares=security-headers, testcenter-backend-stripprefix"
-      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
-    volumes:
-      - testcenter_backend_vo_data:/var/www/testcenter/data
 
   testcenter-db:
     image: ${DOCKERHUB_PROXY}mysql:8.0
