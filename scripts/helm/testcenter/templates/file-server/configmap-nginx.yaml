@@ -45,6 +45,40 @@ data:
       source_charset utf-8;
       include mime.types;
       gzip on;
+      gzip_types # list from https://github.com/h5bp/server-configs-nginx/blob/main/h5bp/web_performance/compression.conf#L38
+        application/atom+xml
+        application/geo+json
+        application/javascript
+        application/x-javascript
+        application/json
+        application/ld+json
+        application/manifest+json
+        application/rdf+xml
+        application/rss+xml
+        application/vnd.ms-fontobject
+        application/wasm
+        application/x-web-app-manifest+json
+        application/xhtml+xml
+        application/xml
+        font/eot
+        font/otf
+        font/ttf
+        image/bmp
+        image/svg+xml
+        image/vnd.microsoft.icon
+        image/x-icon
+        text/cache-manifest
+        text/calendar
+        text/css
+        text/javascript
+        text/markdown
+        text/plain
+        text/xml
+        text/vcard
+        text/vnd.rim.location.xloc
+        text/vtt
+        text/x-component
+        text/x-cross-domain-policy;
 
       resolver kube-dns.kube-system.svc.cluster.local;
 
@@ -53,8 +87,8 @@ data:
       lua_package_path "/usr/share/nginx/auth/?.lua;;";
 
       map $http_testmode $root {
-        default /var/www/html;
-        integration /var/www/data-TEST;
+        default /var/www/testcenter/data;
+        integration /var/www/testcenter/data-TEST;
       }
 
       server {
