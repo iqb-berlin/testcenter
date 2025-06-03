@@ -62,7 +62,7 @@ services:
       - testcenter-cache-service
     environment:
       <<: *env-redis
-    volumes:
+    volumes_from:
       - testcenter-backend:ro
     networks:
       testcenter:
