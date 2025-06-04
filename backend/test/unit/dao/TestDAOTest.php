@@ -40,14 +40,14 @@ class TestDAOTest extends TestCase {
     $this->assertEquals($expected, $result);
   }
 
-  function test_addTestLog() {
+  function test_addTestLogs() {
     $testId = 1;
     $logKey = 'LOG_KEY_TEST';
     $timestamp = 1623456789;
     $logContent = 'This is a log entry test.';
 
     // Add the log
-    $this->dbc->addTestLog($testId, $logKey, $timestamp, $logContent);
+    $this->dbc->addTestLogs([new TestLog($testId, $logKey, $timestamp, $logContent)]);
 
     // Verify log addition (use mock DB or predefined assertions)
     $expectedLog = [
@@ -72,7 +72,7 @@ class TestDAOTest extends TestCase {
 
     // Add a log without content
     $emptyContent = '';
-    $this->dbc->addTestLog($testId, $logKey, $timestamp, $emptyContent);
+    $this->dbc->addTestLogs([new TestLog($testId, $logKey, $timestamp, $emptyContent)]);
 
     $expectedLogEmptyContent = [
       'logentry' => $logKey,

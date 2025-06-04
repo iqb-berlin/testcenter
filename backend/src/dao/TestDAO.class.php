@@ -384,15 +384,37 @@ class TestDAO extends DAO {
     );
   }
 
-  public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
-    $this->_(
-      'insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
-      [
-        ':bookletId' => $testId,
-        ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''),
-        ':timestamp' => $timestamp
-      ]
-    );
+  /**
+   * @param TestLog[] $testLogs
+   */
+  public function addTestLogs(array $testLogs): void {
+    if (empty($testLogs)) {
+      return;
+    }
+
+    foreach ($testLogs as $testLog) {
+      if (!$testLog instanceof TestLog) {
+        throw new \http\Exception\InvalidArgumentException('All array elements must be TestLog instances');
+      }
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    /**
+     * @var  TestLog $testLog
+     */
+    foreach ($testLogs as $index => $testLog) {
+      $placeholders[] = "(:bookletId{$index}, :logentry{$index}, :timestamp{$index})";
+
+      $params[":bookletId{$index}"] = $testLog->testId;
+      $params[":logentry{$index}"] = $testLog->logKey . ($testLog->logContent ? ' : ' . $testLog->logContent : '');
+      $params[":timestamp{$index}"] = $testLog->timestamp;
+    }
+
+    $sql = 'insert into test_logs (booklet_id, logentry, timestamp) values ' . implode(', ', $placeholders);
+
+    $this->_($sql, $params);
   }
 
   // TODO unit test
