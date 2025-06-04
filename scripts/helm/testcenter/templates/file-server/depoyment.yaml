@@ -46,7 +46,7 @@ spec:
                   key: REDIS_CACHE_FILES
           volumeMounts:
             - name: backend-volume
-              mountPath: /var/www/html/
+              mountPath: /var/www/testcenter/data
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf-in-volume
