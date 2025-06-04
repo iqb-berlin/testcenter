@@ -1,8 +1,5 @@
 services:
   testcenter-file-service:
-    volumes:
-      - ./sampledata:/var/www/html
-      - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/html/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
     environment:
       REDIS_CACHE_FILES: false
 
