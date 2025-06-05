@@ -381,7 +381,7 @@ class TestDAOTest extends TestCase {
     $this->assertEquals($expectedOverwrite, $resultOverwrite);
   }
 
-  function test_addUnitLog() {
+  function test_addUnitLogs() {
     $testId = 1;
     $unitName = 'UNIT_1';
     $logKey = 'UNIT_LOG_KEY';
@@ -389,7 +389,7 @@ class TestDAOTest extends TestCase {
     $logContent = 'This is a unit log entry test.';
 
     // Add the log with content
-    $this->dbc->addUnitLog($testId, $unitName, $logKey, $timestamp, $logContent);
+    $this->dbc->addUnitLogs([new UnitLog($testId, $unitName, $logKey, $timestamp, $logContent)]);
 
     // Verify log addition
     $expectedLog = [
@@ -407,7 +407,7 @@ class TestDAOTest extends TestCase {
 
     // Add a log without content
     $emptyContent = '';
-    $this->dbc->addUnitLog($testId, $unitName, $logKey, $timestamp, $emptyContent);
+    $this->dbc->addUnitLogs([new UnitLog($testId, $unitName, $logKey, $timestamp, $emptyContent)]);
 
     $expectedLogEmptyContent = [
       'logentry' => $logKey,
