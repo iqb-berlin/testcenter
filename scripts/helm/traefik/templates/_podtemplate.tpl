@@ -1,5 +1,5 @@
 {{- define "traefik.podTemplate" }}
-  {{- $version := include "imageVersion" $ }}
+  {{- $version := include "traefik.proxyVersion" $ }}
     metadata:
       annotations:
       {{- if .Values.deployment.podAnnotations }}
@@ -16,6 +16,13 @@
       {{- include "traefik.labels" . | nindent 8 -}}
       {{- with .Values.deployment.podLabels }}
       {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.azure.enabled }}
+        azure-extensions-usage-release-identifier: {{ .Release.Name }}
+      {{- end }}
+      {{- if and .Values.hub.token .Values.hub.apimanagement.enabled .Values.hub.apimanagement.admission.restartOnCertificateChange }}
+        {{- $cert := include "traefik-hub.webhook_cert" . | fromYaml }}
+        hub-cert-hash: {{ $cert.Hash }}
       {{- end }}
     spec:
       {{- with .Values.deployment.imagePullSecrets }}
@@ -108,7 +115,7 @@
               {{- fail "ERROR: All hostPort must match their respective containerPort when `hostNetwork` is enabled" }}
             {{- end }}
           {{- end }}
-        - name: {{ $name | lower | quote }}
+        - name: {{ include "traefik.portname" $name }}
           containerPort: {{ default $config.port $config.containerPort }}
           {{- if $config.hostPort }}
           hostPort: {{ $config.hostPort }}
@@ -116,9 +123,9 @@
           {{- if $config.hostIP }}
           hostIP: {{ $config.hostIP }}
           {{- end }}
-          protocol: {{ default "TCP" $config.protocol | quote }}
+          protocol: {{ default "TCP" $config.protocol }}
           {{- if ($config.http3).enabled }}
-        - name: "{{ $name }}-http3"
+        - name: {{ printf "%s-http3" $name | include "traefik.portname" }}
           containerPort: {{ $config.port }}
            {{- if $config.hostPort }}
           hostPort: {{ default $config.hostPort $config.http3.advertisedPort }}
@@ -165,7 +172,7 @@
             mountPath: "/etc/traefik/dynamic"
           {{- end }}
           {{- if .Values.additionalVolumeMounts }}
-            {{- toYaml .Values.additionalVolumeMounts | nindent 10 }}
+            {{- tpl (toYaml .Values.additionalVolumeMounts) . | nindent 10 }}
           {{- end }}
         args:
           {{- with .Values.globalArguments }}
@@ -272,6 +279,11 @@
           {{- if .Values.metrics.prometheus.manualRouting }}
           - "--metrics.prometheus.manualrouting=true"
           {{- end }}
+          {{- if .Values.metrics.prometheus.headerLabels }}
+          {{- range $label, $headerKey := .Values.metrics.prometheus.headerLabels }}
+          - "--metrics.prometheus.headerlabels.{{ $label }}={{ $headerKey }}"
+          {{- end }}
+          {{- end }}
           {{- end }}
           {{- with .Values.metrics.statsd }}
           - "--metrics.statsd=true"
@@ -322,6 +334,9 @@
            {{- end }}
            {{- with .pushInterval }}
           - "--metrics.otlp.pushInterval={{ . }}"
+           {{- end }}
+           {{- with .serviceName }}
+          - "--metrics.otlp.serviceName={{ . }}"
            {{- end }}
            {{- with .http }}
             {{- if .enabled }}
@@ -396,16 +411,16 @@
           - "--tracing.resourceAttributes.{{ $name }}={{ $value }}"
             {{- end }}
 
-            {{- range $index, $value := .capturedRequestHeaders }}
-          - "--tracing.capturedRequestHeaders[{{ $index }}]={{ $value }}"
+            {{- if .capturedRequestHeaders }}
+          - "--tracing.capturedRequestHeaders={{ .capturedRequestHeaders | join "," }}"
             {{- end }}
 
-            {{- range $index, $value := .capturedResponseHeaders }}
-          - "--tracing.capturedResponseHeaders[{{ $index }}]={{ $value }}"
+            {{- if .capturedResponseHeaders }}
+          - "--tracing.capturedResponseHeaders={{ .capturedResponseHeaders | join "," }}"
             {{- end }}
 
             {{- if .safeQueryParams }}
-          - "--tracing.safeQueryParams={{- .safeQueryParams | join "," -}}"
+          - "--tracing.safeQueryParams={{ .safeQueryParams | join "," }}"
             {{- end }}
 
           {{- end }}
@@ -769,6 +784,9 @@
             {{- if and (not .apimanagement.enabled) ($.Values.hub.apimanagement.admission.listenAddr) }}
                {{- fail "ERROR: Cannot configure admission without enabling hub.apimanagement" }}
             {{- end }}
+            {{- if .namespaces }}
+          - "--hub.namespaces={{ join "," (uniq (concat (include "traefik.namespace" $ | list) .namespaces)) }}"
+            {{- end }}
             {{- with .apimanagement }}
              {{- if .enabled }}
               {{- $listenAddr := default ":9943" .admission.listenAddr }}
@@ -809,11 +827,19 @@
               {{- end }}
              {{- end }}
             {{- end }}
-            {{- with .sendlogs }}
+            {{- if ne .sendlogs nil }}
+              {{- with .sendlogs | toString}}
           - "--hub.sendlogs={{ . }}"
+              {{- end }}
             {{- end }}
             {{- if and $.Values.tracing.otlp.enabled .tracing.additionalTraceHeaders.enabled }}
               {{- include "traefik.yaml2CommandLineArgs" (dict "path" "hub.tracing.additionalTraceHeaders.traceContext" "content" $.Values.hub.tracing.additionalTraceHeaders.traceContext) | nindent 10 }}
+            {{- end }}
+            {{- if .providers.consulCatalogEnterprise.enabled }}
+              {{- include "traefik.yaml2CommandLineArgs" (dict "path" "hub.providers.consulCatalogEnterprise" "content" (omit $.Values.hub.providers.consulCatalogEnterprise "enabled")) | nindent 10 }}
+            {{- end }}
+            {{- if .providers.microcks.enabled }}
+              {{- include "traefik.yaml2CommandLineArgs" (dict "path" "hub.providers.microcks" "content" (omit $.Values.hub.providers.microcks "enabled")) | nindent 10 }}
             {{- end }}
           {{- end }}
          {{- end }}
@@ -844,7 +870,7 @@
           - name: HUB_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ . }}
+                name: {{ le (len .) 64 | ternary . "traefik-hub-license" }}
                 key: token
           {{- end }}
         {{- with .Values.env }}
@@ -910,9 +936,6 @@
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.topologySpreadConstraints }}
-      {{- if (semverCompare "<v1.19.0-0" .Capabilities.KubeVersion.Version) }}
-        {{- fail "ERROR: topologySpreadConstraints are supported only on kubernetes >= v1.19" -}}
-      {{- end }}
       topologySpreadConstraints:
         {{- tpl (toYaml .Values.topologySpreadConstraints) . | nindent 8 }}
       {{- end }}
