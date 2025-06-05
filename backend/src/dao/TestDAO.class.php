@@ -282,9 +282,11 @@ class TestDAO extends DAO {
     );
   }
 
-  // TODO unit test
-  // todo reduce nr of queries by using replace...into syntax
-  private function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
+  /**
+      protected for unit test -> should be private
+      todo reduce nr of queries by using replace...into syntax
+   */
+  protected function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
     $unit = $this->_(
       'select units.id from units where units.name = :unitname and units.booklet_id = :testId',
       [

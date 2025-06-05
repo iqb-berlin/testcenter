@@ -3,18 +3,24 @@
 
 use PHPUnit\Framework\TestCase;
 
+class TestDAOExposed extends TestDAO {
+  public function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
+    return parent::getOrCreateUnitId($testId, $unitName, $originalUnitId);
+  }
+}
+
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class TestDAOTest extends TestCase {
-  private TestDAO $dbc;
+  private TestDAOExposed $dbc;
 
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new TestDAO();
+    $this->dbc = new TestDAOExposed();
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
@@ -344,5 +350,39 @@ class TestDAOTest extends TestCase {
 
     $this->assertNotEmpty($actualLogEmptyContent);
     $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
+  }
+
+  function test_getOrCreateUnitId() {
+    $testId = 1;
+    $unitName = "UNIT_1";
+    $originalUnitId = "ORIGINAL_ID_NEW";
+
+    // Test for existing unit being found, without setting original unit ID
+    $resultId = $this->dbc->getOrCreateUnitId($testId, $unitName);
+    $existingUnitId = 1; // from testdata.sql
+    $this->assertEquals($existingUnitId, $resultId);
+
+    // Test for existing unit, with original unit ID update
+    $this->dbc->getOrCreateUnitId($testId, $unitName, $originalUnitId);
+    $updatedUnit = $this->dbc->_(
+      'select original_unit_id from units where id = :id',
+      [':id' => $resultId]
+    );
+    $this->assertEquals($originalUnitId, $updatedUnit['original_unit_id']);
+
+    // Test for new unit creation case
+    $newUnitName = "NEW_UNIT";
+    $newUnitId = $this->dbc->getOrCreateUnitId($testId, $newUnitName);
+    $this->assertNotNull($newUnitId);
+    $newUnit = $this->dbc->_(
+      'select id, name, booklet_id from units where name = :name and booklet_id = :testId',
+      [':name' => $newUnitName, ':testId' => $testId]
+    );
+    $expected = [
+      'id' => $newUnitId,
+      'name' => $newUnitName,
+      'booklet_id' => $testId
+    ];
+    $this->assertEquals($expected, $newUnit);
   }
 }
