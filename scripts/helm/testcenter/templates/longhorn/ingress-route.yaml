@@ -19,9 +19,10 @@ spec:
       services:
         - name: longhorn-frontend
           port: 80
+  {{- if .Values.ingress.tlsEnabled }}
   tls:
-    enabled: {{ .Values.ingress.tlsEnabled }}
     certResolver: {{ .Values.ingress.tlsCertResolver }}
+  {{- end }}
 
 {{- end }}
 
