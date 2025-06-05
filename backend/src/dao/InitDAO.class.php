@@ -78,7 +78,7 @@ class InitDAO extends SessionDAO {
       1,
       'page-1',
     );
-    $testDAO->addUnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp);
+    $testDAO->addUnitLogs([new UnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp)]);
     $testDAO->addTestLogs([new TestLog($test->id, "sample log entry", $timestamp)]);
     $testDAO->updateDataParts(
       $test->id,
