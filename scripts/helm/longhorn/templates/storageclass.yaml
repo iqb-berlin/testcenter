@@ -15,7 +15,7 @@ data:
     provisioner: driver.longhorn.io
     allowVolumeExpansion: true
     reclaimPolicy: "{{ .Values.persistence.reclaimPolicy }}"
-    volumeBindingMode: Immediate
+    volumeBindingMode: {{ .Values.persistence.volumeBindingMode | default "Immediate" }}
     parameters:
       numberOfReplicas: "{{ .Values.persistence.defaultClassReplicaCount }}"
       staleReplicaTimeout: "30"
@@ -54,4 +54,7 @@ data:
       {{- if .Values.persistence.disableRevisionCounter }}
       disableRevisionCounter: "{{ .Values.persistence.disableRevisionCounter }}"
       dataEngine: "{{ .Values.persistence.dataEngine }}"
+      {{- end }}
+      {{- if .Values.persistence.backupTargetName }}
+      backupTargetName: "{{ .Values.persistence.backupTargetName }}"
       {{- end }}

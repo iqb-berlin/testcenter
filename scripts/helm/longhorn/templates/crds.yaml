@@ -1,8 +1,9 @@
+# Generated crds.yaml from github.com/longhorn/longhorn-manager/k8s/pkg/apis and the crds.yaml will be copied to longhorn/longhorn chart/templates and cannot be directly used by kubectl apply.
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backingimagedatasources.longhorn.io
@@ -38,6 +39,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 BackingImageDataSource is deprecated;
+      use longhorn.io/v1beta2 BackingImageDataSource instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -66,7 +70,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -188,7 +192,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backingimagemanagers.longhorn.io
@@ -227,6 +231,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 BackingImageManager is deprecated; use
+      longhorn.io/v1beta2 BackingImageManager instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -255,7 +262,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -342,6 +349,9 @@ spec:
                       type: string
                     progress:
                       type: integer
+                    realSize:
+                      format: int64
+                      type: integer
                     senderManagerAddress:
                       type: string
                     sendingReference:
@@ -378,7 +388,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backingimages.longhorn.io
@@ -413,6 +423,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 BackingImage is deprecated; use longhorn.io/v1beta2
+      BackingImage instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -440,7 +453,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -492,9 +505,20 @@ spec:
             properties:
               checksum:
                 type: string
+              dataEngine:
+                default: v1
+                enum:
+                - v1
+                - v2
+                type: string
               diskFileSpecMap:
                 additionalProperties:
                   properties:
+                    dataEngine:
+                      enum:
+                      - v1
+                      - v2
+                      type: string
                     evictionRequested:
                       type: boolean
                   type: object
@@ -541,6 +565,11 @@ spec:
               diskFileStatusMap:
                 additionalProperties:
                   properties:
+                    dataEngine:
+                      enum:
+                      - v1
+                      - v2
+                      type: string
                     lastStateTransitionTime:
                       type: string
                     message:
@@ -559,14 +588,26 @@ spec:
                 type: object
               ownerID:
                 type: string
+              realSize:
+                description: Real size of image in bytes, which may be smaller than
+                  the size when the file is a sparse file. Will be zero until known
+                  (e.g. while a backing image is uploading)
+                format: int64
+                type: integer
               size:
                 format: int64
                 type: integer
               uuid:
                 type: string
+              v2FirstCopyDisk:
+                type: string
+              v2FirstCopyStatus:
+                description: It is pending -> in-progress -> ready/failed
+                type: string
               virtualSize:
-                description: Virtual size of image, which may be larger than physical
-                  size. Will be zero until known (e.g. while a backing image is uploading)
+                description: Virtual size of image in bytes, which may be larger than
+                  physical size. Will be zero until known (e.g. while a backing image
+                  is uploading)
                 format: int64
                 type: integer
             type: object
@@ -580,7 +621,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backupbackingimages.longhorn.io
@@ -643,6 +684,13 @@ spec:
             description: BackupBackingImageSpec defines the desired state of the Longhorn
               backing image backup
             properties:
+              backingImage:
+                description: The backing image name.
+                type: string
+              backupTargetName:
+                description: The backup target name.
+                nullable: true
+                type: string
               labels:
                 additionalProperties:
                   type: string
@@ -655,11 +703,10 @@ spec:
                 nullable: true
                 type: string
               userCreated:
-                description: |-
-                  Is this CR created by user through API or UI.
-                  Required
+                description: Is this CR created by user through API or UI.
                 type: boolean
             required:
+            - backingImage
             - userCreated
             type: object
           status:
@@ -711,6 +758,13 @@ spec:
               progress:
                 description: The backing image backup progress.
                 type: integer
+              secret:
+                description: Record the secret if this backup backing image is encrypted
+                type: string
+              secretNamespace:
+                description: Record the secret namespace if this backup backing image
+                  is encrypted
+                type: string
               size:
                 description: The backing image size.
                 format: int64
@@ -734,7 +788,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backups.longhorn.io
@@ -770,6 +824,9 @@ spec:
       jsonPath: .status.lastSyncedAt
       name: LastSyncedAt
       type: string
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Backup is deprecated; use longhorn.io/v1beta2
+      Backup instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -797,7 +854,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -813,6 +870,10 @@ spec:
     - description: The snapshot creation time
       jsonPath: .status.snapshotCreatedAt
       name: SnapshotCreatedAt
+      type: string
+    - description: The backup target name
+      jsonPath: .status.backupTargetName
+      name: BackupTarget
       type: string
     - description: The backup state
       jsonPath: .status.state
@@ -875,6 +936,9 @@ spec:
             properties:
               backupCreatedAt:
                 description: The snapshot backup upload finished time.
+                type: string
+              backupTargetName:
+                description: The backup target name.
                 type: string
               compressionMethod:
                 description: Compression method
@@ -957,7 +1021,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backuptargets.longhorn.io
@@ -1005,6 +1069,9 @@ spec:
       jsonPath: .status.lastSyncedAt
       name: LastSyncedAt
       type: string
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 BackupTarget is deprecated; use longhorn.io/v1beta2
+      BackupTarget instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -1032,7 +1099,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -1158,7 +1225,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: backupvolumes.longhorn.io
@@ -1190,6 +1257,9 @@ spec:
       jsonPath: .status.lastSyncedAt
       name: LastSyncedAt
       type: string
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 BackupVolume is deprecated; use longhorn.io/v1beta2
+      BackupVolume instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -1217,11 +1287,15 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
   - additionalPrinterColumns:
+    - description: The backup target name
+      jsonPath: .spec.backupTargetName
+      name: BackupTarget
+      type: string
     - description: The backup volume creation time
       jsonPath: .status.createdAt
       name: CreatedAt
@@ -1264,10 +1338,17 @@ spec:
             description: BackupVolumeSpec defines the desired state of the Longhorn
               backup volume
             properties:
+              backupTargetName:
+                description: The backup target name that the backup volume was synced.
+                nullable: true
+                type: string
               syncRequestedAt:
                 description: The time to request run sync the remote backup volume.
                 format: date-time
                 nullable: true
+                type: string
+              volumeName:
+                description: The volume name that the backup volume was used to backup.
                 type: string
             type: object
           status:
@@ -1337,7 +1418,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: engineimages.longhorn.io
@@ -1385,6 +1466,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 EngineImage is deprecated; use longhorn.io/v1beta2
+      EngineImage instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -1412,7 +1496,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -1549,7 +1633,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: engines.longhorn.io
@@ -1585,6 +1669,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Engine is deprecated; use longhorn.io/v1beta2
+      Engine instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -1612,7 +1699,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -1667,9 +1754,6 @@ spec:
             properties:
               active:
                 type: boolean
-              backendStoreDriver:
-                description: Deprecated:Replaced by field `dataEngine`.
-                type: string
               backupVolume:
                 type: string
               dataEngine:
@@ -1681,14 +1765,12 @@ spec:
                 type: string
               disableFrontend:
                 type: boolean
-              engineImage:
-                description: 'Deprecated: Replaced by field `image`.'
-                type: string
               frontend:
                 enum:
                 - blockdev
                 - iscsi
                 - nvmf
+                - ublk
                 - ""
                 type: string
               image:
@@ -1932,8 +2014,13 @@ spec:
                 type: boolean
               storageIP:
                 type: string
+              ublkID:
+                format: int32
+                type: integer
               unmapMarkSnapChainRemovedEnabled:
                 type: boolean
+              uuid:
+                type: string
             type: object
         type: object
     served: true
@@ -1945,7 +2032,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: instancemanagers.longhorn.io
@@ -1977,6 +2064,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 InstanceManager is deprecated; use longhorn.io/v1beta2
+      InstanceManager instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -2004,7 +2094,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -2056,6 +2146,14 @@ spec:
             properties:
               dataEngine:
                 type: string
+              dataEngineSpec:
+                properties:
+                  v2:
+                    properties:
+                      cpuMask:
+                        type: string
+                    type: object
+                type: object
               image:
                 type: string
               nodeID:
@@ -2075,16 +2173,44 @@ spec:
                 type: integer
               apiVersion:
                 type: integer
+              backingImages:
+                additionalProperties:
+                  properties:
+                    currentChecksum:
+                      type: string
+                    diskUUID:
+                      type: string
+                    message:
+                      type: string
+                    name:
+                      type: string
+                    progress:
+                      type: integer
+                    size:
+                      format: int64
+                      type: integer
+                    state:
+                      type: string
+                    uuid:
+                      type: string
+                  type: object
+                nullable: true
+                type: object
               currentState:
                 type: string
+              dataEngineStatus:
+                properties:
+                  v2:
+                    properties:
+                      cpuMask:
+                        type: string
+                    type: object
+                type: object
               instanceEngines:
                 additionalProperties:
                   properties:
                     spec:
                       properties:
-                        backendStoreDriver:
-                          description: Deprecated:Replaced by field `dataEngine`.
-                          type: string
                         dataEngine:
                           type: string
                         name:
@@ -2121,6 +2247,11 @@ spec:
                           format: int32
                           type: integer
                         type:
+                          type: string
+                        ublkID:
+                          format: int32
+                          type: integer
+                        uuid:
                           type: string
                       type: object
                   type: object
@@ -2131,9 +2262,6 @@ spec:
                   properties:
                     spec:
                       properties:
-                        backendStoreDriver:
-                          description: Deprecated:Replaced by field `dataEngine`.
-                          type: string
                         dataEngine:
                           type: string
                         name:
@@ -2170,6 +2298,11 @@ spec:
                           format: int32
                           type: integer
                         type:
+                          type: string
+                        ublkID:
+                          format: int32
+                          type: integer
+                        uuid:
                           type: string
                       type: object
                   type: object
@@ -2180,9 +2313,6 @@ spec:
                   properties:
                     spec:
                       properties:
-                        backendStoreDriver:
-                          description: Deprecated:Replaced by field `dataEngine`.
-                          type: string
                         dataEngine:
                           type: string
                         name:
@@ -2219,6 +2349,11 @@ spec:
                           format: int32
                           type: integer
                         type:
+                          type: string
+                        ublkID:
+                          format: int32
+                          type: integer
+                        uuid:
                           type: string
                       type: object
                   type: object
@@ -2244,7 +2379,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: nodes.longhorn.io
@@ -2289,6 +2424,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Node is deprecated; use longhorn.io/v1beta2
+      Node instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -2316,7 +2454,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -2484,6 +2622,12 @@ spec:
                       type: string
                     instanceManagerName:
                       type: string
+                    scheduledBackingImage:
+                      additionalProperties:
+                        format: int64
+                        type: integer
+                      nullable: true
+                      type: object
                     scheduledReplica:
                       additionalProperties:
                         format: int64
@@ -2523,7 +2667,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: orphans.longhorn.io
@@ -2573,6 +2717,14 @@ spec:
             description: OrphanSpec defines the desired state of the Longhorn orphaned
               data
             properties:
+              dataEngine:
+                description: |-
+                  The type of data engine for instance orphan.
+                  Can be "v1", "v2".
+                enum:
+                - v1
+                - v2
+                type: string
               nodeID:
                 description: The node ID on which the controller is responsible to
                   reconcile this orphan CR.
@@ -2634,7 +2786,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: recurringjobs.longhorn.io
@@ -2678,6 +2830,9 @@ spec:
       jsonPath: .spec.labels
       name: Labels
       type: string
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 RecurringJob is deprecated; use longhorn.io/v1beta2
+      RecurringJob instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -2705,7 +2860,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -2716,7 +2871,7 @@ spec:
       name: Groups
       type: string
     - description: Should be one of "snapshot", "snapshot-force-create", "snapshot-cleanup",
-        "snapshot-delete", "backup", "backup-force-create" or "filesystem-trim"
+        "snapshot-delete", "backup", "backup-force-create", "filesystem-trim" or "system-backup"
       jsonPath: .spec.task
       name: Task
       type: string
@@ -2789,7 +2944,7 @@ spec:
                   type: string
                 description: |-
                   The parameters of the snapshot/backup.
-                  Support parameters: "full-backup-interval".
+                  Support parameters: "full-backup-interval", "volume-backup-policy".
                 type: object
               retain:
                 description: The retain count of the snapshot/backup.
@@ -2797,7 +2952,7 @@ spec:
               task:
                 description: |-
                   The recurring job task.
-                  Can be "snapshot", "snapshot-force-create", "snapshot-cleanup", "snapshot-delete", "backup", "backup-force-create" or "filesystem-trim"
+                  Can be "snapshot", "snapshot-force-create", "snapshot-cleanup", "snapshot-delete", "backup", "backup-force-create", "filesystem-trim" or "system-backup".
                 enum:
                 - snapshot
                 - snapshot-force-create
@@ -2806,6 +2961,7 @@ spec:
                 - backup
                 - backup-force-create
                 - filesystem-trim
+                - system-backup
                 type: string
             type: object
           status:
@@ -2830,7 +2986,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: replicas.longhorn.io
@@ -2870,6 +3026,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Replica is deprecated; use longhorn.io/v1beta2
+      Replica instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -2897,7 +3056,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -2956,9 +3115,6 @@ spec:
             properties:
               active:
                 type: boolean
-              backendStoreDriver:
-                description: Deprecated:Replaced by field `dataEngine`.
-                type: string
               backingImage:
                 type: string
               dataDirectoryName:
@@ -2973,9 +3129,6 @@ spec:
               diskID:
                 type: string
               diskPath:
-                type: string
-              engineImage:
-                description: 'Deprecated: Replaced by field `image`.'
                 type: string
               engineName:
                 type: string
@@ -3022,6 +3175,11 @@ spec:
                 type: string
               logRequested:
                 type: boolean
+              migrationEngineName:
+                description: |-
+                  MigrationEngineName is indicating the migrating engine which current connected to this replica. This is only
+                  used for live migration of v2 data engine
+                type: string
               nodeID:
                 type: string
               rebuildRetryCount:
@@ -3099,6 +3257,11 @@ spec:
                 type: boolean
               storageIP:
                 type: string
+              ublkID:
+                format: int32
+                type: integer
+              uuid:
+                type: string
             type: object
         type: object
     served: true
@@ -3110,7 +3273,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: settings.longhorn.io
@@ -3134,6 +3297,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Setting is deprecated; use longhorn.io/v1beta2
+      Setting instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -3161,7 +3327,7 @@ spec:
         required:
         - value
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -3223,7 +3389,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: sharemanagers.longhorn.io
@@ -3250,6 +3416,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 ShareManager is deprecated; use longhorn.io/v1beta2
+      ShareManager instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -3277,7 +3446,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -3350,7 +3519,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: snapshots.longhorn.io
@@ -3429,7 +3598,6 @@ spec:
                 description: |-
                   the volume that this snapshot belongs to.
                   This field is immutable after creation.
-                  Required
                 type: string
             required:
             - volume
@@ -3480,7 +3648,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: supportbundles.longhorn.io
@@ -3611,7 +3779,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: systembackups.longhorn.io
@@ -3748,7 +3916,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: systemrestores.longhorn.io
@@ -3857,7 +4025,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: volumeattachments.longhorn.io
@@ -4001,7 +4169,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels: {{- include "longhorn.labels" . | nindent 4 }}
     longhorn-manager: ""
   name: volumes.longhorn.io
@@ -4053,6 +4221,9 @@ spec:
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    deprecated: true
+    deprecationWarning: longhorn.io/v1beta1 Volume is deprecated; use longhorn.io/v1beta2
+      Volume instead
     name: v1beta1
     schema:
       openAPIV3Schema:
@@ -4080,7 +4251,7 @@ spec:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
-    served: true
+    served: false
     storage: false
     subresources:
       status: {}
@@ -4144,9 +4315,6 @@ spec:
                 - rwo
                 - rwx
                 type: string
-              backendStoreDriver:
-                description: Deprecated:Replaced by field `dataEngine`.'
-                type: string
               backingImage:
                 type: string
               backupCompressionMethod:
@@ -4154,6 +4322,10 @@ spec:
                 - none
                 - lz4
                 - gzip
+                type: string
+              backupTargetName:
+                description: The backup target name that the volume will be backed
+                  up to or is synced.
                 type: string
               dataEngine:
                 enum:
@@ -4176,9 +4348,6 @@ spec:
                 type: array
               encrypted:
                 type: boolean
-              engineImage:
-                description: 'Deprecated: Replaced by field `image`.'
-                type: string
               freezeFilesystemForSnapshot:
                 description: Setting that freezes the filesystem on the root partition
                   before a snapshot is created.
@@ -4194,6 +4363,7 @@ spec:
                 - blockdev
                 - iscsi
                 - nvmf
+                - ublk
                 - ""
                 type: string
               image:
@@ -4212,6 +4382,17 @@ spec:
                 type: array
               numberOfReplicas:
                 type: integer
+              offlineRebuilding:
+                description: |-
+                  Specifies whether Longhorn should rebuild replicas while the detached volume is degraded.
+                  - ignored: Use the global setting for offline replica rebuilding.
+                  - enabled: Enable offline rebuilding for this volume, regardless of the global setting.
+                  - disabled: Disable offline rebuilding for this volume, regardless of the global setting
+                enum:
+                - ignored
+                - disabled
+                - enabled
+                type: string
               replicaAutoBalance:
                 enum:
                 - ignored
@@ -4374,9 +4555,6 @@ spec:
               lastDegradedAt:
                 type: string
               ownerID:
-                type: string
-              pendingNodeID:
-                description: Deprecated.
                 type: string
               remountRequestedAt:
                 type: string
