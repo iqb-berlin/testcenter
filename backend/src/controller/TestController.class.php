@@ -292,7 +292,6 @@ class TestController extends Controller {
     );
     self::testDAO()->addTestLogs($testLogs);
 
-
     return $response->withStatus(201);
   }
 
@@ -328,15 +327,19 @@ class TestController extends Controller {
 
     $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
-    foreach ($statePatch as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        $entry['content']
-      );
-    }
+        $entry['content'],
+        '',
+        $originalUnitId
+      ),
+      $statePatch
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::unitState(
@@ -375,16 +378,19 @@ class TestController extends Controller {
       $originalUnitId = '';
     }
 
-    foreach ($logData as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        json_encode($entry['content']),
+        $entry['content'],
+        '',
         $originalUnitId
-      );
-    }
+      ),
+      $logData
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     return $response->withStatus(201);
   }
