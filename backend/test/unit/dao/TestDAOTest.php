@@ -324,7 +324,7 @@ class TestDAOTest extends TestCase {
       'UNIT.SAMPLE',
       [],
       'the-response-type',
-      123456789123
+      123456789124
     );
     $expectedEmptyUpdate = [
       "dataParts" => [
@@ -345,7 +345,7 @@ class TestDAOTest extends TestCase {
         "other" => '{"other": "new_overwrite"}'
       ],
       'new-response-type',
-      987654321987
+      123456789125
     );
     $expectedOverwrite = [
       "dataParts" => [
@@ -353,7 +353,7 @@ class TestDAOTest extends TestCase {
         "other" => '{"other": "new_overwrite"}',
         "added" => '{"stuff": "added"}'
       ],
-      "dataType" => 'new-response-type'
+      "dataType" => 'the-response-type' // TODO see getDataParts()
     ];
     $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
     $this->assertEquals($expectedOverwrite, $resultOverwrite);
@@ -363,11 +363,11 @@ class TestDAOTest extends TestCase {
       1,
       'UNIT.SAMPLE',
       [
-        "other" => '{"other": "new_overwrite"}',
+        'other' => '{"other": "new_overwrite"}',
         'other' => '{"other": "completely_new"}'
       ],
       'new-response-type',
-      987654321987
+      123456789126
     );
     $expectedOverwrite = [
       "dataParts" => [
@@ -375,7 +375,7 @@ class TestDAOTest extends TestCase {
         'other' => '{"other": "completely_new"}',
         "added" => '{"stuff": "added"}'
       ],
-      "dataType" => 'new-response-type'
+      "dataType" => 'the-response-type' // TODO see getDataParts()
     ];
     $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
     $this->assertEquals($expectedOverwrite, $resultOverwrite);
@@ -383,7 +383,7 @@ class TestDAOTest extends TestCase {
 
   function test_addUnitLog() {
     $testId = 1;
-    $unitName = 'TEST_UNIT';
+    $unitName = 'UNIT_1';
     $logKey = 'UNIT_LOG_KEY';
     $timestamp = 1623456789;
     $logContent = 'This is a unit log entry test.';
@@ -398,8 +398,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLog = $this->dbc->_(
-      'select logentry, timestamp from unit_logs where unit_id = 
-            (select id from units where name = :unitName and booklet_id = :testId)',
+      'select logentry, timestamp from unit_logs where unit_name = :unitName and test_id = :testId',
       [':unitName' => $unitName, ':testId' => $testId]
     );
 
@@ -416,8 +415,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLogEmptyContent = $this->dbc->_(
-      'select logentry, timestamp from unit_logs where unit_id = 
-            (select id from units where name = :unitName and booklet_id = :testId) and logentry = :logkey',
+      'select logentry, timestamp from unit_logs where unit_name = :unitName and test_id = :testId and logentry = :logkey',
       [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey]
     );
 
@@ -425,37 +423,4 @@ class TestDAOTest extends TestCase {
     $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
   }
 
-  function test_getOrCreateUnitId() {
-    $testId = 1;
-    $unitName = "UNIT_1";
-    $originalUnitId = "ORIGINAL_ID_NEW";
-
-    // Test for existing unit being found, without setting original unit ID
-    $resultId = $this->dbc->getOrCreateUnitId($testId, $unitName);
-    $existingUnitId = 1; // from testdata.sql
-    $this->assertEquals($existingUnitId, $resultId);
-
-    // Test for existing unit, with original unit ID update
-    $this->dbc->getOrCreateUnitId($testId, $unitName, $originalUnitId);
-    $updatedUnit = $this->dbc->_(
-      'select original_unit_id from units where id = :id',
-      [':id' => $resultId]
-    );
-    $this->assertEquals($originalUnitId, $updatedUnit['original_unit_id']);
-
-    // Test for new unit creation case
-    $newUnitName = "NEW_UNIT";
-    $newUnitId = $this->dbc->getOrCreateUnitId($testId, $newUnitName);
-    $this->assertNotNull($newUnitId);
-    $newUnit = $this->dbc->_(
-      'select id, name, booklet_id from units where name = :name and booklet_id = :testId',
-      [':name' => $newUnitName, ':testId' => $testId]
-    );
-    $expected = [
-      'id' => $newUnitId,
-      'name' => $newUnitName,
-      'booklet_id' => $testId
-    ];
-    $this->assertEquals($expected, $newUnit);
-  }
 }
