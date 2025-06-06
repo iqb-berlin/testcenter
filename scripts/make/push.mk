@@ -1,8 +1,9 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 TAG := dev
+CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter | grep -E "^version:" | awk '{print $$2}')
 
 # prevents collisions of make target names with possible file names
-.PHONY: push-dockerhub push-iqb-registry
+.PHONY: push-dockerhub push-iqb-registry push-helm-chart
 
 # Build and tag all docker images
 .build:
@@ -65,3 +66,10 @@ push-iqb-registry: .build
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-frontend:$(TAG)
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-service:$(TAG)
 	docker logout
+
+push-helm-chart:
+	cd $(TC_BASE_DIR)/scripts/helm &&\
+	sed -i.bak "s|^appVersion:.*|appVersion: $(TAG)|" testcenter/Chart.yaml && rm testcenter/Chart.yaml.bak &&\
+	helm package testcenter &&\
+	helm push testcenter-$(CHART_VERSION).tgz oci://registry-1.docker.io/iqbberlin &&\
+	rm testcenter-$(CHART_VERSION).tgz
