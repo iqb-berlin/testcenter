@@ -297,6 +297,9 @@ class TestDAO extends DAO {
     );
   }
 
+  /* TODO decide on what to do with the different dataTypes per player/unit: the database makes it possible, but the
+  application code does treat it like its not possible, because the verona interface does only work with one responseType
+  per player/unit */
   public function getDataParts(int $testId, string $unitName): array {
     $result = $this->_(
       'select
@@ -323,7 +326,7 @@ class TestDAO extends DAO {
 
     return [
       "dataParts" => $unitData,
-      "dataType" => $row['response_type'] ?? ''
+      "dataType" => $row['response_type'] ?? '' // TODO see function head
     ];
   }
 
