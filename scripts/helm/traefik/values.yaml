@@ -7,7 +7,8 @@ image:  # @schema additionalProperties: false
   registry: docker.io
   # -- Traefik image repository
   repository: traefik
-  # -- defaults to appVersion
+  # -- defaults to appVersion. It's used for version checking, even prefixed with experimental- or latest-.
+  # When a digest is required, `versionOverride` can be used to set the version.
   tag:  # @schema type:[string, null]
   # -- Traefik image pull policy
   pullPolicy: IfNotPresent
@@ -114,7 +115,7 @@ ingressClass:  # @schema additionalProperties: false
   name: ""
 
 core:  # @schema additionalProperties: false
-  # -- Can be used to use globally v2 router syntax
+  # -- Can be used to use globally v2 router syntax. Deprecated since v3.4 /!\.
   # See https://doc.traefik.io/traefik/v3.0/migration/v2-to-v3/#new-v3-syntax-notable-changes
   defaultRuleSyntax: ""
 
@@ -273,7 +274,7 @@ providers:  # @schema additionalProperties: false
     # -- When the parameter is set, only resources containing an annotation with the same value are processed. Otherwise, resources missing the annotation, having an empty value, or the value traefik are processed. It will also set required annotation on Dashboard and Healthcheck IngressRoute when enabled.
     ingressClass: ""
     # labelSelector: environment=production,method=traefik
-    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces.
+    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
     namespaces: []
     # -- Defines whether to use Native Kubernetes load-balancing mode by default.
     nativeLBByDefault: false
@@ -288,7 +289,7 @@ providers:  # @schema additionalProperties: false
     # -- When ingressClass is set, only Ingresses containing an annotation with the same value are processed. Otherwise, Ingresses missing the annotation, having an empty value, or the value traefik are processed.
     ingressClass:  # @schema type:[string, null]
     # labelSelector: environment=production,method=traefik
-    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces.
+    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
     namespaces: []
     # IP used for Kubernetes Ingress endpoints
     publishedService:
@@ -306,7 +307,7 @@ providers:  # @schema additionalProperties: false
     # -- Toggles support for the Experimental Channel resources (Gateway API release channels documentation).
     # This option currently enables support for TCPRoute and TLSRoute.
     experimentalChannel: false
-    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces.
+    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
     namespaces: []
     # -- A label selector can be defined to filter on specific GatewayClass objects only.
     labelselector: ""
@@ -394,25 +395,27 @@ logs:
         names: {}
 
 metrics:
-  ## -- Enable metrics for internal resources. Default: false
+  # -- Enable metrics for internal resources. Default: false
   addInternals: false
 
-  ## -- Prometheus is enabled by default.
-  ## -- It can be disabled by setting "prometheus: null"
+  ## Prometheus is enabled by default.
+  ## It can be disabled by setting "prometheus: null"
   prometheus:
     # -- Entry point used to expose metrics.
     entryPoint: metrics
-    ## Enable metrics on entry points. Default: true
+    # -- Enable metrics on entry points. Default: true
     addEntryPointsLabels:  # @schema type:[boolean, null]
-    ## Enable metrics on routers. Default: false
+    # -- Enable metrics on routers. Default: false
     addRoutersLabels:  # @schema type:[boolean, null]
-    ## Enable metrics on services. Default: true
+    # -- Enable metrics on services. Default: true
     addServicesLabels:  # @schema type:[boolean, null]
-    ## Buckets for latency metrics. Default="0.1,0.3,1.2,5.0"
+    # -- Buckets for latency metrics. Default="0.1,0.3,1.2,5.0"
     buckets: ""
-    ## When manualRouting is true, it disables the default internal router in
+    # -- When manualRouting is true, it disables the default internal router in
     ## order to allow creating a custom router for prometheus@internal service.
     manualRouting: false
+    # -- Add HTTP header labels to metrics. See EXAMPLES.md or upstream doc for usage.
+    headerLabels: {}  # @schema type:[object, null]
     service:
       # -- Create a dedicated metrics service to use with ServiceMonitor
       enabled: false
@@ -501,6 +504,8 @@ metrics:
     explicitBoundaries: []
     # -- Interval at which metrics are sent to the OpenTelemetry Collector. Default: 10s
     pushInterval: ""
+    # -- Service name used in OTLP backend. Default: traefik.
+    serviceName:  # @schema type:[string, null]
     http:
       # -- Set to true in order to send metrics to the OpenTelemetry Collector using HTTP.
       enabled: false
@@ -593,8 +598,8 @@ tracing:  # @schema additionalProperties: false
 
 # -- Global command arguments to be passed to all traefik's pods
 globalArguments:
-- "--global.checknewversion"
-- "--global.sendanonymoususage"
+  - "--global.checknewversion"
+  - "--global.sendanonymoususage"
 
 # -- Additional arguments to be passed at Traefik's binary
 # See [CLI Reference](https://docs.traefik.io/reference/static-configuration/cli/)
@@ -925,22 +930,31 @@ extraObjects: []
 # It will not affect optional CRDs such as `ServiceMonitor` and `PrometheusRules`
 namespaceOverride: ""
 
-## -- This field override the default app.kubernetes.io/instance label for all Objects.
+# -- This field override the default app.kubernetes.io/instance label for all Objects.
 instanceLabelOverride: ""
+
+# -- This field override the default version extracted from image.tag
+versionOverride: ""
 
 # Traefik Hub configuration. See https://doc.traefik.io/traefik-hub/
 hub:
   # -- Name of `Secret` with key 'token' set to a valid license token.
   # It enables API Gateway.
   token: ""
+  # -- By default, Traefik Hub provider watches all namespaces. When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
+  namespaces: []  # @schema required:true
   apimanagement:
     # -- Set to true in order to enable API Management. Requires a valid license token.
     enabled: false
     admission:
       # -- WebHook admission server listen address. Default: "0.0.0.0:9943".
       listenAddr: ""
-      # -- Certificate of the WebHook admission server. Default: "hub-agent-cert".
-      secretName: ""
+      # -- Certificate name of the WebHook admission server. Default: "hub-agent-cert".
+      secretName: "hub-agent-cert"
+      # -- Set custom certificate for the WebHook admission server. The certificate should be specified with _tls.crt_ and _tls.key_ in base64 encoding.
+      customWebhookCertificate: {}
+      # -- Set it to false if you need to disable Traefik Hub pod restart when mutating webhook certificate is updated. It's done with a label update.
+      restartOnCertificateChange: true
     openApi:
       # -- When set to true, it will only accept paths and methods that are explicitly defined in its OpenAPI specification
       validateRequestMethodAndPath: false
@@ -948,6 +962,92 @@ hub:
   experimental:
     # -- Set to true in order to enable AI Gateway. Requires a valid license token.
     aigateway: false
+  providers:
+    consulCatalogEnterprise:
+      # -- Enable Consul Catalog Enterprise backend with default settings.
+      enabled: false
+      # -- Use local agent caching for catalog reads.
+      cache: false
+      # -- Enable Consul Connect support.
+      connectAware: false
+      # -- Consider every service as Connect capable by default.
+      connectByDefault: false
+      # -- Constraints is an expression that Traefik matches against the container's labels
+      constraints: ""
+      # -- Default rule.
+      defaultRule: "Host(`{{ normalize .Name }}`)"
+      endpoint:
+        # -- The address of the Consul server
+        address: ""
+        # -- Data center to use. If not provided, the default agent data center is used
+        datacenter: ""
+        # -- WaitTime limits how long a Watch will block. If not provided, the agent default
+        endpointWaitTime: 0
+        httpauth:
+          # -- Basic Auth password
+          password: ""
+          # -- Basic Auth username
+          username: ""
+        # -- The URI scheme for the Consul server
+        scheme: ""
+        tls:
+          # -- TLS CA
+          ca: ""
+          # -- TLS cert
+          cert: ""
+          # -- TLS insecure skip verify
+          insecureSkipVerify: false
+          # -- TLS key
+          key: ""
+        # -- Token is used to provide a per-request ACL token which overrides the agent's
+        token: ""
+      # -- Expose containers by default.
+      exposedByDefault: true
+      # -- Sets the namespaces used to discover services (Consul Enterprise only).
+      namespaces: ""
+      # -- Sets the partition used to discover services (Consul Enterprise only).
+      partition: ""
+      # -- Prefix for consul service tags.
+      prefix: "traefik"
+      # -- Interval for check Consul API.
+      refreshInterval: 15
+      # -- Forces the read to be fully consistent.
+      requireConsistent: false
+      # -- Name of the Traefik service in Consul Catalog (needs to be registered via the
+      serviceName: "traefik"
+      # -- Use stale consistency for catalog reads.
+      stale: false
+      # -- A list of service health statuses to allow taking traffic.
+      strictChecks: "passing, warning"
+      # -- Watch Consul API events.
+      watch: false
+    microcks:
+      # -- Enable Microcks provider.
+      enabled: false
+      auth:
+        # -- Microcks API client ID.
+        clientId: ""
+        # -- Microcks API client secret.
+        clientSecret: ""
+        # -- Microcks API endpoint.
+        endpoint: ""
+        # -- Microcks API token.
+        token: ""
+      # -- Microcks API endpoint.
+      endpoint: ""
+      # -- Polling interval for Microcks API.
+      pollInterval: 30
+      # -- Polling timeout for Microcks API.
+      pollTimeout: 5
+      tls:
+        # -- TLS CA
+        ca: ""
+        # -- TLS cert
+        cert: ""
+        # -- TLS insecure skip verify
+        insecureSkipVerify: false
+        # -- TLS key
+        key: ""
   redis:
     # -- Enable Redis Cluster. Default: true.
     cluster:    # @schema type:[boolean, null]
@@ -979,6 +1079,7 @@ hub:
       insecureSkipVerify: false
   # Enable export of errors logs to the platform. Default: true.
   sendlogs:  # @schema type:[boolean, null]
+
   tracing:
     # -- Tracing headers to duplicate.
     # To configure the following, tracing.otlp.enabled needs to be set to true.
@@ -993,3 +1094,34 @@ hub:
         traceParent: ""
         # -- Name of the header that will contain the tracestate copy.
         traceState: ""
+
+# -- Required for OCI Marketplace integration.
+# See https://docs.public.content.oci.oraclecloud.com/en-us/iaas/Content/Marketplace/understanding-helm-charts.htm
+oci_meta:
+  # -- Enable specific values for Oracle Cloud Infrastructure
+  enabled: false
+    # -- It needs to be an ocir repo
+  repo: traefik
+  images:
+    proxy:
+      image: traefik
+      tag: latest
+    hub:
+      image: traefik-hub
+      tag: latest
+
+# -- Required for Azure Marketplace integration.
+# See https://learn.microsoft.com/en-us/partner-center/marketplace-offers/azure-container-technical-assets-kubernetes?tabs=linux,linux2#update-the-helm-chart
+global:
+  azure:
+    # -- Enable specific values for Azure Marketplace
+    enabled: false
+    images:
+      proxy:
+        image: traefik
+        tag: latest
+        registry: docker.io/library
+      hub:
+        image: traefik-hub
+        tag: latest
+        registry: ghcr.io/traefik

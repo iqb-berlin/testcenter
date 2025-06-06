@@ -1,7 +1,7 @@
 annotations:
   artifacthub.io/changes: |
-    - "feat(Traefik Hub): add OAS validateRequestMethodAndPath - CRDs update"
-    - "chore(release): publish v34.1.0 and CRDs v1.2.0"
+    - "fix(CRDs): validation check on RootCA for both servertransport"
+    - "chore(release): :rocket: publish v35.4.0 and CRDs v1.8.1"
 apiVersion: v2
 description: A Traefik based Kubernetes ingress controller
 home: https://traefik.io/
@@ -14,14 +14,12 @@ kubeVersion: '>=1.22.0-0'
 maintainers:
 - email: michel.loiseleur@traefik.io
   name: mloiseleur
-- email: charlie.haley@traefik.io
-  name: charlie-haley
 - email: remi.buisson@traefik.io
   name: darkweaver87
 - name: jnoordsij
 name: traefik-crds
 sources:
-- https://github.com/traefik/traefik
 - https://github.com/traefik/traefik-helm-chart
+- https://github.com/traefik/traefik
 type: application
-version: 1.2.0
+version: 1.8.1

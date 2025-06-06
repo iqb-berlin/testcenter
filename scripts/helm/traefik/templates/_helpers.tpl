@@ -18,7 +18,21 @@ Create chart name and version as used by the chart label.
 Create the chart image name.
 */}}
 {{- define "traefik.image-name" -}}
+{{- if .Values.oci_meta.enabled -}}
+ {{- if .Values.hub.token -}}
+{{- printf "%s/%s:%s" .Values.oci_meta.repo .Values.oci_meta.images.hub.image .Values.oci_meta.images.hub.tag }}
+ {{- else -}}
+{{- printf "%s/%s:%s" .Values.oci_meta.repo .Values.oci_meta.images.proxy.image .Values.oci_meta.images.proxy.tag }}
+ {{- end -}}
+{{- else if .Values.global.azure.enabled -}}
+ {{- if .Values.hub.token -}}
+{{- printf "%s/%s:%s" .Values.global.azure.images.hub.registry .Values.global.azure.images.hub.image .Values.global.azure.images.hub.tag }}
+ {{- else -}}
+{{- printf "%s/%s:%s" .Values.global.azure.images.proxy.registry .Values.global.azure.images.proxy.image .Values.global.azure.images.proxy.tag }}
+ {{- end -}}
+{{- else -}}
 {{- printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -93,6 +107,33 @@ are multiple namespaced releases with the same release name.
 {{- end -}}
 
 {{/*
+Change input to a valid name for a port.
+This is a best effort to convert input to a valid port name for Kubernetes,
+which per RFC 6335 only allows lowercase alphanumeric characters and '-',
+and additionally imposes a limit of 15 characters on the length of the name.
+See also https://kubernetes.io/docs/concepts/services-networking/service/#multi-port-services
+and https://www.rfc-editor.org/rfc/rfc6335#section-5.1.
+*/}}
+{{- define "traefik.portname" -}}
+{{- $portName := . -}}
+{{- $portName = $portName | lower -}}
+{{- $portName = $portName | trimPrefix "-" | trunc 15 | trimSuffix "-" -}}
+{{- print $portName -}}
+{{- end -}}
+
+{{/*
+Change input to a valid port reference.
+See also the traefik.portname helper.
+*/}}
+{{- define "traefik.portreference" -}}
+{{- if kindIs "string" . -}}
+    {{- print (include "traefik.portname" .) -}}
+{{- else -}}
+    {{- print . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Construct the path for the providers.kubernetesingress.ingressendpoint.publishedservice.
 By convention this will simply use the <namespace>/<service-name> to match the name of the
 service generated.
@@ -128,39 +169,69 @@ Renders a complete tree, even values that contains template.
   {{- end }}
 {{- end -}}
 
-{{- define "imageVersion" -}}
+
 {{/*
-Traefik hub is based on v3.1 (v3.0 before v3.3.1) of traefik proxy, so this is a hack to avoid to much complexity in RBAC management which are
-based on semverCompare
+This is a hack to avoid too much complexity when proxyVersion is required on Hub.
+It requires a dict with "Version" and "Hub".
 */}}
-{{- if $.Values.hub.token -}}
- {{ $hubVersion := "v3.2" }}
- {{- if regexMatch "v[0-9]+.[0-9]+.[0-9]+" (default "" $.Values.image.tag) -}}
-    {{- if semverCompare "<v3.3.2-0" $.Values.image.tag -}}
-        {{ $hubVersion = "v3.0" }}
-    {{- else if semverCompare "<v3.7.0-0" $.Values.image.tag -}}
-        {{ $hubVersion = "v3.1" }}
-    {{- end -}}
+{{- define "traefik.proxyVersionFromHub" -}}
+ {{- $version := .Version -}}
+ {{- if .Hub -}}
+   {{- $hubProxyVersion := "v3.3" }}
+   {{- if regexMatch "v[0-9]+.[0-9]+.[0-9]+" (default "" $version) -}}
+     {{- if semverCompare "<v3.3.2-0" $version -}}
+        {{- $hubProxyVersion = "v3.0" }}
+     {{- else if semverCompare "<v3.7.0-0" $version -}}
+        {{- $hubProxyVersion = "v3.1" }}
+     {{- else if semverCompare "<v3.11.0-0" $version -}}
+        {{ $hubProxyVersion = "v3.2" }}
+     {{- end -}}
+   {{- end -}}
+   {{ $hubProxyVersion }}
+ {{- else -}}
+   {{ $version }}
  {{- end -}}
-{{ $hubVersion }}
-{{- else -}}
-{{ (split "@" (default $.Chart.AppVersion $.Values.image.tag))._0 | replace "latest-" "" | replace "experimental-" "" }}
 {{- end -}}
+
+
+{{/*
+The version can comes many sources: appVersion, image.tag, override, marketplace.
+*/}}
+{{- define "traefik.proxyVersion" -}}
+ {{- if $.Values.versionOverride }}
+  {{- include "traefik.proxyVersionFromHub" (dict "Version" $.Values.versionOverride "Hub" $.Values.hub.token) }}
+ {{- else if $.Values.hub.token -}}
+  {{- $version := ($.Values.oci_meta.enabled | ternary $.Values.oci_meta.images.hub.tag $.Values.image.tag) -}}
+  {{- $version = ($.Values.global.azure.enabled | ternary $.Values.global.azure.images.hub.tag $version) -}}
+  {{- include "traefik.proxyVersionFromHub" (dict "Version" $version "Hub" true) }}
+ {{- else -}}
+  {{- $imageVersion := ($.Values.oci_meta.enabled | ternary $.Values.oci_meta.images.proxy.tag $.Values.image.tag) -}}
+  {{- $imageVersion = ($.Values.global.azure.enabled | ternary $.Values.global.azure.images.proxy.tag $imageVersion) -}}
+  {{- (split "@" (default $.Chart.AppVersion $imageVersion))._0 | replace "latest-" "" | replace "experimental-" "" }}
+ {{- end -}}
 {{- end -}}
 
 {{/* Generate/load self-signed certificate for admission webhooks */}}
 {{- define "traefik-hub.webhook_cert" -}}
-{{- $cert := lookup "v1" "Secret" (include "traefik.namespace" .) "hub-agent-cert" -}}
-{{- if $cert -}}
-{{/* reusing value of existing cert */}}
+{{- if $.Values.hub.apimanagement.admission.customWebhookCertificate }}
+Cert: {{ index $.Values.hub.apimanagement.admission.customWebhookCertificate "tls.crt" }}
+Key: {{ index $.Values.hub.apimanagement.admission.customWebhookCertificate "tls.key" }}
+Hash: {{ sha1sum (index $.Values.hub.apimanagement.admission.customWebhookCertificate "tls.crt") }}
+{{- else -}}
+    {{- $cert := lookup "v1" "Secret" (include "traefik.namespace" .) $.Values.hub.apimanagement.admission.secretName -}}
+    {{- if $cert -}}
+    {{/* reusing value of existing cert */}}
 Cert: {{ index $cert.data "tls.crt" }}
 Key: {{ index $cert.data "tls.key" }}
-{{- else -}}
-{{/* generate a new one */}}
-{{- $altNames := list ( printf "admission.%s.svc" (include "traefik.namespace" .) ) -}}
-{{- $cert := genSelfSignedCert ( printf "admission.%s.svc" (include "traefik.namespace" .) ) (list) $altNames 3650 -}}
+Hash: {{ sha1sum (index $cert.data "tls.crt") }}
+    {{- else -}}
+    {{/* generate a new one */}}
+    {{- $altNames := list ( printf "admission.%s.svc" (include "traefik.namespace" .) ) -}}
+    {{- $cert := genSelfSignedCert ( printf "admission.%s.svc" (include "traefik.namespace" .) ) (list) $altNames 3650 -}}
 Cert: {{ $cert.Cert | b64enc }}
 Key: {{ $cert.Key | b64enc }}
+Hash: {{ sha1sum ($cert.Cert | b64enc) }}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -192,3 +263,15 @@ Key: {{ $cert.Key | b64enc }}
     {{- end -}}
     {{- $found -}}
 {{- end -}}
+
+{{- define "list.difference" -}}
+    {{- $a := .a }}
+    {{- $b := .b }}
+    {{- $diff := list }}
+    {{- range $a }}
+        {{- if not (has . $b) }}
+            {{- $diff = append $diff . }}
+        {{- end }}
+    {{- end }}
+    {{- toYaml $diff }}
+{{- end }}

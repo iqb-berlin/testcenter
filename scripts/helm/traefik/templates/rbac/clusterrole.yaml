@@ -1,4 +1,4 @@
-{{- $version := include "imageVersion" $ }}
+{{- $version := include "traefik.proxyVersion" $ }}
 {{- if and .Values.rbac.enabled (not .Values.rbac.namespaced) }}
 ---
 kind: ClusterRole
@@ -11,16 +11,6 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-{{ . }}: "true"
     {{- end }}
 rules:
-  {{- if semverCompare ">=v3.1.0-0" $version }}
-  - apiGroups:
-      - ""
-    resources:
-      - nodes
-    verbs:
-      - get
-      - list
-      - watch
-  {{- end }}
   {{- if (semverCompare "<v3.1.0-0" $version) }}
   - apiGroups:
       - ""
@@ -45,6 +35,10 @@ rules:
   - apiGroups:
       - ""
     resources:
+      {{- if and .Values.providers.kubernetesCRD.enabled (semverCompare ">=v3.4.0-0" $version) }}
+      - configmaps
+      {{- end }}
+      - nodes
       - services
     verbs:
       - get
@@ -143,7 +137,6 @@ rules:
       - endpoints
     {{- end }}
       - secrets
-      - services
     {{- if semverCompare ">=v3.2.0-0" $version }}
       - configmaps
     {{- end }}
@@ -200,8 +193,14 @@ rules:
       - update
       - patch
       - delete
-  {{- end }}
-  {{- if .Values.hub.token }}
+  - apiGroups:
+      - hub.traefik.io
+    resources:
+      - aiservices
+    verbs:
+      - list
+      - watch
+      - get
     {{- if or (semverCompare ">=v3.1.0-0" $version) .Values.hub.apimanagement.enabled }}
   - apiGroups:
       - ""
@@ -229,7 +228,6 @@ rules:
       - hub.traefik.io
     resources:
       - accesscontrolpolicies
-      - apiaccesses
       - apiportals
       - apiratelimits
       - apis
@@ -238,7 +236,6 @@ rules:
       - apiplans
       - apicatalogitems
       - managedsubscriptions
-      - aiservices
     verbs:
       - list
       - watch
