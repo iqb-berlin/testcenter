@@ -103,7 +103,7 @@ export class BackendService {
   }
 
   getResource(workspaceId: number, path: string): Observable<LoadingFile> {
-    const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.backendUrl;
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? '/fs/' : this.backendUrl; // @TODO: extract to 'file-server.service' class
     return this.http
       .get(
         `${resourceUri}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,

@@ -24,6 +24,10 @@ readonly class CreateGroupTokenTask implements Task {
         return parent::_($sql, $replacements, $multiRow);
       }
     };
-    return $slowerSessionDao->getOrCreateGroupToken($this->login);
+    return $slowerSessionDao->getOrCreateGroupToken(
+      $this->login->getWorkspaceId(),
+      $this->login->getGroupName(),
+      $this->login->getGroupLabel()
+    );
   }
 }
