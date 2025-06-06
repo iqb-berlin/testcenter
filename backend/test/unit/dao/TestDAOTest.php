@@ -1,19 +1,26 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
+
+class TestDAOExposed extends TestDAO {
+  public function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
+    return parent::getOrCreateUnitId($testId, $unitName, $originalUnitId);
+  }
+}
 
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class TestDAOTest extends TestCase {
-  private TestDAO $dbc;
+  private TestDAOExposed $dbc;
 
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new TestDAO();
+    $this->dbc = new TestDAOExposed();
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
@@ -31,6 +38,54 @@ class TestDAOTest extends TestCase {
     $result = $this->dbc->getTestState(3);
 
     $this->assertEquals($expected, $result);
+  }
+
+  function test_addTestLog() {
+    $testId = 1;
+    $logKey = 'LOG_KEY_TEST';
+    $timestamp = 1623456789;
+    $logContent = 'This is a log entry test.';
+
+    // Add the log
+    $this->dbc->addTestLog($testId, $logKey, $timestamp, $logContent);
+
+    // Verify log addition (use mock DB or predefined assertions)
+    $expectedLog = [
+      [
+        'logentry' => 'sample log entry',
+        'timestamp' => 1597903000
+      ],
+      [
+        'logentry' => $logKey . ' : ' . $logContent,
+        'timestamp' => $timestamp
+      ]
+    ];
+
+    $actualLog = $this->dbc->_(
+      'select logentry, timestamp from test_logs where booklet_id = :id',
+      [':id' => $testId],
+      true
+    );
+
+    $this->assertNotEmpty($actualLog);
+    $this->assertEquals($expectedLog, $actualLog);
+
+    // Add a log without content
+    $emptyContent = '';
+    $this->dbc->addTestLog($testId, $logKey, $timestamp, $emptyContent);
+
+    $expectedLogEmptyContent = [
+      'logentry' => $logKey,
+      'timestamp' => $timestamp
+    ];
+
+    $actualLogEmptyContent = $this->dbc->_(
+      'select logentry, timestamp from test_logs where booklet_id = :id and logentry = :logentry',
+      [':id' => $testId, ':logentry' => $logKey]
+    );
+
+    $this->assertNotEmpty($actualLogEmptyContent);
+    $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
   }
 
   function test_getUnitState() {
@@ -168,6 +223,7 @@ class TestDAOTest extends TestCase {
   }
 
   function test_updateDataParts() {
+    // Test with multiple data parts to update
     $this->dbc->updateDataParts(
       1,
       'UNIT.SAMPLE',
@@ -188,5 +244,145 @@ class TestDAOTest extends TestCase {
     ];
     $result = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
     $this->assertEquals($expected, $result);
+
+    // Test with an empty data parts array
+    $this->dbc->updateDataParts(
+      1,
+      'UNIT.SAMPLE',
+      [],
+      'the-response-type',
+      123456789123
+    );
+    $expectedEmptyUpdate = [
+      "dataParts" => [
+        "all" => '{"name":"Elias Example","age":35}',
+        "other" => '{"other": "overwritten"}',
+        "added" => '{"stuff": "added"}'
+      ],
+      "dataType" => 'the-response-type'
+    ];
+    $resultEmptyUpdate = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
+    $this->assertEquals($expectedEmptyUpdate, $resultEmptyUpdate);
+
+    // Test overwrite of existing data parts
+    $this->dbc->updateDataParts(
+      1,
+      'UNIT.SAMPLE',
+      [
+        "other" => '{"other": "new_overwrite"}'
+      ],
+      'new-response-type',
+      987654321987
+    );
+    $expectedOverwrite = [
+      "dataParts" => [
+        "all" => '{"name":"Elias Example","age":35}',
+        "other" => '{"other": "new_overwrite"}',
+        "added" => '{"stuff": "added"}'
+      ],
+      "dataType" => 'new-response-type'
+    ];
+    $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
+    $this->assertEquals($expectedOverwrite, $resultOverwrite);
+
+    // Test overwrite when multiple parts have same partid
+    $this->dbc->updateDataParts(
+      1,
+      'UNIT.SAMPLE',
+      [
+        "other" => '{"other": "new_overwrite"}',
+        'other' => '{"other": "completely_new"}'
+      ],
+      'new-response-type',
+      987654321987
+    );
+    $expectedOverwrite = [
+      "dataParts" => [
+        "all" => '{"name":"Elias Example","age":35}',
+        'other' => '{"other": "completely_new"}',
+        "added" => '{"stuff": "added"}'
+      ],
+      "dataType" => 'new-response-type'
+    ];
+    $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
+    $this->assertEquals($expectedOverwrite, $resultOverwrite);
+  }
+
+  function test_addUnitLog() {
+    $testId = 1;
+    $unitName = 'TEST_UNIT';
+    $logKey = 'UNIT_LOG_KEY';
+    $timestamp = 1623456789;
+    $logContent = 'This is a unit log entry test.';
+
+    // Add the log with content
+    $this->dbc->addUnitLog($testId, $unitName, $logKey, $timestamp, $logContent);
+
+    // Verify log addition
+    $expectedLog = [
+        'logentry' => $logKey . ' = ' . $logContent,
+        'timestamp' => $timestamp
+    ];
+
+    $actualLog = $this->dbc->_(
+      'select logentry, timestamp from unit_logs where unit_id = 
+            (select id from units where name = :unitName and booklet_id = :testId)',
+      [':unitName' => $unitName, ':testId' => $testId]
+    );
+
+    $this->assertNotEmpty($actualLog);
+    $this->assertEquals($expectedLog, $actualLog);
+
+    // Add a log without content
+    $emptyContent = '';
+    $this->dbc->addUnitLog($testId, $unitName, $logKey, $timestamp, $emptyContent);
+
+    $expectedLogEmptyContent = [
+      'logentry' => $logKey,
+      'timestamp' => $timestamp
+    ];
+
+    $actualLogEmptyContent = $this->dbc->_(
+      'select logentry, timestamp from unit_logs where unit_id = 
+            (select id from units where name = :unitName and booklet_id = :testId) and logentry = :logkey',
+      [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey]
+    );
+
+    $this->assertNotEmpty($actualLogEmptyContent);
+    $this->assertEquals($expectedLogEmptyContent, $actualLogEmptyContent);
+  }
+
+  function test_getOrCreateUnitId() {
+    $testId = 1;
+    $unitName = "UNIT_1";
+    $originalUnitId = "ORIGINAL_ID_NEW";
+
+    // Test for existing unit being found, without setting original unit ID
+    $resultId = $this->dbc->getOrCreateUnitId($testId, $unitName);
+    $existingUnitId = 1; // from testdata.sql
+    $this->assertEquals($existingUnitId, $resultId);
+
+    // Test for existing unit, with original unit ID update
+    $this->dbc->getOrCreateUnitId($testId, $unitName, $originalUnitId);
+    $updatedUnit = $this->dbc->_(
+      'select original_unit_id from units where id = :id',
+      [':id' => $resultId]
+    );
+    $this->assertEquals($originalUnitId, $updatedUnit['original_unit_id']);
+
+    // Test for new unit creation case
+    $newUnitName = "NEW_UNIT";
+    $newUnitId = $this->dbc->getOrCreateUnitId($testId, $newUnitName);
+    $this->assertNotNull($newUnitId);
+    $newUnit = $this->dbc->_(
+      'select id, name, booklet_id from units where name = :name and booklet_id = :testId',
+      [':name' => $newUnitName, ':testId' => $testId]
+    );
+    $expected = [
+      'id' => $newUnitId,
+      'name' => $newUnitName,
+      'booklet_id' => $testId
+    ];
+    $this->assertEquals($expected, $newUnit);
   }
 }

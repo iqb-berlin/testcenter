@@ -219,7 +219,6 @@ class TestDAO extends DAO {
     return $unitData ? JSON::decode($unitData['laststate'], true) : [];
   }
 
-  // TODO unit test
   public function updateUnitState(
     int $testId,
     string $unitName,
@@ -283,9 +282,11 @@ class TestDAO extends DAO {
     );
   }
 
-  // TODO unit test
-  // todo reduce nr of queries by using replace...into syntax
-  private function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
+  /**
+      protected for unit test -> should be private
+      todo reduce nr of queries by using replace...into syntax
+   */
+  protected function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
     $unit = $this->_(
       'select units.id from units where units.name = :unitname and units.booklet_id = :testId',
       [
@@ -383,7 +384,6 @@ class TestDAO extends DAO {
     );
   }
 
-  // TODO unit test
   public function addUnitLog(
     int $testId,
     string $unitName,
@@ -404,14 +404,12 @@ class TestDAO extends DAO {
     );
   }
 
-  // TODO unit test
   public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
     $this->_(
       'insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
       [
         ':bookletId' => $testId,
         ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''),
-        // TODO add value-column to log-tables instead of this shit
         ':timestamp' => $timestamp
       ]
     );
