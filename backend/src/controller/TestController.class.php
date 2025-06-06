@@ -333,9 +333,7 @@ class TestController extends Controller {
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        $entry['content'],
-        '',
-        $originalUnitId
+        $entry['content']
       ),
       $statePatch
     );
@@ -368,14 +366,12 @@ class TestController extends Controller {
           'timeStamp' => 'REQUIRED'
         ],
         'logEntries');
-      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       $logData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
         'content' => '',
         'timeStamp' => 'REQUIRED'
       ]);
-      $originalUnitId = '';
     }
 
     $unitLogs = array_map(
@@ -384,9 +380,7 @@ class TestController extends Controller {
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        $entry['content'],
-        '',
-        $originalUnitId
+        json_encode($entry['content'])
       ),
       $logData
     );
