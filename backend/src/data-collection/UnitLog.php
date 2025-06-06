@@ -9,17 +9,7 @@ class UnitLog extends DataCollectionTypeSafe
     public readonly string $unitName,
     public readonly string $logKey,
     public readonly int $timestamp,
-    public readonly string $logContent = "",
-    private string $unitId = '',
-    public readonly string $originalUnitId = ''
+    public readonly string $logContent = '',
   ) {
-  }
-
-  public function getUnitId(): string {
-    return $this->unitId;
-  }
-
-  public function setUnitId(string $unitId): void {
-    $this->unitId = $unitId;
   }
 }
