@@ -366,33 +366,66 @@ class TestDAO extends DAO {
     );
   }
 
-  public function addUnitLog(
-    int $testId,
-    string $unitName,
-    string $logKey,
-    int $timestamp,
-    string $logContent = ""
-  ): void {
-    $this->_(
-      'insert into unit_logs (unit_name, test_id, logentry, timestamp) values (:unitName, :testId, :logentry, :ts)',
-      [
-        ':unitName' => $unitName,
-        ':testId' => $testId,
-        ':logentry' => $logKey . ($logContent ? ' = ' . $logContent : ''),
-        ':ts' => $timestamp
-      ]
-    );
+  /**
+   * @param UnitLog[] $unitLogs
+   */
+  public function addUnitLogs(array $unitLogs): void {
+    if (empty($unitLogs)) {
+      return;
+    }
+
+    foreach ($unitLogs as $unitLog) {
+      if (!$unitLog instanceof UnitLog) {
+        throw new \http\Exception\InvalidArgumentException('All array elements must be UnitLog instances');
+      }
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    /** @var UnitLog $log */
+    foreach ($unitLogs as $index => $log) {
+      $placeholders[] = "(:unitName{$index}, :testId{$index}, :logentry{$index}, :timestamp{$index})";
+
+      $params[":unitName{$index}"] = $log->unitName;
+      $params[":testId{$index}"] = $log->testId;
+      $params[":logentry{$index}"] = $log->logKey . ($log->logContent ? ' = ' . $log->logContent : '');
+      $params[":timestamp{$index}"] = $log->timestamp;
+    }
+
+    $sql = 'insert into unit_logs (unit_name, test_id, logentry, timestamp) values ' . implode(', ', $placeholders);
+    $this->_($sql, $params);
   }
 
-  public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
-    $this->_(
-      'insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
-      [
-        ':bookletId' => $testId,
-        ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''),
-        ':timestamp' => $timestamp
-      ]
-    );
+  /**
+   * @param TestLog[] $testLogs
+   */
+  public function addTestLogs(array $testLogs): void {
+    if (empty($testLogs)) {
+      return;
+    }
+
+    foreach ($testLogs as $testLog) {
+      if (!$testLog instanceof TestLog) {
+        throw new \http\Exception\InvalidArgumentException('All array elements must be TestLog instances');
+      }
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    /** @var TestLog $log */
+    foreach ($testLogs as $index => $log) {
+      $placeholders[] = "(:bookletId{$index}, :logentry{$index}, :timestamp{$index})";
+
+      $params[":bookletId{$index}"] = $log->testId;
+      $params[":logentry{$index}"] = $log->logKey . ($log->logContent ? ' : ' . $log->logContent : '');
+      $params[":timestamp{$index}"] = $log->timestamp;
+    }
+
+    $sql = 'insert into test_logs (booklet_id, logentry, timestamp) values ' . implode(', ', $placeholders);
+
+    $this->_($sql, $params);
   }
 
   // TODO unit test

@@ -254,9 +254,16 @@ class TestController extends Controller {
 
     $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
-    foreach ($statePatch as $entry) {
-      self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
-    }
+    $testLogs = array_map(
+      fn ($entry) => new TestLog(
+        $testId,
+        $entry['key'],
+        $entry['timeStamp'],
+        json_encode($entry['content'])
+      ),
+      $statePatch
+    );
+    self::testDAO()->addTestLogs($testLogs);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, $newState)
@@ -274,9 +281,16 @@ class TestController extends Controller {
       'timeStamp' => 'REQUIRED'
     ]);
 
-    foreach ($logData as $entry) {
-      self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
-    }
+    $testLogs = array_map(
+      fn ($entry) => new TestLog(
+        $testId,
+        $entry['key'],
+        $entry['timeStamp'],
+        json_encode($entry['content'])
+      ),
+      $logData
+    );
+    self::testDAO()->addTestLogs($testLogs);
 
     return $response->withStatus(201);
   }
@@ -313,15 +327,17 @@ class TestController extends Controller {
 
     $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
-    foreach ($statePatch as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
         $entry['content']
-      );
-    }
+      ),
+      $statePatch
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::unitState(
@@ -350,26 +366,25 @@ class TestController extends Controller {
           'timeStamp' => 'REQUIRED'
         ],
         'logEntries');
-      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       $logData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
         'content' => '',
         'timeStamp' => 'REQUIRED'
       ]);
-      $originalUnitId = '';
     }
 
-    foreach ($logData as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        json_encode($entry['content']),
-        $originalUnitId
-      );
-    }
+        json_encode($entry['content'])
+      ),
+      $logData
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     return $response->withStatus(201);
   }
@@ -386,7 +401,7 @@ class TestController extends Controller {
     ]);
 
     self::testDAO()->lockTest($testId);
-    self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
+    self::testDAO()->addTestLogs([new TestLog($testId, $lockEvent['message'], $lockEvent['timeStamp'])]);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, ['status' => 'locked'])
@@ -425,7 +440,7 @@ class TestController extends Controller {
 
   private static function updateTestState(int $testId, array $testSession, string $field, string $value): void {
     $newState = self::testDAO()->updateTestState($testId, [['key' => $field, 'content' => $value, 'timeStamp' => 0]]);
-    self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
+    self::testDAO()->addTestLogs([new TestLog($testId, '"' . $field . '"', 0, $value)]);
 
     $sessionChangeMessage = SessionChangeMessage::testState(
       $testSession['group_name'],
