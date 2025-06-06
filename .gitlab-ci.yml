@@ -1299,7 +1299,7 @@ test-e2e-session-management:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1349,7 +1349,7 @@ test-e2e-super-admin:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1399,7 +1399,7 @@ test-e2e-sys-check:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1449,7 +1449,7 @@ test-e2e-test-controller:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1499,7 +1499,7 @@ test-e2e-workspace-admin:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
@@ -1549,7 +1549,7 @@ test-e2e-misc:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${DOCKERHUB_PROXY}traefik:v2.11
-    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.0
+    - docker pull --quiet ${DOCKERHUB_PROXY}mysql:8.4
     - docker pull --quiet ${DOCKERHUB_PROXY}redis:7.4-bookworm
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
