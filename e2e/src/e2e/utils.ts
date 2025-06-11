@@ -91,16 +91,54 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
       cy.log('Page could not be loaded. Try again.');
       return visitLoginPage().then(logoutTestTaker);
     }
-
     // if booklet is started
     if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
       cy.get('[data-cy="logo"]')
         .click();
       if (fileType === 'hot') {
         cy.log('end test');
-        cy.get('[data-cy="card-end-resume-test"]')
-          .contains('Der Test ist aktiv.');
-        cy.get('[data-cy="resumeTest-1"]');
+        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
+        cy.get('[data-cy="endTest-1"]')
+          .click();
+        cy.url()
+          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.wait('@waitForGetSession');
+      }
+    }
+    cy.get('[data-cy="logout"]')
+      .click();
+    return cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+  });
+
+export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'): Chainable => cy.url()
+  .then(url => {
+    if (url === 'about:blank') {
+      cy.log('Page could not be loaded. Try again.');
+      return visitLoginPage().then(logoutTestTaker);
+    }
+    // if booklet is started
+    if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
+      if (fileType === 'hot_BkltConfigDefault') {
+        cy.get('[data-cy="logo"]')
+          .click();
+        cy.get('[data-cy="dialog-cancel"]')
+          .click();
+        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
+        cy.get('[data-cy="endTest-1"]')
+          .click();
+        cy.url()
+          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.wait('@waitForGetSession');
+      }
+      if (fileType === 'hot_BkltConfigValue1') {
+        getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+          .click();
+        getFromIframe('[data-cy="next-unit-page"]')
+          .click();
+        cy.get('[data-cy="logo"]')
+          .click();
+        cy.get('[data-cy="dialog-cancel"]')
+          .click();
         cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
           .click();
@@ -276,7 +314,7 @@ export const deleteTesttakersFiles = (): void => {
     .should('not.exist');
 };
 
-export const useTestDBSetDate = (timestamp: string) : void => {
+export const useTestDBSetDate = (timestamp: string): void => {
   cy.intercept(new RegExp(`${Cypress.env('urls').backend}/.*`), req => {
     req.headers.TestClock = timestamp;
     req.headers.TestMode = 'integration';
@@ -346,7 +384,7 @@ export const gotoPage = (pageIndex: number): void => {
     .should('have.class', 'selected-value');
 };
 
-export const readBlockTime = (): Promise <number> => new Promise(resolve => {
+export const readBlockTime = (): Promise<number> => new Promise(resolve => {
   cy.get('[data-cy="time-value"]')
     .then(currTime => {
       const currBlockTimeStr = currTime.text().replace(/0:/, '');

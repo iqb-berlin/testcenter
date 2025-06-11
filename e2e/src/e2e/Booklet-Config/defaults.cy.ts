@@ -5,10 +5,11 @@
 import {
   loginTestTaker,
   resetBackendData,
-  logoutTestTaker,
+  reload,
   getFromIframe,
   visitLoginPage,
-  disableSimplePlayersInternalDebounce
+  disableSimplePlayersInternalDebounce,
+  logoutTestTakerBkltConfig
 } from '../utils';
 
 const mode = 'test-hot';
@@ -28,14 +29,7 @@ describe('check default values', { testIsolation: false }, () => {
   });
 
   afterEach(() => {
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="dialog-cancel"]')
-      .click();
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTakerBkltConfig('hot_BkltConfigDefault');
   });
 
   it('ask_for_fullscreen', () => {
@@ -115,4 +109,43 @@ describe('check default values', { testIsolation: false }, () => {
     cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
+
+  it('allow_player_to_terminate_test', () => {
+    // default:  ON
+    getFromIframe('[data-cy="end-unit"]')
+      .should('be.enabled');
+  });
+
+  it('restore_current_page_on_return', () => {
+    // default:  OFF
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.wait(1000); // wait for debounce
+    reload();
+    cy.get('[data-cy="page-navigation-0"]')
+      .children()
+      .should('have.attr', 'aria-pressed', 'true');
+  });
+
+  it('lock_test_on_termination', () => {
+    // default:  OFF
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    cy.get('[data-cy="endTest-1"]')
+      .click();
+    cy.get('[data-cy="booklet-CY-BKLTCONFIGDEFAULTS"]')
+      .contains('Fortsetzen')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Endseite');
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="endTest-1"]')
+      .click();
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+  });
+
 });

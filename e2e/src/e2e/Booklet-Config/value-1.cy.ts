@@ -5,10 +5,9 @@
 import {
   loginTestTaker,
   resetBackendData,
-  logoutTestTaker,
   getFromIframe,
   visitLoginPage,
-  disableSimplePlayersInternalDebounce
+  disableSimplePlayersInternalDebounce, reload, logoutTestTakerBkltConfig
 } from '../utils';
 
 const mode = 'test-hot';
@@ -28,18 +27,7 @@ describe('check default values', { testIsolation: false }, () => {
   });
 
   afterEach(() => {
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="dialog-cancel"]')
-      .click();
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTakerBkltConfig('hot_BkltConfigValue1');
   });
 
   it('ask_for_fullscreen', () => {
@@ -128,5 +116,46 @@ describe('check default values', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="previous-unit-page"]')
       .click();
+  });
+
+  it('allow_player_to_terminate_test', () => {
+    // default:  OFF
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('[data-cy="end-unit"]')
+      .should('be.disabled');
+  });
+
+  it('restore_current_page_on_return', () => {
+    // default:  ON
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('[data-cy="next-unit-page"]')
+      .click();
+    cy.wait(1000); // wait for debounce
+    reload();
+    cy.wait(1000);
+    getFromIframe('[data-pagenr="2"]')
+      .should('have.attr', 'style', 'display: block;');
+    getFromIframe('[data-cy="previous-unit-page"]')
+      .click();
+  });
+
+  it('lock_test_on_termination', () => {
+    // default:  ON
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    getFromIframe('[data-cy="next-unit-page"]')
+      .click();
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    cy.get('[data-cy="endTest-1"]')
+      .click();
+    cy.get('[data-cy="booklet-CY-BKLTCONFIGVALUE-1"]')
+      .contains('gesperrt');
   });
 });
