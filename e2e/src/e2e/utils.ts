@@ -43,18 +43,25 @@ export const resetBackendData = (): void => {
 };
 
 export const disableSimplePlayersInternalDebounce = (): void => {
-  const playerSettings = '?debounceStateMessages=0&debounceKeyboardEvents=0';
+  modifyPlayer([{
+    replace: 'const overridePlayerSettings = (location.search);',
+    with: 'const overridePlayerSettings = "?debounceStateMessages=0&debounceKeyboardEvents=0"'
+  }]);
+};
+
+export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]): void => {
   cy.intercept(
     {
-      url: `${Cypress.env('urls').fileService}/file/static:group:runhotret/ws_1/Resource/verona-player-simple-6.0.html`
+      url: new RegExp(
+        `${Cypress.env('urls').fileService}/file/static:group:[^\\/]+/ws_1/Resource/verona-player-simple-6.0.html`
+      )
     },
     req => {
       req.headers.TestMode = 'integration';
       req.reply(res => {
-        res.body = res.body.replace(
-          /const overridePlayerSettings = (location\.search);/,
-          `const overridePlayerSettings = "${playerSettings}"`
-        );
+        rules.forEach(rule => {
+          res.body = res.body.replace(rule.replace, rule.with);
+        });
       });
     }
   );
@@ -402,5 +409,22 @@ export const reload = () => cy.url()
   .then(url => cy.visit(url.includes('?testMode=true') ? url : `${url}?testMode=true`));
 
 export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*="unit-nav-item"]')
-  .each((item, index) => cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`)
-  );
+  .each((item, index) => cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`));
+
+export const getResponses =
+  (wsId: number = 1, groups: string[] = ['sample_group']) => cy.request({
+    url: `http://localhost/api/workspace/${wsId}/report/response?dataIds=${groups.join('&')}`,
+    method: 'GET',
+    headers: { authToken: 'static:admin:super', testMode: 'integration' }
+  })
+    .then(responses => {
+      expect(responses.status).to.equal(200);
+      if (!Array.isArray(responses.body)) throw new Error('invalid response');
+      responses.body.forEach(row => {
+        row.laststate = JSON.parse(row.laststate);
+        row.responses.forEach(chunk => {
+          chunk.content = JSON.parse(chunk.content);
+        });
+      });
+      return responses.body;
+    });
