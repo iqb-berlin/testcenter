@@ -227,10 +227,6 @@ install_testcenter() {
       printf "Configure Testcenter 'testcenter-values' for 'longhorn persistent volumes' ...\n"
       sed -i.bak "s|longhornEnabled:.*|longhornEnabled: true|" \
         testcenter-values.yaml && rm testcenter-values.yaml.bak
-      sed -i.bak "s|cacheServerPvcStorageClassName:.*|cacheServerPvcStorageClassName: longhorn-single|" \
-        testcenter-values.yaml && rm testcenter-values.yaml.bak
-      sed -i.bak "s|cacheServerPvcAccessMode:.*|cacheServerPvcAccessMode: ReadWriteOnce|" \
-        testcenter-values.yaml && rm testcenter-values.yaml.bak
       sed -i.bak "s|backendPvcStorageClassName:.*|backendPvcStorageClassName: longhorn|" \
         testcenter-values.yaml && rm testcenter-values.yaml.bak
       sed -i.bak "s|backendPvcAccessMode:.*|backendPvcAccessMode: ReadWriteMany|" \
