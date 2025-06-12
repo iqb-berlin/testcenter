@@ -10,7 +10,8 @@ import {
     </span>
 
     <button mat-stroked-button [disabled]="currentPageIndex == 0"
-                       (click)="navPrevious.emit()">
+                        [attr.data-cy]="'page-navigation-backward'"
+                        (click)="navPrevious.emit()">
       <i class="material-icons">chevron_left</i>
     </button>
 
@@ -26,6 +27,7 @@ import {
     </mat-button-toggle-group>
 
     <button mat-stroked-button [disabled]="currentPageIndex == pageLabels.length - 1"
+            [attr.data-cy]="'page-navigation-forward'"
             (click)="navNext.emit()">
       <i class="material-icons">chevron_right</i>
     </button>

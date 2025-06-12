@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.2.0/definitions/vo_Booklet.xsd">
 	<Metadata>
-		<Id>runhotres</Id>
+		<Id>CY-Bklt_runhotres</Id>
 		<Label>Controller Mode: run-hot-restart</Label>
 		<Description>Test für den Modus run-hot-restart</Description>
 	</Metadata>
@@ -15,7 +15,7 @@
 	</BookletConfig>
 
 	<Units>
-		<Unit id="UNIT.SAMPLE-100" label="Startseite" labelshort="1" />
+		<Unit id="CY-Unit.Sample-100" label="Startseite" labelshort="1" />
 
 		<Testlet id="Tslt1" label="Aufgabenblock">
 			<Restrictions>
@@ -23,11 +23,11 @@
 				<TimeMax minutes="1"/>
 				<DenyNavigationOnIncomplete presentation="ALWAYS" response="ALWAYS" />		
 			</Restrictions>
-			<Unit id="UNIT.SAMPLE-101" label="Aufgabe1" labelshort="2"/>
-			<Unit id="UNIT.SAMPLE-102" label="Aufgabe2" labelshort="3"/>
-			<Unit id="UNIT.SAMPLE-103" label="Aufgabe3" labelshort="4"/>
+			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="2"/>
+			<Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="3"/>
+			<Unit id="CY-Unit.Sample-103" label="Aufgabe3" labelshort="4"/>
 		</Testlet>
 		
-		<Unit id="UNIT.SAMPLE-104" label="Endseite" labelshort="5"/>
+		<Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="5"/>
 	</Units>
 </Booklet>

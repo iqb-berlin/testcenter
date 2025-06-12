@@ -5,7 +5,7 @@
 
     <ng-template #testletFull let-testlet="testlet" let-level="level" [appTemplateContext]="testletContext">
       <div class="testlet">
-        <ng-container *ngFor="let testletOrUnit of testlet.children">
+        <ng-container *ngFor="let testletOrUnit of testlet.children" let i = index>
           <div *ngIf="!isTestlet(testletOrUnit); else: subTestlet" class="child">
             <a
               mat-raised-button
@@ -13,6 +13,7 @@
               [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
               [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : navigation.directions.forward !== 'no' : navigation.directions.backward !== 'no'"
               [matTooltip]="testletOrUnit.label"
+              [attr.data-cy]="'unit-menu-unitbutton'"
             >{{testletOrUnit.label || "&nbsp;"}}
             </a>
           </div>

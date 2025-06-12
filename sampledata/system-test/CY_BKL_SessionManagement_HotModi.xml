@@ -2,7 +2,7 @@
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.2.0/definitions/vo_Booklet.xsd">
 
 	<Metadata>
-		<Id>SM_BKL</Id>
+		<Id>CY-Bklt_SM</Id>
 		<Label>Sessionmanagement test hot modes</Label>
 		<Description></Description>
 	</Metadata>
@@ -13,7 +13,7 @@
 	</BookletConfig>
 
 	<Units>
-		<Unit id="UNIT.SAMPLE-101" label="Aufgabe1" labelshort="1"/>
-		<Unit id="UNIT.SAMPLE-102" label="Aufgabe2" labelshort="2"/>
+		<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+		<Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
 	</Units>
 </Booklet>

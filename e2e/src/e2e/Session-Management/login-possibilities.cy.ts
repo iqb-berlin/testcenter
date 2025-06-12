@@ -38,7 +38,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('with_pw');
-    cy.get('[data-cy="booklet-RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 
   it('login only with a name', () => {
@@ -51,7 +51,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('without_pw');
-    cy.get('[data-cy="booklet-RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 
   it('login as link', () => {
@@ -65,7 +65,7 @@ describe('Check Login Possibilities', () => {
   it('login as link and jump into test', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
     cy.wait(1000);
-    cy.get('[data-cy="booklet-RUNDEMO"]')
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -96,7 +96,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code01');
-    cy.get('[data-cy="booklet-RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 
   it('login with code on login page', () => {
@@ -113,7 +113,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 
   it('login with code via link', () => {
@@ -128,6 +128,6 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 });
