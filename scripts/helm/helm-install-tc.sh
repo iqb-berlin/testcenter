@@ -89,6 +89,7 @@ install_traefik() {
 
     if ${LONGHORN_ENABLED}; then
       printf "Configure Traefik for 'longhorn persistent volumes' ...\n"
+      # Locate the persistence: occurence in traefik-values.yaml, scan downward until the enabled: flag is found, and flip whatever value was present (true or false) to true
       sed -i.bak '/^persistence:$/{:persistence; $!N; /enabled: \(true\|false\)$/! b persistence; s//enabled: true/}'\
         traefik-values.yaml && rm traefik-values.yaml.bak
       sed -i.bak "s|accessMode:.*|accessMode: ReadWriteMany|" traefik-values.yaml && rm traefik-values.yaml.bak
