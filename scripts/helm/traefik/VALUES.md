@@ -1,6 +1,6 @@
 # traefik
 
-![Version: 34.2.0](https://img.shields.io/badge/Version-34.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.3.2](https://img.shields.io/badge/AppVersion-v3.3.2-informational?style=flat-square)
+![Version: 35.4.0](https://img.shields.io/badge/Version-35.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.4.0](https://img.shields.io/badge/AppVersion-v3.4.0-informational?style=flat-square)
 
 A Traefik based Kubernetes ingress controller
 
@@ -11,14 +11,13 @@ A Traefik based Kubernetes ingress controller
 | Name | Email | Url |
 | ---- | ------ | --- |
 | mloiseleur | <michel.loiseleur@traefik.io> |  |
-| charlie-haley | <charlie.haley@traefik.io> |  |
 | darkweaver87 | <remi.buisson@traefik.io> |  |
 | jnoordsij |  |  |
 
 ## Source Code
 
-* <https://github.com/traefik/traefik>
 * <https://github.com/traefik/traefik-helm-chart>
+* <https://github.com/traefik/traefik>
 
 ## Requirements
 
@@ -34,7 +33,7 @@ Kubernetes: `>=1.22.0-0`
 | autoscaling.enabled | bool | `false` | Create HorizontalPodAutoscaler object. See EXAMPLES.md for more details. |
 | certificatesResolvers | object | `{}` | Certificates resolvers configuration. Ref: https://doc.traefik.io/traefik/https/acme/#certificate-resolvers See EXAMPLES.md for more details. |
 | commonLabels | object | `{}` | Add additional label to all resources |
-| core.defaultRuleSyntax | string | `""` | Can be used to use globally v2 router syntax See https://doc.traefik.io/traefik/v3.0/migration/v2-to-v3/#new-v3-syntax-notable-changes |
+| core.defaultRuleSyntax | string | `""` | Can be used to use globally v2 router syntax. Deprecated since v3.4 /!\. See https://doc.traefik.io/traefik/v3.0/migration/v2-to-v3/#new-v3-syntax-notable-changes |
 | deployment.additionalContainers | list | `[]` | Additional containers (e.g. for metric offloading sidecars) |
 | deployment.additionalVolumes | list | `[]` | Additional volumes available for use with initContainers and additionalContainers |
 | deployment.annotations | object | `{}` | Additional deployment annotations (e.g. for jaeger-operator sidecar injection) |
@@ -80,13 +79,57 @@ Kubernetes: `>=1.22.0-0`
 | gatewayClass.enabled | bool | `true` | When providers.kubernetesGateway.enabled and gateway.enabled, deploy a default gatewayClass |
 | gatewayClass.labels | object | `{}` | Additional gatewayClass labels (e.g. for filtering gateway objects by custom labels) |
 | gatewayClass.name | string | `""` | Set a custom name to GatewayClass |
+| global | object | `{"azure":{"enabled":false,"images":{"hub":{"image":"traefik-hub","registry":"ghcr.io/traefik","tag":"latest"},"proxy":{"image":"traefik","registry":"docker.io/library","tag":"latest"}}}}` | Required for Azure Marketplace integration. See https://learn.microsoft.com/en-us/partner-center/marketplace-offers/azure-container-technical-assets-kubernetes?tabs=linux,linux2#update-the-helm-chart |
+| global.azure.enabled | bool | `false` | Enable specific values for Azure Marketplace |
 | globalArguments | list | `["--global.checknewversion","--global.sendanonymoususage"]` | Global command arguments to be passed to all traefik's pods |
 | hostNetwork | bool | `false` | If hostNetwork is true, runs traefik in the host network namespace To prevent unschedulable pods due to port collisions, if hostNetwork=true and replicas>1, a pod anti-affinity is recommended and will be set if the affinity is left as default. |
+| hub.apimanagement.admission.customWebhookCertificate | object | `{}` | Set custom certificate for the WebHook admission server. The certificate should be specified with _tls.crt_ and _tls.key_ in base64 encoding. |
 | hub.apimanagement.admission.listenAddr | string | `""` | WebHook admission server listen address. Default: "0.0.0.0:9943". |
-| hub.apimanagement.admission.secretName | string | `""` | Certificate of the WebHook admission server. Default: "hub-agent-cert". |
+| hub.apimanagement.admission.restartOnCertificateChange | bool | `true` | Set it to false if you need to disable Traefik Hub pod restart when mutating webhook certificate is updated. It's done with a label update. |
+| hub.apimanagement.admission.secretName | string | `"hub-agent-cert"` | Certificate name of the WebHook admission server. Default: "hub-agent-cert". |
 | hub.apimanagement.enabled | bool | `false` | Set to true in order to enable API Management. Requires a valid license token. |
 | hub.apimanagement.openApi.validateRequestMethodAndPath | bool | `false` | When set to true, it will only accept paths and methods that are explicitly defined in its OpenAPI specification |
 | hub.experimental.aigateway | bool | `false` | Set to true in order to enable AI Gateway. Requires a valid license token. |
+| hub.namespaces | list | `[]` | By default, Traefik Hub provider watches all namespaces. When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array. |
+| hub.providers.consulCatalogEnterprise.cache | bool | `false` | Use local agent caching for catalog reads. |
+| hub.providers.consulCatalogEnterprise.connectAware | bool | `false` | Enable Consul Connect support. |
+| hub.providers.consulCatalogEnterprise.connectByDefault | bool | `false` | Consider every service as Connect capable by default. |
+| hub.providers.consulCatalogEnterprise.constraints | string | `""` | Constraints is an expression that Traefik matches against the container's labels |
+| hub.providers.consulCatalogEnterprise.defaultRule | string | `"Host(`{{ normalize .Name }}`)"` | Default rule. |
+| hub.providers.consulCatalogEnterprise.enabled | bool | `false` | Enable Consul Catalog Enterprise backend with default settings. |
+| hub.providers.consulCatalogEnterprise.endpoint.address | string | `""` | The address of the Consul server |
+| hub.providers.consulCatalogEnterprise.endpoint.datacenter | string | `""` | Data center to use. If not provided, the default agent data center is used |
+| hub.providers.consulCatalogEnterprise.endpoint.endpointWaitTime | int | `0` | WaitTime limits how long a Watch will block. If not provided, the agent default |
+| hub.providers.consulCatalogEnterprise.endpoint.httpauth.password | string | `""` | Basic Auth password |
+| hub.providers.consulCatalogEnterprise.endpoint.httpauth.username | string | `""` | Basic Auth username |
+| hub.providers.consulCatalogEnterprise.endpoint.scheme | string | `""` | The URI scheme for the Consul server |
+| hub.providers.consulCatalogEnterprise.endpoint.tls.ca | string | `""` | TLS CA |
+| hub.providers.consulCatalogEnterprise.endpoint.tls.cert | string | `""` | TLS cert |
+| hub.providers.consulCatalogEnterprise.endpoint.tls.insecureSkipVerify | bool | `false` | TLS insecure skip verify |
+| hub.providers.consulCatalogEnterprise.endpoint.tls.key | string | `""` | TLS key |
+| hub.providers.consulCatalogEnterprise.endpoint.token | string | `""` | Token is used to provide a per-request ACL token which overrides the agent's |
+| hub.providers.consulCatalogEnterprise.exposedByDefault | bool | `true` | Expose containers by default. |
+| hub.providers.consulCatalogEnterprise.namespaces | string | `""` | Sets the namespaces used to discover services (Consul Enterprise only). |
+| hub.providers.consulCatalogEnterprise.partition | string | `""` | Sets the partition used to discover services (Consul Enterprise only). |
+| hub.providers.consulCatalogEnterprise.prefix | string | `"traefik"` | Prefix for consul service tags. |
+| hub.providers.consulCatalogEnterprise.refreshInterval | int | `15` | Interval for check Consul API. |
+| hub.providers.consulCatalogEnterprise.requireConsistent | bool | `false` | Forces the read to be fully consistent. |
+| hub.providers.consulCatalogEnterprise.serviceName | string | `"traefik"` | Name of the Traefik service in Consul Catalog (needs to be registered via the |
+| hub.providers.consulCatalogEnterprise.stale | bool | `false` | Use stale consistency for catalog reads. |
+| hub.providers.consulCatalogEnterprise.strictChecks | string | `"passing, warning"` | A list of service health statuses to allow taking traffic. |
+| hub.providers.consulCatalogEnterprise.watch | bool | `false` | Watch Consul API events. |
+| hub.providers.microcks.auth.clientId | string | `""` | Microcks API client ID. |
+| hub.providers.microcks.auth.clientSecret | string | `""` | Microcks API client secret. |
+| hub.providers.microcks.auth.endpoint | string | `""` | Microcks API endpoint. |
+| hub.providers.microcks.auth.token | string | `""` | Microcks API token. |
+| hub.providers.microcks.enabled | bool | `false` | Enable Microcks provider. |
+| hub.providers.microcks.endpoint | string | `""` | Microcks API endpoint. |
+| hub.providers.microcks.pollInterval | int | `30` | Polling interval for Microcks API. |
+| hub.providers.microcks.pollTimeout | int | `5` | Polling timeout for Microcks API. |
+| hub.providers.microcks.tls.ca | string | `""` | TLS CA |
+| hub.providers.microcks.tls.cert | string | `""` | TLS cert |
+| hub.providers.microcks.tls.insecureSkipVerify | bool | `false` | TLS insecure skip verify |
+| hub.providers.microcks.tls.key | string | `""` | TLS key |
 | hub.redis.cluster | string | `nil` | Enable Redis Cluster. Default: true. |
 | hub.redis.database | string | `nil` | Database used to store information. Default: "0". |
 | hub.redis.endpoints | string | `""` | Endpoints of the Redis instances to connect to. Default: "". |
@@ -110,7 +153,7 @@ Kubernetes: `>=1.22.0-0`
 | image.pullPolicy | string | `"IfNotPresent"` | Traefik image pull policy |
 | image.registry | string | `"docker.io"` | Traefik image host registry |
 | image.repository | string | `"traefik"` | Traefik image repository |
-| image.tag | string | `nil` | defaults to appVersion |
+| image.tag | string | `nil` | defaults to appVersion. It's used for version checking, even prefixed with experimental- or latest-. When a digest is required, `versionOverride` can be used to set the version. |
 | ingressClass | object | `{"enabled":true,"isDefaultClass":true,"name":""}` | Create a default IngressClass for Traefik |
 | ingressRoute.dashboard.annotations | object | `{}` | Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class) |
 | ingressRoute.dashboard.enabled | bool | `false` | Create an IngressRoute for the dashboard |
@@ -128,7 +171,7 @@ Kubernetes: `>=1.22.0-0`
 | ingressRoute.healthcheck.middlewares | list | `[]` | Additional ingressRoute middlewares (e.g. for authentication) |
 | ingressRoute.healthcheck.services | list | `[{"kind":"TraefikService","name":"ping@internal"}]` | The internal service used for the healthcheck ingressRoute |
 | ingressRoute.healthcheck.tls | object | `{}` | TLS options (e.g. secret containing certificate) |
-| instanceLabelOverride | string | `""` |  |
+| instanceLabelOverride | string | `""` | This field override the default app.kubernetes.io/instance label for all Objects. |
 | livenessProbe.failureThreshold | int | `3` | The number of consecutive failures allowed before considering the probe as failed. |
 | livenessProbe.initialDelaySeconds | int | `2` | The number of seconds to wait before starting the first probe. |
 | livenessProbe.periodSeconds | int | `10` | The number of seconds to wait between consecutive probes. |
@@ -150,7 +193,7 @@ Kubernetes: `>=1.22.0-0`
 | logs.general.format | string | `nil` | Set [logs format](https://doc.traefik.io/traefik/observability/logs/#format) |
 | logs.general.level | string | `"INFO"` | Alternative logging levels are TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and PANIC. |
 | logs.general.noColor | bool | `false` | When set to true and format is common, it disables the colorized output. |
-| metrics.addInternals | bool | `false` |  |
+| metrics.addInternals | bool | `false` | Enable metrics for internal resources. Default: false |
 | metrics.otlp.addEntryPointsLabels | string | `nil` | Enable metrics on entry points. Default: true |
 | metrics.otlp.addRoutersLabels | string | `nil` | Enable metrics on routers. Default: false |
 | metrics.otlp.addServicesLabels | string | `nil` | Enable metrics on services. Default: true |
@@ -171,13 +214,15 @@ Kubernetes: `>=1.22.0-0`
 | metrics.otlp.http.tls.insecureSkipVerify | string | `nil` | When set to true, the TLS connection accepts any certificate presented by the server regardless of the hostnames it covers. |
 | metrics.otlp.http.tls.key | string | `""` | The path to the private key. When using this option, setting the cert option is required. |
 | metrics.otlp.pushInterval | string | `""` | Interval at which metrics are sent to the OpenTelemetry Collector. Default: 10s |
-| metrics.prometheus.addEntryPointsLabels | string | `nil` |  |
-| metrics.prometheus.addRoutersLabels | string | `nil` |  |
-| metrics.prometheus.addServicesLabels | string | `nil` |  |
-| metrics.prometheus.buckets | string | `""` |  |
+| metrics.otlp.serviceName | string | `nil` | Service name used in OTLP backend. Default: traefik. |
+| metrics.prometheus.addEntryPointsLabels | string | `nil` | Enable metrics on entry points. Default: true |
+| metrics.prometheus.addRoutersLabels | string | `nil` | Enable metrics on routers. Default: false |
+| metrics.prometheus.addServicesLabels | string | `nil` | Enable metrics on services. Default: true |
+| metrics.prometheus.buckets | string | `""` | Buckets for latency metrics. Default="0.1,0.3,1.2,5.0" |
 | metrics.prometheus.disableAPICheck | string | `nil` | When set to true, it won't check if Prometheus Operator CRDs are deployed |
 | metrics.prometheus.entryPoint | string | `"metrics"` | Entry point used to expose metrics. |
-| metrics.prometheus.manualRouting | bool | `false` |  |
+| metrics.prometheus.headerLabels | object | `{}` | Add HTTP header labels to metrics. See EXAMPLES.md or upstream doc for usage. |
+| metrics.prometheus.manualRouting | bool | `false` | When manualRouting is true, it disables the default internal router in # order to allow creating a custom router for prometheus@internal service. |
 | metrics.prometheus.prometheusRule.additionalLabels | object | `{}` |  |
 | metrics.prometheus.prometheusRule.enabled | bool | `false` | Enable optional CR for Prometheus Operator. See EXAMPLES.md for more details. |
 | metrics.prometheus.prometheusRule.namespace | string | `""` |  |
@@ -199,6 +244,9 @@ Kubernetes: `>=1.22.0-0`
 | metrics.prometheus.serviceMonitor.scrapeTimeout | string | `""` |  |
 | namespaceOverride | string | `""` | This field override the default Release Namespace for Helm. It will not affect optional CRDs such as `ServiceMonitor` and `PrometheusRules` |
 | nodeSelector | object | `{}` | nodeSelector is the simplest recommended form of node selection constraint. |
+| oci_meta | object | `{"enabled":false,"images":{"hub":{"image":"traefik-hub","tag":"latest"},"proxy":{"image":"traefik","tag":"latest"}},"repo":"traefik"}` | Required for OCI Marketplace integration. See https://docs.public.content.oci.oraclecloud.com/en-us/iaas/Content/Marketplace/understanding-helm-charts.htm |
+| oci_meta.enabled | bool | `false` | Enable specific values for Oracle Cloud Infrastructure |
+| oci_meta.repo | string | `"traefik"` | It needs to be an ocir repo |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.annotations | object | `{}` |  |
 | persistence.enabled | bool | `false` | Enable persistence using Persistent Volume Claims ref: http://kubernetes.io/docs/user-guide/persistent-volumes/. It can be used to store TLS certificates along with `certificatesResolvers.<name>.acme.storage`  option |
@@ -262,12 +310,12 @@ Kubernetes: `>=1.22.0-0`
 | providers.kubernetesCRD.allowExternalNameServices | bool | `false` | Allows to reference ExternalName services in IngressRoute |
 | providers.kubernetesCRD.enabled | bool | `true` | Load Kubernetes IngressRoute provider |
 | providers.kubernetesCRD.ingressClass | string | `""` | When the parameter is set, only resources containing an annotation with the same value are processed. Otherwise, resources missing the annotation, having an empty value, or the value traefik are processed. It will also set required annotation on Dashboard and Healthcheck IngressRoute when enabled. |
-| providers.kubernetesCRD.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. |
+| providers.kubernetesCRD.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array. |
 | providers.kubernetesCRD.nativeLBByDefault | bool | `false` | Defines whether to use Native Kubernetes load-balancing mode by default. |
 | providers.kubernetesGateway.enabled | bool | `false` | Enable Traefik Gateway provider for Gateway API |
 | providers.kubernetesGateway.experimentalChannel | bool | `false` | Toggles support for the Experimental Channel resources (Gateway API release channels documentation). This option currently enables support for TCPRoute and TLSRoute. |
 | providers.kubernetesGateway.labelselector | string | `""` | A label selector can be defined to filter on specific GatewayClass objects only. |
-| providers.kubernetesGateway.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. |
+| providers.kubernetesGateway.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array. |
 | providers.kubernetesGateway.nativeLBByDefault | bool | `false` | Defines whether to use Native Kubernetes load-balancing mode by default. |
 | providers.kubernetesGateway.statusAddress.hostname | string | `""` | This Hostname will get copied to the Gateway status.addresses. |
 | providers.kubernetesGateway.statusAddress.ip | string | `""` | This IP will get copied to the Gateway status.addresses, and currently only supports one IP value (IPv4 or IPv6). |
@@ -276,7 +324,7 @@ Kubernetes: `>=1.22.0-0`
 | providers.kubernetesIngress.allowExternalNameServices | bool | `false` | Allows to reference ExternalName services in Ingress |
 | providers.kubernetesIngress.enabled | bool | `true` | Load Kubernetes Ingress provider |
 | providers.kubernetesIngress.ingressClass | string | `nil` | When ingressClass is set, only Ingresses containing an annotation with the same value are processed. Otherwise, Ingresses missing the annotation, having an empty value, or the value traefik are processed. |
-| providers.kubernetesIngress.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. |
+| providers.kubernetesIngress.namespaces | list | `[]` | Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array. |
 | providers.kubernetesIngress.nativeLBByDefault | bool | `false` | Defines whether to use Native Kubernetes load-balancing mode by default. |
 | providers.kubernetesIngress.publishedService.enabled | bool | `true` | Enable [publishedService](https://doc.traefik.io/traefik/providers/kubernetes-ingress/#publishedservice) |
 | providers.kubernetesIngress.publishedService.pathOverride | string | `""` | Override path of Kubernetes Service used to copy status from. Format: namespace/servicename. Default to Service deployed with this Chart. |
@@ -332,6 +380,7 @@ Kubernetes: `>=1.22.0-0`
 | updateStrategy.rollingUpdate.maxSurge | int | `1` |  |
 | updateStrategy.rollingUpdate.maxUnavailable | int | `0` |  |
 | updateStrategy.type | string | `"RollingUpdate"` | Customize updateStrategy of Deployment or DaemonSet |
+| versionOverride | string | `""` | This field override the default version extracted from image.tag |
 | volumes | list | `[]` | Add volumes to the traefik pod. The volume name will be passed to tpl. This can be used to mount a cert pair or a configmap that holds a config.toml file. After the volume has been mounted, add the configs into traefik by using the `additionalArguments` list below, eg: `additionalArguments: - "--providers.file.filename=/config/dynamic.toml" - "--ping" - "--ping.entrypoint=web"` |
 
 ----------------------------------------------

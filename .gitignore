@@ -61,7 +61,9 @@ e2e/cypress-headless
 /e2e/.coverage
 
 # helm
-my-custom-values.yaml
+scripts/helm/testcenter-*.tgz
+scripts/helm/testcenter-values.yaml
+scripts/helm/traefik-values.yaml
 
 # additional scripts
 /testcenter-scripts
