@@ -18,7 +18,6 @@
 		<Config key="force_response_complete">OFF</Config>
 		<Config key="unit_show_time_left">OFF</Config>
 		<Config key="unit_time_left_warnings">1</Config>
-		<Config key="show_end_button_in_player">OFF</Config>
 		<Config key="restore_current_page_on_return">OFF</Config>
 		<Config key="allow_player_to_terminate_test">ON</Config>
 		<Config key="lock_test_on_termination">OFF</Config>
