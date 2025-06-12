@@ -1,6 +1,4 @@
-/* ##################### check booklet configuration first value option ############################## */
-/* https://iqb-berlin.github.io/tba-info/intro/install/e2e.html section: Booklet-Config:
---> Here you can find an overview of all booklet configuration parameters that are tested here */
+/* How its work: https://iqb-berlin.github.io/tba-info/intro/install/e2e.html section: Booklet-Config: */
 
 import {
   loginTestTaker,
@@ -12,7 +10,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check default values', { testIsolation: false }, () => {
+describe('check values 1', { testIsolation: false }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();

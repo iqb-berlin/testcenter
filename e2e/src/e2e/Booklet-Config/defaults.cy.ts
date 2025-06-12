@@ -1,6 +1,4 @@
-/* ##################### check booklet configuration default values ############################## */
-/* https://iqb-berlin.github.io/tba-info/intro/install/e2e.html section: Booklet-Config:
---> Here you can find an overview of all booklet configuration parameters that are tested here */
+/* How its work: https://iqb-berlin.github.io/tba-info/intro/install/e2e.html section: Booklet-Config: */
 
 import {
   loginTestTaker,
