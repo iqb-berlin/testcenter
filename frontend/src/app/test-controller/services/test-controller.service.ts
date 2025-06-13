@@ -889,6 +889,10 @@ export class TestControllerService {
       this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
     }
+    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
+      this.cancelTimer();
+      return of(true);
+    }
 
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
       width: '500px',

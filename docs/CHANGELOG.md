@@ -2,9 +2,12 @@
 layout: default
 ---
 ## [next]
+### neue Features
+* Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
+
 ### Bugfixes
 * Der Button für den globalen Systemcheck sollte nun ordnungsgemäß nur angezeigt werden, wenn es kein Login mit dem Modus `sys-check-login` gibt. Beim Löschen oder Hinzufügen einer neuen Testtakers.xml sollte dieser Zustand auch direkt ohne Neuladen der App angezeigt werden.
-
+ 
 ## 16.2.0
 ### neue Features
 * Neue `<BookletConfig>` in der Booklet.xml:

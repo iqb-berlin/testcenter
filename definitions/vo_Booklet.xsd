@@ -129,6 +129,7 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="forbidden" />
       <xs:enumeration value="confirm" />
+      <xs:enumeration value="allowed" />
     </xs:restriction>
   </xs:simpleType>
 
