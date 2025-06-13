@@ -92,11 +92,15 @@ describe('check values 1', { testIsolation: false }, () => {
     // value -1:  ON
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    cy.get('[data-cy="logo"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
       .contains('abgespielt');
     cy.get('[data-cy="dialog-confirm"]')
+      .click();
+    getFromIframe('[data-cy="next-unit-page"]')
       .click();
   });
 
