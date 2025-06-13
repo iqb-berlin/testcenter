@@ -92,7 +92,7 @@ export const sourceIsConditionAggregation =
   (source: BlockConditionSource | BlockConditionSourceAggregation | BlockConditionAggregation):
   source is BlockConditionAggregation => ('conditions' in source);
 
-export const maxTimeLeaveValues = ['confirm', 'forbidden'];
+export const maxTimeLeaveValues = ['confirm', 'forbidden', 'allowed'];
 export type MaxTimeLeaveValue = typeof maxTimeLeaveValues[number];
 
 export interface Restrictions {

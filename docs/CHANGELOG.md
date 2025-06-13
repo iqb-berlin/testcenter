@@ -1,6 +1,13 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
+
+### Infrastruktur
+* Änderungen an der Kubernetes CRDs und Deployments
+
 ## 16.2.0
 ### neue Features
 * Neue `<BookletConfig>` in der Booklet.xml:
