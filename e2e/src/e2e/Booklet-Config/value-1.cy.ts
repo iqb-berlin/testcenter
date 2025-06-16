@@ -88,25 +88,69 @@ describe('check values 1', { testIsolation: false }, () => {
       .contains('Aufgabe1');
   });
 
-  it('presentation_complete', () => {
+  it('presentation_complete: forward', () => {
     // value -1:  ON
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    cy.get('[data-cy="logo"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
       .contains('abgespielt');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
+    getFromIframe('[data-cy="next-unit-page"]')
+      .click();
+    getFromIframe('[data-cy="previous-unit-page"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
+      .click();
   });
 
-  it('responses_complete', () => {
+  it('presentation_complete: backward', () => {
+    // value -1:  ON
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    getFromIframe('[data-cy="next-unit-page"]')
+      .click();
+    getFromIframe('[data-cy="previous-unit-page"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+      .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
+  });
+
+  it('responses_complete: forward', () => {
     // value -1:  ON
     cy.get('[data-cy="dialog-cancel"]')
       .click();
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
-    cy.get('[data-cy="logo"]')
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
       .contains('bearbeitet');
@@ -114,6 +158,41 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="previous-unit-page"]')
       .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
+      .click();
+
+  });
+
+  it('responses_complete: backward', () => {
+    // value -1:  ON
+    cy.get('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    getFromIframe('[data-cy="next-unit-page"]')
+      .click();
+    getFromIframe('[data-cy="previous-unit-page"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+      .click();
+    cy.get('[data-cy="unit-menu"]')
+      .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
   });
 
   it('allow_player_to_terminate_test', () => {

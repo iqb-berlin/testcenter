@@ -82,28 +82,48 @@ describe('check default values', { testIsolation: false }, () => {
       .should('not.exist');
   });
 
-  it('presentation_complete', () => {
+  it('presentation_complete: forward', () => {
     // default:  OFF
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    cy.get('[data-cy="unit-navigation-forward"]');
+    cy.get('[data-cy="dialog-content"]')
+      .should('not.exist');
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="dialog-content"]')
-      .contains('abgespielt')
-      .should('not.exist');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
 
-  it('responses_complete', () => {
+  it('presentation_complete: backward', () => {
     // default:  OFF
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
+    cy.get('[data-cy="unit-navigation-forward"]');
+    cy.get('[data-cy="unit-navigation-backward"]');
+    cy.get('[data-cy="dialog-content"]')
+      .should('not.exist');
     cy.get('[data-cy="logo"]')
       .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+  });
+
+  it('responses_complete: forward', () => {
+    // default:  OFF
+    cy.get('[data-cy="unit-navigation-forward"]');
     cy.get('[data-cy="dialog-content"]')
-      .contains('bearbeitet')
       .should('not.exist');
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+  });
+
+  it('responses_complete: backward', () => {
+    // default:  OFF
+    cy.get('[data-cy="unit-navigation-forward"]');
+    cy.get('[data-cy="unit-navigation-backward"]');
+    cy.get('[data-cy="dialog-content"]')
+      .should('not.exist');
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.get('[data-cy="dialog-confirm"]')
       .click();
   });

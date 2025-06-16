@@ -13,7 +13,7 @@
               [class.current]="tcs.currentUnitSequenceId === testletOrUnit.sequenceId"
               [disabled]="testletOrUnit  | unit_inaccessible : testletOrUnit.lockedAfterLeaving : testletOrUnit.parent.locked?.by : tcs.currentUnitSequenceId : navigation.directions.forward !== 'no' : navigation.directions.backward !== 'no'"
               [matTooltip]="testletOrUnit.label"
-              [attr.data-cy]="'unit-menu-unitbutton'"
+              [attr.data-cy]="'unit-menu-unitbutton-' + testletOrUnit.label"
             >{{testletOrUnit.label || "&nbsp;"}}
             </a>
           </div>
