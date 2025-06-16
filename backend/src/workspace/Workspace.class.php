@@ -132,6 +132,8 @@ class Workspace {
       $deletionReport->$fieldName[] = $localFilePath;
     }
 
+    $this->workspaceDAO->updateContentTypeBasedOnRemainingTesttakers();
+
     return $deletionReport;
   }
 
@@ -241,6 +243,8 @@ class Workspace {
         }
       }
     }
+
+    $this->workspaceDAO->updateContentTypeBasedOnRemainingTesttakers();
 
     return $filesAfterSorting;
   }
@@ -435,6 +439,8 @@ class Workspace {
       $loginStats['deleted'] += $stats['logins_deleted'];
       $loginStats['added'] += $stats['logins_added'];
     }
+
+    $this->workspaceDAO->updateContentTypeBasedOnRemainingTesttakers();
 
     return [
       'valid' => $typeStats,

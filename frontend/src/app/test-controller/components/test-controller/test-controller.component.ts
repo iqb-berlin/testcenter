@@ -12,7 +12,8 @@ import {
   ConfirmDialogComponent,
   ConfirmDialogData,
   CustomtextService,
-  MainDataService, UserAgentService
+  MainDataService, UserAgentService,
+  BackendService as SharedBackendService
 } from '../../../shared/shared.module';
 import {
   Command, MaxTimerEvent,
@@ -21,7 +22,6 @@ import {
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
-import { BackendService as SharedBackendService } from '../../../shared/shared.module';
 import { TestControllerService } from '../../services/test-controller.service';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { CommandService } from '../../services/command.service';
@@ -127,8 +127,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   reload() {
     this.sharedBs.clearCache('cache').subscribe();
+    // eslint-disable-next-line
     // @ts-ignore: force reload with 'true' only works for firefox so far, that's why we clear cache manually
-    setTimeout(() => {window.location.reload(true)}, 100);
+    setTimeout(() => { window.location.reload(true); }, 100);
   }
 
   private startAppFocusLogging() {

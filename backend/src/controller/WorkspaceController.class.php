@@ -186,7 +186,6 @@ class WorkspaceController extends Controller {
       list($type) = explode('/', $deletedFile);
       if ($type == 'Testtakers') {
         BroadcastService::send('system/clean');
-        self::workspaceDAO($workspaceId)->setSysCheckMode('mixed');
         break;
       }
     }

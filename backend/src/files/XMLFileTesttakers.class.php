@@ -182,7 +182,7 @@ class XMLFileTesttakers extends XMLFile {
     return new Login(
       $name,
       (string) $loginElement['pw'],
-      (string) $loginElement['mode'] ?? 'run-demo',
+      $mode ?? 'run-demo',
       (string) $groupElement['id'],
       (string) $groupElement['label'] ?? (string) $groupElement['id'],
       $booklets,

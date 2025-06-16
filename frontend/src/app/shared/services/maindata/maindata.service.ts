@@ -141,7 +141,7 @@ export class MainDataService {
   quit(): void {
     this._authData$.next(null);
     localStorage.removeItem(localStorageAuthDataKey);
-    this.router.navigate(['/']);
+    window.location.href = '/';
   }
 
   resetAuthData(): void {
@@ -157,7 +157,7 @@ export class MainDataService {
       this._authData$.next(null);
       localStorage.removeItem(localStorageAuthDataKey);
     }
-    this.bs.clearCache(); // todo this function is not called (subscribe() missing). think about consequences
+    this.bs.clearCache(); // todo this function is not called - (.subscribe() is missing).
     setTimeout(() => { window.location.href = '/'; }, 100);
   }
 
