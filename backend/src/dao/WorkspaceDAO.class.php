@@ -123,8 +123,6 @@ class WorkspaceDAO extends DAO {
 
     $this->_($sql, [], true);
 
-    $this->setSysCheckModeAccordingToTT($logins);
-
     $this->updateValidUntilInPersonSession();
 
     return count($logins->asArray());
@@ -612,7 +610,7 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  private function setSysCheckModeAccordingToTT(LoginArray $logins) {
+  private function setSysCheckModeAccordingToTT(LoginArray $logins): void {
     $enableSysCheckMode = SysCheckMode::TEST;
     /** @var Login $login */
     foreach ($logins as $login) {
@@ -637,6 +635,39 @@ class WorkspaceDAO extends DAO {
       ],
       true
     );
+  }
+
+  public function updateContentTypeBasedOnRemainingTesttakers(): void {
+    $allLogins = new LoginArray();
+    
+    // Get all remaining testtakers files in this workspace
+    $testtakersFiles = $this->_(
+      "select name from files where workspace_id = :ws_id and type = 'Testtakers' and is_valid = 1",
+      [':ws_id' => $this->workspaceId],
+      true
+    );
+    
+    if (!$testtakersFiles) {
+      $this->setSysCheckMode('mixed');
+      return;
+    }
+    
+    foreach ($testtakersFiles as $fileInfo) {
+      try {
+        $testtakersFile = new XMLFileTesttakers("$this->workspacePath/Testtakers/{$fileInfo['name']}");
+        if ($testtakersFile->isValid()) {
+          $fileLogins = $testtakersFile->getAllLogins();
+          foreach ($fileLogins as $login) {
+            $allLogins->add($login);
+          }
+        }
+      } catch (Exception $e) {
+        // Skip invalid files
+        continue;
+      }
+    }
+
+    $this->setSysCheckModeAccordingToTT($allLogins);
   }
 
   public function fetchDependenciesForFile(string $name): ?array {
