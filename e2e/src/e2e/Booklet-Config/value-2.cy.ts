@@ -28,7 +28,6 @@ describe('check values 2', { testIsolation: false }, () => {
     logoutTestTakerBkltConfig('hot_BkltConfigValue1');
   });
 
-  /*
   it('unit_navibuttons', () => {
     // value -2:  ARROWS_ONLY
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-101"]')
@@ -40,13 +39,15 @@ describe('check values 2', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-screenheader"]')
       .contains('Test Bklt Configs value-2');
   });
-*/
-  it('presentation_complete', () => {
+
+  it('presentation_complete: forward', () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
+    cy.get('[data-cy="dialog-content"]')
+      .contains('abgespielt');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
@@ -55,13 +56,22 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
+  });
+
+  it('presentation_complete: backward', () => {
+    // value -1:  ALWAYS
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
-      .contains('bearbeitet')
-      .should('not.exist');
+      .contains('abgespielt');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
@@ -70,29 +80,65 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
- });
+  });
 
-  it('responses_complete', () => {
-    // value -1:  ON
-    cy.get('[data-cy="dialog-cancel"]')
+  it('responses_complete: forward', () => {
+    // value -1:  ALWAYS
+    cy.get('[data-cy="page-navigation-forward"]')
       .click();
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
-    cy.get('[data-cy="logo"]')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
       .contains('bearbeitet');
     cy.get('[data-cy="dialog-confirm"]')
       .click();
-    getFromIframe('[data-cy="previous-unit-page"]')
+    cy.get('[data-cy="page-navigation-backward"]')
       .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
+  });
+
+  it('responses_complete: backward', () => {
+    // value -1:  ALWAYS
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="page-navigation-backward"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-backward"]')
+      .click();
+    cy.get('[data-cy="dialog-content"]')
+      .contains('bearbeitet');
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-backward"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('not.exist');
   });
 
   it('allow_player_to_terminate_test', () => {
-    // default:  OFF
-    cy.get('[data-cy="dialog-cancel"]')
-      .click();
+    // value -1:  LAST_UNIT
     getFromIframe('[data-cy="end-unit"]')
       .should('be.disabled');
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      .click();
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    getFromIframe('[data-cy="end-unit"]')
+      .should('be.enabled');
   });
 });

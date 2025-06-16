@@ -17,20 +17,16 @@
 		<Config key="allow_player_to_terminate_test">LAST_UNIT</Config>
 		<Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
 		
-
 	</BookletConfig>
 
 	<Units>
 
 		<Testlet id="Tslt1" label="Aufgabenblock">
 			<Restrictions>
-				<TimeMax minutes="2"/>
+        <TimeMax minutes="2" leave = "confirm"/>
 			</Restrictions>
 				<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
         <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
-
 		</Testlet>
-		
-		<Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
 	</Units>
 </Booklet>
