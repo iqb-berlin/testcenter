@@ -17,7 +17,7 @@ import { ReportComponent } from './report/report.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 
 @Injectable()
-export class SysCheckChildCanActivateGuard  {
+export class SysCheckChildCanActivateGuard {
   constructor(
     private router: Router,
     private ds: SysCheckDataService
@@ -31,7 +31,7 @@ export class SysCheckChildCanActivateGuard  {
     if (this.ds.checkConfig && this.ds.loadConfigComplete) {
       return true;
     }
-    this.router.navigate(['/']); //TODO not ideal for not-logged in users (see commitmsg for more)
+    this.router.navigate(['/']); // TODO not ideal for not-logged in users (see commitmsg for more)
     return false;
   }
 }
