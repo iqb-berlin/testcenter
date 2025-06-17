@@ -125,4 +125,16 @@
     </Login>
   </Group>
 
+  <Group id="testletRestrictions" label="testlet restriction parameter check">
+    <Login mode="run-hot-restart" name="bklTsltRestrParam1" pw="123">
+      <Booklet>CY-BkltTsltRestr-1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="bklTsltRestrParam2" pw="123">
+      <Booklet>CY-BkltTsltRestr-2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="bklTsltRestrParam3" pw="123">
+      <Booklet>CY-BkltTsltRestr-3</Booklet>
+    </Login>
+  </Group>
+
 </Testtakers>
