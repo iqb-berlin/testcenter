@@ -119,12 +119,13 @@ composer-refresh-autoload:
 
 # Copies data folder from Backend Container into local, to better be able to work with files in the IDE
 data-pull:
-	cd $(TC_BASE_DIR) && docker cp testcenter-backend:/var/www/testcenter/data ./data
+	cd $(TC_BASE_DIR) && rm -rf data && docker cp testcenter-backend:/var/www/testcenter/data .
 
 # Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
 # from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
+# TODO need better solution - docker cp only merges src->dest, meaning that all files from both sides are added, with src having higher priority -> if src has less files than dest, these files are not deleted
 data-push:
-	cd $(TC_BASE_DIR) && tar -c -f - ./data  --owner www-data --group www-data | docker cp - testcenter-backend:/var/www/testcenter
+	cd $(TC_BASE_DIR) && tar -cf - data  --owner www-data --group www-data | docker cp - testcenter-backend:/var/www/testcenter
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
