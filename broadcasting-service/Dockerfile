@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG REGISTRY_PATH=""
-ARG NODE_VERSION=20.18-bookworm-slim
+ARG NODE_VERSION=22.16-bookworm-slim
 
 FROM ${REGISTRY_PATH}node:${NODE_VERSION} AS base
 ENV NODE_ENV=production
