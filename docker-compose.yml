@@ -23,7 +23,7 @@ services:
   traefik:
     <<: *restart-policy
     container_name: testcenter-traefik
-    image: ${DOCKERHUB_PROXY}traefik:v2.11
+    image: ${DOCKERHUB_PROXY}traefik:v3.4
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
@@ -105,7 +105,7 @@ services:
   testcenter-cache-service:
     <<: *restart-policy
     container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
+    image: ${DOCKERHUB_PROXY}redis:8.0-bookworm
     user: redis
     command: [
       "redis-server",
