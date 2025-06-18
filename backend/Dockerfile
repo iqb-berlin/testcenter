@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG REGISTRY_PATH=""
-ARG PHP_VERSION=8.3.12-apache-bookworm
+ARG PHP_VERSION=8.3-apache-bookworm
 
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
