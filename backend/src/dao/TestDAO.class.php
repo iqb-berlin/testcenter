@@ -275,18 +275,16 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function lockTest(int $testId): void {
-    $this->_(
-      'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
-      [
-        ':locked' => '1',
-        ':id' => $testId,
-        ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
-      ]
-    );
+    $this->changeTestLockStatus($testId, unlock: false);
   }
 
   // TODO unit test
-  public function changeTestLockStatus(int $testId, bool $unlock = true): void {
+  public function unlockTest(int $testId): void {
+    $this->changeTestLockStatus($testId, unlock: true);
+  }
+
+  // TODO unit test
+  private function changeTestLockStatus(int $testId, bool $unlock): void {
     $this->_(
       'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
