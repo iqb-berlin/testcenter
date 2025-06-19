@@ -51,11 +51,3 @@ sync-package-files:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 		cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
-
-# Use this param to only show issues which can be solved by updating
-#--ignore-unfixed
-image-scan:
-	docker run\
-			--rm\
-			--volume /var/run/docker.sock:/var/run/docker.sock\
-		aquasec/trivy:latest image --security-checks vuln $(image):$(tag)

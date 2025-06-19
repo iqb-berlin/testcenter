@@ -20,7 +20,7 @@ image:
   cacheServer:
     imagePullPolicy: Always
     registryPath: ""
-    tag: "7.4-bookworm"
+    tag: "8.0-bookworm"
 
   fileServer:
     imagePullPolicy: Always
@@ -35,7 +35,7 @@ image:
   db:
     imagePullPolicy: Always
     registryPath: ""
-    tag: "8.0"
+    tag: "8.4"
 
   busybox:
     imagePullPolicy: Always
