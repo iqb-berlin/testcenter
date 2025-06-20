@@ -1,6 +1,28 @@
 ---
 layout: default
 ---
+## 17.0.0
+### Breaking Changes
+* API Endpoints des Backends werden nicht mehr mit <HOSTNAME>/api aufgerufen, sondern mit <HOSTNAME>/api/; <HOSTNAME>/api gibt von nun an ein 404 error zurück
+
+### :warning: Hinweis für Administratoren
+* Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen, erst
+  sämtliche Studien zu beenden und die Daten zu löschen bevor geupdatet wird.
+
+### Änderungen
+* Alle Container laufen ohne root-Rechte
+* Kubernetes: Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
+
+### Bugfix
+* Units konnten unter bestimmten Extrembedingungen doppelt angelegt werden, was zu doppelten Zeilen in den Ergebnisdaten
+  führte.
+* Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
+  in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
+  führen.
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
+
 ## [next]
 ### neue Features
 * Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
@@ -107,6 +129,9 @@ layout: default
 
 ### Accessibility
 * Die Buttons im Starter-Menü sind nun mit der Tab Taste navigierbar
+
+### Sicherheit
+* Upgrade von MySQL 8.0 auf 8.4
 
 ## 16.0.0-alpha
 ### Kubernetes
