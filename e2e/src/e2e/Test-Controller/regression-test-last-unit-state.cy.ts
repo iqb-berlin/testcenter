@@ -51,17 +51,18 @@ describe('Test Controller', { testIsolation: false }, () => {
     cy.wait(1000);
     getFromIframe('#end-unit')
       .click();
+    // response outputs are ordered by groupname, loginname, code, unitname, originalUnitId (see AdminDAO)
     getResponses()
       .then(rows => {
         if (!Array.isArray(rows)) throw new Error('wrong response');
         rows.forEach(row => cy.log(`ROW ${JSON.stringify(row.responses)}`));
         expect(rows.length).to.equal(3);
-        expect(rows[1].unitname).to.equal('decision-unit');
+        expect(rows[1].unitname).to.equal('beginner-unit');
         expect(rows[1].responses[0].content[0].id).to.equal('var1');
-        expect(rows[1].responses[0].content[0].value).to.equal('unit 1 - input');
-        expect(rows[2].unitname).to.equal('beginner-unit');
+        expect(rows[1].responses[0].content[0].value).to.equal('unit 2 - input');
+        expect(rows[2].unitname).to.equal('decision-unit');
         expect(rows[2].responses[0].content[0].id).to.equal('var1');
-        expect(rows[2].responses[0].content[0].value).to.equal('unit 2 - input');
+        expect(rows[2].responses[0].content[0].value).to.equal('unit 1 - input');
       });
   });
 });
