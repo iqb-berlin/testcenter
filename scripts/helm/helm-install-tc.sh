@@ -275,7 +275,7 @@ install_testcenter() {
       testcenter-values.yaml && rm testcenter-values.yaml.bak
 
     sed -i.bak "s|redisPassword: \&redisPassword.*|redisPassword: \&redisPassword ${TESTCENTER_ENV_VARS[REDIS_PASSWORD]}|" \
-      testcenter/custom-values.yaml && rm testcenter/custom-values.yaml.bak
+      testcenter-values.yaml && rm testcenter-values.yaml.bak
     sed -i.bak "s|mysqlRootPassword:.*|mysqlRootPassword: ${TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
     sed -i.bak "s|mysqlUser: \&dbUser.*|mysqlUser: \&dbUser ${TESTCENTER_ENV_VARS[MYSQL_USER]}|" \
