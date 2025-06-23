@@ -25,6 +25,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/CY_BKL_Mode_RunHotReturn.xml" => "Booklet/CY_BKL_Mode_RunHotReturn.xml",
       "sampledata/system-test/CY_BKL_Mode_RunHotRestart.xml" => "Booklet/CY_BKL_Mode_RunHotRestart.xml",
       "sampledata/system-test/CY_BKL_SessionManagement_HotModi.xml" => "Booklet/CY_BKL_SessionManagement_HotModi.xml",
+      "sampledata/system-test/CY_BKL_TimeRestriction.xml" => "Booklet/CY_BKL_TimeRestriction.xml",
       "sampledata/system-test/CY_BKL_Config_default.xml" => "Booklet/CY_BKL_Config_default.xml",
       "sampledata/system-test/CY_BKL_Config_value-1.xml" => "Booklet/CY_BKL_Config_value-1.xml",
       "sampledata/system-test/CY_BKL_Config_value-2.xml" => "Booklet/CY_BKL_Config_value-2.xml",
