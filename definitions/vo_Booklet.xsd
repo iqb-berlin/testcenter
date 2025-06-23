@@ -121,7 +121,7 @@
   </xs:complexType>
 
   <xs:complexType name="TimeMaxRestrictionType">
-    <xs:attribute name="minutes" type="xs:positiveInteger"/>
+    <xs:attribute name="minutes" type="xs:double"/>
     <xs:attribute name="leave" type="TimeMaxRestrictionLeaveType" default="confirm"/>
   </xs:complexType>
 
