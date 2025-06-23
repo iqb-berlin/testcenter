@@ -1,11 +1,13 @@
 import {
   backwardsTo,
   disableSimplePlayersInternalDebounce,
-  expectUnitMenuToBe, forwardTo, getFromIframe,
+  expectUnitMenuToBe,
+  forwardTo,
+  getFromIframe,
   loginTestTaker,
   logoutTestTaker,
-  resetBackendData,
-  visitLoginPage
+  probeBackendApi,
+  resetBackendData
 } from '../utils';
 
 describe('check adaptive functionality', { testIsolation: false }, () => {
@@ -13,12 +15,12 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(disableSimplePlayersInternalDebounce);
 
   it('start adaptive booklet with predefined states', () => {
-    visitLoginPage();
     loginTestTaker('test', 'user123', 'code-input');
     cy.get('[formcontrolname="code"]')
       .type('xxx');
@@ -56,7 +58,6 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
 
   it('start adaptive booklet with predefined states', () => {
     logoutTestTaker('hot');
-    visitLoginPage();
     loginTestTaker('test-review', 'user123', 'starter');
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
       .click();

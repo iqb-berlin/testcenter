@@ -1,5 +1,8 @@
 import {
-  insertCredentials, resetBackendData, visitLoginPage, loginMonitor
+  loginMonitor,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
@@ -7,6 +10,7 @@ describe('Check Login Possibilities', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
+    probeBackendApi();
   });
 
   beforeEach(() => {

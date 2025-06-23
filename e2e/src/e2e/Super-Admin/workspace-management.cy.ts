@@ -1,13 +1,23 @@
 import {
-  clickSuperadminSettings, resetBackendData,
-  loginSuperAdmin, logoutAdmin, visitLoginPage, loginWorkspaceAdmin
+  clickSuperadminSettings,
+  loginSuperAdmin,
+  loginWorkspaceAdmin,
+  logoutAdmin,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 describe('Management Workspaces (workspace-tab)', () => {
-  before(resetBackendData);
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
-  beforeEach(clickSuperadminSettings);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(() => {
+    visitLoginPage();
+    loginSuperAdmin();
+    clickSuperadminSettings();
+  });
 
   it('all buttons are visible and sample_workspace is installed', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')

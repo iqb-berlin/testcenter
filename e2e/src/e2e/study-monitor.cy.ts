@@ -1,6 +1,7 @@
 import {
   deleteDownloadsFolder,
   loginMonitor,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from './utils';
@@ -11,6 +12,7 @@ describe('Study-Monitor User', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
+    probeBackendApi();
   });
   beforeEach(() => {
     visitLoginPage();

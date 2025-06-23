@@ -1,6 +1,7 @@
 import {
   insertCredentials,
   logoutTestTaker,
+  probeBackendApi,
   resetBackendData,
   useTestDBSetDate,
   visitLoginPage
@@ -8,8 +9,11 @@ import {
 
 describe('check valid from restrictions', () => {
   // find the current time and dates restrictions in /sampledata/system-test/CY_Test_Logins.xml
-  describe('Check valid from restrictions', () => {
-    before(resetBackendData);
+  describe('Check "valid from" restrictions', () => {
+    before(() => {
+      resetBackendData();
+      probeBackendApi();
+    });
     beforeEach(visitLoginPage);
 
     it('login before time must be impossible', () => {
@@ -57,8 +61,11 @@ describe('check valid from restrictions', () => {
     });
   });
 
-  describe('check valid to restrictions', () => {
-    before(resetBackendData);
+  describe('check "valid to" restrictions', () => {
+    before(() => {
+      resetBackendData();
+      probeBackendApi();
+    });
     beforeEach(visitLoginPage);
 
     it('login after time must be impossible', () => {
@@ -106,11 +113,12 @@ describe('check valid from restrictions', () => {
     });
   });
 
-  describe('check valid for restrictions', { testIsolation: false }, () => {
+  describe('check "valid for" restrictions', { testIsolation: false }, () => {
     before(() => {
       cy.clearLocalStorage();
       cy.clearCookies();
       resetBackendData();
+      probeBackendApi();
     });
     beforeEach(visitLoginPage);
 

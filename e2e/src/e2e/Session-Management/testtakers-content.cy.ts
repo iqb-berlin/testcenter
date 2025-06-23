@@ -2,14 +2,20 @@ import {
   deleteTesttakersFiles,
   loginSuperAdmin,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Check Testtakers Content', () => {
-  before(resetBackendData);
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(() => {
+    visitLoginPage();
+    loginSuperAdmin();
+  });
 
   it('load invalid testtaker-xml with duplicated group name is not possible)', () => {
     openSampleWorkspace(1);

@@ -1,14 +1,22 @@
 import {
-  clickSuperadminSettings, resetBackendData,
-  loginSuperAdmin, visitLoginPage
+  clickSuperadminSettings,
+  loginSuperAdmin,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPageWithProdDb
 } from '../utils';
 
 describe('Settings (setting-tab)', () => {
-  before(resetBackendData);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
 
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
-  beforeEach(clickSuperadminSettings);
+  beforeEach(() => {
+    visitLoginPageWithProdDb()
+    loginSuperAdmin();
+    clickSuperadminSettings();
+  });
 
   it('all setting options are visible', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
@@ -23,6 +31,7 @@ describe('Settings (setting-tab)', () => {
     cy.contains('Logo');
   });
 
+  // todo check how to test this without polluting the real database -> this test can be observed in regular dev container db (make up)
   it('set a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click();

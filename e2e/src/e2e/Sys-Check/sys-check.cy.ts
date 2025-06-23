@@ -4,18 +4,23 @@
 // TODO test sending of a report
 
 import {
+  insertCredentials,
+  loginSuperAdmin,
+  loginTestTaker,
+  openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   selectFromDropdown,
-  loginSuperAdmin,
-  openSampleWorkspace,
-  visitLoginPage,
-  loginTestTaker,
   uploadFileFromFixtureToWorkspace,
+  visitLoginPage,
   insertCredentials, reload, deleteTesttakersFiles
 } from '../utils';
 
 describe('Sys-Check', () => {
-  before(resetBackendData);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
   beforeEach(visitLoginPage);
 
   it('if an SC-login is configured, no SC button must be present', () => {

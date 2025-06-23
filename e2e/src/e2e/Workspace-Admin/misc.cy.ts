@@ -1,15 +1,18 @@
 import {
   insertCredentials,
   loginWorkspaceAdmin,
+  probeBackendApi,
   resetBackendData,
   userData,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin Login', () => {
-  beforeEach(resetBackendData);
-  beforeEach(visitLoginPage);
-  beforeEach(loginWorkspaceAdmin);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+    loginWorkspaceAdmin();
+  });
 
   it('change the password', () => {
     cy.contains(userData.WorkspaceAdminName)
@@ -22,6 +25,8 @@ describe('Workspace-Admin Login', () => {
       .type('newPassword')
       .get('[type="submit"]')
       .click();
+    cy.wait(3000);
+    visitLoginPage();
     insertCredentials(userData.WorkspaceAdminName, 'newPassword');
     cy.get('[data-cy="login-admin"]')
       .click();

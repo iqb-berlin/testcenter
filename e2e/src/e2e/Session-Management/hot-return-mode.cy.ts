@@ -7,6 +7,7 @@ import {
   logoutAdmin,
   logoutTestTaker,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -18,6 +19,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
+    probeBackendApi();
   });
   beforeEach(() => {
     visitLoginPage();
@@ -92,7 +94,5 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
         expect(responses[1]).to.be.match(/\bhret1\b/);
         expect(responses[2]).to.be.match(/\bhret2\b/);
       });
-
-    logoutAdmin();
   });
 });

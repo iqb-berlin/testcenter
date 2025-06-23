@@ -1,11 +1,12 @@
 import {
-  loginTestTaker,
-  resetBackendData,
-  visitLoginPage,
-  getFromIframe,
-  readBlockTime,
   disableSimplePlayersInternalDebounce,
-  logoutTestTaker
+  getFromIframe,
+  loginTestTaker,
+  logoutTestTaker,
+  probeBackendApi,
+  readBlockTime,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 // Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
@@ -21,10 +22,13 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
-  beforeEach(visitLoginPage);
-  beforeEach(disableSimplePlayersInternalDebounce);
+  beforeEach(() => {
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+  });
 
   it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
     loginTestTaker('TimeRestr_Demo1', '123', 'test');
@@ -75,11 +79,14 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   before(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
-  beforeEach(visitLoginPage);
-  beforeEach(disableSimplePlayersInternalDebounce);
-  beforeEach(resetBackendData);
+  beforeEach(() => {
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+    resetBackendData();
+  });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
     loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
@@ -240,6 +247,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {

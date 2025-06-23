@@ -1,11 +1,14 @@
 import {
-  insertCredentials, visitLoginPage
+  insertCredentials,
+  probeBackendApi,
+  visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
   before(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {
