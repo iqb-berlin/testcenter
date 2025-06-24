@@ -34,6 +34,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/CY_BKL_TestletRestrictionParam_2.xml" => "Booklet/CY_BKL_TestletRestrictionParam_2.xml",
       "sampledata/system-test/CY_BKL_TestletRestrictionParam_3.xml" => "Booklet/CY_BKL_TestletRestrictionParam_3.xml",
       "sampledata/system-test/CY_Test_Logins.xml" => "Testtakers/CY_Test_Logins.xml",
+      "sampledata/system-test/CY_SysCheck_2.xml" => "SysCheck/CY_SysCheck_2.xml",
       "sampledata/system-test/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
       "sampledata/system-test/CY_Unit101.xml" => "Unit/CY_SAMPLE_UNIT101.XML",
       "sampledata/system-test/CY_Unit102.xml" => "Unit/CY_SAMPLE_UNIT102.XML",

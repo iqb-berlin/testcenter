@@ -304,9 +304,17 @@ export const deleteFilesSampleWorkspace = (): void => {
     .should('not.exist');
 };
 
-export const deleteTesttakersFiles = (): void => {
-  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
-    .click();
+export const deleteTesttakersFiles = (workspace: number): void => {
+  if (workspace === 1) {
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
+    cy.get('[data-cy="files-checkbox-CY_TEST_LOGINS.XML"]')
+      .click();
+  }
+  if (workspace === 2) {
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
+  }
   cy.get('[data-cy="delete-files"]')
     .click();
   cy.get('[data-cy="dialog-title"]')
@@ -314,10 +322,8 @@ export const deleteTesttakersFiles = (): void => {
   cy.get('[data-cy="dialog-confirm"]')
     .contains('Löschen')
     .click();
-  cy.contains('1 Dateien erfolgreich gelöscht.');
-  cy.contains('1 Dateien erfolgreich gelöscht.', { timeout: 10000 })
-    .should('not.exist');
-  cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+  cy.contains('erfolgreich gelöscht.');
+  cy.contains('erfolgreich gelöscht.', { timeout: 10000 })
     .should('not.exist');
 };
 

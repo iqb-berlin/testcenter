@@ -50,9 +50,22 @@ describe('Check Testtakers Content', () => {
       .click();
   });
 
+  it('load the same testtaker that exist in ws1 to ws2 is not possible', () => {
+    openSampleWorkspace(2);
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Testtakers.xml', { force: true });
+    cy.get('[data-cy="upload-report"]')
+      .contains('Abgelehnt');
+    cy.get('[data-cy="upload-report"]')
+      .contains('Duplicate');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+  });
+
   it('overwrite testtaker with the same file name is possible', () => {
     openSampleWorkspace(1);
-    deleteTesttakersFiles();
+    deleteTesttakersFiles(1);
+    cy.wait(500);
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('../sampledata/Testtakers.xml', { force: true });
     cy.get('[data-cy="upload-report"]')
@@ -70,16 +83,4 @@ describe('Check Testtakers Content', () => {
       .click();
   });
 
-  it('load the same testtaker that exist in ws1 to ws2 is not possible', () => {
-    openSampleWorkspace(2);
-    deleteTesttakersFiles();
-    cy.get('.sidebar > input:nth-child(2)')
-      .selectFile('../sampledata/Testtakers.xml', { force: true });
-    cy.get('[data-cy="upload-report"]')
-      .contains('Abgelehnt');
-    cy.get('[data-cy="upload-report"]')
-      .contains('Duplicate');
-    cy.get('[data-cy="close-upload-report"]')
-      .click();
-  });
 });

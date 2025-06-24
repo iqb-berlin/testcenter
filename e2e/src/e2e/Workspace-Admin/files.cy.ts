@@ -120,7 +120,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile(`${Cypress.config('fixturesFolder')}/SysCheck_error.xml`, { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/invalid_SysCheck.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
