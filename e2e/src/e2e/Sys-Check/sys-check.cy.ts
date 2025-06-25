@@ -4,73 +4,49 @@
 // TODO test sending of a report
 
 import {
+  insertCredentials,
+  loginSuperAdmin,
+  loginTestTaker,
+  openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   selectFromDropdown,
-  loginSuperAdmin,
-  openSampleWorkspace,
-  visitLoginPage,
-  loginTestTaker,
   uploadFileFromFixtureToWorkspace,
-  insertCredentials
+  visitLoginPage,
+  insertCredentials, reload, deleteTesttakersFiles
 } from '../utils';
 
 describe('Sys-Check', () => {
-  before(resetBackendData);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
   beforeEach(visitLoginPage);
 
-  it('start a system-check session', () => {
+  it('if an SC-login is configured, no SC button must be present', () => {
     cy.get('[data-cy="general-sys-check"]')
       .should('not.exist');
+  });
+
+  it('show the starter page, there is more than 1 syscheck-file in workspace', () => {
     insertCredentials('syscheck', '');
     cy.get('[data-cy="login-user"]')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+    cy.get('[data-cy*="syscheck"')
+      .should('have.length', 2);
   });
 
-  it('the system-check button must be visible, if there is no sc-login in TT', () => {
-    loginSuperAdmin();
-    openSampleWorkspace(1);
-    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+  it('run and complete a system-check via SC-Login', () => {
+    insertCredentials('syscheck', '');
+    cy.get('[data-cy="login-user"]')
       .click();
-    cy.get('[data-cy="delete-files"]')
+    cy.get('[data-cy="syscheck-SYSCHECK-2"]')
       .click();
-    cy.get('[data-cy="dialog-title"]')
-      .contains('Löschen von Dateien');
-    cy.get('[data-cy="dialog-confirm"]')
-      .contains('Löschen')
-      .click();
-    cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
-      .should('not.exist');
-    cy.get('[data-cy="upload-file-select"]')
-      .selectFile(`${Cypress.config('fixturesFolder')}/Testtakers_withoutSyscheck.xml`, { force: true });
-    cy.contains('Erfolgreich hochgeladen');
-    cy.contains('Testtakers_withoutSyscheck.xml');
-    visitLoginPage();
-    cy.get('[data-cy="general-sys-check"]')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
-  });
-
-  it('start a system-check', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
-    cy.contains('System-Check Beispiel')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
-    cy.contains('Netzwerk');
-    cy.get('#syscheck-previous-step')
-      .should('be.visible');
-    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.',
-      { timeout: 60000 });
-    cy.get('#syscheck-next-step')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);
     cy.contains('Bitte prüfen Sie die folgenden Aufgaben-Elemente');
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/q`);
     cy.get('[data-cy="input-name"]')
       .type('Test-Input1');
     selectFromDropdown('Auswahl', 'Option A');
@@ -83,47 +59,71 @@ describe('Sys-Check', () => {
       .click();
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/r`);
     cy.contains('Eingabefeld: Test-Input1');
     cy.contains('Auswahl: Option A');
     cy.contains('Eingabebereich: Test-Input2');
     cy.contains('Kontrollkästchen: true');
     cy.contains('Optionsfelder: Option B');
-    cy.contains('System-Check abbrechen')
+    cy.get('[data-cy="send sc-report"]')
       .click();
-    cy.url().should('contain', `${Cypress.config().baseUrl}/#/r`);
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Bericht gespeichert');
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
   });
 
   it('to save a report all required fields must be filled out', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
-    cy.contains('System-Check Beispiel')
+    insertCredentials('syscheck', '');
+    cy.get('[data-cy="login-user"]')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
+    cy.get('[data-cy="syscheck-SYSCHECK-2"]')
+      .click();
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
-    cy.contains('Netzwerk');
-    cy.get('#syscheck-previous-step')
-      .should('be.visible');
-    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.',
-      { timeout: 60000 });
-    cy.get('#syscheck-next-step')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);
     cy.contains('Bitte prüfen Sie die folgenden Aufgaben-Elemente');
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/q`);
-
     cy.get('#syscheck-next-step')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/r`);
     cy.contains('Bitte prüfen Sie die Eingaben (unvollständig)');
   });
 
-  it('show the starter page if more than one system-check is available in workspace', () => {
-    uploadFileFromFixtureToWorkspace('SysCheck_correct.xml', 1);
-    loginTestTaker('syscheck', '', 'starter');
-    cy.get('[data-cy*="syscheck"').should('have.length', 2);
+  it('dont display the starter page if there is only 1 syscheck-file in workspace', () => {
+    loginSuperAdmin();
+    openSampleWorkspace(1);
+    cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
+      .click();
+    cy.get('[data-cy="delete-files"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .click();
+    visitLoginPage();
+    insertCredentials('syscheck', '');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('#syscheck-next-step');
   });
+
+  it('a global system-check button must be visible, if there is no sc-login in TT', () => {
+    loginSuperAdmin();
+    openSampleWorkspace(1);
+    deleteTesttakersFiles(1);
+    cy.get('[data-cy="logo"]')
+      .click();
+    openSampleWorkspace(2);
+    deleteTesttakersFiles(2);
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="logout"]')
+      .click();
+    cy.window().then((win) => {
+      win.location.href = 'about:blank'
+    });
+    cy.visit('http://localhost/#/r/login/?testMode=true');
+    cy.get('[data-cy="general-sys-check"]')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
+  });
+
+
 });

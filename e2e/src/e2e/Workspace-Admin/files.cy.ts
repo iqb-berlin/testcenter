@@ -4,18 +4,24 @@ import {
   loginSuperAdmin,
   logoutAdmin,
   openSampleWorkspace,
+  probeBackendApi,
   reload,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-files', () => {
-  before(deleteDownloadsFolder);
-  before(resetBackendData);
+  before(() => {
+    deleteDownloadsFolder();
+    resetBackendData();
+    probeBackendApi();
+  });
 
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
-  beforeEach(() => openSampleWorkspace(1));
+  beforeEach(() => {
+    visitLoginPage();
+    loginSuperAdmin();
+    openSampleWorkspace(1);
+  });
 
   afterEach(logoutAdmin);
 
@@ -120,7 +126,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="upload-file-select"]')
-      .selectFile(`${Cypress.config('fixturesFolder')}/SysCheck_error.xml`, { force: true });
+      .selectFile(`${Cypress.config('fixturesFolder')}/invalid_SysCheck.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.get('[data-cy="close-upload-report"]')
       .click();
@@ -178,12 +184,12 @@ describe('Workspace-Admin-files', () => {
     cy.contains('erfolgreich gelöscht.');
     cy.get('[data-cy="upload-file-select"]')
       .selectFile([
-        '../sampledata/Unit.xml',
-        '../sampledata/verona-player-simple-6.0.html',
-        '../sampledata/SAMPLE_UNITCONTENTS.HTM',
-        '../sampledata/sample_resource_package.itcr.zip'
-      ],
-      { force: true }
+          '../sampledata/Unit.xml',
+          '../sampledata/verona-player-simple-6.0.html',
+          '../sampledata/SAMPLE_UNITCONTENTS.HTM',
+          '../sampledata/sample_resource_package.itcr.zip'
+        ],
+        { force: true }
       );
     cy.get('[data-cy="close-upload-report"]')
       .click();

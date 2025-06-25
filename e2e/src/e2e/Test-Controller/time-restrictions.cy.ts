@@ -1,15 +1,16 @@
 import {
-  loginTestTaker,
-  resetBackendData,
-  visitLoginPage,
-  getFromIframe,
-  readBlockTime,
   disableSimplePlayersInternalDebounce,
-  logoutTestTaker
+  getFromIframe,
+  loginTestTaker,
+  logoutTestTaker,
+  probeBackendApi,
+  readBlockTime,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 // Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
-const RestrTimeVal = 60000;
+const RestrTimeVal = 12000;
 const RestrTimeValOffset = 1000;
 
 let blockTimeBeforeShowDialog: number = 0;
@@ -21,13 +22,16 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
-  beforeEach(visitLoginPage);
-  beforeEach(disableSimplePlayersInternalDebounce);
+  beforeEach(() => {
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+  });
 
   it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('Test_Demo_Ctrl', '123', 'test');
+    loginTestTaker('TimeRestr_Demo1', '123', 'test');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -39,7 +43,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
-      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 0 min');
     cy.wait(RestrTimeVal + RestrTimeValOffset);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
@@ -49,7 +53,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
   });
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('Test_Review_Ctrl', '123', 'test');
+    loginTestTaker('TimeRestr_Review1', '123', 'test');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -61,7 +65,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
-      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 0 min');
     cy.wait(RestrTimeVal + RestrTimeValOffset);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
@@ -75,14 +79,17 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   before(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
-  beforeEach(visitLoginPage);
-  beforeEach(disableSimplePlayersInternalDebounce);
-  beforeEach(resetBackendData);
+  beforeEach(() => {
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+    resetBackendData();
+  });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('Test_HotRestart_Ctrl1', '123', 'test-hot');
+    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -134,7 +141,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-restart: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('Test_HotReturn_Ctrl1', '123', 'test-hot');
+    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -159,7 +166,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-return: timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('Test_HotReturn_Ctrl1', '123', 'test-hot');
+    loginTestTaker('TimeRestr_HotRet1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -210,7 +217,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-return: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('Test_HotRestart_Ctrl1', '123', 'test-hot');
+    loginTestTaker('TimeRestr_HotRet2', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -240,6 +247,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {

@@ -6,6 +6,7 @@ import {
   loginTestTaker,
   logoutAdmin,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -19,6 +20,7 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     resetBackendData();
+    probeBackendApi();
   });
   beforeEach(() => {
     visitLoginPage();

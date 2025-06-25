@@ -1,12 +1,11 @@
-import {
-  loginMonitor, resetBackendData, visitLoginPage
-} from '../utils';
+import { loginMonitor, probeBackendApi, resetBackendData, visitLoginPage } from '../utils';
 
 describe('Group-Monitor User', () => {
   before(() => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {
@@ -113,7 +112,7 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  it('greate a new  filter', () => {
+  it('create a new  filter', () => {
     cy.get('[data-cy="GM-sample_group-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')

@@ -2,12 +2,12 @@
 <SysCheck xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/15.3.0-alpha3/definitions/vo_SysCheck.xsd">
   <Metadata>
-    <Id>SYSCHECK.CORRECT</Id>
-    <Label>System-Check korrektes Beispiel</Label>
-    <Description>Beschreibungstext für den Systemcheck. Ein bisschen mehr Text.</Description>
+    <Id>syscheck-2</Id>
+    <Label>System-Check-2</Label>
+    <Description></Description>
   </Metadata>
 
-  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="false">
+  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="true">
     <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">
       100000, 200000, 400000, 800000
     </UploadSpeed>

@@ -8,9 +8,10 @@ import {
   gotoPage,
   loginSuperAdmin,
   loginTestTaker,
+  logoutTestTaker,
   openSampleWorkspace,
-  resetBackendData,
-  visitLoginPage
+  probeBackendApi,
+  resetBackendData
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
@@ -23,7 +24,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
-    visitLoginPage();
+    probeBackendApi();
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
 
@@ -160,13 +161,10 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
-    cy.get('[data-cy="logout"]')
-      .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     cy.get('.snackbar-demo-mode')
       .contains('Schließen')
       .click();
+    logoutTestTaker('demo');
   });
 
   it('there are no responses in the response file', () => {

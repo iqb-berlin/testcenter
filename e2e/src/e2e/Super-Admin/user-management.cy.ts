@@ -1,14 +1,26 @@
 import {
-  clickSuperadminSettings, insertCredentials, resetBackendData,
-  loginSuperAdmin, logoutAdmin, addWorkspaceAdmin, visitLoginPage, loginWorkspaceAdmin,
-  userData
+  addWorkspaceAdmin,
+  clickSuperadminSettings,
+  insertCredentials,
+  loginSuperAdmin,
+  loginWorkspaceAdmin,
+  logoutAdmin,
+  probeBackendApi,
+  resetBackendData,
+  userData,
+  visitLoginPage
 } from '../utils';
 
 describe('Usermanagement (user-tab)', () => {
-  before(resetBackendData);
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
-  beforeEach(clickSuperadminSettings);
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(() => {
+    visitLoginPage();
+    loginSuperAdmin();
+    clickSuperadminSettings();
+  });
 
   it('all user option buttons are visible', () => {
     cy.get('[data-cy="superadmin-tabs:users"]')

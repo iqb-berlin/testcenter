@@ -3,17 +3,23 @@ import {
   loginSuperAdmin,
   logoutAdmin,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-results', () => {
-  before(deleteDownloadsFolder);
-  before(resetBackendData);
+  before(() => {
+    deleteDownloadsFolder();
+    resetBackendData();
+    probeBackendApi();
+  });
 
-  beforeEach(visitLoginPage);
-  beforeEach(loginSuperAdmin);
-  beforeEach(() => openSampleWorkspace(1));
+  beforeEach(() => {
+    visitLoginPage();
+    loginSuperAdmin();
+    openSampleWorkspace(1);
+  });
 
   afterEach(logoutAdmin);
 

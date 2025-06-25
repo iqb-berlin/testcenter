@@ -1,14 +1,14 @@
 import {
-  loginSuperAdmin,
-  openSampleWorkspace,
-  loginTestTaker,
-  resetBackendData,
-  visitLoginPage,
-  getFromIframe,
-  forwardTo,
   backwardsTo,
   disableSimplePlayersInternalDebounce,
-  gotoPage
+  gotoPage, convertResultsSeperatedArrays,
+  forwardTo,
+  getFromIframe,
+  loginSuperAdmin,
+  loginTestTaker,
+  openSampleWorkspace,
+  probeBackendApi,
+  resetBackendData, visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -20,7 +20,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
-    visitLoginPage();
+    probeBackendApi();
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
 
@@ -130,11 +130,16 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('a response file is not generated', () => {
+    visitLoginPage();
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('RunDemo')
-      .should('not.exist');
+    cy.contains('RunDemo');
+    cy.get('[data-cy="results-checkbox1"]')
+      .click();
+    cy.get('[data-cy="download-responses"]')
+      .click();
+    cy.contains('Keine Daten verfügbar');
   });
 });

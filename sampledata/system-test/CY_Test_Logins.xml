@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.0.0/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.0.0/definitions/vo_Testtakers.xsd">
+
 
   <Metadata>
     <Description>Logins für die Cypress Controller-Tests</Description>
@@ -68,7 +70,7 @@
     <Login mode="run-demo" name="as_code1" pw="102">
       <Booklet codes="as_code01">CY-Bklt_rundemo</Booklet>
     </Login>
-    <Login mode="run-demo" name="as_code2" >
+    <Login mode="run-demo" name="as_code2">
       <Booklet codes="as_code02">CY-Bklt_rundemo</Booklet>
     </Login>
   </Group>
@@ -134,6 +136,24 @@
     </Login>
     <Login mode="run-hot-restart" name="bklTsltRestrParam3" pw="123">
       <Booklet>CY-BkltTsltRestr-3</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="timeRestriction" label="TimeRestriction">
+    <Login mode="run-hot-return" name="TimeRestr_HotRet1" pw="123">
+      <Booklet>CY-Bklt_TimeRestr</Booklet>
+    </Login>
+    <Login mode="run-hot-return" name="TimeRestr_HotRet2" pw="123">
+      <Booklet>CY-Bklt_TimeRestr</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="TimeRestr_HotRes1" pw="123">
+      <Booklet>CY-Bklt_TimeRestr</Booklet>
+    </Login>
+    <Login mode="run-demo" name="TimeRestr_Demo1" pw="123">
+      <Booklet>CY-Bklt_TimeRestr</Booklet>
+    </Login>
+    <Login mode="run-review" name="TimeRestr_Review1" pw="123">
+      <Booklet>CY-Bklt_TimeRestr</Booklet>
     </Login>
   </Group>
 

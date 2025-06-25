@@ -1,11 +1,14 @@
 /* How its work: https://iqb-berlin.github.io/tba-info/intro/install/e2e.html section: Booklet-Config: */
 
 import {
-  loginTestTaker,
-  resetBackendData,
+  disableSimplePlayersInternalDebounce,
   getFromIframe,
-  visitLoginPage,
-  disableSimplePlayersInternalDebounce, reload, logoutTestTakerBkltConfig
+  loginTestTaker,
+  logoutTestTakerBkltConfig,
+  probeBackendApi,
+  reload,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 const mode = 'test-hot';
@@ -16,6 +19,7 @@ describe('check values 1', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {

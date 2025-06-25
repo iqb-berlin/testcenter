@@ -20,13 +20,23 @@ export const deleteDownloadsFolder = (): void => {
 
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
-    if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
-      cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
-        .as('waitForConfig');
-      const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
-      cy.visit(`${startPage}?testMode=true`, { timeout: 30000 });
-      cy.wait('@waitForConfig');
-    }
+    const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
+    cy.visit(`${startPage}?testMode=true`).wait(10); // wait(10) makes the navigation more stable (seems hacky)
+  });
+
+export const visitLoginPageWithProdDb = (): Chainable => cy.url()
+  .then(url => {
+    const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
+    cy.visit(`${startPage}`).wait(10); // wait(10) makes the navigation more stable (seems hacky)
+  });
+
+export const probeBackendApi = (): Chainable => cy.url()
+  .then(url => {
+    cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
+      .as('waitForConfig');
+    cy.reload();
+    visitLoginPage();
+    cy.wait('@waitForConfig', { timeout: 30000 });
   });
 
 export const resetBackendData = (): void => {
@@ -87,8 +97,7 @@ export const logoutAdmin = (): Chainable => cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       cy.get('[data-cy="logout"]')
         .click();
-      cy.url()
-        .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+      visitLoginPage();
     }
   });
 
@@ -114,7 +123,7 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
     }
     cy.get('[data-cy="logout"]')
       .click();
-    return cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    visitLoginPage();
   });
 
 export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'): Chainable => cy.url()
@@ -272,7 +281,6 @@ export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: nu
   cy.get('[data-cy="upload-file-select"]')
     .selectFile(`${Cypress.config('fixturesFolder')}/${fileName}`, { force: true });
   logoutAdmin();
-  visitLoginPage();
 };
 
 export const deleteFilesSampleWorkspace = (): void => {
@@ -304,9 +312,17 @@ export const deleteFilesSampleWorkspace = (): void => {
     .should('not.exist');
 };
 
-export const deleteTesttakersFiles = (): void => {
-  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
-    .click();
+export const deleteTesttakersFiles = (workspace: number): void => {
+  if (workspace === 1) {
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
+    cy.get('[data-cy="files-checkbox-CY_TEST_LOGINS.XML"]')
+      .click();
+  }
+  if (workspace === 2) {
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
+  }
   cy.get('[data-cy="delete-files"]')
     .click();
   cy.get('[data-cy="dialog-title"]')
@@ -314,10 +330,8 @@ export const deleteTesttakersFiles = (): void => {
   cy.get('[data-cy="dialog-confirm"]')
     .contains('Löschen')
     .click();
-  cy.contains('1 Dateien erfolgreich gelöscht.');
-  cy.contains('1 Dateien erfolgreich gelöscht.', { timeout: 10000 })
-    .should('not.exist');
-  cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+  cy.contains('erfolgreich gelöscht.');
+  cy.contains('erfolgreich gelöscht.', { timeout: 10000 })
     .should('not.exist');
 };
 

@@ -11,6 +11,7 @@ import {
   logoutAdmin,
   logoutTestTaker,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -33,6 +34,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   describe('Login1: Resp/Pres complete, leave the block and end the test with IQB-logo', { testIsolation: false }, () => {
@@ -350,11 +352,11 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       loginTestTaker(TesttakerName3, TesttakerPassword3, mode);
     });
 
+    beforeEach(disableSimplePlayersInternalDebounce);
+
     after(() => {
       logoutTestTaker('hot');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
@@ -508,7 +510,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('check responses from first login', () => {
       getResultFileRows('responses')
         .then(responses => {
-        // metadata
+          // metadata
           expect(responses[1]).to.be.match(/\brunhotres\b/);
           expect(responses[1]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[1]).to.be.match(/\bh5ki-bd\b/);
@@ -539,7 +541,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('check responses from second login', () => {
       getResultFileRows('responses')
         .then(responses => {
-        // metadata
+          // metadata
           expect(responses[6]).to.be.match(/\brunhotres\b/);
           expect(responses[6]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
           expect(responses[6]).to.be.match(/\bva4dg-jc\b/);
@@ -570,8 +572,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('check responses from third login', () => {
       getResultFileRows('responses')
         .then(responses => {
-        // metadata
-        // metadata
+          // metadata
+          // metadata
           expect(responses[11]).to.be.match(/\brunhotres\b/);
           expect(responses[11]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
           expect(responses[11]).to.be.match(/\bh5ki-bd\b/);
@@ -602,8 +604,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('check responses from fourth login', () => {
       getResultFileRows('responses')
         .then(responses => {
-        // metadata
-        // metadata
+          // metadata
+          // metadata
           expect(responses[16]).to.be.match(/\brunhotres\b/);
           expect(responses[16]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
           expect(responses[16]).to.be.match(/\bh5ki-bd\b/);

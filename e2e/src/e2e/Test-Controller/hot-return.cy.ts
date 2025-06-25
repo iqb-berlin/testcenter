@@ -10,6 +10,7 @@ import {
   loginTestTaker,
   logoutTestTaker,
   openSampleWorkspace,
+  probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
@@ -32,6 +33,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   describe('hot-return-login 1', { testIsolation: false }, () => {

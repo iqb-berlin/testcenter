@@ -1,10 +1,12 @@
 import {
-  forwardTo, getFromIframe,
-  loginTestTaker,
-  resetBackendData,
-  visitLoginPage,
+  forwardTo,
+  getFromIframe,
   getResponses,
-  modifyPlayer
+  loginTestTaker,
+  modifyPlayer,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 describe('Test Controller', { testIsolation: false }, () => {
@@ -12,6 +14,7 @@ describe('Test Controller', { testIsolation: false }, () => {
     resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
+    probeBackendApi();
   });
 
   beforeEach(() => {
@@ -24,7 +27,7 @@ describe('Test Controller', { testIsolation: false }, () => {
         replace: 'window.vsp = { PlayerUI, Message, Pages, Log };',
         with:
           'window.vsp = { PlayerUI, Message, Pages, Log };' +
-          "window.addEventListener('unload', () => { Message.send._send(Message.send._createStateMsg(true)); });"
+          'window.addEventListener(\'unload\', () => { Message.send._send(Message.send._createStateMsg(true)); });'
       }
     ]);
   });
