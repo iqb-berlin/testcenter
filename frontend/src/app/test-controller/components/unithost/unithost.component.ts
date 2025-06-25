@@ -54,7 +54,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -246,7 +247,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
-    this.pages = { };
+    this.pages = {};
     if (!Array.isArray(validPages)) {
       // Verona 2-5
       this.pages = validPages;
@@ -292,7 +293,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     };
     const runTimeErrorReactionMap:
-    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]] : keyof typeof reactions } = {
+      { [code in typeof VeronaPlayerRuntimeErrorCodes[number]]: keyof typeof reactions } = {
       'session-id-missing': 'raiseError',
       'unit-definition-missing': 'raiseError',
       'wrong-session-id': 'raiseError',
@@ -446,7 +447,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
     if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
-    const resourceUri = this.mds.appConfig?.fileServiceUri ?? this.bs.backendUrl;
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? '/fs/' : this.bs.backendUrl; // @TODO: extract to 'file-server.service' class
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(navigationState.targets)
         .filter(isVeronaNavigationTarget)
