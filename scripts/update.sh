@@ -17,7 +17,7 @@ declare ALL_RELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]
 declare BACKUP_DIR
 declare DB_SERVICE_NAME='db'
 declare BACKEND_SERVICE_NAME='backend'
-declare BACKEND_VOLUME_NAME='testcenter_backend_vo_data'
+declare BACKEND_VOLUME_NAME='backend_vol'
 declare BACKEND_VOLUME_DIR='/var/www/testcenter/data'
 declare ARE_DATA_SERVICES_UP=false
 
