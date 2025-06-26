@@ -300,7 +300,7 @@ testcenter-export-backend-vol:
 	docker run --rm \
 		--volumes-from "$${container_id}" \
 		--volume $(TC_BASE_DIR)/backup/temp:/tmp \
-		busybox tar czvf /tmp/backend_vo_data.tar.gz /var/www/testcenter/data
+		busybox tar czvf /tmp/backend_vol.tar.gz /var/www/testcenter/data
 
 
 ## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (backend has to be up!)
@@ -310,7 +310,7 @@ testcenter-import-backend-vol:
 			--volumes-from "$${container_id}"\
 			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
 		busybox sh\
-			-c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vo_data.tar.gz --strip-components 4"
+			-c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vol.tar.gz --strip-components 4"
 
 # Start testcenter update procedure
 testcenter-update:

@@ -93,7 +93,7 @@ services:
       timeout: 30s
       retries: 3
     volumes:
-      - testcenter_backend_vo_data:/var/www/testcenter/data
+      - backend_vol:/var/www/testcenter/data
     networks:
       testcenter:
 
@@ -120,7 +120,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
-      - dbdata:/var/lib/mysql
+      - db_vol:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
       start_period: 30s
@@ -132,8 +132,8 @@ services:
       testcenter:
 
 volumes:
-  dbdata:
-  testcenter_backend_vo_data:
+  db_vol:
+  backend_vol:
 
 networks:
   testcenter:
