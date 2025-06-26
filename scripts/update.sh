@@ -379,7 +379,6 @@ export_backend_volume() {
   volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
   container_name=$(basename "$PWD")-backend-1
 
-  # still use docker instead of compose, because busybox is not part of docker compose file yet
   docker run \
     --rm \
     --volumes-from "${container_name}" \
