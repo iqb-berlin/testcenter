@@ -132,7 +132,7 @@ test-system-headless:
 			--file docker-compose.dev.yml\
 			--file e2e/docker-compose.system-test-headless.yml\
 		down &&\
-	docker image rm testcenter-testcenter-e2e
+	docker image rm testcenter-e2e
 
 test-system:
 	cd $(TC_BASE_DIR) &&\

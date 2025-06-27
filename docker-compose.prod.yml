@@ -37,7 +37,7 @@ services:
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
 
-  testcenter-file-service:
+  file-server:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
   backend:

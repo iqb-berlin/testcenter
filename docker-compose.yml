@@ -54,7 +54,7 @@ services:
     networks:
       testcenter:
 
-  testcenter-file-service:
+  file-server:
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     <<: *restart-policy
