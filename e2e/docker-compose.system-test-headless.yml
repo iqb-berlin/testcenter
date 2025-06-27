@@ -30,7 +30,7 @@ services:
     environment:
       OVERRIDE_CONFIG: |
         [fileService]
-        external=testcenter-file-service/
+        external=testcenter-file-server/
         [broadcastingService]
         external=testcenter-broadcasting-service:3000/
 

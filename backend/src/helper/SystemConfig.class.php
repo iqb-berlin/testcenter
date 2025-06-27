@@ -89,7 +89,7 @@ class SystemConfig {
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['fileService']['host'] = 'testcenter-file-service:8080/';
+      $config['fileService']['host'] = 'file-server:8080/';
     }
 
     $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');

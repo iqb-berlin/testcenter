@@ -1,5 +1,5 @@
 services:
-  testcenter-file-service:
+  file-server:
     environment:
       REDIS_CACHE_FILES: false
 
@@ -30,7 +30,7 @@ services:
     extends:
       service: testcenter-task-runner
     depends_on:
-      testcenter-file-service:
+      file-server:
         condition: service_started
       cache-server:
         condition: service_started

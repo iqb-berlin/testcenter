@@ -1,5 +1,5 @@
 {
-  "file_service_url": "http://testcenter-file-service:8080",
+  "file_service_url": "http://file-server:8080",
   "backend_url": "http://backend:8080",
   "cache_service_url": "redis://:change_me@cache-server"
 }
