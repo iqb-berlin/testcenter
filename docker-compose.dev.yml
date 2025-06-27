@@ -32,11 +32,11 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
     build:
-      dockerfile: broadcasting-service/Dockerfile
+      dockerfile: broadcaster/Dockerfile
       target: dev
     volumes:
       - ./common:/usr/src/testcenter/common
-      - ./broadcasting-service/src:/usr/src/testcenter/broadcasting-service/src
+      - ./broadcaster/src:/usr/src/testcenter/broadcaster/src
       - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter

@@ -24,7 +24,7 @@ Details: backend/composer.json
 * Node 20.9.0
 * NestJs 9.0.7
 
-broadcasting-service/package.json
+broadcaster/package.json
 
 ## File-Service
 
