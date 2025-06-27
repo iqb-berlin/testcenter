@@ -21,9 +21,9 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
-    <<: *restart-policy
     container_name: testcenter-traefik
     image: ${DOCKERHUB_PROXY}traefik:v3.4
+    <<: *restart-policy
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
@@ -32,9 +32,9 @@ services:
       testcenter:
 
   testcenter-broadcasting-service:
-    <<: *restart-policy
     container_name: testcenter-broadcasting-service
     image: iqbberlin/testcenter-broadcasting-service:current
+    <<: *restart-policy
     logging:
       options:
         <<: *env-logging-conf
@@ -42,9 +42,9 @@ services:
       testcenter:
 
   testcenter-frontend:
-    <<: *restart-policy
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
+    <<: *restart-policy
     depends_on:
       testcenter-backend:
         condition: service_healthy
@@ -55,9 +55,9 @@ services:
       testcenter:
 
   testcenter-file-service:
-    <<: *restart-policy
     container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
+    <<: *restart-policy
     depends_on:
       - testcenter-cache-service
     environment:
@@ -68,9 +68,9 @@ services:
       testcenter:
 
   testcenter-backend:
-    <<: *restart-policy
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
+    <<: *restart-policy
     depends_on:
       testcenter-db:
         condition: service_healthy
@@ -103,9 +103,9 @@ services:
       testcenter:
 
   testcenter-cache-service:
-    <<: *restart-policy
     container_name: testcenter-cache-service
     image: ${DOCKERHUB_PROXY}redis:8.0-bookworm
+    <<: *restart-policy
     user: redis
     command: [
       "redis-server",
@@ -119,9 +119,9 @@ services:
       testcenter:
 
   testcenter-db:
-    <<: *restart-policy
     container_name: testcenter-db
     image: ${DOCKERHUB_PROXY}mysql:8.4
+    <<: *restart-policy
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
