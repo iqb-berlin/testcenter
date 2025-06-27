@@ -76,7 +76,7 @@ useStaticTime=now
 [language]
 dateFormat=d/m/Y H:i
 ```
-Not that files-service and cache-service are currently not available in local installation.
+Not that files-service and cache-server are currently not available in local installation.
 
 ## Initialize Backend
 ```

@@ -31,7 +31,7 @@ spec:
           imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
           env:
             - name: REDIS_HOST
-              value: "testcenter-cache-service.tc.svc.cluster.local"
+              value: "cache-server.tc.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD
