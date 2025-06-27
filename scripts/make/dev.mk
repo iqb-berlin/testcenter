@@ -14,7 +14,7 @@ init:
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
 
 # Build all images of the project or a specified one as dev-images.
-# Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only build a specified service, e.g. `service=backend`
 build:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -26,7 +26,7 @@ build:
 
 # Ramp the application up (i.e. creates and starts all application containers).
 # Hint: Stop local webserver before, to free port 80
-# Param: (optional) service - Only ramp up a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only ramp up a specified service, e.g. `service=backend`
 up:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -45,7 +45,7 @@ down:
 		down --remove-orphans $(service)
 
 # Start the application with already existing containers.
-# Param: (optional) service - Only start a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only start a specified service, e.g. `service=backend`
 start:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -55,7 +55,7 @@ start:
 		start $(service)
 
 # Stop the application but don't remove the service containers.
-# Param: (optional) service - Only stop a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only stop a specified service, e.g. `service=backend`
 stop:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -65,7 +65,7 @@ stop:
 		stop $(service)
 
 # Log the application.
-# Param: (optional) service - Only log a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only log a specified service, e.g. `service=backend`
 logs:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -87,7 +87,7 @@ composer-install:
 				--ignore-platform-reqs\
 				--no-ansi\
 				--working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
 
 composer-update:
 	docker run --rm --interactive --tty\
@@ -102,7 +102,7 @@ composer-update:
 				--ignore-platform-reqs\
 				--no-ansi\
 				--working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.
 composer-refresh-autoload:
@@ -114,8 +114,8 @@ composer-refresh-autoload:
 			--volume $(TC_BASE_DIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
 			--volume $(HOME)/.composer:/tmp/cache\
 		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
-	cd $(TC_BASE_DIR) && make up service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
+	cd $(TC_BASE_DIR) && make up service=backend
 
 # Copies data folder from Backend Container into local, to better be able to work with files in the IDE
 data-pull:
@@ -188,6 +188,6 @@ new-version:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint="" testcenter-backend\
+		run --rm --entrypoint="" backend\
 			php /var/www/testcenter/backend/test/update-sql-scheme.php &&\
 	make .run-task-runner task="new-version $(version)"

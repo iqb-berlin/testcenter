@@ -7,7 +7,7 @@ test-backend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" testcenter-backend\
+		run --rm --entrypoint "" backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 						--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -19,7 +19,7 @@ test-backend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" testcenter-backend\
+		run --rm --entrypoint "" backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 					--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -35,7 +35,6 @@ test-backend-api:
 			--file test/docker-compose.api-test.yml\
 		run --rm testcenter-task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
-	docker image rm testcenter-testcenter-task-runner-backend
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)

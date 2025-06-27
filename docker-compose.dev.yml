@@ -82,7 +82,7 @@ services:
     networks:
       - testcenter
 
-  testcenter-backend:
+  backend:
     build:
       dockerfile: backend/Dockerfile
       target: dev

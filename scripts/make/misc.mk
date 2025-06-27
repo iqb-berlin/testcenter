@@ -44,10 +44,10 @@ sync-package-files:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-backend:/var/www/testcenter/backend/vendor backend
+		cp backend:/var/www/testcenter/backend/vendor backend
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-backend:/var/www/testcenter/backend/composer.lock backend/composer.lock
+		cp backend:/var/www/testcenter/backend/composer.lock backend/composer.lock

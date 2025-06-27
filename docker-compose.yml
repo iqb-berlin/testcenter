@@ -46,7 +46,7 @@ services:
     image: iqbberlin/testcenter-frontend:current
     <<: *restart-policy
     depends_on:
-      testcenter-backend:
+      backend:
         condition: service_healthy
     logging:
       options:
@@ -63,11 +63,11 @@ services:
     environment:
       <<: *env-redis
     volumes_from:
-      - testcenter-backend:ro
+      - backend:ro
     networks:
       testcenter:
 
-  testcenter-backend:
+  backend:
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     <<: *restart-policy
@@ -91,7 +91,7 @@ services:
       options:
         <<: *env-logging-conf
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://testcenter-backend:8080" ]
+      test: [ "CMD", "curl", "-f", "http://backend:8080" ]
       start_period: 60s
       start_interval: 3s
       interval: 5m
