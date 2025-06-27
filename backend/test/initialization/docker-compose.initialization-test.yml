@@ -5,7 +5,7 @@
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
 x-env-redis: &env-redis
-  REDIS_HOST: testcenter-cache-service
+  REDIS_HOST: cache-server
   REDIS_PORT: 6379
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}

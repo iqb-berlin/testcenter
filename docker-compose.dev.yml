@@ -115,7 +115,7 @@ services:
     networks:
       - testcenter
 
-  testcenter-cache-service:
+  cache-server:
     ports:
       - "6379:6379"
 

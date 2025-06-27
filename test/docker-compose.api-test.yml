@@ -32,7 +32,7 @@ services:
     depends_on:
       testcenter-file-service:
         condition: service_started
-      testcenter-cache-service:
+      cache-server:
         condition: service_started
 
   testcenter-task-runner-backend:
@@ -41,5 +41,5 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-      testcenter-cache-service:
+      cache-server:
         condition: service_started
