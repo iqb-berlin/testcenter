@@ -91,7 +91,7 @@ testcenter-down:
 	fi
 
 ## Start docker containers
-# Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=testcenter-db`
+# Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=db`
 testcenter-start:
 	@if [ $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -110,7 +110,7 @@ testcenter-start:
 	fi
 
 ## Stop docker containers
-# Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=testcenter-db`
+# Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=db`
 testcenter-stop:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -129,7 +129,7 @@ testcenter-stop:
 	fi
 
 ## Restart docker containers
-# Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=testcenter-db`
+# Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=db`
 testcenter-restart:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -148,7 +148,7 @@ testcenter-restart:
 	fi
 
 ## Show status of containers
-# Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=db`
 testcenter-status:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -167,7 +167,7 @@ testcenter-status:
 	fi
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=db`
 testcenter-logs:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -186,7 +186,7 @@ testcenter-logs:
 	fi
 
 ## Show services configuration
-# Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=db`
 testcenter-config:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
