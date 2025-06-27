@@ -103,7 +103,7 @@ include:
         ($CI_COMMIT_BRANCH != "release/lts") &&
         ($CI_PIPELINE_SOURCE != "external_pull_request_event")
       changes:
-        - file-service/**/*
+        - file-server/**/*
 
 .frontend-feature-rules:
   rules:
@@ -827,7 +827,7 @@ build-file-service:
           --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
           --build-arg BUILDKIT_INLINE_CACHE=1
           --cache-from ${FILE_SERVICE_IMAGE_NAME}:dev
-          --file file-service/Dockerfile
+          --file file-server/Dockerfile
           --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
           --tag ${FILE_SERVICE_IMAGE_NAME}:dev
       .
@@ -1683,7 +1683,7 @@ build-file-service-prod:
           --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
           --build-arg BUILDKIT_INLINE_CACHE=1
           --cache-from ${FILE_SERVICE_IMAGE_NAME}:latest
-          --file file-service/Dockerfile
+          --file file-server/Dockerfile
           --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
           --tag ${FILE_SERVICE_IMAGE_NAME}:latest
         .

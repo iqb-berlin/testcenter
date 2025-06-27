@@ -68,7 +68,7 @@ services:
 
   testcenter-file-service:
     build:
-      dockerfile: file-service/Dockerfile
+      dockerfile: file-server/Dockerfile
       args:
         ENABLED_MODULES: lua
     volumes:
@@ -76,9 +76,9 @@ services:
       - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/testcenter/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
       - ./sampledata/verona-player-simple-6.0.html:/var/www/testcenter/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
       - ./sampledata/coding-scheme.vocs.json:/var/www/testcenter/data-TEST/ws_1/Resource/coding-scheme.vocs.json
-      - ./file-service/nginx.conf:/etc/nginx/nginx.conf
-      - ./file-service/auth/:/usr/share/nginx/auth
-      - ./file-service/cors.conf:/etc/nginx/conf.d/cors.conf
+      - ./file-server/nginx.conf:/etc/nginx/nginx.conf
+      - ./file-server/auth/:/usr/share/nginx/auth
+      - ./file-server/cors.conf:/etc/nginx/conf.d/cors.conf
     networks:
       - testcenter
 

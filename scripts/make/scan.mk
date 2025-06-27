@@ -116,7 +116,7 @@ scan-file-service: scan-registry-login
 		docker build\
 				--progress plain\
 				--pull\
-				--file $(TC_BASE_DIR)/file-service/Dockerfile\
+				--file $(TC_BASE_DIR)/file-server/Dockerfile\
 				--tag $(REGISTRY_PATH)iqbberlin/testcenter-file-service:scan\
 			.
 		docker run\
