@@ -11,7 +11,7 @@ services:
       dockerfile: task-runner/Dockerfile
     volumes:
       - ./README.md:/usr/src/testcenter/task-runner/README.md
-      - ./broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
+      - ./broadcaster:/usr/src/testcenter/task-runner/broadcaster
       - ./common:/usr/src/testcenter/task-runner/common
       - ./definitions:/usr/src/testcenter/task-runner/definitions
       - ./dist:/usr/src/testcenter/task-runner/dist

@@ -54,7 +54,7 @@ scan-broadcasting-service: scan-registry-login
 		docker build\
 				--progress plain\
 				--target=prod\
-				--file $(TC_BASE_DIR)/broadcasting-service/Dockerfile\
+				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
 				--tag $(REGISTRY_PATH)iqbberlin/testcenter-broadcasting-service:scan\
 			.
 		docker run\
