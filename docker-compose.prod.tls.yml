@@ -65,7 +65,7 @@ services:
   testcenter-file-service:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
-  testcenter-backend:
+  backend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
 
   testcenter-db:

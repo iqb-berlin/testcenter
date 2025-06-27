@@ -39,7 +39,7 @@ services:
     extends:
       service: testcenter-task-runner
     depends_on:
-      testcenter-backend:
+      backend:
         condition: service_healthy
       testcenter-cache-service:
         condition: service_started
