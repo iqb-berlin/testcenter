@@ -27,7 +27,7 @@
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest",
     "file-service:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
-    "broadcasting-service:update-compodoc": "npx compodoc -p broadcaster/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
+    "broadcasting-service:update-compodoc": "npx compodoc -p broadcaster/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcaster",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"

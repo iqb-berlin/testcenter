@@ -66,7 +66,7 @@ test-broadcasting-service-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcaster\
 			npx jest
 
 test-broadcasting-service-unit-coverage:
@@ -75,7 +75,7 @@ test-broadcasting-service-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcaster\
 			npx jest --coverage
 
 test-frontend-unit:

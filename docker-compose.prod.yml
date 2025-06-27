@@ -20,12 +20,12 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 
-  testcenter-broadcasting-service:
+  broadcaster:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.routers.broadcaster.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.broadcaster.middlewares=security-headers, broadcaster-stripprefix"
+      - "traefik.http.middlewares.broadcaster-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
   frontend:

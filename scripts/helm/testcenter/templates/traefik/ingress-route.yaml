@@ -24,7 +24,7 @@ spec:
         {{- end }}
       services:
         - kind: Service
-          name: testcenter-broadcasting-service # !!! hard coded in application as internal address !!!
+          name: broadcaster # !!! hard coded in application as internal address !!!
           port: 3000
   {{- if .Values.ingress.tlsEnabled }}
   tls:

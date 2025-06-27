@@ -26,19 +26,19 @@ sync-package-files:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcaster/package.json broadcaster/package.json
+		cp broadcaster:/usr/src/testcenter/broadcaster/package.json broadcaster/package.json
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcaster/package-lock.json broadcaster/package-lock.json
+		cp broadcaster:/usr/src/testcenter/broadcaster/package-lock.json broadcaster/package-lock.json
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-broadcasting-service:/usr/src/testcenter/broadcaster/node_modules broadcaster/node_modules
+		cp broadcaster:/usr/src/testcenter/broadcaster/node_modules broadcaster/node_modules
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\

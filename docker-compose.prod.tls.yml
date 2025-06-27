@@ -39,14 +39,14 @@ services:
       - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
       - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 
-  testcenter-broadcasting-service:
+  broadcaster:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.routers.broadcaster.tls=true"
+      - "traefik.http.routers.broadcaster.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.broadcaster.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.broadcaster.middlewares=security-headers, broadcaster-stripprefix"
+      - "traefik.http.middlewares.broadcaster-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
   frontend:
