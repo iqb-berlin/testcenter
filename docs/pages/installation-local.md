@@ -26,7 +26,7 @@ cd backend
 npm install
 cd ..
 
-cd broadcasting-service
+cd broadcaster
 npm install
 cd ..
 ```
@@ -111,7 +111,7 @@ npm run start
 ## Broadcasting-Service
 (optional)
 ```
-cd broadcasting-service
+cd broadcaster
 npm run start
 ```
 
