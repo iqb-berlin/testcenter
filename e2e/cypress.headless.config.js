@@ -8,7 +8,7 @@ const waitForServer = require('./src/plugins/wait-for-server');
 const urls = {
   backend: 'http://testcenter-backend:8080',
   fileService: 'http://testcenter-file-service:8080',
-  frontend: 'http://testcenter-frontend:8080',
+  frontend: 'http://frontend:8080',
   broadcastingService: 'http://testcenter-broadcasting-service:3000'
 };
 

@@ -49,15 +49,15 @@ services:
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
-  testcenter-frontend:
+  frontend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.tls=true"
-      - "traefik.http.routers.testcenter-frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
-      - "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
-      - "traefik.http.routers.testcenter-frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.frontend.tls.domains[0].main=${HOSTNAME}"
+      - "traefik.http.routers.frontend.tls.domains[0].sans=www.${HOSTNAME}"
+      - "traefik.http.routers.frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}

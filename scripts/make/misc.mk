@@ -8,19 +8,19 @@ sync-package-files:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-frontend:/usr/src/testcenter/frontend/package.json frontend/package.json
+		cp frontend:/usr/src/testcenter/frontend/package.json frontend/package.json
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-frontend:/usr/src/testcenter/frontend/package-lock.json frontend/package-lock.json
+		cp frontend:/usr/src/testcenter/frontend/package-lock.json frontend/package-lock.json
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		cp testcenter-frontend:/usr/src/testcenter/frontend/node_modules frontend/node_modules
+		cp frontend:/usr/src/testcenter/frontend/node_modules frontend/node_modules
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\

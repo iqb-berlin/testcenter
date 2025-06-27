@@ -41,11 +41,11 @@ services:
     networks:
       - testcenter
 
-  testcenter-frontend:
+  frontend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
+      - "traefik.http.routers.frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     build:

@@ -41,7 +41,7 @@ services:
     networks:
       testcenter:
 
-  testcenter-frontend:
+  frontend:
     container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
     <<: *restart-policy

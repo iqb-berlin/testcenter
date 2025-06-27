@@ -7,7 +7,7 @@ services:
     build:
       dockerfile: e2e/Dockerfile
     environment:
-      - CYPRESS_baseUrl=http://testcenter-frontend:8080
+      - CYPRESS_baseUrl=http://frontend:8080
     command: [
       "npx", "cypress", "run",
       "--browser", "chrome",
@@ -34,5 +34,5 @@ services:
         [broadcastingService]
         external=testcenter-broadcasting-service:3000/
 
-  testcenter-frontend:
+  frontend:
     command: "serve --configuration e2e --disable-host-check --host 0.0.0.0 --port 8080"
