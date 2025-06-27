@@ -119,7 +119,7 @@ services:
     ports:
       - "6379:6379"
 
-  testcenter-db:
+  db:
     ports:
       - "9091:3306"
     command:

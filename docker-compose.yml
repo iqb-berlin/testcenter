@@ -72,7 +72,7 @@ services:
     image: iqbberlin/testcenter-backend:current
     <<: *restart-policy
     depends_on:
-      testcenter-db:
+      db:
         condition: service_healthy
       cache-server:
         condition: service_started
@@ -84,7 +84,7 @@ services:
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
       <<: [ *env-redis, *env-mysql ]
-      MYSQL_HOST: testcenter-db
+      MYSQL_HOST: db
       MYSQL_PORT: 3306
       PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
@@ -118,7 +118,7 @@ services:
     networks:
       testcenter:
 
-  testcenter-db:
+  db:
     container_name: testcenter-db
     image: ${DOCKERHUB_PROXY}mysql:8.4
     <<: *restart-policy

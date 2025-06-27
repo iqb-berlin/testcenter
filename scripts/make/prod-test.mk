@@ -79,7 +79,7 @@ prod-test-down:
 		rm $(TC_BASE_DIR)/.env.prod.sed
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=db`
 prod-test-logs:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
