@@ -1268,7 +1268,7 @@ test-e2e-group-monitor:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1318,7 +1318,7 @@ test-e2e-session-management:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1368,7 +1368,7 @@ test-e2e-super-admin:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1418,7 +1418,7 @@ test-e2e-sys-check:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1468,7 +1468,7 @@ test-e2e-test-controller:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1518,7 +1518,7 @@ test-e2e-workspace-admin:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
@@ -1568,7 +1568,7 @@ test-e2e-misc:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file e2e/docker-compose.system-test-headless.yml
-        up --abort-on-container-exit --exit-code-from=testcenter-e2e
+        up --abort-on-container-exit --exit-code-from=e2e
   artifacts:
     when: always
     paths:
