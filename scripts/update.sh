@@ -328,7 +328,7 @@ data_services_down() {
 }
 
 dump_db() {
-  declare db_name="${MYSQL_DATABASE}" # see docker envirionment file!
+  declare db_name="${MYSQL_DATABASE}" # see docker environment file!
   declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
 
   if ${TLS_ENABLED}; then

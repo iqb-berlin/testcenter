@@ -175,12 +175,12 @@ docs-user:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=create-docs
 
 create-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll --tag testcenter-jekyll -f docs/Dockerfile .
-	docker run --rm testcenter-jekyll
+	cd $(TC_BASE_DIR) && docker build --target jekyll --tag jekyll -f docs/Dockerfile .
+	docker run --rm jekyll
 
 serve-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag testcenter-jekyll-serve -f docs/Dockerfile .
-	docker run --rm -p 4000:4000 testcenter-jekyll-serve
+	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag jekyll-serve -f docs/Dockerfile .
+	docker run --rm -p 4000:4000 jekyll-serve
 
 new-version:
 	cd $(TC_BASE_DIR) &&\

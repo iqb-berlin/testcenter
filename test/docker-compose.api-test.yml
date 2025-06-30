@@ -7,6 +7,7 @@ services:
     container_name: testcenter-task-runner
     profiles:
       - task-runner
+    image: testcenter-task-runner
     build:
       dockerfile: task-runner/Dockerfile
     volumes:

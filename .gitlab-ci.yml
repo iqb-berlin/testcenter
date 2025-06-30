@@ -1124,7 +1124,7 @@ test-backend-api:
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-task-runner-backend
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-backend
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1261,7 +1261,7 @@ test-e2e-group-monitor:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1311,7 +1311,7 @@ test-e2e-session-management:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1361,7 +1361,7 @@ test-e2e-super-admin:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1411,7 +1411,7 @@ test-e2e-sys-check:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1461,7 +1461,7 @@ test-e2e-test-controller:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1511,7 +1511,7 @@ test-e2e-workspace-admin:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
@@ -1561,7 +1561,7 @@ test-e2e-misc:
     - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-testcenter-e2e
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
     - docker compose
           --env-file .env.dev-template
