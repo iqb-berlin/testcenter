@@ -124,7 +124,7 @@ test-system-headless:
 			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
-			--exit-code-from=testcenter-e2e
+			--exit-code-from=e2e
 	@cd $(TC_BASE_DIR) &&\
 	docker compose --progress quiet\
 			--env-file .env.dev\

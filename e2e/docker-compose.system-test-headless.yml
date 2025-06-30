@@ -1,9 +1,10 @@
 services:
-  testcenter-e2e:
+  e2e:
     container_name: testcenter-e2e
     depends_on:
       backend:
         condition: service_healthy
+    image: testcenter-e2e
     build:
       dockerfile: e2e/Dockerfile
     environment:
