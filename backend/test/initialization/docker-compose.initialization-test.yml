@@ -41,7 +41,6 @@ services:
       initialization-test:
 
   initialization-test-backend:
-    container_name: testcenter-initialization-test-backend
     image: iqbberlin/testcenter-backend:current
     build:
       context: ../../..
@@ -87,7 +86,6 @@ services:
       - "--tls-version=TLSv1.2,TLSv1.3"
       - "--max-connections=500"
       - "--log_error_verbosity=1"
-    container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
