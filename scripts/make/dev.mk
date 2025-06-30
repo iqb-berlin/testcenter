@@ -139,7 +139,7 @@ create-interfaces:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
-		run --name=testcenter-task-runner testcenter-task-runner\
+		run --name=task-runner task-runner\
 			npx --yes update-browserslist-db@latest && npm run create-interfaces
 
 update-docs:
@@ -157,7 +157,7 @@ update-docs:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm --no-deps testcenter-task-runner\
+		run --rm --no-deps task-runner\
 			npm run $(task)
 
 docs-frontend-compodoc:

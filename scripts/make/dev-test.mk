@@ -33,7 +33,7 @@ test-backend-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm testcenter-task-runner-backend\
+		run --rm task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
 
 # Performs a tests suite from the initialization tests.
@@ -49,7 +49,7 @@ test-backend-initialization:
 			--force-recreate\
 			--renew-anon-volumes\
 			--abort-on-container-exit\
-			--exit-code-from=testcenter-initialization-test-backend
+			--exit-code-from=initialization-test-backend
 
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
@@ -108,7 +108,7 @@ test-file-service-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm testcenter-task-runner-file-service\
+		run --rm task-runner-file-service\
 			npm run file-service:api-test
 
 # Performs some e2e tests with CyPress against real backend and services
