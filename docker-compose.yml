@@ -21,7 +21,6 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
-    container_name: testcenter-traefik
     image: ${DOCKERHUB_PROXY}traefik:v3.4
     <<: *restart-policy
     ports:
@@ -32,7 +31,6 @@ services:
       testcenter:
 
   broadcaster:
-    container_name: testcenter-broadcasting-service
     image: iqbberlin/testcenter-broadcasting-service:current
     <<: *restart-policy
     logging:
@@ -42,7 +40,6 @@ services:
       testcenter:
 
   frontend:
-    container_name: testcenter-frontend
     image: iqbberlin/testcenter-frontend:current
     <<: *restart-policy
     depends_on:
@@ -55,7 +52,6 @@ services:
       testcenter:
 
   file-server:
-    container_name: testcenter-file-service
     image: iqbberlin/testcenter-file-service:current
     <<: *restart-policy
     depends_on:
@@ -68,7 +64,6 @@ services:
       testcenter:
 
   backend:
-    container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     <<: *restart-policy
     depends_on:
@@ -103,7 +98,6 @@ services:
       testcenter:
 
   cache-server:
-    container_name: testcenter-cache-service
     image: ${DOCKERHUB_PROXY}redis:8.0-bookworm
     <<: *restart-policy
     user: redis
@@ -119,7 +113,6 @@ services:
       testcenter:
 
   db:
-    container_name: testcenter-db
     image: ${DOCKERHUB_PROXY}mysql:8.4
     <<: *restart-policy
     environment:

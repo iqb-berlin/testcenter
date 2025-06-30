@@ -1,6 +1,5 @@
 services:
   e2e:
-    container_name: testcenter-e2e
     depends_on:
       backend:
         condition: service_healthy

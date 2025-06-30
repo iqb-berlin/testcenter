@@ -17,7 +17,6 @@ x-env-mysql: &env-mysql
 
 services:
   initialization-test-runner:
-    container_name: testcenter-initialization-test-runner
     image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
