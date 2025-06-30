@@ -934,22 +934,22 @@ build-docs:
             --env-file .env.dev-template
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
-          run --rm --no-deps testcenter-task-runner
+          run --rm --no-deps task-runner
             npm run frontend:update-compodoc &&
         docker compose
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
-          run --rm --no-deps testcenter-task-runner
+          run --rm --no-deps task-runner
             npm run broadcasting-service:update-compodoc &&
         docker compose
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
-          run --rm --no-deps testcenter-task-runner
+          run --rm --no-deps task-runner
             npm run backend:update-specs &&
         docker compose
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
-          run --rm --no-deps testcenter-task-runner
+          run --rm --no-deps task-runner
             npm run create-docs;
       else
         rm -rf docs/ &&
@@ -1131,7 +1131,7 @@ test-backend-api:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file test/docker-compose.api-test.yml
-        run --rm testcenter-task-runner-backend npm run backend:api-test
+        run --rm task-runner-backend npm run backend:api-test
 
 test-file-service-api:
   stage: test
@@ -1159,7 +1159,7 @@ test-file-service-api:
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file test/docker-compose.api-test.yml
-        run --rm testcenter-task-runner-file-service npm run file-service:api-test
+        run --rm task-runner-file-service npm run file-service:api-test
 
 test-backend-initialization:
   stage: test
@@ -1186,7 +1186,7 @@ test-backend-initialization:
           --force-recreate
           --renew-anon-volumes
           --abort-on-container-exit
-          --exit-code-from=testcenter-initialization-test-backend
+          --exit-code-from=initialization-test-backend
     - TEST_NAME=general/vanilla-installation
       docker compose
           --env-file .env.dev-template
@@ -1195,7 +1195,7 @@ test-backend-initialization:
           --force-recreate
           --renew-anon-volumes
           --abort-on-container-exit
-          --exit-code-from=testcenter-initialization-test-backend
+          --exit-code-from=initialization-test-backend
     - TEST_NAME=general/no-db-but-files
       docker compose
           --env-file .env.dev-template
@@ -1204,7 +1204,7 @@ test-backend-initialization:
           --force-recreate
           --renew-anon-volumes
           --abort-on-container-exit
-          --exit-code-from=testcenter-initialization-test-backend
+          --exit-code-from=initialization-test-backend
     - TEST_NAME=general/install-db-patches
       docker compose
           --env-file .env.dev-template
@@ -1213,7 +1213,7 @@ test-backend-initialization:
           --force-recreate
           --renew-anon-volumes
           --abort-on-container-exit
-          --exit-code-from=testcenter-initialization-test-backend
+          --exit-code-from=initialization-test-backend
     - TEST_NAME=general/re-initialize
       docker compose
           --env-file .env.dev-template
@@ -1222,7 +1222,7 @@ test-backend-initialization:
           --force-recreate
           --renew-anon-volumes
           --abort-on-container-exit
-          --exit-code-from=testcenter-initialization-test-backend
+          --exit-code-from=initialization-test-backend
 
 test-e2e-group-monitor:
   stage: test-e2e

@@ -3,7 +3,7 @@ services:
     environment:
       REDIS_CACHE_FILES: false
 
-  testcenter-task-runner:
+  task-runner:
     container_name: testcenter-task-runner
     profiles:
       - task-runner
@@ -26,18 +26,18 @@ services:
     networks:
       - testcenter
 
-  testcenter-task-runner-file-service:
+  task-runner-file-service:
     extends:
-      service: testcenter-task-runner
+      service: task-runner
     depends_on:
       file-server:
         condition: service_started
       cache-server:
         condition: service_started
 
-  testcenter-task-runner-backend:
+  task-runner-backend:
     extends:
-      service: testcenter-task-runner
+      service: task-runner
     depends_on:
       backend:
         condition: service_healthy
