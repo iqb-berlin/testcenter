@@ -128,18 +128,6 @@
   </Group>
 
   <Group id="testletRestrictions" label="testlet restriction parameter check">
-    <Login mode="run-hot-restart" name="bklTsltRestrParam1" pw="123">
-      <Booklet>CY-BkltTsltRestr-1</Booklet>
-    </Login>
-    <Login mode="run-hot-restart" name="bklTsltRestrParam2" pw="123">
-      <Booklet>CY-BkltTsltRestr-2</Booklet>
-    </Login>
-    <Login mode="run-hot-restart" name="bklTsltRestrParam3" pw="123">
-      <Booklet>CY-BkltTsltRestr-3</Booklet>
-    </Login>
-  </Group>
-
-  <Group id="timeRestriction" label="TimeRestriction">
     <Login mode="run-hot-return" name="TimeRestr_HotRet1" pw="123">
       <Booklet>CY-Bklt_TimeRestr</Booklet>
     </Login>
@@ -154,6 +142,30 @@
     </Login>
     <Login mode="run-review" name="TimeRestr_Review1" pw="123">
       <Booklet>CY-Bklt_TimeRestr</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="LeaveVal1" pw="123">
+      <Booklet>CY-Bklt_LeaveVal1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="LeaveVal2" pw="123">
+      <Booklet>CY-Bklt_LeaveVal2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="LeaveVal3" pw="123">
+      <Booklet>CY-Bklt_LeaveVal3</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrVal1" pw="123">
+      <Booklet>CY-Bklt_NavRestrVal1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrVal2" pw="123">
+      <Booklet>CY-Bklt_NavRestrVal2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrVal3" pw="123">
+      <Booklet>CY-Bklt_NavRestrVal3</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="RestrLockAfterLeave1" pw="123">
+      <Booklet>CY-Bklt_LockAfterLeave-1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="RestrLockAfterLeave2" pw="123">
+      <Booklet>CY-Bklt_LockAfterLeave-2</Booklet>
     </Login>
   </Group>
 

@@ -256,7 +256,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: confirm', () => {
-    loginTestTaker('bklTsltRestrParam1', '123', 'test-hot');
+    loginTestTaker('LeaveVal1', '123', 'test-hot');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -269,7 +269,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: allowed', () => {
-    loginTestTaker('bklTsltRestrParam2', '123', 'test-hot');
+    loginTestTaker('LeaveVal2', '123', 'test-hot');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -282,7 +282,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: forbidden', () => {
-    loginTestTaker('bklTsltRestrParam3', '123', 'test-hot');
+    loginTestTaker('LeaveVal3', '123', 'test-hot');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('.snackbar-demo-mode');
