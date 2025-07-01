@@ -64,17 +64,20 @@ class SessionChangeMessage implements JsonSerializable {
     }
   }
 
-  public function setUnitState(string $unitName, array $unitState) {
+  public function setUnitState(string $unitName, array $unitState): void {
     $this->unitName = $unitName;
     $this->unitState = $unitState;
   }
 
-  public function jsonSerialize(): mixed {
+  public function jsonSerialize(): array {
     $jsonData = [];
 
     foreach ($this as $key => $value) {
       if ($value !== "") {
         $jsonData[$key] = $value;
+      }
+      if ((($key == "testState") or ($key == "unitState")) and (!count($value))) {
+        $jsonData[$key] = (object) [];
       }
     }
 

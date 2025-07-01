@@ -42,8 +42,3 @@ group by
 
 alter table login_sessions
   add index login_sessions_groups_fk (workspace_id, group_name);
-
-alter table login_session_groups
-  add constraint login_sessions_fk
-    foreign key (workspace_id, group_name) references login_sessions (workspace_id, group_name)
-      on delete cascade;

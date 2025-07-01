@@ -6,8 +6,8 @@ class DAO {
   const tables = [ // because we use different types of DB is difficult to get table list by command
     'users',
     'workspaces',
-    'login_sessions',
     'login_session_groups',
+    'login_sessions',
     'person_sessions',
     'tests',
     'units',
@@ -148,7 +148,13 @@ class DAO {
   }
 
   public function beginTransaction(): void {
-    $this->pdoDBhandle->beginTransaction();
+    if (!$this->pdoDBhandle->beginTransaction()) {
+      throw new Exception('PDO: Could not begin Transaction');
+    }
+  }
+
+  public function commitTransaction(): void {
+    $this->pdoDBhandle->commit();
   }
 
   public function rollBack(): void {
