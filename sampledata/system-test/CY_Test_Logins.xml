@@ -161,6 +161,12 @@
     <Login mode="run-hot-restart" name="NavRestrVal3" pw="123">
       <Booklet>CY-Bklt_NavRestrVal3</Booklet>
     </Login>
+    <Login mode="run-hot-restart" name="RestrLockAfterLeave1" pw="123">
+      <Booklet>CY-Bklt_LockAfterLeave-1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="RestrLockAfterLeave2" pw="123">
+      <Booklet>CY-Bklt_LockAfterLeave-2</Booklet>
+    </Login>
   </Group>
 
 </Testtakers>
