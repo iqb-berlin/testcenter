@@ -101,11 +101,6 @@ test-system-headless:
 test-system:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 
-sync-package-files:
-	$(MAKE) -f $(MK_FILE_DIR)/misc.mk -C $(MK_FILE_DIR) $@
-image-scan:
-	$(MAKE) -f $(MK_FILE_DIR)/misc.mk -C $(MK_FILE_DIR) $@
-	
 testcenter-up:
 	$(MAKE) -f $(MK_FILE_DIR)/prod.mk -C $(MK_FILE_DIR) $@
 testcenter-up-fg:

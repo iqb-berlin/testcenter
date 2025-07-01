@@ -85,11 +85,11 @@ class SystemConfig {
 
     if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
       $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/bs/public/";
-      $config['broadcastingService']['internal'] = 'testcenter-broadcasting-service:3000';
+      $config['broadcastingService']['internal'] = 'broadcaster:3000';
     }
 
     if (self::boolEnv('FILE_SERVICE_ENABLED')) {
-      $config['fileService']['host'] = 'testcenter-file-service:8080/';
+      $config['fileService']['host'] = 'file-server:8080/';
     }
 
     $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');

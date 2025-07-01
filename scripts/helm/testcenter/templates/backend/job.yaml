@@ -44,7 +44,7 @@ spec:
                   name: {{ .Release.Name }}-backend-config
                   key: FILE_SERVICE_ENABLED
             - name: REDIS_HOST
-              value: "testcenter-cache-service"
+              value: "cache-server"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD

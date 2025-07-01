@@ -13,7 +13,7 @@ paths:
         Retrieves a certain test: It's content, state and the mode of current login-session.
         `laststate` is an array of key-value-pairs stored for this test.
         The test-mode is basically a string to be interpretated by the frontend. For more details
-        about that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+        about that see: https://github.com/iqb-berlin/testcenter/blob/master/docs/pages/test-mode.md
 
           * `run-hot-return` and `run-hot-restart` - the real testing situation
           * `run-review` - for reviewers of of units and booklets
@@ -302,7 +302,7 @@ paths:
          - 'PAGE_NAME'
          but all strings are allowed.
          For more about states see
-         - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+         - https://github.com/iqb-berlin/testcenter/blob/master/frontend/src/app/test-controller/interfaces/test-controller.interfaces.ts
          - https://verona-interfaces.github.io/player/#operation-subscribe-vopStateChangedNotification
          "
       tags:
@@ -359,7 +359,7 @@ paths:
           - 'CONTROLLER'
           but all strings are allowed.
           For more about states see
-          - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+          - https://github.com/iqb-berlin/testcenter/blob/master/frontend/src/app/test-controller/interfaces/test-controller.interfaces.ts
           "
       tags:
         - run test
