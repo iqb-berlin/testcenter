@@ -1,87 +1,122 @@
-# Default values for testcenter helm chart.
+# Default values for the testcenter helm chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# This section defines the Docker image configurations for various components of the Testcenter application.
 image:
   ## Image Registry Path
   # Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH value empty!
   # Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
   # GitLab:           scm.cms.hu-berlin.de:4567/iqb/studio-lite/
+
+  # Configuration for the broadcasting image.
   broadcasting:
     imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
+  # Configuration for the frontend image.
   frontend:
     imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
+  # Configuration for the cache server image (Redis).
   cacheServer:
     imagePullPolicy: Always
     registryPath: ""
     tag: "8.0-bookworm"
 
+  # Configuration for the file server image.
   fileServer:
     imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
+  # Configuration for the backend application image.
   backend:
     imagePullPolicy: Always
     registryPath: ""
     tag: ""
 
+  # Configuration for the database image (MySQL).
   db:
     imagePullPolicy: Always
     registryPath: ""
     tag: "8.4"
 
+  # Configuration for the busybox utility image, often used for init containers or simple tasks.
   busybox:
     imagePullPolicy: Always
     registryPath: ""
     tag: "1.28"
 
+# This section defines general configuration parameters for different services.
 config:
   fileServer:
+    # Defines whether files should be cached in Redis for the file server. `&redisCacheFiles` is an anchor.
     redisCacheFiles: &redisCacheFiles false
 
   backend:
+    # Enabled means the backend routes websocket connections to the external Broadcasting Service.
     broadcastServiceEnabled: true
+    # Enabled means the backend routes file requests to the external File Service.
     fileServiceEnabled: true
+    # References the `redisCacheFiles` anchor. Decides if Backend saves files in Cache.
     redisCacheFiles: *redisCacheFiles
 
   cacheServer:
+    # Defines the maximum memory to use for Redis.
     redisMemoryMax: 1gb
 
+# This section defines sensitive information (secrets) for various services.
 secret:
   db:
+    # Defines the MySQL user for the database. `&dbUser` is an anchor.
     mysqlUser: &dbUser iqb_tba_db_user
+    # Defines the MySQL password for the database user. `&dbUserPassword` is an anchor.
     mysqlPassword: &dbUserPassword change_me
+    # Defines the MySQL root password.
     mysqlRootPassword: change_me
 
   cacheServer:
+    # Defines the password for the cache server. `&redisPassword` is an anchor.
     redisPassword: &redisPassword change_me
 
   fileServer:
+    # References the `redisPassword` anchor, setting the file server's Redis password.
     redisPassword: *redisPassword
 
   backend:
+    # References the `redisPassword` anchor, setting the backend's Redis password.
     redisPassword: *redisPassword
+    # References the `dbUser` anchor, setting the backend's MySQL user.
     mysqlUser: *dbUser
+    # References the `dbUserPassword` anchor, setting the backend's MySQL password.
     mysqlPassword: *dbUserPassword
+    # Defines a salt for password hashing in the backend.
     passwordSalt: change_me
 
+# This section configures Ingress settings, typically for exposing services externally.
 ingress:
+  # Enables or disables Traefik Ingress controller.
   traefikEnabled: false
+  # Defines the base domain for Ingress rules.
   baseDomain: testcenter.domain.tld
+  # Defines the HTTP port for Ingress entrypoint.
   httpPort: 80
+  # Defines the HTTPS port for Ingress entrypoint.
   httpsPort: 443
+  # Enables or disables TLS (HTTPS) for Ingress.
   tlsEnabled: false
+  # Specifies the Cert-Manager cluster issuer or resolver for TLS certificates.
   tlsCertResolver: ""
 
+# This section defines deployment-specific configurations for different services.
 deployment:
+  # Deployment configuration for the backend.
   backend:
+    # Backend can be scaled up.
     replicas: 1
     strategy:
       type: RollingUpdate
@@ -89,7 +124,9 @@ deployment:
         maxSurge: 1
         maxUnavailable: 0
 
+  # Deployment configuration for the frontend.
   frontend:
+    # Frontend can be scaled up.
     replicas: 1
     strategy:
       type: RollingUpdate
@@ -97,7 +134,9 @@ deployment:
         maxSurge: 1
         maxUnavailable: 0
 
+  # Deployment configuration for the file server.
   fileServer:
+    # File Server can be scaled up.
     replicas: 1
     strategy:
       type: RollingUpdate
@@ -105,19 +144,32 @@ deployment:
         maxSurge: 1
         maxUnavailable: 0
 
+# This section configures persistent storage settings.
 persistence:
+  # Enables or disables Longhorn storage provisioner.
   longhornEnabled: false
+  # Enables or disables the Longhorn UI.
   longhornUIEnabled: false
+  # Defines the subdomain for the Longhorn UI if enabled.
   longhornUISubdomain: longhorn
 
+  # Storage class name for the backend's Persistent Volume Claim (PVC).
   backendPvcStorageClassName: standard
+  # Access mode for the backend's PVC (e.g., ReadWriteOnce, ReadWriteMany).
   backendPvcAccessMode: ReadWriteOnce
+  # Size of the backend's PVC.
   backendPvcSize: 2Gi
 
+  # Storage class name for the backend configuration's PVC.
   backendConfigPvcStorageClassName: standard
+  # Access mode for the backend configuration's PVC.
   backendConfigPvcAccessMode: ReadWriteOnce
+  # Size of the backend configuration's PVC.
   backendConfigPvcSize: 100Mi
 
+  # Storage class name for the database's PVC.
   dbPvcStorageClassName: standard
+  # Access mode for the database's PVC.
   dbPvcAccessMode: ReadWriteOnce
+  # Size of the database's PVC.
   dbPvcSize: 2Gi
