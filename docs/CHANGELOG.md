@@ -1,9 +1,13 @@
 ---
 layout: default
 ---
-## [next]
+## 16.3.0
 ### neue Features
 * Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
+
+### Verbesserungen
+* Das Backend nutzt opcache und macht das ganze Testcenter damit performanter.
+* Frontend: Die Kommunikation zwischen Player und Host nutzt jetzt unitId (unitAlias) als sessionId. Dadurch werden Statusmeldungen (z.B. beim window:unload) immer eindeutig der richtigen Unit zugeordnet. Dies entspricht der vorgesehenen Nutzung laut Verona-Spezifikation für SessionIdString: "The session id helps to link the correct unit with the data of the message".
 
 ### Bugfixes
 * Der Button für den globalen Systemcheck sollte nun ordnungsgemäß nur angezeigt werden, wenn es kein Login mit dem Modus `sys-check-login` gibt. Beim Löschen oder Hinzufügen einer neuen Testtakers.xml sollte dieser Zustand auch direkt ohne Neuladen der App angezeigt werden.
