@@ -22,6 +22,10 @@ spec:
           command: [ "apache2-foreground" ]
           ports:
             - containerPort: 8080
+          {{- if .Values.deployment.backend.resources }}
+          resources:
+            {{- .Values.deployment.backend.resources | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data

@@ -23,6 +23,9 @@ layout: default
 ### Sicherheit
 * Upgrade von MySQL 8.0 auf 8.4
 
+### Verbesserungen
+* Kubernetes: Alle Deployments nehmen Konfigurationen aus der values.yaml, um deren Resource Management zu steuern.
+
 ## 16.3.0
 ### neue Features
 * Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 

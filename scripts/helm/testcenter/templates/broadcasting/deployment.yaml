@@ -19,3 +19,7 @@ spec:
           ports:
             - name: http-container
               containerPort: 3000
+          {{- if .Values.deployment.broadcasting.resources }}
+          resources:
+            {{- .Values.deployment.broadcasting.resources | toYaml | nindent 12 }}
+          {{- end }}

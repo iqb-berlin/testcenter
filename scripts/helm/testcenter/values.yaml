@@ -123,6 +123,13 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
 
   # Deployment configuration for the frontend.
   frontend:
@@ -133,6 +140,13 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
   # Deployment configuration for the file server.
   fileServer:
@@ -143,6 +157,43 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  # Deployment configuration for the broadcasting service.
+  broadcasting:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  # Deployment configuration for the cache server (Redis).
+  cacheServer:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+  # Deployment configuration for the database (MySQL).
+  db:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
 
 # This section configures persistent storage settings.
 persistence:

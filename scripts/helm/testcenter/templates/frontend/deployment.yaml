@@ -26,3 +26,7 @@ spec:
           ports:
             - name: http-container
               containerPort: 8080
+          {{- if .Values.deployment.frontend.resources }}
+          resources:
+            {{- .Values.deployment.frontend.resources | toYaml | nindent 12 }}
+          {{- end }}

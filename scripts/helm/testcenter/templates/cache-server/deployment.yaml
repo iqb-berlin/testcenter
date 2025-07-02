@@ -33,6 +33,10 @@ spec:
           ports:
             - name: http-container
               containerPort: 6379
+          {{- if .Values.deployment.cacheServer.resources }}
+          resources:
+            {{- .Values.deployment.cacheServer.resources | toYaml | nindent 12 }}
+          {{- end }}
           env:
             - name: REDIS_PASSWORD
               valueFrom:

@@ -18,6 +18,10 @@ spec:
         - name: {{ .Release.Name }}-db-container
           image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
           imagePullPolicy: {{ .Values.image.db.imagePullPolicy }}
+          {{- if .Values.deployment.db.resources }}
+          resources:
+            {{- .Values.deployment.db.resources | toYaml | nindent 12 }}
+          {{- end }}
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
