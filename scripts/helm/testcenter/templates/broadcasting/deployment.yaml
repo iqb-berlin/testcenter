@@ -23,3 +23,29 @@ spec:
           resources:
             {{- .Values.deployment.broadcasting.resources | toYaml | nindent 12 }}
           {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: {{ .Values.deployment.broadcasting.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.broadcasting.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.broadcasting.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.broadcasting.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.broadcasting.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /testees
+              port: 3000
+            periodSeconds: {{ .Values.deployment.broadcasting.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.broadcasting.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.broadcasting.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.broadcasting.probes.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: {{ .Values.deployment.broadcasting.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.broadcasting.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.broadcasting.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.broadcasting.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.broadcasting.probes.startup.failureThreshold }}

@@ -130,6 +130,25 @@ deployment:
       requests:
         cpu: 500m
         memory: 512Mi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 60
+      readiness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+      startup:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 30
 
   # Deployment configuration for the frontend.
   frontend:
@@ -147,6 +166,25 @@ deployment:
       requests:
         cpu: 100m
         memory: 128Mi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 30
+      readiness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+      startup:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 15
 
   # Deployment configuration for the file server.
   fileServer:
@@ -174,6 +212,25 @@ deployment:
       requests:
         cpu: 100m
         memory: 128Mi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 20
+      readiness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+      startup:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 10
 
   # Deployment configuration for the cache server (Redis).
   cacheServer:
