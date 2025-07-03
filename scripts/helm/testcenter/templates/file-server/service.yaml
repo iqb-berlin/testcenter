@@ -8,8 +8,7 @@ spec:
   selector:
     app: {{ .Release.Name }}-file-server-pod
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+    - port: 8080
+      targetPort: http-container
 
 {{- end }}

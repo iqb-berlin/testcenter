@@ -33,6 +33,9 @@ spec:
           resources:
             {{- .Values.deployment.fileServer.resources | toYaml | nindent 12 }}
           {{- end }}
+          ports:
+            - name: http-container
+              containerPort: 8080
           env:
             - name: REDIS_HOST
               value: "{{ .Release.Name }}-cache-server.tc.svc.cluster.local"

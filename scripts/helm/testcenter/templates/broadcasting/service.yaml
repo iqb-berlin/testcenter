@@ -6,6 +6,5 @@ spec:
   selector:
     app: {{ .Release.Name }}-broadcasting-pod
   ports:
-    - name: http-service
-      port: 3000
+    - port: 3000
       targetPort: http-container
