@@ -202,6 +202,25 @@ deployment:
       requests:
         cpu: 100m
         memory: 128Mi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 15
+      readiness:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+      startup:
+        periodSeconds: 10
+        timeoutSeconds: 1
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 5
 
   # Deployment configuration for the broadcasting service.
   broadcasting:
@@ -241,6 +260,26 @@ deployment:
       requests:
         cpu: 100m
         memory: 256Mi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 30
+      readiness:
+        periodSeconds: 5
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 10
+      startup:
+        periodSeconds: 5
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 30
+        initialDelaySeconds: 5
 
   # Deployment configuration for the database (MySQL).
   db:
@@ -251,6 +290,26 @@ deployment:
       requests:
         cpu: 500m
         memory: 1Gi
+    # Health probe configuration
+    probes:
+      liveness:
+        periodSeconds: 300
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 30
+      readiness:
+        periodSeconds: 5
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        initialDelaySeconds: 10
+      startup:
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 30
+        initialDelaySeconds: 10
 
 # This section configures persistent storage settings.
 persistence:

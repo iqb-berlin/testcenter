@@ -37,6 +37,36 @@ spec:
           resources:
             {{- .Values.deployment.cacheServer.resources | toYaml | nindent 12 }}
           {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.liveness.failureThreshold }}
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.readiness.failureThreshold }}
+          startupProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.startup.failureThreshold }}
           env:
             - name: REDIS_PASSWORD
               valueFrom:
