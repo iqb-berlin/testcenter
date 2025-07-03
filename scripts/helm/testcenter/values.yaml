@@ -133,8 +133,8 @@ deployment:
     # Health probe configuration
     probes:
       liveness:
-        periodSeconds: 10
-        timeoutSeconds: 1
+        periodSeconds: 30
+        timeoutSeconds: 30
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 60
@@ -293,8 +293,8 @@ deployment:
     # Health probe configuration
     probes:
       liveness:
-        periodSeconds: 300
-        timeoutSeconds: 5
+        periodSeconds: 30
+        timeoutSeconds: 30
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 30
