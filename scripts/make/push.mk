@@ -1,5 +1,5 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
-TAG := dev
+TAG := 99.99.99
 CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter | grep -E "^version:" | awk '{print $$2}')
 
 # prevents collisions of make target names with possible file names
