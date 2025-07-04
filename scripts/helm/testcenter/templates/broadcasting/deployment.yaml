@@ -12,6 +12,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-broadcasting-pod
     spec:
+      {{- if .Values.deployment.broadcasting.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.broadcasting.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-broadcasting-container
           image: "{{ .Values.image.broadcasting.registryPath }}iqbberlin/testcenter-broadcasting-service:{{ .Values.image.broadcasting.tag | default .Chart.AppVersion }}"

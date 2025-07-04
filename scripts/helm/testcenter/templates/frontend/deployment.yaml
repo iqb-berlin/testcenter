@@ -16,6 +16,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-frontend-pod
     spec:
+      {{- if .Values.deployment.frontend.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.frontend.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsUser: 101
         runAsGroup: 101

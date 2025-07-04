@@ -123,6 +123,7 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    # resource management
     resources:
       limits:
         cpu: 1000m
@@ -149,6 +150,14 @@ deployment:
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 30
+    # Topology spread constraints for backend deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-backend-pod
 
   # Deployment configuration for the frontend.
   frontend:
@@ -159,6 +168,7 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    # resource management
     resources:
       limits:
         cpu: 500m
@@ -185,6 +195,14 @@ deployment:
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 15
+    # Topology spread constraints for frontend deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-frontend-pod
 
   # Deployment configuration for the file server.
   fileServer:
@@ -195,6 +213,7 @@ deployment:
       rollingUpdate:
         maxSurge: 1
         maxUnavailable: 0
+    # resource management
     resources:
       limits:
         cpu: 500m
@@ -221,9 +240,18 @@ deployment:
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 5
+    # Topology spread constraints for file server deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-file-server-pod
 
   # Deployment configuration for the broadcasting service.
   broadcasting:
+    # resource management
     resources:
       limits:
         cpu: 500m
@@ -250,9 +278,18 @@ deployment:
         successThreshold: 1
         failureThreshold: 3
         initialDelaySeconds: 10
+    # Topology spread constraints for broadcasting deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-broadcasting-pod
 
   # Deployment configuration for the cache server (Redis).
   cacheServer:
+    # resource management
     resources:
       limits:
         cpu: 500m
@@ -280,9 +317,18 @@ deployment:
         successThreshold: 1
         failureThreshold: 30
         initialDelaySeconds: 5
+    # Topology spread constraints for cache server deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-cache-server-pod
 
   # Deployment configuration for the database (MySQL).
   db:
+    # resource management
     resources:
       limits:
         cpu: 1000m
@@ -310,6 +356,14 @@ deployment:
         successThreshold: 1
         failureThreshold: 30
         initialDelaySeconds: 10
+    # Topology spread constraints for database deployment
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-db-pod
 
 # This section configures persistent storage settings.
 persistence:

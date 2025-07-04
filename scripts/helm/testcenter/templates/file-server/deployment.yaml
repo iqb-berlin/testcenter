@@ -22,6 +22,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:
+      {{- if .Values.deployment.fileServer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.fileServer.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsUser: 33
         runAsGroup: 33
