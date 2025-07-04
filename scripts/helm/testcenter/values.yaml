@@ -394,3 +394,139 @@ persistence:
   dbPvcAccessMode: ReadWriteOnce
   # Size of the database's PVC.
   dbPvcSize: 2Gi
+
+network:
+  ingressAll:
+    ingress:
+      - {}
+    policyTypes:
+      - Ingress
+
+  egressAll:
+    egress:
+      - {}
+    policyTypes:
+      - Egress
+
+  backend:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-frontend-pod
+        ports:
+          - protocol: TCP
+            port: 8080
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-db-pod
+        ports:
+          - protocol: TCP
+            port: 3306
+      - to:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-cache-server-pod
+        ports:
+          - protocol: TCP
+            port: 6379
+      - to:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-broadcasting-pod
+        ports:
+          - protocol: TCP
+            port: 3000
+
+  frontend:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - {}
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-backend-pod
+        ports:
+          - protocol: TCP
+            port: 8080
+
+  broadcasting:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-backend-pod
+        ports:
+          - protocol: TCP
+            port: 3000
+    egress:
+      - {}
+
+  fileServer:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-backend-pod
+        ports:
+          - protocol: TCP
+            port: 8080
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-cache-server-pod
+        ports:
+          - protocol: TCP
+            port: 6379
+
+  cacheServer:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-backend-pod
+        ports:
+          - protocol: TCP
+            port: 6379
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-file-server-pod
+        ports:
+          - protocol: TCP
+            port: 6379
+    egress:
+      - {}
+
+  db:
+    policyTypes:
+      - Ingress
+      - Egress
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: REPLACEME-backend-pod
+        ports:
+          - protocol: TCP
+            port: 3306
+    egress:
+      - {}
