@@ -15,10 +15,12 @@ services:
       - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
       - "traefik.http.middlewares.security-headers.headers.referrerPolicy=no-referrer"
     command:
-      - "--log.level=INFO"
-      - "--accesslog=false"
+      - "--global.checkNewVersion=false"
+      - "--global.sendAnonymousUsage=false"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--log.level=INFO"
+      - "--accesslog=false"
 
   testcenter-broadcasting-service:
     labels:
