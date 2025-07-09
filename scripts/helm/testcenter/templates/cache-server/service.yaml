@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cache-server # !!! Hard coded in application as internal address !!! @TODO: Should be '{{ .Release.Name }}-cache-server-service'
+  name: {{ .Release.Name }}-cache-server
 spec:
   selector:
     app: {{ .Release.Name }}-cache-server-pod
