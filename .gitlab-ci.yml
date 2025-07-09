@@ -1176,7 +1176,7 @@ test-backend-initialization:
   before_script:
     - docker pull --quiet ${DB_BASE_IMAGE}
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   script:
     - TEST_NAME=general/db-versions
       docker compose
