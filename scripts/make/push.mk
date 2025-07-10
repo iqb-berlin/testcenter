@@ -24,7 +24,7 @@ CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter 
 				--pull\
 				--no-cache\
 				--rm\
-				--file $(TC_BASE_DIR)/file-service/Dockerfile\
+				--file $(TC_BASE_DIR)/file-server/Dockerfile\
 				--tag iqbberlin/testcenter-file-service:$(TAG)\
 				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-service:$(TAG)\
 			.
@@ -44,7 +44,7 @@ CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter 
 				--no-cache\
 				--rm\
 				--target=prod\
-				--file $(TC_BASE_DIR)/broadcasting-service/Dockerfile\
+				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
 				--tag iqbberlin/testcenter-broadcasting-service:$(TAG)\
 				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcasting-service:$(TAG)\
 			.

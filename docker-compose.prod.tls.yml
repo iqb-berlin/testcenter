@@ -39,36 +39,36 @@ services:
       - "./config/traefik/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml:/tls-${TLS_CERTIFICATE_RESOLVER:-certificates}.yml"
       - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 
-  testcenter-broadcasting-service:
+  broadcaster:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=security-headers, testcenter-broadcasting-service-stripprefix"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
+      - "traefik.http.routers.broadcaster.tls=true"
+      - "traefik.http.routers.broadcaster.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.broadcaster.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.routers.broadcaster.middlewares=security-headers, broadcaster-stripprefix"
+      - "traefik.http.middlewares.broadcaster-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcasting-service:${VERSION}
 
-  testcenter-frontend:
+  frontend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.tls=true"
-      - "traefik.http.routers.testcenter-frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.testcenter-frontend.tls.domains[0].main=${HOSTNAME}"
-      - "traefik.http.routers.testcenter-frontend.tls.domains[0].sans=www.${HOSTNAME}"
-      - "traefik.http.routers.testcenter-frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, stripwww-fe"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
+      - "traefik.http.routers.frontend.tls.domains[0].main=${HOSTNAME}"
+      - "traefik.http.routers.frontend.tls.domains[0].sans=www.${HOSTNAME}"
+      - "traefik.http.routers.frontend.rule=Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.frontend.middlewares=security-headers, stripwww-fe"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.regex=^http(s?)://www.${HOSTNAME}/(.*)"
       - "traefik.http.middlewares.stripwww-fe.redirectregex.replacement=http$${1}://${HOSTNAME}/$${2}"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-frontend:${VERSION}
 
-  testcenter-file-service:
+  file-server:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-file-service:${VERSION}
 
-  testcenter-backend:
+  backend:
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-backend:${VERSION}
 
-  testcenter-db:
+  db:
     image: ${DOCKERHUB_PROXY}mysql:8.4
     command:
       - "--explicit-defaults-for-timestamp=TRUE"

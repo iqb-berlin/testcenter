@@ -7,7 +7,7 @@ test-backend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" testcenter-backend\
+		run --rm --entrypoint "" backend\
 			php -dxdebug.mode='debug' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 						--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 						--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -19,7 +19,7 @@ test-backend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint "" testcenter-backend\
+		run --rm --entrypoint "" backend\
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 					--configuration /var/www/testcenter/backend/phpunit.xml\
@@ -33,9 +33,8 @@ test-backend-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm testcenter-task-runner-backend\
+		run --rm task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
-	docker image rm testcenter-testcenter-task-runner-backend
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
@@ -50,7 +49,7 @@ test-backend-initialization:
 			--force-recreate\
 			--renew-anon-volumes\
 			--abort-on-container-exit\
-			--exit-code-from=testcenter-initialization-test-backend
+			--exit-code-from=initialization-test-backend
 
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
@@ -67,7 +66,7 @@ test-broadcasting-service-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcaster\
 			npx jest
 
 test-broadcasting-service-unit-coverage:
@@ -76,7 +75,7 @@ test-broadcasting-service-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-broadcasting-service\
+		broadcaster\
 			npx jest --coverage
 
 test-frontend-unit:
@@ -85,7 +84,7 @@ test-frontend-unit:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-frontend test --watch=false
+		frontend test --watch=false
 
 test-frontend-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
@@ -93,7 +92,7 @@ test-frontend-unit-coverage:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
-		testcenter-frontend test --watch=false --code-coverage
+		frontend test --watch=false --code-coverage
 
 # Performs some integration tests with CyPress against mocked backend with Prism
 test-frontend-integration:
@@ -109,7 +108,7 @@ test-file-service-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm testcenter-task-runner-file-service\
+		run --rm task-runner-file-service\
 			npm run file-service:api-test
 
 # Performs some e2e tests with CyPress against real backend and services
@@ -125,7 +124,7 @@ test-system-headless:
 			--file e2e/docker-compose.system-test-headless.yml\
 		up\
 			--abort-on-container-exit\
-			--exit-code-from=testcenter-e2e
+			--exit-code-from=e2e
 	@cd $(TC_BASE_DIR) &&\
 	docker compose --progress quiet\
 			--env-file .env.dev\
@@ -133,7 +132,7 @@ test-system-headless:
 			--file docker-compose.dev.yml\
 			--file e2e/docker-compose.system-test-headless.yml\
 		down &&\
-	docker image rm testcenter-testcenter-e2e
+	docker image rm testcenter-e2e
 
 test-system:
 	cd $(TC_BASE_DIR) &&\

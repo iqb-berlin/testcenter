@@ -1,9 +1,9 @@
 services:
-  testcenter-file-service:
+  file-server:
     environment:
       REDIS_CACHE_FILES: false
 
-  testcenter-task-runner:
+  task-runner:
     container_name: testcenter-task-runner
     profiles:
       - task-runner
@@ -11,7 +11,7 @@ services:
       dockerfile: task-runner/Dockerfile
     volumes:
       - ./README.md:/usr/src/testcenter/task-runner/README.md
-      - ./broadcasting-service:/usr/src/testcenter/task-runner/broadcasting-service
+      - ./broadcaster:/usr/src/testcenter/task-runner/broadcaster
       - ./common:/usr/src/testcenter/task-runner/common
       - ./definitions:/usr/src/testcenter/task-runner/definitions
       - ./dist:/usr/src/testcenter/task-runner/dist
@@ -26,20 +26,20 @@ services:
     networks:
       - testcenter
 
-  testcenter-task-runner-file-service:
+  task-runner-file-service:
     extends:
-      service: testcenter-task-runner
+      service: task-runner
     depends_on:
-      testcenter-file-service:
+      file-server:
         condition: service_started
-      testcenter-cache-service:
+      cache-server:
         condition: service_started
 
-  testcenter-task-runner-backend:
+  task-runner-backend:
     extends:
-      service: testcenter-task-runner
+      service: task-runner
     depends_on:
-      testcenter-backend:
+      backend:
         condition: service_healthy
-      testcenter-cache-service:
+      cache-server:
         condition: service_started

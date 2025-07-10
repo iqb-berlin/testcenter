@@ -5,7 +5,7 @@
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
 x-env-redis: &env-redis
-  REDIS_HOST: testcenter-cache-service
+  REDIS_HOST: cache-server
   REDIS_PORT: 6379
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
@@ -16,8 +16,7 @@ x-env-mysql: &env-mysql
   MYSQL_PASSWORD: testcenter_pw
 
 services:
-  testcenter-initialization-test-runner:
-    container_name: testcenter-initialization-test-runner
+  initialization-test-runner:
     image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
@@ -26,7 +25,7 @@ services:
       dockerfile: task-runner/Dockerfile
     command: "npm run backend:api-test"
     environment:
-      TC_API_URL: http://testcenter-initialization-test-backend
+      TC_API_URL: http://initialization-test-backend
     volumes:
       - ../../../sampledata:/usr/src/testcenter/task-runner/sampledata
       - ../../../test:/usr/src/testcenter/task-runner/test
@@ -35,13 +34,12 @@ services:
       - ../../../package.json:/usr/src/testcenter/task-runner/package.json
       - ../../../package-lock.json:/usr/src/testcenter/task-runner/package-lock.json
     depends_on:
-      - testcenter-initialization-test-db
-      - testcenter-initialization-test-backend
+      - initialization-test-db
+      - initialization-test-backend
     networks:
-      testcenter-initialization-test:
+      initialization-test:
 
-  testcenter-initialization-test-backend:
-    container_name: testcenter-initialization-test-backend
+  initialization-test-backend:
     image: iqbberlin/testcenter-backend:current
     build:
       context: ../../..
@@ -56,7 +54,7 @@ services:
       BROADCAST_SERVICE_ENABLED: false
       FILE_SERVICE_ENABLED: false
       <<: [ *env-redis, *env-mysql ]
-      MYSQL_HOST: testcenter-initialization-test-db
+      MYSQL_HOST: initialization-test-db
       MYSQL_PORT: 3306
       PASSWORD_SALT: 't'
     volumes:
@@ -72,14 +70,14 @@ services:
       - ../../../sampledata:/var/www/testcenter/sampledata
       - ../../../scripts/database:/var/www/testcenter/scripts/database
     depends_on:
-      testcenter-initialization-test-db:
+      initialization-test-db:
         condition: service_healthy
     networks:
-      testcenter-initialization-test:
+      initialization-test:
     ports:
       - "85:80"
 
-  testcenter-initialization-test-db:
+  initialization-test-db:
     image: ${DOCKERHUB_PROXY}mysql:8.4
     command:
       - "--explicit-defaults-for-timestamp=TRUE"
@@ -87,7 +85,6 @@ services:
       - "--tls-version=TLSv1.2,TLSv1.3"
       - "--max-connections=500"
       - "--log_error_verbosity=1"
-    container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
@@ -100,10 +97,10 @@ services:
     ports:
       - "9091:3306"
     networks:
-      testcenter-initialization-test:
+      initialization-test:
 
 networks:
-  testcenter-initialization-test:
+  initialization-test:
     name: testcenter-initialization-test
     driver: bridge
     driver_opts:

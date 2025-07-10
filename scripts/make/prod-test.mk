@@ -39,7 +39,7 @@ prod-test-build: prod-test-registry-login
 				--progress plain\
 				--pull\
 				--build-arg REGISTRY_PATH=$(DOCKER_HUB_PROXY)\
-				--file $(TC_BASE_DIR)/broadcasting-service/Dockerfile\
+				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
 				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-broadcasting-service:e2e\
 			.
 	cd $(TC_BASE_DIR) &&\
@@ -47,7 +47,7 @@ prod-test-build: prod-test-registry-login
 				--progress plain\
 				--pull\
 				--build-arg REGISTRY_PATH=$(DOCKER_HUB_PROXY)\
-				--file $(TC_BASE_DIR)/file-service/Dockerfile\
+				--file $(TC_BASE_DIR)/file-server/Dockerfile\
 				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-file-service:e2e\
 			.
 	cd $(TC_BASE_DIR) &&\
@@ -79,7 +79,7 @@ prod-test-down:
 		rm $(TC_BASE_DIR)/.env.prod.sed
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=db`
 prod-test-logs:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\

@@ -15,8 +15,8 @@ declare PRERELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*
 declare ALL_RELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))?$'
 
 declare BACKUP_DIR
-declare DB_SERVICE_NAME='testcenter-db'
-declare BACKEND_SERVICE_NAME='testcenter-backend'
+declare DB_SERVICE_NAME='db'
+declare BACKEND_SERVICE_NAME='backend'
 declare BACKEND_VOLUME_NAME='testcenter_backend_vo_data'
 declare BACKEND_VOLUME_DIR='/var/www/testcenter/data'
 declare ARE_DATA_SERVICES_UP=false
@@ -328,7 +328,7 @@ data_services_down() {
 }
 
 dump_db() {
-  declare db_name="${MYSQL_DATABASE}" # see docker envirionment file!
+  declare db_name="${MYSQL_DATABASE}" # see docker environment file!
   declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
 
   if ${TLS_ENABLED}; then
@@ -377,8 +377,9 @@ export_backend_volume() {
   declare container_name
 
   volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
-  container_name="${BACKEND_SERVICE_NAME}"
+  container_name=$(basename "$PWD")-backend-1
 
+  # still use docker instead of compose, because busybox is not part of docker compose file yet
   docker run \
     --rm \
     --volumes-from "${container_name}" \

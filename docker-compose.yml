@@ -5,7 +5,7 @@ x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-always}"
 
 x-env-redis: &env-redis
-  REDIS_HOST: testcenter-cache-service
+  REDIS_HOST: cache-server
   REDIS_PORT: 6379
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
@@ -21,9 +21,8 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
-    <<: *restart-policy
-    container_name: testcenter-traefik
     image: ${DOCKERHUB_PROXY}traefik:v3.4
+    <<: *restart-policy
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
@@ -31,22 +30,20 @@ services:
     networks:
       testcenter:
 
-  testcenter-broadcasting-service:
-    <<: *restart-policy
-    container_name: testcenter-broadcasting-service
+  broadcaster:
     image: iqbberlin/testcenter-broadcasting-service:current
+    <<: *restart-policy
     logging:
       options:
         <<: *env-logging-conf
     networks:
       testcenter:
 
-  testcenter-frontend:
-    <<: *restart-policy
-    container_name: testcenter-frontend
+  frontend:
     image: iqbberlin/testcenter-frontend:current
+    <<: *restart-policy
     depends_on:
-      testcenter-backend:
+      backend:
         condition: service_healthy
     logging:
       options:
@@ -54,27 +51,25 @@ services:
     networks:
       testcenter:
 
-  testcenter-file-service:
-    <<: *restart-policy
-    container_name: testcenter-file-service
+  file-server:
     image: iqbberlin/testcenter-file-service:current
+    <<: *restart-policy
     depends_on:
-      - testcenter-cache-service
+      - cache-server
     environment:
       <<: *env-redis
     volumes_from:
-      - testcenter-backend:ro
+      - backend:ro
     networks:
       testcenter:
 
-  testcenter-backend:
-    <<: *restart-policy
-    container_name: testcenter-backend
+  backend:
     image: iqbberlin/testcenter-backend:current
+    <<: *restart-policy
     depends_on:
-      testcenter-db:
+      db:
         condition: service_healthy
-      testcenter-cache-service:
+      cache-server:
         condition: service_started
     environment:
       HOSTNAME: ${HOSTNAME}
@@ -84,14 +79,14 @@ services:
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
       FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
       <<: [ *env-redis, *env-mysql ]
-      MYSQL_HOST: testcenter-db
+      MYSQL_HOST: db
       MYSQL_PORT: 3306
       PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
       options:
         <<: *env-logging-conf
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://testcenter-backend:8080" ]
+      test: [ "CMD", "curl", "-f", "http://backend:8080" ]
       start_period: 60s
       start_interval: 3s
       interval: 5m
@@ -102,10 +97,9 @@ services:
     networks:
       testcenter:
 
-  testcenter-cache-service:
-    <<: *restart-policy
-    container_name: testcenter-cache-service
+  cache-server:
     image: ${DOCKERHUB_PROXY}redis:8.0-bookworm
+    <<: *restart-policy
     user: redis
     command: [
       "redis-server",
@@ -118,10 +112,9 @@ services:
     networks:
       testcenter:
 
-  testcenter-db:
-    <<: *restart-policy
-    container_name: testcenter-db
+  db:
     image: ${DOCKERHUB_PROXY}mysql:8.4
+    <<: *restart-policy
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

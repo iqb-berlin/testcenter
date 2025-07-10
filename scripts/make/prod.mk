@@ -91,7 +91,7 @@ testcenter-down:
 	fi
 
 ## Start docker containers
-# Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=testcenter-db`
+# Param (optional): SERVICE - Start the specified service only, e.g. `make testcenter-start SERVICE=db`
 testcenter-start:
 	@if [ $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -110,7 +110,7 @@ testcenter-start:
 	fi
 
 ## Stop docker containers
-# Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=testcenter-db`
+# Param (optional): SERVICE - Stop the specified service only, e.g. `make testcenter-stop SERVICE=db`
 testcenter-stop:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -129,7 +129,7 @@ testcenter-stop:
 	fi
 
 ## Restart docker containers
-# Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=testcenter-db`
+# Param (optional): SERVICE - Restart the specified service only, e.g. `make testcenter-restart SERVICE=db`
 testcenter-restart:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -148,7 +148,7 @@ testcenter-restart:
 	fi
 
 ## Show status of containers
-# Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show status of the specified service only, e.g. `make testcenter-status SERVICE=db`
 testcenter-status:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -167,7 +167,7 @@ testcenter-status:
 	fi
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make testcenter-logs SERVICE=db`
 testcenter-logs:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -186,7 +186,7 @@ testcenter-logs:
 	fi
 
 ## Show services configuration
-# Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show config of the specified service only, e.g. `make testcenter-config SERVICE=db`
 testcenter-config:
 	@if $(TLS_ENABLED); then\
 		cd $(TC_BASE_DIR);\
@@ -220,56 +220,94 @@ testcenter-images-clean:
 
 ## Open DB console
 testcenter-connect-db:
-	docker exec -it testcenter-db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
 
 ## Extract all databases into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-sql-format.html)
 testcenter-dump-all:
-	docker exec testcenter-db mysqldump --verbose --all-databases --add-drop-database --user=root\
-		--password=$(MYSQL_ROOT_PASSWORD) >$(TC_BASE_DIR)/backup/temp/all-databases.sql
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysqldump --verbose --all-databases --add-drop-database --user=root\
+			--password=$(MYSQL_ROOT_PASSWORD) >$(TC_BASE_DIR)/backup/temp/all-databases.sql
 
 ## Mysql interactive terminal reads commands from the dump file all-databases.sql
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
 testcenter-restore-all:
-	sed -i 's/\/\*!40000 DROP DATABASE IF EXISTS `mysql`\*\/;/ /g' $(TC_BASE_DIR)/backup/temp/all-databases.sql
-	docker exec -i testcenter-db mysql --verbose --user=root --password=$(MYSQL_ROOT_PASSWORD)\
-		<$(TC_BASE_DIR)/backup/temp/all-databases.sql
+	sed -i 's/\/\*!40000 DROP DATABASE IF EXISTS `mysql`\*\/;/ /g' $(TC_BASE_DIR)/backup/temp/all-databases.sql &&\
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysql --verbose --user=root --password=$(MYSQL_ROOT_PASSWORD)\
+			<$(TC_BASE_DIR)/backup/temp/all-databases.sql
 
 ## Extract a database into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-sql-format.html)
 testcenter-dump-db:
-	docker exec testcenter-db mysqldump --verbose --add-drop-database --user=$(MYSQL_USER)\
-		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysqldump --verbose --add-drop-database --user=$(MYSQL_USER)\
+			--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
 
 ## Restore a database from a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
 testcenter-restore-db:
-	docker exec -i testcenter-db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
-		<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
+			<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE).sql
 
 ## Extract a database data into a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/mysqldump-definition-data-dumps.html)
 testcenter-dump-db-data-only:
-	docker exec testcenter-db mysqldump --verbose --no-create-info --user=$(MYSQL_USER)\
-		--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysqldump --verbose --no-create-info --user=$(MYSQL_USER)\
+			--password=$(MYSQL_PASSWORD) --databases $(MYSQL_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
 
 ## Restore a database data from a sql format file
 # (https://dev.mysql.com/doc/refman/8.0/en/reloading-sql-format-dumps.html)
 testcenter-restore-db-data-only:
-	docker exec -i testcenter-db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
-		<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec --no-TTY db mysql --verbose --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD)\
+			<$(TC_BASE_DIR)/backup/temp/$(MYSQL_DATABASE)-data.sql
 
 ## Creates a gzip'ed tarball in temporary backup directory from backend data (backend has to be up!)
 testcenter-export-backend-vol:
-	docker run --rm\
-			--volumes-from testcenter-backend\
-			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
-		busybox tar cvzf /tmp/backend_vo_data.tar.gz /var/www/testcenter/data
+	@container_id=$$(docker compose ps -q backend 2>/dev/null); \
+	docker run --rm \
+		--volumes-from "$${container_id}" \
+		--volume $(TC_BASE_DIR)/backup/temp:/tmp \
+		busybox tar czvf /tmp/backend_vo_data.tar.gz /var/www/testcenter/data
+
 
 ## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (backend has to be up!)
 testcenter-import-backend-vol:
+	@container_id=$$(docker compose ps -q backend 2>/dev/null); \
 	docker run --rm\
-			--volumes-from testcenter-backend\
+			--volumes-from "$${container_id}"\
 			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
 		busybox sh\
 			-c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vo_data.tar.gz --strip-components 4"

@@ -383,7 +383,7 @@ paths:
                     description: status of the files-service - 'on', 'off', 'unreachable'
                   cacheService:
                     type: string
-                    description: Does not provide exactly the status of the cache-service, but it's the file-caching functionality. 'on', 'off', 'unreachable'
+                    description: Does not provide exactly the status of the cache-server, but it's the file-caching functionality. 'on', 'off', 'unreachable'
                 required:
                   - broadcastingService
                   - fileService

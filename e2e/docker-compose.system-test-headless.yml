@@ -1,13 +1,13 @@
 services:
-  testcenter-e2e:
-    container_name: testcenter-e2e
+  e2e:
     depends_on:
-      testcenter-backend:
+      backend:
         condition: service_healthy
+    image: testcenter-e2e
     build:
       dockerfile: e2e/Dockerfile
     environment:
-      - CYPRESS_baseUrl=http://testcenter-frontend:8080
+      - CYPRESS_baseUrl=http://frontend:8080
     command: [
       "npx", "cypress", "run",
       "--browser", "chrome",
@@ -22,17 +22,17 @@ services:
     networks:
       - testcenter
 
-  testcenter-broadcasting-service:
+  broadcaster:
     environment:
       DEV_MODE: false # loglevel
 
-  testcenter-backend:
+  backend:
     environment:
       OVERRIDE_CONFIG: |
         [fileService]
-        external=testcenter-file-service/
+        external=file-server/
         [broadcastingService]
-        external=testcenter-broadcasting-service:3000/
+        external=broadcaster:3000/
 
-  testcenter-frontend:
+  frontend:
     command: "serve --configuration e2e --disable-host-check --host 0.0.0.0 --port 8080"
