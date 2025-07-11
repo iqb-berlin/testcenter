@@ -83,12 +83,12 @@ class SystemConfig {
       ? (self::stringEnv('TLS_PORT_OF_REVERSE_PROXY', '443'))
       : (self::stringEnv('PORT_OF_REVERSE_PROXY', '80'));
 
-    if (self::boolEnv('BROADCAST_SERVICE_ENABLED')) {
+    if (self::boolEnv('BROADCASTER_ENABLED')) {
       $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/bs/public/";
       $config['broadcastingService']['internal'] = 'broadcaster:3000';
     }
 
-    if (self::boolEnv('FILE_SERVICE_ENABLED')) {
+    if (self::boolEnv('FILE_SERVER_ENABLED')) {
       $config['fileService']['host'] = 'file-server:8080/';
     }
 

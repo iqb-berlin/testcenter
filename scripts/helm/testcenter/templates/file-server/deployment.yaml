@@ -1,4 +1,4 @@
-{{- if .Values.config.backend.fileServiceEnabled }}
+{{- if .Values.config.backend.fileServerEnabled }}
 
 apiVersion: apps/v1
 kind: Deployment
