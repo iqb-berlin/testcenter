@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG REGISTRY_PATH=""
-ARG PHP_VERSION=8.3.12-apache-bookworm
+ARG PHP_VERSION=8.3-apache-bookworm
 
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
@@ -50,9 +50,10 @@ RUN a2dissite 000-default
 COPY backend/config/vhost.conf /etc/apache2/sites-available
 RUN a2ensite vhost
 RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf
-COPY backend/config/security.conf /etc/apache2/conf-available
 RUN a2enconf servername
+COPY backend/config/security.conf /etc/apache2/conf-available
 RUN a2enconf security
+RUN sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
 
 # Copy backend code
 WORKDIR /var/www/testcenter/backend/
@@ -73,11 +74,12 @@ COPY scripts/database ../scripts/database
 RUN chown -R www-data:www-data /var/www
 
 VOLUME /var/www/testcenter/data
-EXPOSE 80
+EXPOSE 8080
 
 COPY backend/entrypoint.sh /entrypoint.sh
 COPY backend/initialize_only.sh /initialize_only.sh
-CMD ["apache2-foreground"]
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 
 FROM base AS dev
@@ -98,9 +100,11 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
     jq
 
+USER www-data
+
 
 FROM base AS prod
 # Copy prod dependencies
 COPY --chown=www-data:www-data --from=prod-composer /usr/src/testcenter/backend/vendor/ ./vendor/
 
-#USER www-data
+USER www-data

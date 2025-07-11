@@ -6,6 +6,5 @@ spec:
   selector:
     app: {{ .Release.Name }}-frontend-pod
   ports:
-    - name: http-service
-      port: 80
+    - port: 8080
       targetPort: http-container

@@ -2,7 +2,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
-	create-interfaces update-docs docs-frontend-compodoc docs-broadcasting-service-compodoc docs-api-specs docs-user\
+	create-interfaces update-docs docs-frontend-compodoc docs-broadcaster-compodoc docs-api-specs docs-user\
 	create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
@@ -12,10 +12,9 @@ init:
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
-	mkdir -m 777 -p $(TC_BASE_DIR)/data
 
 # Build all images of the project or a specified one as dev-images.
-# Param: (optional) service - Only build a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only build a specified service, e.g. `service=backend`
 build:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -27,7 +26,7 @@ build:
 
 # Ramp the application up (i.e. creates and starts all application containers).
 # Hint: Stop local webserver before, to free port 80
-# Param: (optional) service - Only ramp up a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only ramp up a specified service, e.g. `service=backend`
 up:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -46,7 +45,7 @@ down:
 		down --remove-orphans $(service)
 
 # Start the application with already existing containers.
-# Param: (optional) service - Only start a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only start a specified service, e.g. `service=backend`
 start:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -56,7 +55,7 @@ start:
 		start $(service)
 
 # Stop the application but don't remove the service containers.
-# Param: (optional) service - Only stop a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only stop a specified service, e.g. `service=backend`
 stop:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -66,7 +65,7 @@ stop:
 		stop $(service)
 
 # Log the application.
-# Param: (optional) service - Only log a specified service, e.g. `service=testcenter-backend`
+# Param: (optional) service - Only log a specified service, e.g. `service=backend`
 logs:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -88,7 +87,7 @@ composer-install:
 				--ignore-platform-reqs\
 				--no-ansi\
 				--working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
 
 composer-update:
 	docker run --rm --interactive --tty\
@@ -103,7 +102,7 @@ composer-update:
 				--ignore-platform-reqs\
 				--no-ansi\
 				--working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
 
 # use this whenever you created or renamed a class in backend to refresh the autoloader.
 composer-refresh-autoload:
@@ -115,28 +114,49 @@ composer-refresh-autoload:
 			--volume $(TC_BASE_DIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
 			--volume $(HOME)/.composer:/tmp/cache\
 		composer:lts dump-autoload --working-dir=/usr/src/testcenter/backend
-	cd $(TC_BASE_DIR) && make build service=testcenter-backend
-	cd $(TC_BASE_DIR) && make up service=testcenter-backend
+	cd $(TC_BASE_DIR) && make build service=backend
+	cd $(TC_BASE_DIR) && make up service=backend
+
+# Copies data folder from Backend Container into local, to better be able to work with files in the IDE
+data-pull:
+	cd $(TC_BASE_DIR) &&\
+	rm -rf data &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		cp backend:/var/www/testcenter/data .
+
+# Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
+# from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
+# TODO need better solution - docker cp only merges src->dest, meaning that all files from both sides are added, with src having higher priority -> if src has less files than dest, these files are not deleted
+data-push:
+	cd $(TC_BASE_DIR) &&\
+	tar -cf - data  --owner www-data --group www-data | docker compose --env-file .env.dev --file docker-compose.yml --file docker-compose.dev.yml cp - backend:/var/www/testcenter
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/testcenter/backend/initialize.php
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		exec --no-TTY backend php /var/www/testcenter/backend/initialize.php
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
 	cd $(TC_BASE_DIR) &&\
-	docker container rm -f testcenter-task-runner 2> /dev/null || true &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
-		run --name=testcenter-task-runner testcenter-task-runner\
+		run --name=task-runner --rm task-runner\
 			npx --yes update-browserslist-db@latest && npm run create-interfaces
 
 update-docs:
 	cd $(TC_BASE_DIR) &&\
 	make docs-frontend-compodoc &&\
-	make docs-broadcasting-service-compodoc &&\
+	make docs-broadcaster-compodoc &&\
 	make docs-api-specs &&\
 	make docs-user
 
@@ -148,14 +168,14 @@ update-docs:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm --no-deps testcenter-task-runner\
+		run --rm --no-deps task-runner\
 			npm run $(task)
 
 docs-frontend-compodoc:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=frontend:update-compodoc
 
-docs-broadcasting-service-compodoc:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=broadcasting-service:update-compodoc
+docs-broadcaster-compodoc:
+	cd $(TC_BASE_DIR) && make .run-task-runner task=broadcaster:update-compodoc
 
 # Creates a documentation (with ReDoc) of the the API between frontend and backend
 docs-api-specs:
@@ -166,12 +186,12 @@ docs-user:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=create-docs
 
 create-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll --tag testcenter-jekyll -f docs/Dockerfile .
-	docker run --rm testcenter-jekyll
+	cd $(TC_BASE_DIR) && docker build --target jekyll --tag jekyll -f docs/Dockerfile .
+	docker run --rm jekyll
 
 serve-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag testcenter-jekyll-serve -f docs/Dockerfile .
-	docker run --rm -p 4000:4000 testcenter-jekyll-serve
+	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag jekyll-serve -f docs/Dockerfile .
+	docker run --rm -p 4000:4000 jekyll-serve
 
 new-version:
 	cd $(TC_BASE_DIR) &&\
@@ -179,6 +199,6 @@ new-version:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		run --rm --entrypoint="" testcenter-backend\
+		run --rm --entrypoint="" backend\
 			php /var/www/testcenter/backend/test/update-sql-scheme.php &&\
 	make .run-task-runner task="new-version $(version)"

@@ -46,7 +46,7 @@ class ResourceFileTest extends TestCase {
         "url": "https://www.iqb.hu-berlin.de"
       },
       "code": {
-        "repositoryUrl": "https://github.com/iqb-berlin/testcenter-backend",
+        "repositoryUrl": "https://github.com/iqb-berlin/testcenter/tree/master/backend",
         "repositoryType": "git",
         "licenseType": "MIT",
         "licenseUrl": "https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/LICENSE"

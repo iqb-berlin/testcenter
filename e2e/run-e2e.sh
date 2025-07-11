@@ -1,7 +1,8 @@
 #!/bin/bash
 
 while true; do
-  services_count=$(docker ps --filter name=testcenter-* --format='{{.Names}} → {{.Status}}' | wc -l)
+  declare dir_name=$(basename "$PWD")
+  services_count=$(docker ps --filter name="${dir_name}"-* --format='{{.Names}} → {{.Status}}' | wc -l) #todo dir name
   if [[ "$services_count" -eq 7 ]]; then
     cd e2e || exit
     npx cypress open

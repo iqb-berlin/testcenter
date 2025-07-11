@@ -12,14 +12,14 @@ The source code and therefore the application is separated in three submodules:
 
 * Backend: PHP based components to handle most of the requests from frontend; connects to the database.
 
-* Broadcasting-Service: Additional server component to make websocket-connections between frontend and backend possible 
+* Broadcaster: Additional server component to make websocket-connections between frontend and backend possible 
 
 ## Version Control (Git) Usage
 * We generally adhere to the Commit-Message standard formulated [here](https://cbea.ms/git-commit/)
 * In addition to the above rules we use the following prefixes for commit meesages:
   * [FE] for frontend changes
   * [BE] for backend changes
-  * [BS] for broadcasting-service changes
+  * [BS] for broadcaster changes
   * [Setup] for changes to the infrastructure - container setup, CI script etc.
 
 ## Debugging

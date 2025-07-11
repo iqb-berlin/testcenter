@@ -50,7 +50,7 @@
                   <xs:attribute name="mode">
                     <xs:annotation>
                       <xs:documentation>
-                        See: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+                        See: https://github.com/iqb-berlin/testcenter/blob/master/docs/pages/test-mode.md
                       </xs:documentation>
                     </xs:annotation>
                     <xs:simpleType>

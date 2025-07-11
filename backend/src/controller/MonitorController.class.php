@@ -134,7 +134,7 @@ class MonitorController extends Controller {
 
       self::testDAO()->locktTest($testId);
 
-      self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
+      self::testDAO()->addTestLogs([new TestLog($testId, 'locked by monitor', 0, (string) $authToken->getId())]);
       BroadcastService::sessionChange(
         SessionChangeMessage::testState(
           $groupName,

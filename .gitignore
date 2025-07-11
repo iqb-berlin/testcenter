@@ -38,7 +38,7 @@
 /frontend/dist
 /frontend/tmp
 /frontend/out-tsc
-/broadcasting-service/dist
+/broadcaster/dist
 /dist
 
 # dev dependencies
