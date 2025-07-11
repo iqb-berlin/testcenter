@@ -31,7 +31,7 @@ services:
       testcenter:
 
   broadcaster:
-    image: iqbberlin/testcenter-broadcasting-service:current
+    image: iqbberlin/testcenter-broadcaster:current
     <<: *restart-policy
     logging:
       options:

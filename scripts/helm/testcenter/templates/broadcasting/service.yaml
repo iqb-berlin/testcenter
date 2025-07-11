@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: broadcaster # !!! Hard coded in application as internal address !!! @TODO: Should be '{{ .Release.Name }}-broadcasting-service'
+  name: broadcaster # !!! Hard coded in application as internal address !!! @TODO: Should be '{{ .Release.Name }}-broadcaster'
 spec:
   selector:
     app: {{ .Release.Name }}-broadcasting-pod

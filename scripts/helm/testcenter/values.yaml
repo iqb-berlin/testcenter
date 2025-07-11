@@ -16,8 +16,8 @@ image:
   # - Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
   # - GitLab Registry:  scm.cms.hu-berlin.de:4567/iqb/studio-lite/
 
-  # -- Configuration for the broadcasting service image (Node.js/NestJS WebSocket service)
-  # The broadcasting service handles real-time communication and WebSocket connections
+  # -- Configuration for the Broadcaster image (Node.js/NestJS WebSocket service)
+  # The Broadcaster handles real-time communication and WebSocket connections
   # for the testcenter application. It supplements the stateless nature of the PHP backend.
   broadcasting:
     # -- Image pull policy. Use 'IfNotPresent' for production to avoid unnecessary pulls
@@ -111,8 +111,8 @@ config:
     redisCacheFiles: &redisCacheFiles false
 
   backend:
-    # -- Enable WebSocket routing to the broadcasting service
-    # The backend routes WebSocket connections to the external Broadcasting Service
+    # -- Enable WebSocket routing to the Broadcaster
+    # The backend routes WebSocket connections to the external Broadcaster
     # for real-time features like test monitoring and live updates.
     # Set to false only if you don't need real-time features. Should be left to 'true'.
     broadcastServiceEnabled: true
@@ -469,12 +469,12 @@ deployment:
     #       matchLabels:
     #         app: release-name-file-server-pod
 
-  # -- Broadcasting service deployment configuration (Node.js/NestJS WebSocket)
-  # The broadcasting service handles real-time WebSocket connections for live updates,
+  # -- Broadcaster deployment configuration (Node.js/NestJS WebSocket)
+  # The Broadcaster handles real-time WebSocket connections for live updates,
   # test monitoring, and real-time communication features.
   broadcasting:
-    # -- Resource allocation for broadcasting service pods
-    # Broadcasting service needs moderate resources for WebSocket connections
+    # -- Resource allocation for Broadcaster pods
+    # Broadcaster needs moderate resources for WebSocket connections
     resources:
       limits:
         # -- Maximum CPU allocation (500m = 0.5 CPU core)
@@ -485,13 +485,13 @@ deployment:
         memory: 512Mi
       requests:
         # -- Guaranteed CPU allocation
-        # Broadcasting service has moderate CPU requirements
+        # Broadcaster has moderate CPU requirements
         cpu: 100m
         # -- Guaranteed memory allocation
         # Start with minimal memory and scale based on connection count
         memory: 128Mi
-    # -- Health probe configuration for broadcasting service pods
-    # Broadcasting service probes check WebSocket server availability
+    # -- Health probe configuration for Broadcaster pods
+    # Broadcaster probes check WebSocket server availability
     probes:
       liveness:
         # -- How often to perform the liveness probe
@@ -527,7 +527,7 @@ deployment:
         # -- Initial delay before starting startup probes
         # Node.js starts relatively quickly
         initialDelaySeconds: 30
-    # -- Topology spread constraints for broadcasting service deployment
+    # -- Topology spread constraints for Broadcaster deployment
     # Uncomment to distribute broadcasting pods across different nodes
     # For production: Enable for better availability of real-time features
     topologySpreadConstraints:

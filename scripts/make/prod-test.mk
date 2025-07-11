@@ -40,7 +40,7 @@ prod-test-build: prod-test-registry-login
 				--pull\
 				--build-arg REGISTRY_PATH=$(DOCKER_HUB_PROXY)\
 				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
-				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-broadcasting-service:e2e\
+				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-broadcaster:e2e\
 			.
 	cd $(TC_BASE_DIR) &&\
 		docker build\

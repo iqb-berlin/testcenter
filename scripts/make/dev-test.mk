@@ -60,7 +60,7 @@ test-backend-initialization-general:
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/install-db-patches
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/re-initialize
 
-test-broadcasting-service-unit:
+test-broadcaster-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
@@ -69,7 +69,7 @@ test-broadcasting-service-unit:
 		broadcaster\
 			npx jest
 
-test-broadcasting-service-unit-coverage:
+test-broadcaster-unit-coverage:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\

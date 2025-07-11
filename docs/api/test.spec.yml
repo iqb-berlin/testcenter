@@ -26,7 +26,7 @@ paths:
           * `monitor-group` is the monitor account to supervise a group of testees
           * `monitor-study` is an account to supervise alls groups of a study
           * For `run-hot-restart` and `demo` every session is unique so the test will be restarted everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.
-          * `run-hot-return` and `run-hot-restart` - only these types of test wil be broadcasted via broadcasting service, so they can be views in the group-monitor.
+          * `run-hot-return` and `run-hot-restart` - only these types of test wil be broadcasted via Broadcaster, so they can be views in the group-monitor.
       tags:
         - run test
       parameters:

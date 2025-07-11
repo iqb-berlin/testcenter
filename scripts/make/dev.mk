@@ -2,7 +2,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
-	create-interfaces update-docs docs-frontend-compodoc docs-broadcasting-service-compodoc docs-api-specs docs-user\
+	create-interfaces update-docs docs-frontend-compodoc docs-broadcaster-compodoc docs-api-specs docs-user\
 	create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
@@ -156,7 +156,7 @@ create-interfaces:
 update-docs:
 	cd $(TC_BASE_DIR) &&\
 	make docs-frontend-compodoc &&\
-	make docs-broadcasting-service-compodoc &&\
+	make docs-broadcaster-compodoc &&\
 	make docs-api-specs &&\
 	make docs-user
 
@@ -174,8 +174,8 @@ update-docs:
 docs-frontend-compodoc:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=frontend:update-compodoc
 
-docs-broadcasting-service-compodoc:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=broadcasting-service:update-compodoc
+docs-broadcaster-compodoc:
+	cd $(TC_BASE_DIR) && make .run-task-runner task=broadcaster:update-compodoc
 
 # Creates a documentation (with ReDoc) of the the API between frontend and backend
 docs-api-specs:
