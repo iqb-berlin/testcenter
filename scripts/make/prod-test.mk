@@ -65,7 +65,7 @@ prod-test-up:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		up --no-build --pull never -d
 
 ## Stop and remove production containers
@@ -73,7 +73,7 @@ prod-test-down:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		down
 	sed -i.sed 's/^VERSION=e2e$$/VERSION=stable/' $(TC_BASE_DIR)/.env.prod &&\
 		rm $(TC_BASE_DIR)/.env.prod.sed
@@ -84,5 +84,5 @@ prod-test-logs:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		logs -f $(SERVICE)
