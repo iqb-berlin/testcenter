@@ -1002,6 +1002,7 @@ test-backend-unit:
       then
         chmod 0755 scripts/database/000-create-test-db.sh &&
         docker pull --quiet ${DB_BASE_IMAGE} &&
+        docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE} &&
         docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker compose
