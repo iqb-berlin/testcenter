@@ -242,7 +242,7 @@ try {
 
   $bsStatus = BroadcastService::getStatus();
   if ($bsStatus == 'online') {
-    CLI::h2("Flashing Broadcasting-Service");
+    CLI::h2("Flashing Broadcaster");
     BroadcastService::send('system/clean');
   }
 

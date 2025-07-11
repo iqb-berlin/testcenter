@@ -377,7 +377,7 @@ paths:
                 properties:
                   broadcastingService:
                     type: string
-                    description: status of the broadcasting-service - 'on', 'off', 'unreachable'
+                    description: status of the broadcaster - 'on', 'off', 'unreachable'
                   fileService:
                     type: string
                     description: status of the files-service - 'on', 'off', 'unreachable'

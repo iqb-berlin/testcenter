@@ -83,7 +83,7 @@ Not that files-service and cache-server are currently not available in local ins
 sudo --user=www-data php backend/initialize.php
 ```
 
-Tipp: If you don't want to use the broadcasting-service omit the last two lines.
+Tipp: If you don't want to use the broadcaster omit the last two lines.
 
 ## Serve Backend
 
@@ -108,12 +108,12 @@ cd frontend
 npm run start
 ```
 
-## Broadcasting-Service
+## Broadcaster
 (optional)
 ```
 cd broadcaster
 npm run start
 ```
 
-## File-Service
+## File-Server
 Can not be run locally. It is not needed because files can be served by the regular backend as well.

@@ -51,8 +51,8 @@ services:
       PORT_OF_REVERSE_PROXY: 80
       TLS_PORT_OF_REVERSE_PROXY: 443
       TLS_ENABLED: false
-      BROADCAST_SERVICE_ENABLED: false
-      FILE_SERVICE_ENABLED: false
+      BROADCASTER_ENABLED: false
+      FILE_SERVER_ENABLED: false
       <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: initialization-test-db
       MYSQL_PORT: 3306

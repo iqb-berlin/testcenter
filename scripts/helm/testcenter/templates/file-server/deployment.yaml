@@ -1,4 +1,4 @@
-{{- if .Values.config.backend.fileServiceEnabled }}
+{{- if .Values.config.backend.fileServerEnabled }}
 
 apiVersion: apps/v1
 kind: Deployment
@@ -31,7 +31,7 @@ spec:
         runAsGroup: 33
       containers:
         - name: {{ .Release.Name }}-file-server-container
-          image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-server:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
           {{- if .Values.deployment.fileServer.resources }}
           resources:

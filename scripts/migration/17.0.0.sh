@@ -257,6 +257,10 @@ migrate_env_file() {
   REDIS_PASSWORD=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
   sed -i.bak "/^## Cache Service/a REDIS_PASSWORD=${REDIS_PASSWORD}" .env.prod && rm .env.prod.bak
   printf "      Environment file migration done.\n\n"
+
+  # rename to broadcaster and file-server
+  sed -i.bak "s|^BROADCAST_SERVICE_ENABLED=|BROADCASTER_ENABLED=|" .env.prod && rm .env.prod.bak
+  sed -i.bak "s|^FILE_SERVICE_ENABLED=|FILE_SERVER_ENABLED=|" .env.prod && rm .env.prod.bak
 }
 
 migrate_make_testcenter_update_cmd() {

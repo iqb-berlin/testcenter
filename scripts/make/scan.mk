@@ -7,8 +7,8 @@ REGISTRY_PATH :=
 TRIVY_VERSION := aquasec/trivy:latest
 
 # prevents collisions of make target names with possible file names
-.PHONY: scan-registry-login scan-registry-logout scan-app scan-traefik scan-broadcasting-service scan-frontend\
-	scan-file-service scan-backend scan-cache-service scan-db
+.PHONY: scan-registry-login scan-registry-logout scan-app scan-traefik scan-broadcaster scan-frontend\
+	scan-file-server scan-backend scan-cache-service scan-db
 
 # disables printing the recipe of a make target before executing it
 .SILENT: scan-registry-login scan-registry-logout
@@ -22,7 +22,7 @@ scan-registry-logout:
 	if test $(REGISTRY_PATH); then docker logout $(REGISTRY_PATH); fi
 
 # scans application images for security vulnerabilities
-scan-app: scan-traefik scan-broadcasting-service scan-frontend scan-file-service scan-backend scan-cache-service scan-db
+scan-app: scan-traefik scan-broadcaster scan-frontend scan-file-server scan-backend scan-cache-service scan-db
 
 # scans traefik image for security vulnerabilities
 scan-traefik: scan-registry-login
@@ -48,14 +48,14 @@ scan-traefik: scan-registry-login
 						--severity CRITICAL\
 					$(REGISTRY_PATH)traefik:v3.4
 
-# scans broadcasting-service image for security vulnerabilities
-scan-broadcasting-service: scan-registry-login
+# scans broadcaster image for security vulnerabilities
+scan-broadcaster: scan-registry-login
 	cd $(TC_BASE_DIR) &&\
 		docker build\
 				--progress plain\
 				--target=prod\
 				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
-				--tag $(REGISTRY_PATH)iqbberlin/testcenter-broadcasting-service:scan\
+				--tag $(REGISTRY_PATH)iqbberlin/testcenter-broadcaster:scan\
 			.
 		docker run\
 				--rm\
@@ -77,7 +77,7 @@ scan-broadcasting-service: scan-registry-login
  						--scanners vuln\
  						--ignore-unfixed\
  						--severity CRITICAL\
-					$(REGISTRY_PATH)iqbberlin/testcenter-broadcasting-service:scan
+					$(REGISTRY_PATH)iqbberlin/testcenter-broadcaster:scan
 
 # scans frontend image for security vulnerabilities
 scan-frontend: scan-registry-login
@@ -110,14 +110,14 @@ scan-frontend: scan-registry-login
  						--severity CRITICAL\
 					$(REGISTRY_PATH)iqbberlin/testcenter-frontend:scan
 
-# scans file-service image for security vulnerabilities
-scan-file-service: scan-registry-login
+# scans file-server image for security vulnerabilities
+scan-file-server: scan-registry-login
 	cd $(TC_BASE_DIR) &&\
 		docker build\
 				--progress plain\
 				--pull\
 				--file $(TC_BASE_DIR)/file-server/Dockerfile\
-				--tag $(REGISTRY_PATH)iqbberlin/testcenter-file-service:scan\
+				--tag $(REGISTRY_PATH)iqbberlin/testcenter-file-server:scan\
 			.
 		docker run\
 				--rm\
@@ -139,7 +139,7 @@ scan-file-service: scan-registry-login
  						--scanners vuln\
  						--ignore-unfixed\
  						--severity CRITICAL\
-					$(REGISTRY_PATH)iqbberlin/testcenter-file-service:scan
+					$(REGISTRY_PATH)iqbberlin/testcenter-file-server:scan
 
 # scans backend image for security vulnerabilities
 scan-backend: scan-registry-login
