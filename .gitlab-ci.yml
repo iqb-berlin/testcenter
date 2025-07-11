@@ -1130,8 +1130,8 @@ test-backend-api:
     - docker pull --quiet ${DB_BASE_IMAGE}
     - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-backend
   script:
     - docker compose
@@ -1144,6 +1144,7 @@ test-backend-api:
 test-file-server-api:
   stage: test
   needs:
+    - build-backend
     - build-file-server
     - build-task-runner
   rules:
@@ -1153,14 +1154,19 @@ test-file-server-api:
     - if: $CI_COMMIT_TAG
       when: never
   variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DB_BASE_IMAGE}
     - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-server
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-file-server
   script:
     - docker compose
           --env-file .env.dev-template

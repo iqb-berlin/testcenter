@@ -120,17 +120,17 @@ data:
 
         location = /404 {
           internal;
-          return 404 'File-Server: File or Endpoint not found.';
+          return 404 'File Server: File or Endpoint not found.';
         }
 
         location = /403 {
           internal;
-          return 404 'File-Server: Forbidden.';
+          return 404 'File Server: Forbidden.';
         }
 
         location = /500 {
           internal;
-          return 404 'File-Server: Server Error.';
+          return 404 'File Server: Internal error.';
         }
       }
     }
