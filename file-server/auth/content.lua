@@ -1,4 +1,4 @@
-local includeFiles = os.getenv("CACHE_SERVICE_INCLUDE_FILES")
+local includeFiles = os.getenv("REDIS_CACHE_FILES")
 
 if (includeFiles ~= nil)
   and (includeFiles:lower() ~= 'yes')
@@ -6,7 +6,7 @@ if (includeFiles ~= nil)
   and (includeFiles:lower() ~= 'true')
   and (includeFiles ~= '1')
 then
-  ngx.log(ngx.INFO, 'Cache service not configured for files')
+  ngx.log(ngx.INFO, 'Cache Server is not configured for files')
   ngx.header["X-Source"] = "Disk"
   ngx.exec(ngx.var.file_path)
   return

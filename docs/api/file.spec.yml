@@ -38,8 +38,8 @@ paths:
                 type: string
               description: |
                 Contains information on how the values was retrieved. Possible values are:
-                1) `disk`: When the File-Service is used.
-                2) `cache`: When the File-Service is used, configured to cache files and served this one form cache.
+                1) `disk`: When the File-Server is used.
+                2) `cache`: When the File-Server is used, configured to cache files and served this one form cache.
                 3) `backend`: When the Backend served this file.
         "404":
           description: The file was not found

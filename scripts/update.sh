@@ -1,7 +1,8 @@
 #!/bin/bash
 
+declare UPDATE_OPTION
 declare SOURCE_VERSION
-declare TARGET_VERSION="${1}"
+declare TARGET_VERSION
 
 declare APP_NAME='testcenter'
 declare APP_DIR="${PWD}"
@@ -14,9 +15,9 @@ declare PRERELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*
 declare ALL_RELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))?$'
 
 declare BACKUP_DIR
-declare DB_SERVICE_NAME='testcenter-db'
-declare BACKEND_SERVICE_NAME='testcenter-backend'
-declare BACKEND_VOLUME_NAME='testcenter_backend_vo_data'
+declare DB_SERVICE_NAME='db'
+declare BACKEND_SERVICE_NAME='backend'
+declare BACKEND_VOLUME_NAME='backend_vol'
 declare BACKEND_VOLUME_DIR='/var/www/testcenter/data'
 declare ARE_DATA_SERVICES_UP=false
 
@@ -91,6 +92,161 @@ create_app_dir_backup() {
   printf "Application directory backup created.\n\n"
 }
 
+load_docker_environment_variables() {
+  source .env.prod
+}
+
+data_services_up() {
+  if ${TLS_ENABLED}; then
+    if [ "$(docker compose \
+      --env-file "${APP_DIR}/.env.prod" \
+      --file "${APP_DIR}/docker-compose.yml" \
+      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
+      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
+
+      docker compose \
+        --progress quiet \
+        --env-file "${APP_DIR}/.env.prod" \
+        --file "${APP_DIR}/docker-compose.yml" \
+        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
+        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
+    else
+      ARE_DATA_SERVICES_UP=true
+    fi
+  else
+    if [ "$(docker compose \
+      --env-file "${APP_DIR}/.env.prod" \
+      --file "${APP_DIR}/docker-compose.yml" \
+      --file "${APP_DIR}/docker-compose.prod.yml" \
+      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
+
+      docker compose \
+        --progress quiet \
+        --env-file "${APP_DIR}/.env.prod" \
+        --file "${APP_DIR}/docker-compose.yml" \
+        --file "${APP_DIR}/docker-compose.prod.yml" \
+        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
+    else
+      ARE_DATA_SERVICES_UP=true
+    fi
+  fi
+}
+
+data_services_down() {
+  if ! ${ARE_DATA_SERVICES_UP}; then
+    if ${TLS_ENABLED}; then
+      docker compose \
+        --progress quiet \
+        --env-file "${APP_DIR}/.env.prod" \
+        --file "${APP_DIR}/docker-compose.yml" \
+        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
+        down
+    else
+      docker compose \
+        --progress quiet \
+        --env-file "${APP_DIR}/.env.prod" \
+        --file "${APP_DIR}/docker-compose.yml" \
+        --file "${APP_DIR}/docker-compose.prod.yml" \
+        down
+    fi
+  fi
+}
+
+dump_db() {
+  declare db_name="${MYSQL_DATABASE}" # see docker environment file!
+  declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
+
+  if ${TLS_ENABLED}; then
+    docker compose \
+      --env-file "${APP_DIR}/.env.prod" \
+      --file "${APP_DIR}/docker-compose.yml" \
+      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
+      exec "${DB_SERVICE_NAME}" mysqldump \
+      --add-drop-database \
+      --user=root \
+      --password="${MYSQL_ROOT_PASSWORD}" \
+      --databases "${db_name}" \
+      2>/dev/null \
+      >"${APP_DIR}/${db_dump_file}"
+  else
+    docker compose \
+      --env-file "${APP_DIR}/.env.prod" \
+      --file "${APP_DIR}/docker-compose.yml" \
+      --file "${APP_DIR}/docker-compose.prod.yml" \
+      exec "${DB_SERVICE_NAME}" mysqldump \
+      --add-drop-database \
+      --user=root \
+      --password="${MYSQL_ROOT_PASSWORD}" \
+      --databases "${db_name}" \
+      2>/dev/null \
+      >"${APP_DIR}/${db_dump_file}"
+  fi
+
+  if test $? -eq 0; then
+    printf -- "  - Current db dump has been saved at: '%s'\n" "${db_dump_file}"
+  else
+    declare continue
+    printf -- "  - Current db dump was not successful!\n"
+    read -p "  Do you want to continue? [y/N] " -er -n 1 continue
+
+    if [[ ! $continue =~ ^[yY]$ ]]; then
+      printf "'%s' update script finished.\n" "${APP_NAME}"
+
+      exit 0
+    fi
+  fi
+}
+
+export_backend_volume() {
+  declare volume_name
+  declare container_name
+
+  volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
+  container_name=$(basename "$PWD")-backend-1
+
+  docker run \
+    --rm \
+    --volumes-from "${container_name}" \
+    --volume "${APP_DIR}/${BACKUP_DIR}":/tmp \
+    busybox tar czvf "/tmp/${BACKEND_VOLUME_NAME}.tar.gz" "${BACKEND_VOLUME_DIR}" &>/dev/null
+
+  if test ${?} -eq 0; then
+    declare backup_file="${BACKUP_DIR}/${BACKEND_VOLUME_NAME}.tar.gz"
+    printf -- "  - Current '%s' volume has been saved at: '%s'\n" "${volume_name}" "${backup_file}"
+  else
+    declare continue
+    printf -- "  - Current '%s' backup was not successful!\n" "${volume_name}"
+    read -p "    Do you want to continue? [y/N] " -er -n 1 continue
+
+    if [[ ! ${continue} =~ ^[yY]$ ]]; then
+      printf "'%s' update script finished.\n" "${APP_NAME}"
+
+      exit 0
+    fi
+  fi
+}
+
+create_data_backup() {
+  printf "3. Data backup creation\n"
+
+  declare backup
+  read -p "  Do you want to create a data backup? [Y/n] " -er -n 1 backup
+
+  if ! [[ ${backup} =~ ^[nN]$ ]]; then
+    BACKUP_DIR="backup/$(date '+%Y-%m-%d')"
+    mkdir -p "${APP_DIR}/${BACKUP_DIR}"
+
+    printf "\n  Dumping '%s' DB and exporting backend data files (this may take a while) ...\n" "${APP_NAME}"
+    data_services_up
+    dump_db
+    export_backend_volume
+    data_services_down
+    printf "  DB dumped and backend data files exported.\n"
+  fi
+
+  printf "Data backup creation done.\n\n"
+}
+
 validate_source_and_target_release_tag() {
   if ! check_version_tag_exists "${SOURCE_VERSION}"; then
     printf -- "- Source release tag: '%s' doesn't exist (anymore)!\n" "${SOURCE_VERSION}"
@@ -118,7 +274,7 @@ validate_source_and_target_release_tag() {
 }
 
 run_complementary_migration_scripts() {
-  printf "3. Complementary migration scripts check\n"
+  printf "4. Complementary migration scripts check\n"
 
   if ! validate_source_and_target_release_tag; then
     printf "  The existence of possible complemenary migration scripts could not be determined.\n"
@@ -178,7 +334,7 @@ run_complementary_migration_scripts() {
 
     else
       printf -- "- Complementary Migration script(s) available.\n\n"
-      printf "3.1 Complementary Migration script download\n"
+      printf "4.1 Complementary Migration script download\n"
       mkdir -p "${APP_DIR}/scripts/migration"
       declare migration_script
       for migration_script in "${migration_scripts[@]}"; do
@@ -186,7 +342,7 @@ run_complementary_migration_scripts() {
         chmod +x "${APP_DIR}/scripts/migration/${migration_script}"
       done
 
-      printf "\n3.2 Complementary Migration script execution\n"
+      printf "\n4.2 Complementary Migration script execution\n"
       printf "  The following migration scripts will be executed for the migration from version %s to version %s:\n" \
         "${SOURCE_VERSION}" "${TARGET_VERSION}"
       for migration_script in "${migration_scripts[@]}"; do
@@ -266,162 +422,6 @@ run_complementary_migration_scripts() {
   printf "Complementary migration scripts check done.\n\n"
 }
 
-load_docker_environment_variables() {
-  source .env.prod
-  SOURCE_VERSION="${VERSION}"
-}
-
-data_services_up() {
-  if ${TLS_ENABLED}; then
-    if [ "$(docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
-
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
-    else
-      ARE_DATA_SERVICES_UP=true
-    fi
-  else
-    if [ "$(docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.yml" \
-      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
-
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
-    else
-      ARE_DATA_SERVICES_UP=true
-    fi
-  fi
-}
-
-data_services_down() {
-  if ! ${ARE_DATA_SERVICES_UP}; then
-    if ${TLS_ENABLED}; then
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        down
-    else
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        down
-    fi
-  fi
-}
-
-dump_db() {
-  declare db_name="${MYSQL_DATABASE}" # see docker envirionment file!
-  declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
-
-  if ${TLS_ENABLED}; then
-    docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-      exec "${DB_SERVICE_NAME}" mysqldump \
-      --add-drop-database \
-      --user=root \
-      --password="${MYSQL_ROOT_PASSWORD}" \
-      --databases "${db_name}" \
-      2>/dev/null \
-      >"${APP_DIR}/${db_dump_file}"
-  else
-    docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.yml" \
-      exec "${DB_SERVICE_NAME}" mysqldump \
-      --add-drop-database \
-      --user=root \
-      --password="${MYSQL_ROOT_PASSWORD}" \
-      --databases "${db_name}" \
-      2>/dev/null \
-      >"${APP_DIR}/${db_dump_file}"
-  fi
-
-  if test $? -eq 0; then
-    printf -- "  - Current db dump has been saved at: '%s'\n" "${db_dump_file}"
-  else
-    declare continue
-    printf -- "- Current db dump was not successful!\n"
-    read -p "  Do you want to continue? [y/N] " -er -n 1 continue
-
-    if [[ ! $continue =~ ^[yY]$ ]]; then
-      printf "'%s' update script finished.\n" "${APP_NAME}"
-
-      exit 0
-    fi
-  fi
-}
-
-export_backend_volume() {
-  declare volume_name
-  declare container_name
-
-  volume_name="$(basename "${APP_DIR}")_${BACKEND_VOLUME_NAME}"
-  container_name="${BACKEND_SERVICE_NAME}"
-
-  docker run \
-    --rm \
-    --volumes-from "${container_name}" \
-    --volume "${APP_DIR}/${BACKUP_DIR}":/tmp \
-    busybox tar czvf "/tmp/${BACKEND_VOLUME_NAME}.tar.gz" "${BACKEND_VOLUME_DIR}" &>/dev/null
-
-  if test ${?} -eq 0; then
-    declare backup_file="${BACKUP_DIR}/${BACKEND_VOLUME_NAME}.tar.gz"
-    printf -- "  - Current '%s' volume has been saved at: '%s'\n" "${volume_name}" "${backup_file}"
-  else
-    declare continue
-    printf -- "  - Current '%s' backup was not successful!\n" "${volume_name}"
-    read -p "    Do you want to continue? [y/N] " -er -n 1 continue
-
-    if [[ ! ${continue} =~ ^[yY]$ ]]; then
-      printf "'%s' update script finished.\n" "${APP_NAME}"
-
-      exit 0
-    fi
-  fi
-}
-
-create_data_backup() {
-  printf "4. Data backup creation\n"
-
-  declare backup
-  read -p "  Do you want to create a data backup? [Y/n] " -er -n 1 backup
-
-  if ! [[ ${backup} =~ ^[nN]$ ]]; then
-    BACKUP_DIR="backup/$(date '+%Y-%m-%d')"
-    mkdir -p "${APP_DIR}/${BACKUP_DIR}"
-
-    printf "\n  Dumping '%s' DB and exporting backend data files (this may take a while) ...\n" "${APP_NAME}"
-    data_services_up
-    dump_db
-    export_backend_volume
-    data_services_down
-    printf "  DB dumped and backend data files exported.\n"
-  fi
-
-  printf "Data backup creation done.\n\n"
-}
-
 run_update_script_in_selected_version() {
   printf "5. Update script modification check\n"
 
@@ -455,8 +455,8 @@ run_update_script_in_selected_version() {
       printf "compare it with the old one\n(e.g.: 'diff %s %s').\n\n" \
         "scripts/update_${APP_NAME}.sh" "backup/release/${SOURCE_VERSION}/scripts/update_${APP_NAME}.sh"
 
-      printf "  If you want to resume this update process, please type: 'bash scripts/update_%s.sh %s'\n\n" \
-        "${APP_NAME}" "${TARGET_VERSION}"
+      printf "  If you want to resume this update process, please type: 'bash scripts/update_%s.sh -s %s -t %s'\n\n" \
+        "${APP_NAME}" "${SOURCE_VERSION}" "${TARGET_VERSION}"
 
       printf "'%s' update script finished.\n\n" "${APP_NAME}"
 
@@ -465,7 +465,7 @@ run_update_script_in_selected_version() {
 
     printf "Update script modification check done.\n\n"
 
-    bash "${APP_DIR}/scripts/update_${APP_NAME}.sh" "${TARGET_VERSION}"
+    bash "${APP_DIR}/scripts/update_${APP_NAME}.sh" -s "${SOURCE_VERSION}" -t "${TARGET_VERSION}"
     exit ${?}
 
   else
@@ -764,11 +764,11 @@ main() {
       if [ "${choice}" = 1 ]; then
         printf "\n=== UPDATE '%s' application ===\n\n" "${APP_NAME}"
 
-        load_docker_environment_variables
         get_new_release_version
         create_app_dir_backup
-        run_complementary_migration_scripts
+        load_docker_environment_variables
         create_data_backup
+        run_complementary_migration_scripts
         run_update_script_in_selected_version
         prepare_installation_dir
         update_files
@@ -807,5 +807,56 @@ main() {
     finalize_update
   fi
 }
+
+display_usage() {
+  printf "Usage: %s <-s source_release> [-t <target_release>]\n" "${0}"
+  printf "Try '%s -h' for more information.\n\n" "${0}"
+
+  exit 1
+}
+
+display_help() {
+  printf "Usage: %s <-s source_release> [-t <target_release>]\n\n" "${0}"
+  printf "Options:\n"
+  printf "  -s  Specify the current source release tag to be updated from.\n"
+  printf "  -t  Specify the upcoming target release tag to be updated to.\n"
+  printf "      WARNING: Only set the '-t' option if you want to resume an interrupted update process!\n"
+  printf "  -h  Display this help information.\n\n"
+
+  exit 0
+}
+
+while getopts s:t:h UPDATE_OPTION; do
+  case "${UPDATE_OPTION}" in
+  s)
+    if check_version_tag_exists "${OPTARG}"; then
+      SOURCE_VERSION="${OPTARG}"
+    else
+      printf "This source release tag does not exist.\n"
+      exit 1
+    fi
+    ;;
+  t)
+    if check_version_tag_exists "${OPTARG}"; then
+      TARGET_VERSION="${OPTARG}"
+    else
+      printf "This target release tag does not exist.\n"
+      exit 1
+    fi
+    ;;
+  h)
+    display_help
+    ;;
+  \?)
+    display_usage
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "${SOURCE_VERSION}" ]; then
+  printf "Error: '-s' or '-h' option is required.\n\n"
+  display_usage
+fi
 
 main

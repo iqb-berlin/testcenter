@@ -27,7 +27,7 @@ paths:
             type: string
       responses:
         "200":
-          description: "A Booklet-XML (see: https://github.com/iqb-berlin/testcenter-backend/blob/master/definitions/vo_Booklet.xsd)"
+          description: "A Booklet-XML (see: https://github.com/iqb-berlin/testcenter/blob/master/definitions/vo_Booklet.xsd)"
           content:
             application/xml:
               example:
