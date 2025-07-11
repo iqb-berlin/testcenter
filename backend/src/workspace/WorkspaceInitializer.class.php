@@ -38,6 +38,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/CY_BKL_RestrictionNavValue-3.xml" => "Booklet/CY_BKL_RestrictionNavValue-3.xml",
       "sampledata/system-test/CY_BKL_RestrLockAfterLeave-1.xml" => "Booklet/CY_BKL_RestrLockAfterLeave-1.xml",
       "sampledata/system-test/CY_BKL_RestrLockAfterLeave-2.xml" => "Booklet/CY_BKL_RestrLockAfterLeave-2.xml",
+      "sampledata/system-test/CY_BKL_SpeedPlayer.xml" => "Booklet/CY_BKL_SpeedPlayer.xml",
       "sampledata/system-test/CY_Test_Logins.xml" => "Testtakers/CY_Test_Logins.xml",
       "sampledata/system-test/CY_SysCheck_2.xml" => "SysCheck/CY_SysCheck_2.xml",
       "sampledata/system-test/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
@@ -45,6 +46,11 @@ class WorkspaceInitializer {
       "sampledata/system-test/CY_Unit102.xml" => "Unit/CY_SAMPLE_UNIT102.XML",
       "sampledata/system-test/CY_Unit103.xml" => "Unit/CY_SAMPLE_UNIT103.XML",
       "sampledata/system-test/CY_Unit104.xml" => "Unit/CY_SAMPLE_UNIT104.XML",
+      "sampledata/system-test/CY_speedUnit1.voud" => "Resource/CY_speedUnit1.voud",
+      "sampledata/system-test/CY_speedUnit2.voud" => "Resource/CY_speedUnit2.voud",
+      "sampledata/system-test/iqb-player-speedtest-3.0.6.html" => "Resource/iqb-player-speedtest-3.0.6.html",
+      "sampledata/system-test/CY_speedUnit1.xml" => "Unit/CY_speedUnit1.xml",
+      "sampledata/system-test/CY_speedUnit2.xml" => "Unit/CY_speedUnit2.xml",
     ]
   ];
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/16.3.0/definitions/vo_Booklet.xsd">
+	<Metadata>
+		<Id>CY-BkltSpeedPlayer</Id>
+		<Label>Controller Mode: run-hot-return</Label>
+		<Description>Test für den Modus run-hot-return</Description>
+	</Metadata>
+
+	<BookletConfig>
+		<Config key="unit_menu">FULL</Config>
+	</BookletConfig>
+
+	<Units>
+		<Unit id="CY-Speed.Unit-1" label="Speed-Unit 1" labelshort="1"/>
+    <Unit id="CY-Speed.Unit-2" label="Speed-Unit 2" labelshort="2"/>
+	</Units>
+</Booklet>

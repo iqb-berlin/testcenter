@@ -169,4 +169,10 @@
     </Login>
   </Group>
 
+  <Group id="loadPlayer" label="player loading check">
+    <Login mode="run-hot-restart" name="loadPlayer" pw="123">
+      <Booklet>CY-BkltSpeedPlayer</Booklet>
+    </Login>
+  </Group>
+
 </Testtakers>

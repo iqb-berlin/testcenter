@@ -74,6 +74,9 @@ services:
       - ./sampledata/SAMPLE_UNITCONTENTS.HTM:/var/www/data-TEST/ws_1/Resource/SAMPLE_UNITCONTENTS.HTM
       - ./sampledata/verona-player-simple-6.0.html:/var/www/data-TEST/ws_1/Resource/verona-player-simple-6.0.html
       - ./sampledata/coding-scheme.vocs.json:/var/www/data-TEST/ws_1/Resource/coding-scheme.vocs.json
+      - ./sampledata/system-test/iqb-player-speedtest-3.0.6.html:/var/www/data-TEST/ws_1/Resource/iqb-player-speedtest-3.0.6.html
+      - ./sampledata/system-test/CY_speedUnit1.voud:/var/www/data-TEST/ws_1/Resource/CY_speedUnit1.voud
+      - ./sampledata/system-test/CY_speedUnit2.voud:/var/www/data-TEST/ws_1/Resource/CY_speedUnit2.voud
       - ./data:/var/www/html/
       - ./file-service/nginx.conf:/etc/nginx/nginx.conf
       - ./file-service/auth/:/usr/share/nginx/auth
