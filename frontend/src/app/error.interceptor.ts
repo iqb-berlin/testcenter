@@ -29,7 +29,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             if (error.url?.match('/api/')) {
               missingService = 'Backend';
             } else if (error.url?.match('/fs/')) {
-              missingService = 'File-Service';
+              missingService = 'File-Server';
             }
             return throwError(() => {
               throw new AppError({

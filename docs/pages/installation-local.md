@@ -115,5 +115,5 @@ cd broadcaster
 npm run start
 ```
 
-## File-Service
+## File-Server
 Can not be run locally. It is not needed because files can be served by the regular backend as well.

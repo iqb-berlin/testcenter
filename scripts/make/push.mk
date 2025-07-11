@@ -25,8 +25,8 @@ CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter 
 				--no-cache\
 				--rm\
 				--file $(TC_BASE_DIR)/file-server/Dockerfile\
-				--tag iqbberlin/testcenter-file-service:$(TAG)\
-				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-service:$(TAG)\
+				--tag iqbberlin/testcenter-file-server:$(TAG)\
+				--tag scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-server:$(TAG)\
 			.
 	cd $(TC_BASE_DIR) &&\
 		docker build\
@@ -53,7 +53,7 @@ CHART_VERSION := $(shell helm show chart $(TC_BASE_DIR)/scripts/helm/testcenter 
 push-dockerhub: .build
 	docker login
 	docker push iqbberlin/testcenter-backend:$(TAG)
-	docker push iqbberlin/testcenter-file-service:$(TAG)
+	docker push iqbberlin/testcenter-file-server:$(TAG)
 	docker push iqbberlin/testcenter-frontend:$(TAG)
 	docker push iqbberlin/testcenter-broadcaster:$(TAG)
 	docker logout
@@ -62,7 +62,7 @@ push-dockerhub: .build
 push-iqb-registry: .build
 	docker login scm.cms.hu-berlin.de:4567
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-backend:$(TAG)
-	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-service:$(TAG)
+	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-file-server:$(TAG)
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-frontend:$(TAG)
 	docker push scm.cms.hu-berlin.de:4567/iqb/testcenter/iqbberlin/testcenter-broadcaster:$(TAG)
 	docker logout

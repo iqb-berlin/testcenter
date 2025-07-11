@@ -98,18 +98,18 @@ test-frontend-unit-coverage:
 test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
-# Performs some API tests with Dredd on the file-service
+# Performs some API tests with Dredd on the file-server
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
-test-file-service-api:
+test-file-server-api:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm task-runner-file-service\
-			npm run file-service:api-test
+		run --rm task-runner-file-server\
+			npm run file-server:api-test
 
 # Performs some e2e tests with CyPress against real backend and services
 # Param: (optional) spec - specific spec to run (example: spec=Test-Controller/hot-return), omit parameter for all.

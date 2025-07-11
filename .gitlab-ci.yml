@@ -95,7 +95,7 @@ include:
       changes:
         - e2e/**/*
 
-.file-service-feature-rules:
+.file-server-feature-rules:
   rules:
     - when: never # Temporary deactivation of pipeline jobs for feature branches
     - if: $CI_COMMIT_BRANCH &&
@@ -400,12 +400,12 @@ check-e2e-feature-rules:
       then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
       else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
 
-check-file-service-feature-rules:
+check-file-server-feature-rules:
   stage: .pre
   interruptible: true
   allow_failure: true
   rules:
-    - !reference [ .file-service-feature-rules, rules ]
+    - !reference [ .file-server-feature-rules, rules ]
   script:
     - echo $CI_COMMIT_BRANCH
     - echo $CI_PIPELINE_SOURCE
@@ -802,18 +802,18 @@ build-broadcaster:
         printf 'Job finished with success.\n';
       fi
 
-build-file-service:
+build-file-server:
   stage: build
   needs: []
   rules:
-    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .file-server-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
   variables:
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -826,12 +826,12 @@ build-file-service:
           --pull
           --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
           --build-arg BUILDKIT_INLINE_CACHE=1
-          --cache-from ${FILE_SERVICE_IMAGE_NAME}:dev
+          --cache-from ${FILE_SERVER_IMAGE_NAME}:dev
           --file file-server/Dockerfile
-          --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-          --tag ${FILE_SERVICE_IMAGE_NAME}:dev
+          --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+          --tag ${FILE_SERVER_IMAGE_NAME}:dev
       .
-    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
   after_script:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
@@ -875,7 +875,7 @@ build-task-runner:
     # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .backend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .definitions-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
-    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .file-server-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - !reference [ .release_rules, rules ]
   variables:
@@ -1133,33 +1133,33 @@ test-backend-api:
           --file test/docker-compose.api-test.yml
         run --rm task-runner-backend npm run backend:api-test
 
-test-file-service-api:
+test-file-server-api:
   stage: test
   needs:
-    - build-file-service
+    - build-file-server
     - build-task-runner
   rules:
-    # - !reference [ .file-service-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    # - !reference [ .file-server-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .task-runner-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     - !reference [ .master_pr_rules, rules ]
     - if: $CI_COMMIT_TAG
       when: never
   variables:
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
     - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-service
+    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-server
   script:
     - docker compose
           --env-file .env.dev-template
           --file docker-compose.yml
           --file docker-compose.dev.yml
           --file test/docker-compose.api-test.yml
-        run --rm task-runner-file-service npm run file-service:api-test
+        run --rm task-runner-file-server npm run file-server:api-test
 
 test-backend-initialization:
   stage: test
@@ -1231,7 +1231,7 @@ test-e2e-group-monitor:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1242,7 +1242,7 @@ test-e2e-group-monitor:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Group-Monitor/**/*
@@ -1258,8 +1258,8 @@ test-e2e-group-monitor:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1281,7 +1281,7 @@ test-e2e-session-management:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1292,7 +1292,7 @@ test-e2e-session-management:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Session-Management/**/*
@@ -1308,8 +1308,8 @@ test-e2e-session-management:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1331,7 +1331,7 @@ test-e2e-super-admin:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1342,7 +1342,7 @@ test-e2e-super-admin:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Super-Admin/**/*
@@ -1358,8 +1358,8 @@ test-e2e-super-admin:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1381,7 +1381,7 @@ test-e2e-sys-check:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1392,7 +1392,7 @@ test-e2e-sys-check:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Sys-Check/**/*
@@ -1408,8 +1408,8 @@ test-e2e-sys-check:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1431,7 +1431,7 @@ test-e2e-test-controller:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1442,7 +1442,7 @@ test-e2e-test-controller:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Test-Controller/**/*
@@ -1458,8 +1458,8 @@ test-e2e-test-controller:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1481,7 +1481,7 @@ test-e2e-workspace-admin:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1492,7 +1492,7 @@ test-e2e-workspace-admin:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Workspace-Admin/**/*
@@ -1508,8 +1508,8 @@ test-e2e-workspace-admin:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1531,7 +1531,7 @@ test-e2e-misc:
     - build-backend
     - build-frontend
     - build-broadcaster
-    - build-file-service
+    - build-file-server
     - build-e2e
   rules:
     # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1542,7 +1542,7 @@ test-e2e-misc:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=*
@@ -1558,8 +1558,8 @@ test-e2e-misc:
     - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag
         ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-service:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
   script:
@@ -1663,13 +1663,13 @@ build-broadcaster-prod:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
 
-build-file-service-prod:
+build-file-server-prod:
   stage: build
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
   variables:
-    FILE_SERVICE_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
@@ -1682,12 +1682,12 @@ build-file-service-prod:
           --pull
           --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}
           --build-arg BUILDKIT_INLINE_CACHE=1
-          --cache-from ${FILE_SERVICE_IMAGE_NAME}:latest
+          --cache-from ${FILE_SERVER_IMAGE_NAME}:latest
           --file file-server/Dockerfile
-          --tag ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
-          --tag ${FILE_SERVICE_IMAGE_NAME}:latest
+          --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}
+          --tag ${FILE_SERVER_IMAGE_NAME}:latest
         .
-    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
   after_script:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
@@ -1866,11 +1866,11 @@ scan-broadcaster-prod:
     reports:
       container_scanning: gl-container-scanning-report.json
 
-scan-file-service-prod:
+scan-file-server-prod:
   stage: test
   allow_failure: true
   needs:
-    - build-file-service-prod
+    - build-file-server-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
   image:
@@ -1885,7 +1885,7 @@ scan-file-service-prod:
     TRIVY_AUTH_URL: "$CI_REGISTRY"
     TRIVY_NO_PROGRESS: "true"
     TRIVY_CACHE_DIR: ".trivycache/"
-    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-service:${CI_COMMIT_SHA}"
+    FULL_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server:${CI_COMMIT_SHA}"
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
@@ -2104,22 +2104,22 @@ push-pre-release:
     BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "iqbberlin/testcenter-file-server"
   before_script:
     - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}
   script:
     - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker push -q ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker push -q ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker push -q ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker push -q ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
   after_script:
     - docker logout
 
@@ -2162,30 +2162,30 @@ push-release:
     BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
     BROADCASTER_IMAGE_NAME: "iqbberlin/testcenter-broadcaster"
-    FILE_SERVICE_IMAGE_NAME: "iqbberlin/testcenter-file-service"
+    FILE_SERVER_IMAGE_NAME: "iqbberlin/testcenter-file-server"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
     - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}
   script:
     - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
     - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
           && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]];
       then
         docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:stable &&
         docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:stable &&
         docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:stable &&
-        docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVICE_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVICE_IMAGE_NAME}:stable;
+        docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:stable;
       fi
     - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
     - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
     - docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME}
-    - docker push --quiet --all-tags ${FILE_SERVICE_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
   after_script:
     - docker logout

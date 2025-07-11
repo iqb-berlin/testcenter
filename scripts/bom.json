@@ -28,7 +28,7 @@
       "command": "npm view @nestjs/core version"
     }
   },
-  "file-service": {
+  "file-server": {
     "nginx": {
       "command": "nginx -v"
     }

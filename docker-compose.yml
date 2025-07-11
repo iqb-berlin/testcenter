@@ -52,7 +52,7 @@ services:
       testcenter:
 
   file-server:
-    image: iqbberlin/testcenter-file-service:current
+    image: iqbberlin/testcenter-file-server:current
     <<: *restart-policy
     depends_on:
       - cache-server

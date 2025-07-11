@@ -116,13 +116,13 @@ config:
     # for real-time features like test monitoring and live updates.
     # Set to false only if you don't need real-time features. Should be left to 'true'.
     broadcastServiceEnabled: true
-    # -- Enable external file service integration
-    # When enabled, the backend generates routes for file requests to be routed the external File Service
+    # -- Enable external file server integration
+    # When enabled, the backend generates routes for file requests to be routed the external File Server
     # instead of serving files directly. Recommended for production scalability.
     fileServiceEnabled: true
     # -- Enable Redis caching of static files
     # References the `redisCacheFiles` anchor. When enabled, the backend
-    # caches static files in Redis for faster access by the File Service.
+    # caches static files in Redis for faster access by the File Server.
     redisCacheFiles: *redisCacheFiles
 
   cacheServer:
