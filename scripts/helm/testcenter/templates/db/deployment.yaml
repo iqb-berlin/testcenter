@@ -14,10 +14,18 @@ spec:
       labels:
         app: {{ .Release.Name }}-db-pod
     spec:
+      {{- if .Values.deployment.db.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.db.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-db-container
           image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
           imagePullPolicy: {{ .Values.image.db.imagePullPolicy }}
+          {{- if .Values.deployment.db.resources }}
+          resources:
+            {{- .Values.deployment.db.resources | toYaml | nindent 12 }}
+          {{- end }}
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
@@ -51,20 +59,6 @@ spec:
           volumeMounts:
             - name: db-volume
               mountPath: /var/lib/mysql
-          readinessProbe:
-            exec:
-              command:
-                - mysqladmin
-                - ping
-                - --user=${MYSQL_USER}
-                - -h
-                - 127.0.0.1
-                - --silent
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
           livenessProbe:
             exec:
               command:
@@ -74,11 +68,39 @@ spec:
                 - -h
                 - 127.0.0.1
                 - --silent
-            initialDelaySeconds: 30
-            periodSeconds: 300  # 5 minutes
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.deployment.db.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.db.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.db.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.db.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.db.probes.liveness.failureThreshold }}
+          readinessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - --user=${MYSQL_USER}
+                - -h
+                - 127.0.0.1
+                - --silent
+            initialDelaySeconds: {{ .Values.deployment.db.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.db.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.db.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.db.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.db.probes.readiness.failureThreshold }}
+          startupProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - --user=${MYSQL_USER}
+                - -h
+                - 127.0.0.1
+                - --silent
+            initialDelaySeconds: {{ .Values.deployment.db.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.db.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.db.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.db.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.db.probes.startup.failureThreshold }}
       volumes:
         - name: db-volume
           persistentVolumeClaim:

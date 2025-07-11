@@ -22,6 +22,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-file-server-pod
     spec:
+      {{- if .Values.deployment.fileServer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.fileServer.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsUser: 33
         runAsGroup: 33
@@ -29,6 +33,39 @@ spec:
         - name: {{ .Release.Name }}-file-server-container
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-service:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
+          {{- if .Values.deployment.fileServer.resources }}
+          resources:
+            {{- .Values.deployment.fileServer.resources | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http-container
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.deployment.fileServer.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.fileServer.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.fileServer.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.fileServer.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.fileServer.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /health #todo find better endpoint
+              port: 8080
+            periodSeconds: {{ .Values.deployment.fileServer.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.fileServer.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.fileServer.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.fileServer.probes.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.deployment.fileServer.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.fileServer.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.fileServer.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.fileServer.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.fileServer.probes.startup.failureThreshold }}
           env:
             - name: REDIS_HOST
               value: "{{ .Release.Name }}-cache-server.tc.svc.cluster.local"

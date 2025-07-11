@@ -16,6 +16,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-frontend-pod
     spec:
+      {{- if .Values.deployment.frontend.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.frontend.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsUser: 101
         runAsGroup: 101
@@ -26,3 +30,33 @@ spec:
           ports:
             - name: http-container
               containerPort: 8080
+          {{- if .Values.deployment.frontend.resources }}
+          resources:
+            {{- .Values.deployment.frontend.resources | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.deployment.frontend.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.frontend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.frontend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.frontend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.frontend.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /api
+              port: 8080
+            periodSeconds: {{ .Values.deployment.frontend.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.frontend.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.frontend.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.frontend.probes.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.deployment.frontend.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.frontend.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.frontend.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.frontend.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.frontend.probes.startup.failureThreshold }}

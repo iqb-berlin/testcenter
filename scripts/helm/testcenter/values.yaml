@@ -1,175 +1,774 @@
-# Default values for the testcenter helm chart.
+# Default values for the IQB Testcenter helm chart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# This section defines the Docker image configurations for various components of the Testcenter application.
+# =============================================================================
+# DOCKER IMAGE CONFIGURATION
+# =============================================================================
+# This section defines the Docker image configurations for various components 
+# of the Testcenter application. For production deployments, it's recommended 
+# to use specific image tags rather than 'stable' to ensure reproducible deployments.
+# Configure image pull policies based on your deployment strategy
 image:
-  ## Image Registry Path
-  # Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH value empty!
-  # Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
-  # GitLab:           scm.cms.hu-berlin.de:4567/iqb/studio-lite/
+  ## Image Registry Configuration
+  # Configure your registry path based on your deployment environment:
+  # - Docker Hub:       (aka registry-1.docker.io/) leave REGISTRY_PATH empty
+  # - Docker Hub Proxy: scm.cms.hu-berlin.de:443/iqb/dependency_proxy/containers/
+  # - GitLab Registry:  scm.cms.hu-berlin.de:4567/iqb/studio-lite/
 
-  # Configuration for the broadcasting image.
+  # -- Configuration for the broadcasting service image (Node.js/NestJS WebSocket service)
+  # The broadcasting service handles real-time communication and WebSocket connections
+  # for the testcenter application. It supplements the stateless nature of the PHP backend.
   broadcasting:
+    # -- Image pull policy. Use 'IfNotPresent' for production to avoid unnecessary pulls
     imagePullPolicy: Always
+    # -- Registry path for the broadcasting image. Leave empty for Docker Hub
     registryPath: ""
+    # -- Image tag. For production, use specific version tags instead of 'stable'
+    # Example: "17.0.0"
     tag: ""
 
-  # Configuration for the frontend image.
+  # -- Configuration for the frontend application image (Angular SPA)
+  # The frontend provides the user interface for test administrators, workspace admins,
+  # and test monitors. It's served as a static Angular application.
   frontend:
+    # -- Image pull policy. Use 'IfNotPresent' for production environments
     imagePullPolicy: Always
+    # -- Registry path for the frontend image. Leave empty for Docker Hub
     registryPath: ""
+    # -- Image tag. Specify exact version for production deployments
+    # Example: "17.0.0"
     tag: ""
 
-  # Configuration for the cache server image (Redis).
+  # -- Configuration for the cache server image (Redis 8.0)
+  # Redis is used for caching file content, session data, and improving performance.
   cacheServer:
+    # -- Image pull policy. Use 'IfNotPresent' for production stability
     imagePullPolicy: Always
+    # -- Registry path for Redis image. Leave empty for Docker Hub official images
     registryPath: ""
+    # -- Redis version tag. Use specific versions for production
     tag: "8.0-bookworm"
 
-  # Configuration for the file server image.
+  # -- Configuration for the file server image (Nginx-based with Redis caching)
+  # The file server handles serving test files, resources, and static content.
+  # It includes Redis integration for authorization while accessing files.
   fileServer:
+    # -- Image pull policy. Use 'IfNotPresent' for production consistency
     imagePullPolicy: Always
+    # -- Registry path for the file server image. Leave empty for Docker Hub
     registryPath: ""
+    # -- Image tag. Use specific version for production deployments
+    # Example: "17.0.0"
     tag: ""
 
-  # Configuration for the backend application image.
+  # -- Configuration for the backend application image (PHP/Slim REST API)
+  # The backend serves all business logic, handles authentication, test management,
+  # and database operations. It's the core component of the testcenter.
   backend:
+    # -- Image pull policy. Use 'IfNotPresent' for production reliability
     imagePullPolicy: Always
+    # -- Registry path for the backend image. Leave empty for Docker Hub
     registryPath: ""
+    # -- Image tag. Always use specific version tags for production
+    # Example: "17.0.0"
     tag: ""
 
-  # Configuration for the database image (MySQL).
+  # -- Configuration for the database image (MySQL)
+  # MySQL stores all test data, user accounts, results, and application metadata.
+  # For production: Configure backup strategies, replication, and monitoring.
   db:
+    # -- Image pull policy. Use 'IfNotPresent' for production database stability
     imagePullPolicy: Always
+    # -- Registry path for MySQL image. Leave empty for Docker Hub official images
     registryPath: ""
+    # -- MySQL version tag. Use specific versions for production
     tag: "8.4"
 
-  # Configuration for the busybox utility image, often used for init containers or simple tasks.
+  # -- Configuration for the busybox utility image
+  # Used for init containers, file system preparation, and simple maintenance tasks.
+  # Busybox provides essential Unix utilities in a minimal container.
   busybox:
+    # -- Image pull policy. Use 'IfNotPresent' for production
     imagePullPolicy: Always
+    # -- Registry path for busybox image. Leave empty for Docker Hub official images
     registryPath: ""
+    # -- Busybox version tag. Use specific versions for reproducible deployments
     tag: "1.28"
 
+# =============================================================================
+# APPLICATION CONFIGURATION
+# =============================================================================
 # This section defines general configuration parameters for different services.
+# These settings control the behavior and features of the testcenter application.
 config:
   fileServer:
-    # Defines whether files should be cached in Redis for the file server. `&redisCacheFiles` is an anchor.
+    # -- Enable Redis caching for file server operations (experimental!)
+    # When enabled, all uploaded static files are cached in Redis to improve performance.
+    # For production: Enable if you have sufficient Redis memory and high file access patterns.
+    # Disable if Redis memory is limited or file access is infrequent.
+    # The anchor `&redisCacheFiles` allows reusing this value in other sections.
     redisCacheFiles: &redisCacheFiles false
 
   backend:
-    # Enabled means the backend routes websocket connections to the external Broadcasting Service.
+    # -- Enable WebSocket routing to the broadcasting service
+    # The backend routes WebSocket connections to the external Broadcasting Service
+    # for real-time features like test monitoring and live updates.
+    # Set to false only if you don't need real-time features. Should be left to 'true'.
     broadcastServiceEnabled: true
-    # Enabled means the backend routes file requests to the external File Service.
+    # -- Enable external file service integration
+    # When enabled, the backend generates routes for file requests to be routed the external File Service
+    # instead of serving files directly. Recommended for production scalability.
     fileServiceEnabled: true
-    # References the `redisCacheFiles` anchor. Decides if Backend saves files in Cache.
+    # -- Enable Redis caching of static files
+    # References the `redisCacheFiles` anchor. When enabled, the backend
+    # caches static files in Redis for faster access by the File Service.
     redisCacheFiles: *redisCacheFiles
 
   cacheServer:
-    # Defines the maximum memory to use for Redis.
+    # -- Maximum memory allocation for Redis
+    # Defines the maximum memory Redis can use before starting to evict keys.
+    # For production: Set based on your server memory capacity and expected load.
+    # Common values: 1gb (small), 2gb (medium), 4gb+ (large deployments)
+    # Monitor Redis memory usage and adjust accordingly.
     redisMemoryMax: 1gb
 
-# This section defines sensitive information (secrets) for various services.
+# =============================================================================
+# SECRETS AND CREDENTIALS
+# =============================================================================
+# SECURITY WARNING: This section contains sensitive information!
+# For production deployments:
+# 1. Use Kubernetes Secrets or external secret management (Vault, AWS Secrets Manager)
+# 2. Never commit real passwords to version control
+# 3. Use strong, randomly generated passwords (minimum 16 characters)
+# 4. Rotate passwords regularly
 secret:
   db:
-    # Defines the MySQL user for the database. `&dbUser` is an anchor.
+    # -- MySQL database user for the testcenter application
+    # The anchor `&dbUser` allows reusing this value in other sections.
     mysqlUser: &dbUser iqb_tba_db_user
-    # Defines the MySQL password for the database user. `&dbUserPassword` is an anchor.
+    # -- MySQL password for the application database user
+    # The anchor `&dbUserPassword` allows reusing this value in other sections.
+    # PRODUCTION: Replace 'change_me' with a strong, randomly generated password!
     mysqlPassword: &dbUserPassword change_me
-    # Defines the MySQL root password.
+    # -- MySQL root password for database administration
+    # PRODUCTION: Replace 'change_me' with a strong, randomly generated password!
+    # This is used for database initialization and maintenance tasks.
     mysqlRootPassword: change_me
 
   cacheServer:
-    # Defines the password for the cache server. `&redisPassword` is an anchor.
+    # -- Redis authentication password
+    # The anchor `&redisPassword` allows reusing this value in other sections.
+    # PRODUCTION: Replace 'change_me' with a strong, randomly generated password!
+    # Redis password protects cached data and prevents unauthorized access.
     redisPassword: &redisPassword change_me
 
   fileServer:
-    # References the `redisPassword` anchor, setting the file server's Redis password.
+    # -- Redis password for file server cache access
+    # References the `redisPassword` anchor to ensure consistency.
+    # The file server uses Redis for authorization and accessing cached static files, if so enabled.
     redisPassword: *redisPassword
 
   backend:
-    # References the `redisPassword` anchor, setting the backend's Redis password.
+    # -- Redis password for backend cache access
+    # References the `redisPassword` anchor to ensure consistency.
     redisPassword: *redisPassword
-    # References the `dbUser` anchor, setting the backend's MySQL user.
+    # -- MySQL user for backend database connections
+    # References the `dbUser` anchor to ensure consistency.
     mysqlUser: *dbUser
-    # References the `dbUserPassword` anchor, setting the backend's MySQL password.
+    # -- MySQL password for backend database connections
+    # References the `dbUserPassword` anchor to ensure consistency.
     mysqlPassword: *dbUserPassword
-    # Defines a salt for password hashing in the backend.
+    # -- Salt for password hashing in the backend application
+    # PRODUCTION: Replace 'change_me' with a strong, randomly generated salt!
+    # This salt is used for hashing user passwords in the application.
     passwordSalt: change_me
 
-# This section configures Ingress settings, typically for exposing services externally.
+# =============================================================================
+# INGRESS AND NETWORK EXPOSURE
+# =============================================================================
+# This section configures Ingress settings for exposing services externally.
 ingress:
-  # Enables or disables Traefik Ingress controller.
+  # -- Enable Traefik Ingress controller integration
+  # When enabled, the chart creates IngressRoute resources for Traefik.
+  # Set to false if using a different ingress controller (nginx, HAProxy, etc.)
   traefikEnabled: false
-  # Defines the base domain for Ingress rules.
+  # -- Base domain for external access to the testcenter
+  # This domain is used to construct URLs for the testcenter services.
+  # Replace 'testcenter.domain.tld' with your actual domain
   baseDomain: testcenter.domain.tld
-  # Defines the HTTP port for Ingress entrypoint.
+  # -- HTTP port for external access
+  # The port where the testcenter will be accessible via HTTP.
+  # Standard ports: 80 (HTTP)
   httpPort: 80
-  # Defines the HTTPS port for Ingress entrypoint.
+  # -- HTTPS port for external access
+  # The port where the testcenter will be accessible via HTTPS.
+  # Standard ports: 443 (HTTPS)
   httpsPort: 443
-  # Enables or disables TLS (HTTPS) for Ingress.
-  tlsEnabled: false
-  # Specifies the Cert-Manager cluster issuer or resolver for TLS certificates.
+  # -- Enable TLS/SSL encryption for external access
+  # When enabled, the testcenter will be accessible via HTTPS. If enabled, HTTP requests will be automatically rerouted to HTTPS requests.
+  # For production: Always enable TLS to protect sensitive test data.
+  tlsEnabled: true
+  # -- TLS certificate resolver or issuer for automatic certificate management
+  # When using cert-manager, specify the ClusterIssuer name (e.g., "letsencrypt-prod")
+  # When using Traefik, specify the certificate resolver name
+  # Leave empty to use manually configured certificates
   tlsCertResolver: ""
 
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
 # This section defines deployment-specific configurations for different services.
+# These settings control scaling, resource allocation, health checks, and deployment strategy.
 deployment:
-  # Deployment configuration for the backend.
+  # -- Backend deployment configuration (PHP/Slim REST API)
+  # The backend is the core component handling all business logic, authentication,
+  # and database operations. It's stateless and can be horizontally scaled.
   backend:
-    # Backend can be scaled up.
+    # -- Number of backend replicas to run
+    # For production: Start with 2-3 replicas for high availability
+    # Scale based on CPU/memory usage and response times
     replicas: 1
+    # -- Deployment strategy configuration
+    # RollingUpdate ensures zero-downtime deployments
     strategy:
       type: RollingUpdate
       rollingUpdate:
+        # -- Maximum number of pods that can be created above the desired number
+        # Setting to 1 allows one extra pod during updates
         maxSurge: 1
+        # -- Maximum number of pods that can be unavailable during updates
+        # Setting to 0 ensures no downtime during deployments
         maxUnavailable: 0
+    # -- Resource allocation for backend pods
+    # Configure based on your load testing and monitoring data
+    resources:
+      limits:
+        # -- Maximum CPU allocation (1000m = 1 CPU core)
+        # Monitor CPU usage and adjust based on load patterns
+        cpu: 1000m
+        # -- Maximum memory allocation
+        # PHP applications typically need 512Mi-2Gi depending on complexity
+        memory: 1Gi
+      requests:
+        # -- Guaranteed CPU allocation
+        # Start with 50% of limit and adjust based on monitoring
+        cpu: 500m
+        # -- Guaranteed memory allocation
+        # Start with 50% of limit and adjust based on monitoring
+        memory: 512Mi
+    # -- Health probe configuration for backend pods
+    # Properly configured probes ensure reliable service availability
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        # Backend has longer timeout due to potential database operations
+        periodSeconds: 30
+        # -- Timeout for each liveness probe
+        # Longer timeout accounts for database query times
+        timeoutSeconds: 30
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # Longer delay allows backend to fully initialize
+        initialDelaySeconds: 30
+      readiness:
+        # -- How often to perform the readiness probe
+        periodSeconds: 10
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+      startup:
+        # -- How often to perform the startup probe
+        periodSeconds: 10
+        # -- Timeout for each startup probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        failureThreshold: 3
+        # -- Initial delay before starting startup probes
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for backend deployment
+    # Uncomment to distribute backend pods across different nodes for high availability
+    # For production: Enable to ensure pods are not scheduled on the same node
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-backend-pod
 
-  # Deployment configuration for the frontend.
+  # -- Frontend deployment configuration (Angular 16 SPA)
+  # The frontend serves the user interface as a static Angular application.
+  # It's stateless and can be easily scaled for high traffic.
   frontend:
-    # Frontend can be scaled up.
+    # -- Number of frontend replicas to run
+    # For production: Scale based on expected user load
+    # Frontend is lightweight and can handle many concurrent users per pod
     replicas: 1
+    # -- Deployment strategy configuration
+    # RollingUpdate ensures zero-downtime deployments
     strategy:
       type: RollingUpdate
       rollingUpdate:
+        # -- Maximum number of pods that can be created above the desired number
         maxSurge: 1
+        # -- Maximum number of pods that can be unavailable during updates
         maxUnavailable: 0
+    # -- Resource allocation for frontend pods
+    # Frontend is typically less resource-intensive than backend
+    resources:
+      limits:
+        # -- Maximum CPU allocation (500m = 0.5 CPU core)
+        # Frontend (static files) requires less CPU than backend
+        cpu: 500m
+        # -- Maximum memory allocation
+        # Angular applications typically need 128Mi-512Mi
+        memory: 512Mi
+      requests:
+        # -- Guaranteed CPU allocation
+        # Frontend has low CPU requirements for serving static files
+        cpu: 100m
+        # -- Guaranteed memory allocation
+        # Start with minimal memory and scale up if needed
+        memory: 128Mi
+    # -- Health probe configuration for frontend pods
+    # Frontend probes are simpler since it serves static content
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        periodSeconds: 10
+        # -- Timeout for each liveness probe
+        # Short timeout for static content serving
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # Frontend starts quickly as it serves static files
+        initialDelaySeconds: 10
+      readiness:
+        # -- How often to perform the readiness probe
+        periodSeconds: 10
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+      startup:
+        # -- How often to perform the startup probe
+        periodSeconds: 10
+        # -- Timeout for each startup probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        failureThreshold: 3
+        # -- Initial delay before starting startup probes
+        # Frontend starts quickly
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for frontend deployment
+    # Uncomment to distribute frontend pods across different nodes
+    # For production: Enable for better availability and load distribution
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-frontend-pod
 
-  # Deployment configuration for the file server.
+  # -- File server deployment configuration (Nginx-based with Redis caching)
+  # The file server handles serving test files, resources, and static content.
+  # It includes Redis integration for caching frequently accessed files.
   fileServer:
-    # File Server can be scaled up.
+    # -- Number of file server replicas to run
+    # For production: Scale based on file serving load and concurrent users
+    # File server can be horizontally scaled for high availability
     replicas: 1
+    # -- Deployment strategy configuration
+    # RollingUpdate ensures zero-downtime deployments
     strategy:
       type: RollingUpdate
       rollingUpdate:
+        # -- Maximum number of pods that can be created above the desired number
         maxSurge: 1
+        # -- Maximum number of pods that can be unavailable during updates
         maxUnavailable: 0
+    # -- Resource allocation for file server pods
+    # File server typically needs moderate resources for file I/O operations
+    resources:
+      limits:
+        # -- Maximum CPU allocation (500m = 0.5 CPU core)
+        # File serving requires moderate CPU for file operations
+        cpu: 500m
+        # -- Maximum memory allocation
+        # Memory usage depends on file caching and concurrent connections
+        memory: 512Mi
+      requests:
+        # -- Guaranteed CPU allocation
+        # File server has moderate CPU requirements
+        cpu: 100m
+        # -- Guaranteed memory allocation
+        # Start with minimal memory and scale based on file cache usage
+        memory: 128Mi
+    # -- Health probe configuration for file server pods
+    # File server probes check both the web server and file accessibility
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        periodSeconds: 10
+        # -- Timeout for each liveness probe
+        # Short timeout for file serving responsiveness
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # File server starts quickly as it's nginx-based
+        initialDelaySeconds: 10
+      readiness:
+        # -- How often to perform the readiness probe
+        periodSeconds: 10
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+      startup:
+        # -- How often to perform the startup probe
+        periodSeconds: 10
+        # -- Timeout for each startup probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        failureThreshold: 3
+        # -- Initial delay before starting startup probes
+        # File server starts very quickly
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for file server deployment
+    # Uncomment to distribute file server pods across different nodes
+    # For production: Enable for better availability and load distribution
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-file-server-pod
 
-# This section configures persistent storage settings.
+  # -- Broadcasting service deployment configuration (Node.js/NestJS WebSocket)
+  # The broadcasting service handles real-time WebSocket connections for live updates,
+  # test monitoring, and real-time communication features.
+  broadcasting:
+    # -- Resource allocation for broadcasting service pods
+    # Broadcasting service needs moderate resources for WebSocket connections
+    resources:
+      limits:
+        # -- Maximum CPU allocation (500m = 0.5 CPU core)
+        # WebSocket handling requires moderate CPU for connection management
+        cpu: 500m
+        # -- Maximum memory allocation
+        # Memory usage scales with number of concurrent WebSocket connections
+        memory: 512Mi
+      requests:
+        # -- Guaranteed CPU allocation
+        # Broadcasting service has moderate CPU requirements
+        cpu: 100m
+        # -- Guaranteed memory allocation
+        # Start with minimal memory and scale based on connection count
+        memory: 128Mi
+    # -- Health probe configuration for broadcasting service pods
+    # Broadcasting service probes check WebSocket server availability
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        periodSeconds: 10
+        # -- Timeout for each liveness probe
+        # Short timeout for WebSocket server responsiveness
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # Node.js application needs time to initialize
+        initialDelaySeconds: 10
+      readiness:
+        # -- How often to perform the readiness probe
+        periodSeconds: 10
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+      startup:
+        # -- How often to perform the startup probe
+        periodSeconds: 10
+        # -- Timeout for each startup probe
+        timeoutSeconds: 1
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        failureThreshold: 3
+        # -- Initial delay before starting startup probes
+        # Node.js starts relatively quickly
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for broadcasting service deployment
+    # Uncomment to distribute broadcasting pods across different nodes
+    # For production: Enable for better availability of real-time features
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-broadcasting-pod
+
+  # -- Cache server deployment configuration (Redis 8.0)
+  # Redis is used for caching file content, session data, and improving performance.
+  # For production: Consider Redis persistence, backup strategies, and memory limits.
+  cacheServer:
+    # -- Resource allocation for cache server pods
+    # Redis memory usage directly impacts caching performance
+    resources:
+      limits:
+        # -- Maximum CPU allocation (500m = 0.5 CPU core)
+        # Redis is generally memory-bound rather than CPU-bound
+        cpu: 500m
+        # -- Maximum memory allocation
+        # This should align with config.cacheServer.redisMemoryMax
+        # For production: Set based on your caching requirements
+        memory: 1Gi
+      requests:
+        # -- Guaranteed CPU allocation
+        # Redis has low CPU requirements under normal load
+        cpu: 100m
+        # -- Guaranteed memory allocation
+        # Start with 25% of limit and monitor usage
+        memory: 256Mi
+    # -- Health probe configuration for cache server pods
+    # Redis probes use PING command to check server responsiveness
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        periodSeconds: 10
+        # -- Timeout for each liveness probe
+        # Longer timeout for Redis operations
+        timeoutSeconds: 5
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # Redis needs time to initialize and load data
+        initialDelaySeconds: 10
+      readiness:
+        # -- How often to perform the readiness probe
+        # More frequent readiness checks for cache responsiveness
+        periodSeconds: 5
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 5
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+        # -- Initial delay before starting readiness probes
+        initialDelaySeconds: 10
+      startup:
+        # -- How often to perform the startup probe
+        # Frequent startup checks for Redis initialization
+        periodSeconds: 5
+        # -- Timeout for each startup probe
+        timeoutSeconds: 5
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        # High failure threshold as Redis may take time to start with large datasets
+        failureThreshold: 30
+        # -- Initial delay before starting startup probes
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for cache server deployment
+    # Uncomment to distribute cache server pods across different nodes
+    # For production: Enable for better availability, but consider data consistency
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-cache-server-pod
+
+  # -- Database deployment configuration (MySQL 8.4)
+  # MySQL stores all test data, user accounts, results, and application metadata.
+  # For production: Configure backup strategies, replication, and monitoring.
+  # ⚠️  WARNING: Database is stateful - ensure proper backup and recovery procedures!
+  db:
+    # -- Resource allocation for database pods
+    # Database resource requirements depend on data size and query complexity
+    resources:
+      limits:
+        # -- Maximum CPU allocation (1000m = 1 CPU core)
+        # Database operations can be CPU-intensive for complex queries
+        cpu: 1000m
+        # -- Maximum memory allocation
+        # MySQL benefits from large memory for buffer pools and caching
+        # For production: Set based on database size and concurrent connections
+        memory: 2Gi
+      requests:
+        # -- Guaranteed CPU allocation
+        # Database needs consistent CPU for optimal performance
+        cpu: 500m
+        # -- Guaranteed memory allocation
+        # MySQL requires significant memory for buffer pools
+        memory: 1Gi
+    # -- Health probe configuration for database pods
+    # Database probes use MySQL-specific health checks
+    probes:
+      liveness:
+        # -- How often to perform the liveness probe
+        # Less frequent probes for database to avoid interference
+        periodSeconds: 30
+        # -- Timeout for each liveness probe
+        # Longer timeout for database operations
+        timeoutSeconds: 30
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered unhealthy and restarted
+        failureThreshold: 3
+        # -- Initial delay before starting liveness probes
+        # Database needs time to initialize and load data
+        initialDelaySeconds: 10
+      readiness:
+        # -- How often to perform the readiness probe
+        # More frequent checks for database readiness
+        periodSeconds: 5
+        # -- Timeout for each readiness probe
+        timeoutSeconds: 5
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is marked as not ready
+        failureThreshold: 3
+        # -- Initial delay before starting readiness probes
+        initialDelaySeconds: 10
+      startup:
+        # -- How often to perform the startup probe
+        periodSeconds: 10
+        # -- Timeout for each startup probe
+        timeoutSeconds: 5
+        # -- Minimum consecutive successes for probe to be considered successful
+        successThreshold: 1
+        # -- Number of failures before pod is considered failed to start
+        # High failure threshold as database may take time to start with large datasets
+        failureThreshold: 30
+        # -- Initial delay before starting startup probes
+        initialDelaySeconds: 30
+    # -- Topology spread constraints for database deployment
+    # ⚠️  WARNING: Database is stateful - be careful with topology constraints!
+    # For production: Consider using StatefulSets with persistent storage
+    # Only enable if you have proper backup and recovery procedures
+    topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app: release-name-db-pod
+
+# =============================================================================
+# PERSISTENT STORAGE CONFIGURATION
+# =============================================================================
+# This section configures persistent storage settings for stateful components.
+# ⚠️  CRITICAL: Proper storage configuration is essential for data persistence!
+# For production: Use high-performance storage classes with backup capabilities.
 persistence:
-  # Enables or disables Longhorn storage provisioner.
+  # -- Enable Longhorn distributed storage provisioner
+  # Longhorn provides distributed block storage for Kubernetes clusters.
+  # Enable if you want replicated storage across multiple nodes.
+  # For production: Consider for high availability and data replication.
   longhornEnabled: false
-  # Enables or disables the Longhorn UI.
+  # -- Enable Longhorn management UI
+  # Provides web interface for managing Longhorn storage volumes.
+  # Only enable if longhornEnabled is true and you need UI access.
   longhornUIEnabled: false
-  # Defines the subdomain for the Longhorn UI if enabled.
+  # -- Subdomain for Longhorn UI access
+  # The UI will be accessible at: https://longhorn.{baseDomain}
+  # For production: Secure the UI with authentication and authorization.
   longhornUISubdomain: longhorn
 
-  # Storage class name for the backend's Persistent Volume Claim (PVC).
+  # -- Storage class name for backend application data PVC
+  # The backend stores uploaded test files, configurations, and temporary data.
+  # For production: Use fast SSD storage class (e.g., "fast-ssd", "gp3")
   backendPvcStorageClassName: standard
-  # Access mode for the backend's PVC (e.g., ReadWriteOnce, ReadWriteMany).
+  # -- Access mode for backend PVC
+  # ReadWriteOnce: Single node access (recommended for most use cases)
+  # ReadWriteMany: Multi-node access (required for multiple backend replicas)
   backendPvcAccessMode: ReadWriteOnce
-  # Size of the backend's PVC.
+  # -- Size of backend application data storage
+  # Size depends on number of tests, uploaded files, and user data.
+  # For production: Monitor usage and scale accordingly (10Gi-100Gi typical)
   backendPvcSize: 2Gi
 
-  # Storage class name for the backend configuration's PVC.
+  # -- Storage class name for backend configuration PVC
+  # Stores backend configuration files and application settings.
+  # Can use slower storage as it's accessed infrequently.
   backendConfigPvcStorageClassName: standard
-  # Access mode for the backend configuration's PVC.
+  # -- Access mode for backend configuration PVC
+  # ReadWriteOnce is sufficient as config is typically read during startup
   backendConfigPvcAccessMode: ReadWriteOnce
-  # Size of the backend configuration's PVC.
+  # -- Size of backend configuration storage
+  # Configuration files are typically small (100Mi is usually sufficient)
   backendConfigPvcSize: 100Mi
 
-  # Storage class name for the database's PVC.
+  # -- Storage class name for database PVC
+  # ⚠️  CRITICAL: Use high-performance, reliable storage for database!
+  # For production: Use fast SSD storage with backup capabilities
   dbPvcStorageClassName: standard
-  # Access mode for the database's PVC.
+  # -- Access mode for database PVC
+  # ReadWriteOnce for single MySQL instance (most common)
+  # For MySQL replication: Configure separate PVCs per replica
   dbPvcAccessMode: ReadWriteOnce
-  # Size of the database's PVC.
+  # -- Size of database storage
+  # Size depends on number of tests, users, and result data retention.
+  # For production: Monitor database growth and plan accordingly (10Gi-500Gi+)
   dbPvcSize: 2Gi
+
+# =============================================================================
+# NETWORK POLICIES AND SECURITY
+# =============================================================================
+# This section configures Kubernetes Network Policies for micro-segmentation.
+# Network policies control traffic flow between pods for enhanced security.
+# For production: Review and customize policies based on your security requirements.
+network:
+  # -- Default ingress policy allowing all inbound traffic
+  # This policy allows all ingress traffic to any pod that doesn't have
+  # more specific network policies applied.
+  # For production: Consider restricting to specific sources
+  ingressAll:
+    ingress:
+      - { }
+    policyTypes:
+      - Ingress
+
+  # -- Default egress policy allowing all outbound traffic
+  # This policy allows all egress traffic from any pod that doesn't have
+  # more specific network policies applied.
+  # For production: Consider restricting to specific destinations
+  egressAll:
+    egress:
+      - { }
+    policyTypes:
+      - Egress

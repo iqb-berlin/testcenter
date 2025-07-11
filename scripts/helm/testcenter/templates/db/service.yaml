@@ -6,6 +6,5 @@ spec:
   selector:
     app: {{ .Release.Name }}-db-pod
   ports:
-    - protocol: TCP
-      port: 3306
+    - port: 3306
       targetPort: mysql-container

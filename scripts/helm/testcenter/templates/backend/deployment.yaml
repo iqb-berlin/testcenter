@@ -15,35 +15,53 @@ spec:
       labels:
         app: {{ .Release.Name }}-backend-pod
     spec:
+      {{- if .Values.deployment.backend.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.backend.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend-container
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
           command: [ "apache2-foreground" ]
           ports:
-            - containerPort: 8080
+            - name: http-container
+              containerPort: 8080
+          {{- if .Values.deployment.backend.resources }}
+          resources:
+            {{- .Values.deployment.backend.resources | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data
             - name: backend-config-volume
               mountPath: /var/www/testcenter/backend/config
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            periodSeconds: 5
-            timeoutSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /
+              path: /version
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.deployment.backend.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.backend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /system/status
+              port: 8080
+            periodSeconds: {{ .Values.deployment.backend.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /version
+              port: 8080
+            initialDelaySeconds: {{ .Values.deployment.backend.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.backend.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.startup.failureThreshold }}
       initContainers:
         - name: wait-for-db-initcontainer
           image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"

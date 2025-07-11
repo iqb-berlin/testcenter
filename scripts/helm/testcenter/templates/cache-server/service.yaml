@@ -6,6 +6,5 @@ spec:
   selector:
     app: {{ .Release.Name }}-cache-server-pod
   ports:
-    - name: http-service
-      port: 6379
+    - port: 6379
       targetPort: http-container

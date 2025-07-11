@@ -86,7 +86,7 @@ services:
       options:
         <<: *env-logging-conf
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://backend:8080" ]
+      test: [ "CMD", "curl", "-f", "http://backend:8080/version" ]
       start_period: 60s
       start_interval: 3s
       interval: 5m
