@@ -9,7 +9,7 @@ function redis_connector.connect()
   })
   if not ok then
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
-    ngx.say("Cache-Service not reachable")
+    ngx.say("Cache Server is not reachable")
     ngx.log(ngx.ERR, "Failed to connect to Redis")
     return ngx.exit(ngx.status)
   end

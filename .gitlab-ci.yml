@@ -1167,7 +1167,7 @@ test-file-server-api:
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-file-server
+    #- docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-file-server
   script:
     - docker compose
           --env-file .env.dev-template
@@ -2053,7 +2053,7 @@ scan-db-prod:
     reports:
       container_scanning: gl-container-scanning-report.json
 
-scan-cache-service-prod:
+scan-cache-server-prod:
   stage: test
   allow_failure: true
   needs: []
