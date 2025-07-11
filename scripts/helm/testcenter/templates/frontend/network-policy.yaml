@@ -7,4 +7,16 @@ spec:
   podSelector:
     matchLabels:
       app: {{ .Release.Name }}-frontend-pod
-  {{- .Values.network.frontend | toYaml | nindent 2 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - { }
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-backend-pod
+      ports:
+        - protocol: TCP
+          port: 8080

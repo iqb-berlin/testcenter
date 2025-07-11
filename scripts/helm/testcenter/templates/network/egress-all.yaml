@@ -1,8 +1,0 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: egress-all
-  namespace: tc
-spec:
-  podSelector: {}
-  {{- .Values.network.egressAll | toYaml | nindent 2 }}

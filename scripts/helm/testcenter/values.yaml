@@ -273,7 +273,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Longer delay allows backend to fully initialize
-        initialDelaySeconds: 60
+        initialDelaySeconds: 30
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -354,7 +354,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Frontend starts quickly as it serves static files
-        initialDelaySeconds: 30
+        initialDelaySeconds: 10
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -375,7 +375,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting startup probes
         # Frontend starts quickly
-        initialDelaySeconds: 15
+        initialDelaySeconds: 30
     # -- Topology spread constraints for frontend deployment
     # Uncomment to distribute frontend pods across different nodes
     # For production: Enable for better availability and load distribution
@@ -436,7 +436,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # File server starts quickly as it's nginx-based
-        initialDelaySeconds: 15
+        initialDelaySeconds: 10
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -457,7 +457,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting startup probes
         # File server starts very quickly
-        initialDelaySeconds: 5
+        initialDelaySeconds: 30
     # -- Topology spread constraints for file server deployment
     # Uncomment to distribute file server pods across different nodes
     # For production: Enable for better availability and load distribution
@@ -505,7 +505,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Node.js application needs time to initialize
-        initialDelaySeconds: 20
+        initialDelaySeconds: 10
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -526,7 +526,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting startup probes
         # Node.js starts relatively quickly
-        initialDelaySeconds: 10
+        initialDelaySeconds: 30
     # -- Topology spread constraints for broadcasting service deployment
     # Uncomment to distribute broadcasting pods across different nodes
     # For production: Enable for better availability of real-time features
@@ -575,7 +575,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Redis needs time to initialize and load data
-        initialDelaySeconds: 30
+        initialDelaySeconds: 10
       readiness:
         # -- How often to perform the readiness probe
         # More frequent readiness checks for cache responsiveness
@@ -600,7 +600,7 @@ deployment:
         # High failure threshold as Redis may take time to start with large datasets
         failureThreshold: 30
         # -- Initial delay before starting startup probes
-        initialDelaySeconds: 5
+        initialDelaySeconds: 30
     # -- Topology spread constraints for cache server deployment
     # Uncomment to distribute cache server pods across different nodes
     # For production: Enable for better availability, but consider data consistency
@@ -651,7 +651,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Database needs time to initialize and load data
-        initialDelaySeconds: 30
+        initialDelaySeconds: 10
       readiness:
         # -- How often to perform the readiness probe
         # More frequent checks for database readiness
@@ -675,7 +675,7 @@ deployment:
         # High failure threshold as database may take time to start with large datasets
         failureThreshold: 30
         # -- Initial delay before starting startup probes
-        initialDelaySeconds: 10
+        initialDelaySeconds: 30
     # -- Topology spread constraints for database deployment
     # ⚠️  WARNING: Database is stateful - be careful with topology constraints!
     # For production: Consider using StatefulSets with persistent storage

@@ -7,4 +7,22 @@ spec:
   podSelector:
     matchLabels:
       app: {{ .Release.Name }}-file-server-pod
-  {{- .Values.network.fileServer | toYaml | nindent 2 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-backend-pod
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-cache-server-pod
+      ports:
+        - protocol: TCP
+          port: 6379
