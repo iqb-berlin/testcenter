@@ -19,10 +19,10 @@ image:
   # -- Configuration for the Broadcaster image (Node.js/NestJS WebSocket service)
   # The Broadcaster handles real-time communication and WebSocket connections
   # for the testcenter application. It supplements the stateless nature of the PHP backend.
-  broadcasting:
+  broadcaster:
     # -- Image pull policy. Use 'IfNotPresent' for production to avoid unnecessary pulls
     imagePullPolicy: Always
-    # -- Registry path for the broadcasting image. Leave empty for Docker Hub
+    # -- Registry path for the broadcaster image. Leave empty for Docker Hub
     registryPath: ""
     # -- Image tag. For production, use specific version tags instead of 'stable'
     # Example: "17.0.0"
@@ -472,7 +472,7 @@ deployment:
   # -- Broadcaster deployment configuration (Node.js/NestJS WebSocket)
   # The Broadcaster handles real-time WebSocket connections for live updates,
   # test monitoring, and real-time communication features.
-  broadcasting:
+  broadcaster:
     # -- Resource allocation for Broadcaster pods
     # Broadcaster needs moderate resources for WebSocket connections
     resources:
@@ -528,7 +528,7 @@ deployment:
         # Node.js starts relatively quickly
         initialDelaySeconds: 30
     # -- Topology spread constraints for Broadcaster deployment
-    # Uncomment to distribute broadcasting pods across different nodes
+    # Uncomment to distribute broadcaster pods across different nodes
     # For production: Enable for better availability of real-time features
     topologySpreadConstraints:
     #   - maxSkew: 1
@@ -536,7 +536,7 @@ deployment:
     #     whenUnsatisfiable: DoNotSchedule
     #     labelSelector:
     #       matchLabels:
-    #         app: release-name-broadcasting-pod
+    #         app: release-name-broadcaster-pod
 
   # -- Cache server deployment configuration (Redis 8.0)
   # Redis is used for caching file content, session data, and improving performance.

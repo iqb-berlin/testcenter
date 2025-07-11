@@ -33,12 +33,12 @@ class FileService {
 
     if (($errorCode === 0) or ($curlResponse === false)) {
 
-      error_log("FilesService responds Error on `[GET] $uri`: not available");
+      error_log("File Server responds Error on `[GET] $uri`: not available");
       return 'unreachable';
     }
 
     if ($errorCode >= 400) {
-      error_log("BroadcastingService responds Error on `[GET] $uri`: [$errorCode] $curlResponse");
+      error_log("Broadcaster responds Error on `[GET] $uri`: [$errorCode] $curlResponse");
       return 'unreachable';
     }
 

@@ -1,10 +1,10 @@
 {{- if .Values.ingress.traefikEnabled }}
 
-# Broadcasting
+# Broadcaster
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Release.Name }}-broadcasting-ingress
+  name: {{ .Release.Name }}-broadcaster-ingress
   namespace: tc
 spec:
   entryPoints:

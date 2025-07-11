@@ -31,7 +31,7 @@ spec:
     permanent: true
 ---
 
-# Broadcasting
+# Broadcaster
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
