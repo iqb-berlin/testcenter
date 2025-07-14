@@ -2,16 +2,26 @@
 layout: default
 ---
 ## 17.0.0
-### Breaking Changes
-* API Endpoints des Backends werden nicht mehr mit <HOSTNAME>/api aufgerufen, sondern mit <HOSTNAME>/api/; <HOSTNAME>/api gibt von nun an ein 404 error zurück
-
 ### :warning: Hinweis für Administratoren
+* Beim `testcenter-update` auf die 17.0.0 wird beim Schritt [] das Skript einmalig abgebrochen -> man muss das Update mit `bash <project>/scripts/update_testcenter.sh -s <source> -t <target>` einmal manuell fortgesetzt werden. `<source>` stellt die Version dar, von der man gerade kommt, `<target>` die Zielversion also 17.0.0
 * Das Update der Datenbankstruktur kann bei vielen vorhanden Daten *sehr* lange dauern. Es wird empfohlen, erst
   sämtliche Studien zu beenden und die Daten zu löschen bevor geupdatet wird.
 
-### Änderungen
-* Alle Container laufen ohne root-Rechte
-* Kubernetes: Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
+### Breaking Changes
+* API Endpoints des Backends werden nicht mehr mit <HOSTNAME>/api aufgerufen, sondern mit <HOSTNAME>/api/; <HOSTNAME>/api gibt von nun an ein 404 error zurück
+* `.env.prod` Variablen wurden geändert:
+  * `BROADCAST_SERVICE_ENABLED` -> `BROADCASTER_ENABLED`
+  * `FILE_SERVICE_ENABLED` -> `FILE_SERVER_ENABLED`
+  * `CACHE_SERVICE_RAM` -> `REDIS_MEMORY_MAX`
+  * `CACHE_SERVICE_INCLUDE_FILES` -> `REDIS_CACHE_FILES`
+  * `REDIS_PASSWORD` neu
+* Images vom iqbberlin/... wurden im Namen geändert
+  * iqbberlin/testcenter-file-service -> iqbberlin/file-server
+  * iqbberlin/testcenter-broadcasting-service -> iqbberlin/testcenter-broadcaster
+* Docker compose 
+  * Die Container-Namen und auch die Volume Namen werden nun dynamisch erzeugt, statt statische Namen zu verwenden, "testcenter-backend" wird zu "<project>-backend-<nummer>"
+* Makefile
+  * Umbenamung von make commands
 
 ### Bugfix
 * Units konnten unter bestimmten Extrembedingungen doppelt angelegt werden, was zu doppelten Zeilen in den Ergebnisdaten
@@ -19,12 +29,20 @@ layout: default
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
   führen.
+* Testleitungskonsole: Error beim Sperren/Fortsetzen behoben. 
 
 ### Sicherheit
 * Upgrade von MySQL 8.0 auf 8.4
 
 ### Verbesserungen
-* Kubernetes: Alle Deployments nehmen Konfigurationen aus der values.yaml, um deren Resource Management zu steuern.
+* Alle Container laufen mit einem nicht-root User - höhere Sicherheit
+* Kubernetes: 
+  * Alle Deployments nehmen Konfigurationen aus der values.yaml, um deren Resource Management zu steuern.
+  * Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
+  * Pods starten schneller, da die Probes alle enger getaktet wurden, neue healthchecks wurden eingeführt
+  * `values.yaml` ist ausführlicher dokumentiert
+  * Topology spread constraints können in der values.yaml konfiguriert werden
+  * Ressource management ist nun für jeden Service konfigurierbar
 
 ## 16.3.0
 ### neue Features
