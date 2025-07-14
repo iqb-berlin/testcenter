@@ -30,6 +30,8 @@ services:
     extends:
       service: task-runner
     depends_on:
+      backend:
+        condition: service_healthy
       file-server:
         condition: service_started
       cache-server:
