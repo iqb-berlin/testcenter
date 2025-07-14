@@ -994,6 +994,7 @@ test-backend-unit:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
+    - mkdir -m 777 -p docs/dist/test-coverage-backend-unit
   script:
     - if [ -z $CI_COMMIT_TAG ] ||
         ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
@@ -1002,14 +1003,15 @@ test-backend-unit:
       then
         chmod 0755 scripts/database/000-create-test-db.sh &&
         docker pull --quiet ${DB_BASE_IMAGE} &&
+        docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE} &&
         docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker compose
             --env-file .env.dev-template
             --file docker-compose.yml
             --file docker-compose.dev.yml
-          run --rm --entrypoint "" backend php -dxdebug.mode='coverage'
-            /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
+          run --rm --entrypoint "" backend
+            php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
               --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
               --configuration /var/www/testcenter/backend/phpunit.xml
               --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
@@ -1029,6 +1031,7 @@ test-frontend-unit:
   stage: test
   needs:
     - build-frontend
+    - build-backend
   rules:
     # - !reference [ .frontend-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
     # - !reference [ .common-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
@@ -1037,6 +1040,7 @@ test-frontend-unit:
     - !reference [ .release_rules, rules ]
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
@@ -1046,7 +1050,12 @@ test-frontend-unit:
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
       then
         cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts &&
+        chmod 0755 scripts/database/000-create-test-db.sh &&
+        docker pull --quiet ${DB_BASE_IMAGE} &&
+        docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE} &&
+        docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
+        docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current &&
         docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current &&
         docker compose
             --env-file .env.dev-template
@@ -1122,8 +1131,8 @@ test-backend-api:
     - docker pull --quiet ${DB_BASE_IMAGE}
     - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-backend
   script:
     - docker compose
@@ -1136,6 +1145,7 @@ test-backend-api:
 test-file-server-api:
   stage: test
   needs:
+    - build-backend
     - build-file-server
     - build-task-runner
   rules:
@@ -1145,14 +1155,19 @@ test-file-server-api:
     - if: $CI_COMMIT_TAG
       when: never
   variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     TASK_RUNNER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/task-runner"
   before_script:
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${DB_BASE_IMAGE}
     - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+#    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-    - docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner-file-server
+#    - docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-task-runner-file-server
   script:
     - docker compose
           --env-file .env.dev-template
@@ -2038,7 +2053,7 @@ scan-db-prod:
     reports:
       container_scanning: gl-container-scanning-report.json
 
-scan-cache-service-prod:
+scan-cache-server-prod:
   stage: test
   allow_failure: true
   needs: []
