@@ -51,12 +51,3 @@ spec:
             timeoutSeconds: {{ .Values.deployment.frontend.probes.readiness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.frontend.probes.readiness.successThreshold }}
             failureThreshold: {{ .Values.deployment.frontend.probes.readiness.failureThreshold }}
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: {{ .Values.deployment.frontend.probes.startup.initialDelaySeconds }}
-            periodSeconds: {{ .Values.deployment.frontend.probes.startup.periodSeconds }}
-            timeoutSeconds: {{ .Values.deployment.frontend.probes.startup.timeoutSeconds }}
-            successThreshold: {{ .Values.deployment.frontend.probes.startup.successThreshold }}
-            failureThreshold: {{ .Values.deployment.frontend.probes.startup.failureThreshold }}

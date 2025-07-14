@@ -82,25 +82,10 @@ spec:
                 - -h
                 - 127.0.0.1
                 - --silent
-            initialDelaySeconds: {{ .Values.deployment.db.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.db.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.db.probes.readiness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.db.probes.readiness.successThreshold }}
             failureThreshold: {{ .Values.deployment.db.probes.readiness.failureThreshold }}
-          startupProbe:
-            exec:
-              command:
-                - mysqladmin
-                - ping
-                - --user=${MYSQL_USER}
-                - -h
-                - 127.0.0.1
-                - --silent
-            initialDelaySeconds: {{ .Values.deployment.db.probes.startup.initialDelaySeconds }}
-            periodSeconds: {{ .Values.deployment.db.probes.startup.periodSeconds }}
-            timeoutSeconds: {{ .Values.deployment.db.probes.startup.timeoutSeconds }}
-            successThreshold: {{ .Values.deployment.db.probes.startup.successThreshold }}
-            failureThreshold: {{ .Values.deployment.db.probes.startup.failureThreshold }}
       volumes:
         - name: db-volume
           persistentVolumeClaim:

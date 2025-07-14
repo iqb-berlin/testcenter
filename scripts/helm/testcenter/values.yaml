@@ -263,37 +263,32 @@ deployment:
       liveness:
         # -- How often to perform the liveness probe
         # Backend has longer timeout due to potential database operations
-        periodSeconds: 30
+        periodSeconds: 20
         # -- Timeout for each liveness probe
         # Longer timeout accounts for database query times
-        timeoutSeconds: 30
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is considered unhealthy and restarted
         failureThreshold: 3
-        # -- Initial delay before starting liveness probes
-        # Longer delay allows backend to fully initialize
-        initialDelaySeconds: 30
       readiness:
         # -- How often to perform the readiness probe
-        periodSeconds: 10
+        periodSeconds: 5
         # -- Timeout for each readiness probe
-        timeoutSeconds: 1
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
       startup:
         # -- How often to perform the startup probe
-        periodSeconds: 10
+        periodSeconds: 5
         # -- Timeout for each startup probe
-        timeoutSeconds: 1
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is considered failed to start
-        failureThreshold: 3
-        # -- Initial delay before starting startup probes
-        initialDelaySeconds: 30
+        failureThreshold: 60 # 5 minutes overall
     # -- Topology spread constraints for backend deployment
     # Uncomment to distribute backend pods across different nodes for high availability
     # For production: Enable to ensure pods are not scheduled on the same node
@@ -354,7 +349,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Frontend starts quickly as it serves static files
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -364,18 +359,6 @@ deployment:
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
-      startup:
-        # -- How often to perform the startup probe
-        periodSeconds: 10
-        # -- Timeout for each startup probe
-        timeoutSeconds: 1
-        # -- Minimum consecutive successes for probe to be considered successful
-        successThreshold: 1
-        # -- Number of failures before pod is considered failed to start
-        failureThreshold: 3
-        # -- Initial delay before starting startup probes
-        # Frontend starts quickly
-        initialDelaySeconds: 30
     # -- Topology spread constraints for frontend deployment
     # Uncomment to distribute frontend pods across different nodes
     # For production: Enable for better availability and load distribution
@@ -436,7 +419,7 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # File server starts quickly as it's nginx-based
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
       readiness:
         # -- How often to perform the readiness probe
         periodSeconds: 10
@@ -446,18 +429,6 @@ deployment:
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
-      startup:
-        # -- How often to perform the startup probe
-        periodSeconds: 10
-        # -- Timeout for each startup probe
-        timeoutSeconds: 1
-        # -- Minimum consecutive successes for probe to be considered successful
-        successThreshold: 1
-        # -- Number of failures before pod is considered failed to start
-        failureThreshold: 3
-        # -- Initial delay before starting startup probes
-        # File server starts very quickly
-        initialDelaySeconds: 30
     # -- Topology spread constraints for file server deployment
     # Uncomment to distribute file server pods across different nodes
     # For production: Enable for better availability and load distribution
@@ -495,7 +466,7 @@ deployment:
     probes:
       liveness:
         # -- How often to perform the liveness probe
-        periodSeconds: 10
+        periodSeconds: 20
         # -- Timeout for each liveness probe
         # Short timeout for WebSocket server responsiveness
         timeoutSeconds: 1
@@ -505,28 +476,16 @@ deployment:
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Node.js application needs time to initialize
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
       readiness:
         # -- How often to perform the readiness probe
-        periodSeconds: 10
+        periodSeconds: 5
         # -- Timeout for each readiness probe
         timeoutSeconds: 1
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
-      startup:
-        # -- How often to perform the startup probe
-        periodSeconds: 10
-        # -- Timeout for each startup probe
-        timeoutSeconds: 1
-        # -- Minimum consecutive successes for probe to be considered successful
-        successThreshold: 1
-        # -- Number of failures before pod is considered failed to start
-        failureThreshold: 3
-        # -- Initial delay before starting startup probes
-        # Node.js starts relatively quickly
-        initialDelaySeconds: 30
     # -- Topology spread constraints for Broadcaster deployment
     # Uncomment to distribute broadcaster pods across different nodes
     # For production: Enable for better availability of real-time features
@@ -568,39 +527,37 @@ deployment:
         periodSeconds: 10
         # -- Timeout for each liveness probe
         # Longer timeout for Redis operations
-        timeoutSeconds: 5
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is considered unhealthy and restarted
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Redis needs time to initialize and load data
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
       readiness:
         # -- How often to perform the readiness probe
         # More frequent readiness checks for cache responsiveness
         periodSeconds: 5
         # -- Timeout for each readiness probe
-        timeoutSeconds: 5
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
-        # -- Initial delay before starting readiness probes
-        initialDelaySeconds: 10
       startup:
         # -- How often to perform the startup probe
         # Frequent startup checks for Redis initialization
         periodSeconds: 5
         # -- Timeout for each startup probe
-        timeoutSeconds: 5
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is considered failed to start
         # High failure threshold as Redis may take time to start with large datasets
-        failureThreshold: 30
+        failureThreshold: 3
         # -- Initial delay before starting startup probes
-        initialDelaySeconds: 30
+        initialDelaySeconds: 5
     # -- Topology spread constraints for cache server deployment
     # Uncomment to distribute cache server pods across different nodes
     # For production: Enable for better availability, but consider data consistency
@@ -641,41 +598,27 @@ deployment:
       liveness:
         # -- How often to perform the liveness probe
         # Less frequent probes for database to avoid interference
-        periodSeconds: 30
+        periodSeconds: 20
         # -- Timeout for each liveness probe
         # Longer timeout for database operations
-        timeoutSeconds: 30
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is considered unhealthy and restarted
         failureThreshold: 3
         # -- Initial delay before starting liveness probes
         # Database needs time to initialize and load data
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
       readiness:
         # -- How often to perform the readiness probe
         # More frequent checks for database readiness
         periodSeconds: 5
         # -- Timeout for each readiness probe
-        timeoutSeconds: 5
+        timeoutSeconds: 3
         # -- Minimum consecutive successes for probe to be considered successful
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
-        # -- Initial delay before starting readiness probes
-        initialDelaySeconds: 10
-      startup:
-        # -- How often to perform the startup probe
-        periodSeconds: 10
-        # -- Timeout for each startup probe
-        timeoutSeconds: 5
-        # -- Minimum consecutive successes for probe to be considered successful
-        successThreshold: 1
-        # -- Number of failures before pod is considered failed to start
-        # High failure threshold as database may take time to start with large datasets
-        failureThreshold: 30
-        # -- Initial delay before starting startup probes
-        initialDelaySeconds: 30
     # -- Topology spread constraints for database deployment
     # ⚠️  WARNING: Database is stateful - be careful with topology constraints!
     # For production: Consider using StatefulSets with persistent storage

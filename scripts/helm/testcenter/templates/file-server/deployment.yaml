@@ -57,15 +57,6 @@ spec:
             timeoutSeconds: {{ .Values.deployment.fileServer.probes.readiness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.fileServer.probes.readiness.successThreshold }}
             failureThreshold: {{ .Values.deployment.fileServer.probes.readiness.failureThreshold }}
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: {{ .Values.deployment.fileServer.probes.startup.initialDelaySeconds }}
-            periodSeconds: {{ .Values.deployment.fileServer.probes.startup.periodSeconds }}
-            timeoutSeconds: {{ .Values.deployment.fileServer.probes.startup.timeoutSeconds }}
-            successThreshold: {{ .Values.deployment.fileServer.probes.startup.successThreshold }}
-            failureThreshold: {{ .Values.deployment.fileServer.probes.startup.failureThreshold }}
           env:
             - name: REDIS_HOST
               value: "{{ .Release.Name }}-cache-server.tc.svc.cluster.local"

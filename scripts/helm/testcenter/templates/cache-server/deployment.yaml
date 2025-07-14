@@ -56,7 +56,6 @@ spec:
               command:
                 - redis-cli
                 - ping
-            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.cacheServer.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.cacheServer.probes.readiness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.cacheServer.probes.readiness.successThreshold }}

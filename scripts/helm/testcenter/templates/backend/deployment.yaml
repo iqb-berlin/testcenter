@@ -40,7 +40,6 @@ spec:
             httpGet:
               path: /version
               port: 8080
-            initialDelaySeconds: {{ .Values.deployment.backend.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.backend.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.backend.probes.liveness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.backend.probes.liveness.successThreshold }}
@@ -57,7 +56,6 @@ spec:
             httpGet:
               path: /version
               port: 8080
-            initialDelaySeconds: {{ .Values.deployment.backend.probes.startup.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.backend.probes.startup.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.backend.probes.startup.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.backend.probes.startup.successThreshold }}
