@@ -15,35 +15,60 @@ spec:
       labels:
         app: {{ .Release.Name }}-backend-pod
     spec:
-      initContainers:
-        - name: wait-for-db-initcontainer
-          image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
-          command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
+      {{- if .Values.deployment.backend.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.backend.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend-container
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
+          command: [ "apache2-foreground" ]
+          ports:
+            - name: http-container
+              containerPort: 8080
+          {{- if .Values.deployment.backend.resources }}
+          resources:
+            {{- .Values.deployment.backend.resources | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data
             - name: backend-config-volume
               mountPath: /var/www/testcenter/backend/config
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            periodSeconds: 5
-            timeoutSeconds: 30
-            successThreshold: 1
-            failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
+              path: /version
+              port: 8080
+            periodSeconds: {{ .Values.deployment.backend.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /system/status
+              port: 8080
+            periodSeconds: {{ .Values.deployment.backend.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /version
+              port: 8080
+            periodSeconds: {{ .Values.deployment.backend.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.backend.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.backend.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.backend.probes.startup.failureThreshold }}
+      initContainers:
+        - name: wait-for-db-initcontainer
+          image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.busybox.imagePullPolicy }}
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
       volumes:
         - name: backend-volume
           persistentVolumeClaim:

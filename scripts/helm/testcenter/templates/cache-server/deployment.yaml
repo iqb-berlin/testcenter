@@ -11,27 +11,73 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-cache-server-pod
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cache-server/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/cache-server/secret.yaml") . | sha256sum }}
     spec:
+      {{- if .Values.deployment.cacheServer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.cacheServer.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
       containers:
         - name: {{ .Release.Name }}-cache-server-container
           image: "{{ .Values.image.cacheServer.registryPath }}redis:{{ .Values.image.cacheServer.tag }}"
-          command:
-            - bash
-          args:
-            - "-c"
-            - "redis-server"
-            - "--maxmemory"
-            - "111Mi"
-            - "--maxmemory-policy"
-            - "volatile-lru"
+          imagePullPolicy: {{ .Values.image.cacheServer.imagePullPolicy }}
+          command: ["redis-server"]
+          args: [
+            "--requirepass", "$(REDIS_PASSWORD)",
+            "--maxmemory", "$(REDIS_MEMORY_MAX)",
+            "--maxmemory-policy", "volatile-lru",
+            "--save", '""',
+            "--appendonly", "no"
+          ]
           ports:
             - name: http-container
               containerPort: 6379
-          # vielleicht nur der Volume mount benötigt
-          volumeMounts:
-            - name: lv-storage
-              mountPath: /data
-      volumes:
-        - name: lv-storage
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-cache-server-pvc
+          {{- if .Values.deployment.cacheServer.resources }}
+          resources:
+            {{- .Values.deployment.cacheServer.resources | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.liveness.failureThreshold }}
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.readiness.failureThreshold }}
+          startupProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: {{ .Values.deployment.cacheServer.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.cacheServer.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.cacheServer.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.cacheServer.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.cacheServer.probes.startup.failureThreshold }}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-cache-server-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_MEMORY_MAX
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-cache-server-config
+                  key: REDIS_MEMORY_MAX

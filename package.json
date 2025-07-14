@@ -1,10 +1,10 @@
 {
   "name": "iqb-testcenter",
-  "version": "16.3.0",
+  "version": "17.0.0",
   "iqb": {
     "release-channels": {
       "lts": "15.6",
-      "stable": "16.3"
+      "stable": "17.0"
     },
     "verona-player-api-versions": {
       "min": 2,
@@ -22,12 +22,12 @@
   },
   "private": true,
   "scripts": {
-    "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js",
+    "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcaster/src/**/*.ts scripts/**/*.js",
     "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest",
-    "file-service:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
+    "file-server:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
-    "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
+    "broadcaster:update-compodoc": "npx compodoc -p broadcaster/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcaster",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"

@@ -6,11 +6,11 @@ declare(strict_types=1);
 
 class FileService {
   static function getStatus(): string {
-    if (!SystemConfig::$fileService_external or !SystemConfig::$fileService_internal) {
+    if (!SystemConfig::$fileService_host) {
       return 'off';
     }
 
-    $uri = 'http://' . SystemConfig::$fileService_internal . '/health';
+    $uri = 'http://' . SystemConfig::$fileService_host . 'health';
 
     $curl = curl_init();
     curl_setopt_array($curl, [
@@ -33,12 +33,12 @@ class FileService {
 
     if (($errorCode === 0) or ($curlResponse === false)) {
 
-      error_log("FilesService responds Error on `[GET] $uri`: not available");
+      error_log("File Server responds Error on `[GET] $uri`: not available");
       return 'unreachable';
     }
 
     if ($errorCode >= 400) {
-      error_log("BroadcastingService responds Error on `[GET] $uri`: [$errorCode] $curlResponse");
+      error_log("Broadcaster responds Error on `[GET] $uri`: [$errorCode] $curlResponse");
       return 'unreachable';
     }
 
@@ -46,10 +46,9 @@ class FileService {
   }
 
   public static function getUri(): string {
-    if (!SystemConfig::$fileService_external) {
-      return Server::getUrl() . '/';
+    if (!SystemConfig::$fileService_host) {
+      return '';
     }
-    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
-    return $proto . SystemConfig::$fileService_external;
+    return 'http://' . SystemConfig::$fileService_host;
   }
 }

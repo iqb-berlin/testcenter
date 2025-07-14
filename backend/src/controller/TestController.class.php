@@ -180,8 +180,6 @@ class TestController extends Controller {
       ],
     );
 
-    // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-
     $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
       ? (int) $review['priority']
       : 0;
@@ -231,15 +229,12 @@ class TestController extends Controller {
       'responseType' => 'unknown'
     ]);
 
-    // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-
     self::testDAO()->updateDataParts(
       $testId,
       $unitName,
       (array) $unitResponse['dataParts'],
       $unitResponse['responseType'],
-      $unitResponse['timeStamp'],
-      $unitResponse['OriginalUnitId'],
+      $unitResponse['timeStamp']
     );
 
     return $response->withStatus(201);
@@ -251,19 +246,24 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $stateData = RequestBodyParser::getElementsFromArray($request, [
+    $statePatch = RequestBodyParser::getElementsFromArray($request, [
       'key' => 'REQUIRED',
       'content' => 'REQUIRED',
       'timeStamp' => 'REQUIRED'
     ]);
 
-    $statePatch = TestController::stateArray2KeyValue($stateData);
-
     $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
-    foreach ($stateData as $entry) {
-      self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
-    }
+    $testLogs = array_map(
+      fn ($entry) => new TestLog(
+        $testId,
+        $entry['key'],
+        $entry['timeStamp'],
+        json_encode($entry['content'])
+      ),
+      $statePatch
+    );
+    self::testDAO()->addTestLogs($testLogs);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, $newState)
@@ -281,9 +281,16 @@ class TestController extends Controller {
       'timeStamp' => 'REQUIRED'
     ]);
 
-    foreach ($logData as $entry) {
-      self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
-    }
+    $testLogs = array_map(
+      fn ($entry) => new TestLog(
+        $testId,
+        $entry['key'],
+        $entry['timeStamp'],
+        json_encode($entry['content'])
+      ),
+      $logData
+    );
+    self::testDAO()->addTestLogs($testLogs);
 
     return $response->withStatus(201);
   }
@@ -295,12 +302,10 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-
     $body = JSON::decode($request->getBody()->getContents());
     if (!is_array($body)) {
       // 'not being an array' is the new format
-      $stateData = RequestBodyParser::getElementsFromArray(
+      $statePatch = RequestBodyParser::getElementsFromArray(
         $request,
         [
           'key' => 'REQUIRED',
@@ -312,7 +317,7 @@ class TestController extends Controller {
       $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       // deprecated
-      $stateData = RequestBodyParser::getElementsFromArray($request, [
+      $statePatch = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
         'content' => 'REQUIRED',
         'timeStamp' => 'REQUIRED'
@@ -320,19 +325,19 @@ class TestController extends Controller {
       $originalUnitId = '';
     }
 
-    $statePatch = TestController::stateArray2KeyValue($stateData);
     $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch, $originalUnitId);
 
-    foreach ($stateData as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        $entry['content'],
-        $originalUnitId
-      );
-    }
+        $entry['content']
+      ),
+      $statePatch
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::unitState(
@@ -351,7 +356,6 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
     if (!is_array(JSON::decode($request->getBody()->getContents()))) {
       // 'not being an array' is the new format
       $logData = RequestBodyParser::getElementsFromArray(
@@ -362,26 +366,25 @@ class TestController extends Controller {
           'timeStamp' => 'REQUIRED'
         ],
         'logEntries');
-      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
     } else {
       $logData = RequestBodyParser::getElementsFromArray($request, [
         'key' => 'REQUIRED',
         'content' => '',
         'timeStamp' => 'REQUIRED'
       ]);
-      $originalUnitId = '';
     }
 
-    foreach ($logData as $entry) {
-      self::testDAO()->addUnitLog(
+    $unitLogs = array_map(
+      fn($entry) => new UnitLog(
         $testId,
         $unitName,
         $entry['key'],
         $entry['timeStamp'],
-        json_encode($entry['content']),
-        $originalUnitId
-      );
-    }
+        json_encode($entry['content'])
+      ),
+      $logData
+    );
+    self::testDAO()->addUnitLogs($unitLogs);
 
     return $response->withStatus(201);
   }
@@ -398,7 +401,7 @@ class TestController extends Controller {
     ]);
 
     self::testDAO()->lockTest($testId);
-    self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
+    self::testDAO()->addTestLogs([new TestLog($testId, $lockEvent['message'], $lockEvent['timeStamp'])]);
 
     BroadcastService::sessionChange(
       SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, ['status' => 'locked'])
@@ -436,8 +439,8 @@ class TestController extends Controller {
   }
 
   private static function updateTestState(int $testId, array $testSession, string $field, string $value): void {
-    $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
-    self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
+    $newState = self::testDAO()->updateTestState($testId, [['key' => $field, 'content' => $value, 'timeStamp' => 0]]);
+    self::testDAO()->addTestLogs([new TestLog($testId, '"' . $field . '"', 0, $value)]);
 
     $sessionChangeMessage = SessionChangeMessage::testState(
       $testSession['group_name'],
@@ -470,16 +473,5 @@ class TestController extends Controller {
     self::updateTestState($testId, $testSession, 'CONNECTION', 'LOST');
 
     return $response->withStatus(200);
-  }
-
-  // TODO replace this and use proper data-class
-  private static function stateArray2KeyValue(array $stateData): array {
-    $statePatch = [];
-    foreach ($stateData as $stateEntry) {
-      $statePatch[$stateEntry['key']] = is_object($stateEntry['content'])
-        ? json_encode($stateEntry['content'])
-        : $stateEntry['content'];
-    }
-    return $statePatch;
   }
 }

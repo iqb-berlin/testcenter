@@ -4,6 +4,12 @@
 x-restart-policy: &restart-policy
   restart: "${RESTART_POLICY:-always}"
 
+x-env-redis: &env-redis
+  REDIS_HOST: cache-server
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -15,9 +21,8 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
+    image: ${DOCKERHUB_PROXY}traefik:v3.4
     <<: *restart-policy
-    container_name: testcenter-traefik
-    image: ${DOCKERHUB_PROXY}traefik:v2.11
     ports:
       - "${HTTP_PORT:-80}:80"
     volumes:
@@ -25,93 +30,97 @@ services:
     networks:
       testcenter:
 
-  testcenter-broadcasting-service:
+  broadcaster:
+    image: iqbberlin/testcenter-broadcaster:current
     <<: *restart-policy
-    container_name: testcenter-broadcasting-service
-    image: iqbberlin/testcenter-broadcasting-service:current
     logging:
       options:
         <<: *env-logging-conf
     networks:
       testcenter:
 
-  testcenter-frontend:
-    <<: *restart-policy
-    container_name: testcenter-frontend
+  frontend:
     image: iqbberlin/testcenter-frontend:current
+    <<: *restart-policy
+    depends_on:
+      backend:
+        condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
     networks:
       testcenter:
 
-  testcenter-cache-service:
+  file-server:
+    image: iqbberlin/testcenter-file-server:current
     <<: *restart-policy
-    container_name: testcenter-cache-service
-    image: ${DOCKERHUB_PROXY}redis:7.4-bookworm
-    command:
-      - "bash"
-      - "-c"
-      - "redis-server --maxmemory ${CACHE_SERVICE_RAM-1073741824} --maxmemory-policy volatile-lru"
-    networks:
-      testcenter:
-
-  testcenter-file-service:
-    <<: *restart-policy
-    container_name: testcenter-file-service
-    image: iqbberlin/testcenter-file-service:current
+    depends_on:
+      - cache-server
     environment:
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_ADDRESS_FOR_LUA: testcenter-cache-service
-    volumes:
-      - testcenter_backend_vo_data:/var/www/html/
+      <<: *env-redis
+    volumes_from:
+      - backend:ro
     networks:
       testcenter:
 
-  testcenter-backend:
-    <<: *restart-policy
-    container_name: testcenter-backend
+  backend:
     image: iqbberlin/testcenter-backend:current
-    entrypoint: /entrypoint.sh
+    <<: *restart-policy
+    depends_on:
+      db:
+        condition: service_healthy
+      cache-server:
+        condition: service_started
     environment:
       HOSTNAME: ${HOSTNAME}
       PORT_OF_REVERSE_PROXY: ${HTTP_PORT:-80}
       TLS_PORT_OF_REVERSE_PROXY: ${HTTPS_PORT:-443}
       TLS_ENABLED: ${TLS_ENABLED:-true}
-      BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
-      CACHE_SERVICE_INCLUDE_FILES: ${CACHE_SERVICE_INCLUDE_FILES:-off}
-      CACHE_SERVICE_RAM: ${CACHE_SERVICE_RAM}
-      FILE_SERVICE_ENABLED: ${FILE_SERVICE_ENABLED}
-      MYSQL_HOST: testcenter-db
+      BROADCASTER_ENABLED: ${BROADCASTER_ENABLED}
+      FILE_SERVER_ENABLED: ${FILE_SERVER_ENABLED}
+      <<: [ *env-redis, *env-mysql ]
+      MYSQL_HOST: db
       MYSQL_PORT: 3306
-      <<: *env-mysql
       PASSWORD_SALT: ${PASSWORD_SALT}
     logging:
       options:
         <<: *env-logging-conf
-    depends_on:
-      testcenter-db:
-        condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      test: [ "CMD", "curl", "-f", "http://backend:8080/version" ]
       start_period: 60s
       start_interval: 3s
       interval: 5m
       timeout: 30s
       retries: 3
+    volumes:
+      - backend_vol:/var/www/testcenter/data
     networks:
       testcenter:
 
-  testcenter-db:
+  cache-server:
+    image: ${DOCKERHUB_PROXY}redis:8.0-bookworm
     <<: *restart-policy
-    container_name: testcenter-db
-    image: ${DOCKERHUB_PROXY}mysql:8.0
+    user: redis
+    command: [
+      "redis-server",
+      "--requirepass", "${REDIS_PASSWORD}",
+      "--maxmemory", "${REDIS_MEMORY_MAX:-1gb}",
+      "--maxmemory-policy", "volatile-lru",
+      "--save", '""',
+      "--appendonly", "no"
+    ]
+    networks:
+      testcenter:
+
+  db:
+    image: ${DOCKERHUB_PROXY}mysql:8.4
+    <<: *restart-policy
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
-      - dbdata:/var/lib/mysql
+      - db_vol:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
       start_period: 30s
@@ -123,8 +132,8 @@ services:
       testcenter:
 
 volumes:
-  dbdata:
-  testcenter_backend_vo_data:
+  db_vol:
+  backend_vol:
 
 networks:
   testcenter:

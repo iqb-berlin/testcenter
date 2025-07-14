@@ -49,7 +49,7 @@ The important configuration files are:
 * `.env.dev` - This file contains sensitive information about database access
 and user logins
 
-* `testcenter-frontend/src/environments/environment.ts` - Here information about accessing the backend is kept for 
+* `frontend/src/environments/environment.ts` - Here information about accessing the backend is kept for 
 the frontend component
 
 There is one important setting to be made in the generated file `.env.dev`.

@@ -62,12 +62,12 @@ class BroadcastService {
     $errorCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
     if (($errorCode === 0) or ($curlResponse === false)) {
-      error_log("BroadcastingService responds Error on `[$verb] $endpoint`: not available");
+      error_log("Broadcaster responds Error on `[$verb] $endpoint`: not available");
       return null;
     }
 
     if ($errorCode >= 400) {
-      error_log("BroadcastingService responds Error on `[$verb] $endpoint`: [$errorCode] $curlResponse");
+      error_log("Broadcaster responds Error on `[$verb] $endpoint`: [$errorCode] $curlResponse");
       return null;
     }
 

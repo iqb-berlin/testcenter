@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class TestDAO extends DAO {
   // TODO unit test
-  public function getTestByPerson(int $personId, string $testName): TestData|null {
+  public function getTestByPerson(int $personId, string $testName): TestData | null {
     $test = $this->_(
       'select tests.locked, tests.name, tests.id, tests.file_id, tests.laststate, tests.label, tests.running from tests
             where tests.person_id=:personId and tests.name=:testname',
@@ -105,7 +105,7 @@ class TestDAO extends DAO {
   // TODO unit test
   public function addUnitReview(
     int $testId,
-    string $unit,
+    string $unitName,
     int $priority,
     string $categories,
     string $entry,
@@ -114,11 +114,30 @@ class TestDAO extends DAO {
     ?int $page = null,
     ?string $pageLabel = null,
   ): void {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unit, $originalUnitId);
     $this->_(
-      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry, page, pagelabel, user_agent) values(:u, :t, :p, :c, :e, :pa, :pl, :ua)',
+      'insert ignore into units (name, test_id, original_unit_id) values(:u, :t, :o)',
       [
-        ':u' => $unitDbId,
+        ':u' => $unitName,
+        ':t' => $testId,
+        ':o' => $originalUnitId
+      ]
+    );
+    $this->_(
+      'insert into unit_reviews (
+            unit_name,
+            test_id,
+            reviewtime,
+            priority,
+            categories,
+            entry,
+            page,
+            pagelabel,
+            user_agent
+        ) values (:unit_name, :test_id, :t, :p, :c, :e, :pa, :pl, :ua)
+          ',
+      [
+        ':unit_name' => $unitName,
+        ':test_id' => $testId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
         ':p' => $priority,
         ':c' => $categories,
@@ -193,23 +212,24 @@ class TestDAO extends DAO {
     }
 
     $oldState = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
-    $newState = array_merge($oldState, $statePatch);
+    // TODO add column laststate_update_ts analogous to unit_state to avoid race conditions
+    $newState = State::applyPatch($statePatch, $oldState);
 
     $this->_(
       'update tests set laststate = :laststate, timestamp_server = :timestamp where id = :id',
       [
-        ':laststate' => json_encode($newState),
+        ':laststate' => json_encode($newState['newState']),
         ':id' => $testId,
         ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
 
-    return $newState;
+    return $newState['newState'];
   }
 
   public function getUnitState(int $testId, string $unitName): array {
     $unitData = $this->_(
-      'select units.laststate from units where units.name = :unitname and units.booklet_id = :testId',
+      'select units.laststate from units where units.name = :unitname and units.test_id = :testId',
       [
         ':unitname' => $unitName,
         ':testId' => $testId
@@ -225,101 +245,59 @@ class TestDAO extends DAO {
     array $statePatch,
     string $originalUnitId = ''
   ): array {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
-
     $unitData = $this->_(
-      'select units.laststate from units where units.id=:unitId',
+      'select laststate, laststate_update_ts from units where test_id = :testId and name = :unitName',
       [
-        ':unitId' => $unitDbId
+        ':testId' => $testId,
+        ':unitName' => $unitName
       ]
     );
-
     $oldState = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
-    $newState = array_merge($oldState, $statePatch);
+    $oldStateUpdateTs = $unitData['laststate_update_ts'] ? JSON::decode($unitData['laststate_update_ts'], true) : [];
+    $newState = State::applyPatch($statePatch, $oldState, $oldStateUpdateTs);
 
     // todo save states in separate key-value table instead of JSON blob
     $this->_(
-      'update units set laststate = :laststate where id = :id',
+      'insert into units (test_id, name, laststate, laststate_update_ts, original_unit_id)
+      values (:testId, :unitName, :laststate, :laststate_update_ts, :originalUnitId)
+      on duplicate key update laststate = :laststate, laststate_update_ts = :laststate_update_ts;',
       [
-        ':laststate' => json_encode($newState),
-        ':id' => $unitDbId
+        ':laststate' => json_encode($newState['newState']),
+        ':laststate_update_ts' => json_encode($newState['updateTs']),
+        ':testId' => $testId,
+        ':unitName' => $unitName,
+        ':originalUnitId' => $originalUnitId
       ]
     );
 
-    return $newState;
+    return $newState['newState'];
   }
 
   // TODO unit test
   public function lockTest(int $testId): void {
-    $this->_(
-      'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
-      [
-        ':locked' => '1',
-        ':id' => $testId,
-        ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
-      ]
-    );
+    $this->changeTestLockStatus($testId, unlock: false);
   }
 
   // TODO unit test
   public function unlockTest(int $testId): void {
-    $this->changeTestLockStatus($testId, false);
+    $this->changeTestLockStatus($testId, unlock: true);
   }
 
   // TODO unit test
-  public function locktTest(int $testId): void {
-    $this->changeTestLockStatus($testId, true);
-  }
-
-  private function changeTestLockStatus(int $testId, bool $shouldLock): void {
+  private function changeTestLockStatus(int $testId, bool $unlock): void {
     $this->_(
       'update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
-        ':locked' => $shouldLock ? '1' : '0',
+        ':locked' => $unlock ? '0' : '1',
         ':id' => $testId,
         ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
   }
 
-  /**
-      protected for unit test -> should be private
-      todo reduce nr of queries by using replace...into syntax
-   */
-  protected function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
-    $unit = $this->_(
-      'select units.id from units where units.name = :unitname and units.booklet_id = :testId',
-      [
-        ':unitname' => $unitName,
-        ':testId' => $testId
-      ]
-    );
-
-    if ($unit && !empty($originalUnitId)) {
-      $this->_(
-        'update units set original_unit_id = :originalUnitId where id = :unitId',
-        [
-          ':unitId' => $unit['id'],
-          ':originalUnitId' => $originalUnitId
-        ]
-      );
-    }
-
-    if (!$unit) {
-      $this->_(
-        'insert into units (booklet_id, name, original_unit_id) values(:testId, :name, :originalUnitId)',
-        [
-          ':testId' => $testId,
-          ':name' => $unitName,
-          ':originalUnitId' => $originalUnitId
-        ]
-      );
-      return $this->pdoDBhandle->lastInsertId();
-    }
-
-    return (string) $unit['id'];
-  }
-
+  /* TODO decide on what to do with the different dataTypes per player/unit: the database makes it possible, but the
+  application code does treat it like its not possible, because the verona interface does only work with one responseType
+  per player/unit */
   public function getDataParts(int $testId, string $unitName): array {
     $result = $this->_(
       'select
@@ -328,10 +306,9 @@ class TestDAO extends DAO {
           unit_data.response_type
         from
           unit_data
-          left join units on units.id = unit_data.unit_id
         where
-          units.name = :unitname
-          and units.booklet_id = :testId
+          unit_data.unit_name = :unitname
+          and unit_data.test_id = :testId
         ',
       [
         ':unitname' => $unitName,
@@ -347,7 +324,7 @@ class TestDAO extends DAO {
 
     return [
       "dataParts" => $unitData,
-      "dataType" => $row['response_type'] ?? ''
+      "dataType" => $row['response_type'] ?? '' // TODO see function head
     ];
   }
 
@@ -356,20 +333,23 @@ class TestDAO extends DAO {
     string $unitName,
     array $dataParts,
     string $type,
-    int $timestamp,
-    string $originalUnitId = ''
+    int $timestamp
   ): void {
-    $unitDbId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
     foreach ($dataParts as $partId => $content) {
       $this->_(
-        'replace into unit_data(unit_id, part_id, content, ts, response_type)
-                          values (:unit_id, :part_id, :content, :ts, :response_type)',
+      'insert into unit_data(unit_name, test_id, part_id, content, ts, response_type)
+            values (:unit_name, :test_id, :part_id, :content, :ts, :response_type)
+            on duplicate key update
+              content = if (ts < :ts, :content, content),
+              ts = if (ts < :ts, :ts, ts),
+              response_type = if (ts < :ts, :response_type, response_type);',
         [
+          ':unit_name' => $unitName,
+          ':test_id' => $testId,
           ':part_id' => $partId,
           ':content' => $content,
           ':ts' => $timestamp,
-          ':response_type' => $type,
-          ':unit_id' => $unitDbId
+          ':response_type' => $type
         ]
       );
     }
@@ -384,35 +364,66 @@ class TestDAO extends DAO {
     );
   }
 
-  public function addUnitLog(
-    int $testId,
-    string $unitName,
-    string $logKey,
-    int $timestamp,
-    string $logContent = "",
-    string $originalUnitId = ''
-  ): void {
-    $unitId = $this->getOrCreateUnitId($testId, $unitName, $originalUnitId);
+  /**
+   * @param UnitLog[] $unitLogs
+   */
+  public function addUnitLogs(array $unitLogs): void {
+    if (empty($unitLogs)) {
+      return;
+    }
 
-    $this->_(
-      'insert into unit_logs (unit_id, logentry, timestamp) values (:unitId, :logentry, :ts)',
-      [
-        ':unitId' => $unitId,
-        ':logentry' => $logKey . ($logContent ? ' = ' . $logContent : ''),
-        ':ts' => $timestamp
-      ]
-    );
+    foreach ($unitLogs as $unitLog) {
+      if (!$unitLog instanceof UnitLog) {
+        throw new \http\Exception\InvalidArgumentException('All array elements must be UnitLog instances');
+      }
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    /** @var UnitLog $log */
+    foreach ($unitLogs as $index => $log) {
+      $placeholders[] = "(:unitName{$index}, :testId{$index}, :logentry{$index}, :timestamp{$index})";
+
+      $params[":unitName{$index}"] = $log->unitName;
+      $params[":testId{$index}"] = $log->testId;
+      $params[":logentry{$index}"] = $log->logKey . ($log->logContent ? ' = ' . $log->logContent : '');
+      $params[":timestamp{$index}"] = $log->timestamp;
+    }
+
+    $sql = 'insert into unit_logs (unit_name, test_id, logentry, timestamp) values ' . implode(', ', $placeholders);
+    $this->_($sql, $params);
   }
 
-  public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
-    $this->_(
-      'insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
-      [
-        ':bookletId' => $testId,
-        ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''),
-        ':timestamp' => $timestamp
-      ]
-    );
+  /**
+   * @param TestLog[] $testLogs
+   */
+  public function addTestLogs(array $testLogs): void {
+    if (empty($testLogs)) {
+      return;
+    }
+
+    foreach ($testLogs as $testLog) {
+      if (!$testLog instanceof TestLog) {
+        throw new \http\Exception\InvalidArgumentException('All array elements must be TestLog instances');
+      }
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    /** @var TestLog $log */
+    foreach ($testLogs as $index => $log) {
+      $placeholders[] = "(:bookletId{$index}, :logentry{$index}, :timestamp{$index})";
+
+      $params[":bookletId{$index}"] = $log->testId;
+      $params[":logentry{$index}"] = $log->logKey . ($log->logContent ? ' : ' . $log->logContent : '');
+      $params[":timestamp{$index}"] = $log->timestamp;
+    }
+
+    $sql = 'insert into test_logs (booklet_id, logentry, timestamp) values ' . implode(', ', $placeholders);
+
+    $this->_($sql, $params);
   }
 
   // TODO unit test

@@ -4,14 +4,19 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
+x-env-redis: &env-redis
+  REDIS_HOST: cache-server
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
   MYSQL_USER: testcenter_user
   MYSQL_PASSWORD: testcenter_pw
 
 services:
-  testcenter-initialization-test-runner:
-    container_name: testcenter-initialization-test-runner
+  initialization-test-runner:
     image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
@@ -20,7 +25,7 @@ services:
       dockerfile: task-runner/Dockerfile
     command: "npm run backend:api-test"
     environment:
-      TC_API_URL: http://testcenter-initialization-test-backend
+      TC_API_URL: http://initialization-test-backend
     volumes:
       - ../../../sampledata:/usr/src/testcenter/task-runner/sampledata
       - ../../../test:/usr/src/testcenter/task-runner/test
@@ -29,13 +34,12 @@ services:
       - ../../../package.json:/usr/src/testcenter/task-runner/package.json
       - ../../../package-lock.json:/usr/src/testcenter/task-runner/package-lock.json
     depends_on:
-      - testcenter-initialization-test-db
-      - testcenter-initialization-test-backend
+      - initialization-test-db
+      - initialization-test-backend
     networks:
-      testcenter-initialization-test:
+      initialization-test:
 
-  testcenter-initialization-test-backend:
-    container_name: testcenter-initialization-test-backend
+  initialization-test-backend:
     image: iqbberlin/testcenter-backend:current
     build:
       context: ../../..
@@ -43,18 +47,16 @@ services:
       target: dev
     entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
     environment:
-      <<: *env-mysql
-      MYSQL_HOST: testcenter-initialization-test-db
-      MYSQL_PORT: 3306
-      PASSWORD_SALT: 't'
-      BROADCAST_SERVICE_ENABLED: off
-      FILE_SERVICE_ENABLED: off
       HOSTNAME: localhost
-      TLS_ENABLED: off
-      CACHE_SERVICE_INCLUDE_FILES: off
-      CACHE_SERVICE_RAM: 1
       PORT_OF_REVERSE_PROXY: 80
       TLS_PORT_OF_REVERSE_PROXY: 443
+      TLS_ENABLED: false
+      BROADCASTER_ENABLED: false
+      FILE_SERVER_ENABLED: false
+      <<: [ *env-redis, *env-mysql ]
+      MYSQL_HOST: initialization-test-db
+      MYSQL_PORT: 3306
+      PASSWORD_SALT: 't'
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ../../../backend/index.php:/var/www/testcenter/backend/index.php
@@ -68,22 +70,21 @@ services:
       - ../../../sampledata:/var/www/testcenter/sampledata
       - ../../../scripts/database:/var/www/testcenter/scripts/database
     depends_on:
-      testcenter-initialization-test-db:
+      initialization-test-db:
         condition: service_healthy
     networks:
-      testcenter-initialization-test:
+      initialization-test:
     ports:
       - "85:80"
 
-  testcenter-initialization-test-db:
-    image: ${DOCKERHUB_PROXY}mysql:8.0
+  initialization-test-db:
+    image: ${DOCKERHUB_PROXY}mysql:8.4
     command:
       - "--explicit-defaults-for-timestamp=TRUE"
       - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
       - "--tls-version=TLSv1.2,TLSv1.3"
       - "--max-connections=500"
       - "--log_error_verbosity=1"
-    container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
@@ -96,10 +97,10 @@ services:
     ports:
       - "9091:3306"
     networks:
-      testcenter-initialization-test:
+      initialization-test:
 
 networks:
-  testcenter-initialization-test:
+  initialization-test:
     name: testcenter-initialization-test
     driver: bridge
     driver_opts:

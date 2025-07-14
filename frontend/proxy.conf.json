@@ -1,0 +1,18 @@
+{
+  "/api/": {
+    "target": "http://localhost:8090/",
+    "secure": false,
+    "pathRewrite": {
+      "^/api/": ""
+    },
+    "logLevel": "debug"
+  },
+  "/fs/": {
+    "target": "http://localhost:8099/",
+    "secure": false,
+    "pathRewrite": {
+      "^/fs": ""
+    },
+    "logLevel": "debug"
+  }
+}

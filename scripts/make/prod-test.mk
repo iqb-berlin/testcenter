@@ -39,16 +39,16 @@ prod-test-build: prod-test-registry-login
 				--progress plain\
 				--pull\
 				--build-arg REGISTRY_PATH=$(DOCKER_HUB_PROXY)\
-				--file $(TC_BASE_DIR)/broadcasting-service/Dockerfile\
-				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-broadcasting-service:e2e\
+				--file $(TC_BASE_DIR)/broadcaster/Dockerfile\
+				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-broadcaster:e2e\
 			.
 	cd $(TC_BASE_DIR) &&\
 		docker build\
 				--progress plain\
 				--pull\
 				--build-arg REGISTRY_PATH=$(DOCKER_HUB_PROXY)\
-				--file $(TC_BASE_DIR)/file-service/Dockerfile\
-				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-file-service:e2e\
+				--file $(TC_BASE_DIR)/file-server/Dockerfile\
+				--tag $(DOCKER_HUB_PROXY)iqbberlin/testcenter-file-server:e2e\
 			.
 	cd $(TC_BASE_DIR) &&\
 		docker build\
@@ -65,7 +65,7 @@ prod-test-up:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		up --no-build --pull never -d
 
 ## Stop and remove production containers
@@ -73,16 +73,16 @@ prod-test-down:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		down
 	sed -i.sed 's/^VERSION=e2e$$/VERSION=stable/' $(TC_BASE_DIR)/.env.prod &&\
 		rm $(TC_BASE_DIR)/.env.prod.sed
 
 ## Show service logs
-# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=testcenter-db`
+# Param (optional): SERVICE - Show log of the specified service only, e.g. `make prod-test-logs SERVICE=db`
 prod-test-logs:
 	docker compose\
 			--env-file $(TC_BASE_DIR)/.env.prod\
 			--file $(TC_BASE_DIR)/docker-compose.yml\
-			--file $(TC_BASE_DIR)/docker-compose.prod.yml\
+			--file $(TC_BASE_DIR)/docker-compose.prod.tls.yml\
 		logs -f $(SERVICE)

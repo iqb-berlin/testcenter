@@ -92,7 +92,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
         'laststate' => '{"SOME_STATE":"WHATEVER"}',
-        'originalUnitId' => '',
+        'originalUnitId' => 'UNIT_1',
         'responses' => [
           [
             'id' => "all",
@@ -109,7 +109,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
-        'originalUnitId' => '',
+        'originalUnitId' => 'UNIT.SAMPLE',
         'responses' => [
           [
             'id' => "all",
@@ -146,7 +146,7 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
-        'originalUnitId' => '',
+        'originalUnitId' => 'UNIT.SAMPLE',
         'timestamp' => 1597903000,
         'logentry' => 'sample unit log'
       ],
@@ -187,7 +187,7 @@ final class AdminDAOTest extends TestCase {
         'entry' => 'this is a sample unit review',
         'page' => null,
         'pagelabel' => null,
-        'originalUnitId' => '',
+        'originalUnitId' => 'UNIT_1',
         'userAgent' => ''
       ],
       [
@@ -290,7 +290,7 @@ final class AdminDAOTest extends TestCase {
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
     $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
-    $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 4)");
+    $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
 
     $expectation = [
       [
@@ -368,33 +368,33 @@ final class AdminDAOTest extends TestCase {
         'unitState' => []
       ]
     ];
-    // make order-agnostic
-    usort($expectation, function ($first, $second) {
-      return $first['testId'] <=> $second['testId'];
-    });
+
+    $sessionChangeMessageArray = function(SessionChangeMessage $s): array {
+      $asArray = $s->jsonSerialize();
+      foreach ($asArray as $key => $value) {
+        if ((($key == "testState") or ($key == "unitState")) and (empty((array) $value))) {
+          $asArray[$key] = [];
+        }
+      }
+      return $asArray;
+    };
 
     $result = $this->dbc->getTestSessions(1, ['sample_group']);
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, []); // all groups
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });
     $this->assertSame($expectation, $resultAsArray);
 
     $result = $this->dbc->getTestSessions(1, ['unknown_group']);
-    $resultAsArray = array_map(function (SessionChangeMessage $s) {
-      return $s->jsonSerialize();
-    }, $result->asArray());
+    $resultAsArray = array_map($sessionChangeMessageArray, $result->asArray());
     usort($resultAsArray, function ($first, $second) {
       return $first['testId'] <=> $second['testId'];
     });

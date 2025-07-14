@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-broadcaster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-broadcaster-pod
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-broadcaster-pod
+    spec:
+      {{- if .Values.deployment.broadcaster.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.deployment.broadcaster.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Release.Name }}-broadcaster-container
+          image: "{{ .Values.image.broadcaster.registryPath }}iqbberlin/testcenter-broadcaster:{{ .Values.image.broadcaster.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.broadcaster.imagePullPolicy }}
+          ports:
+            - name: http-container
+              containerPort: 3000
+          {{- if .Values.deployment.broadcaster.resources }}
+          resources:
+            {{- .Values.deployment.broadcaster.resources | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            periodSeconds: {{ .Values.deployment.broadcaster.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.broadcaster.probes.liveness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.broadcaster.probes.liveness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.broadcaster.probes.liveness.failureThreshold }}
+            initialDelaySeconds: {{ .Values.deployment.broadcaster.probes.liveness.initialDelaySeconds}}
+          readinessProbe:
+            httpGet:
+              path: /testees
+              port: 3000
+            periodSeconds: {{ .Values.deployment.broadcaster.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.broadcaster.probes.readiness.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.broadcaster.probes.readiness.successThreshold }}
+            failureThreshold: {{ .Values.deployment.broadcaster.probes.readiness.failureThreshold }}

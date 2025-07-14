@@ -1,14 +1,20 @@
 services:
-  testcenter-e2e:
-    container_name: testcenter-e2e
+  e2e:
     depends_on:
-      testcenter-backend:
+      frontend:
         condition: service_healthy
+      backend:
+        condition: service_healthy
+    image: testcenter-e2e
     build:
       dockerfile: e2e/Dockerfile
     environment:
-      - CYPRESS_baseUrl=http://testcenter-frontend:4200
-    command: "npx cypress run --browser chrome --spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
+      - CYPRESS_baseUrl=http://frontend:8080
+    command: [
+      "npx", "cypress", "run",
+      "--browser", "chrome",
+      "--spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
+    ]
     volumes:
       - ./e2e/cypress-headless:/usr/src/testcenter/e2e/cypress-headless
       - ./e2e/src:/usr/src/testcenter/e2e/src
@@ -18,17 +24,24 @@ services:
     networks:
       - testcenter
 
-  testcenter-broadcasting-service:
+  broadcaster:
     environment:
       DEV_MODE: false # loglevel
 
-  testcenter-backend:
+  backend:
     environment:
       OVERRIDE_CONFIG: |
         [fileService]
-        external=testcenter-file-service/
+        external=file-server/
         [broadcastingService]
-        external=testcenter-broadcasting-service:3000/
+        external=broadcaster:3000/
 
-  testcenter-frontend:
-    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
+  frontend:
+    command: "serve --configuration e2e --disable-host-check --host 0.0.0.0 --port 8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://frontend:8080" ]
+      start_period: 60s
+      start_interval: 3s
+      interval: 5m
+      timeout: 30s
+      retries: 3
