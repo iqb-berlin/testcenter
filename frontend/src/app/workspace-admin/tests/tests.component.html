@@ -1,0 +1,90 @@
+<div class="columnhost">
+  <div class="testslist">
+    <mat-progress-bar mode="indeterminate" *ngIf="!testSessions"></mat-progress-bar>
+    <mat-accordion class="example-headers-align" multi="true">
+      <ng-container *ngFor="let groupName of groupNames">
+        <mat-expansion-panel [expanded]="true" *ngIf="testSessions && testSessions[groupName]?.length">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="table-header" [matTooltip]="groupName" >
+              {{ testSessions[groupName][0].groupLabel }}
+            </mat-panel-title>
+            <mat-panel-description>
+              <span>{{ testSessions[groupName].length }} Test-Session{{ testSessions[groupName].length === 1 ? '' : 's' }}</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-table [dataSource]="getDataSourceForGroup(groupName)" matSort (matSortChange)="setTableSorting($event)">
+            <ng-container matColumnDef="checked">
+              <mat-header-cell *matHeaderCellDef class="checkboxcell">
+                <mat-checkbox
+                  [checked]="isGroupFullySelected(groupName)"
+                  [indeterminate]="isGroupPartiallySelected(groupName)"
+                  (change)="checkAllInGroup($event.checked, groupName)">
+                </mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let session" class="checkboxcell">
+                <mat-checkbox
+                  [checked]="session.isChecked"
+                  (change)="onSessionCheckChange(session, $event.checked, groupName)">
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="login">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">Login</mat-header-cell>
+              <mat-cell *matCellDef="let session" class="namecell">
+                <div class="session-info">
+                  <span class="login-name">{{ session.loginName }}</span>
+                </div>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="code">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="codecell">Code (generiert)</mat-header-cell>
+              <mat-cell *matCellDef="let session" class="codecell">
+                {{ session.nameSuffix !== session.code ? '(' + session.nameSuffix + ')' : (session.code ?? '') }}
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="booklet">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="bookletcell">Booklet</mat-header-cell>
+              <mat-cell *matCellDef="let session" class="bookletcell">
+                {{ session.bookletLabel }}<br>
+                (id: {{ session.bookletName }})
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="['checked', 'login', 'code', 'booklet']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['checked', 'login', 'code', 'booklet'];"></mat-row>
+          </mat-table>
+
+        </mat-expansion-panel>
+      </ng-container>
+    </mat-accordion>
+
+    <div class="no-data-message" *ngIf="testSessions && groupNames.length === 0">
+      <tc-alert level="info" text="Keine Test-Sessions gefunden."></tc-alert>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="buttons">
+      <button
+        color="primary"
+        mat-raised-button
+        (click)="deleteSelectedSessions()"
+        matTooltip="Markierte Test-Sessions löschen"
+        matTooltipPosition="above"
+        [disabled]="(workspaceDataService.wsRole !== 'RW') || !testSessions || !hasSelectedSessions()">
+        <mat-icon>delete</mat-icon>
+        Löschen
+      </button>
+    </div>
+
+    <tc-alert 
+      *ngIf="hasSelectedSessions()" 
+      level="warning" 
+      [text]="getSelectedSessions().length + ' Test-Session(s) zum Löschen ausgewählt'">
+    </tc-alert>
+  </div>
+</div>

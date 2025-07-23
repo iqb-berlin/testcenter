@@ -165,6 +165,145 @@ paths:
         "500":
           description: Server Error
 
+  /workspace/{ws_id}/responses/detailed:
+    get:
+      summary: get test sessions with state grouped by group
+      description: retrieves test sessions with non-empty laststate for a given workspace, grouped by group names
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role at least "RO" (read only) for this workspace
+          example: "a:user000000000.superadmin0"
+          required: true
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK, test sessions with non-empty laststate grouped by group names
+          content:
+            application/json:
+              schema:
+                properties:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      loginName:
+                        type: string
+                        description: Login name
+                      groupName:
+                        type: string
+                        description: Name of the group
+                      groupLabel:
+                        type: string
+                        description: Label of the group
+                      code:
+                        type: string
+                        description: Person code
+                      nameSuffix:
+                        type: string
+                        description: Person name suffix
+                      bookletName:
+                        type: string
+                        description: Name of the booklet
+                      bookletLabel:
+                        type: string
+                        description: Label of the booklet
+              example:
+                sample_group:
+                  - loginName: "test_login"
+                    groupName: "sample_group"
+                    groupLabel: "Sample Group"
+                    code: "ABC123"
+                    nameSuffix: ""
+                    bookletName: "BOOKLET.SAMPLE-1"
+                    bookletLabel: "Sample Booklet 1"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+    delete:
+      summary: delete responses for specific person sessions
+      description: deletes all response data for specific person sessions (identified by login name + person code combinations)
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role "RW" (read/write) for this workspace
+          example: "a:user000000000.rw00000000"
+          required: true
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                personSessions:
+                  type: array
+                  description: array of person session identifiers (login name + code combinations)
+                  items:
+                    type: object
+                    properties:
+                      loginName:
+                        type: string
+                        description: name of the login session
+                      code:
+                        type: string
+                        description: person session code
+                      nameSuffix:
+                        type: string
+                        description: person session generated nameSuffix (generated code)
+                      bookletName:
+                        type: string
+                        description: booklet name of the session
+                    required:
+                      - loginName
+                      - code
+                      - nameSuffix
+                      - bookletName
+              required:
+                - personSessions
+            example:
+              personSessions:
+                - loginName: "test"
+                  code: "xxx"
+                  nameSuffix: ""
+                  bookletName: "BOOKLET.SAMPLE-1"
+      responses:
+        "200":
+          description: OK, person session responses deleted
+        "404":
+          description: workspace not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
   /workspace/{ws_id}/results:
     get:
       summary: get results

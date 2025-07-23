@@ -157,6 +157,12 @@ $app->group('/workspace', function (RouteCollectorProxy $group) {
   $group->delete('/{ws_id}/responses', [WorkspaceController::class, 'deleteResponses'])
     ->add(new IsWorkspacePermitted('RW'));
 
+  $group->get('/{ws_id}/responses/detailed', [WorkspaceController::class, 'getTests'])
+    ->add(new IsWorkspacePermitted('RO'));
+
+  $group->delete('/{ws_id}/responses/detailed', [WorkspaceController::class, 'deleteResponsesByTest'])
+    ->add(new IsWorkspacePermitted('RW'));
+
   $group->get('/{ws_id}/file/{type}/{filename}', [WorkspaceController::class, 'getFile'])
     ->add(new IsWorkspacePermitted('RO'));
 

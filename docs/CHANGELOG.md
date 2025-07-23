@@ -2,7 +2,9 @@
 layout: default
 ---
 ## [next]
-### neue Features
+* Im Admin-Bereich kann man innerhalb eines Arbeitsplatzes unter einem neuen Tab bereits gestartete Tests einzeln löschen. Das erweitetert die bestehenede Möglichkeit die gesamte Testgruppe zu löschen. Zum Löschen der einzelnen Tests benötigt der Admin auch Schreibzugriff auf den Arbeitsbereich.
+* Neuer API Endpoint `GET /workspace/{ws_id}/responeses/detailed` - Ermöglicht das Abrufen von einzelnen Test-Sessions mit nicht-leerem laststate für ein Workspace. Vereinfachte Version ohne Broadcasting-Overhead für delete-response Funktionalität.
+* Neuer API Endpoint `DELETE /workspace/{ws_id}/responses/detailed` - Ermöglicht das granulare Löschen von Antworten für spezifische Person-Sessions (identifiziert durch Login-Name + Person-Code + BookletName Kombinationen).
 * Beim (Neu-)Laden des Testcenters wird ein Banner angezeigt, der auf veraltete Versionen hinweist. Dieser soll die Testleitung im Fehlerfall bei der Kommunikation des Fehlers unterstützen.
 
 ### Verbesserungen

@@ -9,7 +9,8 @@ import {
   GetFileResponseData,
   SysCheckStatistics,
   ResultData,
-  ReportType
+  ReportType,
+  TestSessionsResponse, TestSessionRequest
 } from './workspace.interfaces';
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
@@ -129,6 +130,17 @@ export class BackendService {
       .post<GetFileResponseData>(
       `${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
       { body: files }
+    );
+  }
+
+  getTestSessions(workspaceId: number): Observable<TestSessionsResponse> {
+    return this.http.get<TestSessionsResponse>(`${this.serverUrl}workspace/${workspaceId}/responses/detailed`);
+  }
+
+  deleteTestSessionResponses(workspaceId: number, tests: TestSessionRequest[]): Observable<void> {
+    return this.http.delete<void>(
+      `${this.serverUrl}workspace/${workspaceId}/responses/detailed`,
+      { body: { personSessions: tests } }
     );
   }
 }
