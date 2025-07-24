@@ -129,15 +129,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
       dialogRef.afterClosed()
         .subscribe(result => {
-          if (result === false) {
-            return;
+          if (result === true) {
+            this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
+              .subscribe(() => {
+                this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
+                this.tableSelectionCheckbox.clear();
+                this.updateTable();
+              });
           }
-          this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
-            .subscribe(() => {
-              this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
-              this.tableSelectionCheckbox.clear();
-              this.updateTable();
-            });
         });
     }
   }
