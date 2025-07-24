@@ -282,7 +282,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       });
 
     return new Promise<void>(resolve => {
-      if (this.tcs.booklet?.config.loading_mode === 'LAZY') {
+      if (this.tcs.booklet?.config.loading_mode === 'LAZY' && !testData.laststate.BOOKLET_STATES) {
         resolve();
       }
 
@@ -324,7 +324,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
               }]);
             }
             this.tcs.totalLoadingProgress = 100;
-            if (this.tcs.booklet?.config.loading_mode === 'EAGER') {
+            if (this.tcs.booklet?.config.loading_mode === 'EAGER' || testData.laststate.BOOKLET_STATES) {
               resolve();
             }
           }
