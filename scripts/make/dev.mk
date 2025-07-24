@@ -129,9 +129,13 @@ data-pull:
 
 # Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
 # from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
-# TODO need better solution - docker cp only merges src->dest, meaning that all files from both sides are added, with src having higher priority -> if src has less files than dest, these files are not deleted
 data-push:
 	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		exec backend sh -c 'rm -rf ../data/*' &&\
 	tar -cf - data  --owner www-data --group www-data | docker compose --env-file .env.dev --file docker-compose.yml --file docker-compose.dev.yml cp - backend:/var/www/testcenter
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
