@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Bugfix
+* Wenn ein Booklet mit Adaptivität fortgesetzt wird (oder per Browser reloaded), dann wird LAZY-loading Bookletkonfiguration überschrieben. Grund ist, dass die Berechnung des adaptiven Zustands nur mit allen Ressourcen möglich ist. Beim erstmaligen Starten des adaptiven Booklets wird LAZY-loading weiterhin angewandt, da die erste Unit in keinem adaptiven Zweit sein sollte.
+
 ## 17.0.0
 ### :warning: Hinweis für Administratoren
 * Beim `testcenter-update` auf die 17.0.0 wird beim Schritt [] das Skript einmalig abgebrochen -> man muss das Update mit `bash <project>/scripts/update_testcenter.sh -s <source> -t <target>` einmal manuell fortgesetzt werden. `<source>` stellt die Version dar, von der man gerade kommt, `<target>` die Zielversion also 17.0.0
