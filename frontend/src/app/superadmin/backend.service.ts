@@ -43,7 +43,7 @@ export class BackendService {
   }
 
   deleteUsers(users: string[]): Observable<boolean> {
-    return this.http.request<boolean>('delete', `${this.serverUrl}users`, { body: { u: users } });
+    return this.http.delete<boolean>(`${this.serverUrl}users`, { body: { u: users } });
   }
 
   getWorkspacesByUser(userId: number): Observable<IdRoleData[]> {
@@ -63,7 +63,7 @@ export class BackendService {
   }
 
   deleteWorkspaces(workspaces: number[]): Observable<void> {
-    return this.http.request<void>('delete', `${this.serverUrl}workspaces`, { body: { ws: workspaces } });
+    return this.http.delete<void>(`${this.serverUrl}workspaces`, { body: { ws: workspaces } });
   }
 
   getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {

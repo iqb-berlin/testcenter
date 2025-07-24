@@ -32,8 +32,7 @@ export class BackendService {
   }
 
   deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport> {
-    return this.http.request<FileDeletionReport>(
-      'delete',
+    return this.http.delete<FileDeletionReport>(
       `${this.serverUrl}workspace/${workspaceId}/files`,
       { body: { f: filesToDelete } }
     );
@@ -45,7 +44,7 @@ export class BackendService {
 
   deleteResponses(workspaceId: number, groups: string[]): Observable<void> {
     return this.http
-      .request<void>('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
+      .delete<void>(`${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
   }
 
   getSysCheckReportsOverview(workspaceId: number): Observable<SysCheckStatistics[]> {
@@ -53,8 +52,7 @@ export class BackendService {
   }
 
   deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable<FileDeletionReport> {
-    return this.http.request<FileDeletionReport>(
-      'delete',
+    return this.http.delete<FileDeletionReport>(
       `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
       { body: { checkIds } }
     );
