@@ -1,6 +1,17 @@
 ---
 layout: default
 ---
+## [next]
+### neue Features
+* Beim (Neu-)Laden des Testcenters wird ein Banner angezeigt, der auf veraltete Versionen hinweist. Dieser soll die Testleitung im Fehlerfall bei der Kommunikation des Fehlers unterstützen.
+
+### Verbesserungen
+* Der API Call 'system-config' zeigt nun auch die Liste der unterstützten Browser an. Diese Information kann von Konsumenten genutzt werden, um ihre eigene Logik für veraltete Browser darzustellen.
+
+### Custom Texts
+* neue Felder
+  * `login_unsupportedBrowserBanner` -> Inhalt für den Browser-Banner
+
 ## 17.0.0
 ### :warning: Hinweis für Administratoren
 * Beim `testcenter-update` auf die 17.0.0 wird beim Schritt [] das Skript einmalig abgebrochen -> man muss das Update mit `bash <project>/scripts/update_testcenter.sh -s <source> -t <target>` einmal manuell fortgesetzt werden. `<source>` stellt die Version dar, von der man gerade kommt, `<target>` die Zielversion also 17.0.0
