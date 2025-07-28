@@ -110,21 +110,20 @@ export class SyscheckComponent implements OnInit, OnDestroy {
 
       dialogRef.afterClosed()
         .subscribe(result => {
-          if (result === false) {
-            return;
+          if (result === true) {
+            this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)
+              .subscribe(fileDeletionReport => {
+                const message = [];
+                if (fileDeletionReport.deleted.length > 0) {
+                  message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
+                }
+                if (fileDeletionReport.not_allowed.length > 0) {
+                  message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
+                }
+                this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+                this.updateTable();
+              });
           }
-          this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)
-            .subscribe(fileDeletionReport => {
-              const message = [];
-              if (fileDeletionReport.deleted.length > 0) {
-                message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
-              }
-              if (fileDeletionReport.not_allowed.length > 0) {
-                message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
-              }
-              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-              this.updateTable();
-            });
         });
     }
   }

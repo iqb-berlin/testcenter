@@ -144,7 +144,7 @@ export class FilesComponent implements OnInit, OnDestroy {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
+        if (result === true) {
           this.bs.deleteFiles(this.wds.workspaceId, filesToDelete)
             .subscribe((fileDeletionReport: FileDeletionReport) => {
               const message = [];
