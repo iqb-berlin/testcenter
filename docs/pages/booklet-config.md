@@ -60,13 +60,13 @@ Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
 ### force_presentation_complete
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde
  * **"OFF" - Das Verlassen der unvollständig betrachteten Aufgabe wird nicht verhindert.**
- * "ALWAYS" - Das Verlassen der unvollständig betrachteten Aufgabe nicht verhindert.
+ * "ALWAYS" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 ### force_response_complete
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
  * **"OFF" - Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.**
- * "ALWAYS" - Das Verlassen der unvollständig beantworteten Aufgabe nicht verhindert.
+ * "ALWAYS" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 ### controller_design
