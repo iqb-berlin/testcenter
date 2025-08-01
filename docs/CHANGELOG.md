@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 17.1.0
 ### Neue Features
 * Im Admin-Bereich kann man innerhalb eines Arbeitsplatzes unter einem neuen Tab bereits gestartete Tests einzeln löschen. Das erweitetert die bestehenede Möglichkeit die gesamte Testgruppe zu löschen. Zum Löschen der einzelnen Tests benötigt der Admin auch Schreibzugriff auf den Arbeitsbereich.
 * Neuer API Endpoint `GET /workspace/{ws_id}/responeses/detailed` - Ermöglicht das Abrufen von einzelnen Test-Sessions mit nicht-leerem laststate für ein Workspace. Vereinfachte Version ohne Broadcasting-Overhead für delete-response Funktionalität.
