@@ -9,7 +9,8 @@ import {
   GetFileResponseData,
   SysCheckStatistics,
   ResultData,
-  ReportType
+  ReportType,
+  TestSessionsResponse, TestSessionRequest
 } from './workspace.interfaces';
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
@@ -31,8 +32,7 @@ export class BackendService {
   }
 
   deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport> {
-    return this.http.request<FileDeletionReport>(
-      'delete',
+    return this.http.delete<FileDeletionReport>(
       `${this.serverUrl}workspace/${workspaceId}/files`,
       { body: { f: filesToDelete } }
     );
@@ -44,7 +44,7 @@ export class BackendService {
 
   deleteResponses(workspaceId: number, groups: string[]): Observable<void> {
     return this.http
-      .request<void>('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
+      .delete<void>(`${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
   }
 
   getSysCheckReportsOverview(workspaceId: number): Observable<SysCheckStatistics[]> {
@@ -52,8 +52,7 @@ export class BackendService {
   }
 
   deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable<FileDeletionReport> {
-    return this.http.request<FileDeletionReport>(
-      'delete',
+    return this.http.delete<FileDeletionReport>(
       `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
       { body: { checkIds } }
     );
@@ -129,6 +128,17 @@ export class BackendService {
       .post<GetFileResponseData>(
       `${this.serverUrl}workspace/${workspaceId}/files-dependencies`,
       { body: files }
+    );
+  }
+
+  getTestSessions(workspaceId: number): Observable<TestSessionsResponse> {
+    return this.http.get<TestSessionsResponse>(`${this.serverUrl}workspace/${workspaceId}/responses/detailed`);
+  }
+
+  deleteTestSessionResponses(workspaceId: number, tests: TestSessionRequest[]): Observable<void> {
+    return this.http.delete<void>(
+      `${this.serverUrl}workspace/${workspaceId}/responses/detailed`,
+      { body: { personSessions: tests } }
     );
   }
 }

@@ -90,3 +90,20 @@ export interface SysCheckStatistics {
 }
 
 export type FileResponseDataRelationshipType = 'containsUnit' | 'hasBooklet' | 'isDefinedBy' | 'usesPlayer';
+
+export interface TestSession {
+  loginName: string;
+  groupName: string;
+  groupLabel: string;
+  code: string;
+  nameSuffix: string;
+  bookletName: string;
+  bookletLabel: string;
+  isChecked?: boolean; // For UI selection state
+}
+
+export type TestSessionsResponse = {
+  [groupName: string]: TestSession[];
+};
+
+export type TestSessionRequest = Pick<TestSession, 'loginName' | 'code' | 'nameSuffix' | 'bookletName'>;

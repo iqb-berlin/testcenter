@@ -3,6 +3,8 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
+use Slim\Exception\HttpBadRequestException;
+
 class AdminDAO extends DAO {
   /**
    * @codeCoverageIgnore
@@ -117,6 +119,29 @@ class AdminDAO extends DAO {
         ':workspace_id' => $workspaceId,
         ':group_name' => $groupName
       ]
+    );
+  }
+
+  public function deleteResultDataByPersonAndBooklet(int $workspaceId, array $setsToDelete): void {
+    $placeholders = [];
+    $params = [':workspace_id' => $workspaceId];
+    foreach ($setsToDelete as $index => $set) {
+      $placeholders[] = "(:login_name_$index, :code_$index, :name_suffix_$index, :booklet_name_$index)";
+      $params[":login_name_$index"] = $set['loginName'];
+      $params[":code_$index"] = $set['code'];
+      $params[":name_suffix_$index"] = $set['nameSuffix'];
+      $params[":booklet_name_$index"] = $set['bookletName'];
+    }
+
+    $this->_(
+      "
+      delete tests 
+       from tests
+       inner join person_sessions on tests.person_id = person_sessions.id
+       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+       where login_sessions.workspace_id = :workspace_id
+          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
+      $params
     );
   }
 
@@ -275,6 +300,52 @@ class AdminDAO extends DAO {
     }
 
     return $sessionChangeMessages;
+  }
+
+  /**
+   * @return array<string, array<int, TestSession>> Associative array of test session data grouped by group_name
+   */
+  public function getTestSessionsWithState(int $workspaceId): array {
+
+    $sql = 'select
+                 login_sessions.name,
+                 login_session_groups.group_name,
+                 login_session_groups.group_label,
+                 person_sessions.code,
+                 person_sessions.name_suffix,
+                 tests.name as "booklet_name",
+                 tests.label as "booklet_label"
+            from person_sessions
+                 left join tests on person_sessions.id = tests.person_id
+                 left join login_sessions on login_sessions.id = person_sessions.login_sessions_id
+                 left join login_session_groups on login_session_groups.group_name = login_sessions.group_name
+            where
+                login_sessions.workspace_id = :workspaceId
+                and tests.id is not null
+                AND tests.laststate != \'{}\'
+                AND tests.laststate is not null
+            order by login_sessions.group_name, tests.id';
+
+    $testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId], true);
+
+    $groupedSessions = [];
+    foreach ($testSessionsData as $session) {
+      $groupName = $session['group_name'];
+      if (!isset($groupedSessions[$groupName])) {
+        $groupedSessions[$groupName] = [];
+      }
+      $groupedSessions[$groupName][] = new TestSession(
+        $session['name'],
+        $session['group_name'],
+        $session['group_label'],
+        $session['code'],
+        $session['name_suffix'],
+        $session['booklet_name'],
+        $session['booklet_label']
+      );
+    }
+    
+    return $groupedSessions;
   }
 
   private function getUnitState(int $testId, string $unitName): array {

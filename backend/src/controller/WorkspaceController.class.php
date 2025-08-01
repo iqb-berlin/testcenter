@@ -79,6 +79,13 @@ class WorkspaceController extends Controller {
     return $response->withJson($results);
   }
 
+  public static function getTests(Request $request, Response $response): Response {
+    $workspaceId = (int) $request->getAttribute('ws_id');
+    $testSessions = self::adminDAO()->getTestSessionsWithState($workspaceId);
+
+    return $response->withJson($testSessions);
+  }
+
   public static function deleteResponses(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
     $groups = RequestBodyParser::getRequiredElement($request, 'groups');
@@ -88,6 +95,25 @@ class WorkspaceController extends Controller {
     }
 
     BroadcastService::send('system/clean');
+
+    return $response;
+  }
+
+  public static function deleteResponsesByTest(Request $request, Response $response): Response {
+    $workspaceId = (int) $request->getAttribute('ws_id');
+    $setsToDelete = RequestBodyParser::getElementsFromArray(
+      $request,
+      ['loginName' => 'REQUIRED', 'code' => '', 'nameSuffix' => '', 'bookletName' => 'REQUIRED'],
+      'personSessions'
+    );
+
+    if (!is_array($setsToDelete) || empty($setsToDelete)) {
+      throw new HttpBadRequestException($request, "sets to be deleted must be a non-empty array");
+    }
+
+    self::adminDAO()->deleteResultDataByPersonAndBooklet($workspaceId, $setsToDelete);
+
+    BroadcastService::send('system/clean'); //TODO why does this only deactivate the deleted sessions and not all in broadcaster?
 
     return $response;
   }
@@ -130,9 +156,12 @@ class WorkspaceController extends Controller {
     $loginsAffected = false;
     $containsErrors = false;
     foreach ($importedFilesReports as $localPath => $report) {
-        $containsErrors = ($containsErrors or !empty($importedFilesReports[$localPath]['error']));
-        $loginsAffected = ($loginsAffected or ($containsErrors and ($importedFilesReports[$localPath]['type'] == 'Testtakers')));
-        $importedFilesReports[$localPath] = array_splice($report, 1); // revert to current structure for output so not to needlessly change the API
+      $containsErrors = ($containsErrors or !empty($importedFilesReports[$localPath]['error']));
+      $loginsAffected = ($loginsAffected or ($containsErrors and ($importedFilesReports[$localPath]['type'] == 'Testtakers')));
+      $importedFilesReports[$localPath] = array_splice(
+        $report,
+        1
+      ); // revert to current structure for output so not to needlessly change the API
     }
 
     if ($loginsAffected) {
