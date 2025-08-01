@@ -74,6 +74,19 @@ class SystemController extends Controller {
   public static function getConfig(Request $request, Response $response): Response {
     $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
 
+    $browsers = [];
+    try {
+      $browsersData = file_get_contents(ROOT_DIR . '/definitions/browsers.json');
+      $decodedData = json_decode($browsersData);
+      if (json_last_error() === JSON_ERROR_NONE && isset($decodedData->browsers)) {
+        $browsers = $decodedData->browsers;
+      } else {
+        error_log('SystemController::getConfig : JSON invalid - ' . json_last_error_msg());
+      }
+    } catch (Exception $e) {
+      error_log("SystemController::getConfig : The file browsers.json is missing or not readable.");
+    }
+
     return $response->withJson(
       [
         'version' => SystemConfig::$system_version,
@@ -85,7 +98,8 @@ class SystemController extends Controller {
         'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,
         'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
         'fileServiceUri' => FileService::getUri(),
-        'broadcastingServiceUri' => BroadcastService::getUri()
+        'broadcastingServiceUri' => BroadcastService::getUri(),
+        'supportedBrowsers' => $browsers
       ]
     );
   }

@@ -37,7 +37,8 @@ export class UserAgentService {
   ): boolean {
     const parsedBrowsers = UserAgentService.parseBrowsersList(browsersList);
 
-    return parsedBrowsers.some(browser => {
+    // if parsedBrowsers is empty, skip the browser check, because browserslist must be broken in that case
+    return parsedBrowsers.length === 0 || parsedBrowsers.some(browser => {
       if (!userAgent.family) return false;
       if (!userAgent.version) return false;
       if (!browser.version) return false;

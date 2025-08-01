@@ -1,0 +1,52 @@
+.browser-banner {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  background: lightyellow;
+  color: #0a53be;
+  text-align: center;
+  font-size: 0.8rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  cursor: pointer;
+  z-index: 998; /* always below .logo, as logo is needed for navigation */
+}
+
+.browser-banner-inner {
+  max-width: 80%;
+}
+
+.browser-banner-inner button {
+  border: 1px solid grey;
+  background: none;
+  cursor: inherit;
+}
+
+.logo {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 999;
+}
+
+div.logo img {
+  width: 100px;
+}
+
+#main-alert-container {
+  position: fixed !important;
+
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
