@@ -600,7 +600,9 @@ export class TestControllerService {
           .then(navOk => {
             if (!navOk && !targetIsCurrent) {
               // happens when a goto goes to a unit which does exist, but is not accessible
-              this.ms.show(`Navigation zu ${navString} nicht erlaubt.`);
+              if (this.shouldShowConfirmationUI()) {
+                this.ms.show(`Navigation zu ${navString} nicht erlaubt.`);
+              }
             }
             return navOk;
           });
@@ -883,18 +885,27 @@ export class TestControllerService {
       return of(true);
     }
 
-    if (!this.testMode.forceTimeRestrictions) {
-      this.interruptTimer();
-      return of(true);
+    const skipIfNoTimeRestrictionEnforcement = (text: string) => {
+      if (!this.testMode.forceTimeRestrictions) {
+        this.interruptTimer();
+        this.ms.show(text);
+        return true;
+      }
     }
 
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
+      if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
+
       this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
-    } else if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
+    }
+
+    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
       this.cancelTimer();
       return of(true);
     }
+
+    if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
 
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
       width: '500px',
@@ -922,51 +933,48 @@ export class TestControllerService {
   private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
     const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'forward' : 'backward';
     const reasons = this.checkCompleteness(currentUnit, direction);
+
+    // if no testlet has no DenyNavigationOnIncomplete defined
     if (!reasons.length) {
       return of(true);
     }
 
-    if (this.testMode.forceNaviRestrictions) {
-      this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
-
-      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        data: <ConfirmDialogData>{
-          title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
-          content: reasons
-            .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
-            .join(' '),
-          confirmbuttonlabel: 'OK',
-          confirmbuttonreturn: false,
-          showcancel: false
-        }
-      });
-
-      return dialogCDRef.afterClosed().pipe(map(() => false));
+    if (!this.testMode.forceNaviRestrictions) {
+      const reasonTexts = {
+        presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
+        responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
+      };
+      this.ms.show(
+        `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
+      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
+      );
+      return of(true);
     }
 
-    const reasonTexts = {
-      presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
-      responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
-    };
-    this.ms.show(
-      `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
-      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
-    );
-    return of(true);
+    this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
+    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: <ConfirmDialogData>{
+        title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+        content: reasons
+          .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+          .join(' '),
+        confirmbuttonlabel: 'OK',
+        confirmbuttonreturn: false,
+        showcancel: false
+      }
+    });
+    return dialogCDRef.afterClosed().pipe(map(() => false));
+
   }
 
   private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+    // no lockAfterLeaving defined for testlet
     if (!currentUnit.parent.restrictions.lockAfterLeaving) {
       return of(true);
     }
 
     const lockScope = currentUnit.parent.restrictions.lockAfterLeaving.scope;
-
-    if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
-      return of(true);
-    }
-
     const leaveLock = () => {
       if (this.testMode.forceNaviRestrictions) {
         if (lockScope === 'testlet') {
@@ -979,6 +987,11 @@ export class TestControllerService {
         this.ms.show(`${lockScope} würde im Testmodus nun gesperrt werden.`);
       }
     };
+
+    // new unit is in the same testlet as currentUnit, and the lockscope is testlet
+    if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
+      return of(true);
+    }
 
     if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
       const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
@@ -1003,6 +1016,7 @@ export class TestControllerService {
           })
         );
     }
+
     leaveLock();
     return of(true);
   }
@@ -1048,5 +1062,10 @@ export class TestControllerService {
         takeWhile(checkResult => checkResult, true),
         last()
       );
+  }
+
+  shouldShowConfirmationUI(): boolean {
+    return !(this.booklet?.config.ui_mode === 'NONE' &&
+           (this.testMode.forceTimeRestrictions || this.testMode.forceNaviRestrictions));
   }
 }

@@ -181,5 +181,13 @@
     "label": "Speicherfrequenz für Test-Zustände in Ms.",
     "options": {},
     "defaultvalue": "1000"
+  },
+  "ui_mode": {
+    "label": "Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+    "options": {
+      "ALL": "Alle UI-Elemente anzeigen (Standard-Verhalten)",
+      "NONE": "Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen"
+    },
+    "defaultvalue": "ALL"
   }
 }

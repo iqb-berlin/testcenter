@@ -23,4 +23,5 @@ export class BookletConfigData {
   unit_responses_buffer_time: string = '5000';
   unit_state_buffer_time: string = '6000';
   test_state_buffer_time: string = '1000';
+  ui_mode: 'ALL' | 'NONE' = 'ALL';
 }
