@@ -50,6 +50,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
     });
 
     it('enter the block with incorrect is not possible', () => {
@@ -205,6 +206,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
     });
 
     it('enter the block with correct password', () => {
@@ -271,6 +273,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
     });
 
     it('enter the block with correct password', () => {
@@ -342,6 +345,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .contains('Startseite');
       cy.url()
         .should('include', '/u/1');
+      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
     });
 
     it('enter the block with correct code', () => {
