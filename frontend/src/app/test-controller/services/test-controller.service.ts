@@ -544,7 +544,7 @@ export class TestControllerService {
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
     if (this.state$.getValue() === 'TERMINATED') return true; // sometimes terminateTest get called two times
 
-    const navigationSuccessful = await lastValueFrom(this.canDeactivateUnit('/r/starter'));
+    const navigationSuccessful = await lastValueFrom(this.canDeactivateUnit('/r/starter', force));
     if (!(navigationSuccessful || force)) return true;
 
     this.state$.next((this.state$.getValue() === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
@@ -876,20 +876,22 @@ export class TestControllerService {
     if (!this.currentTimerId) { // leaving unit is not in a timed block
       return of(true);
     }
+
     if (newUnit && newUnit.parent.timerId && // staying in the same timed block
       (newUnit.parent.timerId === this.currentTimerId)
     ) {
       return of(true);
     }
+
     if (!this.testMode.forceTimeRestrictions) {
       this.interruptTimer();
       return of(true);
     }
+
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
-    }
-    if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
+    } else if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
       this.cancelTimer();
       return of(true);
     }
@@ -923,14 +925,7 @@ export class TestControllerService {
     if (!reasons.length) {
       return of(true);
     }
-    return this.notifyNavigationDenied(currentUnit, reasons, direction);
-  }
 
-  private notifyNavigationDenied(
-    currentUnit: Unit,
-    reasons: VeronaNavigationDeniedReason[],
-    direction: NavigationDirection
-  ): Observable<boolean> {
     if (this.testMode.forceNaviRestrictions) {
       this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
@@ -946,8 +941,10 @@ export class TestControllerService {
           showcancel: false
         }
       });
+
       return dialogCDRef.afterClosed().pipe(map(() => false));
     }
+
     const reasonTexts = {
       presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
@@ -1010,7 +1007,7 @@ export class TestControllerService {
     return of(true);
   }
 
-  canDeactivateUnit(nextStateUrl: string): Observable<boolean> {
+  canDeactivateUnit(nextStateUrl: string, ignoreRouterState: boolean = false): Observable<boolean> {
     if (nextStateUrl === '/r/route-dispatcher') {
       return of(true);
     }
@@ -1035,7 +1032,7 @@ export class TestControllerService {
       newUnit = this.units[targetUnitSequenceId] || null;
     }
 
-    const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
+    const forceNavigation = ignoreRouterState ?? this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
     if (forceNavigation) {
       this.interruptTimer();
       return of(true);

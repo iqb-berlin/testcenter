@@ -132,7 +132,7 @@ class MonitorController extends Controller {
         throw new HttpBadRequestException($request, "Test `$testId` not found in group `$groupName`");
       }
 
-      self::testDAO()->locktTest($testId);
+      self::testDAO()->lockTest($testId);
 
       self::testDAO()->addTestLogs([new TestLog($testId, 'locked by monitor', 0, (string) $authToken->getId())]);
       BroadcastService::sessionChange(
