@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## 17.1.1
+### Bugfixes
+* Testleitungskonsole: Bei 'Testung beenden' wird nun kein Fehler mehr verursacht. Dies hatte die Sperrung in einigen Fällen verhindert.
+* Wird ein SuS, während es sich in einem zeitbeschränkten Block befindet, von der Testleitungskonsole gesperrt, wurde dies von einem Dialog verhindert. Dies ist gefixt.
+
 ## 17.1.0
 ### Neue Features
 * Im Admin-Bereich kann man innerhalb eines Arbeitsplatzes unter einem neuen Tab bereits gestartete Tests einzeln löschen. Das erweitetert die bestehenede Möglichkeit die gesamte Testgruppe zu löschen. Zum Löschen der einzelnen Tests benötigt der Admin auch Schreibzugriff auf den Arbeitsbereich.
