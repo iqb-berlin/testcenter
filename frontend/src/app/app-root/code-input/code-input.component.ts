@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { AppError, AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';

@@ -3,10 +3,12 @@ import {
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { DomSanitizer, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { CustomtextService, MainDataService, UserAgentService } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
+import { UiVisibilityService } from './shared/services/ui-visibility.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'tc-root',
@@ -17,10 +19,12 @@ import { AppConfig } from './shared/classes/app.config';
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription | null = null;
   private appTitleSubscription: Subscription | null = null;
+  private routerSubscription: Subscription | null = null;
   unsupportedBrowser: [string, string] | [] = [];
   showBrowserBanner : boolean = false;
 
   showError = false;
+  shouldShowLogo = true;
 
   constructor(
     public mainDataService: MainDataService,
@@ -28,7 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private customtextService: CustomtextService,
     private titleService: Title,
     private sanitizer: DomSanitizer,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private uiVisibilityService: UiVisibilityService
   ) { }
 
   ngOnInit(): void {
@@ -77,6 +82,11 @@ export class AppComponent implements OnInit, OnDestroy {
         });
 
       this.checkBrowser();
+
+      this.routerSubscription = this.uiVisibilityService.showConfirmationUI$
+        .subscribe(showUI => {
+          this.shouldShowLogo = showUI;
+        });
     });
   }
 
@@ -137,5 +147,9 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.appTitleSubscription !== null) {
       this.appTitleSubscription.unsubscribe();
     }
+    if (this.routerSubscription !== null) {
+      this.routerSubscription.unsubscribe();
+    }
   }
+
 }

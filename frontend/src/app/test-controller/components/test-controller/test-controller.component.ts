@@ -15,6 +15,7 @@ import {
   MainDataService, UserAgentService,
   BackendService as SharedBackendService
 } from '../../../shared/shared.module';
+import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
   Command, MaxTimerEvent,
   ReviewDialogData,
@@ -62,6 +63,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     public cmd: CommandService,
     private tls: TestLoaderService,
     public dialog: MatDialog,
+    private uiVisibilityService: UiVisibilityService,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
   }
@@ -69,6 +71,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mainDataService.clearErrorBuffer();
+      this.updateLogoVisibility();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
@@ -113,6 +116,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
+          this.updateLogoVisibility();
           await this.requestFullScreen();
         });
 
@@ -261,19 +265,23 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     const minute = timer.timeLeftSeconds / 60;
     switch (timer.type) {
       case MaxTimerEvent.STARTED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + timer.timeLeftMinString, '', {
-          duration: 5000,
-          panelClass: ['snackbar-time-started']
-        });
+        if (this.tcs.shouldShowConfirmationUI()) {
+          this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + timer.timeLeftMinString, '', {
+            duration: 5000,
+            panelClass: ['snackbar-time-started']
+          });
+        }
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         return true;
       case MaxTimerEvent.ENDED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {
-          duration: 5000,
-          panelClass: ['snackbar-time-ended']
-        });
+        if (this.tcs.shouldShowConfirmationUI()) {
+          this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {
+            duration: 5000,
+            panelClass: ['snackbar-time-ended']
+          });
+        }
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
@@ -290,10 +298,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         return true;
       case MaxTimerEvent.CANCELLED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {
-          duration: 5000,
-          panelClass: ['snackbar-time-canceled']
-        });
+        if (this.tcs.shouldShowConfirmationUI()) {
+          this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {
+            duration: 5000,
+            panelClass: ['snackbar-time-canceled']
+          });
+        }
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
@@ -313,7 +323,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           // attention: TODO store timer as well in localStorage to prevent F5-cheating
           this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }
-        if (this.tcs.timerWarningPoints.includes(minute)) {
+        if (this.tcs.timerWarningPoints.includes(minute) && this.tcs.shouldShowConfirmationUI()) {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
           this.snackBar.open(text, '', {
             duration: 5000,
@@ -336,6 +346,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }
+    this.uiVisibilityService.setShowConfirmationUI(true);
   }
 
   @HostListener('window:unload', ['$event'])
@@ -375,6 +386,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updateLogoVisibility(): void {
+    this.uiVisibilityService.setShowConfirmationUI(this.tcs.shouldShowConfirmationUI());
+  }
+
   async requestFullScreen(): Promise<void> {
     if (this.tcs.booklet?.config.ask_for_fullscreen === 'OFF') {
       return;
@@ -382,6 +397,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.mainDataService.isFullScreen) {
       return;
     }
+
+    // todo dont use ignore_ui booklet parameter, as fullscreen without asking leads to errors in the browser
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: 'auto',
       data: <ConfirmDialogData>{

@@ -56,7 +56,7 @@
     "label": "Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde",
     "options": {
       "OFF": "Das Verlassen der unvollständig betrachteten Aufgabe wird nicht verhindert.",
-      "ALWAYS": "Das Verlassen der unvollständig betrachteten Aufgabe nicht verhindert.",
+      "ALWAYS": "Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert.",
       "ON": "Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll."
     },
     "defaultvalue": "OFF"
@@ -65,7 +65,7 @@
     "label": "Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde",
     "options": {
       "OFF": "Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.",
-      "ALWAYS": "Das Verlassen der unvollständig beantworteten Aufgabe nicht verhindert.",
+      "ALWAYS": "Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert.",
       "ON": "Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll."
     },
     "defaultvalue": "OFF"
@@ -181,5 +181,13 @@
     "label": "Speicherfrequenz für Test-Zustände in Ms.",
     "options": {},
     "defaultvalue": "1000"
+  },
+  "ui_mode": {
+    "label": "Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+    "options": {
+      "ALL": "Alle UI-Elemente anzeigen (Standard-Verhalten)",
+      "NONE": "Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen"
+    },
+    "defaultvalue": "ALL"
   }
 }

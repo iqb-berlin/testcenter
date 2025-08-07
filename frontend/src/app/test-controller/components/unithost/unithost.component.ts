@@ -514,14 +514,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.clearCode = '';
       this.runUnit();
     } else {
-      this.snackBar.open(
-        `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
-        'OK',
-        {
-          duration: 3000,
-          panelClass: ['snackbar-wrong-block-code']
-        }
-      );
+      if (this.tcs.shouldShowConfirmationUI()) {
+        this.snackBar.open(
+          `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
+          'OK',
+          {
+            duration: 3000,
+            panelClass: ['snackbar-wrong-block-code']
+          }
+        );
+      }
       this.clearCode = '';
     }
   }

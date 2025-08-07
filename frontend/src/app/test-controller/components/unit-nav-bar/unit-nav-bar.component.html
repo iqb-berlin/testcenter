@@ -1,6 +1,6 @@
 <div class="flex-row unit-nav">
   <a
-    *ngIf="prevButtonVisible && retardedDesign"
+    *ngIf="prevButtonVisible && deprecatedDesign"
     mat-fab
     matTooltip="Zurück"
     data-cy="unit-navigation-backward"
@@ -11,7 +11,7 @@
     <i class="material-icons">chevron_left</i>
   </a>
   <a
-    *ngIf="prevButtonVisible && !retardedDesign"
+    *ngIf="prevButtonVisible && !deprecatedDesign"
     mat-flat-button
     matTooltip="Zurück"
     data-cy="unit-navigation-backward"
@@ -53,7 +53,7 @@
   </ng-template>
 
   <a
-    *ngIf="nextButtonVisible && retardedDesign"
+    *ngIf="nextButtonVisible && deprecatedDesign"
     mat-fab
     matTooltip="Weiter"
     data-cy="unit-navigation-forward"
@@ -64,7 +64,7 @@
     <i class="material-icons">chevron_right</i>
   </a>
   <a
-    *ngIf="nextButtonVisible && !retardedDesign"
+    *ngIf="nextButtonVisible && !deprecatedDesign"
     mat-flat-button
     matTooltip="Weiter"
     data-cy="unit-navigation-forward"

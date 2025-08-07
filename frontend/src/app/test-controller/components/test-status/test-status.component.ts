@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { CustomtextService, MainDataService } from '../../../shared/shared.module';
 import { AppError } from '../../../app.interfaces';
+import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 
 @Component({
   templateUrl: './test-status.component.html',
   styleUrls: ['./test-status.component.css']
 })
 
-export class TestStatusComponent implements OnInit {
+export class TestStatusComponent implements OnInit, OnDestroy {
   loginName = '??';
+  private previousShowLogoState: boolean = true; // AIDEV-NOTE: Store previous logo state to restore on destroy
 
   constructor(
     public tcs: TestControllerService,
     public mainDataService: MainDataService,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    private uiVisibilityService: UiVisibilityService
   ) { }
 
   ngOnInit(): void {
@@ -23,6 +26,11 @@ export class TestStatusComponent implements OnInit {
       if (authData) {
         this.loginName = authData.displayName;
       }
+
+      this.uiVisibilityService.showConfirmationUI$.subscribe(currentState => {
+        this.previousShowLogoState = currentState;
+      }).unsubscribe(); // Get current state immediately and unsubscribe, no need for unsubscribe in ngOnDestroy
+      this.uiVisibilityService.setShowConfirmationUI(true);
     });
   }
 
@@ -37,5 +45,9 @@ export class TestStatusComponent implements OnInit {
 
   continueTest() {
     this.tcs.setUnitNavigationRequest(this.tcs.currentUnitSequenceId.toString(10));
+  }
+
+  ngOnDestroy(): void {
+    this.uiVisibilityService.setShowConfirmationUI(this.previousShowLogoState);
   }
 }

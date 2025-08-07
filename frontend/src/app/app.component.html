@@ -1,4 +1,4 @@
-<div class="logo">
+<div class="logo" *ngIf="shouldShowLogo">
   <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
     <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" matTooltip="Zur Startseite" alt="Logo der Anwendung"/>
   </a>

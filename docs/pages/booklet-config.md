@@ -60,13 +60,13 @@ Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
 ### force_presentation_complete
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde
  * **"OFF" - Das Verlassen der unvollständig betrachteten Aufgabe wird nicht verhindert.**
- * "ALWAYS" - Das Verlassen der unvollständig betrachteten Aufgabe nicht verhindert.
+ * "ALWAYS" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 ### force_response_complete
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
  * **"OFF" - Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.**
- * "ALWAYS" - Das Verlassen der unvollständig beantworteten Aufgabe nicht verhindert.
+ * "ALWAYS" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 ### controller_design
@@ -144,3 +144,8 @@ Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
 ### test_state_buffer_time
 Speicherfrequenz für Test-Zustände in Ms.
  * **1000**
+
+### ui_mode
+Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)
+ * **"ALL" - Alle UI-Elemente anzeigen (Standard-Verhalten)**
+ * "NONE" - Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen

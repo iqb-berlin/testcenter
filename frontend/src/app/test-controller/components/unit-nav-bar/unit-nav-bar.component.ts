@@ -18,7 +18,7 @@ export class UnitNavBarComponent {
   @Input() nextButtonEnabled: boolean = false;
   @Input() forwardAllowed: NavigationDirectionValue = 'yes';
   @Input() backwardAllowed: NavigationDirectionValue = 'yes';
-  @Input() retardedDesign: boolean = false;
+  @Input() deprecatedDesign: boolean = false;
   testletContext?: { testlet: Testlet, level: number };
 
   constructor(
