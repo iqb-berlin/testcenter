@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+## [next]
+### Neue Features
+* Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt. 
+  * Alle Snackbar Einblendungen werden unterdrückt.
+  * Das Logo wird im laufenden Test ausgeblendet. Das Logo erscheint noch im Pause-Bildschirm, den man mit der Testleitungskonsole aktivieren kann. Damit wird auch bei Fehlen des Logos im Laufenden Betrieb sichergestellt, dass ein SuS auf den Startbildschirm zurückkehren kann.
+
 ## 17.1.1
 ### Bugfixes
 * Testleitungskonsole: Bei 'Testung beenden' wird nun kein Fehler mehr verursacht. Dies hatte die Sperrung in einigen Fällen verhindert.

@@ -33,7 +33,9 @@ export class UnitActivateGuard implements CanActivate {
       targetUnit = this.tcs.getUnit(targetUnitSequenceId);
     } catch (e) {
       // a unit-nr was entered in the URL which does not exist
-      this.messageService.show(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
+      if (this.tcs.shouldShowConfirmationUI()) {
+        this.messageService.show(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
+      }
       // looking for alternatives where to go
       const navigation = await this.tcs.closeBuffer('canActivate');
       if (this.tcs.currentUnit && !TestControllerService.unitIsInaccessible(this.tcs.currentUnit)) {
