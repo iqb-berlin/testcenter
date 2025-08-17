@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 17.2.0
 ### Neue Features
 * Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt. 
   * Alle Snackbar Einblendungen werden unterdrückt.
