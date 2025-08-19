@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.3.0-rc
+### Verbesserungen
+* Update der Libraries in Broadcaster und Backend
+
 ## 17.2.0
 ### Neue Features
 * Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt. 
