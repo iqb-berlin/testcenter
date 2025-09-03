@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")
 

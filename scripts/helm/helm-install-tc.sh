@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare TESTCENTER_VERSION="17.2.0"
 declare TESTCENTER_CHART_VERSION="2.2.0"

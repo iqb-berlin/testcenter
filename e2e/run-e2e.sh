@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 while true; do
   declare dir_name=$(basename "$PWD")

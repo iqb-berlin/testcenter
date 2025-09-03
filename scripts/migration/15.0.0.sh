@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source .env
 
 echo "Applying patch: 15.0.0"
