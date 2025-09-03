@@ -102,14 +102,19 @@ test-frontend-integration:
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
 test-file-server-api:
-	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
-			--file test/docker-compose.api-test.yml\
+			--env-file $(TC_BASE_DIR)/.env.dev\
+			--file $(TC_BASE_DIR)/docker-compose.yml\
+			--file $(TC_BASE_DIR)/docker-compose.dev.yml\
+			--file $(TC_BASE_DIR)/test/docker-compose.api-test.yml\
 		run --rm task-runner-file-server\
 			npm run file-server:api-test
+	@docker compose\
+			--env-file $(TC_BASE_DIR)/.env.dev\
+			--file $(TC_BASE_DIR)/docker-compose.yml\
+			--file $(TC_BASE_DIR)/docker-compose.dev.yml\
+		down
+	@docker image rm testcenter-task-runner-file-server
 
 # Performs some e2e tests with CyPress against real backend and services
 # Param: (optional) spec - specific spec to run (example: spec=Test-Controller/hot-return), omit parameter for all.
