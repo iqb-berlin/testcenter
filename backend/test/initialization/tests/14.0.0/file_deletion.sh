@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source backend/test/initialization/functions/functions.sh
 take_current_version

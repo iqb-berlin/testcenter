@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<EOF

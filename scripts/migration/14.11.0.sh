@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source .env
 REPO_URL=iqb-berlin/testcenter/14.11.0
 

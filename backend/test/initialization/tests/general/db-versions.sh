@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source backend/test/initialization/functions/functions.sh
 
 echo_h1 "Fresh installation with legacy-version of DB should work -- $MYSQL_DATABASE";

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare TARGET_VERSION="17.0.0"
 declare APP_NAME='testcenter'

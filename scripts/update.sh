@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 declare UPDATE_OPTION
 declare SOURCE_VERSION
