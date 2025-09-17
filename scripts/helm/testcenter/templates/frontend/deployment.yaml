@@ -21,12 +21,24 @@ spec:
         {{- .Values.deployment.frontend.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
       securityContext:
-        runAsUser: 101
-        runAsGroup: 101
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-frontend-container
           image: "{{ .Values.image.frontend.registryPath }}iqbberlin/testcenter-frontend:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.frontend.imagePullPolicy }}
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http-container
               containerPort: 8080

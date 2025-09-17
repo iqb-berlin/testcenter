@@ -19,10 +19,23 @@ spec:
       topologySpreadConstraints:
         {{- .Values.deployment.backend.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-backend-container
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command: [ "apache2-foreground" ]
           ports:
             - name: http-container
@@ -65,9 +78,11 @@ spec:
           image: "{{ .Values.image.busybox.registryPath }}busybox:{{ .Values.image.busybox.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.image.busybox.imagePullPolicy }}
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            runAsNonRoot: true
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
       volumes:
         - name: backend-volume
