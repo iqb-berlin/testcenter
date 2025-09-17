@@ -27,12 +27,24 @@ spec:
         {{- .Values.deployment.fileServer.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
       securityContext:
-        runAsUser: 33
-        runAsGroup: 33
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-file-server-container
           image: "{{ .Values.image.fileServer.registryPath }}iqbberlin/testcenter-file-server:{{ .Values.image.fileServer.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.fileServer.imagePullPolicy }}
+          securityContext:
+            runAsUser: 33
+            runAsGroup: 33
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           {{- if .Values.deployment.fileServer.resources }}
           resources:
             {{- .Values.deployment.fileServer.resources | toYaml | nindent 12 }}

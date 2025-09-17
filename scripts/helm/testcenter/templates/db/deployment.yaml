@@ -18,10 +18,23 @@ spec:
       topologySpreadConstraints:
         {{- .Values.deployment.db.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-db-container
           image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
           imagePullPolicy: {{ .Values.image.db.imagePullPolicy }}
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           {{- if .Values.deployment.db.resources }}
           resources:
             {{- .Values.deployment.db.resources | toYaml | nindent 12 }}
