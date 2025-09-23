@@ -10,8 +10,16 @@ if (environment.production) {
 
 platformBrowserDynamic(<StaticProvider[]>[
   {
+    provide: 'BROADCASTER_URL',
+    useValue: environment.broadcasterUrl
+  },
+  {
+    provide: 'FILE_SERVER_URL',
+    useValue: environment.fileServerUrl
+  },
+  {
     provide: 'BACKEND_URL',
-    useValue: environment.testcenterUrl
+    useValue: environment.backendUrl
   },
   {
     provide: 'IS_PRODUCTION_MODE',

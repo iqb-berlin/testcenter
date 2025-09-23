@@ -24,7 +24,8 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected connectionClosed = true;
 
   constructor(
-    @Inject('BACKEND_URL') protected serverUrl: string,
+    @Inject('BROADCASTER_URL') protected broadcasterUrl: string,
+    @Inject('BACKEND_URL') protected backendUrl: string,
     @SkipSelf() protected http: HttpClient
   ) {
     super();
@@ -50,7 +51,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     this.connectionStatus$.next('polling-fetch');
 
     this.http
-      .get<T>(this.serverUrl + this.pollingEndpoint, { observe: 'response' })
+      .get<T>(this.backendUrl + this.pollingEndpoint, { observe: 'response' })
       .subscribe((response: HttpResponse<T>) => {
         if (!this.data$) {
           return;
@@ -59,8 +60,9 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
           return;
         }
         this.data$.next(response.body);
-        if (response.headers.has('SubscribeURI')) {
-          this.wsUrl = response.headers.get('SubscribeURI') as string;
+        if (response.headers.has('SubscribeToken')) {
+          this.wsUrl = this.broadcasterUrl + "ws?token=" + response.headers.get('SubscribeToken') as string;
+          console.log('Websocket URL: ' + this.wsUrl);
           this.subScribeToWsChannel();
         } else {
           this.connectionStatus$.next('polling-sleep');

@@ -4,9 +4,6 @@ metadata:
   name: {{ .Release.Name }}-backend-config
 data:
   HOSTNAME: {{ .Values.ingress.baseDomain | quote }}
-  PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpPort | quote }}
-  TLS_PORT_OF_REVERSE_PROXY: {{ .Values.ingress.httpsPort | quote }}
-  TLS_ENABLED: {{ .Values.ingress.tlsEnabled | quote }}
   BROADCASTER_ENABLED: {{ .Values.config.backend.broadcasterEnabled | quote }}
   FILE_SERVER_ENABLED: {{ .Values.config.backend.fileServerEnabled | quote }}
   REDIS_CACHE_FILES: {{ .Values.config.backend.redisCacheFiles | quote }}

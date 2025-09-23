@@ -6,18 +6,18 @@ class CacheService {
 
   private static function connect(): bool {
     if (
-      !SystemConfig::$cacheService_host or
-      !SystemConfig::$cacheService_port or
-      !SystemConfig::$cacheService_password
+      !SystemConfig::$cacheServer_host or
+      !SystemConfig::$cacheServer_port or
+      !SystemConfig::$cacheServer_password
     ) {
       return false;
     }
     if (!isset(self::$redis)) {
       try {
         self::$redis = new Redis([
-          'host' => SystemConfig::$cacheService_host,
-          'port' => SystemConfig::$cacheService_port,
-          'auth' => SystemConfig::$cacheService_password
+          'host' => SystemConfig::$cacheServer_host,
+          'port' => SystemConfig::$cacheServer_port,
+          'auth' => SystemConfig::$cacheServer_password
         ]);
       } catch (RedisException $exception) {
         throw new Exception("Could not reach Cache-Service: " . $exception->getMessage());
@@ -47,7 +47,7 @@ class CacheService {
   }
 
   public static function storeFile(string $filePath): void {
-    if (!SystemConfig::$cacheService_includeFiles) {
+    if (!SystemConfig::$cacheServer_includeFiles) {
       return;
     }
     if (!self::connect()) {
@@ -66,10 +66,10 @@ class CacheService {
 
   static function getStatusFilesCache(): string {
     if (
-      !SystemConfig::$cacheService_host or
-      !SystemConfig::$cacheService_port or
-      !SystemConfig::$cacheService_password or
-      !SystemConfig::$cacheService_includeFiles
+      !SystemConfig::$cacheServer_host or
+      !SystemConfig::$cacheServer_port or
+      !SystemConfig::$cacheServer_password or
+      !SystemConfig::$cacheServer_includeFiles
     ) {
       return 'off';
     }

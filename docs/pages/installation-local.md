@@ -96,7 +96,7 @@ cp backend/config/no-cors.htaccess .htaccess
 
 ## Prepare Frontend
 ```
-echo "export const environment = { production: false, testcenterUrl: 'http://localhost/testcenter/backend/', fastLoadUrl: 'http://localhost/testcenter/backend/' };" \
+echo "export const environment = { production: false, backendUrl: 'http://localhost/testcenter/backend/', fastLoadUrl: 'http://localhost/testcenter/backend/' };" \
  > frontend/src/environments/environment.ts
 ```
 

@@ -15,7 +15,11 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting(<StaticProvider[]>[
     {
       provide: 'SERVER_URL',
-      useValue: environment.testcenterUrl
+      useValue: environment.backendUrl
+    },
+    {
+      provide: 'FILE_SERVER_URL',
+      useValue: environment.fileServerUrl
     },
     {
       provide: 'IS_PRODUCTION_MODE',

@@ -98,7 +98,6 @@ services:
       - ./sampledata:/var/www/testcenter/sampledata
       - ./scripts/database:/var/www/testcenter/scripts/database
     environment:
-      TLS_ENABLED: ${TLS_ENABLED:-false}
       SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
       SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
       OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}

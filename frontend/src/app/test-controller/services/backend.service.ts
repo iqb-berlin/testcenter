@@ -13,6 +13,7 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
 })
 export class BackendService {
   constructor(
+    @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
     @Inject('BACKEND_URL') public backendUrl: string,
     private http: HttpClient,
     private mds: MainDataService
@@ -103,7 +104,7 @@ export class BackendService {
   }
 
   getResource(workspaceId: number, path: string): Observable<LoadingFile> {
-    const resourceUri = this.mds.appConfig?.fileServiceUri ? '/fs/' : this.backendUrl; // @TODO: extract to 'file-server.service' class
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.backendUrl; // @TODO: extract to 'file-server.service' class
     return this.http
       .get(
         `${resourceUri}file/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,

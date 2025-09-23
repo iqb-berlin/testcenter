@@ -1,4 +1,6 @@
 export const environment = {
   production: false,
-  testcenterUrl: '/api/'
+  fileServerUrl: '/fs/',
+  broadcasterUrl: '/bs/public/',
+  backendUrl: '/api/'
 };

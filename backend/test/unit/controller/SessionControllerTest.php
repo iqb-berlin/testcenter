@@ -48,9 +48,8 @@ final class SessionControllerTest extends TestCase {
       ->method('getFileById')
       ->willReturn($mockBooklet);
 
-    SystemConfig::$cacheService_host = '';
-    SystemConfig::$broadcastingService_external = '';
-    SystemConfig::$broadcastingService_internal = '';
+    SystemConfig::$cacheServer_host = '';
+    SystemConfig::$broadcaster_url = '';
 
     SessionControllerInjector::injectWorkspace($mockWorkspace, 1);
   }
