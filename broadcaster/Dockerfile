@@ -21,14 +21,6 @@ COPY broadcaster/tsconfig.json .
 COPY broadcaster/tsconfig.spec.json .
 COPY broadcaster/src ./src
 
-# Install dependencies
-RUN --mount=type=cache,sharing=locked,target=~/.npm \
-    npm ci --include=dev --no-fund
-
-# Build project
-RUN npx nest info
-RUN npx nest build
-
 EXPOSE 3000
 
 
@@ -41,20 +33,32 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
     procps # needed for webpack not to crash on file change
 
+# Install dependencies
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
+    npm ci --include=dev --no-fund
+
+# Build project
+RUN npx nest info
+RUN npx nest build
+
 CMD ["npx", "nest", "start", "--watch", "--preserveWatchOutput"]
 
 
 FROM base AS prod
 WORKDIR /var/www/broadcaster
 
+RUN chown -R node:node /usr/src/testcenter
+
+# Install dependencies
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,sharing=locked,target=~/.npm \
     npm ci --omit=dev --no-fund
 
-RUN chown -R node:node /usr/src/testcenter
-COPY --chown=node:node --from=base /usr/src/testcenter/broadcaster/node_modules/ node_modules/
-COPY --chown=node:node --from=base /usr/src/testcenter/broadcaster/dist/ ./
+# Build project
+RUN npx nest info
+RUN npx nest build
+
 USER node
 
 CMD ["node", "main.js"]
