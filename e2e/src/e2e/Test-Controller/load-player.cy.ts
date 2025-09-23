@@ -2,7 +2,6 @@
 
 import {
   disableSimplePlayersInternalDebounce,
-  getFromIframe,
   loginTestTaker,
   probeBackendApi,
   resetBackendData,
@@ -33,10 +32,11 @@ describe('check correct loading player', { testIsolation: false }, () => {
   });
 
   it('speedtest-player', () => {
-    cy.get('iframe')
+    cy.get('iframe.unitHost')
       .its('0.contentDocument.body')
+      .should('not.be.empty')
       .then(cy.wrap)
-      .as('iframe')
       .contains('richtig');
   });
+
 });
