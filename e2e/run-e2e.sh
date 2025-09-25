@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 while true; do
-  declare dir_name=$(basename "$PWD")
+  declare dir_name=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
   services_count=$(docker ps --filter name="${dir_name}"-* --format='{{.Names}} → {{.Status}}' | wc -l) #todo dir name
   if [[ "$services_count" -eq 7 ]]; then
     cd e2e || exit
