@@ -12,7 +12,7 @@ declare DB_VOLUME='dbdata'
 declare DB_VOLUME_NEW='db_vol'
 
 declare PROJECT_NAME
-PROJECT_NAME=$(basename "${PWD}")
+PROJECT_NAME=$(basename "${PWD}" | tr '[:upper:]' '[:lower:]')
 declare BACKEND_VOLUME_NAME=${PROJECT_NAME}_${BACKEND_VOLUME}
 declare DB_VOLUME_NAME=${PROJECT_NAME}_${DB_VOLUME}
 declare BACKEND_VOLUME_NEW_NAME=${PROJECT_NAME}_${BACKEND_VOLUME_NEW}
