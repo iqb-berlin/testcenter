@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+## 17.3.0-rc
+### Verbesserungen
+* Aktualisierung der Backend und Broadcaster Frameworks 'slim' und 'nest' sowie der 'tcpdf' PHP-Bibliothek
+* Entkopplung des Broadcasters vom der Konfiguration des Edge-Routers 'traefik'
+* Verbesserung und Vervollständigung der 'security contexts' für alle Testcenter Kubernetes Pods
+
 ## 17.2.0
 ### Neue Features
 * Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt. 
