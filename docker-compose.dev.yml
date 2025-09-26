@@ -26,11 +26,6 @@ services:
       - testcenter
 
   broadcaster:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.broadcaster.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.broadcaster.middlewares=security-headers, broadcaster-stripprefix"
-      - "traefik.http.middlewares.broadcaster-stripprefix.stripprefix.prefixes=/bs/public"
     build:
       dockerfile: broadcaster/Dockerfile
       target: dev
@@ -103,7 +98,6 @@ services:
       - ./sampledata:/var/www/testcenter/sampledata
       - ./scripts/database:/var/www/testcenter/scripts/database
     environment:
-      TLS_ENABLED: ${TLS_ENABLED:-false}
       SKIP_READ_FILES: ${SKIP_READ_FILES:-no}
       SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
       OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}

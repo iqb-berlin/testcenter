@@ -2,7 +2,7 @@ import {
   BehaviorSubject, combineLatest, merge, Subscription
 } from 'rxjs';
 import {
-  Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef
+  Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef, Inject
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -51,6 +51,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(
     public tcs: TestControllerService,
     private mds: MainDataService,
+    @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
     private bs: BackendService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
@@ -447,7 +448,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
     if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
-    const resourceUri = this.mds.appConfig?.fileServiceUri ? '/fs/' : this.bs.backendUrl; // @TODO: extract to 'file-server.service' class
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.bs.backendUrl; // @TODO: extract to 'file-server.service' class
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(navigationState.targets)
         .filter(isVeronaNavigationTarget)

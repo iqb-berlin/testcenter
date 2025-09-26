@@ -1,4 +1,4 @@
-Header add Access-Control-Expose-Headers "SubscribeURI, Error-ID, Test-Mode"
+Header add Access-Control-Expose-Headers "SubscribeToken, Error-ID, Test-Mode"
 
 # the browsers does store 410, so re-activated accounts could never be used again without this
 Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate" "expr=%{REQUEST_STATUS} == 410"

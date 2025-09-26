@@ -26,7 +26,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
     const generalError: BookletError = { error: 'general', species: null };
 
     return this.http
-      .get(`${this.serverUrl}booklet/${bookletName}`, { headers, responseType: 'text' })
+      .get(`${this.backendUrl}booklet/${bookletName}`, { headers, responseType: 'text' })
       .pipe(
         catchError((err: AppError) => {
           // we don't rely on general error handler here, because this is to interwoven with subsequent requests
@@ -42,7 +42,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
   command(keyword: string, args: string[], testIds: number[]): Observable<CommandResponse> {
     return this.http
       .put(
-        `${this.serverUrl}monitor/command`,
+        `${this.backendUrl}monitor/command`,
         {
           keyword,
           arguments: args,
@@ -57,7 +57,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
 
   unlock(groupName: string, testIds: number[]): Observable<CommandResponse> {
     return this.http
-      .post(`${this.serverUrl}monitor/group/${groupName}/tests/unlock`, { testIds })
+      .post(`${this.backendUrl}monitor/group/${groupName}/tests/unlock`, { testIds })
       .pipe(
         map(() => ({ commandType: 'unlock', testIds }))
       );
@@ -65,13 +65,13 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
 
   lock(groupName: string, testIds: number[]): Observable<CommandResponse> {
     return this.http
-      .post(`${this.serverUrl}monitor/group/${groupName}/tests/lock`, { testIds })
+      .post(`${this.backendUrl}monitor/group/${groupName}/tests/lock`, { testIds })
       .pipe(
         map(() => ({ commandType: 'lock', testIds }))
       );
   }
 
   getProfile(profileId: string): Observable<Profile> {
-    return this.http.get<Profile>(`${this.serverUrl}monitor/profile/${profileId}`);
+    return this.http.get<Profile>(`${this.backendUrl}monitor/profile/${profileId}`);
   }
 }

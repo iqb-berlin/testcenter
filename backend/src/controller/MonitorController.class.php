@@ -44,14 +44,14 @@ class MonitorController extends Controller {
 
     $sessionChangeMessages = self::adminDAO()->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
-    $bsUrl = BroadcastService::registerChannel('monitor', ["groups" => $groupNames]);
+    $token = BroadcastService::registerChannel('monitor', ["groups" => $groupNames]);
 
-    if ($bsUrl !== null) {
+    if ($token !== null) {
       foreach ($sessionChangeMessages as $sessionChangeMessage) {
         BroadcastService::sessionChange($sessionChangeMessage);
       }
 
-      $response = $response->withHeader('SubscribeURI', $bsUrl);
+      $response = $response->withHeader('SubscribeToken', $token);
     }
 
     return $response->withJson($sessionChangeMessages->asArray());

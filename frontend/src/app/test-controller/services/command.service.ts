@@ -43,10 +43,11 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   constructor(
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
-    @Inject('BACKEND_URL') serverUrl: string,
+    @Inject('BROADCASTER_URL') broadcasterUrl: string,
+    @Inject('BACKEND_URL') backendUrl: string,
     protected override http: HttpClient
   ) {
-    super(serverUrl, http);
+    super(broadcasterUrl, backendUrl, http);
 
     this.setUpGlobalCommandsForDebug();
 
@@ -88,7 +89,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))),
         mergeMap((command: Command) =>
           // eslint-disable-next-line
-          this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
+          this.http.patch(`${this.backendUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
             .pipe(
               map(() => command),
               tap(cmd => this.executedCommandIds.push(cmd.id))

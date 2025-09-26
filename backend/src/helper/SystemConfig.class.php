@@ -7,15 +7,13 @@ class SystemConfig {
   public static string $database_password;
   public static int $database_port;
   public static string $database_user;
-  public static string $fileService_host = "";
-  public static string $broadcastingService_external = "";
-  public static string $broadcastingService_internal = "";
-  public static string $cacheService_host = "";
-  public static int $cacheService_port;
-  public static string $cacheService_password = "";
-  public static string $cacheService_includeFiles = "";
+  public static string $fileServer_url = "";
+  public static string $broadcaster_url = "";
+  public static string $cacheServer_host = "";
+  public static int $cacheServer_port;
+  public static string $cacheServer_password = "";
+  public static string $cacheServer_includeFiles = "";
   public static string $password_salt = "t";
-  public static bool $system_tlsEnabled = true;
   public static string $system_version;
   public static int $system_veronaMax;
   public static int $system_veronaMin;
@@ -77,25 +75,18 @@ class SystemConfig {
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
 
-    $config['system']['tlsEnabled'] = self::boolEnv('TLS_ENABLED');
-
-    $portOfReverseProxy = $config['system']['tlsEnabled']
-      ? (self::stringEnv('TLS_PORT_OF_REVERSE_PROXY', '443'))
-      : (self::stringEnv('PORT_OF_REVERSE_PROXY', '80'));
-
     if (self::boolEnv('BROADCASTER_ENABLED')) {
-      $config['broadcastingService']['external'] = self::stringEnv('HOSTNAME') . ":$portOfReverseProxy/bs/public/";
-      $config['broadcastingService']['internal'] = 'broadcaster:3000';
+      $config['broadcaster']['url'] = 'http://broadcaster:3000';
     }
 
     if (self::boolEnv('FILE_SERVER_ENABLED')) {
-      $config['fileService']['host'] = 'file-server:8080/';
+      $config['fileServer']['url'] = 'http://file-server:8080/';
     }
 
-    $config['cacheService']['host'] = self::stringEnv('REDIS_HOST');
-    $config['cacheService']['port'] = self::stringEnv('REDIS_PORT');
-    $config['cacheService']['password'] = self::stringEnv('REDIS_PASSWORD');
-    $config['cacheService']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
+    $config['cacheServer']['host'] = self::stringEnv('REDIS_HOST');
+    $config['cacheServer']['port'] = self::stringEnv('REDIS_PORT');
+    $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
+    $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

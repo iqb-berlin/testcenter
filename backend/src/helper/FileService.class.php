@@ -6,11 +6,11 @@ declare(strict_types=1);
 
 class FileService {
   static function getStatus(): string {
-    if (!SystemConfig::$fileService_host) {
+    if (!SystemConfig::$fileServer_url) {
       return 'off';
     }
 
-    $uri = 'http://' . SystemConfig::$fileService_host . 'health';
+    $uri = SystemConfig::$fileServer_url . 'health';
 
     $curl = curl_init();
     curl_setopt_array($curl, [
@@ -46,9 +46,9 @@ class FileService {
   }
 
   public static function getUri(): string {
-    if (!SystemConfig::$fileService_host) {
+    if (!SystemConfig::$fileServer_url) {
       return '';
     }
-    return 'http://' . SystemConfig::$fileService_host;
+    return SystemConfig::$fileServer_url;
   }
 }

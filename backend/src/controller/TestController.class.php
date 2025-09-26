@@ -424,10 +424,10 @@ class TestController extends Controller {
     if (TestEnvironment::$testMode) {
       $testee['disconnectNotificationUri'] .= '?testMode=' . TestEnvironment::$testMode;
     }
-    $bsUrl = BroadcastService::registerChannel('testee', $testee);
+    $token = BroadcastService::registerChannel('testee', $testee);
 
-    if ($bsUrl !== null) {
-      $response = $response->withHeader('SubscribeURI', $bsUrl);
+    if ($token !== null) {
+      $response = $response->withHeader('SubscribeToken', $token);
     }
 
     $testSession = self::testDAO()->getTestSession($testId);

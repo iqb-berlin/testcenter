@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 class BroadcastService {
   static function getStatus(): string {
-    if (!SystemConfig::$broadcastingService_internal or !SystemConfig::$broadcastingService_external) {
+    if (!SystemConfig::$broadcaster_url) {
       return 'off';
     }
 
@@ -19,11 +19,8 @@ class BroadcastService {
     $bsToken = md5((string) rand(0, 99999999));
     $data['token'] = $bsToken;
     $response = BroadcastService::send("$channelName/register", json_encode($data));
-    $url =
-      (SystemConfig::$system_tlsEnabled ? 'wss://' : 'ws://')
-      . SystemConfig::$broadcastingService_external
-      . "ws?token=$bsToken";
-    return ($response !== null) ? $url : null;
+
+    return ($response !== null) ? $bsToken : null;
   }
 
   static function sessionChange(SessionChangeMessage $sessionChange): ?string {
@@ -31,13 +28,13 @@ class BroadcastService {
   }
 
   static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
-    if (!SystemConfig::$broadcastingService_internal or !SystemConfig::$broadcastingService_external) {
+    if (!SystemConfig::$broadcaster_url) {
       return null;
     }
 
     $curl = curl_init();
 
-    $bsUri = 'http://' . SystemConfig::$broadcastingService_internal;
+    $bsUri = SystemConfig::$broadcaster_url . '/' . $endpoint;
 
     $headers = ["Content-Type: application/json"];
     if (TestEnvironment::$testMode) {
@@ -45,7 +42,7 @@ class BroadcastService {
     }
 
     curl_setopt_array($curl, [
-      CURLOPT_URL => $bsUri . '/' . $endpoint,
+      CURLOPT_URL => $bsUri,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
@@ -75,7 +72,9 @@ class BroadcastService {
   }
 
   public static function getUri(): string {
-    $proto = (SystemConfig::$system_tlsEnabled ? 'https://' : 'http://');
-    return $proto . SystemConfig::$broadcastingService_external;
+    if (!SystemConfig::$broadcaster_url) {
+      return '';
+    }
+    return SystemConfig::$broadcaster_url;
   }
 }

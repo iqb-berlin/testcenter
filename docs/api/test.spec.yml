@@ -621,7 +621,7 @@ paths:
       summary: get commands
       description: |-
         Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket
-        if available. The websocket address is stored in header "SubscribeURI".
+        if available. The websocket address is stored in header "SubscribeToken".
       tags:
         - run monitor
       parameters:

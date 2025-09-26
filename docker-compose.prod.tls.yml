@@ -42,13 +42,6 @@ services:
       - "./secrets/traefik/certs/${TLS_CERTIFICATE_RESOLVER}:/certs"
 
   broadcaster:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.broadcaster.tls=true"
-      - "traefik.http.routers.broadcaster.tls.certResolver=${TLS_CERTIFICATE_RESOLVER}"
-      - "traefik.http.routers.broadcaster.rule=(Host(`www.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.routers.broadcaster.middlewares=security-headers, broadcaster-stripprefix"
-      - "traefik.http.middlewares.broadcaster-stripprefix.stripprefix.prefixes=/bs/public"
     image: ${DOCKERHUB_PROXY}iqbberlin/testcenter-broadcaster:${VERSION}
 
   frontend:
