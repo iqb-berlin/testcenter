@@ -1595,6 +1595,7 @@ build-backend-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
@@ -1624,6 +1625,7 @@ build-frontend-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
@@ -1654,6 +1656,7 @@ build-broadcaster-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   variables:
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
   before_script:
@@ -1683,6 +1686,7 @@ build-file-server-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   variables:
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
   before_script:
@@ -1714,6 +1718,7 @@ scan-backend-prod:
     - build-backend-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1772,6 +1777,7 @@ scan-frontend-prod:
     - build-frontend-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1830,6 +1836,7 @@ scan-broadcaster-prod:
     - build-broadcaster-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1888,6 +1895,7 @@ scan-file-server-prod:
     - build-file-server-prod
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -1945,6 +1953,7 @@ scan-traefik-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -2002,6 +2011,7 @@ scan-db-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -2059,6 +2069,7 @@ scan-cache-server-prod:
   needs: []
   rules:
     - !reference [ .master_commit_rules, rules ]
+    - !reference [ .pre-release_rules, rules ]
   image:
     name: $TRIVY_IMAGE
     entrypoint: [ "" ]
@@ -2113,6 +2124,11 @@ scan-cache-server-prod:
 
 push-pre-release:
   stage: deploy
+  needs:
+    - scan-backend-prod
+    - scan-frontend-prod
+    - scan-broadcaster-prod
+    - scan-file-server-prod
   rules:
     - !reference [ .pre-release_rules, rules ]
   variables:
