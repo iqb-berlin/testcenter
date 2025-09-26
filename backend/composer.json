@@ -9,12 +9,12 @@
   },
   "license": "MIT",
   "require": {
-    "php": "~8.3.12",
-    "php-di/php-di": "^6.4",
-    "slim/http": "^1.2",
-    "slim/psr7": "^1.5",
-    "slim/slim": "^4.10.0",
-    "tecnickcom/tcpdf": "^6.5.0",
+    "php": "8.3.12",
+    "php-di/php-di": "6.4.0",
+    "slim/http": "1.4.0",
+    "slim/psr7": "1.7.1",
+    "slim/slim": "4.15.0",
+    "tecnickcom/tcpdf": "6.10.0",
     "ext-apache": "*",
     "ext-curl": "*",
     "ext-dom": "*",
@@ -30,10 +30,10 @@
     "ext-zend-opcache" : "*"
   },
   "require-dev": {
-    "amphp/parallel": "^2.2.2",
-    "mikey179/vfsstream": "^1.6.11",
-    "phpunit/phpunit":  "^10.4.2",
-    "mockery/mockery": "^1.6.6",
+    "amphp/parallel": "2.3.2",
+    "mikey179/vfsstream": "1.6.12",
+    "phpunit/phpunit":  "10.4.2",
+    "mockery/mockery": "1.6.12",
     "ext-pcntl" : "*"
   },
   "autoload": {
