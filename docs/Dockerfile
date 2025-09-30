@@ -1,4 +1,7 @@
-FROM ruby:3.4-slim AS jekyll
+# syntax=docker/dockerfile:1
+
+ARG REGISTRY_PATH=""
+FROM ${REGISTRY_PATH}ruby:3.4-slim AS jekyll
 
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
