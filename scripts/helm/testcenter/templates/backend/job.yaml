@@ -7,10 +7,25 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-backend-container-seed
           image: "{{ .Values.image.backend.registryPath }}iqbberlin/testcenter-backend:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.backend.imagePullPolicy }}
+          securityContext:
+            runAsUser: 33
+            runAsGroup: 33
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command: [ "bash", "/initialize_only.sh" ]
           env:
             - name: BROADCASTER_ENABLED
