@@ -6,8 +6,6 @@ import {
 import { catchError, map, share } from 'rxjs/operators';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 import { ConnectionStatusWs } from '../../interfaces/websocket-backend.interfaces';
-import { Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 interface WsMessage {
   event: string;
