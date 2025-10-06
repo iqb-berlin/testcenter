@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## 17.3.0-rc
+## 17.3.0
 ### Verbesserungen
 * Aktualisierung der Backend und Broadcaster Frameworks 'slim' und 'nest' sowie der 'tcpdf' PHP-Bibliothek
 * Entkopplung des Broadcasters vom der Konfiguration des Edge-Routers 'traefik'
