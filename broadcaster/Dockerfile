@@ -25,7 +25,7 @@ FROM base AS build
 ENV NODE_ENV=production
 
 # Install dependencies
-RUN --mount=type=cache,target=~/.npm \
+RUN --mount=type=cache,sharing=locked,target=~/.npm \
     npm ci --include=dev --no-fund
 
 # Build project
