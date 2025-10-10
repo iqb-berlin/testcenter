@@ -5,11 +5,11 @@
       <entry url="file://$PROJECT_DIR$">
         <entryData>
           <resourceRoots>
-            <path value="file://$PROJECT_DIR$/broadcasting-service/node_modules" />
             <path value="file://$PROJECT_DIR$/node_modules" />
             <path value="file://$PROJECT_DIR$/e2e/node_modules" />
             <path value="file://$PROJECT_DIR$/frontend/node_modules" />
             <path value="file://$PROJECT_DIR$/backend/vendor" />
+            <path value="file://$PROJECT_DIR$/broadcaster/node_modules" />
           </resourceRoots>
         </entryData>
       </entry>
