@@ -19,6 +19,11 @@
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:9091/TEST_iqb_tba_testcenter</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
     </data-source>
     <data-source source="LOCAL" name="local | db" uuid="831ab058-dae4-44eb-8ff6-d504297064ab">
       <driver-ref>mysql.8</driver-ref>
