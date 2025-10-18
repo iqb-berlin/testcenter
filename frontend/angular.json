@@ -117,21 +117,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "testcenter-frontend:build:dev",
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "testcenter-frontend:build:dev"
           },
           "configurations": {
             "production": {
-              "browserTarget": "testcenter-frontend:build:production"
+              "buildTarget": "testcenter-frontend:build:production"
             },
             "dev": {
-              "browserTarget": "testcenter-frontend:build:dev"
+              "buildTarget": "testcenter-frontend:build:dev"
             },
             "local": {
-              "browserTarget": "testcenter-frontend:build:local"
+              "buildTarget": "testcenter-frontend:build:local"
             },
             "e2e": {
-              "browserTarget": "testcenter-frontend:build:e2e"
+              "buildTarget": "testcenter-frontend:build:e2e"
             }
           }
         },
