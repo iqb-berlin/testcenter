@@ -3,7 +3,7 @@ import {
   discardPeriodicTasks, fakeAsync, TestBed, tick
 } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TestControllerService } from './test-controller.service';
@@ -50,7 +50,9 @@ class MockMessageService {
 describe('TestControllerService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
+    imports: [RouterTestingModule,
+        MatDialogModule],
+    providers: [
         TestControllerService,
         {
           provide: BackendService,
@@ -61,16 +63,12 @@ describe('TestControllerService', () => {
           useValue: new MockMessageService()
         },
         {
-          provide: MainDataService,
-          useValue: new MockMainDataService()
-        }
-      ],
-      imports: [
-        RouterTestingModule,
-        HttpClientModule,
-        MatDialogModule
-      ]
-    })
+            provide: MainDataService,
+            useValue: new MockMainDataService()
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
       .compileComponents();
     service = TestBed.inject(TestControllerService);
     service.booklet = {

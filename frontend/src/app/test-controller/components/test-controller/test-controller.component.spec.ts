@@ -4,7 +4,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -78,20 +78,17 @@ describe('TestControllerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         TestControllerComponent,
         MockUnitMenuComponent
-      ],
-      imports: [
-        CommonModule,
+    ],
+    imports: [CommonModule,
         MatIconModule,
         MatDialogModule,
         MatSidenavModule,
         RouterTestingModule.withRoutes([{ path: 'yourpath', redirectTo: '' }]),
-        HttpClientModule,
-        NoopAnimationsModule
-      ],
-      providers: [
+        NoopAnimationsModule],
+    providers: [
         CustomtextService,
         MatSnackBar,
         { provide: TestControllerService, useValue: MockTestControllerService },
@@ -100,9 +97,10 @@ describe('TestControllerComponent', () => {
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
         { provide: SharedBackendService, useValue: MockSharedBackendService },
-        { provide: 'IS_PRODUCTION_MODE', useValue: false }
-      ]
-    })
+        { provide: 'IS_PRODUCTION_MODE', useValue: false },
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
       .compileComponents();
   }));
 

@@ -1,6 +1,6 @@
 // eslint-disable max-classes-per-file
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -42,19 +42,16 @@ describe('FilesComponent', () => {
         FilesComponent,
         IqbFilesUploadQueueComponent,
         IqbFilesUploadInputForDirective
-      ],
-      imports: [
-        HttpClientModule,
-        MatExpansionModule,
+    ],
+    imports: [MatExpansionModule,
         MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatIconModule,
         MatCheckboxModule,
         SharedModule,
-        NoopAnimationsModule
-      ],
-      providers: [
+        NoopAnimationsModule],
+    providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
@@ -63,9 +60,10 @@ describe('FilesComponent', () => {
           provide: MainDataService,
           useValue: new MockMainDataService()
         },
-        WorkspaceDataService
-      ]
-    })
+        WorkspaceDataService,
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
       .compileComponents();
   }));
 
