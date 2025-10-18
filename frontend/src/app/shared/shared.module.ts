@@ -8,7 +8,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -26,57 +26,51 @@ import { TrustPipe } from './pipes/trust.pipe';
 import { BlockConditionPipe } from './pipes/block-condition.pipe';
 import { TemplateContextDirective } from './directives/template-context.directive';
 
-@NgModule({
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatExpansionModule,
-    MatSnackBarModule,
-    MatCardModule,
-    FormsModule,
-    MatInputModule,
-    HttpClientModule,
-    MatTooltipModule,
-    MatButtonToggleModule,
-    ReactiveFormsModule
-  ],
-  declarations: [
-    ConfirmDialogComponent,
-    MessageDialogComponent,
-    BytesPipe,
-    CustomtextPipe,
-    BlockConditionPipe,
-    AlertComponent,
-    ErrorComponent,
-    TemplateContextDirective,
-    PageNavBarComponent,
-    TrustPipe,
-    PageNavBarComponent,
-    AutofocusDirective,
-    NewPasswordComponent
-  ],
-  exports: [
-    ConfirmDialogComponent,
-    MessageDialogComponent,
-    BytesPipe,
-    CustomtextPipe,
-    BlockConditionPipe,
-    AlertComponent,
-    ErrorComponent,
-    TemplateContextDirective,
-    PageNavBarComponent,
-    TrustPipe,
-    PageNavBarComponent,
-    AutofocusDirective,
-    NewPasswordComponent
-  ],
-  providers: [
-    BackendService
-  ]
-})
+@NgModule({ declarations: [
+        ConfirmDialogComponent,
+        MessageDialogComponent,
+        BytesPipe,
+        CustomtextPipe,
+        BlockConditionPipe,
+        AlertComponent,
+        ErrorComponent,
+        TemplateContextDirective,
+        PageNavBarComponent,
+        TrustPipe,
+        PageNavBarComponent,
+        AutofocusDirective,
+        NewPasswordComponent
+    ],
+    exports: [
+        ConfirmDialogComponent,
+        MessageDialogComponent,
+        BytesPipe,
+        CustomtextPipe,
+        BlockConditionPipe,
+        AlertComponent,
+        ErrorComponent,
+        TemplateContextDirective,
+        PageNavBarComponent,
+        TrustPipe,
+        PageNavBarComponent,
+        AutofocusDirective,
+        NewPasswordComponent
+    ], imports: [CommonModule,
+        MatDialogModule,
+        MatIconModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatExpansionModule,
+        MatSnackBarModule,
+        MatCardModule,
+        FormsModule,
+        MatInputModule,
+        MatTooltipModule,
+        MatButtonToggleModule,
+        ReactiveFormsModule], providers: [
+        BackendService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class SharedModule {}
 export { BackendService } from './services/backend.service';
 export { CustomtextService } from './services/customtext/customtext.service';

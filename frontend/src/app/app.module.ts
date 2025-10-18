@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApplicationModule, ErrorHandler, NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -42,76 +42,70 @@ import { TestModeInterceptor } from './test-mode.interceptor';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    AppRootComponent,
-    SysCheckStarterComponent,
-    LoginComponent,
-    CodeInputComponent,
-    RouteDispatcherComponent,
-    StatusCardComponent,
-    LegalNoticeComponent,
-    StarterComponent
-  ],
-  imports: [
-    ApplicationModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatBadgeModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatMenuModule,
-    MatProgressBarModule,
-    MatRadioModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    RouterModule,
-    AppRoutingModule,
-    SharedModule,
-    CdkAccordionModule,
-    MatExpansionModule
-  ],
-  providers: [
-    BackendService,
-    MatDialog,
-    {
-      provide: ErrorHandler,
-      useClass: AppErrorHandler
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: RetryInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TestModeInterceptor,
-      multi: true
-    },
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        AppRootComponent,
+        SysCheckStarterComponent,
+        LoginComponent,
+        CodeInputComponent,
+        RouteDispatcherComponent,
+        StatusCardComponent,
+        LegalNoticeComponent,
+        StarterComponent
+    ],
+    bootstrap: [AppComponent], imports: [ApplicationModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatBadgeModule,
+        MatButtonModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatMenuModule,
+        MatProgressBarModule,
+        MatRadioModule,
+        MatTabsModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        ReactiveFormsModule,
+        RouterModule,
+        AppRoutingModule,
+        SharedModule,
+        CdkAccordionModule,
+        MatExpansionModule], providers: [
+        BackendService,
+        MatDialog,
+        {
+            provide: ErrorHandler,
+            useClass: AppErrorHandler
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ErrorInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: RetryInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: TestModeInterceptor,
+            multi: true
+        },
+        {
+            provide: LocationStrategy,
+            useClass: HashLocationStrategy
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }

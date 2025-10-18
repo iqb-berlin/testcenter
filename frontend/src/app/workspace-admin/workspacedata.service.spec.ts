@@ -6,9 +6,10 @@ import {
   MatDialogModule
 } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { WorkspaceDataService } from './workspacedata.service';
 import { BackendService } from './backend.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 class MockMatDialog {
   // eslint-disable-next-line class-methods-use-this
@@ -26,17 +27,16 @@ class MockBackendService {
 describe('WorkspaceDataService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule,
-        MatSnackBarModule,
-        HttpClientTestingModule
-      ],
-      providers: [
+    imports: [MatDialogModule,
+        MatSnackBarModule],
+    providers: [
         WorkspaceDataService,
         { provide: BackendService, useValue: new MockBackendService() },
-        { provide: MatDialog, useValue: new MockMatDialog() }
-      ]
-    });
+        { provide: MatDialog, useValue: new MockMatDialog() },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
   });
 
   it('should be created', inject([WorkspaceDataService], (service: WorkspaceDataService) => {

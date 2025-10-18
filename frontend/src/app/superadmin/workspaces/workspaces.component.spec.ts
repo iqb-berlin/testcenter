@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -24,23 +24,21 @@ describe('WorkspacesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [WorkspacesComponent],
-      imports: [
-        HttpClientModule,
-        MatDialogModule,
+    declarations: [WorkspacesComponent],
+    imports: [MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatCheckboxModule,
-        MatIconModule
-      ],
-      providers: [
+        MatIconModule],
+    providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
         },
-        MainDataService
-      ]
-    })
+        MainDataService,
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
       .compileComponents();
   }));
 
