@@ -1,9 +1,11 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
+include $(TC_BASE_DIR)/.env.dev
+
 ## prevents collisions of make target names with possible file names
-.PHONY: init build up down start stop logs composer-install composer-update composer-refresh-autoload re-init-backend\
-	create-interfaces update-docs docs-frontend-compodoc docs-broadcaster-compodoc docs-api-specs docs-user\
-	create-pages serve-pages new-version
+.PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
+	composer-refresh-autoload re-init-backend create-interfaces update-docs docs-frontend-compodoc\
+	docs-broadcaster-compodoc docs-api-specs docs-user create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -13,9 +15,17 @@ init:
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
 
+# Log in to selected registry (see .env.dev file)
+dev-registry-login:
+	@if test $(DOCKERHUB_PROXY); then printf "Login %s\n" $(DOCKERHUB_PROXY); docker login $(DOCKERHUB_PROXY); fi
+
+# Log out of selected registry (see .env.dev file)
+dev-registry-logout:
+	@if test $(DOCKERHUB_PROXY); then docker logout $(DOCKERHUB_PROXY); fi
+
 # Build all images of the project or a specified one as dev-images.
 # Param: (optional) service - Only build a specified service, e.g. `service=backend`
-build:
+build:	dev-registry-login
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--progress plain\
@@ -131,12 +141,17 @@ data-pull:
 # from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
 data-push:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
-		exec backend sh -c 'rm -rf ../data/*' &&\
-	tar -cf - data  --owner www-data --group www-data | docker compose --env-file .env.dev --file docker-compose.yml --file docker-compose.dev.yml cp - backend:/var/www/testcenter
+		docker compose\
+				--env-file .env.dev\
+				--file docker-compose.yml\
+				--file docker-compose.dev.yml\
+			exec backend sh -c 'rm -rf ../data/*' &&\
+		tar -cf - data --owner www-data --group www-data |\
+			docker compose\
+					--env-file .env.dev\
+					--file docker-compose.yml\
+					--file docker-compose.dev.yml\
+				cp - backend:/var/www/testcenter
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
@@ -190,7 +205,13 @@ docs-user:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=create-docs
 
 create-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll --tag jekyll -f docs/Dockerfile .
+	cd $(TC_BASE_DIR) &&\
+		docker build\
+				--target jekyll\
+				--build-arg REGISTRY_PATH=$(DOCKERHUB_PROXY)\
+				--tag jekyll\
+				--file docs/Dockerfile\
+			.
 	docker run --rm jekyll
 
 serve-pages:

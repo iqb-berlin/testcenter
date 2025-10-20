@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ARG REGISTRY_PATH=""
 FROM ${REGISTRY_PATH}cypress/browsers:node-22.16.0-chrome-137.0.7151.119-1-ff-139.0.4-edge-137.0.3296.62-1
 WORKDIR /usr/src/testcenter/e2e

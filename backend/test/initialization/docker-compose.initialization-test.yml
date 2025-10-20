@@ -23,6 +23,8 @@ services:
     build:
       context: ../../..
       dockerfile: task-runner/Dockerfile
+      args:
+        REGISTRY_PATH: ${DOCKERHUB_PROXY}
     command: "npm run backend:api-test"
     environment:
       TC_API_URL: http://initialization-test-backend
