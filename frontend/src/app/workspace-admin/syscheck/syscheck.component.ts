@@ -13,8 +13,9 @@ import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 
 @Component({
-  templateUrl: './syscheck.component.html',
-  styleUrls: ['./syscheck.component.css']
+    templateUrl: './syscheck.component.html',
+    styleUrls: ['./syscheck.component.css'],
+    standalone: false
 })
 export class SyscheckComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];

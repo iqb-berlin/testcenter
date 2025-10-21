@@ -10,9 +10,10 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
 import { AlertLevel, isAlertLevel } from '../../../shared/interfaces/alert.interfaces';
 
 @Component({
-  selector: 'tc-files-upload',
-  templateUrl: './iqb-files-upload.component.html',
-  styleUrls: ['../iqb-files.scss']
+    selector: 'tc-files-upload',
+    templateUrl: './iqb-files-upload.component.html',
+    styleUrls: ['../iqb-files.scss'],
+    standalone: false
 })
 export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @HostBinding('class') myclass = 'iqb-files-upload';

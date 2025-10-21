@@ -6,11 +6,12 @@ import { KbDetectionService } from '../../../shared/services/kb-detection/kb-det
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 @Component({
-  templateUrl: './review-dialog.component.html',
-  styles: [
-    '.mat-mdc-radio-group {display: flex; flex-direction: column;}',
-    'ul {list-style-type: none; padding: 0;}'
-  ]
+    templateUrl: './review-dialog.component.html',
+    styles: [
+        '.mat-mdc-radio-group {display: flex; flex-direction: column;}',
+        'ul {list-style-type: none; padding: 0;}'
+    ],
+    standalone: false
 })
 export class ReviewDialogComponent implements OnInit {
   reviewForm = new FormGroup({

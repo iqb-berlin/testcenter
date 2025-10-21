@@ -3,7 +3,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CodingScheme } from '@iqb/responses';
 
 @Pipe({
-  name: 'schemeastext'
+    name: 'schemeastext',
+    standalone: false
 })
 export class SchemeAsTextPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

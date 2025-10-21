@@ -6,9 +6,10 @@ import { Subscription } from 'rxjs';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 @Component({
-  selector: 'tc-attachment-manager',
-  templateUrl: './attachment-manager.component.html',
-  styleUrls: ['../../../../monitor-layout.css']
+    selector: 'tc-attachment-manager',
+    templateUrl: './attachment-manager.component.html',
+    styleUrls: ['../../../../monitor-layout.css'],
+    standalone: false
 })
 export class AttachmentManagerComponent implements OnInit, OnDestroy {
   groupLabel: string = '';

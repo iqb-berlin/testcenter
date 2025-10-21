@@ -2,8 +2,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'tc-save-report',
-  templateUrl: './save-report.component.html'
+    selector: 'tc-save-report',
+    templateUrl: './save-report.component.html',
+    standalone: false
 })
 
 export class SaveReportComponent {

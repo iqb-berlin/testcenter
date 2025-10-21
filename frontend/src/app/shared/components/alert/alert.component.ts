@@ -8,9 +8,10 @@ import { CustomtextService } from '../../services/customtext/customtext.service'
 import { AlertLevel } from '../../interfaces/alert.interfaces';
 
 @Component({
-  selector: 'tc-alert',
-  templateUrl: 'alert.component.html',
-  styleUrls: ['alert.component.css']
+    selector: 'tc-alert',
+    templateUrl: 'alert.component.html',
+    styleUrls: ['alert.component.css'],
+    standalone: false
 })
 export class AlertComponent implements OnChanges {
   @Input() text: string = '';

@@ -35,8 +35,9 @@ interface FileStats {
 }
 
 @Component({
-  templateUrl: './files.component.html',
-  styleUrls: ['./files.component.css']
+    templateUrl: './files.component.html',
+    styleUrls: ['./files.component.css'],
+    standalone: false
 })
 export class FilesComponent implements OnInit, OnDestroy {
   files: { [type in IQBFileType]: MatTableDataSource<IQBFile> };

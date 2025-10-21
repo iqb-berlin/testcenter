@@ -5,8 +5,9 @@ import { MainDataService } from '../../shared/shared.module';
 import { SysCheckInfo } from '../../app.interfaces';
 
 @Component({
-  templateUrl: './sys-check-starter.component.html',
-  styleUrls: ['./sys-check-starter.component.css']
+    templateUrl: './sys-check-starter.component.html',
+    styleUrls: ['./sys-check-starter.component.css'],
+    standalone: false
 })
 export class SysCheckStarterComponent implements OnInit {
   checkConfigList: SysCheckInfo[] = [];

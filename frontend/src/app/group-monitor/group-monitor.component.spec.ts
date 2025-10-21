@@ -72,7 +72,10 @@ class MockTestSessionManagerService {
   resetFilters = () => null;
 }
 
-@Pipe({ name: 'customtext' })
+@Pipe({
+    name: 'customtext',
+    standalone: false
+})
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 class MockCustomtextPipe {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
