@@ -13,8 +13,9 @@ import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, ResultData } from '../workspace.interfaces';
 
 @Component({
-  templateUrl: './results.component.html',
-  styleUrls: ['./results.component.css']
+    templateUrl: './results.component.html',
+    styleUrls: ['./results.component.css'],
+    standalone: false
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [

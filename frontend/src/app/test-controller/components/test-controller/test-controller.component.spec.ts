@@ -34,8 +34,9 @@ const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
 
 @Component({
-  template: '',
-  selector: 'tc-unit-menu'
+    template: '',
+    selector: 'tc-unit-menu',
+    standalone: false
 })
 class MockUnitMenuComponent {
   // @Input() menu: Array<UnitNaviButtonData | string> = [];

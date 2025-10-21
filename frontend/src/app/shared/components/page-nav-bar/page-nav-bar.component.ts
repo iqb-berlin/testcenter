@@ -3,8 +3,8 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'tc-page-nav',
-  template: `
+    selector: 'tc-page-nav',
+    template: `
     <span [style.color]="'white'" [style.padding-right.px]="8">
         {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
     </span>
@@ -32,11 +32,12 @@ import {
       <i class="material-icons">chevron_right</i>
     </button>
   `,
-  styles: [`
+    styles: [`
     .selected-value {background-color: var(--accent) !important;}
     button { height: 34px !important; margin-bottom: 2px;}
     mat-button-toggle-group {height: 34px; align-items: center;}
-  `]
+  `],
+    standalone: false
 })
 export class PageNavBarComponent {
   @Input() pageLabels: string[] = [];

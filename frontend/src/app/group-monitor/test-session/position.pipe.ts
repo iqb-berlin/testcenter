@@ -8,7 +8,8 @@ import {
 } from '../group-monitor.interfaces';
 
 @Pipe({
-  name: 'position'
+    name: 'position',
+    standalone: false
 })
 export class PositionPipe implements PipeTransform {
   transform(testSession: TestSession, root: Testlet): string {

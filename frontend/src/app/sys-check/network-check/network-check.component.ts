@@ -10,8 +10,9 @@ import {
 import { TcSpeedChartComponent, TcSpeedChartSettings } from './tc-speed-chart.component';
 
 @Component({
-  styleUrls: ['../sys-check.component.css'],
-  templateUrl: './network-check.component.html'
+    styleUrls: ['../sys-check.component.css'],
+    templateUrl: './network-check.component.html',
+    standalone: false
 })
 
 export class NetworkCheckComponent implements OnInit, OnDestroy {

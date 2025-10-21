@@ -4,7 +4,8 @@ import {
 import { IqbFilesUploadQueueComponent } from '../iqb-files-upload-queue/iqb-files-upload-queue.component';
 
 @Directive({
-  selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'
+    selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]',
+    standalone: false
 })
 export class IqbFilesUploadInputForDirective {
   private queue: IqbFilesUploadQueueComponent | null = null;

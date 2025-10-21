@@ -9,9 +9,10 @@ import { Verona5ValidPages, Verona6ValidPages } from '../../test-controller/inte
 // TODO merge this with the test-controller/unithost component. both could inherit from a parent class
 
 @Component({
-  selector: 'tc-unit-check',
-  templateUrl: './unit-check.component.html',
-  styleUrls: ['./unit-check.component.css']
+    selector: 'tc-unit-check',
+    templateUrl: './unit-check.component.html',
+    styleUrls: ['./unit-check.component.css'],
+    standalone: false
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   pages: { [id: string]: string } = {};

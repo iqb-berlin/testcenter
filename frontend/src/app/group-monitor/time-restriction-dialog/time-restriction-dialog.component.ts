@@ -12,9 +12,10 @@ export interface TimeRestrictionDialogData {
 }
 
 @Component({
-  selector: 'time-restriction-dialog',
-  templateUrl: './time-restriction-dialog.component.html',
-  styleUrls: ['./time-restriction-dialog.component.css']
+    selector: 'time-restriction-dialog',
+    templateUrl: './time-restriction-dialog.component.html',
+    styleUrls: ['./time-restriction-dialog.component.css'],
+    standalone: false
 })
 export class TimeRestrictionDialogComponent implements OnInit {
   showcancel: boolean = true;

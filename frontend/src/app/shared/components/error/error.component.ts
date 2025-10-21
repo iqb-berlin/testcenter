@@ -13,9 +13,10 @@ import { BugReportResult } from '../../interfaces/bug-report.interfaces';
 import { FileService } from '../../services/file.service';
 
 @Component({
-  selector: 'error',
-  templateUrl: 'error.component.html',
-  styleUrls: ['error.component.css']
+    selector: 'error',
+    templateUrl: 'error.component.html',
+    styleUrls: ['error.component.css'],
+    standalone: false
 })
 export class ErrorComponent implements OnInit, OnDestroy {
   @Input() onBeforeClose: (() => void) | null = null;

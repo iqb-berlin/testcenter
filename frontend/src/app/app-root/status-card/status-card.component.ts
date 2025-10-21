@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../../shared/shared.module';
 
 @Component({
-  selector: 'tc-status-card',
-  templateUrl: './status-card.component.html'
+    selector: 'tc-status-card',
+    templateUrl: './status-card.component.html',
+    standalone: false
 })
 export class StatusCardComponent implements OnInit {
   loginName = '';

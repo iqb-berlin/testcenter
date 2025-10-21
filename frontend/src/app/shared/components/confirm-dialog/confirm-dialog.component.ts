@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ConfirmDialogData } from '../../interfaces/confirm-dialog.interfaces';
 
 @Component({
-  selector: 'tc-confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.css']
+    selector: 'tc-confirm-dialog',
+    templateUrl: './confirm-dialog.component.html',
+    styleUrls: ['./confirm-dialog.component.css'],
+    standalone: false
 })
 export class ConfirmDialogComponent implements OnInit {
   showcancel = true;
