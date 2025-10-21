@@ -336,11 +336,14 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   // TODO: Either this algorithm or the whole this.files datastructure could be reworked to allow more files per workspace
   private static calculateFileSize(fileList: GetFileResponseData) {
-    const needsToCalculate = IQBFileTypes.filter(type => type !== 'Testtakers' && type !== 'SysCheck' && type !== 'Resource');
+    type Subset = Exclude<typeof IQBFileTypes[number], 'Testtakers' | 'SysCheck' | 'Resource'>;
+    function isSubset(value: string): value is Subset {
+      return !['Testtakers', 'SysCheck', 'Resource'].includes(value);
+    }
 
     IQBFileTypes.forEach(type => {
       fileList[type]?.forEach(file => {
-        if (needsToCalculate.includes(type) && file.dependencies.length !== 0) {
+        if (isSubset(type) && file.dependencies.length !== 0) {
           file.info.totalSize = file.size;
           file.dependencies.forEach(dep => {
             if (
