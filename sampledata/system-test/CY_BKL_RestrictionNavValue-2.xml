@@ -21,7 +21,7 @@
         <DenyNavigationOnIncomplete presentation="ON" response="ON" />
       </Restrictions>
       <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
-      <Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy1-unit-101"/>
     </Testlet>
 
     <Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
