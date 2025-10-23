@@ -10,20 +10,15 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Workspace-Admin-files', () => {
+describe('Workspace-Admin-files', { testIsolation: false }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
     probeBackendApi();
-  });
-
-  beforeEach(() => {
     visitLoginPage();
     loginSuperAdmin();
     openSampleWorkspace(1);
   });
-
-  afterEach(logoutAdmin);
 
   it('download files', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
@@ -71,8 +66,7 @@ describe('Workspace-Admin-files', () => {
       .click();
     cy.contains('1 Dateien werden von anderen verwendet und wurden nicht gelöscht.');
     cy.get('[data-cy="SAMPLE_BOOKLET.XML"]');
-    cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
-      .click();
+
   });
 
   it('delete SAMPLE_BOOKLET.XML, if tt-xml is deleted before', () => {
@@ -102,14 +96,16 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('upload any file as a resource', () => {
+  it('load any file as a resource', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/AnyResource.txt`, { force: true });
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('AnyResource.txt');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
-  it('uploading invalid files is not possible', () => {
+  it('load invalid files is not possible', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Testtakers_error.xml`, { force: true });
     cy.contains('Abgelehnt');
@@ -132,16 +128,18 @@ describe('Workspace-Admin-files', () => {
       .click();
   });
 
-  it('upload the file SysCheck.xml', () => {
+  it('load the file SysCheck.xml', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/SysCheck.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen');
     reload();
     cy.get('mat-table >mat-row button >span')
       .contains('SysCheck.xml');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
-  it('upload a unit file, the player file must be exists.', () => {
+  it('load a unit file, the player file must be exists.', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
@@ -167,9 +165,11 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
-  it('upload resources files and unit-xml ', () => {
+  it('load resources files and unit-xml ', () => {
     cy.get('[data-cy="files-checkAll-Unit"]')
       .click();
     cy.get('[data-cy="files-checkAll-Resource"]')
@@ -198,7 +198,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]');
   });
 
-  it('upload a booklet file, if the declared unit files already exist', () => {
+  it('load a booklet file, if the declared unit files already exist', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
@@ -242,7 +242,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]');
   });
 
-  it('upload a tt-xml, if the declared booklet files already exist', () => {
+  it('load a tt-xml, if the declared booklet files already exist', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/verona-player-simple-6.0.html', { force: true });
     cy.get('[data-cy="close-upload-report"]')
@@ -301,7 +301,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="files-checkbox-TESTTAKERS.XML"]');
   });
 
-  it('upload a Booklet-File with 2 Testlets and the same Testlet-Names is not possible', () => {
+  it('load a Booklet-File with 2 Testlets and the same Testlet-Names is not possible', () => {
     // firstly delete the testtakers and booklet, because after Backend-Reset the filenames are different
     cy.get('[data-cy="files-checkAll-Testtakers"]')
       .click();
@@ -326,7 +326,7 @@ describe('Workspace-Admin-files', () => {
       .should('not.exist');
   });
 
-  it('upload a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
+  it('load a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
     // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs.xml`, { force: true });
@@ -334,9 +334,11 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Unit');
     cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
       .should('not.exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
-  it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
+  it('load a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
     // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs_Alias.xml`, { force: true });
@@ -375,6 +377,8 @@ describe('Workspace-Admin-files', () => {
       .selectFile(`${Cypress.config('fixturesFolder')}/Booklet.xml`, { force: true });
     cy.contains('Abgelehnt');
     cy.contains('did already exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
   });
 
   it('load a Booklet with different names and same Booklet-ID is not possible', () => {
