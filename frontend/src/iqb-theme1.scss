@@ -28,7 +28,7 @@ $my-theme: mat.m2-define-light-theme((
 }
 
 .mat-mdc-card {
-  --mdc-outlined-card-container-color: var(--tc-box-background);
+  --mat-card-outlined-container-color: var(--tc-box-background);
 }
 
 .mat-mdc-dialog-actions,
