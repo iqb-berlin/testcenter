@@ -4,16 +4,14 @@
 // TODO test sending of a report
 
 import {
-  insertCredentials,
   loginSuperAdmin,
-  loginTestTaker,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
   selectFromDropdown,
-  uploadFileFromFixtureToWorkspace,
   visitLoginPage,
-  insertCredentials, reload, deleteTesttakersFiles
+  insertCredentials,
+  deleteTesttakersFiles
 } from '../utils';
 
 describe('Sys-Check', () => {
@@ -21,6 +19,7 @@ describe('Sys-Check', () => {
     resetBackendData();
     probeBackendApi();
   });
+
   beforeEach(visitLoginPage);
 
   it('if an SC-login is configured, no SC button must be present', () => {
@@ -119,11 +118,9 @@ describe('Sys-Check', () => {
     cy.window().then((win) => {
       win.location.href = 'about:blank'
     });
-    cy.visit('http://localhost/#/r/login/?testMode=true');
+    visitLoginPage();
     cy.get('[data-cy="general-sys-check"]')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
   });
-
-
 });

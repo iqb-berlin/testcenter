@@ -1,7 +1,6 @@
 import {
   forwardTo,
   getFromIframe,
-  getResponses,
   loginTestTaker,
   modifyPlayer,
   probeBackendApi,
@@ -66,3 +65,21 @@ describe('Test Controller', { testIsolation: false }, () => {
       });
   });
 });
+
+const getResponses =
+  (wsId: number = 1, groups: string[] = ['sample_group']) => cy.request({
+    url: `${Cypress.config().baseUrl}/api/workspace/${wsId}/report/response?dataIds=${groups.join('&')}`,
+    method: 'GET',
+    headers: { authToken: 'static:admin:super', testMode: 'integration' }
+  })
+    .then(responses => {
+      expect(responses.status).to.equal(200);
+      if (!Array.isArray(responses.body)) throw new Error('invalid response');
+      responses.body.forEach(row => {
+        row.laststate = JSON.parse(row.laststate);
+        row.responses.forEach(chunk => {
+          chunk.content = JSON.parse(chunk.content);
+        });
+      });
+      return responses.body;
+    });
