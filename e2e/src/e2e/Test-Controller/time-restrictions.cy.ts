@@ -10,12 +10,11 @@ import {
 } from '../utils';
 
 // Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
-const RestrTimeVal = 12000;
-const RestrTimeValOffset = 1000;
+const RestrTimeVal = 5000;
 
 let blockTimeBeforeShowDialog: number = 0;
 let blockTimeAfterCancelDialog: number = 0;
-const timeToDisplayedDialog: number = 3000;
+const timeToDisplayedDialog: number = 2000;
 
 describe('Block Time-Restrictions demo and review-mode', { testIsolation: false }, () => {
   before(() => {
@@ -44,7 +43,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 0 min');
-    cy.wait(RestrTimeVal + RestrTimeValOffset);
+    cy.wait(RestrTimeVal);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
@@ -66,7 +65,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 0 min');
-    cy.wait(RestrTimeVal + RestrTimeValOffset);
+    cy.wait(RestrTimeVal);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
@@ -77,6 +76,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
 
 describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   before(() => {
+    resetBackendData();
     cy.clearLocalStorage();
     cy.clearCookies();
     probeBackendApi();
@@ -85,15 +85,13 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   beforeEach(() => {
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    resetBackendData();
+
   });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
     loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    // wait for presentation complete, before navigate forward
-    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]')
@@ -104,7 +102,6 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-1"]')
       .click();
-    cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
@@ -120,23 +117,19 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     cy.wait(timeToDisplayedDialog);
     cy.get('[data-cy="dialog-confirm"]')
       .click();
-    // Wait a certain time because the timing is too imprecise
-    cy.wait(1000);
-    // note the time after the exit block message is closed
+   // note the time after the exit block message is closed
     readBlockTime()
       .then(leaveBlockTime => {
         blockTimeAfterCancelDialog = leaveBlockTime;
         // the second time must be smaller than first time minus timeToDisplayedDialog
         cy.wrap(blockTimeAfterCancelDialog)
-          .should('be.lessThan', (blockTimeBeforeShowDialog - (timeToDisplayedDialog / 1000)));
+          .should('be.lte', (blockTimeBeforeShowDialog - (timeToDisplayedDialog/1000)));
         // expect(blockTimeAfterCancelDialog).to.be.lessThan(blockTimeBeforeShowDialog - (timeToDisplayedDialog / 1000));
       });
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    // wait for presentation complete, before end the test
-    cy.wait(1000);
     logoutTestTaker('hot');
   });
 
@@ -144,20 +137,17 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    // wait for presentation complete, before navigate forward
-    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]')
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait(RestrTimeVal + RestrTimeValOffset);
+    cy.wait(RestrTimeVal);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
-    cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
@@ -169,8 +159,6 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     loginTestTaker('TimeRestr_HotRet1', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    // wait for presentation complete, before navigate forward
-    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]')
@@ -181,7 +169,6 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-1"]')
       .click();
-    cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
@@ -197,22 +184,18 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     cy.wait(timeToDisplayedDialog);
     cy.get('[data-cy="dialog-confirm"]')
       .click();
-    // Wait a certain time because the timing is too imprecise
-    cy.wait(1000);
     // note the time after the exit block message is closed
     readBlockTime()
       .then(leaveBlockTime => {
         blockTimeAfterCancelDialog = leaveBlockTime;
-        // the second time must be smaller than first time minus timeToDisplayedDialog
+        // The second time must be equal to the first time.
         cy.wrap(blockTimeAfterCancelDialog)
-          .should('be.lessThan', (blockTimeBeforeShowDialog - (timeToDisplayedDialog / 1000)));
+          .should('be.lte', (blockTimeBeforeShowDialog - (timeToDisplayedDialog / 1000)));
       });
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    // wait for presentation complete, before end the test
-    cy.wait(1000);
     logoutTestTaker('hot');
   });
 
@@ -220,20 +203,17 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
     loginTestTaker('TimeRestr_HotRet2', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    // wait for presentation complete, before navigate forward
-    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unlockUnit"]')
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    cy.wait(RestrTimeVal + RestrTimeValOffset);
+    cy.wait(RestrTimeVal);
     cy.get('.snackbar-time-ended')
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
-    cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')

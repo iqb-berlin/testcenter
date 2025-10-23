@@ -267,7 +267,6 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Endseite');
-      // cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="unit-title"]')

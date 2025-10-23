@@ -20,7 +20,7 @@
 		<Testlet id="Tslt1" label="Aufgabenblock">
 			<Restrictions>
 				<CodeToEnter code="Hase">Bitte gib das Freigabewort ein.</CodeToEnter>
-				<TimeMax minutes="0.2"/>
+				<TimeMax minutes="0.1"/>
 			</Restrictions>
 			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="2"/>
 			<Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="3"/>

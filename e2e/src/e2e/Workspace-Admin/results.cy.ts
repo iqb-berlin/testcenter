@@ -8,22 +8,17 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Workspace-Admin-results', () => {
+describe('Workspace-Admin-results', { testIsolation: false }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
     probeBackendApi();
-  });
-
-  beforeEach(() => {
     visitLoginPage();
     loginSuperAdmin();
     openSampleWorkspace(1);
   });
 
-  afterEach(logoutAdmin);
-
-  it('download the responses of a group', () => {
+ it('download the responses of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.get('[data-cy="results-checkbox0"]')
