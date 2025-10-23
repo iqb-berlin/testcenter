@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NetworkCheckComponent } from './network-check.component';
 import { BackendService } from '../backend.service';
 import { TcSpeedChartComponent } from './tc-speed-chart.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 class MockBackendService {
 
@@ -18,18 +19,17 @@ describe('NetworkCheckComponent', () => {
       declarations: [
         NetworkCheckComponent,
         TcSpeedChartComponent
-      ],
-      imports: [
-        HttpClientTestingModule,
-        MatCardModule
-      ],
-      providers: [
+    ],
+    imports: [MatCardModule],
+    providers: [
         {
-          provide: BackendService,
-          useClass: MockBackendService
-        }
-      ]
-    })
+            provide: BackendService,
+            useClass: MockBackendService
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   }));
 

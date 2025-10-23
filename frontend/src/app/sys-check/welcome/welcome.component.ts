@@ -7,8 +7,9 @@ import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
 
 @Component({
-  styleUrls: ['welcome.component.css', '../sys-check.component.css'],
-  templateUrl: './welcome.component.html'
+    styleUrls: ['welcome.component.css', '../sys-check.component.css'],
+    templateUrl: './welcome.component.html',
+    standalone: false
 })
 export class WelcomeComponent implements OnInit {
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { isBooklet, Testlet, TestSession } from '../group-monitor.interfaces';
 
 @Pipe({
-  name: 'testletvisible'
+    name: 'testletvisible',
+    standalone: false
 })
 export class TestletvisiblePipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Testlet, TestSession } from '../group-monitor.interfaces';
 
 @Pipe({
-  name: 'timeleft'
+    name: 'timeleft',
+    standalone: false
 })
 export class TimeLeftPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

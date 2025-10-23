@@ -4,7 +4,8 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { samePasswordValidator } from '../../validators/samePassword.validator';
 
 @Component({
-  templateUrl: './new-password.component.html'
+    templateUrl: './new-password.component.html',
+    standalone: false
 })
 
 export class NewPasswordComponent {

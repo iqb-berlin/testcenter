@@ -3,7 +3,8 @@ import { Component, Inject } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
-  templateUrl: './superadmin-password-request.component.html'
+    templateUrl: './superadmin-password-request.component.html',
+    standalone: false
 })
 
 export class SuperadminPasswordRequestComponent {

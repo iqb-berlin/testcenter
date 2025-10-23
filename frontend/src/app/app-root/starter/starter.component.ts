@@ -13,9 +13,10 @@ import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'tc-starter',
-  templateUrl: './starter.component.html',
-  styleUrls: ['./starter.component.css']
+    selector: 'tc-starter',
+    templateUrl: './starter.component.html',
+    styleUrls: ['./starter.component.css'],
+    standalone: false
 })
 export class StarterComponent implements OnInit, OnDestroy {
   accessObjects: { [accessType: string]: AccessObject[] } = {};
