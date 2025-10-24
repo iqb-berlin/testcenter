@@ -47,7 +47,7 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
@@ -57,6 +57,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -67,15 +69,17 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
@@ -95,6 +99,8 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -105,7 +111,7 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
@@ -117,10 +123,12 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
@@ -135,7 +143,7 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();

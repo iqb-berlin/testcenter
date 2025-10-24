@@ -98,7 +98,7 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
@@ -130,7 +130,7 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
@@ -142,7 +142,7 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
@@ -158,6 +158,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -170,7 +172,7 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
@@ -191,7 +193,7 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
