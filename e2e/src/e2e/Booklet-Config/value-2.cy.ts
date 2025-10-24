@@ -47,6 +47,8 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -65,12 +67,16 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -99,6 +105,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -109,6 +117,8 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -125,6 +135,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -137,6 +149,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .should('be.disabled');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-navigation-forward"]')

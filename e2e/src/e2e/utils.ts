@@ -149,6 +149,8 @@ export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'h
       if (fileType === 'hot_BkltConfigValue1') {
         getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
           .click();
+        //wait for response complete
+        cy.wait(1000);
         getFromIframe('[data-cy="next-unit-page"]')
           .click();
         cy.get('[data-cy="logo"]')
@@ -424,3 +426,22 @@ export const reload = () => cy.url()
 
 export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*="unit-nav-item"]')
   .each((item, index) => cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`));
+
+export const getResponses =
+//headless-error
+  (wsId: number = 1, groups: string[] = ['sample_group']) => cy.request({
+    url: `http://localhost/api/workspace/${wsId}/report/response?dataIds=${groups.join('&')}`,
+    method: 'GET',
+    headers: { authToken: 'static:admin:super', testMode: 'integration' }
+  })
+    .then(responses => {
+      expect(responses.status).to.equal(200);
+      if (!Array.isArray(responses.body)) throw new Error('invalid response');
+      responses.body.forEach(row => {
+        row.laststate = JSON.parse(row.laststate);
+        row.responses.forEach(chunk => {
+          chunk.content = JSON.parse(chunk.content);
+        });
+      });
+      return responses.body;
+    });

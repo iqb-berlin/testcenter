@@ -98,6 +98,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -128,6 +130,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
     getFromIframe('[data-cy="previous-unit-page"]')
@@ -138,6 +142,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
@@ -164,6 +170,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -183,6 +191,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
     getFromIframe('[data-cy="previous-unit-page"]')
@@ -228,6 +238,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
     cy.get('[data-cy="logo"]')
