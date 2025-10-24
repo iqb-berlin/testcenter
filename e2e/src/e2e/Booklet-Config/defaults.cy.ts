@@ -45,7 +45,7 @@ describe('check default values', { testIsolation: false }, () => {
   });
 
   it('unit_time_left_warnings', () => {
-    // snackbar will be showed 1 second before the time is expiried
+    // snackbar will be shown 1 second before the time is expired
     // because the testlet have a
     cy.get('.snackbar-timerWarning');
   });
