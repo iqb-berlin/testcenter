@@ -317,14 +317,20 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the block, after which the block will be locked', () => {
@@ -387,14 +393,20 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the block, after which the block will be locked', () => {
@@ -467,14 +479,20 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-cancel"]')

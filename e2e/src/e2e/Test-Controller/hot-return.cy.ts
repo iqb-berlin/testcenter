@@ -121,16 +121,22 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
     });
 
     it('complete the last unit in restricted block', () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .click();
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]').as('radio1-Aufg3');
       cy.get('@radio1-Aufg3')
         .click();
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('navigate backwards and verify that the last answer is there', () => {
@@ -231,14 +237,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the block and lock it afterwards', () => {
@@ -298,14 +310,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the block and lock it afterwards', () => {
@@ -369,20 +387,29 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
         .contains('Aufgabenabschnitt verlassen?');
       cy.get('[data-cy="dialog-cancel"]')
         .click();
+      //wait for block is locked and last unit is reached
+      cy.get('[data-cy="unit-title"]')
+        .contains('Endseite');
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="unit-title"]')
