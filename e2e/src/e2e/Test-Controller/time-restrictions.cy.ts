@@ -257,14 +257,16 @@ describe('check attribute: leave', { testIsolation: false }, () => {
 
   it('check leave: confirm', () => {
     loginTestTaker('LeaveVal1', '123', 'test-hot');
-    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
+    cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .click();
-    cy.get('[data-cy="logo"]')
+    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
       .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Endseite');
     logoutTestTaker('hot');
   });
 

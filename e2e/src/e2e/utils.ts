@@ -407,14 +407,14 @@ export const gotoPage = (pageIndex: number): void => {
     .should('have.class', 'selected-value');
 };
 
-export const readBlockTime = (): Promise<number> => new Promise(resolve => {
-  cy.get('[data-cy="time-value"]')
-    .then(currTime => {
-      const currBlockTimeStr = currTime.text().replace(/0:/, '');
-      const currBlockTimeNumber = +currBlockTimeStr;
-      resolve(currBlockTimeNumber);
+export const readBlockTime = () => {
+  return cy.get('[data-cy="time-value"]')
+    .invoke('text')
+    .then(currTimeStr => {
+      const currBlockTimeStr = currTimeStr.replace(/0:/, '');
+      return +currBlockTimeStr;
     });
-});
+};
 
 export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
