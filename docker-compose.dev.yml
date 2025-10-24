@@ -29,6 +29,8 @@ services:
     build:
       dockerfile: broadcaster/Dockerfile
       target: dev
+      args:
+        REGISTRY_PATH: ${DOCKERHUB_PROXY}
     volumes:
       - ./common:/usr/src/testcenter/common
       - ./broadcaster/src:/usr/src/testcenter/broadcaster/src
@@ -46,6 +48,8 @@ services:
     build:
       dockerfile: frontend/Dockerfile
       target: dev
+      args:
+        REGISTRY_PATH: ${DOCKERHUB_PROXY}
     command: [
       "serve",
       "--configuration", "dev",
@@ -65,6 +69,7 @@ services:
     build:
       dockerfile: file-server/Dockerfile
       args:
+        REGISTRY_PATH: ${DOCKERHUB_PROXY}
         ENABLED_MODULES: lua
     volumes:
       - ./sampledata/sample_resource_package.itcr.zip:/var/www/testcenter/data-TEST/ws_1/Resource/sample_resource_package.itcr.zip
@@ -81,6 +86,8 @@ services:
     build:
       dockerfile: backend/Dockerfile
       target: dev
+      args:
+        REGISTRY_PATH: ${DOCKERHUB_PROXY}
     volumes:
       - ./backend/.htaccess:/var/www/testcenter/backend/.htaccess
       - ./backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

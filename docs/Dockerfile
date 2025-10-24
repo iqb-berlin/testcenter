@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ARG REGISTRY_PATH=""
 FROM ${REGISTRY_PATH}ruby:3.4-slim AS jekyll
 
