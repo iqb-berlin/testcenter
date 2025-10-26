@@ -23,7 +23,7 @@ test-frontend-unit:
   before_script:
     - cd frontend
     - apt-get update && apt-get install -y --no-install-recommends chromium
-    - npm ci --cache .npm --no-fund
+    - npm ci --cache .npm --no-fund --prefer-offline
     - cp ./src/environments/environment.dev.ts ./src/environments/environment.ts
   script:
     - npx ng test --watch=false --code-coverage
