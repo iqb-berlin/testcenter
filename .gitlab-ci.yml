@@ -23,9 +23,15 @@ test-frontend-unit:
   before_script:
     - cd frontend
     - apt-get update && apt-get install -y --no-install-recommends chromium
-    - npm ci --no-fund
+    - npm ci --cache .npm --no-fund
   script:
-    - ng test --watch=false --code-coverage
+    - npx ng test --watch=false --code-coverage
+  cache:  # Cache modules using lock file
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - frontend/npm/
   artifacts:
     paths:
       - docs/dist/test-coverage-frontend-unit/*
