@@ -24,6 +24,7 @@ test-frontend-unit:
     - cd frontend
     - apt-get update && apt-get install -y --no-install-recommends chromium
     - npm ci --cache .npm --no-fund
+    - cp ./src/environments/environment.dev.ts ./src/environments/environment.ts
   script:
     - npx ng test --watch=false --code-coverage
   cache:  # Cache modules using lock file
