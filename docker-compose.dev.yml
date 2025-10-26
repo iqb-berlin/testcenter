@@ -52,6 +52,7 @@ services:
         REGISTRY_PATH: ${DOCKERHUB_PROXY}
     command: [
       "serve",
+      "testcenter-frontend",
       "--configuration", "dev",
       "--host", "0.0.0.0",
       "--port", "8080"
