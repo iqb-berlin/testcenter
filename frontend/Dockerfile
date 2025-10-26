@@ -1,5 +1,5 @@
 ARG REGISTRY_PATH=""
-ARG NODE_VERSION=22.16-bookworm
+ARG NODE_VERSION=22-bookworm
 
 
 FROM ${REGISTRY_PATH}node:${NODE_VERSION} AS base
@@ -10,10 +10,10 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     chromium
 
 # Update npm to latest version
-RUN npm --version
-RUN --mount=type=cache,target=~/.npm \
-    npm install -g --no-fund npm
-RUN npm --version
+# RUN npm --version
+# RUN --mount=type=cache,target=~/.npm \
+#     npm install -g --no-fund npm
+# RUN npm --version
 
 WORKDIR /usr/src/testcenter/frontend
 

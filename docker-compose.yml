@@ -42,9 +42,9 @@ services:
   frontend:
     image: iqbberlin/testcenter-frontend:current
     <<: *restart-policy
-    depends_on:
-      backend:
-        condition: service_healthy
+    # depends_on:
+    #   backend:
+    #     condition: service_healthy
     logging:
       options:
         <<: *env-logging-conf
