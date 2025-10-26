@@ -22,7 +22,7 @@ RUN --mount=type=cache,sharing=locked,target=~/.npm \
     npm ci --no-fund
 
 COPY frontend/angular.json .
-COPY frontend/tsconfig.json .
+COPY frontend/tsconfig*.json .
 COPY frontend/src src/
 COPY common ../common
 COPY definitions ../definitions
