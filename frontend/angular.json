@@ -125,13 +125,15 @@
               "buildTarget": "testcenter-frontend:build:production"
             },
             "dev": {
-              "buildTarget": "testcenter-frontend:build:dev"
+              "buildTarget": "testcenter-frontend:build:dev",
+              "allowedHosts": ["frontend"]
             },
             "local": {
               "buildTarget": "testcenter-frontend:build:local"
             },
             "e2e": {
-              "buildTarget": "testcenter-frontend:build:e2e"
+              "buildTarget": "testcenter-frontend:build:e2e",
+              "allowedHosts": ["frontend"]
             }
           }
         },
