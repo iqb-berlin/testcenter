@@ -32,7 +32,8 @@ test-frontend-unit:
       files:
         - frontend/package-lock.json
     paths:
-      - frontend/npm/
+      - frontend/.npm/
+      - frontend/node_modules
   artifacts:
     paths:
       - docs/dist/test-coverage-frontend-unit/*
