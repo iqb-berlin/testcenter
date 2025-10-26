@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Testlet, TestSession } from '../group-monitor.interfaces';
 
 @Pipe({
-  name: 'iscodeclear'
+    name: 'iscodeclear',
+    standalone: false
 })
 export class IsCodeClearPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

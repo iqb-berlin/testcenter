@@ -4,8 +4,9 @@ import { Subscription } from 'rxjs';
 import { SysCheckDataService } from '../sys-check-data.service';
 
 @Component({
-  templateUrl: './questionnaire.component.html',
-  styleUrls: ['./questionnaire.component.css', '../sys-check.component.css']
+    templateUrl: './questionnaire.component.html',
+    styleUrls: ['./questionnaire.component.css', '../sys-check.component.css'],
+    standalone: false
 })
 export class QuestionnaireComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup([]);

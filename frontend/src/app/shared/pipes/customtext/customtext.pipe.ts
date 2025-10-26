@@ -7,7 +7,8 @@ import { environment } from '../../../../environments/environment';
 /** Output depends on the environment.ts. If the given default value is an empty string: *) In Production, the function
  * returns an empty string; *) In Dev the function returns the key argument, for debugging purposes. */
 @Pipe({
-  name: 'customtext'
+    name: 'customtext',
+    standalone: false
 })
 export class CustomtextPipe implements PipeTransform {
   constructor(private cts: CustomtextService) {}

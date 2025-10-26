@@ -5,8 +5,9 @@ import { MainDataService } from '../shared/shared.module';
 import { WorkspaceDataService } from './workspacedata.service';
 
 @Component({
-  templateUrl: './workspace.component.html',
-  styleUrls: ['./workspace.component.css']
+    templateUrl: './workspace.component.html',
+    styleUrls: ['./workspace.component.css'],
+    standalone: false
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;

@@ -20,8 +20,8 @@ export interface CustomTextDataGroup {
 }
 
 @Component({
-  selector: 'tc-custom-texts',
-  template: `
+    selector: 'tc-custom-texts',
+    template: `
     <form [formGroup]="customTextsForm">
       <mat-accordion>
         <mat-expansion-panel *ngFor="let ctGroup of customTextGroups | keyvalue">
@@ -44,7 +44,8 @@ export interface CustomTextDataGroup {
         </mat-expansion-panel>
       </mat-accordion>
     </form>
-  `
+  `,
+    standalone: false
 })
 
 export class EditCustomTextsComponent {

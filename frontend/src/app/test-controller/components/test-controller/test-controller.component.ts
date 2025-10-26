@@ -32,8 +32,9 @@ import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
 
 @Component({
-  templateUrl: './test-controller.component.html',
-  styleUrls: ['./test-controller.component.css']
+    templateUrl: './test-controller.component.html',
+    styleUrls: ['./test-controller.component.css'],
+    standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   private subscriptions: { [key: string]: Subscription | null } = {

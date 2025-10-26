@@ -3,10 +3,11 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReportComponent } from './report.component';
 import { BackendService } from '../backend.service';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 class MockBackendService {
 
@@ -24,24 +25,23 @@ describe('ReportComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         ReportComponent
-      ],
-      imports: [
-        HttpClientTestingModule,
-        MatDialogModule,
+    ],
+    imports: [MatDialogModule,
         MatCardModule,
-        RouterTestingModule
-      ],
-      providers: [
+        RouterTestingModule],
+    providers: [
         {
           provide: BackendService,
           useClass: MockBackendService
         },
         {
-          provide: MainDataService,
-          useValue: MockMainDataService
-        }
-      ]
-    })
+            provide: MainDataService,
+            useValue: MockMainDataService
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   }));
 

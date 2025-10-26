@@ -12,11 +12,12 @@ import { FileService } from '../../../shared/services/file.service';
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
-  templateUrl: './attachment-overview.component.html',
-  styleUrls: [
-    '../../../../monitor-layout.css',
-    './attachment-overview.component.css'
-  ]
+    templateUrl: './attachment-overview.component.html',
+    styleUrls: [
+        '../../../../monitor-layout.css',
+        './attachment-overview.component.css'
+    ],
+    standalone: false
 })
 export class AttachmentOverviewComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;

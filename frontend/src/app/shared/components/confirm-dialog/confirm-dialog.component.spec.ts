@@ -1,10 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import {
-  MatDialogClose,
-  MAT_DIALOG_DATA,
-  MatDialog
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
@@ -15,8 +11,7 @@ describe('ConfirmDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        ConfirmDialogComponent,
-        MatDialogClose
+        ConfirmDialogComponent
       ],
       providers: [
         {

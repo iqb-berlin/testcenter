@@ -6,10 +6,11 @@ import { AppError, AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 
 @Component({
-  templateUrl: './code-input.component.html',
-  styles: [
-    '.mat-mdc-card {width: 400px;}'
-  ]
+    templateUrl: './code-input.component.html',
+    styles: [
+        '.mat-mdc-card {width: 400px;}'
+    ],
+    standalone: false
 })
 export class CodeInputComponent implements OnInit {
   @ViewChild('codeInputControl') codeInputControl!: FormControl;

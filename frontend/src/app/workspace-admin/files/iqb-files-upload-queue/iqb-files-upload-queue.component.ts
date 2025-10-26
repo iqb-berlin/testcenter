@@ -5,9 +5,10 @@ import { IqbFilesUploadComponent } from '../iqb-files-upload/iqb-files-upload.co
 import { UploadStatus } from '../files.interfaces';
 
 @Component({
-  selector: 'tc-files-upload-queue',
-  templateUrl: 'iqb-files-upload-queue.component.html',
-  styleUrls: ['../iqb-files.scss']
+    selector: 'tc-files-upload-queue',
+    templateUrl: 'iqb-files-upload-queue.component.html',
+    styleUrls: ['../iqb-files.scss'],
+    standalone: false
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads!: QueryList<IqbFilesUploadComponent>;

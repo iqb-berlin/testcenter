@@ -16,8 +16,9 @@ import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 
 @Component({
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+    templateUrl: './users.component.html',
+    styleUrls: ['./users.component.css'],
+    standalone: false
 })
 export class UsersComponent implements OnInit {
   objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();

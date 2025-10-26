@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CustomtextService } from '../../shared/services/customtext/customtext.service';
 import { AttachmentData } from '../interfaces/users.interfaces';
 
-@Pipe({ name: 'AttachmentTitle' })
+@Pipe({
+    name: 'AttachmentTitle',
+    standalone: false
+})
 export class AttachmentTitlePipe implements PipeTransform {
   private template: string | null = null;
 

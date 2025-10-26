@@ -16,9 +16,10 @@ import { BackendService } from '../backend.service';
 import { TestSession, TestSessionRequest, TestSessionsResponse } from '../workspace.interfaces';
 
 @Component({
-  selector: 'tc-tests',
-  templateUrl: './tests.component.html',
-  styleUrls: ['./tests.component.css']
+    selector: 'tc-tests',
+    templateUrl: './tests.component.html',
+    styleUrls: ['./tests.component.css'],
+    standalone: false
 })
 export class TestsComponent implements OnInit, OnDestroy {
   testSessions: TestSessionsResponse | null = null;
