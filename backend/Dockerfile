@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ARG REGISTRY_PATH=""
 ARG PHP_VERSION=8.3-apache-bookworm
 

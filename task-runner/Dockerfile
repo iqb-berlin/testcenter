@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ARG REGISTRY_PATH=""
 FROM ${REGISTRY_PATH}node:lts-bookworm
 
