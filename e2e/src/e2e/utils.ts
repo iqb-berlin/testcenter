@@ -165,9 +165,12 @@ export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'h
         cy.wait('@waitForGetSession');
       }
     }
+    cy.intercept('DELETE', `${Cypress.env('urls').backend}/session`).as('waitForDeleteSession');
     cy.get('[data-cy="logout"]')
       .click();
+    cy.wait('@waitForDeleteSession');
     return cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+
   });
 
 export const openSampleWorkspace = (workspace: number): void => {
