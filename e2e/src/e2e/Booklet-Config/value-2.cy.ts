@@ -89,6 +89,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -133,6 +135,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-navigation-backward"]')
@@ -157,10 +161,12 @@ describe('check values 2', { testIsolation: false }, () => {
       .should('be.disabled');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    //wait for presentation complete
+    //wait for response complete
     cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="end-unit"]')
