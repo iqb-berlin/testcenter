@@ -100,6 +100,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
   it('presentation_complete: forward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -108,8 +110,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
-    cy.get('[data-cy="page-navigation-backward"]')
-      .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -121,14 +123,18 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
   it('presentation_complete: backward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
-    cy.get('[data-cy="page-navigation-backward"]')
-      .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -138,6 +144,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
   it('responses_complete: forward', () => {
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -148,6 +156,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -160,10 +170,12 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
   it('responses_complete: backward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
-    cy.get('[data-cy="page-navigation-backward"]')
-      .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-navigation-backward"]')
@@ -197,6 +209,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
   it('presentation_complete: forward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -205,6 +219,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -214,12 +230,18 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
   it('presentation_complete: backward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -228,6 +250,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -237,6 +261,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
   it('responses_complete: forward', () => {
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -247,6 +273,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -256,12 +284,18 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
   it('responses_complete: backward', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-navigation-backward"]')
@@ -272,6 +306,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
