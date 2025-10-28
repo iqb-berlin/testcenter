@@ -101,29 +101,34 @@ export const logoutAdmin = (): Chainable => cy.url()
     }
   });
 
-export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
-  .then(url => {
+export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
+  cy.url().then(url => {
     if (url === 'about:blank') {
       cy.log('Page could not be loaded. Try again.');
-      return visitLoginPage().then(logoutTestTaker);
+      return visitLoginPage().then(() => logoutTestTaker(fileType));
     }
-    // if booklet is started
-    if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
-      cy.get('[data-cy="logo"]')
-        .click();
+
+    const baseUrl = Cypress.config().baseUrl;
+    const backendUrl = Cypress.env('urls').backend;
+    const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
+
+    if (!isOnStarterPage) {
+      cy.get('[data-cy="logo"]').click();
+
       if (fileType === 'hot') {
         cy.log('end test');
-        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-        cy.get('[data-cy="endTest-1"]')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.intercept('GET', `${backendUrl}/session`).as('waitForGetSession');
+        cy.get('[data-cy="endTest-1"]').click();
+        cy.url().should('eq', `${baseUrl}/#/r/starter`);
         cy.wait('@waitForGetSession');
       }
     }
-    cy.get('[data-cy="logout"]')
-      .click();
-    visitLoginPage();
+
+    cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
+    cy.get('[data-cy="logout"]').click();
+    cy.wait('@waitForDeleteSession');
+
+    return visitLoginPage();
   });
 
 export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'): Chainable => cy.url()

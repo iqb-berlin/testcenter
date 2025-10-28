@@ -8,7 +8,9 @@ import {
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage,
+  logoutTestTaker
+
 } from '../utils';
 
 let idHres1;
@@ -33,15 +35,7 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('h5ki-bd-');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTaker('hot');
   });
 
   it('start a second session', () => {
@@ -51,15 +45,7 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('va4dg-jc');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTaker('hot');
   });
 
   it('generated file (responses, logs) exist in workspace with session group names', () => {
