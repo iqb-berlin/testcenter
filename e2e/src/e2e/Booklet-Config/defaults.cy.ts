@@ -167,5 +167,5 @@ describe('check default values', { testIsolation: false }, () => {
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   });
-
 });
+

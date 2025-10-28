@@ -96,3 +96,4 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
       });
   });
 });
+

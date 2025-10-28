@@ -46,3 +46,4 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="GM-tt-checkbox"]');
   });
 });
+

@@ -124,3 +124,4 @@ describe('Sys-Check', () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
   });
 });
+

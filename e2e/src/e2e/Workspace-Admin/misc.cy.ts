@@ -34,3 +34,4 @@ describe('Workspace-Admin Login', () => {
       .contains('Status: Angemeldet als "workspace_admin"');
   });
 });
+

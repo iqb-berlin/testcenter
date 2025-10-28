@@ -77,3 +77,4 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     expectUnitMenuToBe(['decision-unit', 'advanced-unit']);
   });
 });
+

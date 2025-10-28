@@ -88,5 +88,5 @@ describe('Check Testtakers Content', () => {
     cy.get('[data-cy="close-upload-report"]')
       .click();
   });
-
 });
+

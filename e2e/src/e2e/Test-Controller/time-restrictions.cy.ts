@@ -297,5 +297,4 @@ describe('check attribute: leave', { testIsolation: false }, () => {
       .click();
     cy.get('.snackbar-demo-mode');
   });
-
 });

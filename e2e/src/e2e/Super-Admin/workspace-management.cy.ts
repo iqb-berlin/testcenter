@@ -115,3 +115,4 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('not.exist');
   });
 });
+

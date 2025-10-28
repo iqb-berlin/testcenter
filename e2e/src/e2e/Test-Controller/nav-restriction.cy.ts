@@ -313,5 +313,4 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
   });
-
 });
