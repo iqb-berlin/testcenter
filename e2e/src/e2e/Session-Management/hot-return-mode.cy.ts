@@ -32,15 +32,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('hret1');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTaker('hot');
   });
 
   it('second login does not create a new session', () => {
@@ -57,15 +49,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('hret2');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logoutTestTaker('hot');
   });
 
   it('second login does not create a new session', () => {
