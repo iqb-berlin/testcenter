@@ -32,6 +32,8 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
+    //wait for response complete
+    cy.wait(1000);
     logoutTestTaker('hot');
   });
 
@@ -49,6 +51,8 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
+    //wait for response complete
+    cy.wait(1000);
     logoutTestTaker('hot');
   });
 

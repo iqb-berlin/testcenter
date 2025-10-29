@@ -35,6 +35,8 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
+    //wait for response complete
+    cy.wait(1000);
     logoutTestTaker('hot');
   });
 
@@ -45,6 +47,8 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
+    //wait for response complete
+    cy.wait(1000);
     logoutTestTaker('hot');
   });
 
