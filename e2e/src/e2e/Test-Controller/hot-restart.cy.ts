@@ -544,15 +544,18 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
       cy.contains('RunHotRestart');
-
       cy.get('[data-cy="results-checkbox1"]')
         .click();
+      cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownloadResponse');
       cy.get('[data-cy="download-responses"]')
         .click();
+      cy.wait('@waitForDownloadResponse');
       cy.get('[data-cy="results-checkbox1"]')
         .click();
+      cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/log?*`).as('waitForDownloadLogs');
       cy.get('[data-cy="download-logs"]')
         .click();
+      cy.wait('@waitForDownloadLogs');
       logoutAdmin();
     });
 
