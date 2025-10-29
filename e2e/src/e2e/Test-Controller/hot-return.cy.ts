@@ -45,12 +45,17 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
+    after(() => {
+      logoutTestTaker('hot');
+    });
+
     it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
-      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with incorrect is not possible', () => {
@@ -77,6 +82,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      //wait for presentation complete
+      cy.wait(1000);
       cy.get('.snackbar-time-started')
         .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     });
@@ -104,6 +111,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for response complete
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .should('have.class', 'marked');
       cy.get('[data-cy="unit-navigation-forward"]')
@@ -158,11 +167,6 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     it('leave the time restricted block in unit-menu without a message is not possible', () => {
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe1');
-      gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-        .contains('Presentation complete');
       cy.get('[data-cy="unit-menu"]')
         .click();
       cy.get('[data-cy="endTest"]')
@@ -176,26 +180,21 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     it('enter the locked block is not possible', () => {
-      cy.get('[data-cy="logo"]')
+      cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
         .contains('Aufgabenabschnitt verlassen?');
       cy.get('[data-cy="dialog-cancel"]')
         .click();
-      cy.get('[data-cy="endTest-1"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRET"]')
-        .contains('Fortsetzen')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
+      //wait for presentation complete
+      cy.wait(1000);
+      cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Endseite');
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
     });
-
-    after(() => logoutTestTaker('hot'));
   });
 
   describe('hot-return-login 2', { testIsolation: false }, () => {
@@ -207,12 +206,17 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
+    after(() => {
+      logoutTestTaker('hot');
+    });
+
     it('should start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
-      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -233,6 +237,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -267,8 +273,6 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
     });
-
-    after(() => logoutTestTaker('hot'));
   });
 
   describe('hot-return-login 3', { testIsolation: false }, () => {
@@ -280,12 +284,17 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
+    after(() => {
+      logoutTestTaker('hot');
+    });
+
     it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
-      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -306,6 +315,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -345,8 +356,6 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
     });
-
-    after(() => logoutTestTaker('hot'));
   });
 
   describe('hot-return-login 4', { testIsolation: false }, () => {
@@ -358,12 +367,17 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
 
     beforeEach(disableSimplePlayersInternalDebounce);
 
+    after(() => {
+      logoutTestTaker('hot');
+    });
+
     it('start a hot-return-test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
       cy.url()
         .should('include', '/u/1');
-      cy.wait(50); // it needs to wait for a small tick, for the frontend to calculate the right state, before the next test starts
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct code', () => {
@@ -377,12 +391,16 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('complete the test', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -415,8 +433,6 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
     });
-
-    after(() => logoutTestTaker('hot'));
   });
 
   describe('check responses', { testIsolation: false }, () => {

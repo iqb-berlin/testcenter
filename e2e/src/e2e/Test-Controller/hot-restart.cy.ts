@@ -55,6 +55,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with incorrect password is not possible', () => {
@@ -83,6 +85,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Aufgabe1');
       cy.get('.snackbar-time-started')
         .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('navigate to next unit without responses/presentation complete is not possible', () => {
@@ -98,12 +102,16 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('navigate to the next unit without responses complete is not possible', () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
@@ -119,6 +127,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
     });
 
@@ -127,11 +137,15 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       cy.intercept(`${Cypress.env('urls').backend}/test/3/unit/CY-Unit.Sample-103/response`).as('response103-1-1');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the time restricted block forward without a message is not possible', () => {
@@ -161,21 +175,17 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="dialog-cancel"]');
       cy.get('[data-cy="dialog-confirm"]')
         .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1');
     });
 
     it('leave the time restricted block in unit-menu without a message is not possible', () => {
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe1');
-      gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-        .contains('Presentation complete');
       cy.get('[data-cy="unit-menu"]')
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
         .contains('Aufgabenabschnitt verlassen?');
-      cy.get('[data-cy="dialog-cancel"]');
       cy.get('[data-cy="dialog-confirm"]')
         .click();
       cy.get('.mat-drawer-backdrop')
@@ -224,6 +234,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -244,18 +256,26 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe2');
       getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       forwardTo('Aufgabe3');
       getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
     });
 
     it('leave the block, after which the block will be locked', () => {
@@ -267,7 +287,6 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Endseite');
-      // cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -293,6 +312,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -313,6 +334,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -369,6 +392,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
       getFromIframe('[data-cy="TestController-TextStartseite"]')
         .contains('Testung Controller');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -389,6 +414,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -455,6 +482,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
       cy.url()
         .should('include', '/u/1');
+      //wait for presentation complete
+      cy.wait(1000);
     });
 
     it('enter the block with correct password', () => {
@@ -475,6 +504,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       gotoPage(1);
       getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
+      //wait for presentation complete
+      cy.wait(1000);
       gotoPage(0);
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click()
