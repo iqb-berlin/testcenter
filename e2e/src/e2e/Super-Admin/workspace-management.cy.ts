@@ -57,7 +57,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginWorkspaceAdmin();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
     cy.get('[data-cy="upload-files"]')
@@ -76,7 +76,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginWorkspaceAdmin();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
     cy.get('[data-cy="upload-files"]')

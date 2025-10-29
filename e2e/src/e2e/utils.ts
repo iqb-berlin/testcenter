@@ -3,8 +3,6 @@ import Chainable = Cypress.Chainable;
 export const userData = {
   SuperAdminName: 'super',
   SuperAdminPassword: 'user123',
-  WorkspaceAdminName: 'workspace_admin',
-  WorkspaceAdminPassword: 'anotherPassword'
 
 };
 
@@ -193,8 +191,8 @@ export const loginSuperAdmin = (): void => {
     .contains(userData.SuperAdminName);
 };
 
-export const loginWorkspaceAdmin = (): void => {
-  insertCredentials(userData.WorkspaceAdminName, userData.WorkspaceAdminPassword);
+export const loginWorkspaceAdmin = (username: string, password: string): void => {
+  insertCredentials(username, password);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
@@ -202,7 +200,7 @@ export const loginWorkspaceAdmin = (): void => {
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   cy.get('[data-cy="card-login-name"]')
-    .contains(userData.WorkspaceAdminName);
+    .contains(username);
 };
 
 export const loginTestTaker =
