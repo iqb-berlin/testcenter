@@ -16,7 +16,7 @@ import {
 let idHres1;
 let idHres2;
 
-describe('check hot-restart-mode functions', { testIsolation: false }, () => {
+describe('check hot-restart-mode functions', { testIsolation: true }, () => {
   before(() => {
     deleteDownloadsFolder();
     cy.clearLocalStorage();
@@ -37,7 +37,7 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
       .should('be.checked');
     //wait for response complete
     cy.wait(1000);
-    logoutTestTaker('hot');
+
   });
 
   it('start a second session', () => {
@@ -49,10 +49,10 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
       .should('be.checked');
     //wait for response complete
     cy.wait(1000);
-    logoutTestTaker('hot');
+
   });
 
-  it('generated file (responses, logs) exist in workspace with session group names', () => {
+  it('generated response file exist in workspace with different ID/Code for each session', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -60,12 +60,10 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     cy.contains('SessionManagement Hot-Modes-Test Logins');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownload');
     cy.get('[data-cy="download-responses"]')
       .click();
-    logoutAdmin();
-  });
-
-  it('different ID/Code must be saved for each session', () => {
+    cy.wait('@waitForDownload');
     convertResultsSeperatedArrays('responses')
       .then(LoginID => {
         idHres1 = LoginID[1][2];

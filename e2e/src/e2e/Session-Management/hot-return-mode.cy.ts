@@ -63,7 +63,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     logoutTestTaker('hot');
   });
 
-  it('generated file (responses, logs) exist in workspace with session group names', () => {
+  it('generated responses file exist in workspace with saved session-login', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -71,12 +71,10 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
     cy.contains('SessionManagement Hot-Modes-Test Logins');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownload');
     cy.get('[data-cy="download-responses"]')
       .click();
-    logoutAdmin();
-  });
-
-  it('session login must be saved in response file', () => {
+    cy.wait('@waitForDownload');
     getResultFileRows('responses')
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhret1\b/);
