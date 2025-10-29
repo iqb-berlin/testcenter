@@ -34,11 +34,7 @@ describe('Usermanagement (user-tab)', () => {
   it('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
-    insertCredentials('newTest', 'user123');
-    cy.get('[data-cy="login-admin"]')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.contains('newTest');
+    loginWorkspaceAdmin('newTest', 'user123');
   });
 
   it('set admin rights for a workspaceadmin without correct password is not possible', () => {

@@ -265,11 +265,11 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
     .should('be.disabled');
   cy.get('[formcontrolname="pw"]')
     .clear()
-    .type(password)
-    .get('[type="submit"]')
-    .should('be.enabled')
+    .type(password);
+  cy.intercept('PUT', `${Cypress.env('urls').backend}/user`).as('waitForNewUser');
+  cy.get('[type="submit"]')
     .click();
-  cy.contains(username);
+  cy.wait('@waitForNewUser');
 };
 
 export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
