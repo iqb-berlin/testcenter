@@ -1,6 +1,6 @@
 import {
   insertCredentials,
-  loginWorkspaceAdmin,
+  loginWorkspaceAdmin, logoutAdmin,
   probeBackendApi,
   resetBackendData,
   userData,
@@ -11,27 +11,20 @@ describe('Workspace-Admin Login', () => {
   before(() => {
     resetBackendData();
     probeBackendApi();
-    loginWorkspaceAdmin();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password');
   });
 
   it('change the password', () => {
-    cy.contains(userData.WorkspaceAdminName)
-      .click()
-      .get('[data-cy="change-password"]')
-      .click()
-      .get('[formcontrolname="pw"]')
-      .type('newPassword')
-      .get('[formcontrolname="pw_confirm"]')
-      .type('newPassword')
-      .get('[type="submit"]')
+    cy.get('[data-cy="change-password"]')
       .click();
-    cy.wait(3000);
-    visitLoginPage();
-    insertCredentials(userData.WorkspaceAdminName, 'newPassword');
-    cy.get('[data-cy="login-admin"]')
+    cy.get('[formcontrolname="pw"]')
+      .type('ws_password_new')
+    cy.get('[formcontrolname="pw_confirm"]')
+      .type('ws_password_new')
+    cy.get('[type="submit"]')
       .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('Status: Angemeldet als "workspace_admin"');
+    logoutAdmin();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
 });
 
