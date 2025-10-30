@@ -23,6 +23,8 @@ describe('Workspace-Admin Login', () => {
       .type('ws_password_new')
     cy.get('[type="submit"]')
       .click();
+    cy.contains('Schließen')
+      .click();
     logoutAdmin();
     loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
