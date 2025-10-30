@@ -134,3 +134,4 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
   });
 });
+

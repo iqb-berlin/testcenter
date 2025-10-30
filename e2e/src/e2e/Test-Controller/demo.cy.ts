@@ -143,3 +143,4 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.contains('Keine Daten verfügbar');
   });
 });
+

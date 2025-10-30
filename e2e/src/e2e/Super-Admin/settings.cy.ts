@@ -54,3 +54,4 @@ describe('Settings (setting-tab)', () => {
     cy.contains('NewName');
   });
 });
+

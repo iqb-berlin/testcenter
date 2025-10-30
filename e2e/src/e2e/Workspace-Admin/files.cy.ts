@@ -385,3 +385,4 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Duplicate Booklet-Id');
   });
 });
+
