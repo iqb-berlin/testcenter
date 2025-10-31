@@ -43,6 +43,5 @@ describe('check values 2', { testIsolation: false }, () => {
     cy.get('[data-cy="unit-screenheader"]')
       .contains('Aufgabenblock');
   });
-
-
 });
+
