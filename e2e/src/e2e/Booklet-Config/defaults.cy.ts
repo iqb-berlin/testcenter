@@ -4,7 +4,6 @@ import {
   disableSimplePlayersInternalDebounce,
   getFromIframe,
   loginTestTaker,
-  logoutTestTakerBkltConfig,
   probeBackendApi,
   reload,
   resetBackendData,
@@ -13,7 +12,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check default values', { testIsolation: false }, () => {
+describe('check default values', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -26,10 +25,6 @@ describe('check default values', { testIsolation: false }, () => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('bklConfigDefault', '123', mode);
-  });
-
-  afterEach(() => {
-    logoutTestTakerBkltConfig('hot_BkltConfigDefault');
   });
 
   it('ask_for_fullscreen', () => {
@@ -168,4 +163,3 @@ describe('check default values', { testIsolation: false }, () => {
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   });
 });
-

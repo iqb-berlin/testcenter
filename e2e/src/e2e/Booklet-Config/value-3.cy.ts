@@ -2,9 +2,7 @@
 
 import {
   disableSimplePlayersInternalDebounce,
-  getFromIframe,
   loginTestTaker,
-  logoutTestTakerBkltConfig,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -12,7 +10,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check values 2', { testIsolation: false }, () => {
+describe('check values 2', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -25,10 +23,6 @@ describe('check values 2', { testIsolation: false }, () => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('bklConfigValue3', '123', mode);
-  });
-
-  afterEach(() => {
-    logoutTestTakerBkltConfig('hot_BkltConfigValue1');
   });
 
   it('unit_navibuttons', () => {
@@ -44,4 +38,3 @@ describe('check values 2', { testIsolation: false }, () => {
       .contains('Aufgabenblock');
   });
 });
-

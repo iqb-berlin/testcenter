@@ -11,7 +11,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check DenyNavigationOnIncomplete: response & presentation = OFF', { testIsolation: false }, () => {
+describe('check DenyNavigationOnIncomplete: response & presentation = OFF', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -24,12 +24,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation = OFF', { te
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('NavRestrVal1', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('presentation_complete: forward', () => {
@@ -76,7 +70,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation = OFF', { te
 
 });
 
-describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { testIsolation: false }, () => {
+describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -89,12 +83,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('NavRestrVal2', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('presentation_complete: forward', () => {
@@ -185,7 +173,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ON ', { te
   });
 });
 
-describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', { testIsolation: false }, () => {
+describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -198,12 +186,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation = ALWAYS ', 
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('NavRestrVal3', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('presentation_complete: forward', () => {

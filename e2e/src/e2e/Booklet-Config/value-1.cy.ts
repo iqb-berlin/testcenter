@@ -4,7 +4,6 @@ import {
   disableSimplePlayersInternalDebounce,
   getFromIframe,
   loginTestTaker,
-  logoutTestTakerBkltConfig,
   probeBackendApi,
   reload,
   resetBackendData,
@@ -13,7 +12,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check values 1', { testIsolation: false }, () => {
+describe('check values 1', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -26,10 +25,6 @@ describe('check values 1', { testIsolation: false }, () => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('bklConfigValue1', '123', mode);
-  });
-
-  afterEach(() => {
-    logoutTestTakerBkltConfig('hot_BkltConfigValue1');
   });
 
   it('ask_for_fullscreen', () => {
@@ -262,4 +257,3 @@ describe('check values 1', { testIsolation: false }, () => {
       .contains('gesperrt');
   });
 });
-

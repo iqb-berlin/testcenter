@@ -11,7 +11,7 @@ import {
 
 const mode = 'test-hot';
 
-describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: false }, () => {
+describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -24,12 +24,6 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('RestrLockAfterLeave1', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('leave unit: display a warning message', () => {
@@ -51,7 +45,7 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
   });
 });
 
-describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsolation: false }, () => {
+describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
@@ -66,12 +60,6 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
     loginTestTaker('RestrLockAfterLeave2', '123', mode);
   });
 
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
-  });
-
   it('leave testlet: display no warning message', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
@@ -79,7 +67,7 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
       .should('not.exist');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe2');
-      cy.get('[data-cy="unit-navigation-forward"]')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-title"]')
       .should('not.exist');

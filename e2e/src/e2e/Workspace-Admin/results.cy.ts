@@ -1,6 +1,6 @@
 import {
   deleteDownloadsFolder,
-  loginSuperAdmin,
+  loginSuperAdmin, loginWorkspaceAdmin,
   logoutAdmin,
   openSampleWorkspace,
   probeBackendApi,
@@ -20,8 +20,6 @@ describe('Workspace-Admin-results', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
   });
-
-  afterEach(logoutAdmin);
 
   it('download the responses of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -59,4 +57,3 @@ describe('Workspace-Admin-results', () => {
       .should('not.exist');
   });
 });
-
