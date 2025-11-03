@@ -59,7 +59,6 @@ describe('Check Login Possibilities', () => {
 
   it('login as link', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
-    cy.wait(1000);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="status-card"]')
       .contains('as_link');
@@ -67,7 +66,6 @@ describe('Check Login Possibilities', () => {
 
   it('login as link and jump into test', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
-    cy.wait(1000);
     cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
       .click();
     cy.get('[data-cy="unit-title"]')

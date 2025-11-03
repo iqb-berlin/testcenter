@@ -126,7 +126,6 @@ describe('Group-Monitor User', () => {
     cy.get('[data-cy="column-selection"]')
       .contains('Testheft')
       .click();
-    cy.wait(1000);
     cy.get('[data-cy="comment-diag-value"]')
       .click()
       .type('Sample booklet');
