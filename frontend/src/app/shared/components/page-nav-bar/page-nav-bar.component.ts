@@ -15,7 +15,7 @@ import {
       <i class="material-icons">chevron_left</i>
     </button>
 
-    <mat-button-toggle-group [value]="currentPageIndex">
+    <mat-button-toggle-group [value]="currentPageIndex" [hideSingleSelectionIndicator]="true">
       <mat-button-toggle *ngFor="let pageLabel of pageLabels; let index = index"
                          [class.selected-value]="currentPageIndex === index"
                          [matTooltip]="pageLabel"
