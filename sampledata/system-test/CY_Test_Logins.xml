@@ -89,19 +89,19 @@
   </Group>
 
   <Group id="SM_ValidFromLogin" validFrom="1/6/2023 10:00" label="SessionManagement valid from login">
-    <Login mode="run-demo" name="validFrom01" pw="123">
+    <Login mode="run-hot-restart" name="validFrom01" pw="123">
       <Booklet>CY-Bklt_rundemo</Booklet>
     </Login>
   </Group>
 
   <Group id="SM_ValidToLogin" validTo="1/6/2023 10:00" label="SessionManagement valid to login">
-    <Login mode="run-demo" name="validTo01" pw="123">
+    <Login mode="run-hot-restart" name="validTo01" pw="123">
       <Booklet>CY-Bklt_rundemo</Booklet>
     </Login>
   </Group>
 
   <Group id="SM_ValidForLogin" validFor="10" label="SessionManagement valid for login">
-    <Login mode="run-review" name="validFor01" pw="123">
+    <Login mode="run-hot-return" name="validFor01" pw="123">
       <Booklet>CY-Bklt_runreview</Booklet>
     </Login>
   </Group>

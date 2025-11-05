@@ -1,5 +1,5 @@
 import {
-  insertCredentials,
+  insertCredentials, loginTestTaker,
   logoutTestTaker,
   probeBackendApi,
   resetBackendData,
@@ -28,14 +28,7 @@ describe('check valid from restrictions', () => {
     it('login after time must be possible ', () => {
       // UnixTimestamp: 01.06.2023 10:30
       useTestDBSetDate('1685608200');
-      insertCredentials('validFrom01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      loginTestTaker('validFrom01', '123', 'test-hot');
     });
 
     it('login before date must be impossible', () => {
@@ -50,14 +43,7 @@ describe('check valid from restrictions', () => {
     it('login after date must be possible.', () => {
       // UnixTimestamp: 02.06.2023 09:30
       useTestDBSetDate('1685691000');
-      insertCredentials('validFrom01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      loginTestTaker('validFrom01', '123', 'test-hot');
     });
   });
 
@@ -80,14 +66,7 @@ describe('check valid from restrictions', () => {
     it('login before time must be possible', () => {
       // UnixTimestamp: 01.06.2023 09:00
       useTestDBSetDate('1685602800');
-      insertCredentials('validTo01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      loginTestTaker('validTo01', '123', 'test-hot');
     });
 
     it('login after date must be impossible', () => {
@@ -102,18 +81,11 @@ describe('check valid from restrictions', () => {
     it('login before date must be possible', () => {
       // UnixTimestamp: 31.05.2023 10:30
       useTestDBSetDate('1685521800');
-      insertCredentials('validTo01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      loginTestTaker('validTo01', '123', 'test-hot');
     });
   });
 
-  describe('check "valid for" restrictions', { testIsolation: false }, () => {
+  describe('check "valid for" restrictions', () => {
     before(() => {
       cy.clearLocalStorage();
       cy.clearCookies();
@@ -125,29 +97,13 @@ describe('check valid from restrictions', () => {
     it('a first time login must be possible', () => {
       // UnixTimestamp: 31.05.2023 10:30
       useTestDBSetDate('1685521800');
-      insertCredentials('validFor01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]');
-      logoutTestTaker('demo');
+      loginTestTaker('validFor01', '123', 'test-hot');
     });
 
     it('a second login must be possible if the time has not expired', () => {
       // UnixTimestamp: 31.05.2023 10:30 + 9 Minuten
       useTestDBSetDate('1685522340');
-      insertCredentials('validFor01', '123');
-      cy.get('[data-cy="login-user"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]');
-      logoutTestTaker('demo');
+      loginTestTaker('validFor01', '123', 'test-hot');
     });
 
     it('login after time is not possible', () => {
