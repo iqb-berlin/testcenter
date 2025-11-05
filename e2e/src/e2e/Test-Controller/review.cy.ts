@@ -199,8 +199,10 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('check the given comment in response file', () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/review?*`).as('waitForDownloadComment');
     cy.get('[data-cy="download-comments"]')
       .click();
+    cy.wait('@waitForDownloadComment');
     convertResultsSeperatedArrays('reviews')
       .then(sepArrays => {
         expect(sepArrays[0][6]).to.be.equal('category: tech');
