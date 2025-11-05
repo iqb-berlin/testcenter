@@ -3,8 +3,6 @@ import Chainable = Cypress.Chainable;
 export const userData = {
   SuperAdminName: 'super',
   SuperAdminPassword: 'user123',
-  WorkspaceAdminName: 'workspace_admin',
-  WorkspaceAdminPassword: 'anotherPassword'
 
 };
 
@@ -101,71 +99,70 @@ export const logoutAdmin = (): Chainable => cy.url()
     }
   });
 
-export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
-  .then(url => {
+export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
+  cy.url().then(url => {
     if (url === 'about:blank') {
       cy.log('Page could not be loaded. Try again.');
-      return visitLoginPage().then(logoutTestTaker);
+      return visitLoginPage().then(() => logoutTestTaker(fileType));
     }
-    // if booklet is started
-    if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
-      cy.get('[data-cy="logo"]')
-        .click();
+
+    const baseUrl = Cypress.config().baseUrl;
+    const backendUrl = Cypress.env('urls').backend;
+    const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
+
+    if (!isOnStarterPage) {
+      cy.get('[data-cy="logo"]').click();
+
       if (fileType === 'hot') {
         cy.log('end test');
-        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-        cy.get('[data-cy="endTest-1"]')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+        cy.intercept('GET', `${backendUrl}/session`).as('waitForGetSession');
+        cy.get('[data-cy="endTest-1"]').click();
+        cy.url().should('eq', `${baseUrl}/#/r/starter`);
         cy.wait('@waitForGetSession');
       }
     }
-    cy.get('[data-cy="logout"]')
-      .click();
-    visitLoginPage();
+
+    cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
+    cy.get('[data-cy="logout"]').click();
+    cy.wait('@waitForDeleteSession');
+
+    return visitLoginPage();
   });
 
-export const logoutTestTakerBkltConfig = (fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'): Chainable => cy.url()
-  .then(url => {
+export const logoutTestTakerBkltConfig = (
+  fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'
+): Chainable =>
+  cy.url().then(url => {
     if (url === 'about:blank') {
       cy.log('Page could not be loaded. Try again.');
-      return visitLoginPage().then(logoutTestTaker);
+      return visitLoginPage().then(() => logoutTestTakerBkltConfig(fileType));
     }
-    // if booklet is started
-    if (url !== `${Cypress.config().baseUrl}/#/r/starter`) {
-      if (fileType === 'hot_BkltConfigDefault') {
-        cy.get('[data-cy="logo"]')
-          .click();
-        cy.get('[data-cy="dialog-cancel"]')
-          .click();
-        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-        cy.get('[data-cy="endTest-1"]')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-        cy.wait('@waitForGetSession');
-      }
+
+    const baseUrl = Cypress.config().baseUrl;
+    const backendUrl = Cypress.env('urls').backend;
+    const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
+
+    if (!isOnStarterPage) {
       if (fileType === 'hot_BkltConfigValue1') {
-        getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-          .click();
-        getFromIframe('[data-cy="next-unit-page"]')
-          .click();
-        cy.get('[data-cy="logo"]')
-          .click();
-        cy.get('[data-cy="dialog-cancel"]')
-          .click();
-        cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-        cy.get('[data-cy="endTest-1"]')
-          .click();
-        cy.url()
-          .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-        cy.wait('@waitForGetSession');
+        getFromIframe('[data-cy="TestController-radio1-Aufg1"]').click();
+        cy.wait(1000); // Wait for response complete
+        getFromIframe('[data-cy="next-unit-page"]').click();
       }
+
+      cy.get('[data-cy="logo"]').click();
+      cy.get('[data-cy="dialog-cancel"]').click();
+
+      cy.intercept('GET', `${backendUrl}/session`).as('waitForGetSession');
+      cy.get('[data-cy="endTest-1"]').click();
+      cy.url().should('eq', `${baseUrl}/#/r/starter`);
+      cy.wait('@waitForGetSession');
     }
-    cy.get('[data-cy="logout"]')
-      .click();
-    return cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+
+    cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
+    cy.get('[data-cy="logout"]').click();
+    cy.wait('@waitForDeleteSession');
+
+    return cy.url().should('eq', `${baseUrl}/#/r/login/`);
   });
 
 export const openSampleWorkspace = (workspace: number): void => {
@@ -194,8 +191,8 @@ export const loginSuperAdmin = (): void => {
     .contains(userData.SuperAdminName);
 };
 
-export const loginWorkspaceAdmin = (): void => {
-  insertCredentials(userData.WorkspaceAdminName, userData.WorkspaceAdminPassword);
+export const loginWorkspaceAdmin = (username: string, password: string): void => {
+  insertCredentials(username, password);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
@@ -203,7 +200,7 @@ export const loginWorkspaceAdmin = (): void => {
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   cy.get('[data-cy="card-login-name"]')
-    .contains(userData.WorkspaceAdminName);
+    .contains(username);
 };
 
 export const loginTestTaker =
@@ -268,11 +265,11 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
     .should('be.disabled');
   cy.get('[formcontrolname="pw"]')
     .clear()
-    .type(password)
-    .get('[type="submit"]')
-    .should('be.enabled')
+    .type(password);
+  cy.intercept('PUT', `${Cypress.env('urls').backend}/user`).as('waitForNewUser');
+  cy.get('[type="submit"]')
     .click();
-  cy.contains(username);
+  cy.wait('@waitForNewUser');
 };
 
 export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number): void => {
@@ -405,14 +402,14 @@ export const gotoPage = (pageIndex: number): void => {
     .should('have.class', 'selected-value');
 };
 
-export const readBlockTime = (): Promise<number> => new Promise(resolve => {
-  cy.get('[data-cy="time-value"]')
-    .then(currTime => {
-      const currBlockTimeStr = currTime.text().replace(/0:/, '');
-      const currBlockTimeNumber = +currBlockTimeStr;
-      resolve(currBlockTimeNumber);
+export const readBlockTime = () => {
+  return cy.get('[data-cy="time-value"]')
+    .invoke('text')
+    .then(currTimeStr => {
+      const currBlockTimeStr = currTimeStr.replace(/0:/, '');
+      return +currBlockTimeStr;
     });
-});
+};
 
 export const selectFromDropdown = (dropdownLabel: string, optionName: string): void => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
