@@ -45,8 +45,8 @@ describe('check default values', { testIsolation: false }, () => {
   });
 
   it('unit_time_left_warnings', () => {
-    // default: warning message will be displayed when one minute remains
-    cy.wait(61000);
+    // snackbar will be showed 1 second before the time is expiried
+    // because the testlet have a
     cy.get('.snackbar-timerWarning');
   });
 
@@ -167,5 +167,5 @@ describe('check default values', { testIsolation: false }, () => {
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   });
-
 });
+
