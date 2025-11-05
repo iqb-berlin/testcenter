@@ -124,8 +124,8 @@ class InitDAO extends SessionDAO {
   public function createSampleWorkspaceAdmins(): void {
     $superAdminDAO = new SuperAdminDAO();
     $adminDAO = new AdminDAO();
-    $superAdminDAO->createUser("workspace_admin", "anotherPassword");
-    $adminDAO->createAdminToken("workspace_admin", "anotherPassword", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
+    $superAdminDAO->createUser("workspace_admin", "ws_password");
+    $adminDAO->createAdminToken("workspace_admin", "ws_password", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     $superAdminDAO->createUser("expired_user", "whatever", true);
     $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
   }
