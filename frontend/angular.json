@@ -20,7 +20,7 @@
             "polyfills": [
               "src/polyfills.ts"
             ],
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "./tsconfig.app.json",
             "allowedCommonJsDependencies": [
               "ua-parser-js",
               "browserslist-useragent"
@@ -83,7 +83,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["src/polyfills.ts"],
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "./tsconfig.app.json",
             "assets": [
               "src/assets"
             ],
@@ -142,7 +142,7 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": ["src/polyfills.ts"],
-            "tsConfig": "src/tsconfig.spec.json",
+            "tsConfig": "./tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
               "src/styles.css"
