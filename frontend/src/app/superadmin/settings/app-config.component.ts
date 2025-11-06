@@ -8,9 +8,10 @@ import { BackendService } from '../backend.service';
 import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
 
 @Component({
-  selector: 'tc-app-config',
-  templateUrl: 'app-config.component.html',
-  styleUrls: ['app-config.component.css']
+    selector: 'tc-app-config',
+    templateUrl: 'app-config.component.html',
+    styleUrls: ['app-config.component.css'],
+    standalone: false
 })
 
 export class AppConfigComponent implements OnInit, OnDestroy {

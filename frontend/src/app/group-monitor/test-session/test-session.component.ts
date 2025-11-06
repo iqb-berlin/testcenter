@@ -24,9 +24,10 @@ interface TestletContext {
 }
 
 @Component({
-  selector: 'tc-test-session',
-  templateUrl: './test-session.component.html',
-  styleUrls: ['./test-session.component.css']
+    selector: 'tc-test-session',
+    templateUrl: './test-session.component.html',
+    styleUrls: ['./test-session.component.css'],
+    standalone: false
 })
 export class TestSessionComponent {
   @Input() testSession: TestSession = {} as TestSession;

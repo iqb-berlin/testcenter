@@ -22,8 +22,9 @@ export interface TcSpeedChartSettings {
 }
 
 @Component({
-  selector: 'tc-speed-chart',
-  template: '<canvas #speedChart></canvas>'
+    selector: 'tc-speed-chart',
+    template: '<canvas #speedChart></canvas>',
+    standalone: false
 })
 export class TcSpeedChartComponent {
   @ViewChild('speedChart') private canvas!: ElementRef;

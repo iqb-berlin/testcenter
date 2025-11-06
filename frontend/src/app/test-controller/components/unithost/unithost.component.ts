@@ -28,8 +28,9 @@ import {
 import { AppError } from '../../../app.interfaces';
 
 @Component({
-  templateUrl: './unithost.component.html',
-  styleUrls: ['./unithost.component.css']
+    templateUrl: './unithost.component.html',
+    styleUrls: ['./unithost.component.css'],
+    standalone: false
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {

@@ -3,10 +3,11 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MessageDialogData } from '../../interfaces/message-dialog.interfaces';
 
 @Component({
-  templateUrl: './message-dialog.component.html',
-  styles: [
-    '.mdc-dialog__title::before { height: auto; }'
-  ]
+    templateUrl: './message-dialog.component.html',
+    styles: [
+        '.mdc-dialog__title::before { height: auto; }'
+    ],
+    standalone: false
 })
 export class MessageDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public msgdata: MessageDialogData) { }

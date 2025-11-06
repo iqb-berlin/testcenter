@@ -14,8 +14,9 @@ import { EditworkspaceComponent } from './editworkspace/editworkspace.component'
 import { IdAndName, IdRoleData } from '../superadmin.interfaces';
 
 @Component({
-  templateUrl: './workspaces.component.html',
-  styleUrls: ['./workspaces.component.css']
+    templateUrl: './workspaces.component.html',
+    styleUrls: ['./workspaces.component.css'],
+    standalone: false
 })
 export class WorkspacesComponent implements OnInit {
   workspaces: MatTableDataSource<IdAndName> = new MatTableDataSource<IdAndName>();

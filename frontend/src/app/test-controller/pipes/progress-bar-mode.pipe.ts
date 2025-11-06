@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { LoadingProgress } from '../interfaces/test-controller.interfaces';
 
 @Pipe({
-  name: 'progressbarmode'
+    name: 'progressbarmode',
+    standalone: false
 })
 export class PogressBarModePipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

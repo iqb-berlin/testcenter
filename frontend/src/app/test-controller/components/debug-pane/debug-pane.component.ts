@@ -13,9 +13,10 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { ConditionUtil } from '../../util/condition.util';
 
 @Component({
-  templateUrl: './debug-pane.component.html',
-  styleUrls: ['./debug-pane.component.css'],
-  selector: 'tc-debug-pane'
+    templateUrl: './debug-pane.component.html',
+    styleUrls: ['./debug-pane.component.css'],
+    selector: 'tc-debug-pane',
+    standalone: false
 })
 export class DebugPaneComponent implements OnInit {
   constructor(

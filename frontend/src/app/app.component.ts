@@ -11,9 +11,10 @@ import { UiVisibilityService } from './shared/services/ui-visibility.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'tc-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'tc-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    standalone: false
 })
 
 export class AppComponent implements OnInit, OnDestroy {

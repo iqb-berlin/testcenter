@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  templateUrl: './new-user.component.html'
+    templateUrl: './new-user.component.html',
+    standalone: false
 })
 
 export class NewUserComponent {
