@@ -30,6 +30,10 @@ module.exports = defineConfig({
   e2e: {
     ...cypressJsonConfig,
     baseUrl: 'http://localhost',
+    // Timeout-Einstellungen hier hinzufügen:
+    // Standard: 5000ms (für cy.wait('@alias'))
+    requestTimeout: 10000,
+
     env: {
       urls
     },
