@@ -928,6 +928,9 @@ build-docs:
         && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
         && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
       then
+        printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+          docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
+        printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY} &&
         docker pull --quiet ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} &&
         docker tag ${TASK_RUNNER_IMAGE_NAME}:${CI_COMMIT_SHA} docker-testcenter-task-runner &&
         docker compose
@@ -950,11 +953,13 @@ build-docs:
             --file docker-compose.yml
             --file test/docker-compose.api-test.yml
           run --rm --no-deps task-runner
-            npm run create-docs;
+            npm run create-docs &&
+        docker logout ${CI_DEPENDENCY_PROXY_SERVER} &&
+        docker logout ${REGISTRY};
       else
         rm -rf docs/ &&
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Generating documents is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
