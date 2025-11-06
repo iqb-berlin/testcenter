@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.4.0
+### Verbesserungen
+* Aktualisierung des Frontends auf Angular 20, inkl. Material 3
+
 ## 17.3.0
 ### Verbesserungen
 * Aktualisierung der Backend und Broadcaster Frameworks 'slim' und 'nest' sowie der 'tcpdf' PHP-Bibliothek
