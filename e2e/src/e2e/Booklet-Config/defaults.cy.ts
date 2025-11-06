@@ -144,7 +144,7 @@ describe('check default values', { testIsolation: false }, () => {
     reload();
     cy.get('[data-cy="page-navigation-0"]')
       .children()
-      .should('have.attr', 'aria-pressed', 'true');
+      .should('have.attr', 'aria-checked', 'true');
   });
 
   it('lock_test_on_termination', () => {

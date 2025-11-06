@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -35,16 +35,15 @@ describe('UsersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [UsersComponent],
-      imports: [
-        HttpClientModule,
+    declarations: [UsersComponent],
+    imports: [
         MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatCheckboxModule,
         MatIconModule
-      ],
-      providers: [
+    ],
+    providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
@@ -53,9 +52,10 @@ describe('UsersComponent', () => {
           provide: PasswordChangeService,
           useValue: new MockPasswordChangeService()
         },
-        MainDataService
-      ]
-    })
+        MainDataService,
+        provideHttpClient(withInterceptorsFromDi())
+    ]
+})
       .compileComponents();
   }));
 

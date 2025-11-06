@@ -10,8 +10,9 @@ import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interf
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
 @Component({
-  templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css', '../sys-check.component.css']
+    templateUrl: './report.component.html',
+    styleUrls: ['./report.component.css', '../sys-check.component.css'],
+    standalone: false
 })
 export class ReportComponent implements OnInit {
   isReportSaved = false;

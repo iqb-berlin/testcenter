@@ -5,8 +5,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'tc-custom-text',
-  template: `
+    selector: 'tc-custom-text',
+    template: `
     <div class="flex-row"  [style.align-items]="'center'" [style.margin-bottom.px]="10">
       <div class="flex-column" [style.width.%]="40">
         <p>{{ctLabel}}</p>
@@ -24,7 +24,8 @@ import { Subscription } from 'rxjs';
       </button>
     </div>
     <mat-divider></mat-divider>
-    `
+    `,
+    standalone: false
 })
 
 export class EditCustomTextComponent implements OnInit, OnDestroy {

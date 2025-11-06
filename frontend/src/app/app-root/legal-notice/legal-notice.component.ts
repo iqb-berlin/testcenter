@@ -3,11 +3,12 @@ import { MainDataService } from '../../shared/shared.module';
 import { ServiceStatus } from '../../shared/interfaces/service-status.interfaces';
 
 @Component({
-  templateUrl: './legal-notice.component.html',
-  styles: [
-    'mat-card { width: 500px; }',
-    'ul { margin-top: 0; }'
-  ]
+    templateUrl: './legal-notice.component.html',
+    styles: [
+        'mat-card { width: 500px; }',
+        'ul { margin-top: 0; }'
+    ],
+    standalone: false
 })
 export class LegalNoticeComponent implements OnInit {
   readonly translations: { [status in ServiceStatus]: string } = {

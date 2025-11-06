@@ -10,11 +10,12 @@ import { BackendService } from '../../services/backend/backend.service';
 import { PageDesign } from '../../interfaces/page.interfaces';
 
 @Component({
-  templateUrl: './capture-image.component.html',
-  styleUrls: [
-    '../../../../monitor-layout.css',
-    './capture-image.component.css'
-  ]
+    templateUrl: './capture-image.component.html',
+    styleUrls: [
+        '../../../../monitor-layout.css',
+        './capture-image.component.css'
+    ],
+    standalone: false
 })
 export class CaptureImageComponent implements OnInit, OnDestroy {
   @ViewChild('video') video!: ElementRef;

@@ -6,8 +6,9 @@ import { SysCheckDataService } from './sys-check-data.service';
 import { AppError } from '../app.interfaces';
 
 @Component({
-  templateUrl: './sys-check.component.html',
-  styleUrls: ['./sys-check.component.css']
+    templateUrl: './sys-check.component.html',
+    styleUrls: ['./sys-check.component.css'],
+    standalone: false
 })
 
 export class SysCheckComponent implements OnInit {

@@ -8,8 +8,9 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
 import { BackendService } from '../../services/backend.service';
 
 @Component({
-  templateUrl: './study-monitor.component.html',
-  styleUrls: ['./study-monitor.component.css']
+    templateUrl: './study-monitor.component.html',
+    styleUrls: ['./study-monitor.component.css'],
+    standalone: false
 })
 export class StudyMonitorComponent {
   displayedColumns: string[] = [

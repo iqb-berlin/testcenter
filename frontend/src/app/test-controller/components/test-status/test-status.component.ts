@@ -5,8 +5,9 @@ import { AppError } from '../../../app.interfaces';
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 
 @Component({
-  templateUrl: './test-status.component.html',
-  styleUrls: ['./test-status.component.css']
+    templateUrl: './test-status.component.html',
+    styleUrls: ['./test-status.component.css'],
+    standalone: false
 })
 
 export class TestStatusComponent implements OnInit, OnDestroy {

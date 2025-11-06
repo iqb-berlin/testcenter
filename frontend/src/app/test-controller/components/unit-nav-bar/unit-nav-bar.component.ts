@@ -5,9 +5,10 @@ import {
 } from '../../interfaces/test-controller.interfaces';
 
 @Component({
-  selector: 'tc-unit-nav-bar',
-  templateUrl: './unit-nav-bar.component.html',
-  styleUrls: ['./unit-nav-bar.component.css']
+    selector: 'tc-unit-nav-bar',
+    templateUrl: './unit-nav-bar.component.html',
+    styleUrls: ['./unit-nav-bar.component.css'],
+    standalone: false
 })
 export class UnitNavBarComponent {
   @Input() booklet: Booklet | null = null;
