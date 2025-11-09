@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 17.4.0-rc
 ### Verbesserungen
 * Dockerfile nutzt den neuen Pfad für compilierte Angular Dateien
 
