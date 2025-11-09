@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* Dockerfile nutzt den neuen Pfad für compilierte Angular Dateien
+
 ## 17.4.0
 ### Verbesserungen
 * Aktualisierung des Frontends auf Angular 20, inkl. Material 3
