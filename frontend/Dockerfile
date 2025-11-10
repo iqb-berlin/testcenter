@@ -50,7 +50,7 @@ USER root
 RUN chown -R nginx:root /usr/share/nginx/html
 
 USER nginx
-COPY --chown=nginx:root --from=base /usr/src/testcenter/frontend/dist /usr/share/nginx/html
+COPY --chown=nginx:root --from=base /usr/src/testcenter/frontend/dist/browser /usr/share/nginx/html
 COPY --chown=nginx:root frontend/nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 8080
