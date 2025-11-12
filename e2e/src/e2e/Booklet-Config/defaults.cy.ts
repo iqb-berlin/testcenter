@@ -45,13 +45,13 @@ describe('check default values', { testIsolation: false }, () => {
   });
 
   it('unit_time_left_warnings', () => {
-    // default: warning message will be displayed when one minute remains
-    cy.wait(61000);
+    // snackbar will be shown 1 second before the time is expired
+    // because the testlet have only 1 second, the message will be displayed directly
     cy.get('.snackbar-timerWarning');
   });
 
   it('page_navibutton', () => {
-    // default:  SEPARATE_BOTTOM
+    // default: SEPARATE_BOTTOM
     cy.get('[data-cy="page-navigation-0"]');
   });
 
@@ -84,6 +84,14 @@ describe('check default values', { testIsolation: false }, () => {
       .should('not.exist');
   });
 
+  // TODO check response/presentation hier wieder aktivieren, wenn stabil headless läuft
+  /*
+  presentation/response-complete machen die Tests headless instabil.
+  Daher sollen diese Funktionen nur noch in einem Test getestet werden.
+  Das erfolgt nun in Test-Controller/Nav-Restriction
+  */
+
+  /*
   it('presentation_complete: forward', () => {
     // default:  OFF
     cy.get('[data-cy="unit-navigation-forward"]');
@@ -129,6 +137,7 @@ describe('check default values', { testIsolation: false }, () => {
     cy.get('[data-cy="dialog-confirm"]')
       .click();
   });
+  */
 
   it('allow_player_to_terminate_test', () => {
     // default:  ON
@@ -167,5 +176,6 @@ describe('check default values', { testIsolation: false }, () => {
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   });
-
 });
+
+

@@ -43,10 +43,20 @@ describe('check values 2', { testIsolation: false }, () => {
       .contains('Test Bklt Configs value-2');
   });
 
+  // TODO check response/presentation hier wieder aktivieren, wenn stabil headless läuft
+  /*
+  presentation/response-complete machen die Tests headless instabil.
+  Daher sollen diese Funktionen nur noch in einem Test getestet werden.
+  Das erfolgt nun in Test-Controller/Nav-Restriction
+  */
+
+  /*
   it('presentation_complete: forward', () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -55,6 +65,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -65,12 +77,18 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -79,6 +97,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -89,6 +109,8 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-content"]')
@@ -99,6 +121,8 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -109,12 +133,18 @@ describe('check values 2', { testIsolation: false }, () => {
     // value -1:  ALWAYS
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-navigation-backward"]')
@@ -125,23 +155,23 @@ describe('check values 2', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
   });
+  */
 
   it('allow_player_to_terminate_test', () => {
     // value -1:  LAST_UNIT
     getFromIframe('[data-cy="end-unit"]')
       .should('be.disabled');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
-    cy.get('[data-cy="page-navigation-forward"]')
-      .click();
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     getFromIframe('[data-cy="end-unit"]')
       .should('be.enabled');
   });
 });
+

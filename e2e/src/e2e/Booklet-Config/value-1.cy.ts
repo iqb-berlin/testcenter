@@ -92,12 +92,22 @@ describe('check values 1', { testIsolation: false }, () => {
       .contains('Aufgabe1');
   });
 
+  // TODO check response/presentation hier wieder aktivieren, wenn stabil headless läuft
+  /*
+  presentation/response-complete machen die Tests headless instabil.
+  Daher sollen diese Funktionen nur noch in einem Test getestet werden.
+  Das erfolgt nun in Test-Controller/Nav-Restriction
+  */
+
+  /*
   it('presentation_complete: forward', () => {
     // value -1:  ON
     cy.get('[data-cy="dialog-cancel"]')
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -108,6 +118,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="previous-unit-page"]')
       .click();
     cy.get('[data-cy="unit-menu"]')
@@ -128,8 +140,12 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="previous-unit-page"]')
       .click();
     cy.get('[data-cy="unit-menu"]')
@@ -138,6 +154,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
@@ -152,6 +170,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -164,6 +184,8 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     cy.get('[data-cy="unit-menu"]')
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
@@ -174,7 +196,6 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
       .click();
-
   });
 
   it('responses_complete: backward', () => {
@@ -183,8 +204,12 @@ describe('check values 1', { testIsolation: false }, () => {
       .click();
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
+    //wait for response complete
+    cy.wait(1000);
     getFromIframe('[data-cy="next-unit-page"]')
       .click();
+    //wait for presentation complete
+    cy.wait(1000);
     getFromIframe('[data-cy="previous-unit-page"]')
       .click();
     cy.get('[data-cy="unit-menu"]')
@@ -198,6 +223,7 @@ describe('check values 1', { testIsolation: false }, () => {
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
   });
+  */
 
   it('allow_player_to_terminate_test', () => {
     // default:  OFF
@@ -226,10 +252,6 @@ describe('check values 1', { testIsolation: false }, () => {
     // default:  ON
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
@@ -240,3 +262,4 @@ describe('check values 1', { testIsolation: false }, () => {
       .contains('gesperrt');
   });
 });
+
