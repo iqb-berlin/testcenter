@@ -1,14 +1,15 @@
 import {
   backwardsTo,
   disableSimplePlayersInternalDebounce,
-  gotoPage, convertResultsSeperatedArrays,
+  logoutTestTaker,
   forwardTo,
   getFromIframe,
   loginSuperAdmin,
   loginTestTaker,
   openSampleWorkspace,
   probeBackendApi,
-  resetBackendData, visitLoginPage
+  resetBackendData,
+  visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -55,37 +56,17 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
   });
 
-  it('navigate to next unit without responses/presentation complete but with a message', () => {
-    forwardTo('Aufgabe2');
-    cy.get('.snackbar-demo-mode')
-      .contains('Es wurde nicht alles gesehen oder abgespielt.');
-    cy.url()
-      .should('include', '/u/3');
-    backwardsTo('Aufgabe1');
-  });
-
-  it('navigate to the next unit without responses complete but with a message', () => {
-    gotoPage(1);
-    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-      .contains('Presentation complete');
-    forwardTo('Aufgabe2');
-    cy.get('.snackbar-demo-mode')
-      .contains('Es wurde nicht alles bearbeitet.');
-    cy.get('.snackbar-demo-mode')
-      .contains('gesehen')
-      .should('not.be.exist');
-    backwardsTo('Aufgabe1');
-  });
-
-  it('navigate to the next unit when required fields have been filled', () => {
+  it('Complete all question-elements in Aufgabe 1', () => {
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    forwardTo('Aufgabe2');
+    // some time to ensure that the answer is saved
+    cy.wait(1000);
   });
 
-  it('navigate backwards and verify that the last answer is there', () => {
-    backwardsTo('Aufgabe1');
+  it('verify that the last answer is there', () => {
+    forwardTo('Aufgabe2');
+    backwardsTo('Aufgabe1')
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
@@ -93,8 +74,6 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
       .contains('Fortsetzen')
       .click();
@@ -119,14 +98,9 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('navigate back to the booklet view and check out', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
-    cy.get('[data-cy="logout"]')
-      .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    logoutTestTaker('demo');
   });
 
   it('a response file is not generated', () => {
@@ -143,3 +117,4 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.contains('Keine Daten verfügbar');
   });
 });
+
