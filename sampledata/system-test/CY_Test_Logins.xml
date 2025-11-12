@@ -150,14 +150,14 @@
     <Login mode="run-hot-restart" name="LeaveVal3" pw="123">
       <Booklet>CY-Bklt_LeaveVal3</Booklet>
     </Login>
-    <Login mode="run-hot-restart" name="NavRestrVal1" pw="123">
-      <Booklet>CY-Bklt_NavRestrVal1</Booklet>
+    <Login mode="run-hot-restart" name="NavRestrTslt1" pw="123">
+      <Booklet>CY-Bklt_NavRestrTslt-1</Booklet>
     </Login>
-    <Login mode="run-hot-restart" name="NavRestrVal2" pw="123">
-      <Booklet>CY-Bklt_NavRestrVal2</Booklet>
+    <Login mode="run-hot-restart" name="NavRestrTslt2" pw="123">
+      <Booklet>CY-Bklt_NavRestrTslt-2</Booklet>
     </Login>
-    <Login mode="run-hot-restart" name="NavRestrVal3" pw="123">
-      <Booklet>CY-Bklt_NavRestrVal3</Booklet>
+    <Login mode="run-hot-restart" name="NavRestrTslt3" pw="123">
+      <Booklet>CY-Bklt_NavRestrTslt-3</Booklet>
     </Login>
     <Login mode="run-hot-restart" name="RestrLockAfterLeave1" pw="123">
       <Booklet>CY-Bklt_LockAfterLeave-1</Booklet>

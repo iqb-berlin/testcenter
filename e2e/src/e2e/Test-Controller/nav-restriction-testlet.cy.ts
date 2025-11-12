@@ -23,7 +23,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrVal1', '123', 'test-hot');
+      loginTestTaker('NavRestrTslt1', '123', 'test-hot');
     });
 
    it('presentation_complete: forward', () => {
@@ -81,7 +81,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrVal2', '123', 'test-hot');
+      loginTestTaker('NavRestrTslt2', '123', 'test-hot');
     });
 
     it('presentation_complete: forward', () => {
@@ -183,7 +183,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrVal3', '123', 'test-hot');
+      loginTestTaker('NavRestrTslt3', '123', 'test-hot');
     });
 
     it('presentation_complete: forward', () => {
