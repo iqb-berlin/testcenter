@@ -13,17 +13,16 @@ describe('Workspace-Admin Login', () => {
   });
 
   it('change the password', () => {
-    cy.contains('workspace_admin')
-      .click()
-      .get('[data-cy="change-password"]')
-      .click()
-      .get('[formcontrolname="pw"]')
-      .type('newPassword')
-      .get('[formcontrolname="pw_confirm"]')
-      .type('newPassword')
-      .get('[type="submit"]')
+    cy.get('[data-cy="change-password"]')
       .click();
-    cy.wait(3000);
+    cy.get('[formcontrolname="pw"]')
+      .type('ws_password_new')
+    cy.get('[formcontrolname="pw_confirm"]')
+      .type('ws_password_new')
+    cy.get('[type="submit"]')
+      .click();
+    cy.contains('Schließen')
+      .click();
     logoutAdmin();
     loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
