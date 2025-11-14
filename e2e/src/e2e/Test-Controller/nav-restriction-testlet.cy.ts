@@ -26,47 +26,41 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('NavRestrTslt1', '123', 'test-hot');
     });
 
-   it('presentation_complete: forward', () => {
-      cy.get('[data-cy="unit-navigation-forward"]');
-      cy.get('[data-cy="dialog-content"]')
+    it('presentation/response-complete: forward in unit-menu', () => {
+      cy.get('[data-cy="unit-menu"]')
+        .click();
+      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
     });
 
-    it('presentation_complete: backward', () => {
-      cy.get('[data-cy="unit-navigation-forward"]');
-      cy.get('[data-cy="unit-navigation-backward"]');
-      cy.get('[data-cy="dialog-content"]')
-        .should('not.exist');
+    it('presentation/response-complete: logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .should('not.exist');
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Aufgabenabschnitt verlassen?')
+        .should(`exist`);
     });
 
-    it('responses_complete: forward', () => {
-      cy.get('[data-cy="unit-navigation-forward"]');
-      cy.get('[data-cy="dialog-content"]')
+   it('presentation/response-complete: forward/backward', () => {
+      cy.get('[data-cy="unit-navigation-forward"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
-      cy.get('[data-cy="logo"]')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
+      cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
-    });
-
-    it('responses_complete: backward', () => {
-      cy.get('[data-cy="unit-navigation-forward"]');
-      cy.get('[data-cy="unit-navigation-backward"]');
-      cy.get('[data-cy="dialog-content"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
-      cy.get('[data-cy="logo"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
-    });
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+   });
   });
 
   describe('response & presentation = ON ', { testIsolation: true }, () => {
@@ -84,7 +78,31 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('NavRestrTslt2', '123', 'test-hot');
     });
 
-    it('presentation_complete: forward', () => {
+    it('presentation-complete: forward in unit-menu', () => {
+      cy.get('[data-cy="unit-menu"]')
+        .click();
+      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+    });
+
+    it('presentation-complete: logo', () => {
+      cy.get('[data-cy="logo"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+    });
+
+    it('presentation-complete: forward/backward', () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click();
       //wait for response complete
@@ -92,43 +110,29 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-content"]')
-        .contains('abgespielt');
-      cy.get('[data-cy="dialog-confirm"]')
+        .contains('abgespielt')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
         .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
-      cy.get('[data-cy="page-navigation-backward"]')
-        .click();
+      //wait for presentation-complete
+      cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-    });
-
-    it('presentation_complete: backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="page-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
-        .click();
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
     });
 
-    it('responses_complete: forward', () => {
+    it('responses-complete: forward/backward', () => {
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation complete
@@ -136,9 +140,12 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-content"]')
-        .contains('bearbeitet');
-      cy.get('[data-cy="dialog-confirm"]')
+        .contains('bearbeitet')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
         .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-backward"]')
         .click();
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
@@ -147,26 +154,13 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-    });
-
-    it('responses_complete: backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="page-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
     });
   });
@@ -186,38 +180,71 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('NavRestrTslt3', '123', 'test-hot');
     });
 
-    it('presentation_complete: forward', () => {
+    it('presentation-complete: forward/backward in unit-menu', () => {
+      cy.get('[data-cy="unit-menu"]')
+        .click();
+      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click();
       //wait for response complete
       cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('abgespielt');
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
-      //wait for presentation complete
+      //wait for presentation-complete
       cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
+      cy.get('[data-cy="unit-menu"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
+      cy.get('[data-cy="unit-menu"]')
+        .click();
+      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
     });
 
-    it('presentation_complete: backward', () => {
+    it('presentation-complete: logo', () => {
+      cy.get('[data-cy="logo"]')
+        .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+    });
+
+    it('presentation-complete: forward/backward', () => {
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click();
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
-      //wait for presentation complete
+      //wait for presentation-complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
+      cy.contains('Aufgabe darf nicht verlassen werden')
+        .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click();
       //wait for response complete
@@ -225,73 +252,62 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="dialog-content"]')
-        .contains('abgespielt');
-      cy.get('[data-cy="dialog-confirm"]')
+        .contains('abgespielt')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
         .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
-      //wait for presentation complete
+      //wait for presentation-complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
     });
 
-    it('responses_complete: forward', () => {
+    it('responses-complete: forward/backward', () => {
+      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+        .click();
+      //wait for response complete
+      cy.wait(2000);
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('bearbeitet');
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
+      cy.get('[data-cy="page-navigation-forward"]')
         .click();
+      //wait for presentation complete
+      cy.wait(2000);
+      cy.get('[data-cy="unit-navigation-backward"]')
+        .click();
+      cy.get('[data-cy="dialog-content"]')
+        .contains('bearbeitet')
+        .closest('[role="dialog"]')
+        .find('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
       cy.get('[data-cy="page-navigation-backward"]')
         .click();
       getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
         .click();
       //wait for response complete
       cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
-        .should('not.exist');
-    });
-
-    it('responses_complete: backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-backward"]')
-        .click();
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('bearbeitet');
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="dialog-confirm"]')
+      cy.contains('Aufgabe darf nicht verlassen werden')
         .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
     });
   });
 });

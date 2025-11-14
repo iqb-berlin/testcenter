@@ -11,6 +11,7 @@
     <Config key="pagingMode">buttons</Config>
     <Config key="force_presentation_complete">OFF</Config>
     <Config key="force_response_complete">OFF</Config>
+    <Config key="unit_menu">FULL</Config>
   </BookletConfig>
 
   <Units>
@@ -21,7 +22,7 @@
         <DenyNavigationOnIncomplete presentation="ON" response="ON" />
       </Restrictions>
       <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
-      <Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="unit2"/>
     </Testlet>
 
     <Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
