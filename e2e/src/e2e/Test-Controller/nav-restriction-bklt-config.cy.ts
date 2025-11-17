@@ -32,16 +32,14 @@ describe('check response & presentation from booklet-config', { testIsolation: t
    it('presentation/response-complete have to be ON in testlet', () => {
      cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-     cy.contains('Aufgabe darf nicht verlassen werden')
-       .closest('[role="dialog"]')
+     cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
        .find('[data-cy="dialog-confirm"]')
        .click();
      cy.get('[data-cy="unit-title"]')
        .contains('Aufgabe1');
      cy.get('[data-cy="unit-navigation-backward"]')
        .click();
-     cy.contains('Aufgabe darf nicht verlassen werden')
-       .closest('[role="dialog"]')
+     cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
        .find('[data-cy="dialog-confirm"]')
        .click();
      cy.get('[data-cy="unit-title"]')
@@ -119,8 +117,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
         .click();
       cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -130,8 +127,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     it('presentation-complete: logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -145,9 +141,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('abgespielt')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'abgespielt')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -174,10 +168,8 @@ describe('check response & presentation from booklet-config', { testIsolation: t
       //wait for presentation complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('bearbeitet')
-        .closest('[role="dialog"]')
+        .click()
+      cy.contains('mat-dialog-container', 'bearbeitet')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -221,8 +213,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
         .click();
       cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -247,8 +238,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
         .click();
       cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -258,8 +248,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     it('presentation-complete: logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -287,9 +276,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('abgespielt')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'abgespielt')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
@@ -325,9 +312,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.get('[data-cy="dialog-content"]')
-        .contains('bearbeitet')
-        .closest('[role="dialog"]')
+      cy.contains('mat-dialog-container', 'bearbeitet')
         .find('[data-cy="dialog-confirm"]')
         .click();
       cy.get('[data-cy="unit-title"]')
