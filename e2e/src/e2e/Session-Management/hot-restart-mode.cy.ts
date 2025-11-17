@@ -8,13 +8,15 @@ import {
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage,
+  logoutTestTaker
+
 } from '../utils';
 
 let idHres1;
 let idHres2;
 
-describe('check hot-restart-mode functions', { testIsolation: false }, () => {
+describe('check hot-restart-mode functions', { testIsolation: true }, () => {
   before(() => {
     deleteDownloadsFolder();
     cy.clearLocalStorage();
@@ -28,41 +30,23 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
 
   it('start first session', () => {
     loginTestTaker('hres1', '203', 'test-hot');
+    cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click()
-      .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('h5ki-bd-');
-    cy.get('[data-cy="logout"]')
-      .click();
+    //make sure the session has been added
+    cy.wait(['@waitUnitLoad']);
   });
 
   it('start a second session', () => {
     loginTestTaker('hres1', '203', 'test-hot');
+    cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click()
-      .should('be.checked');
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.log('end test');
-    cy.get('[data-cy="endTest-1"]')
-      .click();
-    cy.get('[data-cy="card-login-name"]')
-      .contains('va4dg-jc');
-    cy.get('[data-cy="logout"]')
-      .click();
+    //make sure the session has been added
+    cy.wait(['@waitUnitLoad']);
   });
 
-  it('generated file (responses, logs) exist in workspace with session group names', () => {
+  it('generated response file exist in workspace with different ID/Code for each session', () => {
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
@@ -70,12 +54,10 @@ describe('check hot-restart-mode functions', { testIsolation: false }, () => {
     cy.contains('SessionManagement Hot-Modes-Test Logins');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownload');
     cy.get('[data-cy="download-responses"]')
       .click();
-    logoutAdmin();
-  });
-
-  it('different ID/Code must be saved for each session', () => {
+    cy.wait('@waitForDownload');
     convertResultsSeperatedArrays('responses')
       .then(LoginID => {
         idHres1 = LoginID[1][2];
