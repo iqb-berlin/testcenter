@@ -1,5 +1,100 @@
 # Change Log
 
+## 1.12.0  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-11-10
+
+* feat: knative provider
+* feat(CRDs): update for Traefik Proxy v3.6 and Gateway API v1.4.0
+* feat(CRDs): update Traefik Hub to v1.23.1
+* chore(release): 🚀 publish traefik 37.3.0 and 1.12.0
+
+### Default value changes
+
+```diff
+diff --git a/traefik-crds/values.yaml b/traefik-crds/values.yaml
+index 8979fff..d95ed61 100644
+--- a/traefik-crds/values.yaml
++++ b/traefik-crds/values.yaml
+@@ -19,6 +19,9 @@ gatewayAPI: false
+ # This includes additional experimental features beyond the standard Gateway API
+ # Cannot be used together with gatewayAPI
+ gatewayAPIExperimental: false
++# -- Set it to true to install Knative CRDs.
++# Needed if you set providers.knative.enabled to true in main chart
++knative: false
+ # -- Set it to true to install Traefik Hub CRDs.
+ # Needed if you set hub.enabled to true in main chart
+ hub: false
+```
+
+## 1.11.1  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-10-03
+
+* fix(CRDs): ✨ update for Traefik Proxy v3.5.2
+* feat(CRDs): update for Traefik to v3.5.3
+* chore(release): :rocket: publish traefik 37.1.2 and crds 1.11.1
+
+
+## 1.11.0  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-09-03
+
+* feat(CRDs): update Traefik Hub to v1.21.1
+* feat(CRDs): add gatewayAPI experimental channel option
+* chore(release): :rocket: Publish 37.1.0 and 1.11.0
+
+### Default value changes
+
+```diff
+diff --git a/traefik-crds/values.yaml b/traefik-crds/values.yaml
+index 1240977..8979fff 100644
+--- a/traefik-crds/values.yaml
++++ b/traefik-crds/values.yaml
+@@ -13,7 +13,12 @@ enabled: true
+ traefik: true
+ # -- Set it to true to install GatewayAPI CRDs.
+ # Needed if you set providers.kubernetesGateway.enabled to true in main chart
++# Cannot be used together with gatewayAPIExperimental
+ gatewayAPI: false
++# -- Set it to true to install experimental GatewayAPI CRDs.
++# This includes additional experimental features beyond the standard Gateway API
++# Cannot be used together with gatewayAPI
++gatewayAPIExperimental: false
+ # -- Set it to true to install Traefik Hub CRDs.
+ # Needed if you set hub.enabled to true in main chart
+ hub: false
+```
+
+## 1.10.0  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-07-29
+
+* feat(hub): offline mode
+* feat(CRDs): update for Traefik Proxy v3.5 and Gateway API v1.3.0
+* feat(CRDs): update Traefik Hub to v1.21.0
+* chore(release): 🚀 Publish 37.0.0 and 1.10.0
+
+
+## 1.9.0  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-06-23
+
+* fix(CRDs): :bug: kustomization file for CRDs
+* chore(schema): update linter
+* chore(release): 🚀 publish v36.2.0 and CRDs v1.9.0
+
+
+## 1.9.0-rc1  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
+
+**Release date:** 2025-06-11
+
+* feat(CRDs): update Traefik Hub to v1.20.1
+* chore: :rocket: prerelease traefik v36.2.0-rc1 and traefik-crds v1.9.0-rc1
+* chore(schema): 🔧 update following latest upstream release
+
+
 ## 1.8.1  ![Kubernetes: >=1.22.0-0](https://img.shields.io/static/v1?label=Kubernetes&message=%3E%3D1.22.0-0&color=informational&logo=kubernetes) ![Helm: v3](https://img.shields.io/static/v1?label=Helm&message=v3&color=informational&logo=helm)
 
 **Release date:** 2025-05-23

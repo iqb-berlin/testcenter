@@ -157,6 +157,9 @@ Construct a comma-separated list of whitelisted namespaces
 {{- define "providers.kubernetesIngress.namespaces" -}}
 {{- default (include "traefik.namespace" .) (join "," .Values.providers.kubernetesIngress.namespaces) }}
 {{- end -}}
+{{- define "providers.knative.namespaces" -}}
+{{- default (include "traefik.namespace" .) (join "," .Values.providers.knative.namespaces) }}
+{{- end -}}
 
 {{/*
 Renders a complete tree, even values that contains template.
@@ -177,14 +180,20 @@ It requires a dict with "Version" and "Hub".
 {{- define "traefik.proxyVersionFromHub" -}}
  {{- $version := .Version -}}
  {{- if .Hub -}}
-   {{- $hubProxyVersion := "v3.3" }}
+   {{- $hubProxyVersion := "v3.5" }}
    {{- if regexMatch "v[0-9]+.[0-9]+.[0-9]+" (default "" $version) -}}
      {{- if semverCompare "<v3.3.2-0" $version -}}
         {{- $hubProxyVersion = "v3.0" }}
      {{- else if semverCompare "<v3.7.0-0" $version -}}
         {{- $hubProxyVersion = "v3.1" }}
-     {{- else if semverCompare "<v3.11.0-0" $version -}}
+     {{- else if semverCompare "<v3.10.2-0" $version -}}
         {{ $hubProxyVersion = "v3.2" }}
+     {{- else if semverCompare "<v3.15.3-0" $version -}}
+        {{ $hubProxyVersion = "v3.3" }}
+     {{- else if or (semverCompare "=v3.16.0" $version) (semverCompare "=v3.16.1" $version) -}}
+        {{ $hubProxyVersion = "v3.3" }}
+     {{- else if semverCompare "<v3.18.0" $version -}}
+        {{ $hubProxyVersion = "v3.4" }}
      {{- end -}}
    {{- end -}}
    {{ $hubProxyVersion }}
@@ -219,12 +228,15 @@ Key: {{ index $.Values.hub.apimanagement.admission.customWebhookCertificate "tls
 Hash: {{ sha1sum (index $.Values.hub.apimanagement.admission.customWebhookCertificate "tls.crt") }}
 {{- else -}}
     {{- $cert := lookup "v1" "Secret" (include "traefik.namespace" .) $.Values.hub.apimanagement.admission.secretName -}}
-    {{- if $cert -}}
+    {{- if $cert }}
+        {{ if or (not (hasKey $cert.data "tls.crt")) (not (hasKey $cert.data "tls.key")) -}}
+            {{- fail (printf "ERROR: secret %s/%s exists but doesn't contain any certificate data. Please remove it or change hub.apimanagement.admission.secretName." (include "traefik.namespace" .) $.Values.hub.apimanagement.admission.secretName) }}
+        {{- end -}}
     {{/* reusing value of existing cert */}}
 Cert: {{ index $cert.data "tls.crt" }}
 Key: {{ index $cert.data "tls.key" }}
 Hash: {{ sha1sum (index $cert.data "tls.crt") }}
-    {{- else -}}
+    {{- else if not $.Values.hub.apimanagement.admission.selfManagedCertificate -}}
     {{/* generate a new one */}}
     {{- $altNames := list ( printf "admission.%s.svc" (include "traefik.namespace" .) ) -}}
     {{- $cert := genSelfSignedCert ( printf "admission.%s.svc" (include "traefik.namespace" .) ) (list) $altNames 3650 -}}
@@ -274,4 +286,77 @@ Hash: {{ sha1sum ($cert.Cert | b64enc) }}
         {{- end }}
     {{- end }}
     {{- toYaml $diff }}
+{{- end }}
+
+{{/*
+  This helper converts the input value of memory to Bytes.
+  Input needs to be a valid value as supported by k8s memory resource field.
+  This function aims to handle SI, IEC prefixes or no prefixes (cf. https://github.com/kubeflow/crd-validation/blob/master/vendor/k8s.io/apimachinery/pkg/api/resource/quantity.go#L44).
+  SI prefixes use power of 10 (e.g. 1e18 = 1 x 10^18) (m | "" | k | M | G | T | P | E).
+  IEC prefixes use power of 2 (e.g. 0x1p60 = 2^60) (Ki | Mi | Gi | Ti | Pi | Ei).
+ */}}
+{{- define "traefik.convertMemToBytes" }}
+  {{- $mem := lower . -}}
+  {{- if hasSuffix "e" $mem -}}
+    {{- $mem = mulf (trimSuffix "e" $mem | float64) 1e18 -}}
+  {{- else if hasSuffix "ei" $mem -}}
+    {{- $mem = mulf (trimSuffix "e" $mem | float64) 0x1p60 -}}
+  {{- else if hasSuffix "p" $mem -}}
+    {{- $mem = mulf (trimSuffix "p" $mem | float64) 1e15 -}}
+  {{- else if hasSuffix "pi" $mem -}}
+    {{- $mem = mulf (trimSuffix "pi" $mem | float64) 0x1p50 -}}
+  {{- else if hasSuffix "t" $mem -}}
+    {{- $mem = mulf (trimSuffix "t" $mem | float64) 1e12 -}}
+  {{- else if hasSuffix "ti" $mem -}}
+    {{- $mem = mulf (trimSuffix "ti" $mem | float64) 0x1p40 -}}
+  {{- else if hasSuffix "g" $mem -}}
+    {{- $mem = mulf (trimSuffix "g" $mem | float64) 1e9 -}}
+  {{- else if hasSuffix "gi" $mem -}}
+    {{- $mem = mulf (trimSuffix "gi" $mem | float64) 0x1p30 -}}
+  {{- else if hasSuffix "m" . -}}
+    {{- $mem = divf (trimSuffix "m" $mem | float64) 1e3 -}}
+  {{- else if hasSuffix "M" . -}}
+    {{- $mem = mulf (trimSuffix "m" $mem | float64) 1e6 -}}
+  {{- else if hasSuffix "mi" $mem -}}
+    {{- $mem = mulf (trimSuffix "mi" $mem | float64) 0x1p20 -}}
+  {{- else if hasSuffix "k" $mem -}}
+    {{- $mem = mulf (trimSuffix "k" $mem | float64) 1e3 -}}
+  {{- else if hasSuffix "ki" $mem -}}
+    {{- $mem = mulf (trimSuffix "ki" $mem | float64) 0x1p10 -}}
+  {{- end }}
+{{- $mem }}
+{{- end }}
+
+{{- define "traefik.gomemlimit" }}
+{{- $percentage := .percentage -}}
+{{- $memlimitBytes := include "traefik.convertMemToBytes" .memory | mulf $percentage -}}
+{{- printf "%dMiB" (divf $memlimitBytes 0x1p20 | floor | int64) -}}
+{{- end }}
+
+{{- define "traefik.oltpCommonParams" }}
+  {{- $path := .path -}}
+  {{- $otlpConfig := .oltp -}}
+  {{- if $otlpConfig.enabled }}
+  - "--{{$path}}=true"
+   {{- with $otlpConfig.http }}
+    {{- if .enabled }}
+  - "--{{$path}}.http=true"
+      {{ println }}
+      {{- include "traefik.yaml2CommandLineArgs" (dict "path" (printf "%s.http" $path) "content" (omit . "enabled")) | nindent 2 }}
+    {{- end }}
+   {{- end }}
+   {{- with $otlpConfig.grpc }}
+    {{- if .enabled }}
+  - "--{{$path}}.grpc=true"
+      {{ println }}
+      {{- include "traefik.yaml2CommandLineArgs" (dict "path" (printf "%s.grpc" $path)  "content" (omit . "enabled")) | nindent 2 }}
+    {{- end }}
+   {{- end }}
+   {{- with $otlpConfig.serviceName }}
+  - "--{{$path}}.serviceName={{.}}"
+   {{- end }}
+   {{- range $name, $value := $otlpConfig.resourceAttributes }}
+  -  "--{{$path}}.resourceAttributes.{{ $name }}={{ $value }}"
+   {{- end }}
+  {{- end }}
 {{- end }}

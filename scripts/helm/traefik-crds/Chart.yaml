@@ -1,7 +1,7 @@
 annotations:
-  artifacthub.io/changes: |
-    - "fix(CRDs): validation check on RootCA for both servertransport"
-    - "chore(release): :rocket: publish v35.4.0 and CRDs v1.8.1"
+  artifacthub.io/changes: "- \"feat: knative provider\"\n- \"feat(CRDs): update for
+    Traefik Proxy v3.6 and Gateway API v1.4.0\"\n- \"feat(CRDs): update Traefik Hub
+    to v1.23.1\"\n- \"chore(release): \U0001F680 publish traefik 37.3.0 and 1.12.0\"\n"
 apiVersion: v2
 description: A Traefik based Kubernetes ingress controller
 home: https://traefik.io/
@@ -22,4 +22,4 @@ sources:
 - https://github.com/traefik/traefik-helm-chart
 - https://github.com/traefik/traefik
 type: application
-version: 1.8.1
+version: 1.12.0
