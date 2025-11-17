@@ -19,13 +19,13 @@ export const deleteDownloadsFolder = (): void => {
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
-    cy.visit(`${startPage}?testMode=true`).wait(10); // wait(10) makes the navigation more stable (seems hacky)
+    cy.visit(`${startPage}?testMode=true`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
   });
 
 export const visitLoginPageWithProdDb = (): Chainable => cy.url()
   .then(url => {
     const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
-    cy.visit(`${startPage}`).wait(10); // wait(10) makes the navigation more stable (seems hacky)
+    cy.visit(`${startPage}`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
   });
 
 export const probeBackendApi = (): Chainable => cy.url()
