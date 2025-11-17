@@ -123,6 +123,18 @@
     <Login mode="run-hot-restart" name="bklConfigValue3" pw="123">
       <Booklet>CY-BkltConfigValue-3</Booklet>
     </Login>
+    <Login mode="run-hot-restart" name="NavRestrBklt0" pw="123">
+      <Booklet>CY-Bklt_NavRestrBklt-0</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrBklt1" pw="123">
+      <Booklet>CY-Bklt_NavRestrBklt-1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrBklt2" pw="123">
+      <Booklet>CY-Bklt_NavRestrBklt-2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="NavRestrBklt3" pw="123">
+      <Booklet>CY-Bklt_NavRestrBklt-3</Booklet>
+    </Login>
   </Group>
 
   <Group id="testletRestrictions" label="testlet restriction parameter check">
