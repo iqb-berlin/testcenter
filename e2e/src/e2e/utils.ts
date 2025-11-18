@@ -20,6 +20,9 @@ export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
     cy.visit(`${startPage}?testMode=true`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
+    cy.url().should('include', '/#/r/login');
+    cy.url().should('include', 'testMode=true');
+    cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
 export const visitLoginPageWithProdDb = (): Chainable => cy.url()
@@ -77,10 +80,12 @@ export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]
 
 export const insertCredentials = (username: string, password = ''): void => {
   cy.get('[formcontrolname="name"]')
+    .should(`be.visible`)
     .clear()
     .type(username);
   if (password) {
     cy.get('[formcontrolname="pw"]')
+      .should(`be.visible`)
       .clear()
       .type(password);
   }
@@ -97,6 +102,7 @@ export const logoutAdmin = (): Chainable => cy.url()
         .click();
       visitLoginPage();
     }
+    cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
 export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
@@ -179,6 +185,8 @@ export const openSampleWorkspace2 = (): void => {
 };
 
 export const loginSuperAdmin = (): void => {
+  // wait for login site
+  cy.get('[data-cy="login-admin"]').should('be.visible');
   insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
@@ -191,9 +199,11 @@ export const loginSuperAdmin = (): void => {
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string): void => {
-  insertCredentials(username, password);
+  // wait for login site
+  cy.get('[data-cy="login-admin"]').should('be.visible');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
+  insertCredentials(username, password);
   cy.get('[data-cy="login-admin"]')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
@@ -204,6 +214,8 @@ export const loginWorkspaceAdmin = (username: string, password: string): void =>
 
 export const loginTestTaker =
   (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' | 'sys-check' = 'starter'): void => {
+    // wait for login site
+    cy.get('[data-cy="login-admin"]').should('be.visible');
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
