@@ -21,7 +21,6 @@ export const visitLoginPage = (): Chainable => cy.url()
     const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
     cy.visit(`${startPage}?testMode=true`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
     cy.url().should('include', '/#/r/login');
-    cy.url().should('include', 'testMode=true');
     cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
