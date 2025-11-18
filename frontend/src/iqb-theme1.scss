@@ -20,26 +20,4 @@ $my-theme: mat.m2-define-light-theme((
   --accent: #{mat.m2-get-color-from-palette($iqb-accent)};
 }
 
-.mat-mdc-card {
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  flex-wrap: wrap;
-}
 
-.mat-mdc-card {
-  --mat-card-outlined-container-color: var(--tc-box-background);
-}
-
-.mat-mdc-dialog-actions,
-.mat-mdc-card-actions {
-  margin: auto 0 0 !important;
-}
-
-.mat-mdc-card-actions .mdc-button {
-  margin-right: 8px;
-}
-
-.mat-mdc-card-actions .mdc-button:last-child {
-  margin-right: 0;
-}
