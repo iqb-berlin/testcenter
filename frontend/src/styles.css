@@ -124,3 +124,27 @@ tc-starter {
     }
   }
 }
+
+.mat-mdc-card {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.mat-mdc-card {
+  --mat-card-outlined-container-color: var(--tc-box-background);
+}
+
+.mat-mdc-dialog-actions,
+.mat-mdc-card-actions {
+  margin: auto 0 0 !important;
+}
+
+.mat-mdc-card-actions .mdc-button {
+  margin-right: 8px;
+}
+
+.mat-mdc-card-actions .mdc-button:last-child {
+  margin-right: 0;
+}
