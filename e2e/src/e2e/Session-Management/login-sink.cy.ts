@@ -47,22 +47,15 @@ describe('The login-sink', () => {
     loginAttempt('user', 'username', 400);
   });
 
-  it('trigger not trigger for monitor logins', () => {
-    loginAttempt('user', 'test-group-monitor', 400);
-    loginAttempt('user', 'test-group-monitor', 400);
-    loginAttempt('user', 'test-group-monitor', 400);
-    loginAttempt('user', 'test-group-monitor', 400);
-    loginAttempt('user', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 429);
-    loginAttempt('admin', 'test-group-monitor', 429, 'user123');
-    loginAttempt('admin', 'test-group-monitor', 429);
+  it('user- and admin-logout must be independent of each other.', () => {
     cy.wait(10000);
-    loginAttempt('admin', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 400);
-    loginAttempt('admin', 'test-group-monitor', 429);
-    loginAttempt('admin', 'test-group-monitor', 429, 'user123');
+    loginAttempt('user', 'username', 400);
+    loginAttempt('user', 'username', 400);
+    loginAttempt('user', 'username', 400);
+    loginAttempt('user', 'username', 400);
+    loginAttempt('user', 'username', 400);
+    loginAttempt('admin', 'username', 400);
+    loginAttempt('admin', 'username', 400, 'user123');
+    loginAttempt('admin', 'username', 400);
   });
 });
