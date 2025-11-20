@@ -79,9 +79,9 @@
     <span>{{'Aufgabe' | customtext:'gm_col_unitLabel' | async}}</span>
   </button>
   <ng-container *ngFor="let bookletState of bookletStates | keyvalue; let i = index">
-    <button 
-      mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)" 
-      [attr.data-cy]="'GM_columns_state_button-' + i" > 
+    <button
+      mat-menu-item (click)="toggleBookletStatesColumn(bookletState.key)"
+      [attr.data-cy]="'GM_columns_state_button-' + i" >
       <mat-icon *ngIf="displayOptions.bookletStatesColumns.includes(bookletState.key)" [attr.data-cy]="'GM_columns_checked_state-' + i">check</mat-icon>
       <span>{{'Zustände' | customtext:'gm_menu_cols_states' | async}} {{bookletState.value}}</span>
     </button>
@@ -112,7 +112,6 @@
 
       <div class="toolbar-section" *ngIf="tsm.sessionsStats$ | async as sessionsStats">
         <mat-slide-toggle
-            color="accent"
             data-cy="GM_control_all_tests"
             (change)="toggleAlwaysCheckAll($event)"
             [disabled]="!tsm.checkingOptions.enableAutoCheckAll"
@@ -151,12 +150,12 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" data-cy="GM_forward_button" color="primary" (click)="tsm.testCommandResume()">
+        <button mat-raised-button class="control" data-cy="GM_forward_button" (click)="tsm.testCommandResume()">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" data-cy="GM_pause_button" color="primary" (click)="tsm.testCommandPause()">
+        <button mat-raised-button class="control" data-cy="GM_pause_button" (click)="tsm.testCommandPause()">
           <mat-icon>pause</mat-icon>
           {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
@@ -167,7 +166,6 @@
           mat-raised-button
           class="control"
           data-cy="GM_jump_button"
-          color="primary"
           (click)="testCommandGoto()"
           matTooltip="{{currentlySelected?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
         >
@@ -182,7 +180,6 @@
           mat-raised-button
           class="control"
           data-cy="GM_lock_button"
-          color="primary"
           (click)="unlockCommand()"
           matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
         >
@@ -203,7 +200,7 @@
 
       <div class="toolbar-section-bottom">
         <div class="toolbar-section">
-          <button mat-raised-button class="control" data-cy="GM_end_button" color="primary" (click)="finishEverythingCommand()">
+          <button mat-raised-button class="control" data-cy="GM_end_button" (click)="finishEverythingCommand()">
             <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
           </button>
         </div>

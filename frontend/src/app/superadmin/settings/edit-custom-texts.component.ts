@@ -38,7 +38,7 @@ export interface CustomTextDataGroup {
                            [ctInitialValue]="ct.value"
                            (valueChange)="valueChanged($event)">
           </tc-custom-text>
-          <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
+          <button mat-raised-button [disabled]="!dataChanged" (click)="saveData()">
             Speichern
           </button>
         </mat-expansion-panel>

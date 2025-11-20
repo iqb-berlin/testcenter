@@ -36,7 +36,7 @@
   </mat-form-field>
 
   <p>
-    <mat-slide-toggle color="accent" [(ngModel)]="filter.not" (ngModelChange)="updateFilterId()" *ngIf="advancedMode">
+    <mat-slide-toggle [(ngModel)]="filter.not" (ngModelChange)="updateFilterId()" *ngIf="advancedMode">
       {{'Nicht' | customtext : 'gm_filter_not' | async}}
     </mat-slide-toggle>
   </p>
@@ -116,7 +116,6 @@
 <mat-dialog-actions>
   <button
     mat-raised-button
-    color="primary"
     type="submit"
     [mat-dialog-close]="filter"
     [disabled]="!filter.label || !filter.value || !isValid"
