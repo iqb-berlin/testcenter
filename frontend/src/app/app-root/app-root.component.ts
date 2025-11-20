@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-    template: `<div class="root-body">
+    template: `<div>
            <router-outlet></router-outlet>
          </div>
         `,

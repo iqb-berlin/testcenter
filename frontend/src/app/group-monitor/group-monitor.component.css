@@ -23,6 +23,7 @@ mat-sidenav {
 }
 
 .connection-status mat-icon {
+  position: relative;
   font-size: 100%;
   padding: 0;
   top: 2px;
