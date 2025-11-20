@@ -46,3 +46,8 @@ mat-panel-title {
   font-size: initial;
   font-weight: 700;
 }
+
+mat-expansion-panel button {
+  margin-top: 10px;
+  width: 100%;
+}
