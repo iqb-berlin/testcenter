@@ -1,8 +1,9 @@
 {{- $version := include "traefik.proxyVersion" $ }}
 {{- $ingressNamespaces := concat (include "traefik.namespace" . | list) .Values.providers.kubernetesIngress.namespaces -}}
 {{- $CRDNamespaces := concat (include "traefik.namespace" . | list) .Values.providers.kubernetesCRD.namespaces -}}
+{{- $knativeNamespaces := concat (include "traefik.namespace" . | list) .Values.providers.knative.namespaces -}}
 {{- $hubNamespaces := concat (include "traefik.namespace" . | list) .Values.hub.namespaces -}}
-{{- $allNamespaces := sortAlpha (uniq (concat $ingressNamespaces $CRDNamespaces $hubNamespaces)) -}}
+{{- $allNamespaces := sortAlpha (uniq (concat $ingressNamespaces $CRDNamespaces $hubNamespaces $knativeNamespaces)) -}}
 
 {{- if and .Values.rbac.enabled .Values.rbac.namespaced -}}
 {{- range $allNamespaces }}
@@ -44,6 +45,14 @@ rules:
     verbs:
       - list
       - watch
+  {{- end }}
+  {{- if (semverCompare ">=v3.5.0-0" $version) }}
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
   {{- end }}
   # Required while https://github.com/traefik/traefik/issues/7097#issuecomment-1983581843
   - apiGroups:
@@ -100,6 +109,22 @@ rules:
       - list
       - watch
 {{- end -}}
+{{- if (and (has . $knativeNamespaces) $.Values.providers.knative.enabled) }}
+  - apiGroups:
+      - networking.internal.knative.dev
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.internal.knative.dev
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+{{- end }}
 {{- if $.Values.podSecurityPolicy.enabled }}
   - apiGroups:
       - extensions
@@ -173,7 +198,9 @@ rules:
   - apiGroups:
       - hub.traefik.io
     resources:
+      - apiauths
       - apiportals
+      - apiportalauths
       - apis
       - apiversions
       - apibundles
@@ -181,14 +208,17 @@ rules:
       - apicatalogitems
       - apiaccesses
       - managedsubscriptions
+      - managedapplications
     verbs:
       - get
       - list
       - watch
+      {{- if not $.Values.hub.offline }}
       - create
       - update
       - patch
       - delete
+      {{- end }}
   - apiGroups:
       - ""
     resources:

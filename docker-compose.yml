@@ -21,7 +21,7 @@ x-env-logging-conf: &env-logging-conf
 
 services:
   traefik:
-    image: ${DOCKERHUB_PROXY}traefik:v3.4
+    image: ${DOCKERHUB_PROXY}traefik:v3.6
     <<: *restart-policy
     ports:
       - "${HTTP_PORT:-80}:80"
