@@ -30,7 +30,7 @@
       </mat-card-content>
 
       <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" color="primary" data-cy="login-user"
+        <button mat-raised-button type="submit" data-cy="login-user"
                 [disabled]="!loginForm.get('name')?.valid">
           Weiter
         </button>
@@ -55,13 +55,11 @@
 
     <mat-card-actions [style.justify-content]="'space-between'">
       <a *ngIf="this.mainDataService.sysCheckAvailableForAll"
-         mat-raised-button
-         color="primary"
-         data-cy="general-sys-check"
+         mat-raised-button data-cy="general-sys-check"
          [routerLink]="['/r/check-starter']">
         System-Check
       </a>
-      <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
+      <a [routerLink]="['/legal-notice']" mat-raised-button>Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
 </div>

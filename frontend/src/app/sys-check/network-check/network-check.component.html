@@ -40,8 +40,8 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary"
-              [disabled]="!sysCheckDataService.networkCheckStatus.done" (click)="startCheck()">
+      <button mat-raised-button [disabled]="!sysCheckDataService.networkCheckStatus.done"
+              (click)="startCheck()">
         Neustart
       </button>
     </mat-card-actions>
