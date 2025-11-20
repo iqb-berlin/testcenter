@@ -103,14 +103,12 @@
                   {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <button
-                *ngFor="let b of claims.test"
-                mat-raised-button color="primary"
-                class="starter"
-                [disabled]="!!b.flags.locked"
-                [attr.aria-label]="'Starte Testheft ' + b.label"
-                [attr.data-cy]="'booklet-' + b.id"
-                (click)="startTest(b)">
+              <button *ngFor="let b of claims.test"
+                      matButton="elevated" class="starter"
+                      [disabled]="!!b.flags.locked"
+                      [attr.aria-label]="'Starte Testheft ' + b.label"
+                      [attr.data-cy]="'booklet-' + b.id"
+                      (click)="startTest(b)">
                 <div class="starter-title">{{b.label}}</div>
                 <div class="starter-status">
                   {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (claims.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
