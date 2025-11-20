@@ -34,18 +34,18 @@
 
     <div class="toolbar-section" *ngIf="this.attachmentLabel">
       <p>Seite gehört zu: <b>{{attachmentLabel}}</b></p>
-      <button mat-raised-button color="primary" data-cy="dialog-confirm" (click)="uploadImage()">
+      <button mat-raised-button data-cy="dialog-confirm" (click)="uploadImage()">
         Upload
       </button>
     </div>
 
     <div class="toolbar-section hidden" [class.show]="state === 'confirm' || state === 'error'">
-      <button mat-raised-button color="primary" data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
+      <button mat-raised-button data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
     </div>
 
     <div class="toolbar-section-bottom">
       <div class="toolbar-section">
-        <a mat-raised-button color="primary" [routerLink]="'..'">
+        <a mat-raised-button [routerLink]="'..'">
           {{'Zurück zur Übersicht' | customtext:'am_goto_attachment_overview' | async}}
         </a>
       </div>

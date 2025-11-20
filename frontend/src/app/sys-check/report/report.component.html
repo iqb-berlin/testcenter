@@ -35,7 +35,7 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-raised-button color="primary"
+      <button mat-raised-button
               [disabled]="isReportSaved || questionnaireDataWarnings.length > 0"
               [attr.data-cy]="'send sc-report'"
               (click)="saveReport()">
