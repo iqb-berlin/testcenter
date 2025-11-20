@@ -9,8 +9,7 @@
         <h4 *ngIf="accessObjects.workspaceAdmin">Studien</h4>
         <button
           *ngFor="let workspace of workspaces"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [attr.data-cy]="'workspace-' + workspace.id"
           (click)="buttonGotoWorkspaceAdmin(workspace)"
         >
@@ -26,8 +25,7 @@
         <h4 *ngIf="accessObjects.studyMonitor">Gesamte Studie überwachen</h4>
         <button
           *ngFor="let accessObject of accessObjects.studyMonitor"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [attr.data-cy]="'SM-' + accessObject.id"
           (click)="buttonGotoStudyMonitor(accessObject)"
         >
@@ -41,8 +39,7 @@
         <h4 *ngIf="accessObjects.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_show_monitor' | async }}</h4>
         <button
           *ngFor="let accessObject of accessObjects.testGroupMonitor let i = index"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
           [attr.data-cy]="'GM-' + accessObject.id +'-' + i"
           (click)="buttonGotoMonitor(accessObject)"
@@ -69,8 +66,7 @@
         <h4 *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">Aufgaben-Anhänge Verwalten</h4>
         <button
           *ngFor="let accessObject of accessObjects.attachmentManager"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           (click)="buttonGotoAttachmentManager(accessObject)"
         >
           <div class="starter-title">{{accessObject.label}}</div>
@@ -80,8 +76,7 @@
         <ng-container *ngIf="!accessObjects.testGroupMonitor && accessObjects.test">
           <button
             *ngFor="let b of accessObjects.test"
-             mat-raised-button color="primary"
-             class="starter"
+             mat-raised-button class="starter"
              [disabled]="!!b.flags.locked"
              [attr.aria-label]="'Starte Testheft ' + b.label"
              [attr.data-cy]="'booklet-' + b.id"
@@ -120,9 +115,7 @@
           <h4>System-Check</h4>
           <button
             *ngFor="let sc of accessObjects.sysCheck"
-            mat-raised-button
-            class="starter"
-            color="primary"
+            mat-raised-button class="starter"
             [attr.data-cy]="'syscheck-' + sc.id"
             [routerLink]="['/check', sc.workspaceId, sc.id]"
           >
@@ -140,13 +133,13 @@
     </mat-card-content>
 
     <mat-card-actions [style.justify-content]="'space-between'">
-      <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
+      <button *ngIf="isSuperAdmin" mat-raised-button [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
         Systemverwaltung
       </button>
-      <button mat-raised-button data-cy="change-password" *ngIf="accessObjects.workspaceAdmin" color="primary" (click)="changePassword()">
+      <button mat-raised-button data-cy="change-password" *ngIf="accessObjects.workspaceAdmin" (click)="changePassword()">
         Passwort ändern
       </button>
-      <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
+      <button mat-raised-button data-cy="logout" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>
   </mat-card>
 

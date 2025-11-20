@@ -1,7 +1,6 @@
 <div class="columnhost flex-column">
   <div class="flex-row">
     <button
-      color="primary"
       mat-raised-button
       (click)="downloadReportsCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
@@ -13,7 +12,6 @@
       Berichte
     </button>
     <button
-      color="primary"
       mat-raised-button
       (click)="deleteReports()"
       [disabled]="!tableSelectionCheckbox.hasValue()"

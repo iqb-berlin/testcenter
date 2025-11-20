@@ -54,7 +54,6 @@
       class="unit-badge"
       *ngIf="testSession | timeleft : current.parent as timeLeft"
       matBadge="{{timeLeft | number: '1.0-0'}}"
-      matBadgeColor="accent"
       matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip':timeLeft:(current.parent.restrictions.timeMax?.minutes || 0) | async}}"
     >schedule
     </mat-icon>
@@ -266,7 +265,6 @@
         *ngIf="testSession.timeLeft[testlet.id] > 0"
         matTooltip="{{'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]:timeMax.minutes | async}}"
         matTooltipPosition="above"
-        color="accent"
       >timer</mat-icon>
     </ng-container>
     <ng-template #timerNotStarted>
@@ -296,7 +294,6 @@
     <mat-icon class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'CURRENT_PAGE_NR')"
       matBadge="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
-      matBadgeColor="accent"
       matTooltip="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_ID'])}}"
     >description
     </mat-icon>
