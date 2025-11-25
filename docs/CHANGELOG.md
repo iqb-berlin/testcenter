@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.4.1
+### Verbesserungen
+* Update von internen Komponenten.
+
 ## 17.4.0
 ### Verbesserungen
 * Aktualisierung des Frontends auf Angular 20, inkl. Material 3
