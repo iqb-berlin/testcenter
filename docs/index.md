@@ -30,7 +30,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
 ### General
-* **[User Manual](https://iqb-berlin.github.io/tba-info/Testcenter/)** (in german)
+* **[User Manual](https://iqb-berlin.github.io/tba-info/study-run/)** (in german)
 * [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
 * [Changelog](https://pages.cms.hu-berlin.de/iqb/testcenter/CHANGELOG.html)
 
