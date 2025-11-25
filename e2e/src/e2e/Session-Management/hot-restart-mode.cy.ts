@@ -19,8 +19,6 @@ let idHres2;
 describe('check hot-restart-mode functions', { testIsolation: true }, () => {
   before(() => {
     deleteDownloadsFolder();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });

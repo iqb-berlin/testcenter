@@ -14,8 +14,6 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
   // TODO Testfälle bzgl. Ticket #315 erstellen
   before(() => {
     deleteDownloadsFolder();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });

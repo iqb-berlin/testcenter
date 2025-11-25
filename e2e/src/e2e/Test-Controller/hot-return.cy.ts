@@ -19,8 +19,6 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

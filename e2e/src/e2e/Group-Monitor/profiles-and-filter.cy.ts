@@ -3,8 +3,6 @@ import { loginMonitor, probeBackendApi, resetBackendData, visitLoginPage } from 
 describe('Group-Monitor User', () => {
   before(() => {
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

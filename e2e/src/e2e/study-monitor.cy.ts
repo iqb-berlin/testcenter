@@ -9,8 +9,6 @@ import {
 describe('Study-Monitor User', () => {
   before(() => {
     deleteDownloadsFolder();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });

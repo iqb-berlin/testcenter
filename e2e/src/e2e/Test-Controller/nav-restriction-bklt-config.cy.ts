@@ -13,8 +13,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
       visitLoginPage();
       loginTestTaker('NavRestrBklt0', '123', 'test-hot');
@@ -51,8 +49,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 
@@ -101,8 +97,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 
@@ -197,8 +191,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 

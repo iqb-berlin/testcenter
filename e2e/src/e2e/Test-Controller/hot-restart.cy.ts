@@ -20,8 +20,6 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
   before(() => {
     deleteDownloadsFolder();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

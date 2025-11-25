@@ -15,8 +15,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 
@@ -67,8 +65,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 
@@ -164,8 +160,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     before(() => {
       disableSimplePlayersInternalDebounce();
       resetBackendData();
-      cy.clearLocalStorage();
-      cy.clearCookies();
       probeBackendApi();
     });
 

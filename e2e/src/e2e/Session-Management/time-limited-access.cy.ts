@@ -85,8 +85,6 @@ describe('check "valid to" restrictions', () => {
 
 describe('check "valid for" restrictions', () => {
   before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });
