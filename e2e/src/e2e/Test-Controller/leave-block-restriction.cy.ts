@@ -11,12 +11,10 @@ import {
 
 const mode = 'test-hot';
 
-describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: false }, () => {
+describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -24,12 +22,6 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('RestrLockAfterLeave1', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('leave unit: display a warning message', () => {
@@ -51,12 +43,10 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
   });
 });
 
-describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsolation: false }, () => {
+describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsolation: true }, () => {
   before(() => {
     disableSimplePlayersInternalDebounce();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -64,12 +54,6 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
     loginTestTaker('RestrLockAfterLeave2', '123', mode);
-  });
-
-  afterEach(() => {
-    cy.window().then((win) => {
-      win.location.href = 'about:blank'
-    });
   });
 
   it('leave testlet: display no warning message', () => {
