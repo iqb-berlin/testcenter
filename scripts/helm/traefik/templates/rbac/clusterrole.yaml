@@ -52,6 +52,14 @@ rules:
       - list
       - watch
   {{- end }}
+  {{- if (semverCompare ">=v3.5.0-0" $version) }}
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+  {{- end }}
   - apiGroups:
       - ""
     resources:
@@ -180,6 +188,22 @@ rules:
     verbs:
       - update
   {{- end }}
+  {{- if (.Values.providers.knative).enabled }}
+  - apiGroups:
+      - networking.internal.knative.dev
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.internal.knative.dev
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+  {{- end }}
   {{- if .Values.hub.token }}
   - apiGroups:
       - coordination.k8s.io
@@ -228,7 +252,9 @@ rules:
       - hub.traefik.io
     resources:
       - accesscontrolpolicies
+      - apiauths
       - apiportals
+      - apiportalauths
       - apiratelimits
       - apis
       - apiversions
@@ -236,14 +262,17 @@ rules:
       - apiplans
       - apicatalogitems
       - managedsubscriptions
+      - managedapplications
     verbs:
+      - get
       - list
       - watch
+      {{- if not .Values.hub.offline }}
       - create
       - update
       - patch
       - delete
-      - get
+      {{- end }}
   - apiGroups:
       - ""
     resources:

@@ -2,9 +2,9 @@
 
 declare TESTCENTER_VERSION="17.4.0"
 declare TESTCENTER_CHART_VERSION="2.4.0"
-declare TRAEFIK_VERSION="v3.4.0"
-declare TRAEFIK_CHART_VERSION="35.4.0"
-declare TRAEFIK_CRDS_CHART_VERSION="1.8.1"
+declare TRAEFIK_VERSION="v3.6.0"
+declare TRAEFIK_CHART_VERSION="37.3.0"
+declare TRAEFIK_CRDS_CHART_VERSION="1.12.0"
 declare LONGHORN_VERSION="v1.9.0"
 declare REQUIRED_PACKAGES=("kubectl version" "kubectl cluster-info" "helm version")
 
