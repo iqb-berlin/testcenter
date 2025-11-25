@@ -8,9 +8,9 @@ stages:
   - deploy
 
 variables:
-  REGISTRY: "$CI_REGISTRY"
-  REGISTRY_USER: "$CI_REGISTRY_USER"
-  REGISTRY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+  REGISTRY: "${CI_REGISTRY}"
+  REGISTRY_USER: "${CI_REGISTRY_USER}"
+  REGISTRY_PASSWORD: "${CI_REGISTRY_PASSWORD}"
   REGISTRY_PROJECT: "/${CI_PROJECT_PATH}/"
   DOCKER_HUB_PROXY: "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}"
   BASE_IMAGE: docker:28.2
@@ -169,36 +169,36 @@ check-config:
     - if: "$CI_COMMIT_BRANCH"
     - if: "$CI_COMMIT_TAG"
   script:
-    - echo $CI_PIPELINE_SOURCE
-    - echo $CI_REGISTRY
-    - echo $CI_REGISTRY_IMAGE
-    - echo $CI_DEPENDENCY_PROXY_SERVER
-    - echo $CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX
-    - echo $CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX
-    - echo $CI_PROJECT_PATH
-    - echo $CI_DEFAULT_BRANCH
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_COMMIT_TAG
-    - echo $CI_COMMIT_BEFORE_SHA
-    - echo $CI_COMMIT_SHA
-    - echo $CI_COMMIT_SHORT_SHA
-    - echo $CI_COMMIT_REF_NAME
-    - echo $CI_COMMIT_REF_SLUG
-    - echo $CI_COMMIT_REF_PROTECTED
-    - echo $CI_EXTERNAL_PULL_REQUEST_IID
-    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY
-    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY
-    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_NAME
-    - echo $CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_SHA
-    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_SHA
-    - echo $CI_MERGE_REQUEST_IID
-    - echo $CI_MERGE_REQUEST_LABELS
-    - echo $CI_MERGE_REQUEST_EVENT_TYPE
-    - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_SOURCE_BRANCH_SHA
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_SHA
+    - echo ${CI_PIPELINE_SOURCE}
+    - echo ${CI_REGISTRY}
+    - echo ${CI_REGISTRY_IMAGE}
+    - echo ${CI_DEPENDENCY_PROXY_SERVER}
+    - echo ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}
+    - echo ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}
+    - echo ${CI_PROJECT_PATH}
+    - echo ${CI_DEFAULT_BRANCH}
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_COMMIT_TAG}
+    - echo ${CI_COMMIT_BEFORE_SHA}
+    - echo ${CI_COMMIT_SHA}
+    - echo ${CI_COMMIT_SHORT_SHA}
+    - echo ${CI_COMMIT_REF_NAME}
+    - echo ${CI_COMMIT_REF_SLUG}
+    - echo ${CI_COMMIT_REF_PROTECTED}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_IID}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_SOURCE_REPOSITORY}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_TARGET_REPOSITORY}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_NAME}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_SOURCE_BRANCH_SHA}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}
+    - echo ${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_SHA}
+    - echo ${CI_MERGE_REQUEST_IID}
+    - echo ${CI_MERGE_REQUEST_LABELS}
+    - echo ${CI_MERGE_REQUEST_EVENT_TYPE}
+    - echo ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
+    - echo ${CI_MERGE_REQUEST_SOURCE_BRANCH_SHA}
+    - echo ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+    - echo ${CI_MERGE_REQUEST_TARGET_BRANCH_SHA}
 
 check-backend-feature-rules:
   stage: .pre
@@ -207,38 +207,56 @@ check-backend-feature-rules:
   rules:
     - !reference [ .backend-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-broadcaster-feature-rules:
   stage: .pre
@@ -247,38 +265,56 @@ check-broadcaster-feature-rules:
   rules:
     - !reference [ .broadcaster-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-common-feature-rules:
   stage: .pre
@@ -287,38 +323,56 @@ check-common-feature-rules:
   rules:
     - !reference [ .common-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-definitions-feature-rules:
   stage: .pre
@@ -327,38 +381,56 @@ check-definitions-feature-rules:
   rules:
     - !reference [ .definitions-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-e2e-feature-rules:
   stage: .pre
@@ -367,38 +439,56 @@ check-e2e-feature-rules:
   rules:
     - !reference [ .e2e-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-file-server-feature-rules:
   stage: .pre
@@ -407,38 +497,56 @@ check-file-server-feature-rules:
   rules:
     - !reference [ .file-server-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-frontend-feature-rules:
   stage: .pre
@@ -447,38 +555,56 @@ check-frontend-feature-rules:
   rules:
     - !reference [ .frontend-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-task-runner-feature-rules:
   stage: .pre
@@ -487,38 +613,56 @@ check-task-runner-feature-rules:
   rules:
     - !reference [ .task-runner-feature-rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "release/lts" ];
       then echo "commit branch is not 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' == 'release/lts'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "release/lts" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'release/lts'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "release/lts" ];
       then echo "commit branch is 'release/lts'";
-      else echo "'$CI_COMMIT_BRANCH' != 'release/lts'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'release/lts'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "master" ] && [ "$CI_COMMIT_BRANCH" != "release/lts" ] && [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
-      then echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" == "master" ] || [ "$CI_COMMIT_BRANCH" == "release/lts" ] || [ "$CI_PIPELINE_SOURCE" == "external_pull_request_event" ];
-      then echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "master" ] &&
+        [ "${CI_COMMIT_BRANCH}" != "release/lts" ] &&
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
+      then
+        echo "commit branch exists, is neither 'master' nor 'release/lts', and it's not an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "master" ] ||
+        [ "${CI_COMMIT_BRANCH}" == "release/lts" ] ||
+        [ "${CI_PIPELINE_SOURCE}" == "external_pull_request_event" ];
+      then
+        echo "commit branch doesn't exist or is 'master' or 'release/lts' branch or it is an external_pull_request_event";
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
 
 check-master-pr-rules:
   stage: .pre
@@ -529,20 +673,24 @@ check-master-pr-rules:
     - if: $CI_COMMIT_TAG
       when: never
   script:
-    - echo $CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_COMMIT_TAG
-    - if [ "$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME" != "master" ];
+    - echo ${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}
+    - echo ${CI_COMMIT_TAG}
+    - if [ "${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}" != "master" ];
       then echo "pull request target branch is not 'master'";
-      else echo "pull request target branch '$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME' == 'master'"; fi
-    - if [ "$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME" == "master" ];
+      else echo "pull request target branch '${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}' == 'master'";
+      fi
+    - if [ "${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}" == "master" ];
       then echo "pull request target branch is 'master'";
-      else echo "pull request target branch '$CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME' != 'master'"; fi
-    - if [ -n "$CI_COMMIT_TAG" ];
+      else echo "pull request target branch '${CI_EXTERNAL_PULL_REQUEST_TARGET_BRANCH_NAME}' != 'master'";
+      fi
+    - if [ -n "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is nonzero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
-    - if [ -z "$CI_COMMIT_TAG" ];
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
+    - if [ -z "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is zero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
 
 check-master-commit-rules:
   stage: .pre
@@ -551,39 +699,53 @@ check-master-commit-rules:
   rules:
     - !reference [ .master_commit_rules, rules ]
   script:
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_PIPELINE_SOURCE
-    - echo $CI_COMMIT_TAG
-    - if [ -n "$CI_COMMIT_BRANCH" ];
+    - echo ${CI_COMMIT_BRANCH}
+    - echo ${CI_PIPELINE_SOURCE}
+    - echo ${CI_COMMIT_TAG}
+    - if [ -n "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is nonzero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ];
       then echo "commit branch string length is zero";
-      else echo "commit branch = '$CI_COMMIT_BRANCH'"; fi
-    - if [ "$CI_COMMIT_BRANCH" = "master" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" = "master" ];
       then echo "commit branch is 'master'";
-      else echo "'$CI_COMMIT_BRANCH' != 'master'"; fi
-    - if [ "$CI_COMMIT_BRANCH" != "master" ];
+      else echo "'${CI_COMMIT_BRANCH}' != 'master'";
+      fi
+    - if [ "${CI_COMMIT_BRANCH}" != "master" ];
       then echo "commit branch is not 'master'";
-      else echo "'$CI_COMMIT_BRANCH' == 'master'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_COMMIT_BRANCH}' == 'master'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "pipeline source is 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' != 'external_pull_request_event'"; fi
-    - if [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' != 'external_pull_request_event'";
+      fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "pipeline source is not 'external_pull_request_event'";
-      else echo "'$CI_PIPELINE_SOURCE' == 'external_pull_request_event'"; fi
-    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" = "master" ] && [ "$CI_PIPELINE_SOURCE" = "external_pull_request_event" ];
+      else echo "'${CI_PIPELINE_SOURCE}' == 'external_pull_request_event'";
+      fi
+    - if [ -n "${CI_COMMIT_BRANCH}" ] &&
+        [ "${CI_COMMIT_BRANCH}" = "master" ] &&
+        [ "${CI_PIPELINE_SOURCE}" = "external_pull_request_event" ];
       then echo "commit branch exists, is 'master', and it's an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_BRANCH" ] || [ "$CI_COMMIT_BRANCH" != "master" ] || [ "$CI_PIPELINE_SOURCE" != "external_pull_request_event" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_BRANCH}" ] ||
+        [ "${CI_COMMIT_BRANCH}" != "master" ] ||
+        [ "${CI_PIPELINE_SOURCE}" != "external_pull_request_event" ];
       then echo "commit branch doesn't exist or isn't 'master' or it isn't an external_pull_request_event";
-      else echo "commit branch = '$CI_COMMIT_BRANCH', pipeline source = '$CI_PIPELINE_SOURCE'"; fi
-    - if [ -z "$CI_COMMIT_TAG" ];
+      else echo "commit branch = '${CI_COMMIT_BRANCH}', pipeline source = '${CI_PIPELINE_SOURCE}'";
+      fi
+    - if [ -z "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is zero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
-    - if [ -n "$CI_COMMIT_TAG" ];
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
+    - if [ -n "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is nonzero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
 
 check-pre-release-rules:
   stage: .pre
@@ -592,10 +754,11 @@ check-pre-release-rules:
   rules:
     - !reference [ .pre-release_rules, rules ]
   script:
-    - echo $PRERELEASE_SCRIPT_REGEX
-    - if [[ $CI_COMMIT_TAG =~ $PRERELEASE_SCRIPT_REGEX ]];
-      then echo "$CI_COMMIT_TAG is a valid pre-release tag.";
-      else echo "$CI_COMMIT_TAG is not a valid pre-release tag!"; fi
+    - echo ${PRERELEASE_SCRIPT_REGEX}
+    - if [[ ${CI_COMMIT_TAG} =~ ${PRERELEASE_SCRIPT_REGEX} ]];
+      then echo "${CI_COMMIT_TAG} is a valid pre-release tag.";
+      else echo "${CI_COMMIT_TAG} is not a valid pre-release tag!";
+      fi
 
 check-release-rules:
   stage: .pre
@@ -606,36 +769,55 @@ check-release-rules:
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - echo $STABLE_VERSION
-    - if [ -n "$STABLE_VERSION" ];
+    - echo ${STABLE_VERSION}
+    - if [ -n "${STABLE_VERSION}" ];
       then echo "stable version string length is nonzero"
-      else echo "stable version = '$STABLE_VERSION'"; fi
-    - if [ -z "$STABLE_VERSION" ];
+      else echo "stable version = '${STABLE_VERSION}'";
+      fi
+    - if [ -z "${STABLE_VERSION}" ];
       then echo "stable version string length is zero";
-      else echo "stable version = '$STABLE_VERSION'"; fi
-    - echo $CI_COMMIT_TAG
-    - if [ -n "$CI_COMMIT_TAG" ];
+      else echo "stable version = '${STABLE_VERSION}'";
+      fi
+    - echo ${CI_COMMIT_TAG}
+    - if [ -n "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is nonzero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
-    - if [ -z "$CI_COMMIT_TAG" ];
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
+    - if [ -z "${CI_COMMIT_TAG}" ];
       then echo "commit tag string length is zero";
-      else echo "commit tag = '$CI_COMMIT_TAG'"; fi
-    - if [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]];
+      else echo "commit tag = '${CI_COMMIT_TAG}'";
+      fi
+    - if [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]];
       then echo "shortened commit tag and stable version are equal";
-      else echo "commit tag = '$CI_COMMIT_TAG' and stable version = '$STABLE_VERSION' are unequal"; fi
-    - if [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]];
+      else echo "commit tag = '${CI_COMMIT_TAG}' and stable version = '${STABLE_VERSION}' are unequal";
+      fi
+    - if [[ "${CI_COMMIT_TAG%.*}" != "${STABLE_VERSION}" ]];
       then echo "shortened commit tag and stable version are unequal";
-      else echo "commit tag = '$CI_COMMIT_TAG' and stable version = '$STABLE_VERSION' are equal"; fi
-    - echo $RELEASE_SCRIPT_REGEX
-    - if [[ $CI_COMMIT_TAG =~ $RELEASE_SCRIPT_REGEX ]];
-      then echo "$CI_COMMIT_TAG is a valid release tag.";
-      else echo "$CI_COMMIT_TAG is not a valid release tag!"; fi
-    - if [ -n "$CI_COMMIT_TAG" ] && [ -n "$STABLE_VERSION" ] && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]] && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
-      then echo "commit tag exists, stable version exists, shortened commit tag and stable version are equal, and commit tag matches regular release tag expression";
-      else echo "commit tag = '$CI_COMMIT_TAG', stable version = '$STABLE_VERSION', release regex = '$RELEASE_SCRIPT_REGEX'"; fi
-    - if [ -z "$CI_COMMIT_TAG" ] || [ -z "$STABLE_VERSION" ] || [[ "${CI_COMMIT_TAG%.*}" != "$STABLE_VERSION" ]] || [[ ! "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
-      then echo "commit tag doesn't exist or stable version doesn't exist or shortened commit tag aren't equal to stable version or commit tag doesn't match regular release tag expression";
-      else echo "commit tag = '$CI_COMMIT_TAG', stable version = '$STABLE_VERSION', release regex = '$RELEASE_SCRIPT_REGEX'"; fi
+      else echo "commit tag = '${CI_COMMIT_TAG}' and stable version = '${STABLE_VERSION}' are equal";
+      fi
+    - echo ${RELEASE_SCRIPT_REGEX}
+    - if [[ ${CI_COMMIT_TAG} =~ ${RELEASE_SCRIPT_REGEX} ]];
+      then echo "${CI_COMMIT_TAG} is a valid release tag.";
+      else echo "${CI_COMMIT_TAG} is not a valid release tag!";
+      fi
+    - if [ -n "${CI_COMMIT_TAG}" ] &&
+        [ -n "${STABLE_VERSION}" ] &&
+        [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]] &&
+        [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]];
+      then
+        echo "commit tag exists, stable version exists, shortened commit tag and stable version are equal, and commit tag matches regular release tag expression";
+      else
+        echo "commit tag = '${CI_COMMIT_TAG}', stable version = '${STABLE_VERSION}', release regex = '${RELEASE_SCRIPT_REGEX}'";
+      fi
+    - if [ -z "${CI_COMMIT_TAG}" ] ||
+        [ -z "${STABLE_VERSION}" ] ||
+        [[ "${CI_COMMIT_TAG%.*}" != "${STABLE_VERSION}" ]] ||
+        [[ ! "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]];
+      then
+        echo "commit tag doesn't exist or stable version doesn't exist or shortened commit tag aren't equal to stable version or commit tag doesn't match regular release tag expression";
+      else
+        echo "commit tag = '${CI_COMMIT_TAG}', stable version = '${STABLE_VERSION}', release regex = '${RELEASE_SCRIPT_REGEX}'";
+      fi
 
 
 build-jekyll-pages-image:
@@ -662,8 +844,8 @@ build-jekyll-pages-image:
         .
     - docker push -q ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-backend:
   stage: build
@@ -682,14 +864,14 @@ build-backend:
     - docker network inspect bridge | grep mtu
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
-        printf "$CI_DEPENDENCY_PROXY_PASSWORD" |
-          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
-        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        printf "${CI_DEPENDENCY_PROXY_PASSWORD}" |
+          docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
+        printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY} &&
         docker build
             --progress plain
             --pull
@@ -702,11 +884,11 @@ build-backend:
             --tag ${BACKEND_IMAGE_NAME}:dev
           . &&
         docker push --quiet --all-tags ${BACKEND_IMAGE_NAME} &&
-        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
-        docker logout $REGISTRY;
+        docker logout ${CI_DEPENDENCY_PROXY_SERVER} &&
+        docker logout ${REGISTRY};
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Backend build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
@@ -729,14 +911,14 @@ build-frontend:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
-        printf $CI_DEPENDENCY_PROXY_PASSWORD |
-          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
-        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+          docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
+        printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY} &&
         docker build
             --progress plain
             --pull
@@ -749,14 +931,15 @@ build-frontend:
             --tag ${FRONTEND_IMAGE_NAME}:dev
           . &&
         docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME} &&
-        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
-        docker logout $REGISTRY;
+        docker logout ${CI_DEPENDENCY_PROXY_SERVER} &&
+        docker logout ${REGISTRY};
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Frontend build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
+
 build-broadcaster:
   stage: build
   needs: []
@@ -773,14 +956,14 @@ build-broadcaster:
     - docker network inspect bridge | grep mtu
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
-        printf $CI_DEPENDENCY_PROXY_PASSWORD |
-          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
-        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+          docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
+        printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY} &&
         docker build
             --progress plain
             --pull
@@ -793,11 +976,11 @@ build-broadcaster:
             --tag ${BROADCASTER_IMAGE_NAME}:dev
           . &&
         docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME} &&
-        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
-        docker logout $REGISTRY;
+        docker logout ${CI_DEPENDENCY_PROXY_SERVER} &&
+        docker logout ${REGISTRY};
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Broadcaster build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
@@ -817,9 +1000,9 @@ build-file-server:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
           --progress plain
@@ -833,8 +1016,8 @@ build-file-server:
       .
     - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-e2e:
   stage: build
@@ -849,9 +1032,9 @@ build-e2e:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
         --progress plain
@@ -865,8 +1048,8 @@ build-e2e:
       .
     - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-task-runner:
   stage: build
@@ -885,14 +1068,14 @@ build-task-runner:
     - docker network inspect bridge | grep mtu
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
-        printf $CI_DEPENDENCY_PROXY_PASSWORD |
-          docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER &&
-        printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY &&
+        printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+          docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
+        printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY} &&
         docker build
           --progress plain
           --pull
@@ -904,11 +1087,11 @@ build-task-runner:
           --tag ${TASK_RUNNER_IMAGE_NAME}:latest
         . &&
         docker push --quiet --all-tags ${TASK_RUNNER_IMAGE_NAME} &&
-        docker logout $CI_DEPENDENCY_PROXY_SERVER &&
-        docker logout $REGISTRY;
+        docker logout ${CI_DEPENDENCY_PROXY_SERVER} &&
+        docker logout ${REGISTRY};
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Task runner build is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
@@ -924,9 +1107,9 @@ build-docs:
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
   script:
-    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+    - if [ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]];
       then
         printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
           docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER} &&
@@ -1003,10 +1186,10 @@ test-backend-unit:
     - docker login -u ${CI_DEPENDENCY_PROXY_USER} -p ${CI_DEPENDENCY_PROXY_PASSWORD} ${CI_DEPENDENCY_PROXY_SERVER}
     - echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
         chmod 0755 scripts/database/000-create-test-db.sh &&
         docker pull --quiet ${DB_BASE_IMAGE} &&
@@ -1025,13 +1208,13 @@ test-backend-unit:
               --testdox;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Backend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     paths:
       - docs/dist/test-coverage-backend-unit/*
@@ -1056,10 +1239,10 @@ test-frontend-unit:
     - docker login -u ${CI_DEPENDENCY_PROXY_USER} -p ${CI_DEPENDENCY_PROXY_PASSWORD} ${CI_DEPENDENCY_PROXY_SERVER}
     - echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
         cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts &&
         chmod 0755 scripts/database/000-create-test-db.sh &&
@@ -1076,13 +1259,13 @@ test-frontend-unit:
           run frontend test --watch=false --code-coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Frontend unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     paths:
       - docs/dist/test-coverage-frontend-unit/*
@@ -1104,10 +1287,10 @@ test-broadcaster-unit:
     - docker login -u ${CI_DEPENDENCY_PROXY_USER} -p ${CI_DEPENDENCY_PROXY_PASSWORD} ${CI_DEPENDENCY_PROXY_SERVER}
     - echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
-    - if [ -z $CI_COMMIT_TAG ] ||
-        ([ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]]);
+    - if [ -z ${CI_COMMIT_TAG} ] ||
+        ([ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]]);
       then
         docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev &&
         docker tag
@@ -1119,13 +1302,13 @@ test-broadcaster-unit:
           run broadcaster npx jest --coverage;
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Broadcaster unit tests are not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     paths:
       - docs/dist/test-coverage-broadcaster-unit/*
@@ -1200,8 +1383,8 @@ test-file-server-api:
           --file test/docker-compose.api-test.yml
         run --rm task-runner-file-server npm run file-server:api-test
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 test-backend-initialization:
   stage: test
@@ -1268,8 +1451,8 @@ test-backend-initialization:
           --abort-on-container-exit
           --exit-code-from=initialization-test-backend
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 test-e2e-booklet-configuration:
   stage: test-e2e
@@ -1374,8 +1557,8 @@ test-e2e-group-monitor:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1429,8 +1612,8 @@ test-e2e-session-management:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1484,8 +1667,8 @@ test-e2e-super-admin:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1539,8 +1722,8 @@ test-e2e-sys-check:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1594,8 +1777,8 @@ test-e2e-test-controller:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1649,8 +1832,8 @@ test-e2e-workspace-admin:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1704,8 +1887,8 @@ test-e2e-misc:
           --file e2e/docker-compose.system-test-headless.yml
         up --abort-on-container-exit --exit-code-from=e2e
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
   artifacts:
     when: always
     paths:
@@ -1723,9 +1906,9 @@ build-backend-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
           --progress plain
@@ -1739,8 +1922,8 @@ build-backend-prod:
         .
     - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-frontend-prod:
   stage: build
@@ -1754,9 +1937,9 @@ build-frontend-prod:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
           --progress plain
@@ -1770,8 +1953,8 @@ build-frontend-prod:
         .
     - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-broadcaster-prod:
   stage: build
@@ -1784,9 +1967,9 @@ build-broadcaster-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
           --progress plain
@@ -1800,8 +1983,8 @@ build-broadcaster-prod:
         .
     - docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 build-file-server-prod:
   stage: build
@@ -1814,9 +1997,9 @@ build-file-server-prod:
   before_script:
     - ip a | grep mtu
     - docker network inspect bridge | grep mtu
-    - printf $CI_DEPENDENCY_PROXY_PASSWORD |
-        docker login --username $CI_DEPENDENCY_PROXY_USER --password-stdin $CI_DEPENDENCY_PROXY_SERVER
-    - printf "$REGISTRY_PASSWORD" | docker login --username $REGISTRY_USER --password-stdin $REGISTRY
+    - printf ${CI_DEPENDENCY_PROXY_PASSWORD} |
+        docker login --username ${CI_DEPENDENCY_PROXY_USER} --password-stdin ${CI_DEPENDENCY_PROXY_SERVER}
+    - printf "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USER} --password-stdin ${REGISTRY}
   script:
     - docker build
           --progress plain
@@ -1830,8 +2013,8 @@ build-file-server-prod:
         .
     - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
   after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+    - docker logout ${CI_DEPENDENCY_PROXY_SERVER}
+    - docker logout ${REGISTRY}
 
 scan-backend-prod:
   stage: test
@@ -1860,7 +2043,7 @@ scan-backend-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -1919,7 +2102,7 @@ scan-frontend-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -1978,7 +2161,7 @@ scan-broadcaster-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -2037,7 +2220,7 @@ scan-file-server-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -2095,7 +2278,7 @@ scan-traefik-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -2153,7 +2336,7 @@ scan-db-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -2211,7 +2394,7 @@ scan-cache-server-prod:
     - trivy clean --scan-cache
     # update vulnerabilities db
     - trivy image --download-db-only --no-progress
-    # Builds report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
+    # Builds a report and puts it in the default workdir ${CI_PROJECT_DIR}, so `artifacts:` can take it from there
     - trivy image
           --exit-code 0
           --timeout 30m
@@ -2259,7 +2442,7 @@ push-pre-release:
     BROADCASTER_IMAGE_NAME: "iqbberlin/testcenter-broadcaster"
     FILE_SERVER_IMAGE_NAME: "iqbberlin/testcenter-file-server"
   before_script:
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - echo "${DOCKERHUB_PASSWORD}" | docker login -u ${DOCKERHUB_USER} --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -2289,15 +2472,15 @@ pages:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
     - docker pull -q ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE}
   script:
-    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ]
-        && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-        && [[ "$CI_COMMIT_TAG" =~ $RELEASE_SCRIPT_REGEX ]];
+    - if [ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ]
+        && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+        && [[ "${CI_COMMIT_TAG}" =~ ${RELEASE_SCRIPT_REGEX} ]];
       then
         mkdir public &&
         docker run --volume $(pwd)/public/:/usr/src/testcenter/public/ --volume $(pwd)/docs/:/usr/src/testcenter/docs/ ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE};
       else
         printf "Shortened release tag '%s' is not equal to the stable version tag '%s'!\n"
-          ${CI_COMMIT_TAG%.*} $STABLE_VERSION &&
+          ${CI_COMMIT_TAG%.*} ${STABLE_VERSION} &&
         printf 'Pages deployment is not necessary.\n' &&
         printf 'Job finished with success.\n';
       fi
@@ -2318,7 +2501,7 @@ push-release:
     FILE_SERVER_IMAGE_NAME: "iqbberlin/testcenter-file-server"
   before_script:
     - STABLE_VERSION=$(grep '"stable"' package.json | cut -d '"' -f 4 | head -n 1)
-    - echo "$DOCKERHUB_PASSWORD" | docker login -u $DOCKERHUB_USER --password-stdin
+    - echo "${DOCKERHUB_PASSWORD}" | docker login -u ${DOCKERHUB_USER} --password-stdin
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -2328,8 +2511,8 @@ push-release:
     - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - if [ -n $CI_COMMIT_TAG ] && [ -n $STABLE_VERSION ] && [[ "${CI_COMMIT_TAG%.*}" == "$STABLE_VERSION" ]]
-          && [[ "$CI_COMMIT_TAG" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]];
+    - if [ -n ${CI_COMMIT_TAG} ] && [ -n ${STABLE_VERSION} ] && [[ "${CI_COMMIT_TAG%.*}" == "${STABLE_VERSION}" ]]
+          && [[ "${CI_COMMIT_TAG}" =~ "^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$" ]];
       then
         docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:latest &&
         docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:latest &&
