@@ -22,6 +22,20 @@ export const visitLoginPage = (): Chainable => cy.url()
     cy.visit(`${startPage}?testMode=true`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
     cy.url().should('include', '/#/r/login');
     cy.get('[data-cy="login-admin"]').should('be.visible');
+    // Prüfe testMode und setzen, wenn nötig
+    cy.url().then(currentUrl => {
+      if (!currentUrl.includes('testMode=true')) {
+        cy.log('⚠️ Test-Mode wurde nicht gesetzt!');
+        cy.window().then(win => {
+          const hasQuery = currentUrl.includes('?');
+          const separator = hasQuery ? '&' : '?';
+          win.location.href = `${currentUrl}${separator}testMode=true`;
+        });
+        // Warte bis URL aktualisiert ist
+        cy.url().should('include', 'testMode=true');
+        cy.get('[data-cy="login-admin"]').should('be.visible');
+      }
+    });
   });
 
 export const visitLoginPageWithProdDb = (): Chainable => cy.url()
