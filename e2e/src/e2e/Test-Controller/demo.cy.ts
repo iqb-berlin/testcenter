@@ -22,6 +22,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     probeBackendApi();
+    visitLoginPage();
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
 

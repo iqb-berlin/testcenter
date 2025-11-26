@@ -34,6 +34,7 @@ describe('Usermanagement (user-tab)', () => {
   it('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('newTest', 'user123');
   });
 
@@ -74,6 +75,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
@@ -93,6 +95,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
@@ -115,6 +118,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[type="submit"]')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
 

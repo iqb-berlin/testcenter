@@ -7,7 +7,7 @@ import {
   loginTestTaker,
   logoutTestTaker,
   probeBackendApi,
-  resetBackendData
+  resetBackendData, visitLoginPage
 } from '../utils';
 
 describe('check adaptive functionality', { testIsolation: false }, () => {
@@ -16,6 +16,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     probeBackendApi();
+    visitLoginPage();
   });
 
   beforeEach(disableSimplePlayersInternalDebounce);
@@ -58,6 +59,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
 
   it('start adaptive booklet with predefined states', () => {
     logoutTestTaker('hot');
+    visitLoginPage();
     loginTestTaker('test-review', 'user123', 'starter');
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
       .click();

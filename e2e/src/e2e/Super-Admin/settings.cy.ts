@@ -2,7 +2,7 @@ import {
   clickSuperadminSettings,
   loginSuperAdmin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendData, visitLoginPage,
   visitLoginPageWithProdDb
 } from '../utils';
 

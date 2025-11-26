@@ -2,13 +2,14 @@ import {
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendData, visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin Login', () => {
   before(() => {
     resetBackendData();
     probeBackendApi();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
   });
 
@@ -24,6 +25,7 @@ describe('Workspace-Admin Login', () => {
     cy.contains('Schließen')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
 });

@@ -11,7 +11,7 @@ import {
   logoutTestTaker,
   openSampleWorkspace,
   probeBackendApi,
-  resetBackendData
+  resetBackendData, visitLoginPage
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
@@ -25,6 +25,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     probeBackendApi();
+    visitLoginPage();
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
 
@@ -142,6 +143,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('there are no responses in the response file', () => {
+    visitLoginPage();
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')

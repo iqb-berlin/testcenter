@@ -57,6 +57,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
@@ -76,6 +77,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
+    visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();

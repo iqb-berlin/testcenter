@@ -48,8 +48,7 @@ export const probeBackendApi = (): Chainable => cy.url()
   .then(url => {
     cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
       .as('waitForConfig');
-    cy.reload();
-    visitLoginPage();
+    cy.visit(Cypress.config('baseUrl'));
     cy.wait('@waitForConfig', { timeout: 30000 });
   });
 
@@ -113,7 +112,7 @@ export const logoutAdmin = (): Chainable => cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       cy.get('[data-cy="logout"]')
         .click();
-      visitLoginPage();
+      cy.get('[data-cy="login-admin"]').should('be.visible');
     }
     cy.get('[data-cy="login-admin"]').should('be.visible');
   });
@@ -140,12 +139,10 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
         cy.wait('@waitForGetSession');
       }
     }
-
     cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
     cy.get('[data-cy="logout"]').click();
     cy.wait('@waitForDeleteSession');
-
-    return visitLoginPage();
+    cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
 export const logoutTestTakerBkltConfig = (
