@@ -11,12 +11,12 @@ import {
 
 describe('check DenyNavigationOnIncomplete: response & presentation', { testIsolation: true }, () => {
 
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+
   describe('response & presentation = OFF', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
@@ -62,11 +62,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
   });
 
   describe('response & presentation = ON ', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
@@ -157,11 +152,6 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
   });
 
   describe('response & presentation = ALWAYS ', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();

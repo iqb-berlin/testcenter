@@ -9,14 +9,20 @@ import {
 
 describe('check response & presentation from booklet-config', { testIsolation: true }, () => {
 
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+
   describe(' DenyNavigationOnIncomplete and booklet-config must be independent from each other.', { testIsolation: false }, () => {
     before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
       loginTestTaker('NavRestrBklt0', '123', 'test-hot');
     });
+
+    beforeEach(disableSimplePlayersInternalDebounce);
 
    it('presentation/response-complete have to be OFF in booklet-config', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
@@ -46,11 +52,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
   });
 
   describe('response & presentation = OFF', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
@@ -94,11 +95,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
   });
 
   describe('response & presentation = ON ', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
@@ -188,11 +184,6 @@ describe('check response & presentation from booklet-config', { testIsolation: t
   });
 
   describe('response & presentation = ALWAYS ', { testIsolation: true }, () => {
-    before(() => {
-      disableSimplePlayersInternalDebounce();
-      resetBackendData();
-      probeBackendApi();
-    });
 
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();

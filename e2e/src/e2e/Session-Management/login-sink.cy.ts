@@ -2,11 +2,11 @@ import { insertCredentials, probeBackendApi, resetBackendData, visitLoginPage } 
 
 describe('The login-sink', () => {
   before(() => {
+    resetBackendData();
     probeBackendApi();
   });
 
   beforeEach(() => {
-    resetBackendData();
     visitLoginPage();
   });
 
