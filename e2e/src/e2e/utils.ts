@@ -148,41 +148,6 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
     cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
-export const logoutTestTakerBkltConfig = (
-  fileType: 'hot_BkltConfigDefault' | 'hot_BkltConfigValue1'
-): Chainable =>
-  cy.url().then(url => {
-    if (url === 'about:blank') {
-      cy.log('Page could not be loaded. Try again.');
-      return visitLoginPage().then(() => logoutTestTakerBkltConfig(fileType));
-    }
-
-    const baseUrl = Cypress.config().baseUrl;
-    const backendUrl = Cypress.env('urls').backend;
-    const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
-
-    if (!isOnStarterPage) {
-      if (fileType === 'hot_BkltConfigValue1') {
-        getFromIframe('[data-cy="TestController-radio1-Aufg1"]').click();
-        getFromIframe('[data-cy="next-unit-page"]').click();
-      }
-
-      cy.get('[data-cy="logo"]').click();
-      cy.get('[data-cy="dialog-cancel"]').click();
-
-      cy.intercept('GET', `${backendUrl}/session`).as('waitForGetSession');
-      cy.get('[data-cy="endTest-1"]').click();
-      cy.url().should('eq', `${baseUrl}/#/r/starter`);
-      cy.wait('@waitForGetSession');
-    }
-
-    cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
-    cy.get('[data-cy="logout"]').click();
-    cy.wait('@waitForDeleteSession');
-
-    return cy.url().should('eq', `${baseUrl}/#/r/login/`);
-  });
-
 export const openSampleWorkspace = (workspace: number): void => {
   cy.get(`[data-cy="workspace-${workspace}"]`)
     .click();

@@ -7,17 +7,13 @@
 	</Metadata>
 
   <BookletConfig>
-
     <!--its only important to navigated to the next page if page navibuttons are disabled -->
     <Config key="pagingMode">buttons</Config>
-
     <Config key="unit_navibuttons">FORWARD_ONLY</Config>
     <Config key="unit_screenheader">WITH_BLOCK_TITLE</Config>
-
   </BookletConfig>
 
   <Units>
-
     <Testlet id="Tslt1" label="Aufgabenblock">
       <Restrictions>
         <TimeMax minutes="2" leave = "confirm"/>

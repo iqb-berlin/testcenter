@@ -7,10 +7,8 @@
 	</Metadata>
 
 	<BookletConfig>
-
 		<!--its only important to navigated to the next page if page navibuttons are disabled -->
 		<Config key="pagingMode">buttons</Config>
-
 		<Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
 		<Config key="unit_menu">OFF</Config>
 		<Config key="unit_navibuttons">FULL</Config>
@@ -25,12 +23,9 @@
 		<Config key="show_fullscreen_button">OFF</Config>
 		<Config key="unit_screenheader">EMPTY</Config>
 		<Config key="unit_title">ON</Config>
-		
-
 	</BookletConfig>
 
 	<Units>
-
 		<Testlet id="Tslt1" label="Aufgabenblock">
 			<Restrictions>
         <TimeMax minutes="0.05" leave = "confirm"/>
@@ -38,6 +33,6 @@
 			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
       <Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
 		</Testlet>
-    <Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
-	</Units>
+     <Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
+ 	</Units>
 </Booklet>
