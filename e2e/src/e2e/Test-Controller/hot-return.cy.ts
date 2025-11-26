@@ -24,7 +24,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login1: complete the test, leave the block via iqb-logo', { testIsolation: false }, () => {
     before(() => {
-      disableSimplePlayersInternalDebounce();
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
       loginTestTaker('Test_HotReturn_Ctrl1', '123', 'test-hot');
     });
@@ -154,17 +155,19 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="logout"]');
     cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRET"]')
       .contains('gesperrt');
     cy.get('[data-cy="logout"]')
       .click();
+    cy.get('[data-cy="login-admin"]')
+      .should('be.visible');
     });
   });
 
   describe('Login2: run and complete the test, leave the block with unit-navigation forward', { testIsolation: false }, () => {
     before(() => {
-      disableSimplePlayersInternalDebounce();
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
       loginTestTaker('Test_HotReturn_Ctrl2', '123', 'test-hot');
     });
@@ -242,12 +245,15 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
         .click();
       cy.get('[data-cy="logout"]')
         .click();
+      cy.get('[data-cy="login-admin"]')
+        .should('be.visible');
     });
   });
 
   describe('Login3: run and complete the test, leave the block with unit-navigation backward', { testIsolation: false }, () => {
     before(() => {
-      disableSimplePlayersInternalDebounce();
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
       loginTestTaker('Test_HotReturn_Ctrl3', '123', 'test-hot');
     });
@@ -327,7 +333,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login4: complete the test, leave the block via unit-menu', { testIsolation: false }, () => {
     before(() => {
-      disableSimplePlayersInternalDebounce();
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
       loginTestTaker('Test_HotReturn_Ctrl4', '123', 'test-hot');
     });
@@ -407,6 +414,8 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('check responses', { testIsolation: true }, () => {
     before(() => {
+      cy.clearLocalStorage();
+      cy.clearCookies();
       visitLoginPage();
     });
 
