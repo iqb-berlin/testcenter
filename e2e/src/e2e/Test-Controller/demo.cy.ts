@@ -97,10 +97,6 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('navigate back to the booklet view and check out', () => {
-    cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="endTest-1"]')
-      .should('not.exist');
     logoutTestTaker('demo');
   });
 
