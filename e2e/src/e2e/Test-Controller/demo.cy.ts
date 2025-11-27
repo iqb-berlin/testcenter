@@ -13,7 +13,7 @@ import {
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
-const TesttakerName = 'Test_Demo_Ctrl';
+const TesttakerName = 'Test_Ctrl-1';
 const TesttakerPassword = '123';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -106,7 +106,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('RunDemo');
+    cy.contains('Demo');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-responses"]')

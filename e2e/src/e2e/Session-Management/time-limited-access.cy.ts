@@ -17,7 +17,7 @@ describe('Check "valid from" restrictions', () => {
   it('login before time must be impossible', () => {
     // UnixTimestamp: 01.06.2023 09:00
     useTestDBSetDate('1685602800');
-    insertCredentials('validFrom01', '123');
+    insertCredentials('SM-10', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:401"]');
@@ -26,13 +26,13 @@ describe('Check "valid from" restrictions', () => {
   it('login after time must be possible ', () => {
     // UnixTimestamp: 01.06.2023 10:30
     useTestDBSetDate('1685608200');
-    loginTestTaker('validFrom01', '123', 'test-hot');
+    loginTestTaker('SM-10', '123', 'test-hot');
   });
 
   it('login before date must be impossible', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
-    insertCredentials('validFrom01', '123');
+    insertCredentials('SM-10', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:401"]');
@@ -41,7 +41,7 @@ describe('Check "valid from" restrictions', () => {
   it('login after date must be possible.', () => {
     // UnixTimestamp: 02.06.2023 09:30
     useTestDBSetDate('1685691000');
-    loginTestTaker('validFrom01', '123', 'test-hot');
+    loginTestTaker('SM-10', '123', 'test-hot');
   });
 });
 
@@ -55,7 +55,7 @@ describe('check "valid to" restrictions', () => {
   it('login after time must be impossible', () => {
     // UnixTimestamp: 01.06.2023 11:00
     useTestDBSetDate('1685610000');
-    insertCredentials('validTo01', '123');
+    insertCredentials('SM-11', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:410"]');
@@ -64,13 +64,13 @@ describe('check "valid to" restrictions', () => {
   it('login before time must be possible', () => {
     // UnixTimestamp: 01.06.2023 09:00
     useTestDBSetDate('1685602800');
-    loginTestTaker('validTo01', '123', 'test-hot');
+    loginTestTaker('SM-11', '123', 'test-hot');
   });
 
   it('login after date must be impossible', () => {
     // UnixTimestamp: 02.06.2023 09:30
     useTestDBSetDate('1685691000');
-    insertCredentials('validTo01', '123');
+    insertCredentials('SM-11', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:410"]');
@@ -79,7 +79,7 @@ describe('check "valid to" restrictions', () => {
   it('login before date must be possible', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
-    loginTestTaker('validTo01', '123', 'test-hot');
+    loginTestTaker('SM-11', '123', 'test-hot');
   });
 });
 
@@ -93,21 +93,21 @@ describe('check "valid for" restrictions', () => {
   it('a first time login must be possible', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
-    loginTestTaker('validFor01', '123', 'test-hot');
+    loginTestTaker('SM-12', '123', 'test-hot');
     logoutTestTaker('hot');
   });
 
   it('a second login must be possible if the time has not expired', () => {
     // UnixTimestamp: 31.05.2023 10:30 + 9 Minuten
     useTestDBSetDate('1685522340');
-    loginTestTaker('validFor01', '123', 'test-hot');
+    loginTestTaker('SM-12', '123', 'test-hot');
     logoutTestTaker('hot');
   });
 
   it('login after time is not possible', () => {
     // UnixTimestamp: 31.05.2023 10:30 + 11 Minuten
     useTestDBSetDate('1685522460');
-    insertCredentials('validFor01', '123');
+    insertCredentials('SM-12', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:410"]');

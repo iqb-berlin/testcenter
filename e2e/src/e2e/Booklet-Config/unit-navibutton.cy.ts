@@ -20,12 +20,12 @@ describe('check parameter: unit-navibutton', { testIsolation: true }, () => {
   });
 
   it('FULL (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="unit-navigation-forward"]');
   });
 
   it('OFF', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
@@ -34,13 +34,13 @@ describe('check parameter: unit-navibutton', { testIsolation: true }, () => {
   });
 
   it('ARROWS_ONLY', () => {
-    loginTestTaker('bklConfigValue2', '123', mode);
+    loginTestTaker('Bklt_Config-3', '123', mode);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-101"]')
       .should('not.exist');
   });
 
   it('FORWARD_ONLY', () => {
-    loginTestTaker('bklConfigValue3', '123', mode);
+    loginTestTaker('Bklt_Config-4', '123', mode);
     cy.get('[data-cy="unit-navigation-forward"]');
     cy.get('[data-cy="unit-navigation-backward"]')
       .should('not.exist');

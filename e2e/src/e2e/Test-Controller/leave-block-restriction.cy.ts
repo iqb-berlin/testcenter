@@ -21,7 +21,7 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
   beforeEach(() => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
-    loginTestTaker('RestrLockAfterLeave1', '123', mode);
+    loginTestTaker('Test_Ctrl-21', '123', mode);
   });
 
   it('leave unit: display a warning message', () => {
@@ -53,7 +53,7 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
   beforeEach(() => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
-    loginTestTaker('RestrLockAfterLeave2', '123', mode);
+    loginTestTaker('Test_Ctrl-22', '123', mode);
   });
 
   it('leave testlet: display no warning message', () => {

@@ -28,7 +28,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotRestart_Ctrl1', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -170,7 +170,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotRestart_Ctrl1', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -256,7 +256,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotRestart_Ctrl2', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-8', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -337,7 +337,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotRestart_Ctrl3', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-9', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -418,12 +418,12 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
       visitLoginPage();
     });
 
-    it('download a responses/log file with groupname: RunHotReturn', () => {
+    it('download a responses/log file with groupname: Hot-Restart', () => {
       loginSuperAdmin();
       openSampleWorkspace(1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
-      cy.contains('RunHotRestart');
+      cy.contains('Hot-Restart');
       cy.get('[data-cy="results-checkbox1"]')
         .click();
       cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownloadResponse');
@@ -443,24 +443,24 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[1]).to.be.match(/\brunhotres\b/);
-          expect(responses[1]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[1]).to.be.match(/\bhot-restart\b/);
+          expect(responses[1]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[1]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[1]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[2]).to.be.match(/\brunhotres\b/);
-          expect(responses[2]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[2]).to.be.match(/\bhot-restart\b/);
+          expect(responses[2]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[2]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[2]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[3]).to.be.match(/\brunhotres\b/);
-          expect(responses[3]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[3]).to.be.match(/\bhot-restart\b/);
+          expect(responses[3]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[3]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[3]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[4]).to.be.match(/\brunhotres\b/);
-          expect(responses[4]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[4]).to.be.match(/\bhot-restart\b/);
+          expect(responses[4]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[4]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[4]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[5]).to.be.match(/\brunhotres\b/);
-          expect(responses[5]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[5]).to.be.match(/\bhot-restart\b/);
+          expect(responses[5]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[5]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[5]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
@@ -474,24 +474,24 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[6]).to.be.match(/\brunhotres\b/);
-          expect(responses[6]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[6]).to.be.match(/\bhot-restart\b/);
+          expect(responses[6]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[6]).to.be.match(/\bva4dg-jc\b/);
           expect(responses[6]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[7]).to.be.match(/\brunhotres\b/);
-          expect(responses[7]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[7]).to.be.match(/\bhot-restart\b/);
+          expect(responses[7]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[7]).to.be.match(/\bva4dg-jc\b/);
           expect(responses[7]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[8]).to.be.match(/\brunhotres\b/);
-          expect(responses[8]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[8]).to.be.match(/\bhot-restart\b/);
+          expect(responses[8]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[8]).to.be.match(/\bva4dg-jc\b/);
           expect(responses[8]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[9]).to.be.match(/\brunhotres\b/);
-          expect(responses[9]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[9]).to.be.match(/\bhot-restart\b/);
+          expect(responses[9]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[9]).to.be.match(/\bva4dg-jc\b/);
           expect(responses[9]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[10]).to.be.match(/\brunhotres\b/);
-          expect(responses[10]).to.be.match(/\bTest_HotRestart_Ctrl1\b/);
+          expect(responses[10]).to.be.match(/\bhot-restart\b/);
+          expect(responses[10]).to.be.match(/\bTest_Ctrl-7\b/);
           expect(responses[10]).to.be.match(/\bva4dg-jc\b/);
           expect(responses[10]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
@@ -506,24 +506,24 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
         .then(responses => {
           // metadata
           // metadata
-          expect(responses[11]).to.be.match(/\brunhotres\b/);
-          expect(responses[11]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
+          expect(responses[11]).to.be.match(/\bhot-restart\b/);
+          expect(responses[11]).to.be.match(/\bTest_Ctrl-8\b/);
           expect(responses[11]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[11]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[12]).to.be.match(/\brunhotres\b/);
-          expect(responses[12]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
+          expect(responses[12]).to.be.match(/\bhot-restart\b/);
+          expect(responses[12]).to.be.match(/\bTest_Ctrl-8\b/);
           expect(responses[12]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[12]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[13]).to.be.match(/\brunhotres\b/);
-          expect(responses[13]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
+          expect(responses[13]).to.be.match(/\bhot-restart\b/);
+          expect(responses[13]).to.be.match(/\bTest_Ctrl-8\b/);
           expect(responses[13]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[13]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[14]).to.be.match(/\brunhotres\b/);
-          expect(responses[14]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
+          expect(responses[14]).to.be.match(/\bhot-restart\b/);
+          expect(responses[14]).to.be.match(/\bTest_Ctrl-8\b/);
           expect(responses[14]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[14]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[15]).to.be.match(/\brunhotres\b/);
-          expect(responses[15]).to.be.match(/\bTest_HotRestart_Ctrl2\b/);
+          expect(responses[15]).to.be.match(/\bhot-restart\b/);
+          expect(responses[15]).to.be.match(/\bTest_Ctrl-8\b/);
           expect(responses[15]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[15]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
@@ -538,24 +538,24 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
         .then(responses => {
           // metadata
           // metadata
-          expect(responses[16]).to.be.match(/\brunhotres\b/);
-          expect(responses[16]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
+          expect(responses[16]).to.be.match(/\bhot-restart\b/);
+          expect(responses[16]).to.be.match(/\bTest_Ctrl-9\b/);
           expect(responses[16]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[16]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[17]).to.be.match(/\brunhotres\b/);
-          expect(responses[17]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
+          expect(responses[17]).to.be.match(/\bhot-restart\b/);
+          expect(responses[17]).to.be.match(/\bTest_Ctrl-9\b/);
           expect(responses[17]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[17]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[18]).to.be.match(/\brunhotres\b/);
-          expect(responses[18]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
+          expect(responses[18]).to.be.match(/\bhot-restart\b/);
+          expect(responses[18]).to.be.match(/\bTest_Ctrl-9\b/);
           expect(responses[18]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[18]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[19]).to.be.match(/\brunhotres\b/);
-          expect(responses[19]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
+          expect(responses[19]).to.be.match(/\bhot-restart\b/);
+          expect(responses[19]).to.be.match(/\bTest_Ctrl-9\b/);
           expect(responses[19]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[19]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[20]).to.be.match(/\brunhotres\b/);
-          expect(responses[20]).to.be.match(/\bTest_HotRestart_Ctrl3\b/);
+          expect(responses[20]).to.be.match(/\bhot-restart\b/);
+          expect(responses[20]).to.be.match(/\bTest_Ctrl-9\b/);
           expect(responses[20]).to.be.match(/\bh5ki-bd\b/);
           expect(responses[20]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3

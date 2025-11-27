@@ -302,8 +302,6 @@ export const deleteTesttakersFiles = (workspace: number): void => {
   if (workspace === 1) {
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .click();
-    cy.get('[data-cy="files-checkbox-CY_TEST_LOGINS.XML"]')
-      .click();
   }
   if (workspace === 2) {
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')

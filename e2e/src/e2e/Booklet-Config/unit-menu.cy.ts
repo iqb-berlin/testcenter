@@ -20,13 +20,13 @@ describe('check parameter: unit-menu', { testIsolation: true }, () => {
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="unit-menu"]')
       .should('not.exist');
   });
 
   it('FULL', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

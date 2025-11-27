@@ -20,13 +20,13 @@ describe('check parameter: unit-show-time-left', { testIsolation: true }, () => 
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="time-value"]')
       .should('not.exist');
   });
 
   it('ON', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

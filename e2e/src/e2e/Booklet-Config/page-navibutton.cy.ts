@@ -20,12 +20,12 @@ describe('check parameter: page-navibutton', { testIsolation: true }, () => {
   });
 
   it('SEPARATE_BOTTOM (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="page-navigation-0"]');
   });
 
   it('OFF', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

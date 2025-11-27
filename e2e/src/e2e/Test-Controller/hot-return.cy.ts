@@ -27,7 +27,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotReturn_Ctrl1', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-3', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -169,7 +169,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotReturn_Ctrl2', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-4', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -255,7 +255,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotReturn_Ctrl3', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-5', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -336,7 +336,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('Test_HotReturn_Ctrl4', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-6', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -424,7 +424,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       openSampleWorkspace(1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
-      cy.contains('RunHotReturn');
+      cy.contains('Hot-Return');
       cy.get('[data-cy="results-checkbox1"]')
         .click();
       cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownloadResponse');
@@ -443,20 +443,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[1]).to.be.match(/\brunhotret\b/);
-          expect(responses[1]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
+          expect(responses[1]).to.be.match(/\bhot-return\b/);
+          expect(responses[1]).to.be.match(/\bTest_Ctrl-3\b/);
           expect(responses[1]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[2]).to.be.match(/\brunhotret\b/);
-          expect(responses[2]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
+          expect(responses[2]).to.be.match(/\bhot-return\b/);
+          expect(responses[2]).to.be.match(/\bTest_Ctrl-3\b/);
           expect(responses[2]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[3]).to.be.match(/\brunhotret\b/);
-          expect(responses[3]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
+          expect(responses[3]).to.be.match(/\bhot-return\b/);
+          expect(responses[3]).to.be.match(/\bTest_Ctrl-3\b/);
           expect(responses[3]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[4]).to.be.match(/\brunhotret\b/);
-          expect(responses[4]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
+          expect(responses[4]).to.be.match(/\bhot-return\b/);
+          expect(responses[4]).to.be.match(/\bTest_Ctrl-3\b/);
           expect(responses[4]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[5]).to.be.match(/\brunhotret\b/);
-          expect(responses[5]).to.be.match(/\bTest_HotReturn_Ctrl1\b/);
+          expect(responses[5]).to.be.match(/\bhot-return\b/);
+          expect(responses[5]).to.be.match(/\bTest_Ctrl-3\b/);
           expect(responses[5]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[2]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -469,20 +469,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[6]).to.be.match(/\brunhotret\b/);
-          expect(responses[6]).to.be.match(/\bTest_HotReturn_Ctrl2\b/);
+          expect(responses[6]).to.be.match(/\bhot-return\b/);
+          expect(responses[6]).to.be.match(/\bTest_Ctrl-4\b/);
           expect(responses[6]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[7]).to.be.match(/\brunhotret\b/);
-          expect(responses[7]).to.be.match(/\bTest_HotReturn_Ctrl2\b/);
+          expect(responses[7]).to.be.match(/\bhot-return\b/);
+          expect(responses[7]).to.be.match(/\bTest_Ctrl-4\b/);
           expect(responses[7]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[8]).to.be.match(/\brunhotret\b/);
-          expect(responses[8]).to.be.match(/\bTest_HotReturn_Ctrl2\b/);
+          expect(responses[8]).to.be.match(/\bhot-return\b/);
+          expect(responses[8]).to.be.match(/\bTest_Ctrl-4\b/);
           expect(responses[8]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[9]).to.be.match(/\brunhotret\b/);
-          expect(responses[9]).to.be.match(/\bTest_HotReturn_Ctrl2\b/);
+          expect(responses[9]).to.be.match(/\bhot-return\b/);
+          expect(responses[9]).to.be.match(/\bTest_Ctrl-4\b/);
           expect(responses[9]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[10]).to.be.match(/\brunhotret\b/);
-          expect(responses[10]).to.be.match(/\bTest_HotReturn_Ctrl2\b/);
+          expect(responses[10]).to.be.match(/\bhot-return\b/);
+          expect(responses[10]).to.be.match(/\bTest_Ctrl-4\b/);
           expect(responses[10]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[7]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -495,20 +495,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[11]).to.be.match(/\brunhotret\b/);
-          expect(responses[11]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
+          expect(responses[11]).to.be.match(/\bhot-return\b/);
+          expect(responses[11]).to.be.match(/\bTest_Ctrl-5\b/);
           expect(responses[11]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[12]).to.be.match(/\brunhotret\b/);
-          expect(responses[12]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
+          expect(responses[12]).to.be.match(/\bhot-return\b/);
+          expect(responses[12]).to.be.match(/\bTest_Ctrl-5\b/);
           expect(responses[12]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[13]).to.be.match(/\brunhotret\b/);
-          expect(responses[13]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
+          expect(responses[13]).to.be.match(/\bhot-return\b/);
+          expect(responses[13]).to.be.match(/\bTest_Ctrl-5\b/);
           expect(responses[13]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[14]).to.be.match(/\brunhotret\b/);
-          expect(responses[14]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
+          expect(responses[14]).to.be.match(/\bhot-return\b/);
+          expect(responses[14]).to.be.match(/\bTest_Ctrl-5\b/);
           expect(responses[14]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[15]).to.be.match(/\brunhotret\b/);
-          expect(responses[15]).to.be.match(/\bTest_HotReturn_Ctrl3\b/);
+          expect(responses[15]).to.be.match(/\bhot-return\b/);
+          expect(responses[15]).to.be.match(/\bTest_Ctrl-5\b/);
           expect(responses[15]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[12]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));
@@ -521,20 +521,20 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       getResultFileRows('responses')
         .then(responses => {
           // metadata
-          expect(responses[16]).to.be.match(/\brunhotret\b/);
-          expect(responses[16]).to.be.match(/\bTest_HotReturn_Ctrl4\b/);
+          expect(responses[16]).to.be.match(/\bhot-return\b/);
+          expect(responses[16]).to.be.match(/\bTest_Ctrl-6\b/);
           expect(responses[16]).to.be.match(/\bCY-Unit.Sample-100\b/);
-          expect(responses[17]).to.be.match(/\brunhotret\b/);
-          expect(responses[17]).to.be.match(/\bTest_HotReturn_Ctrl4\b/);
+          expect(responses[17]).to.be.match(/\bhot-return\b/);
+          expect(responses[17]).to.be.match(/\bTest_Ctrl-6\b/);
           expect(responses[17]).to.be.match(/\bCY-Unit.Sample-101\b/);
-          expect(responses[18]).to.be.match(/\brunhotret\b/);
-          expect(responses[18]).to.be.match(/\bTest_HotReturn_Ctrl4\b/);
+          expect(responses[18]).to.be.match(/\bhot-return\b/);
+          expect(responses[18]).to.be.match(/\bTest_Ctrl-6\b/);
           expect(responses[18]).to.be.match(/\bCY-Unit.Sample-102\b/);
-          expect(responses[19]).to.be.match(/\brunhotret\b/);
-          expect(responses[19]).to.be.match(/\bTest_HotReturn_Ctrl4\b/);
+          expect(responses[19]).to.be.match(/\bhot-return\b/);
+          expect(responses[19]).to.be.match(/\bTest_Ctrl-6\b/);
           expect(responses[19]).to.be.match(/\bCY-Unit.Sample-103\b/);
-          expect(responses[20]).to.be.match(/\brunhotret\b/);
-          expect(responses[20]).to.be.match(/\bTest_HotReturn_Ctrl4\b/);
+          expect(responses[20]).to.be.match(/\bhot-return\b/);
+          expect(responses[20]).to.be.match(/\bTest_Ctrl-6\b/);
           expect(responses[20]).to.be.match(/\bCY-Unit.Sample-104\b/);
           // responses unit1-3
           expect(responses[17]).to.be.match((/\bid"":""radio1"",""status"":""VALUE_CHANGED"",""value"":""true\b/));

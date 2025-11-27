@@ -21,13 +21,13 @@ describe('check parameter: allow_player_to_terminate_test', { testIsolation: tru
   });
 
   it('ON (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     getFromIframe('[data-cy="end-unit"]')
       .should('be.enabled');
   });
 
   it('OFF', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
@@ -42,7 +42,7 @@ describe('check parameter: allow_player_to_terminate_test', { testIsolation: tru
   });
 
   it('LAST_UNIT', () => {
-    loginTestTaker('bklConfigValue2', '123', mode);
+    loginTestTaker('Bklt_Config-3', '123', mode);
     getFromIframe('[data-cy="end-unit"]')
       .should('be.disabled');
     cy.get('[data-cy="unit-navigation-forward"]')

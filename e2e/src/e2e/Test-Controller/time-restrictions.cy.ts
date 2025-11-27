@@ -31,7 +31,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
   });
 
   it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('TimeRestr_Demo1', '123', 'test');
+    loginTestTaker('Test_Ctrl-13', '123', 'test');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -53,7 +53,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
   });
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('TimeRestr_Review1', '123', 'test');
+    loginTestTaker('Test_Ctrl-14', '123', 'test');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -89,7 +89,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-12', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -141,7 +141,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-restart: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-12', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -166,7 +166,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-return: timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('TimeRestr_HotRet1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-10', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -217,7 +217,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-return: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('TimeRestr_HotRet2', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-11', '123', 'test-hot');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -256,7 +256,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: confirm', () => {
-    loginTestTaker('LeaveVal1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-15', '123', 'test-hot');
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -271,7 +271,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: allowed', () => {
-    loginTestTaker('LeaveVal2', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-16', '123', 'test-hot');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -284,7 +284,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: forbidden', () => {
-    loginTestTaker('LeaveVal3', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-17', '123', 'test-hot');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('.snackbar-demo-mode');

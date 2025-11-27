@@ -22,7 +22,7 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
     cy.wait(1000); // wait for debounce
@@ -33,7 +33,7 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
   });
 
   it('ON', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

@@ -20,7 +20,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('bklConfigDefault', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123', mode);
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
@@ -33,7 +33,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
   });
 
   it('ON', () => {
-    loginTestTaker('bklConfigValue1', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123', mode);
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

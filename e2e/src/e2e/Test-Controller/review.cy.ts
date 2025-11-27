@@ -15,7 +15,7 @@ import {
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
-const TesttakerName = 'Test_Review_Ctrl';
+const TesttakerName = 'Test_Ctrl-2';
 const TesttakerPassword = '123';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -148,7 +148,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('RunReview');
+    cy.contains('Review');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-responses"]')

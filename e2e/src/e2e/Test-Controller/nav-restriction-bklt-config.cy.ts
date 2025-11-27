@@ -19,7 +19,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
       cy.clearLocalStorage();
       cy.clearCookies();
       visitLoginPage();
-      loginTestTaker('NavRestrBklt0', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-23', '123', 'test-hot');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -56,7 +56,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrBklt1', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-24', '123', 'test-hot');
     });
 
     it('presentation/response-complete: forward in unit-menu', () => {
@@ -99,7 +99,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrBklt2', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-25', '123', 'test-hot');
     });
 
     it('presentation-complete: forward in unit-menu', () => {
@@ -188,7 +188,7 @@ describe('check response & presentation from booklet-config', { testIsolation: t
     beforeEach(() => {
       disableSimplePlayersInternalDebounce();
       visitLoginPage();
-      loginTestTaker('NavRestrBklt3', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-26', '123', 'test-hot');
     });
 
     it('presentation-complete: forward/backward in unit-menu', () => {
