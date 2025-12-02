@@ -1,11 +1,12 @@
 import {
   insertCredentials,
-  probeBackendApi,
+  probeBackendApi, resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
   before(() => {
+    resetBackendData();
     probeBackendApi();
   });
 
