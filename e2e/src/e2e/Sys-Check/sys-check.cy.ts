@@ -11,7 +11,7 @@ import {
   selectFromDropdown,
   visitLoginPage,
   insertCredentials,
-  deleteTesttakersFiles
+  deleteTesttakersFiles, logoutAdmin
 } from '../utils';
 
 describe('Sys-Check', () => {
@@ -96,6 +96,7 @@ describe('Sys-Check', () => {
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .click();
+    logoutAdmin();
     visitLoginPage();
     insertCredentials('sys-check', '');
     cy.get('[data-cy="login-user"]')
