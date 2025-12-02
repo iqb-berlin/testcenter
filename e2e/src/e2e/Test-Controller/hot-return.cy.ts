@@ -155,7 +155,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRET"]')
+    cy.get('[data-cy="booklet-CY-BKLT_TC-3"]')
       .contains('gesperrt');
     cy.get('[data-cy="logout"]')
       .click();

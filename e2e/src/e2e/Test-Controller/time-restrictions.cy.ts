@@ -9,7 +9,7 @@ import {
   visitLoginPage
 } from '../utils';
 
-// Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
+// Restriction Time: Declared in Sampledata/CY_Bklt_TC-1.xml
 const RestrTimeVal = 12000;
 const RestrTimeValOffset = 1000;
 

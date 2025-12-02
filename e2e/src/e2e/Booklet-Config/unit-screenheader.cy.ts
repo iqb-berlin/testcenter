@@ -1,6 +1,6 @@
 import {
   disableSimplePlayersInternalDebounce,
-  loginTestTaker,
+  loginTestTaker, logoutTestTaker,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -38,7 +38,7 @@ describe('check parameter: unit-screenheader', { testIsolation: true }, () => {
   it('WITH_BOOKLET_TITLE', () => {
     loginTestTaker('Bklt_Config-3', '123', mode);
     cy.get('[data-cy="unit-screenheader"]')
-      .contains('Test Bklt Configs value-2');
+      .contains('Bklt-config-3');
   });
 
   it('WITH_BLOCK_TITLE', () => {

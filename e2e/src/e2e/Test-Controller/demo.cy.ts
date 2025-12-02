@@ -75,7 +75,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
+    cy.get('[data-cy="booklet-CY-BKLT_TC-1"]')
       .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')

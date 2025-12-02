@@ -27,7 +27,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLTCONFIGDEFAULTS"]')
+    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-1"]')
       .contains('Fortsetzen')
       .click();
   });
@@ -43,7 +43,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLTCONFIGVALUE-1"]')
+    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-2"]')
       .contains('gesperrt');
   });
 });

@@ -31,6 +31,7 @@ describe('Check Login Possibilities', () => {
 
   it('login with name and right password, the booklet start immediately', () => {
     insertCredentials('SM-2', '101');
+    cy.wait(10000);
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="unit-title"]')
@@ -39,7 +40,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('SM-2');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login only with a name', () => {
@@ -52,7 +53,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('SM-1');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login as link', () => {
@@ -66,7 +67,7 @@ describe('Check Login Possibilities', () => {
   it('login as link and jump into test', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/SM-4`);
     cy.wait(1000);
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -97,7 +98,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code01');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login with code on login page', () => {
@@ -114,7 +115,7 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login with code via link', () => {
@@ -129,6 +130,6 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 });

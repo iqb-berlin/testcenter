@@ -156,7 +156,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
         .click();
       cy.get('[data-cy="endTest-1"]')
         .click();
-      cy.get('[data-cy="booklet-CY-BKLT_RUNHOTRES"]')
+      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]')
         .contains('gesperrt');
       cy.get('[data-cy="logout"]')
         .click();
