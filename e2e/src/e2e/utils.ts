@@ -6,11 +6,6 @@ export const userData = {
 
 };
 
-export const credentialsControllerTest = {
-  // Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
-  DemoRestrTime: 60000
-};
-
 export const cleanUp = () =>  {
   cy.clearCookies();
   cy.clearLocalStorage();
