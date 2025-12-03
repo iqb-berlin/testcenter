@@ -25,6 +25,8 @@ export const visitLoginPage = (): Chainable => cy.url()
     cy.visit(loginUrl);
     cy.get('[data-cy="login-admin"]')
       .should('be.visible');
+    cy.get('[formcontrolname="name"]')
+      .should(`be.visible`)
     cy.contains('Testmode!').should('be.visible');
     cy.url().should('include', '/#/r/login');
     cy.url().should('include', 'testMode=true');
