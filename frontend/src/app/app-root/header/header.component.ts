@@ -29,6 +29,19 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
     <mat-toolbar>
       <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
       <div>
+        @if (headerService.showLogo) {
+          <a class="logo" [routerLink]="['/r']" aria-label="Gehe zur Startseite">
+            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
+                 matTooltip="Zur Startseite"/>
+          </a>
+        }
+      </div>
+      <div>
+        @if (headerService.title) {
+          <h1>{{ headerService.title }}</h1>
+        }
+      </div>
+      <div>
         @if (headerService.showAccountPanel) {
           <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
                   (click)="isOpen = !isOpen">
@@ -57,23 +70,8 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
                   <button matButton>SHARE</button>
                 </mat-card-actions>
               </mat-card>
-
-              
             </div>
           </ng-template>
-        }
-      </div>
-      <div>
-        @if (headerService.title) {
-          <h1>{{ headerService.title }}</h1>
-        }
-      </div>
-      <div>
-        @if (headerService.showLogo) {
-          <a class="logo" [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
-                 matTooltip="Zur Startseite"/>
-          </a>
         }
       </div>
     </mat-toolbar>
