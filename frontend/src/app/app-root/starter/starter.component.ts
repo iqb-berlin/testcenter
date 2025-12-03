@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '../../shared/services/file.service';
 import { MessageService } from '../../shared/services/message.service';
 import { AuthAccessType } from '../../app.interfaces';
-
+import { HeaderService } from '../../core/header.service';
 
 @Component({
     selector: 'tc-starter',
@@ -30,16 +30,11 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  constructor(
-    private router: Router,
-    private bs: BackendService,
-    public cts: CustomtextService,
-    public mds: MainDataService,
-    public ds: SysCheckDataService,
-    public pcs: PasswordChangeService,
-    private dialog: MatDialog,
-    private ms: MessageService
-  ) { }
+
+  constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
+              public mds: MainDataService, public ds: SysCheckDataService,
+              public pcs: PasswordChangeService, private dialog: MatDialog,
+              private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
     this.ds.networkReports = [];
@@ -79,6 +74,7 @@ export class StarterComponent implements OnInit, OnDestroy {
                 this.mds.logOut();
               }
 
+              // TODO is this subscription ever unsubscribed?
               this.pcs.showPasswordChangeDialog(
                 { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
                 { disableClose: true }
@@ -122,6 +118,8 @@ export class StarterComponent implements OnInit, OnDestroy {
         }
       });
     });
+    this.headerService.title = 'Übersicht';
+    this.headerService.showAccountPanel = true;
   }
 
   startTest(test: AccessObject): void {

@@ -1,33 +1,28 @@
 import { Injectable } from '@angular/core';
 import { UiVisibilityService } from '../shared/services/ui-visibility.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { MainDataService } from '../shared/services/maindata/maindata.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeaderService {
-  private ngUnsubscribe = new Subject<void>();
-
-  showLogo = true;
   title: string = '';
+  showLogo = true;
+  showAccountPanel: boolean = false;
+  accountName?: string;
 
-  constructor(private uiVisibilityService: UiVisibilityService) { }
-
-  ngOnInit(): void {
+  constructor(private mds: MainDataService, private uiVisibilityService: UiVisibilityService) {
+    this.accountName = this.mds.getAuthData()?.displayName;
     this.uiVisibilityService.showConfirmationUI$
-      .pipe(takeUntil(this.ngUnsubscribe))
+      // no unsubscribe necessary because the service basically lives forever
       .subscribe(showUI => {
         this.showLogo = showUI;
       });
   }
 
-  setTitle(newTitle: string): void {
-    this.title = newTitle;
-  }
-
-  ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
+  reset() {
+    this.title = '';
+    this.showLogo = true;
+    this.showAccountPanel = false;
   }
 }
