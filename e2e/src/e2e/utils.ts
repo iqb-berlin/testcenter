@@ -132,16 +132,11 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
           .as('waitForGetSession');
         cy.get('[data-cy="endTest-1"]')
           .click();
-        cy.url()
-          .should('eq', `${baseUrl}/#/r/starter`);
         cy.wait('@waitForGetSession');
       }
-
-      if (fileType === 'demo') {
-        cy.get('[data-cy="endTest-1"]')
-          .should('not.exist');
-      }
     }
+    cy.url().should('eq', `${baseUrl}/#/r/starter`);
+    cy.contains('Status:');
     cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
     cy.get('[data-cy="logout"]').click();
     cy.wait('@waitForDeleteSession');
