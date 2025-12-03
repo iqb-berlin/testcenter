@@ -5,7 +5,7 @@ import {
   forwardTo,
   getFromIframe,
   loginTestTaker,
-  logoutTestTaker,
+  logoutTestTakerHot,
   probeBackendApi,
   resetBackendData, visitLoginPage
 } from '../utils';
@@ -57,7 +57,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('start adaptive booklet with predefined states', () => {
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
     visitLoginPage();
     loginTestTaker('test-review', 'user123', 'starter');
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')

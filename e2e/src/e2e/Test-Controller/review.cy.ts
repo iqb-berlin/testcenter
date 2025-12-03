@@ -8,7 +8,7 @@ import {
   gotoPage,
   loginSuperAdmin,
   loginTestTaker,
-  logoutTestTaker,
+  logoutTestTaker, logoutTestTakerDemo,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData, visitLoginPage
@@ -138,7 +138,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('.snackbar-demo-mode')
       .contains('Schließen')
       .click();
-    logoutTestTaker('demo');
+    logoutTestTakerDemo();
   });
 
   it('there are no responses in the response file', () => {

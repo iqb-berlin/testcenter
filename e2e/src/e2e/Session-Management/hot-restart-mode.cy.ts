@@ -9,7 +9,6 @@ import {
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
-  logoutTestTaker
 
 } from '../utils';
 

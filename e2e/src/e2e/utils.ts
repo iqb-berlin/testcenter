@@ -112,31 +112,54 @@ export const logoutAdmin = (): Chainable => cy.url()
     cy.get('[data-cy="login-admin"]').should('be.visible');
   });
 
-export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable =>
-  cy.url().then(url => {
-    const baseUrl = Cypress.config().baseUrl;
-    const backendUrl = Cypress.env('urls').backend;
+export const logoutTestTakerHot = (): Chainable => {
+  const baseUrl = Cypress.config().baseUrl;
+  const backendUrl = Cypress.env('urls').backend;
+
+  return cy.url().then(url => {
     const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
 
     if (!isOnStarterPage) {
       cy.get('[data-cy="logo"]')
         .click();
-
-      if (fileType === 'hot') {
-        cy.intercept('GET', `${backendUrl}/session`)
-          .as('waitForGetSession');
-        cy.get('[data-cy="endTest-1"]')
-          .click();
-        cy.wait('@waitForGetSession');
-      }
     }
+    cy.intercept('GET', `${backendUrl}/session`)
+      .as('waitForGetSession');
+    cy.get('[data-cy="endTest-1"]')
+      .click();
+    cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
-    cy.contains('Status:');
+    cy.contains('Status:').should('be.visible');
+
     cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
     cy.get('[data-cy="logout"]').click();
     cy.wait('@waitForDeleteSession');
-    cy.get('[data-cy="login-admin"]').should('be.visible');
+
+    return cy.get('[data-cy="login-admin"]').should('be.visible');
   });
+}
+
+export const logoutTestTakerDemo = (): Chainable => {
+  const baseUrl = Cypress.config().baseUrl;
+  const backendUrl = Cypress.env('urls').backend;
+
+  return cy.url().then(url => {
+    const isOnStarterPage = url === `${baseUrl}/#/r/starter`;
+
+    if (!isOnStarterPage) {
+      cy.get('[data-cy="logo"]')
+        .click();
+    }
+    cy.url().should('eq', `${baseUrl}/#/r/starter`);
+    cy.contains('Status:').should('be.visible');
+
+    cy.intercept('DELETE', `${backendUrl}/session`).as('waitForDeleteSession');
+    cy.get('[data-cy="logout"]').click();
+    cy.wait('@waitForDeleteSession');
+
+    return cy.get('[data-cy="login-admin"]').should('be.visible');
+  });
+}
 
 export const openSampleWorkspace = (workspace: number): void => {
   cy.get(`[data-cy="workspace-${workspace}"]`)

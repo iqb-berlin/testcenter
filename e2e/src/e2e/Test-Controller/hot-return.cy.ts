@@ -8,7 +8,7 @@ import {
   gotoPage,
   loginSuperAdmin,
   loginTestTaker,
-  logoutTestTaker,
+  logoutTestTakerHot,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -259,7 +259,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
-      logoutTestTaker('hot');
+     logoutTestTakerHot();
     });
 
     it('start a test without booklet selection', () => {
@@ -339,7 +339,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
-      logoutTestTaker('hot');
+      logoutTestTakerHot();
     });
 
     it('start a test without booklet selection', () => {

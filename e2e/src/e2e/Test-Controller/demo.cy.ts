@@ -9,7 +9,7 @@ import {
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage, cleanUp
+  visitLoginPage, cleanUp, logoutTestTakerDemo
 } from '../utils';
 
 // declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
@@ -96,7 +96,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('navigate back to the booklet view and check out', () => {
-    logoutTestTaker('demo');
+    logoutTestTakerDemo();
   });
 
   it('a response file is not generated', () => {

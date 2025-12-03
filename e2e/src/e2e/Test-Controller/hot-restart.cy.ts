@@ -9,7 +9,7 @@ import {
   loginSuperAdmin,
   loginTestTaker,
   logoutAdmin,
-  logoutTestTaker,
+  logoutTestTakerHot,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -260,7 +260,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
-      logoutTestTaker('hot');
+      logoutTestTakerHot();
     });
 
     it('start a test without booklet selection', () => {
@@ -340,7 +340,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
-      logoutTestTaker('hot');
+      logoutTestTakerHot();
     });
 
     it('start a test without booklet selection', () => {

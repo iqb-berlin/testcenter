@@ -3,7 +3,8 @@ import {
   disableSimplePlayersInternalDebounce,
   getFromIframe,
   loginTestTaker,
-  logoutTestTaker,
+  logoutTestTakerDemo,
+  logoutTestTakerHot,
   probeBackendApi,
   readBlockTime,
   resetBackendData,
@@ -49,7 +50,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
       .should('not.exist');
-    logoutTestTaker('demo');
+    logoutTestTakerDemo();
   });
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
@@ -71,7 +72,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
       .should('not.exist');
-    logoutTestTaker('demo');
+   logoutTestTakerDemo();
   });
 });
 
@@ -136,7 +137,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     // wait for presentation complete, before end the test
     cy.wait(1000);
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 
   it('hot-restart: time is expired, block will be locked, warning message is displayed.', () => {
@@ -161,7 +162,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 
   it('hot-return: timer is not stopped while the exit block message is displayed', () => {
@@ -212,7 +213,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     // wait for presentation complete, before end the test
     cy.wait(1000);
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 
   it('hot-return: time is expired, block will be locked, warning message is displayed.', () => {
@@ -237,7 +238,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 });
 
@@ -265,7 +266,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 
   it('check leave: allowed', () => {
@@ -278,7 +279,7 @@ describe('check attribute: leave', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
-    logoutTestTaker('hot');
+    logoutTestTakerHot();
   });
 
   it('check leave: forbidden', () => {
