@@ -178,8 +178,6 @@ export const openSampleWorkspace2 = (): void => {
 };
 
 export const loginSuperAdmin = (): void => {
-  // wait for login site
-  cy.get('[data-cy="login-admin"]').should('be.visible');
   insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
@@ -192,8 +190,6 @@ export const loginSuperAdmin = (): void => {
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string): void => {
-  // wait for login site
-  cy.get('[data-cy="login-admin"]').should('be.visible');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   insertCredentials(username, password);
@@ -207,8 +203,6 @@ export const loginWorkspaceAdmin = (username: string, password: string): void =>
 
 export const loginTestTaker =
   (name: string, password: string, expectedView: 'test' | 'test-hot' | 'starter' | 'code-input' | 'sys-check' = 'starter'): void => {
-    // wait for login site
-    cy.get('[data-cy="login-admin"]').should('be.visible');
     insertCredentials(name, password);
     if (expectedView === 'test-hot') {
       cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/state`)).as('testState');
