@@ -21,6 +21,7 @@ import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-disp
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { AppModuleSettings } from './app.interfaces';
 import { StarterComponent } from './app-root/starter/starter.component';
+import { FabFormComponent } from './app-root/code-input/fab-form/fab-form.component';
 
 const routes: Routes = [
   {
@@ -62,7 +63,7 @@ const routes: Routes = [
       },
       {
         path: 'code-input',
-        component: CodeInputComponent,
+        component: FabFormComponent,
         canActivate: [CodeInputComponentActivateGuard]
       },
       {
