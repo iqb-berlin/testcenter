@@ -1,4 +1,5 @@
 import {
+  cleanUp,
   disableSimplePlayersInternalDebounce,
   getFromIframe,
   loginTestTaker,
@@ -7,17 +8,17 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('check response & presentation from booklet-config', { testIsolation: true }, () => {
+describe('check response & presentation from booklet-config', { testIsolation: false }, () => {
 
   before(() => {
+    cleanUp();
     resetBackendData();
     probeBackendApi();
   });
 
   describe(' DenyNavigationOnIncomplete and booklet-config must be independent from each other.', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-23', '123', 'test-hot');
     });

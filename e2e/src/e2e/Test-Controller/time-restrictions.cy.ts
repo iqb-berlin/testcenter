@@ -1,4 +1,5 @@
 import {
+  cleanUp,
   disableSimplePlayersInternalDebounce,
   getFromIframe,
   loginTestTaker,
@@ -19,9 +20,8 @@ const timeToDisplayedDialog: number = 3000;
 
 describe('Block Time-Restrictions demo and review-mode', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -77,8 +77,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
 
 describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
+    cleanUp();
     probeBackendApi();
   });
 
@@ -244,9 +243,8 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
 
 describe('check attribute: leave', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

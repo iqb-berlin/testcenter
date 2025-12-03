@@ -1,5 +1,5 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   deleteDownloadsFolder,
   disableSimplePlayersInternalDebounce,
   forwardTo,
@@ -16,8 +16,9 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('check hot-restart functionalities', { testIsolation: true }, () => {
+describe('check hot-restart functionalities', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     deleteDownloadsFolder();
     resetBackendData();
     probeBackendApi();
@@ -25,8 +26,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
 
   describe('Login1: complete the test, leave the block via iqb-logo', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
     });
@@ -167,8 +167,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
 
   describe('Login2: run and complete the test, leave the block with unit-navigation forward', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
     });
@@ -253,8 +252,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
 
   describe('Login3: run and complete the test, leave the block with unit-navigation backward', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-8', '123', 'test-hot');
     });
@@ -334,8 +332,7 @@ describe('check hot-restart functionalities', { testIsolation: true }, () => {
 
 describe('Login4: complete the test, leave the block via unit-menu', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-9', '123', 'test-hot');
     });
@@ -415,6 +412,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
   describe('check responses and logs', { testIsolation: false }, () => {
     before(() => {
+      cleanUp();
       visitLoginPage();
     });
 

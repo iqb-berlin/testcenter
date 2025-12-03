@@ -1,5 +1,5 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   disableSimplePlayersInternalDebounce,
   expectUnitMenuToBe,
   forwardTo,
@@ -12,9 +12,8 @@ import {
 
 describe('check adaptive functionality', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
     visitLoginPage();
   });

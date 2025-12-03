@@ -1,5 +1,5 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   deleteDownloadsFolder,
   disableSimplePlayersInternalDebounce,
   forwardTo,
@@ -15,8 +15,9 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('check hot-return test-controller functionalities', { testIsolation: true }, () => {
+describe('check hot-return test-controller functionalities', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     deleteDownloadsFolder();
     resetBackendData();
     probeBackendApi();
@@ -24,8 +25,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login1: complete the test, leave the block via iqb-logo', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-3', '123', 'test-hot');
     });
@@ -166,8 +166,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login2: run and complete the test, leave the block with unit-navigation forward', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-4', '123', 'test-hot');
     });
@@ -252,8 +251,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login3: run and complete the test, leave the block with unit-navigation backward', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-5', '123', 'test-hot');
     });
@@ -333,8 +331,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('Login4: complete the test, leave the block via unit-menu', { testIsolation: false }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
       loginTestTaker('Test_Ctrl-6', '123', 'test-hot');
     });
@@ -414,8 +411,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: tr
 
   describe('check responses', { testIsolation: true }, () => {
     before(() => {
-      cy.clearLocalStorage();
-      cy.clearCookies();
+      cleanUp();
       visitLoginPage();
     });
 

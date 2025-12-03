@@ -1,4 +1,5 @@
 import {
+  cleanUp,
   forwardTo,
   getFromIframe,
   loginTestTaker,
@@ -10,9 +11,8 @@ import {
 
 describe('Test Controller', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

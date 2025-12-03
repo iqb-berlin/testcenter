@@ -11,6 +11,14 @@ export const credentialsControllerTest = {
   DemoRestrTime: 60000
 };
 
+export const cleanUp = () =>  {
+  cy.clearCookies();
+  cy.clearLocalStorage();
+  cy.clearAllSessionStorage();
+  Cypress.env('alias_storage', {});
+  return cy.visit('about:blank');
+};
+
 export const deleteDownloadsFolder = (): void => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.task('deleteFolder', downloadsFolder);

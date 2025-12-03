@@ -1,5 +1,5 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   convertResultsSeperatedArrays,
   deleteDownloadsFolder,
   disableSimplePlayersInternalDebounce,
@@ -20,10 +20,9 @@ const TesttakerPassword = '123';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     deleteDownloadsFolder();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
     visitLoginPage();
     loginTestTaker(TesttakerName, TesttakerPassword, 'test');
