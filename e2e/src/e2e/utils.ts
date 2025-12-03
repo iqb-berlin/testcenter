@@ -18,23 +18,15 @@ export const deleteDownloadsFolder = (): void => {
 
 export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
-    const startPage = url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`;
-    cy.visit(`${startPage}?testMode=true`).wait(1000); // wait(10) makes the navigation more stable (seems hacky)
+    const loginUrl = `${Cypress.config().baseUrl}/#/r/login/?testMode=true`;
+    cy.visit(loginUrl);
+    cy.get('[data-cy="login-admin"]')
+      .should('be.visible');
+    cy.contains('Testmode!').should('be.visible');
     cy.url().should('include', '/#/r/login');
-    cy.get('[data-cy="login-admin"]').should('be.visible');
-    // Prüfe testMode und setzen, wenn nötig
-    cy.url().then(currentUrl => {
-      if (!currentUrl.includes('testMode=true')) {
-        cy.log('⚠️ Test-Mode wurde nicht gesetzt!');
-        cy.window().then(win => {
-          const hasQuery = currentUrl.includes('?');
-          const separator = hasQuery ? '&' : '?';
-          win.location.href = `${currentUrl}${separator}testMode=true`;
-        });
-        // Warte bis URL aktualisiert ist
-        cy.url().should('include', 'testMode=true');
-        cy.get('[data-cy="login-admin"]').should('be.visible');
-      }
+    cy.url().should('include', 'testMode=true');
+    return cy.url().then(() => {
+      cy.log('✅ Test-Mode ist gesetzt.');
     });
   });
 
