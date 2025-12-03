@@ -3,6 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../shared/shared.module';
 import { WorkspaceDataService } from './workspacedata.service';
+import { HeaderService } from '../core/header.service';
 
 @Component({
     templateUrl: './workspace.component.html',
@@ -12,12 +13,9 @@ import { WorkspaceDataService } from './workspacedata.service';
 export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;
 
-  constructor(
-    private route: ActivatedRoute,
-    public mainDataService: MainDataService,
-    public workspaceDataService: WorkspaceDataService
-  ) {
-  }
+  constructor(private route: ActivatedRoute, public mainDataService: MainDataService,
+              public workspaceDataService: WorkspaceDataService,
+              private headerService: HeaderService) { }
 
   navLinks = [
     { path: 'files', label: 'Dateien' },
@@ -38,6 +36,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
           `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
         );
       });
+      this.headerService.title =
+        `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`;
+      this.headerService.showAccountPanel = true;
     });
   }
 

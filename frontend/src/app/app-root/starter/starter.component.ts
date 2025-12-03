@@ -205,6 +205,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.headerService.reset();
     if (this.getMonitorDataSubscription !== null) {
       this.getMonitorDataSubscription.unsubscribe();
     }
