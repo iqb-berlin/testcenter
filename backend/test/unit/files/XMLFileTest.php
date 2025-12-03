@@ -88,7 +88,7 @@ class XMLFileTest extends TestCase {
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals('Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 8: Extra content at the end of the document', $this->getErrorString($xf));
+    $this->assertEquals('Error [76] in line 7: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 9: Extra content at the end of the document', $this->getErrorString($xf));
   }
 
   function test_loadFromValid() {
@@ -114,7 +114,7 @@ class XMLFileTest extends TestCase {
     $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
     $this->assertEquals('', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
-    $this->assertEquals('Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 8: Extra content at the end of the document', $this->getErrorString($xf));
+    $this->assertEquals('Error [76] in line 7: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 9: Extra content at the end of the document', $this->getErrorString($xf));
   }
 
   function test_loadFromInvalid() {
