@@ -6,7 +6,7 @@ import { MainDataService } from '../shared/services/maindata/maindata.service';
   providedIn: 'root'
 })
 export class HeaderService {
-  title: string = '';
+  title?: string;
   showLogo = true;
   showAccountPanel: boolean = false;
   accountName?: string;

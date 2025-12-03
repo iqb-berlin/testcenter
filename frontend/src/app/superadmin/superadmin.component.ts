@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../shared/shared.module';
+import { HeaderService } from '../core/header.service';
 
 @Component({
     templateUrl: './superadmin.component.html',
@@ -7,9 +8,7 @@ import { MainDataService } from '../shared/shared.module';
     standalone: false
 })
 export class SuperadminComponent implements OnInit {
-  constructor(
-    public mds: MainDataService
-  ) { }
+  constructor(public mds: MainDataService, private headerService: HeaderService) { }
 
   navLinks = [
     { path: 'users', label: 'Admins' },
@@ -19,5 +18,7 @@ export class SuperadminComponent implements OnInit {
 
   ngOnInit():void {
     setTimeout(() => this.mds.appSubTitle$.next('Systemverwaltung'));
+    this.headerService.title = 'Systemverwaltung';
+    this.headerService.showAccountPanel = true;
   }
 }
