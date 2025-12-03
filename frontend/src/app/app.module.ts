@@ -41,6 +41,7 @@ import { StarterComponent } from './app-root/starter/starter.component';
 import { TestModeInterceptor } from './test-mode.interceptor';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { HeaderComponent } from './app-root/header/header.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -54,28 +55,28 @@ import { MatExpansionModule } from '@angular/material/expansion';
         StarterComponent
     ],
     bootstrap: [AppComponent], imports: [ApplicationModule,
-        BrowserModule,
-        BrowserAnimationsModule,
-        MatBadgeModule,
-        MatButtonModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatMenuModule,
-        MatProgressBarModule,
-        MatRadioModule,
-        MatTabsModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        ReactiveFormsModule,
-        RouterModule,
-        AppRoutingModule,
-        SharedModule,
-        CdkAccordionModule,
-        MatExpansionModule], providers: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    RouterModule,
+    AppRoutingModule,
+    SharedModule,
+    CdkAccordionModule,
+    MatExpansionModule, HeaderComponent], providers: [
         BackendService,
         MatDialog,
         {

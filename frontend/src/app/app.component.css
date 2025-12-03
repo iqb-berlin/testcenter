@@ -23,17 +23,6 @@
   cursor: inherit;
 }
 
-.logo {
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 999;
-}
-
-div.logo img {
-  width: 100px;
-}
-
 #main-alert-container {
   position: fixed !important;
 
