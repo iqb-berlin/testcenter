@@ -49,17 +49,25 @@ export const probeBackendApi = (): Chainable => cy.url()
     cy.wait('@waitForConfig', { timeout: 30000 });
   });
 
-export const resetBackendData = (): void => {
+export const resetBackendData = (): Chainable => {
+  cy.log('🔄 Setze Backend-Daten zurück');
   cy.request({
     url: `${Cypress.env('urls').backend}/version`,
     headers: { TestMode: 'prepare-integration' }
   })
-    .its('status').should('eq', 200);
+    .its('status')
+    .should('eq', 200)
+    .then(() => cy.log('✅ Version-Endpoint erfolgreich'));
+
   cy.request({
     url: `${Cypress.env('urls').backend}/flush-broadcasting-service`,
     headers: { TestMode: 'integration' }
   })
-    .its('status').should('eq', 200);
+    .its('status')
+    .should('eq', 200)
+    .then(() => cy.log('✅ Broadcasting-Service geflushed'));
+
+  return cy.wrap(null);
 };
 
 export const disableSimplePlayersInternalDebounce = (): void => {
