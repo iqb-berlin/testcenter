@@ -218,7 +218,7 @@ class TestDAO extends DAO {
     $this->_(
       'update tests set laststate = :laststate, timestamp_server = :timestamp where id = :id',
       [
-        ':laststate' => json_encode($newState['newState']),
+        ':laststate' => json_encode((object)$newState['newState']),
         ':id' => $testId,
         ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
@@ -262,7 +262,7 @@ class TestDAO extends DAO {
       values (:testId, :unitName, :laststate, :laststate_update_ts, :originalUnitId)
       on duplicate key update laststate = :laststate, laststate_update_ts = :laststate_update_ts;',
       [
-        ':laststate' => json_encode($newState['newState']),
+        ':laststate' => json_encode((object)$newState['newState']),
         ':laststate_update_ts' => json_encode($newState['updateTs']),
         ':testId' => $testId,
         ':unitName' => $unitName,

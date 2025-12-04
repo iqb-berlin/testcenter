@@ -88,7 +88,7 @@ class WorkspaceController extends Controller {
 
   public static function deleteResponses(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $groups = RequestBodyParser::getRequiredElement($request, 'groups');
+    $groups = RequestBodyParser::getRequiredField($request, 'groups');
 
     foreach ($groups as $group) {
       self::adminDAO()->deleteResultData($workspaceId, $group);
@@ -101,7 +101,7 @@ class WorkspaceController extends Controller {
 
   public static function deleteResponsesByTest(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $setsToDelete = RequestBodyParser::getElementsFromArray(
+    $setsToDelete = RequestBodyParser::getArrayOfFieldsets(
       $request,
       ['loginName' => 'REQUIRED', 'code' => '', 'nameSuffix' => '', 'bookletName' => 'REQUIRED'],
       'personSessions'
@@ -188,7 +188,7 @@ class WorkspaceController extends Controller {
 
   public static function getFilesWithDependencies(Request $request, Response $response) {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $names = RequestBodyParser::getRequiredElement($request, 'body');
+    $names = RequestBodyParser::getRequiredField($request, 'body');
 
     $workspace = new Workspace($workspaceId);
     $files = $workspace->workspaceDAO->getFilesByNames($names);
@@ -206,7 +206,7 @@ class WorkspaceController extends Controller {
    */
   public static function deleteFiles(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
+    $filesToDelete = RequestBodyParser::getRequiredField($request, 'f');
 
     $workspace = new Workspace($workspaceId);
     $deletionReport = $workspace->deleteFiles($filesToDelete);
@@ -262,7 +262,7 @@ class WorkspaceController extends Controller {
 
   public static function deleteSysCheckReports(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $checkIds = RequestBodyParser::getElementWithDefault($request, 'checkIds', []);
+    $checkIds = RequestBodyParser::getFieldWithDefault($request, 'checkIds', []);
 
     $sysChecksFolder = new SysChecksFolder($workspaceId);
     $fileDeletionReport = $sysChecksFolder->deleteSysCheckReports($checkIds);
