@@ -1,1 +1,44 @@
-<p>fab-form works!</p>
+<!--container-->
+<div class="fab-form-container">
+
+  <!--header-->
+  <div class="header-section">
+    <h1>Wähle aus</h1>
+    <p>Welche Symbole stehen auf deinem Zettel?</p>
+    <p>Wähle sie hier aus:</p>
+  </div>
+
+  <!--selection row-->
+  <div class="selected-row">
+    <div class="selected-buttons">
+      @for (icon of selectedIcons(); track $index) {
+        <button mat-fab [class.placeholder]="!icon">
+          <mat-icon>{{ icon?.icon }}</mat-icon>
+        </button>
+      }
+    </div>
+
+    <div class="delete-button">
+      <button mat-fab (click)="clearSelection()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!--button grid-->
+  <div class="button-grid">
+    @for (row of gridIcons; track row) {
+      @for (element of row; track element.id) {
+        <button mat-fab (click)="onIconSelect(element)">
+          <mat-icon>{{element.icon}}</mat-icon>
+        </button>
+      }
+    }
+  </div>
+
+  <!--helper-->
+  <div class="help-bubble">
+
+  </div>
+
+</div>
