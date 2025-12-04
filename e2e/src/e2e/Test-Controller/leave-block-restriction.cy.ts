@@ -2,14 +2,12 @@
 
 import {
   disableSimplePlayersInternalDebounce,
-  getFromIframe,
   loginTestTaker,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
-const mode = 'test-hot';
 
 describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: true }, () => {
   before(() => {
@@ -21,7 +19,7 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
   beforeEach(() => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
-    loginTestTaker('Test_Ctrl-21', '123', mode);
+    loginTestTaker('Test_Ctrl-21', '123');
   });
 
   it('leave unit: display a warning message', () => {
@@ -53,7 +51,7 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
   beforeEach(() => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
-    loginTestTaker('Test_Ctrl-22', '123', mode);
+    loginTestTaker('Test_Ctrl-22', '123');
   });
 
   it('leave testlet: display no warning message', () => {

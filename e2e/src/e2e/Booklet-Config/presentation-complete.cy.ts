@@ -7,8 +7,6 @@ import {
   visitLoginPage
 } from '../utils';
 
-const mode = 'test-hot';
-
 // TODO check presentation-complete hier wieder aktivieren (skip entfernen), wenn stabil headless läuft
 /*
 presentation/response-complete machen die Tests headless instabil.
@@ -29,7 +27,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('OFF (default): forward', () => {
-    loginTestTaker('Bklt_Config-1', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123');
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.contains('Aufgabe darf nicht verlassen werden')
@@ -39,7 +37,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('OFF (default): backward', () => {
-    loginTestTaker('Bklt_Config-1', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123');
     cy.get('[data-cy="unit-navigation-forward"]');
     cy.get('[data-cy="unit-navigation-backward"]');
     cy.contains('Aufgabe darf nicht verlassen werden')
@@ -49,7 +47,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ON: forward', () => {
-    loginTestTaker('Bklt_Config-2', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123');
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
@@ -81,7 +79,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ON: backward', () => {
-    loginTestTaker('Bklt_Config-2', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123');
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
@@ -110,7 +108,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ALWAYS: forward', () => {
-    loginTestTaker('Bklt_Config-3', '123', mode);
+    loginTestTaker('Bklt_Config-3', '123');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     //wait for response complete
@@ -135,7 +133,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ALWAYS: backward', () => {
-    loginTestTaker('Bklt_Config-3', '123', mode);
+    loginTestTaker('Bklt_Config-3', '123');
     getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
     //wait for response complete

@@ -5,18 +5,14 @@ import {
   disableSimplePlayersInternalDebounce,
   forwardTo,
   getFromIframe,
-  gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
-  logoutTestTaker, logoutTestTakerDemo,
+  logoutTestTakerDemo,
   openSampleWorkspace,
   probeBackendApi,
-  resetBackendData, visitLoginPage
+  resetBackendData,
+  visitLoginPage,
+  insertCredentials
 } from '../utils';
-
-// declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
-const TesttakerName = 'Test_Ctrl-2';
-const TesttakerPassword = '123';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   before(() => {
@@ -25,7 +21,10 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     resetBackendData();
     probeBackendApi();
     visitLoginPage();
-    loginTestTaker(TesttakerName, TesttakerPassword, 'test');
+    insertCredentials('Test_Ctrl-2', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   });
 
   beforeEach(disableSimplePlayersInternalDebounce);

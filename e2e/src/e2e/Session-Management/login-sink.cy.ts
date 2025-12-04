@@ -1,4 +1,9 @@
-import { insertCredentials, probeBackendApi, resetBackendData, visitLoginPage } from '../utils';
+import {
+  insertCredentials,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPage }
+  from '../utils';
 
 describe('The login-sink', () => {
   before(() => {

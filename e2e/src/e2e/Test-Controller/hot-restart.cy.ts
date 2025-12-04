@@ -28,7 +28,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-7', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -169,7 +169,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-7', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-7', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -254,7 +254,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-8', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-8', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -334,7 +334,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-9', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-9', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);

@@ -6,8 +6,6 @@ import {
   visitLoginPage
 } from '../utils';
 
-const mode = 'test-hot';
-
 describe('check parameter: unit-time-left-warnings', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
@@ -20,7 +18,7 @@ describe('check parameter: unit-time-left-warnings', { testIsolation: true }, ()
   });
 
   it('1 second before end of time', () => {
-    loginTestTaker('Bklt_Config-1', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123');
     // snackbar will be shown 1 second before the time is expired
     // because the testlet have only 1 second, the message will be displayed directly
     cy.get('.snackbar-timerWarning');

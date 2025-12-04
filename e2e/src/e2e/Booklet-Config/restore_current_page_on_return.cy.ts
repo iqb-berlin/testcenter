@@ -8,8 +8,6 @@ import {
   visitLoginPage
 } from '../utils';
 
-const mode = 'test-hot';
-
 describe('check parameter: restore_current_page_on_return', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
@@ -22,7 +20,7 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('Bklt_Config-1', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123');
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
     cy.wait(1000); // wait for debounce
@@ -33,7 +31,7 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
   });
 
   it('ON', () => {
-    loginTestTaker('Bklt_Config-2', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123');
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();

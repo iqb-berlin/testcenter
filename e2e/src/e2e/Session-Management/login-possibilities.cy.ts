@@ -1,6 +1,7 @@
 import {
   insertCredentials,
-  probeBackendApi, resetBackendData,
+  probeBackendApi,
+  resetBackendData,
   visitLoginPage
 } from '../utils';
 

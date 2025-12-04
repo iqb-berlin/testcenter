@@ -27,7 +27,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-3', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-3', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -168,7 +168,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-4', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-4', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -253,7 +253,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-5', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-5', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);
@@ -333,7 +333,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
-      loginTestTaker('Test_Ctrl-6', '123', 'test-hot');
+      loginTestTaker('Test_Ctrl-6', '123');
     });
 
     beforeEach(disableSimplePlayersInternalDebounce);

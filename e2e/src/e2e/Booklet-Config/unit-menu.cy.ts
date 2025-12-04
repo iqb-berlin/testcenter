@@ -6,8 +6,6 @@ import {
   visitLoginPage
 } from '../utils';
 
-const mode = 'test-hot';
-
 describe('check parameter: unit-menu', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
@@ -20,13 +18,13 @@ describe('check parameter: unit-menu', { testIsolation: true }, () => {
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('Bklt_Config-1', '123', mode);
+    loginTestTaker('Bklt_Config-1', '123');
     cy.get('[data-cy="unit-menu"]')
       .should('not.exist');
   });
 
   it('FULL', () => {
-    loginTestTaker('Bklt_Config-2', '123', mode);
+    loginTestTaker('Bklt_Config-2', '123');
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
