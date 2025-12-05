@@ -67,10 +67,12 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 1', () => {
       gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
       gotoPage(0);
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -79,7 +81,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 2', () => {
       forwardTo('Aufgabe2');
-      getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg2"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -88,7 +91,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 3', () => {
       forwardTo('Aufgabe3');
-      getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -106,10 +110,12 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('navigate backwards: the last answer must be there', () => {
       backwardsTo('Aufgabe2');
-      getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg2"]')
         .should('be.checked');
       backwardsTo('Aufgabe1');
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
         .should('be.checked');
     });
 
@@ -193,10 +199,12 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 1', () => {
       gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
       gotoPage(0);
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -205,7 +213,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 2', () => {
       forwardTo('Aufgabe2');
-      getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -214,7 +223,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 3', () => {
       forwardTo('Aufgabe3');
-      getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -281,10 +291,12 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 1', () => {
       gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
       gotoPage(0);
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -293,7 +305,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 2', () => {
       forwardTo('Aufgabe2');
-      getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -302,7 +315,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
 
     it('Complete all question-elements in Aufgabe 3', () => {
       forwardTo('Aufgabe3');
-      getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -360,10 +374,12 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
     it('Complete all question-elements in Aufgabe 1', () => {
       gotoPage(1);
-      getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
       gotoPage(0);
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -372,7 +388,8 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
     it('Complete all question-elements in Aufgabe 2', () => {
       forwardTo('Aufgabe2');
-      getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio2-Aufg2"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved
@@ -381,7 +398,8 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
     it('Complete all question-elements in Aufgabe 3', () => {
       forwardTo('Aufgabe3');
-      getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg3"]')
         .click()
         .should('be.checked');
       // some time to ensure that the answer is saved

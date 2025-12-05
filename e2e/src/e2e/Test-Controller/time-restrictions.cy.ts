@@ -104,15 +104,19 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg3"]')
+      .click()
+      .should('be.checked');
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {
@@ -181,15 +185,19 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg3"]')
+      .click()
+      .should('be.checked');
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {

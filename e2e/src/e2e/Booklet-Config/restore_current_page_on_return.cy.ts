@@ -35,15 +35,18 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="next-unit-page"]')
+      .click()
     cy.wait(1000); // wait for debounce
     reload();
     cy.wait(1000);
-    getFromIframe('[data-pagenr="2"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-pagenr="2"]')
       .should('have.attr', 'style', 'display: block;');
-    getFromIframe('[data-cy="previous-unit-page"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="previous-unit-page"]')
+      .click()
   });
 });
 

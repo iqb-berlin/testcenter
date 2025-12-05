@@ -20,7 +20,8 @@ describe('check parameter: allow_player_to_terminate_test', { testIsolation: tru
 
   it('ON (default)', () => {
     loginTestTaker('Bklt_Config-1', '123');
-    getFromIframe('[data-cy="end-unit"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="end-unit"]')
       .should('be.enabled');
   });
 
@@ -34,24 +35,26 @@ describe('check parameter: allow_player_to_terminate_test', { testIsolation: tru
     cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
       .should('be.visible')
       .click();
-    cy.contains('Aufgabe2')
-    getFromIframe('[data-cy="end-unit"]')
+    cy.contains('Aufgabe2');
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="end-unit"]')
       .should('be.disabled');
   });
 
   it('LAST_UNIT', () => {
     loginTestTaker('Bklt_Config-3', '123');
-    getFromIframe('[data-cy="end-unit"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="end-unit"]')
       .should('be.disabled');
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe2');
-    getFromIframe('[data-cy="end-unit"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="end-unit"]')
       .should('be.enabled');
   });
 });
-
 
 
 

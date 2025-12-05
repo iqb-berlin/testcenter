@@ -93,8 +93,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     });
 
     it('presentation-complete: forward/backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
@@ -134,8 +136,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-backward"]')
         .click();
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-forward"]')
@@ -169,8 +173,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="page-navigation-forward"]')
@@ -207,8 +213,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     });
 
     it('presentation-complete: forward/backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="page-navigation-forward"]')
@@ -221,8 +229,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')
@@ -245,8 +255,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     });
 
     it('responses-complete: forward/backward', () => {
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="page-navigation-forward"]')
@@ -270,8 +282,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .contains('Aufgabe2')
       cy.get('[data-cy="page-navigation-backward"]')
         .click();
-      getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-        .click();
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
       //wait for response complete
       cy.wait(2000);
       cy.get('[data-cy="unit-navigation-backward"]')

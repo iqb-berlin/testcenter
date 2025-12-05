@@ -90,7 +90,8 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('Complete all question-elements in Aufgabe 1', () => {
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
     // some time to ensure that the answer is saved
@@ -100,7 +101,8 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('navigate backwards and verify that the last answer is there', () => {
     forwardTo('Aufgabe2');
     backwardsTo('Aufgabe1');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
 
@@ -124,7 +126,8 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
   });
 

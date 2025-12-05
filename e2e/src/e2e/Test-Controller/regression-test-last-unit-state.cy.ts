@@ -42,14 +42,17 @@ describe('Test Controller', { testIsolation: false }, () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2"]')
       .click();
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('unit 1 - input');
     cy.wait(1000);
     forwardTo('Ⓐ Beginner Unit');
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('unit 2 - input');
     cy.wait(1000);
-    getFromIframe('#end-unit')
+    getFromIframe('iframe.unitHost')
+      .find('#end-unit')
       .click();
     // response outputs are ordered by groupname, loginname, code, unitname, originalUnitId (see AdminDAO)
     getResponses()

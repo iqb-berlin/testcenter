@@ -19,7 +19,7 @@ export const visitLoginPage = () => {
   cy.get('[data-cy="login-admin"]')
     .should('be.visible');
   cy.get('[formcontrolname="name"]')
-    .should(`be.visible`)
+    .should(`be.visible`);
   cy.contains('Testmode!').should('be.visible');
   cy.url().should('include', '/#/r/login');
   cy.url().should('include', 'testMode=true');
@@ -133,7 +133,7 @@ export const logoutTestTakerHot = (): Chainable => {
 
     return cy.get('[data-cy="login-admin"]').should('be.visible');
   });
-}
+};
 
 export const logoutTestTakerDemo = (): Chainable => {
   const baseUrl = Cypress.config().baseUrl;
@@ -337,7 +337,7 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
   throw new Error(`Unknown filetype: ${fileType}`);
 };
 
-export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {
+export const getFromIframeAlt = (selector: string): Chainable<JQuery<HTMLElement>> => {
   cy.get('iframe')
     .its('0.contentDocument.body')
     .as('iframeBody')
@@ -345,6 +345,16 @@ export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> 
   return cy.get('@iframeBody')
     .find(selector);
 };
+
+export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {
+  cy.get(selector)
+    .its('0.contentDocument.body')
+    .should('not.be.empty')
+    .then(cy.wrap)
+    .as('iframeBody')
+  return cy.get('@iframeBody')
+};
+
 
 export const forwardTo = (expectedLabel: string) => {
   cy.get('[data-cy="unit-navigation-forward"]')

@@ -33,9 +33,11 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('adapt on the basis of values', () => {
-    getFromIframe('#var3')
+    getFromIframe('iframe.unitHost')
+      .find('#var3')
       .type('3');
-    getFromIframe('#var4')
+    getFromIframe('iframe.unitHost')
+      .find('#var4')
       .type('3');
     forwardTo('Ⓒ Professional Unit');
     expectUnitMenuToBe(['decision-unit', 'professional-unit']);
@@ -43,13 +45,17 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
 
   it('adapt on the basis of results of the autocoder', () => {
     backwardsTo('Decision Unit');
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('a');
-    getFromIframe('#var2')
+    getFromIframe('iframe.unitHost')
+      .find('#var2')
       .type('anything');
-    getFromIframe('#var3')
+    getFromIframe('iframe.unitHost')
+      .find('#var3')
       .clear();
-    getFromIframe('#var4')
+    getFromIframe('iframe.unitHost')
+      .find('#var4')
       .clear();
     cy.wait(1000);
     forwardTo('Ⓑ Advanced Unit');

@@ -13,6 +13,7 @@ presentation/response-complete machen die Tests headless instabil.
 Daher sollen diese Funktionen nur noch in einem Test getestet werden.
 Das erfolgt nun in Test-Controller/Nav-Restriction. Wenn dauerhaft Stabilität
 gewährleistet werden kann, können Tests auch hier wieder aktiviert werden.
+Dazu im verwendeten Booklet presentation-/response-complete ON setzen!
 */
 
 describe.skip('check parameter: response-complete', { testIsolation: true }, () => {
@@ -51,8 +52,9 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="next-unit-page"]')
+      .click()
     //wait for presentation-complete
     cy.wait(2000);
     cy.get('[data-cy="unit-menu"]')
@@ -64,10 +66,13 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
       .find('[data-cy="dialog-confirm"]')
       .click();
     cy.contains('Aufgabe1');
-    getFromIframe('[data-cy="previous-unit-page"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="previous-unit-page"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     //wait for response complete
     cy.wait(2000);
     cy.get('[data-cy="unit-menu"]')
@@ -85,12 +90,15 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.contains('mat-dialog-container', 'Vollbild')
       .find('[data-cy="dialog-cancel"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     //wait for response complete
     cy.wait(2000);
-    getFromIframe('[data-cy="next-unit-page"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="next-unit-page"]')
+      .click()
     //wait for presentation-complete
     cy.wait(2000);
     cy.get('[data-cy="unit-menu"]')
@@ -123,8 +131,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.contains('Aufgabe1');
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     //wait for response complete
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -136,8 +146,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
 
   it('ALWAYS: backward', () => {
     loginTestTaker('Bklt_Config-3', '123');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     //wait for response complete
     cy.wait(2000);
     cy.get('[data-cy="page-navigation-forward"]')
@@ -159,8 +171,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
       .click();
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     //wait for response complete
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
