@@ -28,10 +28,9 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-7', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     it('start a test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
@@ -169,10 +168,9 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-7', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     it('start a test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
@@ -254,10 +252,9 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-8', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
       logoutTestTakerHot();
@@ -334,10 +331,9 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-9', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
       logoutTestTakerHot();

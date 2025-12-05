@@ -17,9 +17,8 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     visitLoginPage();
   });
 
-  beforeEach(disableSimplePlayersInternalDebounce);
-
   it('start adaptive booklet with predefined states', () => {
+    disableSimplePlayersInternalDebounce();
     insertCredentials('test', 'user123');
     cy.get('[data-cy="login-user"]')
       .click();
@@ -60,6 +59,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   it('start adaptive booklet with predefined states', () => {
     logoutTestTakerHot();
     visitLoginPage();
+    disableSimplePlayersInternalDebounce();
     insertCredentials('test-review', 'user123');
     cy.get('[data-cy="login-user"]')
       .click();

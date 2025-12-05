@@ -20,12 +20,11 @@ describe('check response & presentation from booklet-config', { testIsolation: f
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-23', '123');
     });
 
-    beforeEach(disableSimplePlayersInternalDebounce);
-
-   it('presentation/response-complete have to be OFF in booklet-config', () => {
+    it('presentation/response-complete have to be OFF in booklet-config', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.contains('Aufgabe darf nicht verlassen werden')
@@ -34,7 +33,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .contains('Aufgabe1');
     });
 
-   it('presentation/response-complete have to be ON in testlet', () => {
+    it('presentation/response-complete have to be ON in testlet', () => {
      cy.get('[data-cy="unit-navigation-forward"]')
         .click();
      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
@@ -55,8 +54,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
   describe('response & presentation = OFF', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-24', '123');
     });
 
@@ -98,8 +97,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
   describe('response & presentation = ON ', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-25', '123');
     });
 
@@ -187,8 +186,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
   describe('response & presentation = ALWAYS ', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-26', '123');
     });
 

@@ -19,8 +19,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
   describe('response & presentation = OFF', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-18', '123');
     });
 
@@ -64,8 +64,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
   describe('response & presentation = ON ', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-19', '123');
     });
 
@@ -154,8 +154,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
   describe('response & presentation = ALWAYS ', { testIsolation: true }, () => {
 
     beforeEach(() => {
-      disableSimplePlayersInternalDebounce();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-20', '123');
     });
 

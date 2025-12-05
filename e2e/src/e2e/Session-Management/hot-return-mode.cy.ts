@@ -1,5 +1,5 @@
 import {
-  deleteDownloadsFolder,
+  deleteDownloadsFolder, disableSimplePlayersInternalDebounce,
   getResultFileRows,
   loginSuperAdmin,
   loginTestTaker,
@@ -21,6 +21,7 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
   });
 
   it('start first session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-7', '201');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
@@ -30,12 +31,14 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
   });
 
   it('continue the test with login from first session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-7', '201');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
 
   it('start a second session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-8', '202');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
@@ -45,6 +48,7 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
   });
 
   it('continue the test with login from second session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-8', '202');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');

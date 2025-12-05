@@ -11,7 +11,6 @@ import {
 
 describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation: true }, () => {
   before(() => {
-    disableSimplePlayersInternalDebounce();
     resetBackendData();
     probeBackendApi();
   });
@@ -19,6 +18,7 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
   beforeEach(() => {
     disableSimplePlayersInternalDebounce();
     visitLoginPage();
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('Test_Ctrl-21', '123');
   });
 
@@ -43,14 +43,13 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
 
 describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsolation: true }, () => {
   before(() => {
-    disableSimplePlayersInternalDebounce();
     resetBackendData();
     probeBackendApi();
   });
 
   beforeEach(() => {
-    disableSimplePlayersInternalDebounce();
     visitLoginPage();
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('Test_Ctrl-22', '123');
   });
 

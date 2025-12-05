@@ -21,13 +21,12 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     resetBackendData();
     probeBackendApi();
     visitLoginPage();
+    disableSimplePlayersInternalDebounce();
     insertCredentials('Test_Ctrl-2', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   });
-
-  beforeEach(disableSimplePlayersInternalDebounce);
 
   it('start a review-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')

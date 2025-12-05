@@ -27,12 +27,11 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-3', '123');
     });
 
-    beforeEach(disableSimplePlayersInternalDebounce);
-
-   it('start a test without booklet selection', () => {
+  it('start a test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Startseite');
     });
@@ -168,10 +167,9 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-4', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     it('start a test without booklet selection', () => {
       cy.get('[data-cy="unit-title"]')
@@ -253,10 +251,9 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-5', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
      logoutTestTakerHot();
@@ -333,10 +330,9 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     before(() => {
       cleanUp();
       visitLoginPage();
+      disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-6', '123');
     });
-
-    beforeEach(disableSimplePlayersInternalDebounce);
 
     after(() => {
       logoutTestTakerHot();

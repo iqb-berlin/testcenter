@@ -1,12 +1,12 @@
 import {
   convertResultsSeperatedArrays,
-  deleteDownloadsFolder,
+  deleteDownloadsFolder, disableSimplePlayersInternalDebounce,
   loginSuperAdmin,
   loginTestTaker,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage,
+  visitLoginPage
 
 } from '../utils';
 
@@ -24,6 +24,7 @@ describe('check hot-restart-mode functions', { testIsolation: true }, () => {
   });
 
   it('start first session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-9', '203');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
@@ -33,6 +34,7 @@ describe('check hot-restart-mode functions', { testIsolation: true }, () => {
   });
 
   it('start a second session', () => {
+    disableSimplePlayersInternalDebounce();
     loginTestTaker('SM-9', '203');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/unit/CY-Unit.Sample-101/.*`)).as('waitUnitLoad');
     cy.get('[data-cy="unit-title"]')
