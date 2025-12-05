@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-## [next]
+## 17.4.2
 ### Bugfix
 * Wird während des Testladens das Fenster geschlossen, konnte es u.U. dazu kommen, dass die Testperson und die Testleiterkonsole der gesamten Gruppe ausgesperrt wurden. Dies ist nun behoben.
 
