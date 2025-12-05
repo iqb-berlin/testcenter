@@ -1271,6 +1271,61 @@ test-backend-initialization:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
 
+test-e2e-booklet-configuration:
+  stage: test-e2e
+  allow_failure: true
+  needs:
+    - build-backend
+    - build-frontend
+    - build-broadcaster
+    - build-file-server
+    - build-e2e
+  rules:
+    # - !reference [ .e2e-feature-rules, rules ] # Temporary deactivation of pipeline jobs for feature branches
+    - !reference [ .master_pr_rules, rules ]
+    - if: $CI_COMMIT_TAG
+      when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
+    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  before_script:
+    - export SPEC=Booklet-Config/**/*
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker login -u ${CI_DEPENDENCY_PROXY_USER} -p ${CI_DEPENDENCY_PROXY_PASSWORD} ${CI_DEPENDENCY_PROXY_SERVER}
+    - echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY}
+    - docker pull --quiet ${TRAEFIK_BASE_IMAGE}
+    - docker pull --quiet ${DB_BASE_IMAGE}
+    - docker pull --quiet ${CACHE_SERVICE_BASE_IMAGE}
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+    - docker pull --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag
+      ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
+    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
+  script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file e2e/docker-compose.system-test-headless.yml
+      up --abort-on-container-exit --exit-code-from=e2e
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
 test-e2e-group-monitor:
   stage: test-e2e
   allow_failure: true

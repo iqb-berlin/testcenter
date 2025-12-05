@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>Logins für Cypress Test: Booklet-Config</Description>
+  </Metadata>
+
+  <Group id="bklt-config" label="Bklt-Config">
+    <Login mode="run-hot-restart" name="Bklt_Config-1" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-1</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-2" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-2</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-3" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-3</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-4" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-4</Booklet>
+    </Login>
+  </Group>
+
+</Testtakers>
+

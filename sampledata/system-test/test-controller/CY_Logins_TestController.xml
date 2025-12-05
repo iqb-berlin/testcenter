@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>Logins für Cypress Test: Test-Controller</Description>
+  </Metadata>
+
+  <Group id="demo" label="Demo">
+    <Login mode="run-demo" name="Test_Ctrl-1" pw="123">
+      <Booklet>Cy-Bklt_TC-1</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="review" label="Review">
+    <Login mode="run-review" name="Test_Ctrl-2" pw="123">
+      <Booklet>Cy-Bklt_TC-2</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="hot-return" label="Hot-Return">
+    <Login mode="run-hot-return" name="Test_Ctrl-3" pw="123">
+      <Booklet>Cy-Bklt_TC-3</Booklet>
+    </Login>
+    <Login mode="run-hot-return" name="Test_Ctrl-4" pw="123">
+      <Booklet>Cy-Bklt_TC-3</Booklet>
+    </Login>
+    <Login mode="run-hot-return" name="Test_Ctrl-5" pw="123">
+      <Booklet>Cy-Bklt_TC-3</Booklet>
+    </Login>
+    <Login mode="run-hot-return" name="Test_Ctrl-6" pw="123">
+      <Booklet>Cy-Bklt_TC-3</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="hot-restart" label="Hot-Restart">
+    <Login mode="run-hot-restart" name="Test_Ctrl-7" pw="123">
+      <Booklet>Cy-Bklt_TC-4</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-8" pw="123">
+      <Booklet>Cy-Bklt_TC-4</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-9" pw="123">
+      <Booklet>Cy-Bklt_TC-4</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="time-restr" label="Time-Restr">
+    <Login mode="run-hot-return" name="Test_Ctrl-10" pw="123">
+      <Booklet>Cy-Bklt_TC-5</Booklet>
+    </Login>
+    <Login mode="run-hot-return" name="Test_Ctrl-11" pw="123">
+      <Booklet>Cy-Bklt_TC-5</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-12" pw="123">
+      <Booklet>Cy-Bklt_TC-5</Booklet>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-13" pw="123">
+      <Booklet>Cy-Bklt_TC-5</Booklet>
+    </Login>
+    <Login mode="run-review" name="Test_Ctrl-14" pw="123">
+      <Booklet>Cy-Bklt_TC-5</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-15" pw="123">
+      <Booklet>Cy-Bklt_TC-6</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-16" pw="123">
+      <Booklet>Cy-Bklt_TC-7</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-17" pw="123">
+      <Booklet>Cy-Bklt_TC-8</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="tslt-restr" label="Tslt-Restr">
+    <!--Nav-Restriction-->
+    <Login mode="run-hot-restart" name="Test_Ctrl-18" pw="123">
+      <Booklet>Cy-Bklt_TC-9</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-19" pw="123">
+      <Booklet>Cy-Bklt_TC-10</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-20" pw="123">
+      <Booklet>Cy-Bklt_TC-11</Booklet>
+    </Login>
+    <!--Leave-Block-Restriction-->
+    <Login mode="run-hot-restart" name="Test_Ctrl-21" pw="123">
+      <Booklet>Cy-Bklt_TC-12</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-22" pw="123">
+      <Booklet>Cy-Bklt_TC-13</Booklet>
+    </Login>
+  </Group>
+
+  <Group id="bklt-cfg-restr" label="Bklt-Cfg-Restr">
+    <Login mode="run-hot-restart" name="Test_Ctrl-23" pw="123">
+      <Booklet>Cy-Bklt_TC-14</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-24" pw="123">
+      <Booklet>Cy-Bklt_TC-15</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-25" pw="123">
+      <Booklet>Cy-Bklt_TC-16</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-26" pw="123">
+      <Booklet>Cy-Bklt_TC-17</Booklet>
+    </Login>
+  </Group>
+
+</Testtakers>

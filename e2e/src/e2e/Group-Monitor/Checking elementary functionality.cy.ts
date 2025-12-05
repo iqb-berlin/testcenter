@@ -7,8 +7,6 @@ import {
 
 describe('Check Login Possibilities', () => {
   before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });

@@ -23,8 +23,6 @@ describe('Workspace-Admin-files', () => {
     openSampleWorkspace(1);
   });
 
-  afterEach(logoutAdmin);
-
   it('download files', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
       .click();

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2022-10-11T09:30:00+00:00">
+    <Id>CY-Unit.Sample-102</Id>
+    <Label>Aufgabe 2</Label>
+    <Description>This is an Unit</Description>
+  </Metadata>
+
+ <Definition player="verona-player-simple-6.0">
+    <![CDATA[
+      <fieldset>
+        <legend>Aufgabe2: Fieldset1: click some radio fields</legend>
+        <div style="flex: 50%; padding: 2px">
+          <p><b>Testung Controller: Aufgabe2: click some radio fields</b></p>
+          <label><input data-cy= "TestController-radio1-Aufg2" type="radio" name="radio1" value="true"/>radio1: click non requiered field</label>
+          <label><input data-cy= "TestController-radio2-Aufg2" type="radio" name="radio2" value="true"/>radio2: click non requiered field</label>
+        </div>
+      </fieldset>
+   ]]>
+  </Definition>
+</Unit>

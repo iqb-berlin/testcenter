@@ -21,8 +21,6 @@ describe('Workspace-Admin-results', () => {
     openSampleWorkspace(1);
   });
 
-  afterEach(logoutAdmin);
-
   it('download the responses of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();

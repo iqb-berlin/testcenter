@@ -1,10 +1,13 @@
-import { loginMonitor, probeBackendApi, resetBackendData, visitLoginPage } from '../utils';
+import {
+  loginMonitor,
+  probeBackendApi,
+  resetBackendData,
+  visitLoginPage }
+  from '../utils';
 
 describe('Group-Monitor User', () => {
   before(() => {
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 

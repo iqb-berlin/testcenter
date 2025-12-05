@@ -9,8 +9,6 @@ import {
 describe('Study-Monitor User', () => {
   before(() => {
     deleteDownloadsFolder();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     resetBackendData();
     probeBackendApi();
   });
@@ -19,7 +17,7 @@ describe('Study-Monitor User', () => {
   });
 
   it('start a study monitor', () => {
-    loginMonitor('tsm', '401');
+    loginMonitor('test-study-monitor', 'user123');
 
     cy.get('[data-cy="SM-1"]')
       .should('exist')
