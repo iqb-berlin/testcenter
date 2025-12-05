@@ -1,13 +1,11 @@
 import {
   addWorkspaceAdmin,
   clickSuperadminSettings,
-  insertCredentials,
   loginSuperAdmin,
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
   resetBackendData,
-  userData,
   visitLoginPage
 } from '../utils';
 
@@ -57,7 +55,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="change-superadmin"]')
       .click();
     cy.get('[formcontrolname="pw"]')
-      .type(userData.SuperAdminPassword);
+      .type('user123');
     cy.get('[data-cy="dialog-change-superadmin"] [type="submit"]')
       .click();
     cy.get('[formcontrolname="pw"]')
