@@ -53,4 +53,21 @@ describe('Settings (setting-tab)', () => {
     cy.contains('Maintenance works');
     cy.contains('NewName');
   });
+
+  it('clear a message for maintenance works', () => {
+    cy.get('[data-cy="superadmin-tabs:settings"]')
+      .click();
+    cy.get('[formcontrolname="globalWarningText"]')
+      .clear();
+    cy.get('[formcontrolname="globalWarningExpiredDay"]')
+      .clear();
+    cy.get('[formcontrolname="appTitle"]')
+      .clear()
+    cy.get('[data-cy="Settings:Submit-ApplicationConfiguration"]')
+      .click();
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="logout"]')
+      .click();
+  });
 });
