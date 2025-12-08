@@ -8,7 +8,7 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
 @Component({
     selector: 'tc-attachment-manager',
     templateUrl: './attachment-manager.component.html',
-    styleUrls: ['../../../../monitor-layout.css'],
+    styleUrls: ['./monitor-layout.css'],
     standalone: false
 })
 export class AttachmentManagerComponent implements OnInit, OnDestroy {

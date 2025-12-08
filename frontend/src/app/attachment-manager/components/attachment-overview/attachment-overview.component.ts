@@ -14,7 +14,7 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
 @Component({
     templateUrl: './attachment-overview.component.html',
     styleUrls: [
-        '../../../../monitor-layout.css',
+        '../attachment-manager/monitor-layout.css',
         './attachment-overview.component.css'
     ],
     standalone: false
