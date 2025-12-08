@@ -17,7 +17,7 @@ class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
-    $body = RequestBodyParser::getElementsFromRequest($request, [
+    $body = RequestBodyParser::getFields($request, [
       'bookletName' => 'REQUIRED'
     ]);
 
@@ -167,7 +167,7 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $review = RequestBodyParser::getElementsFromRequest(
+    $review = RequestBodyParser::getFields(
       $request,
       [
         'priority' => 0, // was: p
@@ -202,7 +202,7 @@ class TestController extends Controller {
   public static function putReview(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $review = RequestBodyParser::getElementsFromRequest($request, [
+    $review = RequestBodyParser::getFields($request, [
       'priority' => 0, // was: p
       'categories' => 0, // was: c
       'entry' => 'REQUIRED', // was: e
@@ -222,7 +222,7 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $unitResponse = RequestBodyParser::getElementsFromRequest($request, [
+    $unitResponse = RequestBodyParser::getFields($request, [
       'timeStamp' => 'REQUIRED',
       'dataParts' => [],
       'OriginalUnitId' => '',
@@ -246,7 +246,7 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $statePatch = RequestBodyParser::getElementsFromArray($request, [
+    $statePatch = RequestBodyParser::getArrayOfFieldsets($request, [
       'key' => 'REQUIRED',
       'content' => 'REQUIRED',
       'timeStamp' => 'REQUIRED'
@@ -275,7 +275,7 @@ class TestController extends Controller {
   public static function putLog(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $logData = RequestBodyParser::getElementsFromArray($request, [
+    $logData = RequestBodyParser::getArrayOfFieldsets($request, [
       'key' => 'REQUIRED',
       'content' => '',
       'timeStamp' => 'REQUIRED'
@@ -305,7 +305,7 @@ class TestController extends Controller {
     $body = JSON::decode($request->getBody()->getContents());
     if (!is_array($body)) {
       // 'not being an array' is the new format
-      $statePatch = RequestBodyParser::getElementsFromArray(
+      $statePatch = RequestBodyParser::getArrayOfFieldsets(
         $request,
         [
           'key' => 'REQUIRED',
@@ -314,10 +314,10 @@ class TestController extends Controller {
         ],
         'newState'
       );
-      $originalUnitId = RequestBodyParser::getElementWithDefault($request, 'originalUnitId', '');
+      $originalUnitId = RequestBodyParser::getFieldWithDefault($request, 'originalUnitId', '');
     } else {
       // deprecated
-      $statePatch = RequestBodyParser::getElementsFromArray($request, [
+      $statePatch = RequestBodyParser::getArrayOfFieldsets($request, [
         'key' => 'REQUIRED',
         'content' => 'REQUIRED',
         'timeStamp' => 'REQUIRED'
@@ -358,7 +358,7 @@ class TestController extends Controller {
 
     if (!is_array(JSON::decode($request->getBody()->getContents()))) {
       // 'not being an array' is the new format
-      $logData = RequestBodyParser::getElementsFromArray(
+      $logData = RequestBodyParser::getArrayOfFieldsets(
         $request,
         [
           'key' => 'REQUIRED',
@@ -367,7 +367,7 @@ class TestController extends Controller {
         ],
         'logEntries');
     } else {
-      $logData = RequestBodyParser::getElementsFromArray($request, [
+      $logData = RequestBodyParser::getArrayOfFieldsets($request, [
         'key' => 'REQUIRED',
         'content' => '',
         'timeStamp' => 'REQUIRED'
@@ -395,7 +395,7 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $lockEvent = RequestBodyParser::getElementsFromRequest($request, [
+    $lockEvent = RequestBodyParser::getFields($request, [
       'timeStamp' => 'REQUIRED',
       'message' => ''
     ]);
@@ -413,7 +413,7 @@ class TestController extends Controller {
   public static function getCommands(Request $request, Response $response): Response {
     // TODO do we have to check access to test?
     $testId = (int) $request->getAttribute('test_id');
-    $lastCommandId = RequestBodyParser::getElementWithDefault($request, 'lastCommandId', null);
+    $lastCommandId = RequestBodyParser::getFieldWithDefault($request, 'lastCommandId', null);
 
     $commands = self::testDAO()->getCommands($testId, $lastCommandId);
 

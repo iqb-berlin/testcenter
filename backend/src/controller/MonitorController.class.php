@@ -62,7 +62,7 @@ class MonitorController extends Controller {
     $authToken = $request->getAttribute('AuthToken');
     $personId = $authToken->getId();
 
-    $body = RequestBodyParser::getElementsFromRequest($request, [
+    $body = RequestBodyParser::getFields($request, [
       'keyword' => 'REQUIRED',
       'arguments' => [],
       'timestamp' => 'REQUIRED',
@@ -94,7 +94,7 @@ class MonitorController extends Controller {
 
   public static function postUnlock(Request $request, Response $response): Response {
     $groupName = $request->getAttribute('group_name');
-    $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
+    $testIds = RequestBodyParser::getFieldWithDefault($request, 'testIds', []);
 
     foreach ($testIds as $testId) {
       $testSession = self::testDAO()->getTestSession($testId);
@@ -123,7 +123,7 @@ class MonitorController extends Controller {
     $authToken = $request->getAttribute('AuthToken');
 
     $groupName = $request->getAttribute('group_name');
-    $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
+    $testIds = RequestBodyParser::getFieldWithDefault($request, 'testIds', []);
 
     foreach ($testIds as $testId) {
       $testSession = self::testDAO()->getTestSession($testId);
