@@ -8,9 +8,8 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Test Controller', { testIsolation: false }, () => {
+describe('Test Controller', { testIsolation: true }, () => {
   before(() => {
-    cleanUp();
     resetBackendData();
     probeBackendApi();
   });
