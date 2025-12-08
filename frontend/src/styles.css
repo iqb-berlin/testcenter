@@ -7,22 +7,6 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.page-body {
-  overflow-x: auto;
-  position: absolute;
-  width: 100%;
-  top: 70px;
-  bottom: 0;
-}
-
-.page-header {
-  position: absolute;
-  left: 140px;
-  width: calc(100% - 140px);
-  top: 0;
-  padding: 0 10px 0 0;
-}
-
 /* has to be global because dynamic created element is not in the scope of the component */
 iframe.unitHost {
   width: 100%;

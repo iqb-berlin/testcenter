@@ -1,21 +1,18 @@
-<div class="page-body">
-  <div class="adminbackground">
+<div class="adminbackground">
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+    <a #rla="routerLinkActive"
+       mat-tab-link
+       *ngFor="let link of navLinks"
+       [routerLink]="link.path"
+       routerLinkActive
+       [active]="rla.isActive"
+       [attr.data-cy]="'superadmin-tabs:' + link.path"
+    >
+      <h2>{{link.label}}</h2>
+    </a>
+  </nav>
 
-    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-      <a #rla="routerLinkActive"
-         mat-tab-link
-         *ngFor="let link of navLinks"
-         [routerLink]="link.path"
-         routerLinkActive
-         [active]="rla.isActive"
-         [attr.data-cy]="'superadmin-tabs:' + link.path"
-      >
-        <h2>{{link.label}}</h2>
-      </a>
-    </nav>
-
-    <mat-tab-nav-panel #tabPanel>
-      <router-outlet></router-outlet>
-    </mat-tab-nav-panel>
-  </div>
+  <mat-tab-nav-panel #tabPanel>
+    <router-outlet></router-outlet>
+  </mat-tab-nav-panel>
 </div>
