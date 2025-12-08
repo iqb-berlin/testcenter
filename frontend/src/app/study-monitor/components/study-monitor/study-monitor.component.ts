@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ResultData } from '../../../workspace-admin/workspace.interfaces';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { BackendService } from '../../services/backend.service';
+import { HeaderService } from '../../../core/header.service';
 
 @Component({
     templateUrl: './study-monitor.component.html',
@@ -28,7 +29,8 @@ export class StudyMonitorComponent {
   constructor(
     private route: ActivatedRoute,
     private backendService: BackendService,
-    public mainDataService: MainDataService
+    public mainDataService: MainDataService,
+    private headerService: HeaderService,
   ) {
   }
 
@@ -41,6 +43,7 @@ export class StudyMonitorComponent {
           this.updateTable(params.ws);
         }, 10000);
       });
+      this.headerService.title = 'Studienmonitor';
     });
   }
 
