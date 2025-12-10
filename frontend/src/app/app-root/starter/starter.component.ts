@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmDialogComponent,
   CustomtextService,
@@ -10,7 +11,7 @@ import {
 import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
-import { MatDialog } from '@angular/material/dialog';
+import { HeaderService } from '../../core/header.service';
 
 @Component({
     selector: 'tc-starter',
@@ -26,15 +27,11 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  constructor(
-    private router: Router,
-    private bs: BackendService,
-    public cts: CustomtextService,
-    public mds: MainDataService,
-    public ds: SysCheckDataService,
-    public pcs: PasswordChangeService,
-    private dialog: MatDialog
-  ) { }
+
+  constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
+              public mds: MainDataService, public ds: SysCheckDataService,
+              public pcs: PasswordChangeService, private dialog: MatDialog,
+              private headerService: HeaderService) { }
 
   ngOnInit(): void {
     this.ds.networkReports = [];
@@ -74,6 +71,7 @@ export class StarterComponent implements OnInit, OnDestroy {
                 this.mds.logOut();
               }
 
+              // TODO is this subscription ever unsubscribed?
               this.pcs.showPasswordChangeDialog(
                 { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
                 { disableClose: true }
@@ -117,6 +115,8 @@ export class StarterComponent implements OnInit, OnDestroy {
         }
       });
     });
+    this.headerService.title = 'Übersicht';
+    this.headerService.showAccountPanel = true;
   }
 
   startTest(test: AccessObject): void {
@@ -191,6 +191,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.headerService.reset();
     if (this.getMonitorDataSubscription !== null) {
       this.getMonitorDataSubscription.unsubscribe();
     }

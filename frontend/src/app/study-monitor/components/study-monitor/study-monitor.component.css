@@ -1,3 +1,8 @@
+:host {
+  display: flex;
+  height: 100%;
+}
+
 .adminbackground {
   flex: 10 0 900px;
   box-shadow: 5px 10px 20px black;
@@ -5,4 +10,8 @@
   min-height: 85%;
   margin: 15px;
   padding: 25px;
+}
+
+mat-table {
+  height: 100%;
 }

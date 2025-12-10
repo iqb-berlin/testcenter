@@ -73,7 +73,6 @@
           <mat-card-content>
             <ng-container *ngFor="let loading of loadingResources; let index = index">
               <mat-progress-bar
-                color="primary"
                 [mode]="loading | progressbarmode"
                 [value]="loading.progress"
               >
@@ -99,7 +98,6 @@
             <button
               *ngIf="tcs.currentUnit && unit.parent.locked?.by == 'code'"
               mat-raised-button
-              color="primary"
               [disabled]="!clearCode.length"
               (click)="verifyCodes()"
               data-cy="unit-block-dialog-submit"

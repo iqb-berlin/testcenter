@@ -12,7 +12,7 @@ import { PageDesign } from '../../interfaces/page.interfaces';
 @Component({
     templateUrl: './capture-image.component.html',
     styleUrls: [
-        '../../../../monitor-layout.css',
+        '../attachment-manager/monitor-layout.css',
         './capture-image.component.css'
     ],
     standalone: false

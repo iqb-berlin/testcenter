@@ -1,18 +1,16 @@
 <div class="flex-row header">
   <p>System-Check: {{checkLabel}}</p>
-  <button id="syscheck-previous-step" mat-fab color="accent" matTooltip="Zurück"
+  <button id="syscheck-previous-step" mat-fab matTooltip="Zurück"
           [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done"
           [routerLink]="[ds.prevStep]">
     <mat-icon class=".material-icons.md-36">chevron_left</mat-icon>
   </button>
 
-  <button id="syscheck-next-step" mat-fab color="accent" matTooltip="Weiter"
+  <button id="syscheck-next-step" mat-fab matTooltip="Weiter"
           [disabled]="!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone"
           [routerLink]="[ds.nextStep]">
     <mat-icon>chevron_right</mat-icon>
   </button>
 </div>
 
-<div class="page-body">
-  <router-outlet></router-outlet>
-</div>
+<router-outlet></router-outlet>

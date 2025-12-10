@@ -47,13 +47,11 @@
 
   <h4>Logo</h4>
   <div class="flex-row" [style.gap.px]="5">
-    <button mat-mini-fab color="primary"
-            matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
+    <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
             (click)="hiddenimgfileinput.click()">
       <mat-icon>cloud_upload</mat-icon>
     </button>
-    <button mat-mini-fab color="primary"
-            matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
+    <button mat-mini-fab matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
             (click)="removeLogoImg()">
       <mat-icon>delete</mat-icon>
     </button>
@@ -65,7 +63,7 @@
   <h4>Hintergrundfarbe Anwendung</h4>
   <mat-form-field appearance="fill">
     <input matInput formControlName="backgroundBody" placeholder="Farbe" #backgroundInput>
-    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()" color="primary">
+    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()">
       <mat-icon>edit</mat-icon>
     </button>
   </mat-form-field>
@@ -97,8 +95,7 @@
          formControlName="backgroundBox"
          (change)="backgroundBoxInput.value = $any($event.target).value">
 
-  <button mat-raised-button color="primary"
-          data-cy="Settings:Submit-ApplicationConfiguration"
+  <button mat-raised-button data-cy="Settings:Submit-ApplicationConfiguration"
           [style.align-self]="'start'"
           [disabled]="!dataChanged" (click)="saveData()">
     Speichern

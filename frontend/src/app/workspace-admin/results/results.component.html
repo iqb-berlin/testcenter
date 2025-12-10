@@ -1,7 +1,6 @@
 <div class="columnhost flex-column">
   <div class="flex-row">
     <button
-      color="primary"
       mat-raised-button
       (click)="downloadResponsesCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
@@ -12,7 +11,6 @@
       <mat-icon>cloud_download</mat-icon>Antworten
     </button>
     <button
-      color="primary"
       mat-raised-button (click)="downloadLogsCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
       matTooltip="Download markierte Gruppen als CSV für Excel"
@@ -22,7 +20,6 @@
       <mat-icon>cloud_download</mat-icon>Logs
     </button>
     <button
-      color="primary"
       mat-raised-button
       (click)="downloadNewReviewsCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
@@ -33,7 +30,6 @@
       <mat-icon>cloud_download</mat-icon>Kommentare (neues Format)
     </button>
     <button
-      color="primary"
       mat-raised-button
       (click)="downloadReviewsCSV()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
@@ -44,7 +40,6 @@
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
     <button
-      color="primary"
       mat-raised-button
       (click)="deleteData()"
       [disabled]="!tableSelectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"

@@ -38,12 +38,12 @@ import {
   TimeRestrictionDialogData
 } from './time-restriction-dialog/time-restriction-dialog.component';
 import { ComponentUtilService } from '../shared/services/component-util.service';
+import { HeaderService } from '../core/header.service';
 
 @Component({
     selector: 'tc-group-monitor',
     templateUrl: './group-monitor.component.html',
     styleUrls: [
-        '../../monitor-layout.css',
         './group-monitor.component.css'
     ],
     standalone: false
@@ -92,7 +92,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private cts: CustomtextService,
     public mds: MainDataService,
     private addFilterDialog: MatDialog,
-    private componentUtilService: ComponentUtilService
+    private componentUtilService: ComponentUtilService,
+    private headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
@@ -122,6 +123,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
     this.tsm.resetFilters();
+
+    this.headerService.title = `${this.mds.appTitle$.value} ${this.mds.appSubTitle$.value} - ${this.groupLabel}`;
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {

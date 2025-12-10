@@ -1,32 +1,46 @@
+:host {
+  height: 100%;
+  flex: 1;
+  display: flex;
+}
+
 .adminbackground {
-  padding-top: 0;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  margin: 0 0 0 15px;
+  padding: 15px 15px 10px 15px;
+  scroll-behavior: smooth;
+  height: 100%;
 }
 
-mat-sidenav {
-  width: 350px;
-  min-width: 350px;
+.mat-drawer-content {
+  overflow: unset;
 }
 
+.mat-drawer-container {
+  flex: 1;
+}
 
-.pending {
-  opacity: 0.5;
+.mat-drawer {
+  margin: 15px 0 0 0;
+  padding: 1em;
 }
 
 .connection-status {
   text-transform: uppercase;
   color: white;
-  font-size: 80%;
-  justify-content: space-between;
   width: 100px;
   padding: 2px 10px;
   border-radius: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3px;
 }
 
 .connection-status mat-icon {
-  font-size: 100%;
-  padding: 0;
-  top: 2px;
-  vertical-align: bottom;
+  margin-right: 10px;
 }
 
 .connection-status.error {
@@ -131,10 +145,6 @@ mat-sidenav {
   color: #821123
 }
 
-mat-sidenav {
-  width: 350px;
-}
-
 #message-panel alert:first-of-type {
   background: #b2ff59;
   animation: fade 7s reverse forwards;
@@ -222,5 +232,48 @@ mat-sidenav {
      background: white;
    }
 
+}
+
+.corner-menu {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10000;
+  border-bottom-left-radius: 10px;
+  background: white;
+  display: flex;
+}
+
+.corner-menu input[type="text"] {
+  margin: 1em;
+}
+
+.toolbar {
+  padding: 15px;
+}
+
+.toolbar h2 {
+  margin-top: 0;
+}
+
+.toolbar .mat-mdc-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+.toolbar-section {
+  margin-bottom: 1em
+}
+
+.toolbar .control ~ .control {
+  margin-left: 15px;
+}
+
+.min-height-section {
+  min-height: 3em;
+}
+
+.toolbar-section-bottom {
+  position: absolute;
+  bottom: 0;
 }
 
