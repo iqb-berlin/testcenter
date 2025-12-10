@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.2/definitions/vo_Booklet.xsd">
+	<Metadata>
+		<Id>Cy-Bklt_BkltConfig-4</Id>
+		<Label>Bklt-config-4</Label>
+		<Description>Testheft der vierten Wertemöglichkeit</Description>
+	</Metadata>
+
+  <BookletConfig>
+    <!--its only important to navigated to the next page if page navibuttons are disabled -->
+    <Config key="pagingMode">buttons</Config>
+    <Config key="unit_navibuttons">FORWARD_ONLY</Config>
+    <Config key="unit_screenheader">WITH_BLOCK_TITLE</Config>
+  </BookletConfig>
+
+  <Units>
+    <Testlet id="Tslt1" label="Aufgabenblock">
+      <Restrictions>
+        <TimeMax minutes="2" leave = "confirm"/>
+      </Restrictions>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
+    </Testlet>
+  </Units>
+</Booklet>

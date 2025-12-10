@@ -1,13 +1,11 @@
 import {
   addWorkspaceAdmin,
   clickSuperadminSettings,
-  insertCredentials,
   loginSuperAdmin,
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
   resetBackendData,
-  userData,
   visitLoginPage
 } from '../utils';
 
@@ -34,15 +32,12 @@ describe('Usermanagement (user-tab)', () => {
   it('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
-    insertCredentials('newTest', 'user123');
-    cy.get('[data-cy="login-admin"]')
-      .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.contains('newTest');
+    visitLoginPage();
+    loginWorkspaceAdmin('newTest', 'user123');
   });
 
   it('set admin rights for a workspaceadmin without correct password is not possible', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-superadmin"]')
       .click();
@@ -55,12 +50,12 @@ describe('Usermanagement (user-tab)', () => {
   });
 
   it('set admin rights for a workspaceadmin with correct password', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-superadmin"]')
       .click();
     cy.get('[formcontrolname="pw"]')
-      .type(userData.SuperAdminPassword);
+      .type('user123');
     cy.get('[data-cy="dialog-change-superadmin"] [type="submit"]')
       .click();
     cy.get('[formcontrolname="pw"]')
@@ -71,14 +66,15 @@ describe('Usermanagement (user-tab)', () => {
   });
 
   it('change privileges for a workspaceadmin to read-only', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-ro"]')
       .click();
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginWorkspaceAdmin();
+    visitLoginPage();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
@@ -90,14 +86,15 @@ describe('Usermanagement (user-tab)', () => {
   });
 
   it('change privileges for a workspaceadmin to read-write', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-rw"]')
       .click();
     cy.get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginWorkspaceAdmin();
+    visitLoginPage();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password');
     cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
@@ -108,25 +105,23 @@ describe('Usermanagement (user-tab)', () => {
   });
 
   it('change the password for a workspaceadmin', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-password"]')
       .click();
     cy.get('[formcontrolname="pw"]')
-      .type('newPassword');
+      .type('ws_password_new');
     cy.get('[formcontrolname="pw_confirm"]')
-      .type('newPassword');
+      .type('ws_password_new');
     cy.get('[type="submit"]')
       .click();
     logoutAdmin();
-    insertCredentials(userData.WorkspaceAdminName, 'newPassword');
-    cy.get('[data-cy="login-admin"]')
-      .click();
-    cy.contains('Status: Angemeldet als "workspace_admin"');
+    visitLoginPage();
+    loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
 
   it('change the password for a workspaceadmin: repeated password is incorrect', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-password"]')
       .click();
@@ -138,7 +133,7 @@ describe('Usermanagement (user-tab)', () => {
   });
 
   it('delete a workspace admin', () => {
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="delete-user"]')
       .click();
@@ -147,7 +142,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="dialog-confirm"]')
       .contains('Administrator:in löschen')
       .click();
-    cy.contains(userData.WorkspaceAdminName)
+    cy.contains('workspace_admin')
       .should('not.exist');
     cy.get('[data-cy="logo"]')
       .click();

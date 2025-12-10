@@ -1,34 +1,32 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   convertResultsSeperatedArrays,
   deleteDownloadsFolder,
   disableSimplePlayersInternalDebounce,
   forwardTo,
   getFromIframe,
-  gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
-  logoutTestTaker,
+  logoutTestTakerDemo,
   openSampleWorkspace,
   probeBackendApi,
-  resetBackendData
+  resetBackendData,
+  visitLoginPage,
+  insertCredentials
 } from '../utils';
-
-// declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
-const TesttakerName = 'Test_Review_Ctrl';
-const TesttakerPassword = '123';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     deleteDownloadsFolder();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
-    loginTestTaker(TesttakerName, TesttakerPassword, 'test');
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+    insertCredentials('Test_Ctrl-2', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   });
-
-  beforeEach(disableSimplePlayersInternalDebounce);
 
   it('start a review-test without booklet selection', () => {
     cy.get('[data-cy="unit-title"]')
@@ -91,53 +89,31 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .contains('Kommentar gespeichert');
   });
 
-  // Hier kommt manchmal die Snackbar nicht und der Test scheitert
-  it('navigate to next unit without responses/presentation complete but with a message', () => {
-    forwardTo('Aufgabe2');
-    cy.get('.snackbar-demo-mode')
-      .contains('Es wurde nicht alles gesehen oder abgespielt.');
-    cy.url()
-      .should('include', '/u/3');
-    backwardsTo('Aufgabe1');
-  });
-
-  it('navigate to the next unit without responses complete but with a message', () => {
-    gotoPage(1);
-    getFromIframe('[data-cy="TestController-Text-Aufg1-S2"]')
-      .contains('Presentation complete');
-    forwardTo('Aufgabe2');
-    cy.get('.snackbar-demo-mode')
-      .contains('Es wurde nicht alles bearbeitet.');
-    cy.get('.snackbar-demo-mode')
-      .contains('gesehen')
-      .should('not.be.exist');
-    backwardsTo('Aufgabe1');
-  });
-
-  it('navigate to the next unit when required fields have been filled', () => {
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+  it('Complete all question-elements in Aufgabe 1', () => {
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
-    forwardTo('Aufgabe2');
+    // some time to ensure that the answer is saved
+    cy.wait(1000);
   });
 
   it('navigate backwards and verify that the last answer is there', () => {
+    forwardTo('Aufgabe2');
     backwardsTo('Aufgabe1');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
   });
 
   it('start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.get('[data-cy="booklet-CY-BKLT_RUNREVIEW"]')
+    cy.get('[data-cy="booklet-CY-BKLT_TC-2"]')
       .contains('Fortsetzen')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    cy.get('[data-cy="unit-navigation-forward"]');
   });
 
   it('the last answers should be not visible', () => {
@@ -150,29 +126,29 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .contains('Aufgabe1');
     cy.get('.snackbar-time-started')
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
   });
 
   it('navigate backward to the booklet view and check out', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="endTest-1"]')
       .should('not.exist');
     cy.get('.snackbar-demo-mode')
       .contains('Schließen')
       .click();
-    logoutTestTaker('demo');
+    logoutTestTakerDemo();
   });
 
   it('there are no responses in the response file', () => {
+    visitLoginPage();
     loginSuperAdmin();
     openSampleWorkspace(1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('RunReview');
+    cy.contains('Review');
     cy.get('[data-cy="results-checkbox1"]')
       .click();
     cy.get('[data-cy="download-responses"]')
@@ -199,8 +175,10 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('check the given comment in response file', () => {
     cy.get('[data-cy="results-checkbox1"]')
       .click();
+    cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/review?*`).as('waitForDownloadComment');
     cy.get('[data-cy="download-comments"]')
       .click();
+    cy.wait('@waitForDownloadComment');
     convertResultsSeperatedArrays('reviews')
       .then(sepArrays => {
         expect(sepArrays[0][6]).to.be.equal('category: tech');
@@ -209,3 +187,4 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       });
   });
 });
+

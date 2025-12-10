@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.2/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2022-10-11T09:30:00+00:00">
+    <Id>CY-Unit.Sample-104</Id>
+    <Label>End-Unit</Label>
+    <Description>This is an Unit</Description>
+  </Metadata>
+
+  <Definition player="verona-player-simple-6.0">
+    <![CDATA[
+      <fieldset>
+        <legend>Endseite: Fieldset1</legend>
+        <div style="flex: 50%; padding: 2px">
+          <p><b>Testung Controller: Ende</b></p>
+        </div>
+      </fieldset>
+    ]]>
+  </Definition>
+</Unit>

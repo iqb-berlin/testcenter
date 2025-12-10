@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.2/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2022-10-11T09:30:00+00:00">
+    <Id>CY-Unit.Sample-101</Id>
+    <Label>Aufgabe 1</Label>
+    <Description>This is an Unit</Description>
+  </Metadata>
+
+  <Definition player="verona-player-simple-6.0">
+    <![CDATA[
+      <fieldset>
+        <legend>Aufgabe1: Fieldset1: response complete forward</legend>
+        <div style="flex: 50%; padding: 2px">
+          <p><b>Testung Controller: Aufgabe1: Check response complete and presentation complete</b></p>
+          <label><input data-cy= "TestController-radio1-Aufg1" type="radio" name="radio1" value="true" required />click for response complete</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Aufgabe1: Fieldset2: Presentation Complete forward</legend>
+        <div style="flex: 50%; padding: 2px">
+          <p data-cy= "TestController-Text-Aufg1-S2"><b>Presentation complete</b></p>
+        </div>
+      </fieldset>
+   ]]>
+  </Definition>
+</Unit>

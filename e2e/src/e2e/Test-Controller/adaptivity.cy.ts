@@ -1,27 +1,27 @@
 import {
-  backwardsTo,
+  backwardsTo, cleanUp,
   disableSimplePlayersInternalDebounce,
   expectUnitMenuToBe,
   forwardTo,
-  getFromIframe,
-  loginTestTaker,
-  logoutTestTaker,
+  getFromIframe, insertCredentials,
+  logoutTestTakerHot,
   probeBackendApi,
-  resetBackendData
+  resetBackendData, visitLoginPage
 } from '../utils';
 
 describe('check adaptive functionality', { testIsolation: false }, () => {
   before(() => {
+    cleanUp();
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
+    visitLoginPage();
   });
 
-  beforeEach(disableSimplePlayersInternalDebounce);
-
   it('start adaptive booklet with predefined states', () => {
-    loginTestTaker('test', 'user123', 'code-input');
+    disableSimplePlayersInternalDebounce();
+    insertCredentials('test', 'user123');
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
@@ -33,9 +33,11 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('adapt on the basis of values', () => {
-    getFromIframe('#var3')
+    getFromIframe('iframe.unitHost')
+      .find('#var3')
       .type('3');
-    getFromIframe('#var4')
+    getFromIframe('iframe.unitHost')
+      .find('#var4')
       .type('3');
     forwardTo('Ⓒ Professional Unit');
     expectUnitMenuToBe(['decision-unit', 'professional-unit']);
@@ -43,13 +45,17 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
 
   it('adapt on the basis of results of the autocoder', () => {
     backwardsTo('Decision Unit');
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('a');
-    getFromIframe('#var2')
+    getFromIframe('iframe.unitHost')
+      .find('#var2')
       .type('anything');
-    getFromIframe('#var3')
+    getFromIframe('iframe.unitHost')
+      .find('#var3')
       .clear();
-    getFromIframe('#var4')
+    getFromIframe('iframe.unitHost')
+      .find('#var4')
       .clear();
     cy.wait(1000);
     forwardTo('Ⓑ Advanced Unit');
@@ -57,8 +63,12 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('start adaptive booklet with predefined states', () => {
-    logoutTestTaker('hot');
-    loginTestTaker('test-review', 'user123', 'starter');
+    logoutTestTakerHot();
+    visitLoginPage();
+    disableSimplePlayersInternalDebounce();
+    insertCredentials('test-review', 'user123');
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
       .click();
     expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);

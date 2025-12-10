@@ -1,0 +1,58 @@
+import {
+  disableSimplePlayersInternalDebounce,
+  getFromIframe,
+  loginTestTaker,
+  probeBackendApi,
+  reload,
+  resetBackendData,
+  visitLoginPage
+} from '../utils';
+
+describe('check parameter: restore_current_page_on_return', { testIsolation: true }, () => {
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+
+  beforeEach(() => {
+    disableSimplePlayersInternalDebounce();
+    visitLoginPage();
+  });
+
+  it('OFF (default)', () => {
+    loginTestTaker('Bklt_Config-1', '123');
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
+    cy.wait(1000); // wait for debounce
+    reload();
+    cy.get('[data-cy="page-navigation-0"]')
+      .children()
+      .should('have.attr', 'aria-checked', 'true');
+  });
+
+  it('ON', () => {
+    loginTestTaker('Bklt_Config-2', '123');
+    cy.contains('mat-dialog-container', 'Vollbild')
+      .find('[data-cy="dialog-cancel"]')
+      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="next-unit-page"]')
+      .click()
+    cy.wait(1000); // wait for debounce
+    reload();
+    cy.wait(1000);
+    getFromIframe('iframe.unitHost')
+      .find('[data-pagenr="2"]')
+      .should('have.attr', 'style', 'display: block;');
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="previous-unit-page"]')
+      .click()
+  });
+});
+
+
+
+
+
+
+

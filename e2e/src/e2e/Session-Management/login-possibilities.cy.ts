@@ -1,13 +1,13 @@
 import {
   insertCredentials,
   probeBackendApi,
+  resetBackendData,
   visitLoginPage
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
   before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
+    resetBackendData();
     probeBackendApi();
   });
 
@@ -16,7 +16,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login without existing password is not possible', () => {
-    insertCredentials('with_pw', '');
+    insertCredentials('SM-2', '');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:400"]')
@@ -24,7 +24,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with wrong password is not possible', () => {
-    insertCredentials('with_pw', '123');
+    insertCredentials('SM-2', '123');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="login-problem:400"]')
@@ -32,7 +32,8 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with name and right password, the booklet start immediately', () => {
-    insertCredentials('with_pw', '101');
+    insertCredentials('SM-2', '101');
+    cy.wait(10000);
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="unit-title"]')
@@ -40,12 +41,12 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="status-card"]')
-      .contains('with_pw');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      .contains('SM-2');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login only with a name', () => {
-    insertCredentials('without_pw', '');
+    insertCredentials('SM-1', '');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[data-cy="unit-title"]')
@@ -53,29 +54,29 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="status-card"]')
-      .contains('without_pw');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+      .contains('SM-1');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login as link', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
+    cy.visit(`${Cypress.config().baseUrl}/#/SM-3`);
     cy.wait(1000);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="status-card"]')
-      .contains('as_link');
+      .contains('SM-3');
   });
 
   it('login as link and jump into test', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/as_link_immediate`);
+    cy.visit(`${Cypress.config().baseUrl}/#/SM-4`);
     cy.wait(1000);
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]')
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
   });
 
   it('login with wrong code is not possible', () => {
-    insertCredentials('as_code1', '102');
+    insertCredentials('SM-5', '102');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[formcontrolname="code"]')
@@ -87,7 +88,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with right code and password', () => {
-    insertCredentials('as_code1', '102');
+    insertCredentials('SM-5', '102');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[formcontrolname="code"]')
@@ -99,11 +100,11 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code01');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login with code on login page', () => {
-    insertCredentials('as_code2', '');
+    insertCredentials('SM-6', '');
     cy.get('[data-cy="login-user"]')
       .click();
     cy.get('[formcontrolname="code"]')
@@ -116,11 +117,11 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
   it('login with code via link', () => {
-    cy.visit(`${Cypress.config().baseUrl}/#/as_code2`);
+    cy.visit(`${Cypress.config().baseUrl}/#/SM-6`);
     cy.get('[formcontrolname="code"]')
       .clear()
       .type('as_code02');
@@ -131,6 +132,6 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.get('[data-cy="status-card"]')
       .contains('as_code02');
-    cy.get('[data-cy="booklet-CY-BKLT_RUNDEMO"]');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 });

@@ -1,15 +1,17 @@
 import {
+  cleanUp,
   disableSimplePlayersInternalDebounce,
-  getFromIframe,
+  getFromIframe, insertCredentials,
   loginTestTaker,
-  logoutTestTaker,
+  logoutTestTakerDemo,
+  logoutTestTakerHot,
   probeBackendApi,
   readBlockTime,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
-// Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
+// Restriction Time: Declared in Sampledata/CY_Bklt_TC-1.xml
 const RestrTimeVal = 12000;
 const RestrTimeValOffset = 1000;
 
@@ -17,11 +19,9 @@ let blockTimeBeforeShowDialog: number = 0;
 let blockTimeAfterCancelDialog: number = 0;
 const timeToDisplayedDialog: number = 3000;
 
-describe('Block Time-Restrictions demo and review-mode', { testIsolation: false }, () => {
+describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -30,8 +30,10 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
     disableSimplePlayersInternalDebounce();
   });
 
-  it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('TimeRestr_Demo1', '123', 'test');
+ it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
+    insertCredentials('Test_Ctrl-13', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -49,11 +51,12 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
       .should('not.exist');
-    logoutTestTaker('demo');
   });
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
-    loginTestTaker('TimeRestr_Review1', '123', 'test');
+    insertCredentials('Test_Ctrl-14', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -71,14 +74,11 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: false 
       .contains('Die Bearbeitung des Abschnittes ist beendet.');
     cy.get('[data-cy="info-blocktime-is-up"]')
       .should('not.exist');
-    logoutTestTaker('demo');
   });
 });
 
-describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
+describe('Block Time-Restrictions hot-modes', { testIsolation: true }, () => {
   before(() => {
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -89,7 +89,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
   });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-12', '123');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -100,15 +100,19 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg3"]')
+      .click()
+      .should('be.checked');
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {
@@ -137,11 +141,10 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     // wait for presentation complete, before end the test
     cy.wait(1000);
-    logoutTestTaker('hot');
   });
 
   it('hot-restart: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('TimeRestr_HotRes1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-12', '123');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -162,11 +165,10 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    logoutTestTaker('hot');
   });
 
   it('hot-return: timer is not stopped while the exit block message is displayed', () => {
-    loginTestTaker('TimeRestr_HotRet1', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-10', '123');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -177,15 +179,19 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .type('Hase');
     cy.get('[data-cy="unit-block-dialog-submit"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .click()
+      .should('be.checked');
     cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.wait(1000);
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-103"]')
       .click();
-    getFromIframe('[data-cy="TestController-radio1-Aufg3"]')
-      .click();
+    getFromIframe('iframe.unitHost')
+      .find('[data-cy="TestController-radio1-Aufg3"]')
+      .click()
+      .should('be.checked');
     // note the time before the exit block message is displayed
     readBlockTime()
       .then(leaveBlockTime => {
@@ -213,11 +219,10 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     // wait for presentation complete, before end the test
     cy.wait(1000);
-    logoutTestTaker('hot');
   });
 
   it('hot-return: time is expired, block will be locked, warning message is displayed.', () => {
-    loginTestTaker('TimeRestr_HotRet2', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-11', '123');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     // wait for presentation complete, before navigate forward
@@ -238,15 +243,12 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    logoutTestTaker('hot');
   });
 });
 
-describe('check attribute: leave', { testIsolation: false }, () => {
+describe('check attribute: leave', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -256,20 +258,21 @@ describe('check attribute: leave', { testIsolation: false }, () => {
   });
 
   it('check leave: confirm', () => {
-    loginTestTaker('LeaveVal1', '123', 'test-hot');
-    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
+    loginTestTaker('Test_Ctrl-15', '123');
+    cy.get('[data-cy="logo"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .click();
-    cy.get('[data-cy="logo"]')
+    cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-cancel"]')
       .click();
-    logoutTestTaker('hot');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Endseite');
   });
 
   it('check leave: allowed', () => {
-    loginTestTaker('LeaveVal2', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-16', '123');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -278,11 +281,10 @@ describe('check attribute: leave', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="dialog-confirm"]')
       .should('not.exist');
-    logoutTestTaker('hot');
   });
 
   it('check leave: forbidden', () => {
-    loginTestTaker('LeaveVal3', '123', 'test-hot');
+    loginTestTaker('Test_Ctrl-17', '123');
     cy.get('[data-cy="unit-nav-item:CY-Unit.Sample-104"]')
       .click();
     cy.get('.snackbar-demo-mode');
@@ -295,5 +297,4 @@ describe('check attribute: leave', { testIsolation: false }, () => {
       .click();
     cy.get('.snackbar-demo-mode');
   });
-
 });

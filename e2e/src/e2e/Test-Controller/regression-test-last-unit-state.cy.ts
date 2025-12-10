@@ -1,18 +1,16 @@
 import {
+  cleanUp,
   forwardTo,
-  getFromIframe,
-  loginTestTaker,
+  getFromIframe, insertCredentials,
   modifyPlayer,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
-describe('Test Controller', { testIsolation: false }, () => {
+describe('Test Controller', { testIsolation: true }, () => {
   before(() => {
     resetBackendData();
-    cy.clearLocalStorage();
-    cy.clearCookies();
     probeBackendApi();
   });
 
@@ -33,7 +31,9 @@ describe('Test Controller', { testIsolation: false }, () => {
 
   it('should not confuse response data if a last package was sent with window:unload', () => {
     visitLoginPage();
-    loginTestTaker('test', 'user123', 'code-input');
+    insertCredentials('test', 'user123');
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
@@ -41,14 +41,17 @@ describe('Test Controller', { testIsolation: false }, () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2"]')
       .click();
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('unit 1 - input');
     cy.wait(1000);
     forwardTo('Ⓐ Beginner Unit');
-    getFromIframe('#var1')
+    getFromIframe('iframe.unitHost')
+      .find('#var1')
       .type('unit 2 - input');
     cy.wait(1000);
-    getFromIframe('#end-unit')
+    getFromIframe('iframe.unitHost')
+      .find('#end-unit')
       .click();
     // response outputs are ordered by groupname, loginname, code, unitname, originalUnitId (see AdminDAO)
     getResponses()

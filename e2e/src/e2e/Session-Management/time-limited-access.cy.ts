@@ -1,0 +1,116 @@
+import {
+  insertCredentials,
+  loginTestTaker,
+  logoutTestTakerHot,
+  probeBackendApi,
+  resetBackendData,
+  useTestDBSetDate,
+  visitLoginPage
+} from '../utils';
+
+describe('Check "valid from" restrictions', () => {
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(visitLoginPage);
+
+  it('login before time must be impossible', () => {
+    // UnixTimestamp: 01.06.2023 09:00
+    useTestDBSetDate('1685602800');
+    insertCredentials('SM-10', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('[data-cy="login-problem:401"]');
+  });
+
+  it('login after time must be possible ', () => {
+    // UnixTimestamp: 01.06.2023 10:30
+    useTestDBSetDate('1685608200');
+    loginTestTaker('SM-10', '123');
+  });
+
+  it('login before date must be impossible', () => {
+    // UnixTimestamp: 31.05.2023 10:30
+    useTestDBSetDate('1685521800');
+    insertCredentials('SM-10', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('[data-cy="login-problem:401"]');
+  });
+
+  it('login after date must be possible.', () => {
+    // UnixTimestamp: 02.06.2023 09:30
+    useTestDBSetDate('1685691000');
+    loginTestTaker('SM-10', '123');
+  });
+});
+
+describe('check "valid to" restrictions', () => {
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(visitLoginPage);
+
+  it('login after time must be impossible', () => {
+    // UnixTimestamp: 01.06.2023 11:00
+    useTestDBSetDate('1685610000');
+    insertCredentials('SM-11', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('[data-cy="login-problem:410"]');
+  });
+
+  it('login before time must be possible', () => {
+    // UnixTimestamp: 01.06.2023 09:00
+    useTestDBSetDate('1685602800');
+    loginTestTaker('SM-11', '123');
+  });
+
+  it('login after date must be impossible', () => {
+    // UnixTimestamp: 02.06.2023 09:30
+    useTestDBSetDate('1685691000');
+    insertCredentials('SM-11', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('[data-cy="login-problem:410"]');
+  });
+
+  it('login before date must be possible', () => {
+    // UnixTimestamp: 31.05.2023 10:30
+    useTestDBSetDate('1685521800');
+    loginTestTaker('SM-11', '123');
+  });
+});
+
+describe('check "valid for" restrictions', () => {
+  before(() => {
+    resetBackendData();
+    probeBackendApi();
+  });
+  beforeEach(visitLoginPage);
+
+  it('a first time login must be possible', () => {
+    // UnixTimestamp: 31.05.2023 10:30
+    useTestDBSetDate('1685521800');
+    loginTestTaker('SM-12', '123');
+    logoutTestTakerHot();
+  });
+
+  it('a second login must be possible if the time has not expired', () => {
+    // UnixTimestamp: 31.05.2023 10:30 + 9 Minuten
+    useTestDBSetDate('1685522340');
+    loginTestTaker('SM-12', '123');
+    logoutTestTakerHot();
+  });
+
+  it('login after time is not possible', () => {
+    // UnixTimestamp: 31.05.2023 10:30 + 11 Minuten
+    useTestDBSetDate('1685522460');
+    insertCredentials('SM-12', '123');
+    cy.get('[data-cy="login-user"]')
+      .click();
+    cy.get('[data-cy="login-problem:410"]');
+  });
+});

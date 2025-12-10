@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.2/definitions/vo_Booklet.xsd">
+	<Metadata>
+		<Id>Cy-Bklt_BkltConfig-2</Id>
+		<Label>Bklt-config-2</Label>
+		<Description>Testheft der zweiten Wertemöglichkeit</Description>
+	</Metadata>
+
+	<BookletConfig>
+		<!--its only important to navigated to the next page if page navibuttons are disabled -->
+		<Config key="pagingMode">buttons</Config>
+		<Config key="page_navibuttons">OFF</Config>
+		<Config key="unit_menu">FULL</Config>
+		<Config key="unit_navibuttons">OFF</Config>
+		<Config key="force_presentation_complete">OFF</Config>
+		<Config key="force_response_complete">OFF</Config>
+		<Config key="unit_show_time_left">ON</Config>
+		<Config key="unit_time_left_warnings">1</Config>
+		<Config key="restore_current_page_on_return">ON</Config>
+		<Config key="allow_player_to_terminate_test">OFF</Config>
+		<Config key="lock_test_on_termination">ON</Config>
+		<Config key="ask_for_fullscreen">ON</Config>
+		<Config key="show_fullscreen_button">ON</Config>
+		<Config key="unit_screenheader">WITH_UNIT_TITLE</Config>
+		<Config key="unit_title">OFF</Config>
+  </BookletConfig>
+
+	<Units>
+		<Testlet id="Tslt1" label="Aufgabenblock">
+			<Restrictions>
+        <TimeMax minutes="2" leave = "confirm"/>
+			</Restrictions>
+			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+      <Unit id="CY-Unit.Sample-102" label="Aufgabe2" labelshort="2"/>
+		</Testlet>
+		<Unit id="CY-Unit.Sample-104" label="Endseite" labelshort="3"/>
+	</Units>
+</Booklet>

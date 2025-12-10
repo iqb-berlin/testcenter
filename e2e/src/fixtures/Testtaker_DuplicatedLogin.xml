@@ -11,13 +11,13 @@
 
   <Group id="group1" label="group1">
     <Login mode="run-demo" name="login1" pw="123">
-      <Booklet>CY-Bklt_rundemo</Booklet>
+      <Booklet>Cy-Bklt_TC-1</Booklet>
     </Login>
   </Group>
 
   <Group id="group2" label="group2">
     <Login mode="run-review" name="login1" pw="123">
-      <Booklet>CY-Bklt_runreview</Booklet>
+      <Booklet>Cy-Bklt_TC-2</Booklet>
     </Login>
   </Group>
 

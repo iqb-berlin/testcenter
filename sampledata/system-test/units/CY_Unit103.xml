@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.2/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2022-10-11T09:30:00+00:00">
+    <Id>CY-Unit.Sample-103</Id>
+    <Label>Aufgabe 3</Label>
+    <Description>This is an Unit</Description>
+  </Metadata>
+
+  <Definition player="verona-player-simple-6.0">
+    <![CDATA[
+      <fieldset>
+        <legend>Aufgabe3: Fieldset1: Response Complete backward</legend>
+        <div style="flex: 50%; padding: 2px">
+          <p><b>Testung Controller: Aufgabe3: Check response complete backward</b></p>
+          <label><input data-cy= "TestController-radio1-Aufg3" type="radio" name="radio1" value="true" required />click for response complete</label>
+        </div>
+      </fieldset>
+    ]]>
+  </Definition>
+</Unit>
