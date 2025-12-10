@@ -4,10 +4,10 @@
 </div>
 
 <div class="flex-row-wrap" [style.justify-content]="'center'" style="gap: 10px; margin-top: 60px;">
-  <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
+  <form [formGroup]="loginForm" (ngSubmit)="login('admin')" [style.display]="'flex'">
     <mat-card appearance="raised">
       <mat-card-header>
-        <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-title>Admin-Bereich</mat-card-title>
       </mat-card-header>
       <mat-card-content *ngIf="mainDataService.appConfig">
         <mat-form-field appearance="outline">
@@ -30,11 +30,10 @@
       </mat-card-content>
 
       <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" data-cy="login-user"
-                [disabled]="!loginForm.get('name')?.valid">
+        <button mat-raised-button type="submit" color="primary" id="admin" data-cy="login-admin"
+                [disabled]="loginForm.invalid">
           Weiter
         </button>
-        <a [routerLink]="['/r/admin-login']" mat-raised-button color="primary">Admin-Bereich</a>
       </mat-card-actions>
     </mat-card>
   </form>
@@ -51,11 +50,13 @@
 
     <mat-card-actions [style.justify-content]="'space-between'">
       <a *ngIf="this.mainDataService.sysCheckAvailableForAll"
-         mat-raised-button data-cy="general-sys-check"
+         mat-raised-button
+         color="primary"
+         data-cy="general-sys-check"
          [routerLink]="['/r/check-starter']">
         System-Check
       </a>
-      <a [routerLink]="['/legal-notice']" mat-raised-button>Impressum/Datenschutz</a>
+      <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
 </div>

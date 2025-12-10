@@ -30,6 +30,7 @@ import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
+import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { StatusCardComponent } from './app-root/status-card/status-card.component';
@@ -48,6 +49,7 @@ import { HeaderComponent } from './app-root/header/header.component';
         AppRootComponent,
         SysCheckStarterComponent,
         LoginComponent,
+        AdminLoginComponent,
         CodeInputComponent,
         RouteDispatcherComponent,
         StatusCardComponent,
