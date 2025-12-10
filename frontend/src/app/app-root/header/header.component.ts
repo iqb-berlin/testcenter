@@ -81,7 +81,6 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      background-color: lightgray; /* TODO weg */
     }
     .logo img {
       width: 100px;
