@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FabFormComponent } from './fab-form.component';
+import { By } from '@angular/platform-browser';
 
 describe('FabFormComponent', () => {
   let component: FabFormComponent;
@@ -22,11 +23,17 @@ describe('FabFormComponent', () => {
   });
 
   it('adds the right icon to select bar', () => {
+    const { debugElement } = fixture;
+    const gridIconFirst = debugElement.query(By.css('[data-gridPos="0-0"]'))
+    const expectedIcon = gridIconFirst.query(By.css('mat-icon')).nativeElement.textContent.trim();
 
-  });
+    gridIconFirst.triggerEventHandler('click', null);
+    fixture.detectChanges();
 
-  it('does not overflow, when the max limit of selected icons is reached', () => {
+    const selectedIcon = debugElement.query(By.css('[data-selectedPos="0"]'));
+    const actualIcon = selectedIcon.query(By.css('mat-icon')).nativeElement.textContent.trim();
 
+    expect(actualIcon).toBe(expectedIcon);
   });
 
   it('deletes all icons, when pushing the delete button', () => {

@@ -12,7 +12,9 @@
   <div class="selected-row">
     <div class="selected-buttons">
       @for (icon of selectedIcons(); track $index) {
-        <button mat-fab [class.placeholder]="!icon">
+        <button mat-fab
+                [attr.data-selectedPos]="$index"
+                [class.placeholder]="!icon">
           <mat-icon>{{ icon?.icon }}</mat-icon>
         </button>
       }
@@ -27,9 +29,11 @@
 
   <!--button grid-->
   <div class="button-grid">
-    @for (row of gridIcons; track row) {
-      @for (element of row; track element.id) {
-        <button mat-fab (click)="onIconSelect(element)">
+    @for (row of gridIcons; track row; let iOuter = $index) {
+      @for (element of row; track element.id; let iInner = $index) {
+        <button mat-fab
+                [attr.data-gridPos]="iOuter + '-' + iInner"
+                (click)="onIconSelect(element)">
           <mat-icon>{{element.icon}}</mat-icon>
         </button>
       }
