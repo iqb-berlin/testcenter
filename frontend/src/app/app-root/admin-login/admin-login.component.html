@@ -1,10 +1,5 @@
-<div class="version-label">
-  <span *ngIf="mainDataService.isTestingMode" style="color:red">Testmode!</span>
-  IQB-Testcenter Version {{mainDataService.appConfig?.version}}
-</div>
-
-<div class="flex-row-wrap" [style.justify-content]="'center'" style="gap: 10px; margin-top: 60px;">
-  <form [formGroup]="loginForm" (ngSubmit)="login('admin')" [style.display]="'flex'">
+<div class="login-wrapper">
+  <form [formGroup]="loginForm" (ngSubmit)="adminLogin()" [style.display]="'flex'">
     <mat-card appearance="raised">
       <mat-card-header>
         <mat-card-title>Admin-Bereich</mat-card-title>
@@ -38,27 +33,14 @@
     </mat-card>
   </form>
 
-  <mat-card appearance="outlined" class="status-card">
-    <mat-card-header>
-      <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
-      <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div [innerHTML]="mainDataService.appConfig?.trustedIntroHtml"></div>
-      <tc-status-card></tc-status-card>
-    </mat-card-content>
-
-    <mat-card-actions [style.justify-content]="'space-between'">
-      <a *ngIf="this.mainDataService.sysCheckAvailableForAll"
-         mat-raised-button
-         color="primary"
-         data-cy="general-sys-check"
-         [routerLink]="['/r/check-starter']">
-        System-Check
-      </a>
-      <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
-    </mat-card-actions>
-  </mat-card>
+  <div class="button-box">
+    <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
+      Systemcheck
+    </a>
+    <a [routerLink]="['/r/login']" mat-raised-button color="primary" data-cy="general-sys-check">
+      Testtakerbereich
+    </a>
+  </div>
 </div>
 
 <div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="!mainDataService.appConfig">

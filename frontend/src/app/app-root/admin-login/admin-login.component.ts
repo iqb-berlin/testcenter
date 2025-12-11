@@ -5,22 +5,17 @@ import { Subscription } from 'rxjs';
 import { MainDataService, UserAgentService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { HeaderService } from '../../core/header.service';
 
 @Component({
-    templateUrl: './admin-login.component.html',
-    styles: [
-        '.mat-mdc-form-field {display: block}',
-        '.mat-mdc-card {width: 400px;}',
-        '.version-label {position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); padding: 0.5em 1em}',
-        '.version-label a {color:black; text-decoration: none; font-size: large}'
-    ],
-    standalone: false
+  templateUrl: './admin-login.component.html',
+  styleUrl: './admin-login.component.css',
+  standalone: false
 })
 
-export class AdminLoginComponent implements OnInit, OnDestroy {
+export class AdminLoginComponent implements OnInit {
   static oldLoginName = '';
   private routingSubscription: Subscription | null = null;
-  returnTo = '';
   problemText = '';
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
@@ -29,56 +24,41 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
 
   loginForm = new FormGroup({
     name: new FormControl(AdminLoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
-    pw: new FormControl('')
+    pw: new FormControl('', [Validators.required])
   });
 
   constructor(
     public mainDataService: MainDataService,
+    private headerService: HeaderService,
     private backendService: BackendService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.mainDataService.appSubTitle$.next('Bitte anmelden');
-    this.routingSubscription = this.route.params
-      .subscribe(params => { this.returnTo = params.returnTo; });
+    this.headerService.title = 'Anmelden';
     this.checkBrowser();
   }
 
-  login(loginType: 'admin' | 'login' = 'login'): void {
+  adminLogin(): void {
     const loginData = this.loginForm.value;
-    if (!loginData.name) {
+    if (!loginData.name || !loginData.pw) {
       return;
     }
     AdminLoginComponent.oldLoginName = loginData.name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginType, loginData.name, loginData.pw ?? '').subscribe({
+    this.backendService.adminLogin(loginData.name, loginData.pw).subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
-        if (this.returnTo) {
-          this.router.navigateByUrl(this.returnTo).then(navOk => {
+        const returnTo = this.route.snapshot.paramMap.get('returnTo');
+        if (returnTo) {
+          this.router.navigateByUrl(returnTo).then(navOk => {
             if (!navOk) {
               this.router.navigate(['/r']);
             }
           });
-        } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
-          if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.backendService.startTest(authData.claims.test[0].id).subscribe({
-              next: testId => {
-                this.router.navigate(['/t', testId]);
-              },
-              error: () => {
-                this.router.navigate(['/r/starter']);
-              }
-            });
-          } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
-          } else {
-            this.router.navigate(['/r/starter']);
-          }
         } else {
           this.router.navigate(['/r']);
         }
@@ -125,12 +105,6 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     const ua = UserAgentService.resolveUserAgent();
     if (!UserAgentService.userAgentMatches(ua)) {
       this.unsupportedBrowser = [ua.family, ua.version];
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.routingSubscription !== null) {
-      this.routingSubscription.unsubscribe();
     }
   }
 }
