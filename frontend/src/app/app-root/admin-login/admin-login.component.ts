@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -52,16 +52,7 @@ export class AdminLoginComponent implements OnInit {
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
-        const returnTo = this.route.snapshot.paramMap.get('returnTo');
-        if (returnTo) {
-          this.router.navigateByUrl(returnTo).then(navOk => {
-            if (!navOk) {
-              this.router.navigate(['/r']);
-            }
-          });
-        } else {
-          this.router.navigate(['/r']);
-        }
+        this.router.navigate(['/r/starter']);
       },
       error: error => {
         this.problemCode = error.code;
