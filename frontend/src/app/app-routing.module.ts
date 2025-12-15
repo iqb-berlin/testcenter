@@ -52,10 +52,6 @@ const routes: Routes = [
         component: LoginComponent
       },
       {
-        path: 'admin-login/:returnTo',
-        component: AdminLoginComponent
-      },
-      {
         path: 'check-starter',
         component: SysCheckStarterComponent
       },
