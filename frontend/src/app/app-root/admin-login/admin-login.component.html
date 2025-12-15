@@ -58,17 +58,6 @@
     </mat-card-content>
   </mat-card>
 </div>
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="unsupportedBrowser.length">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert
-          level="warning"
-          customtext="login_unsupportedBrowser"
-          text="Sie verwenden einen Browser, der nicht offiziell unterstützt wird."
-          [replacements]="unsupportedBrowser"
-      ></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
+
 
 
