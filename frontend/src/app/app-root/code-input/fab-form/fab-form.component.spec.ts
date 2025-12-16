@@ -56,10 +56,26 @@ describe('FabFormComponent', () => {
   });
 
   it('sends the request automatically, when icon bar is full', () => {
+    
+  });
+
+  it('makes the code input red, when the code is wrong', () => {
 
   });
 
-  it('gives feedback, when the code is wrong', () => {
+  it('keeps the input icons after failed request', () => {
 
   });
+
+  it('changes the helper text after failed request', () => {
+
+  });
+
+  it('inputs the same code under the hood, no matter how icons look like', () => {
+
+  });
+
+  it('', () => {
+
+  })
 });
