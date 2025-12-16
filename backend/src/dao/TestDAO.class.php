@@ -149,6 +149,121 @@ class TestDAO extends DAO {
     );
   }
 
+  public function getUnitReviews(int $testId, string $unitName): array {
+    return $this->_(
+      'select
+        unit_reviews.id,
+        unit_reviews.unit_name,
+        unit_reviews.test_id,
+        unit_reviews.reviewtime,
+        unit_reviews.priority,
+        unit_reviews.categories,
+        unit_reviews.entry,
+        unit_reviews.page,
+        unit_reviews.pagelabel,
+        unit_reviews.user_agent as userAgent,
+        units.original_unit_id as originalUnitId
+      from unit_reviews
+      left join units on units.test_id = unit_reviews.test_id
+                     and units.name = unit_reviews.unit_name
+      where unit_reviews.test_id = :test_id
+        and unit_reviews.unit_name = :unit_name
+      order by unit_reviews.reviewtime desc',
+      [
+        ':test_id' => $testId,
+        ':unit_name' => $unitName
+      ],
+      true
+    );
+  }
+
+  public function getTestReviews(int $testId): array {
+    return $this->_(
+        'select
+          id,
+          booklet_id,
+          reviewtime,
+          priority,
+          categories,
+          entry,
+          user_agent as userAgent
+        from test_reviews
+        where booklet_id = :test_id
+        order by reviewtime desc',
+        [
+          ':test_id' => $testId
+        ],
+        true
+      );
+  }
+
+  public function deleteUnitReview(int $reviewId): void {
+    $this->_(
+      'delete from unit_reviews where id = :id',
+      [
+        ':id' => $reviewId
+      ]
+    );
+  }
+    public function deleteTestReview(int $reviewId): void {
+    $this->_(
+      'delete from test_reviews where id = :id',
+      [
+        ':id' => $reviewId
+      ]
+    );
+  }
+
+  public function updateUnitReview(
+    int $reviewId,
+    int $priority,
+    string $categories,
+    string $entry,
+    string $userAgent
+  ): void {
+    $this->_(
+      'update unit_reviews
+      set
+        priority = :p,
+        categories = :c,
+        entry = :e,
+        user_agent = :u
+      where id = :id',
+      [
+        ':id' => $reviewId,
+        ':p' => $priority,
+        ':c' => $categories,
+        ':e' => $entry,
+        ':u' => $userAgent
+      ]
+    );
+  }
+
+  public function updateTestReview(
+    int $reviewId,
+    int $priority,
+    string $categories,
+    string $entry,
+    string $userAgent
+  ): void {
+    $this->_(
+      'update test_reviews
+      set
+        priority = :p,
+        categories = :c,
+        entry = :e,
+        user_agent = :u
+      where id = :id',
+      [
+        ':id' => $reviewId,
+        ':p' => $priority,
+        ':c' => $categories,
+        ':e' => $entry,
+        ':u' => $userAgent
+      ]
+    );
+  }
+
   public function getTestState(int $testId): array {
     $test = $this->_(
       'select tests.laststate from tests where tests.id=:testId',

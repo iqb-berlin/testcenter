@@ -218,6 +218,95 @@ class TestController extends Controller {
     return $response->withStatus(201);
   }
 
+  public static function getUnitReviews(Request $request, Response $response): Response {
+    $testId = (int) $request->getAttribute('test_id');
+    $unitName = $request->getAttribute('unit_name');
+
+    $reviews = self::testDAO()->getUnitReviews($testId, $unitName);
+
+    return $response->withJson($reviews);
+  }
+
+  public static function getReviews(Request $request, Response $response): Response {
+    $testId = (int) $request->getAttribute('test_id');
+
+    $reviews = self::testDAO()->getTestReviews($testId);
+
+    return $response->withJson($reviews);
+  }
+
+  public static function deleteUnitReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+
+    self::testDAO()->deleteUnitReview($reviewId);
+
+    return $response->withStatus(204);
+  }
+
+  public static function deleteReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+
+    self::testDAO()->deleteTestReview($reviewId);
+
+    return $response->withStatus(204);
+  }
+
+  public static function patchUnitReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+
+    $review = RequestBodyParser::getFields(
+      $request,
+      [
+        'priority' => 0,
+        'categories' => '',
+        'entry' => 'REQUIRED',
+        'userAgent' => ''
+      ]
+    );
+
+    $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
+      ? (int) $review['priority']
+      : 0;
+
+    self::testDAO()->updateUnitReview(
+      $reviewId,
+      $priority,
+      $review['categories'],
+      $review['entry'],
+      $review['userAgent']
+    );
+
+    return $response->withStatus(200);
+  }
+
+  public static function patchReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+
+    $review = RequestBodyParser::getFields(
+      $request,
+      [
+        'priority' => 0,
+        'categories' => '',
+        'entry' => 'REQUIRED',
+        'userAgent' => ''
+      ]
+    );
+
+    $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
+      ? (int) $review['priority']
+      : 0;
+
+    self::testDAO()->updateTestReview(
+      $reviewId,
+      $priority,
+      $review['categories'],
+      $review['entry'],
+      $review['userAgent']
+    );
+
+    return $response->withStatus(200);
+  }
+
   public static function putUnitResponse(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
