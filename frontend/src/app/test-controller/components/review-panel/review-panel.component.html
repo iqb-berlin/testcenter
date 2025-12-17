@@ -1,0 +1,66 @@
+<form [formGroup]="reviewForm">
+  <h2 data-cy="comment-diag-title">Kommentar verfassen</h2>
+  <div class="scrollable-area">
+    <div>
+      <p>
+        Sie sind angemeldet als <b>"{{ accountName }}"</b>.
+        Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.
+      </p>
+      <mat-form-field class="username">
+        <input matInput formControlName="sender" placeholder="Mein Name" data-cy="comment-diag-sender">
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-radio-group formControlName="target">
+        <label>Der Kommentar wird gegeben für:</label>
+        <mat-radio-button value="booklet" [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
+          aktuelles Testheft "{{ bookletname }}"
+        </mat-radio-button>
+        <mat-radio-button value="unit" [disabled]="unitAlias?.length === 0" [matTooltip]="unitAlias"
+                          data-cy="comment-diag-currentUnit">
+          aktuelle Aufgabe/Seite "{{ unitTitle }}"
+        </mat-radio-button>
+        <mat-radio-button value="task" [disabled]="unitAlias?.length === 0"
+                          data-cy="comment-diag-currentPage">
+          folgende Teilaufgabe:
+          <mat-form-field>
+            <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});"/>
+          </mat-form-field>
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <mat-form-field appearance="fill">
+      <mat-label>Kommentar</mat-label>
+      <textarea matInput formControlName="entry" cdkTextareaAutosize cdkAutosizeMinRows="5"
+                data-cy="comment-diag-comment"></textarea>
+    </mat-form-field>
+    <div class="prio-and-category-box">
+      <div>
+        <label>Priorität</label>
+        <mat-radio-group formControlName="priority">
+          <mat-radio-button value="1" data-cy="comment-diag-priority1">dringend/kritisch</mat-radio-button>
+          <mat-radio-button value="2" data-cy="comment-diag-priority2">mittelfristig</mat-radio-button>
+          <mat-radio-button value="3" data-cy="comment-diag-priority3">optional</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div>
+        <label>Kategorie</label>
+        <ul>
+          <li>
+            <mat-checkbox formControlName="tech" data-cy="comment-diag-cat-tech">Technisches</mat-checkbox>
+          </li>
+          <li>
+            <mat-checkbox formControlName="content" data-cy="comment-diag-cat-content">Inhaltliches</mat-checkbox>
+          </li>
+          <li>
+            <mat-checkbox formControlName="design" data-cy="comment-diag-cat-design">Gestaltung</mat-checkbox>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <button mat-raised-button type="submit" class="save-button" data-cy="comment-diag-submit"
+          [disabled]="reviewForm.invalid" (click)="saveReview()">
+    Speichern
+  </button>
+</form>

@@ -21,7 +21,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
-import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
 import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
@@ -38,6 +37,7 @@ import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
 import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
 import { PropertiesPipe } from './pipes/properties.pipe';
 import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
+import { ReviewPanelComponent } from './components/review-panel/review-panel.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -68,12 +68,12 @@ export { TestControllerService } from './services/test-controller.service';
     MatListModule,
     MatAutocompleteModule,
     MatSelectModule,
-    NgIf
+    NgIf,
+    ReviewPanelComponent
   ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,
-    ReviewDialogComponent,
     TestStatusComponent,
     UnitMenuComponent,
     DebugPaneComponent,

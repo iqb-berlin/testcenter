@@ -51,6 +51,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   timerValue: TimerData | null = null;
 
   debugPane = false;
+  sideNavContent: 'unit-menu' | 'review-form' = 'unit-menu';
 
   constructor(
     public mainDataService: MainDataService,
