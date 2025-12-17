@@ -264,6 +264,24 @@ class TestDAO extends DAO {
     );
   }
 
+  public function unitReviewExists(int $reviewId): bool {
+    $result = $this->_(
+      'select count(*) as count from unit_reviews where id = :id',
+      [':id' => $reviewId],
+      true
+    );
+    return $result && $result[0]['count'] > 0;
+  }
+
+  public function testReviewExists(int $reviewId): bool {
+    $result = $this->_(
+      'select count(*) as count from test_reviews where id = :id',
+      [':id' => $reviewId],
+      true
+    );
+    return $result && $result[0]['count'] > 0;
+  }
+
   public function getTestState(int $testId): array {
     $test = $this->_(
       'select tests.laststate from tests where tests.id=:testId',

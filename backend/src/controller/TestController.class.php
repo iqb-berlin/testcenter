@@ -238,6 +238,10 @@ class TestController extends Controller {
   public static function deleteUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
 
+    if (!self::testDAO()->unitReviewExists($reviewId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+
     self::testDAO()->deleteUnitReview($reviewId);
 
     return $response->withStatus(204);
@@ -246,6 +250,10 @@ class TestController extends Controller {
   public static function deleteReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
 
+    if (!self::testDAO()->testReviewExists($reviewId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+
     self::testDAO()->deleteTestReview($reviewId);
 
     return $response->withStatus(204);
@@ -253,6 +261,10 @@ class TestController extends Controller {
 
   public static function patchUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
+
+    if (!self::testDAO()->unitReviewExists($reviewId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
 
     $review = RequestBodyParser::getFields(
       $request,
@@ -281,6 +293,10 @@ class TestController extends Controller {
 
   public static function patchReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
+
+    if (!self::testDAO()->testReviewExists($reviewId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
 
     $review = RequestBodyParser::getFields(
       $request,
