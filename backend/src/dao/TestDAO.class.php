@@ -87,12 +87,14 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
-    string $userAgent
+    string $userAgent,
+    int $personId
   ): void {
     $this->_(
-      'insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent) values(:b, :t, :p, :c, :e, :u)',
+      'insert into test_reviews (booklet_id, person_id, reviewtime, priority, categories, entry, user_agent) values(:b, :person, :t, :p, :c, :e, :u)',
       [
         ':b' => $testId,
+        ':person' => $personId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
         ':p' => $priority,
         ':c' => $categories,
@@ -113,6 +115,7 @@ class TestDAO extends DAO {
     string $originalUnitId,
     ?int $page = null,
     ?string $pageLabel = null,
+    int $personId
   ): void {
     $this->_(
       'insert ignore into units (name, test_id, original_unit_id) values(:u, :t, :o)',
@@ -125,6 +128,7 @@ class TestDAO extends DAO {
     $this->_(
       'insert into unit_reviews (
             unit_name,
+            person_id,
             test_id,
             reviewtime,
             priority,
@@ -133,10 +137,11 @@ class TestDAO extends DAO {
             page,
             pagelabel,
             user_agent
-        ) values (:unit_name, :test_id, :t, :p, :c, :e, :pa, :pl, :ua)
+        ) values (:unit_name, :person_id, :test_id, :t, :p, :c, :e, :pa, :pl, :ua)
           ',
       [
         ':unit_name' => $unitName,
+        ':person_id' => $personId,
         ':test_id' => $testId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
         ':p' => $priority,
@@ -149,39 +154,43 @@ class TestDAO extends DAO {
     );
   }
 
-  public function getUnitReviews(int $testId, string $unitName): array {
+  public function getUnitReviews(int $testId, string $unitName, int $personId): array {
     return $this->_(
-      'select
-        unit_reviews.id,
-        unit_reviews.unit_name,
-        unit_reviews.test_id,
-        unit_reviews.reviewtime,
-        unit_reviews.priority,
-        unit_reviews.categories,
-        unit_reviews.entry,
-        unit_reviews.page,
-        unit_reviews.pagelabel,
-        unit_reviews.user_agent as userAgent,
-        units.original_unit_id as originalUnitId
-      from unit_reviews
-      left join units on units.test_id = unit_reviews.test_id
-                     and units.name = unit_reviews.unit_name
-      where unit_reviews.test_id = :test_id
-        and unit_reviews.unit_name = :unit_name
-      order by unit_reviews.reviewtime desc',
+      'select 
+            unit_reviews.id,
+            unit_reviews.unit_name,
+            unit_reviews.test_id,
+            unit_reviews.person_id,
+            unit_reviews.reviewtime,
+            unit_reviews.priority,
+            unit_reviews.categories,
+            unit_reviews.entry,
+            unit_reviews.page,
+            unit_reviews.pagelabel,
+            unit_reviews.user_agent as userAgent,
+            units.original_unit_id as originalUnitId
+          from unit_reviews
+          left join units on units.test_id = unit_reviews.test_id 
+              and units.name = unit_reviews.unit_name
+          where unit_reviews.test_id = :test_id 
+            and unit_reviews.unit_name = :unit_name
+            and unit_reviews.person_id = :person_id
+          order by unit_reviews.reviewtime desc',
       [
         ':test_id' => $testId,
-        ':unit_name' => $unitName
+        ':unit_name' => $unitName,
+        ':person_id' => $personId
       ],
       true
     );
   }
 
-  public function getTestReviews(int $testId): array {
+  public function getTestReviews(int $testId, int $personId): array {
     return $this->_(
         'select
           id,
           booklet_id,
+          person_id,
           reviewtime,
           priority,
           categories,
@@ -189,29 +198,37 @@ class TestDAO extends DAO {
           user_agent as userAgent
         from test_reviews
         where booklet_id = :test_id
+          and person_id = :person_id
         order by reviewtime desc',
         [
-          ':test_id' => $testId
+          ':test_id' => $testId,
+          ':person_id' => $personId
         ],
         true
       );
   }
 
-  public function deleteUnitReview(int $reviewId): void {
+  public function deleteUnitReview(int $reviewId, int $personId): void {
     $this->_(
-      'delete from unit_reviews where id = :id',
+      'delete from unit_reviews 
+        where id = :id 
+            and person_id = :person_id',
       [
-        ':id' => $reviewId
+        ':id' => $reviewId,
+        ':person_id' => $personId
       ]
     );
   }
-    public function deleteTestReview(int $reviewId): void {
-    $this->_(
-      'delete from test_reviews where id = :id',
-      [
-        ':id' => $reviewId
-      ]
-    );
+    public function deleteTestReview(int $reviewId, int $personId): void {
+      $this->_(
+        'delete from test_reviews 
+        where id = :id 
+          and person_id = :person_id',
+        [
+          ':id' => $reviewId,
+          ':person_id' => $personId
+        ]
+      );
   }
 
   public function updateUnitReview(
@@ -219,7 +236,8 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
-    string $userAgent
+    string $userAgent,
+    int $personId
   ): void {
     $this->_(
       'update unit_reviews
@@ -227,14 +245,16 @@ class TestDAO extends DAO {
         priority = :p,
         categories = :c,
         entry = :e,
-        user_agent = :u
+        user_agent = :u,
+        person_id = :person_id
       where id = :id',
       [
         ':id' => $reviewId,
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
-        ':u' => $userAgent
+        ':u' => $userAgent,
+        ':person_id' => $personId
       ]
     );
   }
@@ -244,7 +264,8 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
-    string $userAgent
+    string $userAgent,
+    int $personId
   ): void {
     $this->_(
       'update test_reviews
@@ -253,30 +274,65 @@ class TestDAO extends DAO {
         categories = :c,
         entry = :e,
         user_agent = :u
+        person_id = :person_id
       where id = :id',
       [
         ':id' => $reviewId,
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
-        ':u' => $userAgent
+        ':u' => $userAgent,
+        ':perdon_if' => $personId
       ]
     );
   }
 
-  public function unitReviewExists(int $reviewId): bool {
+  public function unitReviewExists(int $reviewId, int $personId): bool {
     $result = $this->_(
-      'select count(*) as count from unit_reviews where id = :id',
-      [':id' => $reviewId],
+      'select count(*) as count 
+     from unit_reviews 
+     where id = :id 
+       and person_id = :person_id',
+      [
+        ':id' => $reviewId,
+        ':person_id' => $personId
+      ],
       true
     );
     return $result && $result[0]['count'] > 0;
   }
 
-  public function testReviewExists(int $reviewId): bool {
+  public function testReviewExists(int $reviewId, int $personId): bool {
     $result = $this->_(
-      'select count(*) as count from test_reviews where id = :id',
-      [':id' => $reviewId],
+      'select count(*) as count 
+     from test_reviews 
+     where id = :id 
+       and person_id = :person_id',
+      [
+        ':id' => $reviewId,
+        ':person_id' => $personId
+      ],
+      true
+    );
+    return $result && $result[0]['count'] > 0;
+  }
+
+  public function testExists(int $testId): bool {
+    $result = $this->_(
+      'select count(*) as count from tests where id = :id',
+      [':id' => $testId],
+      true
+    );
+    return $result && $result[0]['count'] > 0;
+  }
+
+  public function unitExists(int $testId, string $unitName): bool {
+    $result = $this->_(
+      'select count(*) as count from units where test_id = :test_id and name = :name',
+      [
+        ':test_id' => $testId,
+        ':name' => $unitName
+      ],
       true
     );
     return $result && $result[0]['count'] > 0;
