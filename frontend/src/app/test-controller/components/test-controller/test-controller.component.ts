@@ -24,7 +24,6 @@ import {
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
-import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
@@ -168,46 +167,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       .subscribe(isWsConnected => {
         this.tcs.setTestState('CONNECTION', isWsConnected ? 'WEBSOCKET' : 'POLLING');
       });
-  }
-
-  showReviewDialog(): void {
-    const authData = this.mainDataService.getAuthData();
-    if (!authData) {
-      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // necessary?!
-    } else {
-      const dialogData = <ReviewDialogData>{
-        loginname: authData.displayName,
-        bookletname: this.tcs.booklet?.metadata.label,
-        unitTitle: this.tcs.currentUnit?.label,
-        unitAlias: this.tcs.currentUnit?.alias,
-        currentPageIndex: this.tcs.currentUnit?.state.CURRENT_PAGE_NR,
-        currentPageLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])
-      };
-      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, { data: dialogData });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (!result) {
-          return;
-        }
-        ReviewDialogComponent.savedName = result.sender;
-        this.bs.saveReview(
-          this.tcs.testId,
-          (result.target === 'u' || result.target === 'p') ? dialogData.unitAlias : null,
-          (result.target === 'p') ? dialogData.currentPageIndex : null,
-          (result.target === 'p') ? dialogData.currentPageLabel : null,
-          result.priority,
-          dialogRef.componentInstance.getSelectedCategories(),
-          result.sender ? `${result.sender}: ${result.entry}` : result.entry,
-          UserAgentService.outputWithOs(),
-          this.tcs.currentUnit?.id || ''
-        ).subscribe(() => {
-          this.snackBar.open('Kommentar gespeichert', '', {
-            duration: 5000,
-            panelClass: ['snackbar-comment-saved']
-          });
-        });
-      });
-    }
   }
 
   handleCommand(commandName: string, params: string[]): Promise<boolean> {
