@@ -65,7 +65,8 @@ class InitDAO extends SessionDAO {
       1,
       "content",
       "luigi: sample booklet review",
-      'Firefox/126.0'
+      'Firefox/126.0',
+      1,
     );
     $testDAO->addUnitReview(
       $test->id,
@@ -77,6 +78,7 @@ class InitDAO extends SessionDAO {
       "UNIT.SAMPLE",
       1,
       'page-1',
+      1,
     );
     $testDAO->addUnitLogs([new UnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp)]);
     $testDAO->addTestLogs([new TestLog($test->id, "sample log entry", $timestamp)]);
