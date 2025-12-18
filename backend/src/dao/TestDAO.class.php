@@ -273,7 +273,7 @@ class TestDAO extends DAO {
         priority = :p,
         categories = :c,
         entry = :e,
-        user_agent = :u
+        user_agent = :u,
         person_id = :person_id
       where id = :id',
       [
@@ -282,7 +282,7 @@ class TestDAO extends DAO {
         ':c' => $categories,
         ':e' => $entry,
         ':u' => $userAgent,
-        ':perdon_if' => $personId
+        ':person_id' => $personId
       ]
     );
   }
