@@ -335,8 +335,6 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
-        "404":
-          description: Test or unit not found
         "500":
           description: Server Error
 
@@ -417,8 +415,6 @@ paths:
             description: Not authenticated
           "403":
             description: Forbidden
-          "404":
-            description: Test not found
           "500":
             description: Server Error
 
@@ -488,8 +484,6 @@ paths:
             description: Not authenticated
           "403":
             description: Forbidden
-          "404":
-            description: Review not found
           "500":
             description: Server Error
 
@@ -534,8 +528,6 @@ paths:
             description: Not authenticated
           "403":
             description: Forbidden
-          "404":
-            description: Review not found
           "500":
             description: Server Error
 
@@ -598,8 +590,6 @@ paths:
             description: Not authenticated
           "403":
             description: Forbidden
-          "404":
-            description: Review not found
           "500":
             description: Server Error
 
@@ -637,8 +627,6 @@ paths:
             description: Not authenticated
           "403":
             description: Forbidden
-          "404":
-            description: Review not found
           "500":
             description: Server Error
 

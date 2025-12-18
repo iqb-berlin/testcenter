@@ -194,9 +194,9 @@ class TestController extends Controller {
       $review['entry'],
       $review['userAgent'],
       $review['originalUnitId'] ?? '',
+      $personId,
       $review['page'] ?? null,
       $review['pagelabel'] ?? null,
-      $personId
     );
 
     return $response->withStatus(201);
