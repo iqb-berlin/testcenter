@@ -379,7 +379,7 @@ class TestController extends Controller {
     $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
     $testLogs = array_map(
-      fn ($entry) => new TestLog(
+      fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -406,7 +406,7 @@ class TestController extends Controller {
     ]);
 
     $testLogs = array_map(
-      fn ($entry) => new TestLog(
+      fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -489,7 +489,8 @@ class TestController extends Controller {
           'content' => '',
           'timeStamp' => 'REQUIRED'
         ],
-        'logEntries');
+        'logEntries'
+      );
     } else {
       $logData = RequestBodyParser::getArrayOfFieldsets($request, [
         'key' => 'REQUIRED',

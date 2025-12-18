@@ -268,6 +268,7 @@ dreddHooks.beforeValidation('/file/{group_token}/{+path} > get file by path > 20
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=utf-8', attachBOM);
+dreddHooks.beforeValidation('specs > /reviews/export > get all reviews of a person > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=utf-8', attachBOM);
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', addBookletToExpectation);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);

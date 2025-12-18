@@ -60,6 +60,7 @@ class AccessSet extends DataCollectionTypeSafe {
 
     foreach ($accessItems as $accessItem) {
       switch (get_class($accessItem)) {
+        // todo this is wrong use of WorkspaceData - Use create a new class instead, as we are not in admin login
         case 'WorkspaceData':
           if ($login->getMode() == 'monitor-study') {
             $accessSet->addStudyMonitor($accessItem);
@@ -81,6 +82,10 @@ class AccessSet extends DataCollectionTypeSafe {
         AccessObjectType::ATTACHMENT_MANAGER,
         new AccessObject($login->getGroupName(), AccessObjectType::ATTACHMENT_MANAGER, $login->getGroupLabel())
       );
+    }
+
+    if ($login->getMode() === 'run-review') {
+      $accessSet->addAccessObjects(AccessObjectType::REVIEW);
     }
 
     return $accessSet;

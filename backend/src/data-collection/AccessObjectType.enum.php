@@ -10,4 +10,5 @@ enum AccessObjectType: string {
   case TEST_GROUP_MONITOR = 'testGroupMonitor';
   case ATTACHMENT_MANAGER = 'attachmentManager';
   case SYS_CHECK = 'sysCheck';
+  case REVIEW = 'review';
 }
