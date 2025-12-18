@@ -1,11 +1,10 @@
 <form [formGroup]="reviewForm">
+  <button matButton="outlined" class="view-switch-button" (click)="showList.emit()">
+    Kommentarübersicht öffnen
+  </button>
   <h2 data-cy="comment-diag-title">Kommentar verfassen</h2>
   <div class="scrollable-area">
     <div>
-      <p>
-        Sie sind angemeldet als <b>"{{ accountName }}"</b>.
-        Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.
-      </p>
       <mat-form-field class="username">
         <input matInput formControlName="sender" placeholder="Mein Name" data-cy="comment-diag-sender">
       </mat-form-field>
@@ -13,17 +12,19 @@
     <div>
       <mat-radio-group formControlName="target">
         <label>Der Kommentar wird gegeben für:</label>
-        <mat-radio-button value="booklet" [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
+        <mat-radio-button value="booklet" [disabled]="review && isUnitReview(review)"
+                          [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
           aktuelles Testheft "{{ bookletname }}"
         </mat-radio-button>
-        <mat-radio-button value="unit" [disabled]="unitAlias?.length === 0" [matTooltip]="unitAlias"
+        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
+                          [matTooltip]="unitAlias"
                           data-cy="comment-diag-currentUnit">
           aktuelle Aufgabe/Seite "{{ unitTitle }}"
         </mat-radio-button>
-        <mat-radio-button value="task" [disabled]="unitAlias?.length === 0"
+        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
-          <mat-form-field>
+          <mat-form-field [appearance]="'outline'">
             <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});"/>
           </mat-form-field>
         </mat-radio-button>
@@ -38,9 +39,9 @@
       <div>
         <label>Priorität</label>
         <mat-radio-group formControlName="priority">
-          <mat-radio-button value="1" data-cy="comment-diag-priority1">dringend/kritisch</mat-radio-button>
-          <mat-radio-button value="2" data-cy="comment-diag-priority2">mittelfristig</mat-radio-button>
-          <mat-radio-button value="3" data-cy="comment-diag-priority3">optional</mat-radio-button>
+          <mat-radio-button [value]="1" data-cy="comment-diag-priority1">dringend/kritisch</mat-radio-button>
+          <mat-radio-button [value]="2" data-cy="comment-diag-priority2">mittelfristig</mat-radio-button>
+          <mat-radio-button [value]="3" data-cy="comment-diag-priority3">optional</mat-radio-button>
         </mat-radio-group>
       </div>
       <div>
@@ -59,8 +60,18 @@
       </div>
     </div>
   </div>
-  <button mat-raised-button type="submit" class="save-button" data-cy="comment-diag-submit"
-          [disabled]="reviewForm.invalid" (click)="saveReview()">
-    Speichern
-  </button>
+  <div class="action-buttons">
+    <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
+            [disabled]="reviewForm.invalid" (click)="saveReview()">
+      Speichern
+    </button>
+    @if (review) {
+      <button mat-button color="warn" (click)="deleteReview()">
+        Kommentar Löschen
+      </button>
+    }
+    <button mat-button (click)="close.emit()">
+      Schließen
+    </button>
+  </div>
 </form>

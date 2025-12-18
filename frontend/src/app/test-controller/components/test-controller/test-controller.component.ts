@@ -18,7 +18,6 @@ import {
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
   Command, MaxTimerEvent,
-  ReviewDialogData,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
