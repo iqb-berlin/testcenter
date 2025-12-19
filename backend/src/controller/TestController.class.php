@@ -184,6 +184,8 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
+    $personId = self::getPersonIdFromRequest($request);
+
     self::testDAO()->addUnitReview(
       $testId,
       $unitName,
@@ -192,6 +194,7 @@ class TestController extends Controller {
       $review['entry'],
       $review['userAgent'],
       $review['originalUnitId'] ?? '',
+      $personId,
       $review['page'] ?? null,
       $review['pagelabel'] ?? null,
     );
@@ -212,10 +215,131 @@ class TestController extends Controller {
     $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
       ? (int) $review['priority']
       : 0;
+    $personId = self::getPersonIdFromRequest($request);
 
-    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent']);
+    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId);
 
     return $response->withStatus(201);
+  }
+
+  public static function getUnitReviews(Request $request, Response $response): Response {
+    $testId = (int) $request->getAttribute('test_id');
+    $unitName = $request->getAttribute('unit_name');
+
+    if (!self::testDAO()->testExists($testId)) {
+      throw new HttpNotFoundException($request, "Test with ID $testId not found");
+    }
+
+    if (!self::testDAO()->unitExists($testId, $unitName)) {
+      throw new HttpNotFoundException($request, "Unit '$unitName' not found in test $testId");
+    }
+    $personId = self::getPersonIdFromRequest($request);
+    $reviews = self::testDAO()->getUnitReviews($testId, $unitName, $personId);
+
+    return $response->withJson($reviews);
+  }
+
+  public static function getReviews(Request $request, Response $response): Response {
+    $testId = (int) $request->getAttribute('test_id');
+
+    if (!self::testDAO()->testExists($testId)) {
+      throw new HttpNotFoundException($request, "Test with ID $testId not found");
+    }
+    $personId = self::getPersonIdFromRequest($request);
+    $reviews = self::testDAO()->getTestReviews($testId, $personId);
+
+    return $response->withJson($reviews);
+  }
+
+  public static function deleteUnitReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+    $personId = self::getPersonIdFromRequest($request);
+    if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+
+    self::testDAO()->deleteUnitReview($reviewId, $personId);
+
+    return $response->withStatus(204);
+  }
+
+  public static function deleteReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+    $personId = self::getPersonIdFromRequest($request);
+
+    if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+    self::testDAO()->deleteTestReview($reviewId, $personId);
+
+    return $response->withStatus(204);
+  }
+
+  public static function patchUnitReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+    $personId = self::getPersonIdFromRequest($request);
+
+    if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+
+    $review = RequestBodyParser::getFields(
+      $request,
+      [
+        'priority' => 0,
+        'categories' => '',
+        'entry' => 'REQUIRED',
+        'userAgent' => ''
+      ]
+    );
+
+    $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
+      ? (int) $review['priority']
+      : 0;
+    self::testDAO()->updateUnitReview(
+      $reviewId,
+      $priority,
+      $review['categories'],
+      $review['entry'],
+      $review['userAgent'],
+      $personId
+    );
+
+    return $response->withStatus(200);
+  }
+
+  public static function patchReview(Request $request, Response $response): Response {
+    $reviewId = (int) $request->getAttribute('review_id');
+    $personId = self::getPersonIdFromRequest($request);
+
+    if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
+      throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
+    }
+
+    $review = RequestBodyParser::getFields(
+      $request,
+      [
+        'priority' => 0,
+        'categories' => '',
+        'entry' => 'REQUIRED',
+        'userAgent' => ''
+      ]
+    );
+
+    $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
+      ? (int) $review['priority']
+      : 0;
+
+    self::testDAO()->updateTestReview(
+      $reviewId,
+      $priority,
+      $review['categories'],
+      $review['entry'],
+      $review['userAgent'],
+      $personId
+    );
+
+    return $response->withStatus(200);
   }
 
   public static function putUnitResponse(Request $request, Response $response): Response {
@@ -449,6 +573,14 @@ class TestController extends Controller {
       $newState
     );
     BroadcastService::sessionChange($sessionChangeMessage);
+  }
+
+  private static function getPersonIdFromRequest(Request $request): int {
+    $authToken = $request->getAttribute('AuthToken');
+    $tokenString = $authToken->getToken();
+
+    $session = self::sessionDAO()->getPersonSessionByToken($tokenString);
+    return $session->getPerson()->getId();
   }
 
   public static function patchCommandExecuted(Request $request, Response $response): Response {

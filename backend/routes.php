@@ -91,6 +91,23 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->put('/{test_id}/review', [TestController::class, 'putReview'])
     ->add(new IsTestWritable());
 
+  $group->get('/{test_id}/unit/{unit_name}/reviews', [TestController::class, 'getUnitReviews']);
+
+  $group->get('/{test_id}/reviews', [TestController::class, 'getReviews']);
+
+
+  $group->delete('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'deleteUnitReview'])
+     ->add(new IsTestWritable());
+
+  $group->delete('/{test_id}/review/{review_id}', [TestController::class, 'deleteReview'])
+    ->add(new IsTestWritable());
+
+  $group->patch('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'patchUnitReview'])
+    ->add(new IsTestWritable());
+
+  $group->patch('/{test_id}/review/{review_id}', [TestController::class, 'patchReview'])
+    ->add(new IsTestWritable());
+
   $group->patch('/{test_id}/state', [TestController::class, 'patchState'])
     ->add(new IsTestWritable());
 
