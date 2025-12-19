@@ -69,7 +69,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="send-comments"]')
       .click();
     cy.get('[data-cy="comment-diag-title"]')
-      .contains('Kommentar geben');
+      .contains('Kommentar verfassen');
     cy.get('[data-cy="comment-diag-sender"]')
       .type('tobias');
     cy.get('[data-cy="comment-diag-currentBklt"]')
