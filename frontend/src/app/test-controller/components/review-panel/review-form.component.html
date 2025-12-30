@@ -2,7 +2,7 @@
   <button matButton="outlined" class="view-switch-button" (click)="showList.emit()">
     Kommentarübersicht öffnen
   </button>
-  <h2 data-cy="comment-diag-title">Kommentar verfassen</h2>
+  <h2 data-cy="comment-diag-title">Kommentar {{ review ? 'bearbeiten' : 'verfassen'}}</h2>
   <div class="scrollable-area">
     <div>
       <mat-form-field class="username">
