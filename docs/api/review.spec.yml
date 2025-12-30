@@ -1,0 +1,113 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /reviews/export:
+    get:
+      summary: get all reviews of a person
+      description: Returns a Review report in JSON or CSV format for the person associated with the token.
+      tags:
+        - review
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for a person
+          example: "p:a_person_token"
+          required: true
+        - in: header
+          name: Accept
+          description: "Expected response Mimetype: 'text/csv' or 'application/json'"
+          example: "text/csv"
+      responses:
+        "200":
+          description: Reviews report in JSON or CSV format.
+          content:
+            text/csv;charset=utf-8:
+              schema:
+                type: string
+              example: |-
+                unitname;bookletname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry
+                "UNIT.SAMPLE";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";"mario";"this is a sample unit review"
+                "";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";"luigi";"sample booklet review"
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unitname:
+                      type: string
+                    bookletname:
+                      type: string
+                    priority:
+                      type: integer
+                    reviewtime:
+                      type: string
+                      format: date-time
+                    page:
+                      type: string
+                      nullable: true
+                    pagelabel:
+                      type: string
+                      nullable: true
+                    originalUnitId:
+                      type: string
+                    userAgent:
+                      type: string
+                    reviewer:
+                      type: string
+                      nullable: true
+                    entry:
+                      type: string
+              example:
+                - unitname: "UNIT.SAMPLE"
+                  bookletname: "BOOKLET.SAMPLE-1"
+                  priority: 0
+                  reviewtime: "2025-12-19 12:51:27"
+                  page: null
+                  pagelabel: null
+                  originalUnitId: "UNIT.SAMPLE"
+                  userAgent: "Linux/x86_64 Firefox/146.0.0"
+                  reviewer: null
+                  entry: "b1 u1"
+                - unitname: "an_alias"
+                  bookletname: "BOOKLET.SAMPLE-1"
+                  priority: 0
+                  reviewtime: "2025-12-19 12:51:33"
+                  page: null
+                  pagelabel: null
+                  originalUnitId: "UNIT.SAMPLE"
+                  userAgent: "Linux/x86_64 Firefox/146.0.0"
+                  reviewer: null
+                  entry: "b1u3"
+                - unitname: "decision-unit"
+                  bookletname: "BOOKLET.SAMPLE-2#bonus:yes"
+                  priority: 0
+                  reviewtime: "2025-12-19 12:51:43"
+                  page: null
+                  pagelabel: null
+                  originalUnitId: "UNIT.SAMPLE-2"
+                  userAgent: "Linux/x86_64 Firefox/146.0.0"
+                  reviewer: null
+                  entry: "b2u1"
+                - unitname: ""
+                  bookletname: "BOOKLET.SAMPLE-2#bonus:no"
+                  priority: 0
+                  reviewtime: "2025-12-19 12:51:52"
+                  page: null
+                  pagelabel: null
+                  originalUnitId: ""
+                  userAgent: "Linux/x86_64 Firefox/146.0.0"
+                  reviewer: null
+                  entry: "b3t"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error

@@ -4,6 +4,7 @@ use Slim\Http\ServerRequest as Request;
 
 abstract class Controller {
   protected static $_adminDAO; // TODO refactor DAO to be static, than this would not be needed
+  protected static $_reviewDAO;
   protected static $_superAdminDAO;
   protected static $_sessionDAO;
   protected static $_testDAO;
@@ -23,6 +24,14 @@ abstract class Controller {
     }
 
     return self::$_adminDAO;
+  }
+
+  protected static function reviewDAO(): ReviewDAO {
+    if (!self::$_reviewDAO) {
+      self::$_reviewDAO = new ReviewDAO();
+    }
+
+    return self::$_reviewDAO;
   }
 
   protected static function testDAO(): TestDAO {

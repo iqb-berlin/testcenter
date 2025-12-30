@@ -32,7 +32,8 @@ export class ReviewDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData,
     private kbDetectionService: KbDetectionService,
-    private mainDataService: MainDataService) {
+    private mainDataService: MainDataService
+  ) {
   }
 
   ngOnInit(): void {
@@ -90,4 +91,5 @@ export class ReviewDialogComponent implements OnInit {
     this.heightOuter = sum.toString();
     this.heightInner = (sum - 30).toString();
   }
+
 }

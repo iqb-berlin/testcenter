@@ -20,7 +20,7 @@ class SessionController extends Controller {
   public static function putSessionAdmin(Request $request, Response $response): Response {
     usleep(500000); // 0.5s delay to slow down brute force attack
 
-    $body = RequestBodyParser::getFields($request, [
+    $body = RequestHelper::getFields($request, [
       "name" => 'REQUIRED',
       "password" => 'REQUIRED'
     ]);
@@ -49,7 +49,7 @@ class SessionController extends Controller {
   }
 
   public static function putSessionLogin(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getFields($request, [
+    $body = RequestHelper::getFields($request, [
       "name" => 'REQUIRED',
       "password" => ''
     ]);
@@ -93,7 +93,7 @@ class SessionController extends Controller {
    * @codeCoverageIgnore
    */
   public static function putSessionPerson(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getFields($request, [
+    $body = RequestHelper::getFields($request, [
       'code' => ''
     ]);
 

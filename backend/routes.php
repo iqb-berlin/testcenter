@@ -264,3 +264,6 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
 
 
 $app->get('/file/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'getFile']);
+
+$app->get('/reviews/export', [ReviewController::class, 'getAllReviewsFromPersonExport'])
+  ->add(new RequireToken('person'));

@@ -17,7 +17,7 @@ class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
-    $body = RequestBodyParser::getFields($request, [
+    $body = RequestHelper::getFields($request, [
       'bookletName' => 'REQUIRED'
     ]);
 
@@ -167,7 +167,7 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $review = RequestBodyParser::getFields(
+    $review = RequestHelper::getFields(
       $request,
       [
         'priority' => 0, // was: p
@@ -184,7 +184,7 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
 
     self::testDAO()->addUnitReview(
       $testId,
@@ -205,7 +205,7 @@ class TestController extends Controller {
   public static function putReview(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $review = RequestBodyParser::getFields($request, [
+    $review = RequestHelper::getFields($request, [
       'priority' => 0, // was: p
       'categories' => 0, // was: c
       'entry' => 'REQUIRED', // was: e
@@ -215,7 +215,7 @@ class TestController extends Controller {
     $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
       ? (int) $review['priority']
       : 0;
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
 
     self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId);
 
@@ -233,7 +233,7 @@ class TestController extends Controller {
     if (!self::testDAO()->unitExists($testId, $unitName)) {
       throw new HttpNotFoundException($request, "Unit '$unitName' not found in test $testId");
     }
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
     $reviews = self::testDAO()->getUnitReviews($testId, $unitName, $personId);
 
     return $response->withJson($reviews);
@@ -245,7 +245,7 @@ class TestController extends Controller {
     if (!self::testDAO()->testExists($testId)) {
       throw new HttpNotFoundException($request, "Test with ID $testId not found");
     }
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
     $reviews = self::testDAO()->getTestReviews($testId, $personId);
 
     return $response->withJson($reviews);
@@ -253,7 +253,7 @@ class TestController extends Controller {
 
   public static function deleteUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
     if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
     }
@@ -265,7 +265,7 @@ class TestController extends Controller {
 
   public static function deleteReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
 
     if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
@@ -277,13 +277,13 @@ class TestController extends Controller {
 
   public static function patchUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
 
     if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
     }
 
-    $review = RequestBodyParser::getFields(
+    $review = RequestHelper::getFields(
       $request,
       [
         'priority' => 0,
@@ -310,13 +310,13 @@ class TestController extends Controller {
 
   public static function patchReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = self::getPersonIdFromRequest($request);
+    $personId = RequestHelper::getPersonIdFromRequest($request);
 
     if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
     }
 
-    $review = RequestBodyParser::getFields(
+    $review = RequestHelper::getFields(
       $request,
       [
         'priority' => 0,
@@ -346,7 +346,7 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $unitResponse = RequestBodyParser::getFields($request, [
+    $unitResponse = RequestHelper::getFields($request, [
       'timeStamp' => 'REQUIRED',
       'dataParts' => [],
       'OriginalUnitId' => '',
@@ -370,7 +370,7 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $statePatch = RequestBodyParser::getArrayOfFieldsets($request, [
+    $statePatch = RequestHelper::getArrayOfFieldsets($request, [
       'key' => 'REQUIRED',
       'content' => 'REQUIRED',
       'timeStamp' => 'REQUIRED'
@@ -379,7 +379,7 @@ class TestController extends Controller {
     $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
     $testLogs = array_map(
-      fn ($entry) => new TestLog(
+      fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -399,14 +399,14 @@ class TestController extends Controller {
   public static function putLog(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $logData = RequestBodyParser::getArrayOfFieldsets($request, [
+    $logData = RequestHelper::getArrayOfFieldsets($request, [
       'key' => 'REQUIRED',
       'content' => '',
       'timeStamp' => 'REQUIRED'
     ]);
 
     $testLogs = array_map(
-      fn ($entry) => new TestLog(
+      fn($entry) => new TestLog(
         $testId,
         $entry['key'],
         $entry['timeStamp'],
@@ -429,7 +429,7 @@ class TestController extends Controller {
     $body = JSON::decode($request->getBody()->getContents());
     if (!is_array($body)) {
       // 'not being an array' is the new format
-      $statePatch = RequestBodyParser::getArrayOfFieldsets(
+      $statePatch = RequestHelper::getArrayOfFieldsets(
         $request,
         [
           'key' => 'REQUIRED',
@@ -438,10 +438,10 @@ class TestController extends Controller {
         ],
         'newState'
       );
-      $originalUnitId = RequestBodyParser::getFieldWithDefault($request, 'originalUnitId', '');
+      $originalUnitId = RequestHelper::getFieldWithDefault($request, 'originalUnitId', '');
     } else {
       // deprecated
-      $statePatch = RequestBodyParser::getArrayOfFieldsets($request, [
+      $statePatch = RequestHelper::getArrayOfFieldsets($request, [
         'key' => 'REQUIRED',
         'content' => 'REQUIRED',
         'timeStamp' => 'REQUIRED'
@@ -482,16 +482,17 @@ class TestController extends Controller {
 
     if (!is_array(JSON::decode($request->getBody()->getContents()))) {
       // 'not being an array' is the new format
-      $logData = RequestBodyParser::getArrayOfFieldsets(
+      $logData = RequestHelper::getArrayOfFieldsets(
         $request,
         [
           'key' => 'REQUIRED',
           'content' => '',
           'timeStamp' => 'REQUIRED'
         ],
-        'logEntries');
+        'logEntries'
+      );
     } else {
-      $logData = RequestBodyParser::getArrayOfFieldsets($request, [
+      $logData = RequestHelper::getArrayOfFieldsets($request, [
         'key' => 'REQUIRED',
         'content' => '',
         'timeStamp' => 'REQUIRED'
@@ -519,7 +520,7 @@ class TestController extends Controller {
 
     $testId = (int) $request->getAttribute('test_id');
 
-    $lockEvent = RequestBodyParser::getFields($request, [
+    $lockEvent = RequestHelper::getFields($request, [
       'timeStamp' => 'REQUIRED',
       'message' => ''
     ]);
@@ -537,7 +538,7 @@ class TestController extends Controller {
   public static function getCommands(Request $request, Response $response): Response {
     // TODO do we have to check access to test?
     $testId = (int) $request->getAttribute('test_id');
-    $lastCommandId = RequestBodyParser::getFieldWithDefault($request, 'lastCommandId', null);
+    $lastCommandId = RequestHelper::getFieldWithDefault($request, 'lastCommandId', null);
 
     $commands = self::testDAO()->getCommands($testId, $lastCommandId);
 
@@ -575,13 +576,6 @@ class TestController extends Controller {
     BroadcastService::sessionChange($sessionChangeMessage);
   }
 
-  private static function getPersonIdFromRequest(Request $request): int {
-    $authToken = $request->getAttribute('AuthToken');
-    $tokenString = $authToken->getToken();
-
-    $session = self::sessionDAO()->getPersonSessionByToken($tokenString);
-    return $session->getPerson()->getId();
-  }
 
   public static function patchCommandExecuted(Request $request, Response $response): Response {
     // TODO to we have to check access to test?
