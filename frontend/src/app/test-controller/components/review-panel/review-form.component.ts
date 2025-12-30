@@ -94,13 +94,13 @@ export class ReviewFormComponent implements OnInit {
   saveReview(): void {
     const result = this.reviewForm.value;
     const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_NR;
-    const currentPageLabel = this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''];
+    const currentPageLabel = this.tcs.currentUnit?.pageLabels[currentPageIndex || ''];
     if (!this.review) {
       this.backendService.saveReview(
         this.tcs.testId,
         (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
         (result.target === 'task') ? currentPageIndex || null : null,
-        (result.target === 'task') ? currentPageLabel || null : null,
+        (result.target === 'task') ? result.targetLabel || currentPageLabel : null,
         result.priority,
         this.getSelectedCategories(),
         result.sender ? `${result.sender}: ${result.entry}` : result.entry,
@@ -120,7 +120,7 @@ export class ReviewFormComponent implements OnInit {
         result.priority,
         this.getSelectedCategories(),
         result.sender ? `${result.sender}: ${result.entry}` : result.entry,
-        (this.reviewForm.value.target === 'task') ? currentPageLabel || null : null,
+        (this.reviewForm.value.target === 'task') ? result.targetLabel || currentPageLabel : null,
       ).subscribe(() => {
         this.snackBar.open('Kommentar geändert', '', {
           duration: 5000,
