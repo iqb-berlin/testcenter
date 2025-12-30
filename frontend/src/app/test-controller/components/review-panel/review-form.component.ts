@@ -82,13 +82,13 @@ export class ReviewFormComponent implements OnInit {
   }
 
   private getSender(reviewText: string): string | null {
-    const index = reviewText.indexOf(':');
+    const index = reviewText.indexOf(': ');
     return index === -1 ? null : reviewText.slice(0, index);
   }
 
   private getBodyText(reviewText: string): string | null {
-    const index = reviewText.indexOf(':');
-    return index === -1 ? null : reviewText.slice(index + 2); // 2 because save function adds colon AND another space
+    const index = reviewText.indexOf(': ');
+    return index === -1 ? reviewText : reviewText.slice(index + 2); // index + whitespace
   }
 
   saveReview(): void {
