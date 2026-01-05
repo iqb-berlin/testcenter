@@ -1,0 +1,42 @@
+form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.username {
+  width: 400px;
+}
+
+mat-radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.prio-and-category-box {
+  display: flex;
+  gap: 60px;
+}
+
+.prio-and-category-box ul {
+  list-style-type: none;
+  margin: 0;
+  padding-inline-start: 0;
+}
+
+.scrollable-area {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.action-buttons {
+  margin-top: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}

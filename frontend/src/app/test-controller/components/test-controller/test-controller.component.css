@@ -37,6 +37,9 @@ h1 {
   color: white;
 }
 
+mat-sidenav {
+  width: 700px;
+}
 
 
 .sidebar {

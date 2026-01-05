@@ -226,13 +226,6 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    if (!self::testDAO()->testExists($testId)) {
-      throw new HttpNotFoundException($request, "Test with ID $testId not found");
-    }
-
-    if (!self::testDAO()->unitExists($testId, $unitName)) {
-      throw new HttpNotFoundException($request, "Unit '$unitName' not found in test $testId");
-    }
     $personId = RequestHelper::getPersonIdFromRequest($request);
     $reviews = self::testDAO()->getUnitReviews($testId, $unitName, $personId);
 
@@ -242,9 +235,6 @@ class TestController extends Controller {
   public static function getReviews(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    if (!self::testDAO()->testExists($testId)) {
-      throw new HttpNotFoundException($request, "Test with ID $testId not found");
-    }
     $personId = RequestHelper::getPersonIdFromRequest($request);
     $reviews = self::testDAO()->getTestReviews($testId, $personId);
 

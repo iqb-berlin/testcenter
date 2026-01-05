@@ -138,13 +138,30 @@ export enum MaxTimerEvent {
   ENDED = 'ENDED'
 }
 
-export interface ReviewDialogData {
-  loginname: string;
-  bookletname: string;
-  unitAlias: string;
-  unitTitle: string;
-  currentPageIndex: number;
-  currentPageLabel: string;
+export interface Review {
+  id: number;
+  person_id: number;
+  reviewtime: string;
+  priority: number;
+  categories: string;
+  entry: string;
+  userAgent: string;
+}
+
+export interface BookletReview extends Review {
+  booklet_id: number;
+}
+
+export interface UnitReview extends Review {
+  unit_name: string;
+  test_id: number;
+  page: number | null;
+  pagelabel: string | null;
+  originalUnitId: string;
+}
+
+export function isUnitReview(review: Review): review is UnitReview {
+  return (review as UnitReview).test_id !== undefined;
 }
 
 export interface KeyValuePairNumber {

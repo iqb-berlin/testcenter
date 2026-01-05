@@ -317,27 +317,6 @@ class TestDAO extends DAO {
     return $result && $result[0]['count'] > 0;
   }
 
-  public function testExists(int $testId): bool {
-    $result = $this->_(
-      'select count(*) as count from tests where id = :id',
-      [':id' => $testId],
-      true
-    );
-    return $result && $result[0]['count'] > 0;
-  }
-
-  public function unitExists(int $testId, string $unitName): bool {
-    $result = $this->_(
-      'select count(*) as count from units where test_id = :test_id and name = :name',
-      [
-        ':test_id' => $testId,
-        ':name' => $unitName
-      ],
-      true
-    );
-    return $result && $result[0]['count'] > 0;
-  }
-
   public function getTestState(int $testId): array {
     $test = $this->_(
       'select tests.laststate from tests where tests.id=:testId',

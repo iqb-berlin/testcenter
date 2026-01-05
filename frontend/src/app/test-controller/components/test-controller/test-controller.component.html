@@ -28,12 +28,8 @@
     />
   </ng-container>
 
-  <button
-    mat-button
-    (click)="showReviewDialog()"
-    *ngIf="tcs.testMode.canReview"
-    matTooltip="Kommentar senden"
-    data-cy="send-comments">
+  <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
+          (click)="sideNavContent = 'review-form'; sidenav.toggle(true)">
     <mat-icon>rate_review</mat-icon>
   </button>
   <button
@@ -52,30 +48,20 @@
     data-cy="fullscreen">
     <mat-icon>{{mainDataService.isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
   </button>
-  <button
-    mat-button
-    (click)="unitMenu.toggle(true)"
+  <button mat-button (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)"
     *ngIf="(tcs.booklet?.config?.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-    matTooltip="Zur Aufgabenliste"
-    data-cy="unit-menu">
+    matTooltip="Zur Aufgabenliste" data-cy="unit-menu">
     <mat-icon>menu</mat-icon>
   </button>
 </div>
 
-<mat-sidenav-container
-  [class]="{'tc-body': true, 'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF'}"
-  hasBackdrop="true"
->
-  <mat-sidenav
-    #unitMenu
-    mode="over"
-    class="sidebar"
-    fixedInViewport="true"
-    fixedTopGap="55"
-    position="end"
-    opened="false"
-  >
-    <tc-unit-menu (close)="unitMenu.close()"></tc-unit-menu>
+<mat-sidenav-container [class]="{'tc-body': true, 'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF'}">
+  <mat-sidenav #sidenav mode="over" position="end" opened="false">
+    @if (sideNavContent === 'review-form') {
+      <tc-review-panel [testID]="tcs.testId" [unitAlias]="tcs.currentUnit?.alias" (close)="sidenav.close()"></tc-review-panel>
+    } @else {
+      <tc-unit-menu (close)="sidenav.close()"></tc-unit-menu>
+    }
   </mat-sidenav>
 
   <mat-sidenav-content>

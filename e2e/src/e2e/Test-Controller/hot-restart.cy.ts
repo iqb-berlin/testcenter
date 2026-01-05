@@ -140,7 +140,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="dialog-confirm"]')
         .click();
       cy.get('.mat-drawer-backdrop')
-        .click();
+        .click({force: true});
     });
 
     it('leave the block via iqb-logo, check the locked block', () => {

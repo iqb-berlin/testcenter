@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
   UnitData, TestData, StateReportEntry, LoadingFile,
-  KeyValuePairString, UnitStateUpdate, TestStateUpdate
+  KeyValuePairString, UnitStateUpdate, TestStateUpdate, Review, UnitReview, BookletReview
 } from '../interfaces/test-controller.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
@@ -17,7 +17,16 @@ export class BackendService {
     @Inject('BACKEND_URL') public backendUrl: string,
     private http: HttpClient,
     private mds: MainDataService
-  ) {
+  ) { }
+
+  getReviews(testId: string, unitAlias: string | null): Observable<BookletReview[] | UnitReview[]> {
+    return this.http.get<BookletReview[] | UnitReview[]>(
+      `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/reviews`);
+  }
+
+  deleteReview(testId: string, unitAlias: string | null, reviewID: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review/${reviewID}`);
   }
 
   saveReview(
@@ -35,6 +44,16 @@ export class BackendService {
       `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review`,
       {
         priority, categories, entry, page, pagelabel, userAgent, originalUnitId
+      }
+    );
+  }
+
+  updateReview(testId: string, unitAlias: string | null, reviewID: number, priority: number,
+               categories: string, entry: string, pagelabel: string | null): Observable<void> {
+    return this.http.patch<void>(
+      `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review/${reviewID}`,
+      {
+        priority, categories, entry, pagelabel
       }
     );
   }
