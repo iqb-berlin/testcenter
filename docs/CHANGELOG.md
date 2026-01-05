@@ -1,6 +1,22 @@
 ---
 layout: default
 ---
+## 17.5.0-rc
+### Neue Features
+* "run-review" Modus wurde stark erweitert
+  * Das Formular zur Erstellung eines Reviews wurde vereinfacht und neu angeordnet.
+  * Ein Nutzer kann nun seine eigenen gegebenen Reviews wieder aufrufen, bearbeiten und löschen.
+  * Ein Nutzer kann seine eigenen gegebenen Reviews aus der Test-Übersichtsseite als CSV ausgeben lassen.
+* Neue API Endoints:
+  * Neuer API Endpoint `GET /reviews/export` - Ermöglicht dars Exportieren aller Reviews einer Person als CSV oder JSON.
+  * Neue API Endpoints für Reviews:
+    * `GET /test/{test_id}/unit/{unit_name}/reviews` - Abrufen von Unit-Reviews.
+    * `GET /test/{test_id}/reviews` - Abrufen von Booklet-Reviews.
+    * `PATCH /test/{test_id}/unit/{unit_name}/review/{review_id}` - Aktualisieren eines Unit-Reviews.
+    * `DELETE /test/{test_id}/unit/{unit_name}/review/{review_id}` - Löschen eines Unit-Reviews.
+    * `PATCH /test/{test_id}/review/{review_id}` - Aktualisieren eines Booklet-Reviews.
+    * `DELETE /test/{test_id}/review/{review_id}` - Löschen eines Booklet-Reviews.
+
 ## 17.4.2
 ### Bugfix
 * Wird während des Testladens das Fenster geschlossen, konnte es u.U. dazu kommen, dass die Testperson und die Testleiterkonsole der gesamten Gruppe ausgesperrt wurden. Dies ist nun behoben.
