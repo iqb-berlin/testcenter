@@ -2,6 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 interface GridIcon {
   id: string;
@@ -37,6 +38,11 @@ export class FabFormComponent {
   selectedIcons = signal<(GridIcon | null)[]>(Array(5).fill(null));
   nextIcon = computed(() => this.selectedIcons().indexOf(null))
 
+  constructor(
+    private mds: MainDataService
+  ) {
+  }
+
   clearSelection() {
     this.selectedIcons.set(Array(5).fill(null));
   }
@@ -49,5 +55,9 @@ export class FabFormComponent {
         return newIcons;
       });
     }
+  }
+
+  protected resetLogin() {
+    this.mds.logOut();
   }
 }
