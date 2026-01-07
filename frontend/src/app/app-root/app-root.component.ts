@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
 
 @Component({
-    template: `<div>
+  template: `
            <router-outlet></router-outlet>
-         </div>
         `,
-    standalone: false
+  styles: `
+      :host {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }`,
+  standalone: false
 })
 export class AppRootComponent {
 }
