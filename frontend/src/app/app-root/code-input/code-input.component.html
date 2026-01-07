@@ -22,10 +22,10 @@
       </mat-card-content>
       <mat-card-actions [style.justify-content]="'space-between'">
         <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
-                color="primary" data-cy="continue">
+                data-cy="continue">
           Weiter
         </button>
-        <button type="button" mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">
+        <button type="button" mat-raised-button data-cy="logout" (click)="resetLogin()">
           Neu anmelden
         </button>
       </mat-card-actions>
@@ -41,7 +41,7 @@
       <tc-status-card></tc-status-card>
     </mat-card-content>
     <mat-card-actions>
-      <button [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</button>
+      <button [routerLink]="['/legal-notice']" mat-raised-button>Impressum/Datenschutz</button>
     </mat-card-actions>
   </mat-card>
 </div>
