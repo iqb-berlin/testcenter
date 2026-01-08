@@ -210,6 +210,8 @@ export const loginMonitor =
     cy.get('[data-cy="login-user"]')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
+    cy.get('[data-cy="logout"]')
+      .should('be.visible');
   };
 
 export const clickSuperadminSettings = () => {
