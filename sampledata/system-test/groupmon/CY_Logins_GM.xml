@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>Logins für Cypress Test: Groupmonitor</Description>
+  </Metadata>
+
+  <Profiles>
+    <GroupMonitor>
+      <Profile
+        id="small"
+        label="Superklein"
+        blockColumn="hide"
+        unitColumn="hide"
+        groupColumn="hide"
+        bookletColumn="hide"
+        bookletStatesColumns=""
+        view="small"
+        filterLocked="yes"
+        filterPending="yes"
+      >
+        <Filter label="Reduced Booklet" type="equal" field="bookletLabel" value="Reduced Booklet" />
+      </Profile>
+      <Profile
+        id="all"
+        label="Alles zeigen"
+        blockColumn="show"
+        unitColumn="show"
+        groupColumn="show"
+        bookletColumn="show"
+        bookletStatesColumns="level bonus"
+        view="full"
+        filterLocked="no"
+        filterPending="no"
+        autoselectNextBlock="no"
+      >
+      </Profile>
+    </GroupMonitor>
+  </Profiles>
+
+  <Group id="filter-profiles" label="Filter-Profiles">
+
+    <Login mode="run-hot-return" name="testtaker-a" pw="123">
+      <Booklet>Cy-Bklt_GM-1</Booklet>
+    </Login>
+
+    <Login mode="monitor-group" name="GM-1" pw="123">
+      <Profile id="all" />
+      <Profile id="small" />
+    </Login>
+  </Group>
+
+</Testtakers>
