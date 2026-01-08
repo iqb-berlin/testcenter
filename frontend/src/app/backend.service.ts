@@ -53,4 +53,13 @@ export class BackendService {
     return this.http
       .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`);
   }
+
+  downloadReviews(): Observable<Blob> {
+    return this.http.get(`${this.serverUrl}reviews/export`, {
+      headers: {
+        Accept: 'text/csv'
+      },
+      responseType: 'blob'
+    });
+  }
 }

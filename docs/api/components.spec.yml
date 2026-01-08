@@ -114,6 +114,11 @@ components:
               items:
                 $ref: '#/components/schemas/accessObject'
               description: Elements are available groups.
+            review:
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: No Elements. Presence of this key indicates the user to be of logintype "review".
         access:
           deprecated: true
           description: old format of claims, kept for backwards compatibility

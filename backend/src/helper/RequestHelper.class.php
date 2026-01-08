@@ -8,7 +8,9 @@ declare(strict_types=1);
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\ServerRequest as Request;
 
-class RequestBodyParser {
+class RequestHelper {
+  private static $_sessionDAO;
+
   static function getRequiredField(Request $request, string $elementName) {
     $requestBody = JSON::decode($request->getBody()->getContents());
 
@@ -69,5 +71,21 @@ class RequestBodyParser {
     }
 
     return $result;
+  }
+
+  protected static function sessionDAO(): SessionDAO {
+    if (!self::$_sessionDAO) {
+      self::$_sessionDAO = new SessionDAO();
+    }
+
+    return self::$_sessionDAO;
+  }
+
+  static function getPersonIdFromRequest(Request $request): int {
+    $authToken = $request->getAttribute('AuthToken');
+    $tokenString = $authToken->getToken();
+
+    $session = self::sessionDAO()->getPersonSessionByToken($tokenString);
+    return $session->getPerson()->getId();
   }
 }

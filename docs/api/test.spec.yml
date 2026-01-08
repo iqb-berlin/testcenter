@@ -229,6 +229,407 @@ paths:
         "500":
           description: Server Error
 
+  /test/{test_id}/unit/{unit_name}/reviews:
+    get:
+      summary: get unit-level reviews of a unit
+      description: |-
+        Retrieves all review items for a specific unit in a test.
+        Only returns reviews created by the authenticated user.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+          required: true
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: UNIT.SAMPLE
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of reviews for the unit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: unique review ID
+                    unit_name:
+                      type: string
+                      description: name of the unit
+                    test_id:
+                      type: integer
+                      description: ID of the test
+                    person_id:
+                      type: integer
+                      description: ID of the person who created the review
+                    reviewtime:
+                      type: string
+                      format: date-time
+                      description: timestamp of review creation/last edit
+                    priority:
+                      type: integer
+                      description: priority (0-3)
+                    categories:
+                      type: string
+                      description: whitespace separated list of categories
+                    entry:
+                      type: string
+                      description: text of the review entry
+                    page:
+                      type: integer
+                      nullable: true
+                      description: page number where review was made
+                    pagelabel:
+                      type: string
+                      nullable: true
+                      description: label of the page
+                    userAgent:
+                      type: string
+                      description: user agent string
+                    originalUnitId:
+                      type: string
+                      description: original unit ID
+              example:
+                - id: 1
+                  unit_name: "UNIT.SAMPLE"
+                  test_id: 1
+                  person_id: 5
+                  reviewtime: "2025-12-17T14:30:00Z"
+                  priority: 2
+                  categories: "content design"
+                  entry: "This is a review comment"
+                  page: null
+                  pagelabel: null
+                  userAgent: "Mozilla/5.0..."
+                  originalUnitId: "UNIT.SAMPLE"
+                - id: 2
+                  unit_name: "UNIT.SAMPLE"
+                  test_id: 1
+                  person_id: 5
+                  reviewtime: "2025-12-17T15:00:00Z"
+                  priority: 1
+                  categories: "tech"
+                  entry: "Another review"
+                  page: 3
+                  pagelabel: "Unit 1.2"
+                  userAgent: "Mozilla/5.0..."
+                  originalUnitId: "UNIT.SAMPLE"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/reviews:
+      get:
+        summary: get booklet-level reviews for a test
+        description: |-
+          Retrieves all review items for a specific booklet/test.
+          Only returns reviews created by the authenticated user.
+        tags:
+          - run test
+        parameters:
+          - in: header
+            name: AuthToken
+            description: auth-token for test-user
+            example: "p:0000000000000.00000000000"
+            required: true
+          - in: path
+            name: test_id
+            description: test-id - id of a test execution
+            example: 1
+            required: true
+            schema:
+              type: integer
+        responses:
+          "200":
+            description: List of reviews for the booklet
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: unique review ID
+                      booklet_id:
+                        type: integer
+                        description: ID of the booklet/test
+                      person_id:
+                        type: integer
+                        description: ID of the person who created the review
+                      reviewtime:
+                        type: string
+                        format: date-time
+                        description: timestamp of review creation/last edit
+                      priority:
+                        type: integer
+                        description: priority (0-3)
+                      categories:
+                        type: string
+                        description: whitespace separated list of categories
+                      entry:
+                        type: string
+                        description: text of the review entry
+                      userAgent:
+                        type: string
+                        description: user agent string
+                example:
+                  - id: 1
+                    booklet_id: 1
+                    person_id: 5
+                    reviewtime: "2025-12-17T14:30:00Z"
+                    priority: 1
+                    categories: "content"
+                    entry: "This booklet needs improvement"
+                    userAgent: "Mozilla/5.0..."
+                  - id: 2
+                    booklet_id: 1
+                    person_id: 5
+                    reviewtime: "2025-12-17T15:30:00Z"
+                    priority: 2
+                    categories: "design"
+                    entry: "Navigation could be better"
+                    userAgent: "Mozilla/5.0..."
+          "401":
+            description: Not authenticated
+          "403":
+            description: Forbidden
+          "500":
+            description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/review/{review_id}:
+      patch:
+        summary: update a unit review
+        description: |-
+          Updates an existing review item for a unit.
+          Users can only update their own reviews.
+        tags:
+          - run test
+        parameters:
+          - in: header
+            name: AuthToken
+            description: auth-token for test-user
+            example: "p:0000000000000.00000000000"
+            required: true
+          - in: path
+            name: test_id
+            description: test_id - id of a test execution
+            example: 1
+            required: true
+            schema:
+              type: integer
+          - in: path
+            name: unit_name
+            description: unit-name (or alias) as defined in booklet
+            example: UNIT.SAMPLE
+            required: true
+            schema:
+              type: string
+          - in: path
+            name: review_id
+            description: unique ID of the review to update
+            example: 1
+            required: true
+            schema:
+              type: integer
+        requestBody:
+          content:
+            application/json:
+              schema:
+                properties:
+                  priority:
+                    description: priority, 0=lowest, 3=highest
+                    type: integer
+                  entry:
+                    description: text of the review entry
+                    type: string
+                  categories:
+                    description: whitespace separated list of categories
+                    type: string
+                  userAgent:
+                    description: user agent string
+                    type: string
+                required:
+                  - entry
+              example:
+                entry: "Updated review comment"
+                priority: 3
+                categories: "content design"
+                userAgent: "Mozilla/5.0..."
+        responses:
+          "200":
+            description: OK, review updated
+          "401":
+            description: Not authenticated
+          "403":
+            description: Forbidden
+          "500":
+            description: Server Error
+
+      delete:
+        summary: delete a unit review
+        description: |-
+          Deletes an existing review item for a unit.
+          Users can only delete their own reviews.
+        tags:
+          - run test
+        parameters:
+          - in: header
+            name: AuthToken
+            description: auth-token for test-user
+            example: "p:0000000000000.00000000000"
+            required: true
+          - in: path
+            name: test_id
+            description: test-id - id of a test execution
+            example: 1
+            required: true
+            schema:
+              type: integer
+          - in: path
+            name: unit_name
+            description: unit-name (or alias) as defined in booklet
+            example: UNIT.SAMPLE
+            required: true
+            schema:
+              type: string
+          - in: path
+            name: review_id
+            description: unique ID of the review to delete
+            example: 1
+            required: true
+            schema:
+              type: integer
+        responses:
+          "204":
+            description: OK, review deleted (no content)
+          "401":
+            description: Not authenticated
+          "403":
+            description: Forbidden
+          "500":
+            description: Server Error
+
+  /test/{test_id}/review/{review_id}:
+      patch:
+        summary: update a booklet review
+        description: |-
+          Updates an existing review item for a booklet/test.
+          Users can only update their own reviews.
+        tags:
+          - run test
+        parameters:
+          - in: header
+            name: AuthToken
+            description: auth-token for test-user
+            example: "p:0000000000000.00000000000"
+            required: true
+          - in: path
+            name: test_id
+            description: test-id - id of a test execution
+            example: 1
+            required: true
+            schema:
+              type: integer
+          - in: path
+            name: review_id
+            description: unique ID of the review to update
+            example: 1
+            required: true
+            schema:
+              type: integer
+        requestBody:
+          content:
+            application/json:
+              schema:
+                properties:
+                  priority:
+                    description: priority, 0=lowest, 3=highest
+                    type: integer
+                  entry:
+                    description: text of the review entry
+                    type: string
+                  categories:
+                    description: whitespace separated list of categories
+                    type: string
+                  userAgent:
+                    description: user agent string
+                    type: string
+                required:
+                  - entry
+              example:
+                entry: "Updated booklet review"
+                priority: 2
+                categories: " tech"
+                userAgent: "Mozilla/5.0..."
+        responses:
+          "200":
+            description: OK, review updated
+          "401":
+            description: Not authenticated
+          "403":
+            description: Forbidden
+          "500":
+            description: Server Error
+
+      delete:
+        summary: delete a booklet review
+        description: |-
+          Deletes an existing review item for a booklet/test.
+          Users can only delete their own reviews.
+        tags:
+          - run test
+        parameters:
+          - in: header
+            name: AuthToken
+            description: auth-token for test-user
+            example: "p:0000000000000.00000000000"
+            required: true
+          - in: path
+            name: test_id
+            description: test-id - id of a test execution
+            example: 1
+            required: true
+            schema:
+              type: integer
+          - in: path
+            name: review_id
+            description: unique ID of the review to delete
+            example: 1
+            required: true
+            schema:
+              type: integer
+        responses:
+          "204":
+            description: OK, review deleted (no content)
+          "401":
+            description: Not authenticated
+          "403":
+            description: Forbidden
+          "500":
+            description: Server Error
+
   /test/{test_id}/unit/{unit_name}/response:
     put:
       summary: add response to a unit

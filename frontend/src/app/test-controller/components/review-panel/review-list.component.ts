@@ -1,0 +1,73 @@
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatListItem, MatSelectionList } from '@angular/material/list';
+import { MatButton } from '@angular/material/button';
+import { BackendService } from '../../services/backend.service';
+import { Observable } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { BookletReview, Review, UnitReview } from '../../interfaces/test-controller.interfaces';
+
+@Component({
+  selector: 'tc-review-list',
+  imports: [
+    MatListItem,
+    MatSelectionList,
+    MatButton,
+    AsyncPipe
+  ],
+  template: `
+    <div class="wrapper">
+      <button matButton="outlined" class="view-switch-button"
+              (click)="editReview.emit(undefined)">Neuer Kommentar</button>
+      <h2>Kommentare zu dieser Unit</h2>
+      <mat-selection-list>
+        @for (review of unitReviews$ | async; track review.id) {
+          <mat-list-item (click)="editReview.emit(review)">
+            {{ review.entry }}
+          </mat-list-item>
+        }
+      </mat-selection-list>
+      <h2>alle Kommentare zu diesem Testheft</h2>
+      <mat-selection-list>
+        @for (review of bookletReviews$ | async; track review.id) {
+          <mat-list-item (click)="editReview.emit(review)">
+            {{ review.entry }}
+          </mat-list-item>
+        }
+      </mat-selection-list>
+      <button mat-button class="close-button" (click)="close.emit()">
+        Schließen
+      </button>
+    </div>
+  `,
+  styles: `
+    .wrapper {
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    .close-button {
+      margin-top: auto;
+      align-self: start;
+    }
+  `,
+})
+export class ReviewListComponent implements OnInit {
+  @Input() testID!: string;
+  @Input() unitAlias?: string | null = null;
+  @Output() editReview = new EventEmitter<Review | undefined>();
+  @Output() close = new EventEmitter<void>();
+
+  unitReviews$: Observable<UnitReview[]> | undefined;
+  bookletReviews$: Observable<BookletReview[]> | undefined;
+
+  constructor(private backendService: BackendService) { }
+
+  ngOnInit(): void {
+    if (this.unitAlias) {
+      this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias) as Observable<UnitReview[]>;
+    }
+    this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
+  }
+}

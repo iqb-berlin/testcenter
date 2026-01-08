@@ -11,6 +11,10 @@ import { BackendService } from '../../backend.service';
 import { AccessObject } from '../../app.interfaces';
 import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
 import { MatDialog } from '@angular/material/dialog';
+import { FileService } from '../../shared/services/file.service';
+import { MessageService } from '../../shared/services/message.service';
+import { AuthAccessType } from '../../app.interfaces';
+
 
 @Component({
     selector: 'tc-starter',
@@ -19,7 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
     standalone: false
 })
 export class StarterComponent implements OnInit, OnDestroy {
-  accessObjects: { [accessType: string]: AccessObject[] } = {};
+  claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
   workspaces: AccessObject[] = [];
   private getMonitorDataSubscription: Subscription | null = null;
   private getBookletDataSubscription: Subscription | null = null;
@@ -33,7 +37,8 @@ export class StarterComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     public ds: SysCheckDataService,
     public pcs: PasswordChangeService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ms: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -44,16 +49,16 @@ export class StarterComponent implements OnInit, OnDestroy {
           this.mds.logOut();
           return;
         }
-        this.accessObjects = authData.claims;
+        this.claims = authData.claims;
         this.mds.setAuthData(authData);
 
         if (
-          'attachmentManager' in this.accessObjects ||
-          'workspaceMonitor' in this.accessObjects ||
-          'testGroupMonitor' in this.accessObjects
+          'attachmentManager' in this.claims ||
+          'workspaceMonitor' in this.claims ||
+          'testGroupMonitor' in this.claims
         ) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-        } else if ('workspaceAdmin' in this.accessObjects || 'superAdmin' in this.accessObjects) {
+        } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
           this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
           if (this.getWorkspaceDataSubscription !== null) {
             this.getWorkspaceDataSubscription.unsubscribe();
@@ -112,7 +117,7 @@ export class StarterComponent implements OnInit, OnDestroy {
               });
             });
           }
-        } else if ('test' in this.accessObjects) {
+        } else if ('test' in this.claims) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
         }
       });
@@ -188,6 +193,17 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   buttonGotoWorkspaceAdmin(ws: AccessObject): void {
     this.router.navigateByUrl(`/admin/${ws.id.toString()}/files`);
+  }
+
+  downloadReview() {
+    this.bs.downloadReviews()
+      .subscribe((response: Blob) => {
+        if (response.size > 0) {
+          FileService.saveBlobToFile(response, 'reviews.csv');
+        } else {
+          this.ms.show('Keine Daten verfügbar.');
+        }
+      });
   }
 
   ngOnDestroy(): void {

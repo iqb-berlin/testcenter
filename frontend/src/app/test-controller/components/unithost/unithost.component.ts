@@ -473,14 +473,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   gotoNextPage(): void {
-    this.gotoPage(this.currentPageIndex + 1);
+    this.gotoPage(++this.currentPageIndex);
   }
 
   gotoPreviousPage(): void {
-    this.gotoPage(this.currentPageIndex - 1);
+    this.gotoPage(--this.currentPageIndex);
   }
 
   gotoPage(targetPageIndex: number): void {
+    this.currentPageIndex = targetPageIndex;
     this.postMessageTarget?.postMessage({
       type: 'vopPageNavigationCommand',
       sessionId: this.tcs.currentUnit?.alias,

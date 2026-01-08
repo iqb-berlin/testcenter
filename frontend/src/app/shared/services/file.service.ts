@@ -9,5 +9,6 @@ export class FileService {
     anchor.download = fileName;
     anchor.href = window.URL.createObjectURL(fileData);
     anchor.click();
+    window.URL.revokeObjectURL(anchor.href);
   }
 }

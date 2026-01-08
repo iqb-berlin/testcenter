@@ -139,7 +139,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.get('.mat-drawer-backdrop')
-      .click();
+      .click({force: true});
   });
 
   it('leave the block via iqb-logo, check the locked block', () => {

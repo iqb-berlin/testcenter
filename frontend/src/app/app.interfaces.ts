@@ -9,7 +9,8 @@ export type AuthAccessType =
   | 'testGroupMonitor'
   | 'attachmentManager'
   | 'studyMonitor'
-  | 'sysCheck';
+  | 'sysCheck'
+  | 'review';
 
 export interface AccessObject {
   label: string;

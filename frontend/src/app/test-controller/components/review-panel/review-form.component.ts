@@ -1,0 +1,164 @@
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  FormControl, FormGroup, ReactiveFormsModule, Validators
+} from '@angular/forms';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MainDataService } from '../../../shared/services/maindata/maindata.service';
+import { AppError } from '../../../app.interfaces';
+import { TestControllerService } from '../../services/test-controller.service';
+import { BackendService } from '../../services/backend.service';
+import { UserAgentService } from '../../../shared/shared.module';
+import { isUnitReview, Review } from '../../interfaces/test-controller.interfaces';
+
+@Component({
+  selector: 'tc-review-form',
+  imports: [
+    ReactiveFormsModule,
+    MatFormField,
+    MatButton,
+    MatRadioGroup,
+    MatInput,
+    MatRadioButton,
+    CdkTextareaAutosize,
+    MatLabel,
+    MatTooltip,
+    MatCheckbox
+  ],
+  templateUrl: './review-form.component.html',
+  styleUrl: './review-form.component.css',
+})
+export class ReviewFormComponent implements OnInit {
+  @Input() review?: Review;
+  @Output() showList = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+
+  reviewForm: FormGroup;
+  senderName?: string;
+  accountName: string;
+  bookletname?: string;
+  unitTitle?: string;
+  unitAlias?: string;
+
+  constructor(private tcs: TestControllerService, private mainDataService: MainDataService,
+              private backendService: BackendService, private snackBar: MatSnackBar) {
+    this.reviewForm = new FormGroup({
+      target: new FormControl('unit', Validators.required),
+      targetLabel: new FormControl((this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])),
+      priority: new FormControl(''),
+      tech: new FormControl(),
+      content: new FormControl(),
+      design: new FormControl(),
+      entry: new FormControl('', Validators.required),
+      sender: new FormControl(this.senderName)
+    });
+    const authData = this.mainDataService.getAuthData();
+    if (!authData) {
+      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // TODO necessary?!
+    }
+    this.accountName = authData.displayName;
+    this.bookletname = this.tcs.booklet?.metadata.label;
+    this.unitTitle = this.tcs.currentUnit?.label;
+    this.unitAlias = this.tcs.currentUnit?.alias;
+  }
+
+  ngOnInit(): void {
+    if (!this.review) return; // this means it is a new review, no init needed
+    this.reviewForm.patchValue({
+      target: isUnitReview(this.review) ? (this.review.pagelabel ? 'task' : 'unit') : 'booklet',
+      sender: this.getSender(this.review.entry),
+      targetLabel: isUnitReview(this.review) ? this.review.pagelabel : '',
+      priority: this.review.priority,
+      tech: this.review.categories.includes('tech'),
+      content: this.review.categories.includes('content'),
+      design: this.review.categories.includes('design'),
+      entry: this.getBodyText(this.review.entry)
+    });
+  }
+
+  private getSender(reviewText: string): string | null {
+    const index = reviewText.indexOf(': ');
+    return index === -1 ? null : reviewText.slice(0, index);
+  }
+
+  private getBodyText(reviewText: string): string | null {
+    const index = reviewText.indexOf(': ');
+    return index === -1 ? reviewText : reviewText.slice(index + 2); // index + whitespace
+  }
+
+  saveReview(): void {
+    const result = this.reviewForm.value;
+    const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_NR;
+    const currentPageLabel = this.tcs.currentUnit?.pageLabels[currentPageIndex || ''];
+    if (!this.review) {
+      this.backendService.saveReview(
+        this.tcs.testId,
+        (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
+        (result.target === 'task') ? currentPageIndex || null : null,
+        (result.target === 'task') ? result.targetLabel || currentPageLabel : null,
+        result.priority,
+        this.getSelectedCategories(),
+        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        UserAgentService.outputWithOs(),
+        this.tcs.currentUnit?.id || ''
+      ).subscribe(() => {
+        this.snackBar.open('Kommentar gespeichert', '', {
+          duration: 5000,
+          panelClass: ['snackbar-comment-saved']
+        });
+      });
+    } else {
+      this.backendService.updateReview(
+        this.tcs.testId,
+        (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
+        this.review.id,
+        result.priority,
+        this.getSelectedCategories(),
+        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        (this.reviewForm.value.target === 'task') ? result.targetLabel || currentPageLabel : null,
+      ).subscribe(() => {
+        this.snackBar.open('Kommentar geändert', '', {
+          duration: 5000,
+          panelClass: ['snackbar-comment-saved']
+        });
+      });
+    }
+  }
+
+  getSelectedCategories(): string { // TODO wtf is this a string
+    let selectedCategories = '';
+    if (this.reviewForm.get('tech')?.value === true) {
+      selectedCategories = ' tech';
+    }
+    if (this.reviewForm.get('design')?.value === true) {
+      selectedCategories += ' design';
+    }
+    if (this.reviewForm.get('content')?.value === true) {
+      selectedCategories += ' content';
+    }
+    return selectedCategories.trim();
+  }
+
+  protected deleteReview() {
+    this.backendService.deleteReview(
+      this.tcs.testId,
+      this.reviewForm.value.target !== 'booklet' ? (this.unitAlias || null) : null,
+      this.review!.id
+    ).subscribe(
+      () => {
+        this.snackBar.open('Kommentar gelöscht', '', {
+          duration: 5000,
+          panelClass: ['snackbar-comment-saved']
+        });
+        this.showList.emit();
+      }
+    );
+  }
+
+  protected readonly isUnitReview = isUnitReview;
+}
