@@ -8,6 +8,45 @@ export const cleanUp = (): Chainable =>  {
   return cy.visit('about:blank');
 };
 
+export const sendMonitorCommand = ({
+                                     method = 'PUT',
+                                     url = 'http://localhost/api/monitor/command',
+                                     expectedStatus = 201,
+                                     keyword = '',
+                                     args = [],
+                                     testIds = [],
+                                     authToken = 'static:person:filter-profiles_GM-1_'
+                                   } = {}) => {
+  return cy.request({
+    method,
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json, text/plain, */*',
+      'AuthToken': authToken,
+      'TestMode': 'integration'
+    },
+    body: {
+      keyword: keyword,
+      arguments: args,
+      timestamp: Date.now() / 1000,
+      testIds: testIds.map(id => Number(id))
+    }
+  }).then((response) => {
+    if (expectedStatus !== null) {
+      expect(response.status).to.eq(expectedStatus);
+    }
+    return response;
+  });
+};
+
+export const giveTestId = (): Chainable => {
+  return cy.wait('@testId').then((interception) => {
+    const testId = interception.response?.body;
+    Cypress.env('savedTestId', testId);
+  });
+}
+
 export const deleteDownloadsFolder = () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.task('deleteFolder', downloadsFolder);
@@ -198,6 +237,7 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
 export const loginTestTaker =
   (name: string, password: string): void => {
     insertCredentials(name, password);
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/test`).as('testId');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
     cy.get('[data-cy="login-user"]')
       .click();
