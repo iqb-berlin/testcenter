@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  FormControl, FormGroup, ReactiveFormsModule, Validators
+  FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatButton } from '@angular/material/button';
@@ -37,6 +37,7 @@ export class ReviewFormComponent implements OnInit {
   @Input() review?: Review;
   @Output() showList = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
+  @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
   senderName?: string;
@@ -111,6 +112,11 @@ export class ReviewFormComponent implements OnInit {
           duration: 5000,
           panelClass: ['snackbar-comment-saved']
         });
+        this.formDir.resetForm({
+          sender: this.reviewForm.get('sender')?.value,
+          target: this.reviewForm.get('target')?.value,
+          targetLabel: this.reviewForm.get('targetLabel')?.value,
+        })
       });
     } else {
       this.backendService.updateReview(

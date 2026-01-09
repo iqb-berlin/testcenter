@@ -1,8 +1,8 @@
-<form [formGroup]="reviewForm">
+<form [formGroup]="reviewForm" (ngSubmit)="saveReview()">
   <button matButton="outlined" class="view-switch-button" (click)="showList.emit()">
     Kommentarübersicht öffnen
   </button>
-  <h2 data-cy="comment-diag-title">Kommentar {{ review ? 'bearbeiten' : 'verfassen'}}</h2>
+  <h2 data-cy="comment-diag-title">Kommentar {{ review ? 'bearbeiten' : 'verfassen' }}</h2>
   <div class="scrollable-area">
     <div>
       <mat-form-field class="username">
@@ -62,8 +62,8 @@
   </div>
   <div class="action-buttons">
     <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
-            [disabled]="reviewForm.invalid" (click)="saveReview()">
-      Speichern
+            [disabled]="reviewForm.invalid">
+      {{ review ? 'Updaten' : 'Speichern' }}
     </button>
     @if (review) {
       <button mat-button color="warn" (click)="deleteReview()">
