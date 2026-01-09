@@ -25,11 +25,12 @@
       [forwardAllowed]="navigation.directions.forward"
       [backwardAllowed]="navigation.directions.backward"
       [deprecatedDesign]="tcs.booklet?.config?.controller_design === '2018'"
+      (click)="sidenav.close()"
     />
   </ng-container>
 
   <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
-          (click)="sideNavContent = 'review-form'; sidenav.toggle(true)">
+          (click)="sideNavContent = 'review-form'; sidenav.toggle()">
     <mat-icon>rate_review</mat-icon>
   </button>
   <button
