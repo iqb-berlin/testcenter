@@ -19,7 +19,7 @@
         <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
                           [matTooltip]="unitAlias"
                           data-cy="comment-diag-currentUnit">
-          aktuelle Aufgabe/Seite "{{ unitTitle }}"
+          aktuelle Aufgabe "{{ unitTitle }}"
         </mat-radio-button>
         <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
                           data-cy="comment-diag-currentPage">
