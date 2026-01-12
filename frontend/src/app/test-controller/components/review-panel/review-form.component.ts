@@ -142,6 +142,7 @@ export class ReviewFormComponent implements OnInit {
         });
       });
     }
+    this.close.emit();
   }
 
   getSelectedCategories(): string { // TODO wtf is this a string
