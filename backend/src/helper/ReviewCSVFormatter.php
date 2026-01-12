@@ -17,8 +17,8 @@ class ReviewCSVFormatter
         array_slice($review, $offset + 1, null);
 
       $transformedReviewData[] = $useNewVersion ?
-        self::returnArrayWithSeperateEntry($transformedReview)
-        : $transformedReview;
+        self::setFormForV2($transformedReview)
+        : self::setFormForV1($transformedReview);
     }
 
     return $transformedReviewData;
@@ -92,19 +92,16 @@ class ReviewCSVFormatter
     return $categories;
   }
 
-  private static function returnArrayWithSeperateEntry(array $reviewData): array {
-    [$reviewer, $entry] = explode(': ', $reviewData['entry'], 2);
-    unset($reviewData['entry']);
-    // if delimiter is not found, because of empty reviewer, the exploded string will be saved in $reviewer only
-    if ($entry) {
-      $reviewData['reviewer'] = $reviewer;
-      $reviewData['entry'] = $entry;
-    } else {
-      $reviewData['reviewer'] = null;
-      $reviewData['entry'] = $reviewer;
-    }
-
+  private static function setFormForV1(array $reviewData): array {
+    unset($reviewData['reviewer']);
     return $reviewData;
   }
 
+  private static function setFormForV2(array $reviewData): array {
+    $entryCopy = $reviewData['entry'];
+    unset($reviewData['entry']);
+    $reviewData['entry'] = $entryCopy;
+
+    return $reviewData;
+  }
 }

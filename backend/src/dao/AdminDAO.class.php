@@ -517,7 +517,8 @@ class AdminDAO extends DAO {
         unit_reviews.page,
         unit_reviews.pagelabel,
         units.original_unit_id as originalUnitId,
-        unit_reviews.user_agent as userAgent
+        unit_reviews.user_agent as userAgent,
+        unit_reviews.reviewer
 			from
         unit_reviews
         left join units on units.test_id = unit_reviews.test_id and units.name = unit_reviews.unit_name
@@ -543,7 +544,8 @@ class AdminDAO extends DAO {
         null as page,
         null as pagelabel,
         '' as originalUnitId,
-        test_reviews.user_agent as userAgent
+        test_reviews.user_agent as userAgent,
+        test_reviews.reviewer
 			from
         test_reviews
         left join tests on test_reviews.booklet_id = tests.id
