@@ -10,15 +10,13 @@ import { Review } from '../../interfaces/test-controller.interfaces';
     ReviewListComponent
   ],
   template: `
-    @if (activeView == 'form') {
-      <tc-review-form [review]="selectedReview"
-                      (showList)="onShowList()" (close)="close.emit()">
-      </tc-review-form>
-    } @else {
-      <tc-review-list [testID]="testID" [unitAlias]="unitAlias"
-                      (editReview)="onEditReview($event)" (close)="close.emit()">
-      </tc-review-list>
-    }
+    <tc-review-form [hidden]="activeView !== 'form'" [review]="selectedReview"
+                    (showList)="onShowList()" (close)="close.emit()">
+    </tc-review-form>
+
+    <tc-review-list [hidden]="activeView !== 'list'"
+                    (editReview)="onEditReview($event)" (close)="close.emit()">
+    </tc-review-list>
   `,
   styles: `
     :host ::ng-deep .view-switch-button {
@@ -29,15 +27,19 @@ import { Review } from '../../interfaces/test-controller.interfaces';
 })
 export class ReviewPanelComponent {
   @Output() close = new EventEmitter<void>();
+  @ViewChild(ReviewFormComponent) formComponent!: ReviewFormComponent;
+  @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
 
   activeView: 'list' | 'form' = 'form';
   selectedReview?: Review;
 
   protected onShowList() {
+    this.listComponent.loadReviews();
     this.activeView = 'list';
   }
 
   protected onEditReview(review?: Review) {
+    this.formComponent.updateFormData(review);
     this.activeView = 'form';
     this.selectedReview = review;
   }
