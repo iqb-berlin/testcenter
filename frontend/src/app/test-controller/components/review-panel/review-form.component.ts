@@ -76,24 +76,24 @@ export class ReviewFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.updateFormData(this.review);
+    if (this.review) this.updateFormData(this.review);
   }
 
-  updateFormData(existingReview?: Review): void {
-    if (!existingReview) {
-      this.reviewForm.reset(this.REVIEW_FORM_DEFAULTS);
-    } else {
-      this.reviewForm.patchValue({
-        target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
-        sender: this.getSender(existingReview.entry),
-        targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
-        priority: existingReview.priority,
-        tech: existingReview.categories.includes('tech'),
-        content: existingReview.categories.includes('content'),
-        design: existingReview.categories.includes('design'),
-        entry: this.getBodyText(existingReview.entry)
-      });
-    }
+  updateFormData(existingReview: Review): void {
+    this.reviewForm.patchValue({
+      target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
+      sender: this.getSender(existingReview.entry),
+      targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
+      priority: existingReview.priority,
+      tech: existingReview.categories.includes('tech'),
+      content: existingReview.categories.includes('content'),
+      design: existingReview.categories.includes('design'),
+      entry: this.getBodyText(existingReview.entry)
+    });
+  }
+
+  resetFormData(): void {
+    this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
   }
 
   private getSender(reviewText: string): string | null {

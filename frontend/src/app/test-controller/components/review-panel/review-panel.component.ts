@@ -66,7 +66,11 @@ export class ReviewPanelComponent {
   }
 
   protected onEditReview(review?: Review) {
-    this.formComponent.updateFormData(review);
+    if (review) {
+      this.formComponent.updateFormData(review);
+    } else {
+      this.formComponent.resetFormData();
+    }
     this.activeView = 'form';
     this.selectedReview = review;
     this.updateHeading();
