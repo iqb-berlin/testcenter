@@ -17,7 +17,7 @@ import { TestControllerService } from '../../services/test-controller.service';
   ],
   template: `
     <div class="wrapper">
-      <h2>Kommentare zu dieser Unit</h2>
+      <h3>Kommentare zu dieser Unit</h3>
       <mat-selection-list>
         @for (review of unitReviews$ | async; track review.id) {
           <mat-list-item (click)="editReview.emit(review)">
@@ -25,7 +25,7 @@ import { TestControllerService } from '../../services/test-controller.service';
           </mat-list-item>
         }
       </mat-selection-list>
-      <h2>alle Kommentare zu diesem Testheft</h2>
+      <h3>alle Kommentare zu diesem Testheft</h3>
       <mat-selection-list>
         @for (review of bookletReviews$ | async; track review.id) {
           <mat-list-item (click)="editReview.emit(review)">
