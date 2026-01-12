@@ -28,8 +28,6 @@ import { Review } from '../../interfaces/test-controller.interfaces';
   `
 })
 export class ReviewPanelComponent {
-  @Input() testID!: string;
-  @Input() unitAlias?: string;
   @Output() close = new EventEmitter<void>();
 
   activeView: 'list' | 'form' = 'form';

@@ -5,6 +5,7 @@ import { BackendService } from '../../services/backend.service';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { BookletReview, Review, UnitReview } from '../../interfaces/test-controller.interfaces';
+import { TestControllerService } from '../../services/test-controller.service';
 
 @Component({
   selector: 'tc-review-list',
@@ -54,20 +55,22 @@ import { BookletReview, Review, UnitReview } from '../../interfaces/test-control
   `,
 })
 export class ReviewListComponent implements OnInit {
-  @Input() testID!: string;
-  @Input() unitAlias?: string | null = null;
   @Output() editReview = new EventEmitter<Review | undefined>();
   @Output() close = new EventEmitter<void>();
 
   unitReviews$: Observable<UnitReview[]> | undefined;
   bookletReviews$: Observable<BookletReview[]> | undefined;
+  testID!: string;
+  unitAlias?: string | null = null;
 
-  constructor(private backendService: BackendService) { }
+  constructor(private backendService: BackendService, private tcs: TestControllerService) { }
 
   ngOnInit(): void {
     if (this.unitAlias) {
       this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias) as Observable<UnitReview[]>;
     }
     this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
+    this.testID = this.tcs.testId;
+    this.unitAlias = this.tcs.currentUnit?.alias;
   }
 }
