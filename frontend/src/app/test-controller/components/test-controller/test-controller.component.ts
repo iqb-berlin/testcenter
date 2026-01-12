@@ -56,7 +56,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     public tcs: TestControllerService,
     private bs: BackendService,
     private sharedBs: SharedBackendService,
-    private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private cts: CustomtextService,

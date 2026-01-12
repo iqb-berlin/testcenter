@@ -43,7 +43,7 @@ up:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		up --detach $(service)
+		up $(service)
 
 # Stop and remove all application containers.
 down:

@@ -40,23 +40,30 @@ export class ReviewFormComponent implements OnInit {
   @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
-  senderName?: string;
   accountName: string;
   bookletname?: string;
   unitTitle?: string;
   unitAlias?: string;
 
+  REVIEW_FORM_DEFAULTS = {
+    target: 'unit',
+    targetLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']),
+    priority: 0,
+    entry: '',
+    sender: undefined
+  };
+
   constructor(private tcs: TestControllerService, private mainDataService: MainDataService,
               private backendService: BackendService, private snackBar: MatSnackBar) {
     this.reviewForm = new FormGroup({
-      target: new FormControl('unit', Validators.required),
-      targetLabel: new FormControl((this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])),
-      priority: new FormControl(''),
+      target: new FormControl(this.REVIEW_FORM_DEFAULTS.target, Validators.required),
+      targetLabel: new FormControl(this.REVIEW_FORM_DEFAULTS.targetLabel),
+      priority: new FormControl(this.REVIEW_FORM_DEFAULTS.priority),
       tech: new FormControl(),
       content: new FormControl(),
       design: new FormControl(),
-      entry: new FormControl('', Validators.required),
-      sender: new FormControl(this.senderName)
+      entry: new FormControl(this.REVIEW_FORM_DEFAULTS.entry, Validators.required),
+      sender: new FormControl(this.REVIEW_FORM_DEFAULTS.sender)
     });
     const authData = this.mainDataService.getAuthData();
     if (!authData) {
@@ -69,17 +76,24 @@ export class ReviewFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.review) return; // this means it is a new review, no init needed
-    this.reviewForm.patchValue({
-      target: isUnitReview(this.review) ? (this.review.pagelabel ? 'task' : 'unit') : 'booklet',
-      sender: this.getSender(this.review.entry),
-      targetLabel: isUnitReview(this.review) ? this.review.pagelabel : '',
-      priority: this.review.priority,
-      tech: this.review.categories.includes('tech'),
-      content: this.review.categories.includes('content'),
-      design: this.review.categories.includes('design'),
-      entry: this.getBodyText(this.review.entry)
-    });
+    this.updateFormData(this.review);
+  }
+
+  updateFormData(existingReview?: Review): void {
+    if (!existingReview) {
+      this.reviewForm.reset(this.REVIEW_FORM_DEFAULTS);
+    } else {
+      this.reviewForm.patchValue({
+        target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
+        sender: this.getSender(existingReview.entry),
+        targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
+        priority: existingReview.priority,
+        tech: existingReview.categories.includes('tech'),
+        content: existingReview.categories.includes('content'),
+        design: existingReview.categories.includes('design'),
+        entry: this.getBodyText(existingReview.entry)
+      });
+    }
   }
 
   private getSender(reviewText: string): string | null {
@@ -134,6 +148,7 @@ export class ReviewFormComponent implements OnInit {
         });
       });
     }
+    this.close.emit();
   }
 
   getSelectedCategories(): string { // TODO wtf is this a string
