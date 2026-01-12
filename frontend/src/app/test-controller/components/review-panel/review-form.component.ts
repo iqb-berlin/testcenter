@@ -39,7 +39,6 @@ export class ReviewFormComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   reviewForm: FormGroup;
-  senderName?: string;
   accountName: string;
   bookletname?: string;
   unitTitle?: string;
