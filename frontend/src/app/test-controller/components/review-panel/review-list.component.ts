@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatListItem, MatSelectionList } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
 import { BackendService } from '../../services/backend.service';
@@ -17,8 +17,6 @@ import { TestControllerService } from '../../services/test-controller.service';
   ],
   template: `
     <div class="wrapper">
-      <button matButton="outlined" class="view-switch-button"
-              (click)="editReview.emit(undefined)">Neuer Kommentar</button>
       <h2>Kommentare zu dieser Unit</h2>
       <mat-selection-list>
         @for (review of unitReviews$ | async; track review.id) {
@@ -66,11 +64,12 @@ export class ReviewListComponent implements OnInit {
   constructor(private backendService: BackendService, private tcs: TestControllerService) { }
 
   ngOnInit(): void {
-    if (this.unitAlias) {
-      this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias) as Observable<UnitReview[]>;
-    }
-    this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
     this.testID = this.tcs.testId;
     this.unitAlias = this.tcs.currentUnit?.alias;
+    this.loadReviews();
+  }
+
+  loadReviews(): void {
+    this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias || null) as Observable<UnitReview[]>;
   }
 }
