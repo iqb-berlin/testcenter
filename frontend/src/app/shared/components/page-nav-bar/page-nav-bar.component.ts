@@ -16,14 +16,15 @@ import {
     </button>
 
     <mat-button-toggle-group [value]="currentPageIndex" [hideSingleSelectionIndicator]="true">
-      <mat-button-toggle *ngFor="let pageLabel of pageLabels; let index = index"
-                         [class.selected-value]="currentPageIndex === index"
-                         [matTooltip]="pageLabel"
-                         [attr.data-cy]="'page-navigation-' + index"
-                         [value]="index"
-                         (click)="navToPage.emit(index)">
-        {{ index + 1 }}
-      </mat-button-toggle>
+      @for (pageLabel of pageLabels; track $index) {
+        <mat-button-toggle [class.selected-value]="currentPageIndex === $index"
+                           [matTooltip]="pageLabel"
+                           [attr.data-cy]="'page-navigation-' + $index"
+                           [value]="$index"
+                           (click)="navToPage.emit($index)">
+          {{ $index + 1 }}
+        </mat-button-toggle>
+      }
     </mat-button-toggle-group>
 
     <button mat-stroked-button [disabled]="currentPageIndex == pageLabels.length - 1"
