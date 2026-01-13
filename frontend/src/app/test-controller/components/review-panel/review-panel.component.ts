@@ -94,4 +94,8 @@ export class ReviewPanelComponent {
       this.heading = 'Kommentarübersicht';
     }
   }
+
+  resetForm() {
+    this.formComponent.resetFormData();
+  }
 }
