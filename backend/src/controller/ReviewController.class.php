@@ -12,7 +12,9 @@ class ReviewController extends Controller
 {
 
   public static function getAllReviewsFromPersonExport(Request $request, Response $response): Response {
+    $authToken = self::authToken($request);
     $personId = RequestHelper::getPersonIdFromRequest($request);
+    $workspaceId = $authToken->getWorkspaceId();
 
     $reviewData = self::reviewDAO()->getAllReviewsByPerson($personId);
 
@@ -22,11 +24,13 @@ class ReviewController extends Controller
     if ($isJson) {
       // Return as JSON
       $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::JSON);
+      $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
       return $response->withJson($transformedData);
 
     } else {
       // Return as CSV (default)
       $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::CSV);
+      $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
       $csv = ReviewCSVFormatter::generateCsvReportData($transformedData);
 
       $bookletName = !empty($reviewData) ? $reviewData[0]['bookletname'] : 'reviews';

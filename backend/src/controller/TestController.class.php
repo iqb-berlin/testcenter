@@ -220,7 +220,7 @@ class TestController extends Controller {
       : 0;
     $personId = RequestHelper::getPersonIdFromRequest($request);
 
-    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['reviewer'], $review['userAgent'], $personId, $review['entry']);
+    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId, $review['reviewer']);
 
     return $response->withStatus(201);
   }

@@ -4,6 +4,55 @@ declare(strict_types=1);
 
 class ReviewCSVFormatter
 {
+  /**
+   * Enriches review data with unit and booklet labels by parsing booklet XML files.
+   * @param array $reviewData Raw review data from DAO
+   * @param int $workspaceId Workspace ID to load booklet files from
+   * @return array Review data with added 'unitlabel' and 'bookletlabel' fields
+   */
+  public static function enrichWithLabels(array $reviewData, int $workspaceId): array {
+    if (empty($reviewData)) {
+      return $reviewData;
+    }
+
+    $workspace = new Workspace($workspaceId);
+    $labelCache = []; // [bookletFileId => ['bookletLabel' => string, 'unitLabels' => [alias => label]]]
+
+    foreach ($reviewData as &$review) {
+      $bookletName = $review['bookletname'] ?? '';
+      if (!$bookletName) {
+        $review['unitlabel'] = '';
+        $review['bookletlabel'] = '';
+        continue;
+      }
+
+      $testName = TestName::fromString($bookletName);
+      $bookletFileId = $testName->bookletFileId;
+
+      if (!isset($labelCache[$bookletFileId])) {
+        try {
+          /** @var XMLFileBooklet $bookletFile */
+          $bookletFile = $workspace->getFileById('Booklet', $bookletFileId);
+          $labelCache[$bookletFileId] = [
+            'bookletLabel' => $bookletFile->getLabel(),
+            'unitLabels' => $bookletFile->getUnitLabelsMap()
+          ];
+        } catch (Exception) {
+          $labelCache[$bookletFileId] = [
+            'bookletLabel' => '',
+            'unitLabels' => []
+          ];
+        }
+      }
+
+      $unitAlias = $review['unitname'] ?? '';
+      $review['unitlabel'] = $labelCache[$bookletFileId]['unitLabels'][$unitAlias] ?? '';
+      $review['bookletlabel'] = $labelCache[$bookletFileId]['bookletLabel'];
+    }
+    unset($review);
+
+    return $reviewData;
+  }
 
   public static function transformReviewData(array $reviewData, bool $useNewVersion = false, ReportFormat $format = ReportFormat::CSV): array {
     $transformedReviewData = [];
