@@ -25,13 +25,18 @@ class ReviewCSVFormatter
   }
 
   public static function generateCsvReportData(array $reviewData): string {
-    $csv[] = implode(Report::DELIMITER, CSV::collectColumnNamesFromHeterogeneousObjects($reviewData));   // TODO: Adjust column headers?
+    $csv[] = implode(Report::DELIMITER, CSV::collectColumnNamesFromHeterogeneousObjects($reviewData));
 
     foreach ($reviewData as $review) {
       $csv[] = implode(
         Report::DELIMITER,
         array_map(function ($reviewProperty) {
-          return isset($reviewProperty) ? sprintf(Report::CSV_CELL_FORMAT, $reviewProperty) : $reviewProperty;
+          if (!isset($reviewProperty)) {
+            return $reviewProperty; // null: leave unquoted
+          }
+          // Wrap the whole value in quotes to make all symbols safe (except "), escape existing quotes by doubling them (extra step)
+          $escaped = str_replace('"', '""', (string)$reviewProperty);
+          return sprintf(Report::CSV_CELL_FORMAT, $escaped);
         }, $review)
       );
     }
