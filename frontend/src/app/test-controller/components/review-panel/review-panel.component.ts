@@ -22,10 +22,14 @@ import { MatTooltip } from '@angular/material/tooltip';
       <h2 data-cy="comment-diag-title">{{ heading }}</h2>
       <span class="example-spacer"></span>
       <span class="spacer"></span>
-      <button matIconButton [matTooltip]="'Neuer Kommentar'" (click)="onEditReview()">
+      <button matIconButton [matTooltip]="'Zurück zum Kommentar'" [disabled]="activeView === 'form'"
+              (click)="onBack()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button matIconButton [matTooltip]="'Neuer Kommentar'" (click)="onNew()">
         <mat-icon>add_circle</mat-icon>
       </button>
-      <button matIconButton [matTooltip]="'Kommentarübersicht'" [disabled]="activeView === 'list'" 
+      <button matIconButton [matTooltip]="'Kommentarübersicht'" [disabled]="activeView === 'list'"
               (click)="onShowList()">
         <mat-icon>list_alt</mat-icon>
       </button>
@@ -59,18 +63,25 @@ export class ReviewPanelComponent {
   selectedReview?: Review;
   heading: string = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
 
+  protected onBack() {
+    this.activeView = 'form';
+  }
+
+  protected onNew() {
+    this.selectedReview =  undefined;
+    this.formComponent.resetFormData();
+    this.updateHeading();
+    this.activeView = 'form';
+  }
+
   protected onShowList() {
     this.listComponent.loadReviews();
     this.activeView = 'list';
     this.updateHeading();
   }
 
-  protected onEditReview(review?: Review) {
-    if (review) {
-      this.formComponent.updateFormData(review);
-    } else {
-      this.formComponent.resetFormData();
-    }
+  protected onEditReview(review: Review) {
+    this.formComponent.updateFormData(review);
     this.activeView = 'form';
     this.selectedReview = review;
     this.updateHeading();

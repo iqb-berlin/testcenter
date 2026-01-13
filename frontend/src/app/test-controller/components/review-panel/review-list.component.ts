@@ -53,7 +53,7 @@ import { TestControllerService } from '../../services/test-controller.service';
   `,
 })
 export class ReviewListComponent implements OnInit {
-  @Output() editReview = new EventEmitter<Review | undefined>();
+  @Output() editReview = new EventEmitter<Review>();
   @Output() close = new EventEmitter<void>();
 
   unitReviews$: Observable<UnitReview[]> | undefined;
