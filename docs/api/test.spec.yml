@@ -156,6 +156,10 @@ paths:
                 entry:
                   description: text of the review entry
                   type: string
+                reviewer:
+                  description: name of the reviewer
+                  type: string
+                  nullable: true
                 categories:
                   description: whitespace separated list of categories
                   type: string
@@ -166,6 +170,7 @@ paths:
                 - entry
             example:
               entry: I am a critical review item for unit 1
+              reviewer: John Doe
               priority: 1
               categories: content whatever
               originalUnitId: ''
@@ -210,6 +215,10 @@ paths:
                 entry:
                   description: text of the review entry
                   type: string
+                reviewer:
+                  description: name of the reviewer
+                  type: string
+                  nullable: true
                 categories:
                   description: whitespace separated list of categories
                   type: string
@@ -217,6 +226,7 @@ paths:
                 - entry
             example:
               entry: I am a critical review item for booklet 1
+              reviewer: John Doe
               priority: 1
               categories: content whatever
       responses:
@@ -292,6 +302,10 @@ paths:
                     entry:
                       type: string
                       description: text of the review entry
+                    reviewer:
+                      type: string
+                      nullable: true
+                      description: name of the reviewer
                     page:
                       type: integer
                       nullable: true
@@ -315,6 +329,7 @@ paths:
                   priority: 2
                   categories: "content design"
                   entry: "This is a review comment"
+                  reviewer: "John Doe"
                   page: null
                   pagelabel: null
                   userAgent: "Mozilla/5.0..."
@@ -327,6 +342,7 @@ paths:
                   priority: 1
                   categories: "tech"
                   entry: "Another review"
+                  reviewer: null
                   page: 3
                   pagelabel: "Unit 1.2"
                   userAgent: "Mozilla/5.0..."
@@ -391,6 +407,10 @@ paths:
                       entry:
                         type: string
                         description: text of the review entry
+                      reviewer:
+                        type: string
+                        nullable: true
+                        description: name of the reviewer
                       userAgent:
                         type: string
                         description: user agent string
@@ -402,6 +422,7 @@ paths:
                     priority: 1
                     categories: "content"
                     entry: "This booklet needs improvement"
+                    reviewer: "John Doe"
                     userAgent: "Mozilla/5.0..."
                   - id: 2
                     booklet_id: 1
@@ -410,6 +431,7 @@ paths:
                     priority: 2
                     categories: "design"
                     entry: "Navigation could be better"
+                    reviewer: null
                     userAgent: "Mozilla/5.0..."
           "401":
             description: Not authenticated
@@ -464,6 +486,10 @@ paths:
                   entry:
                     description: text of the review entry
                     type: string
+                  reviewer:
+                    description: name of the reviewer
+                    type: string
+                    nullable: true
                   categories:
                     description: whitespace separated list of categories
                     type: string
@@ -474,6 +500,7 @@ paths:
                   - entry
               example:
                 entry: "Updated review comment"
+                reviewer: "John Doe"
                 priority: 3
                 categories: "content design"
                 userAgent: "Mozilla/5.0..."
@@ -570,6 +597,10 @@ paths:
                   entry:
                     description: text of the review entry
                     type: string
+                  reviewer:
+                    description: name of the reviewer
+                    type: string
+                    nullable: true
                   categories:
                     description: whitespace separated list of categories
                     type: string
@@ -580,6 +611,7 @@ paths:
                   - entry
               example:
                 entry: "Updated booklet review"
+                reviewer: "John Doe"
                 priority: 2
                 categories: " tech"
                 userAgent: "Mozilla/5.0..."

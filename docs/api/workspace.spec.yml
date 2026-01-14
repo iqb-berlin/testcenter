@@ -1258,9 +1258,9 @@ paths:
                     "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"X";"2021-07-29 10:00:00";"luigi: sample booklet review";;;"";"Firefox/126.0"
                 new:
                   value: |-
-                    groupname;loginname;code;bookletname;unitname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry
-                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";"mario";"this is a sample unit review"
-                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";"luigi";"sample booklet review"
+                    groupname;loginname;code;bookletname;unitname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry;unitlabel;bookletlabel
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";;"mario: this is a sample unit review";"A Sample Unit to demonstrate the SamplePlayer2";"Sample booklet"
+                    "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";;"luigi: sample booklet review";"";"Sample booklet"
             application/json:
               schema:
                 oneOf:

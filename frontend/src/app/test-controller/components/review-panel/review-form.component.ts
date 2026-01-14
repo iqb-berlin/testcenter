@@ -50,7 +50,7 @@ export class ReviewFormComponent implements OnInit {
     targetLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']),
     priority: 0,
     entry: '',
-    sender: undefined
+    reviewer: undefined
   };
 
   constructor(private tcs: TestControllerService, private mainDataService: MainDataService,
@@ -63,7 +63,7 @@ export class ReviewFormComponent implements OnInit {
       content: new FormControl(),
       design: new FormControl(),
       entry: new FormControl(this.REVIEW_FORM_DEFAULTS.entry, Validators.required),
-      sender: new FormControl(this.REVIEW_FORM_DEFAULTS.sender)
+      reviewer: new FormControl(this.REVIEW_FORM_DEFAULTS.reviewer)
     });
     const authData = this.mainDataService.getAuthData();
     if (!authData) {
@@ -82,28 +82,18 @@ export class ReviewFormComponent implements OnInit {
   updateFormData(existingReview: Review): void {
     this.reviewForm.patchValue({
       target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
-      sender: this.getSender(existingReview.entry),
+      reviewer: existingReview.reviewer,
       targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
       priority: existingReview.priority,
       tech: existingReview.categories.includes('tech'),
       content: existingReview.categories.includes('content'),
       design: existingReview.categories.includes('design'),
-      entry: this.getBodyText(existingReview.entry)
+      entry: existingReview.entry
     });
   }
 
   resetFormData(): void {
     this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
-  }
-
-  private getSender(reviewText: string): string | null {
-    const index = reviewText.indexOf(': ');
-    return index === -1 ? null : reviewText.slice(0, index);
-  }
-
-  private getBodyText(reviewText: string): string | null {
-    const index = reviewText.indexOf(': ');
-    return index === -1 ? reviewText : reviewText.slice(index + 2); // index + whitespace
   }
 
   saveReview(): void {
@@ -118,7 +108,8 @@ export class ReviewFormComponent implements OnInit {
         (result.target === 'task') ? result.targetLabel || currentPageLabel : null,
         result.priority,
         this.getSelectedCategories(),
-        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        result.entry,
+        result.reviewer || null,
         UserAgentService.outputWithOs(),
         this.tcs.currentUnit?.id || ''
       ).subscribe(() => {
@@ -127,7 +118,7 @@ export class ReviewFormComponent implements OnInit {
           panelClass: ['snackbar-comment-saved']
         });
         this.formDir.resetForm({
-          sender: this.reviewForm.get('sender')?.value,
+          reviewer: this.reviewForm.get('reviewer')?.value,
           target: this.reviewForm.get('target')?.value,
           targetLabel: this.reviewForm.get('targetLabel')?.value,
         })
@@ -139,7 +130,8 @@ export class ReviewFormComponent implements OnInit {
         this.review.id,
         result.priority,
         this.getSelectedCategories(),
-        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        result.entry,
+        result.reviewer || null,
         (this.reviewForm.value.target === 'task') ? result.targetLabel || currentPageLabel : null,
       ).subscribe(() => {
         this.snackBar.open('Kommentar geändert', '', {

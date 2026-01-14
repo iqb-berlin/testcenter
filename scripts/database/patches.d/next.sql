@@ -19,3 +19,9 @@ alter table unit_reviews
 
 create index idx_test_reviews_person on test_reviews(person_id);
 create index idx_unit_reviews_person on unit_reviews(person_id);
+
+alter table test_reviews
+  add column reviewer varchar(255) default null after entry;
+
+alter table unit_reviews
+  add column reviewer varchar(255) default null after entry;

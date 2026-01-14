@@ -173,6 +173,7 @@ class TestController extends Controller {
         'priority' => 0, // was: p
         'categories' => 0, // was: c
         'entry' => 'REQUIRED',// was: e
+        'reviewer' => null,
         'userAgent' => '',
         'page' => null,
         'pagelabel' => null,
@@ -197,6 +198,7 @@ class TestController extends Controller {
       $personId,
       $review['page'] ?? null,
       $review['pagelabel'] ?? null,
+      $review['reviewer'],
     );
 
     return $response->withStatus(201);
@@ -209,6 +211,7 @@ class TestController extends Controller {
       'priority' => 0, // was: p
       'categories' => 0, // was: c
       'entry' => 'REQUIRED', // was: e
+      'reviewer' => null,
       'userAgent' => ''
     ]);
 
@@ -217,7 +220,7 @@ class TestController extends Controller {
       : 0;
     $personId = RequestHelper::getPersonIdFromRequest($request);
 
-    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId);
+    self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId, $review['reviewer']);
 
     return $response->withStatus(201);
   }
@@ -279,6 +282,7 @@ class TestController extends Controller {
         'priority' => 0,
         'categories' => '',
         'entry' => 'REQUIRED',
+        'reviewer' => null,
         'userAgent' => ''
       ]
     );
@@ -291,6 +295,7 @@ class TestController extends Controller {
       $priority,
       $review['categories'],
       $review['entry'],
+      $review['reviewer'],
       $review['userAgent'],
       $personId
     );
@@ -312,6 +317,7 @@ class TestController extends Controller {
         'priority' => 0,
         'categories' => '',
         'entry' => 'REQUIRED',
+        'reviewer' => null,
         'userAgent' => ''
       ]
     );
@@ -325,6 +331,7 @@ class TestController extends Controller {
       $priority,
       $review['categories'],
       $review['entry'],
+      $review['reviewer'],
       $review['userAgent'],
       $personId
     );

@@ -10,6 +10,9 @@ class ReviewReportOutput extends Report {
     $adminDAO = new AdminDAO();
     $reviewData = $adminDAO->getReviewReportData($this->workspaceId, $this->dataIds);
     $reviewData = ReviewCSVFormatter::transformReviewData($reviewData, $useNewVersion, $this->format);
+    if ($this->useNewVersion) {
+      $reviewData = ReviewCSVFormatter::enrichWithLabels($reviewData, $this->workspaceId);
+    }
 
     if (empty($reviewData)) {
       return false;

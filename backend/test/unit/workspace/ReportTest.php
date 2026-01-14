@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Mockery\MockInterface;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,6 +11,34 @@ use PHPUnit\Framework\TestCase;
  * @preserveGlobalState disabled
  */
 final class ReportTest extends TestCase {
+
+  /**
+   * AIDEV-NOTE: Custom VFS setup instead of VfsForTest for the following reasons:
+   *
+   * 1. VfsForTest::setUp() calls WorkspaceInitializer->importSampleFiles() which requires
+   *    real DAO connections and file system operations incompatible with our Mockery overloads.
+   *
+   * 2. This test uses 'overload:' mocks for AdminDAO, SysChecksFolder, and Workspace classes.
+   *    VfsForTest would instantiate the real Workspace class before our mocks are registered,
+   *    causing conflicts.
+   *
+   * 3. ReviewCSVFormatter::enrichWithLabels() instantiates Workspace directly (line 18),
+   *    which calls getOrCreateWorkspacePath() needing DATA_DIR. Our Workspace mock intercepts
+   *    getFileById() to return empty results, avoiding actual file parsing.
+   *
+   * Minimal setup: define DATA_DIR pointing to vfsStream so Workspace constructor doesn't
+   * fail, then mock away the actual file operations.
+   *
+   * Future refactor opportunity: inject Workspace dependency into ReviewCSVFormatter
+   * instead of instantiating internally, enabling cleaner test isolation.
+   */
+  public static function setUpBeforeClass(): void {
+    if (!defined('DATA_DIR')) {
+      vfsStream::setup('root', 0777);
+      define('DATA_DIR', vfsStream::url('root/data'));
+    }
+  }
+
   private const BOM = "\xEF\xBB\xBF";
   private const LOGS = [
     [
@@ -64,6 +93,7 @@ final class ReportTest extends TestCase {
       "priority" => "1",
       "categories" => "",
       "reviewtime" => "2021-07-29 10:00:00",
+      "reviewer" => null,
       "entry" => "this is a sample unit review"
     ], [
       "groupname" => "sample_group",
@@ -74,6 +104,7 @@ final class ReportTest extends TestCase {
       "priority" => "1",
       "categories" => "",
       "reviewtime" => "2021-07-29 10:00:00",
+      "reviewer" => null,
       "entry" => "sample booklet review"
     ]
   ];
@@ -87,6 +118,7 @@ final class ReportTest extends TestCase {
       "priority" => "1",
       "categories" => "tech",
       "reviewtime" => "2021-07-29 10:00:00",
+      "reviewer" => null,
       "entry" => "this is a sample unit review"
     ], [
       "groupname" => "sample_group",
@@ -97,6 +129,7 @@ final class ReportTest extends TestCase {
       "priority" => "1",
       "categories" => "content tech design",
       "reviewtime" => "2021-07-29 10:00:00",
+      "reviewer" => null,
       "entry" => "sample booklet review"
     ]
   ];
@@ -316,12 +349,15 @@ final class ReportTest extends TestCase {
 
   private AdminDAO|MockInterface $adminDaoMock;
   private SysChecksFolder|MockInterface $sysChecksFolderMock;
+  private Workspace|MockInterface $workspaceMock;
 
   public function setUp(): void {
     $this->workspaceId = 1;
     $this->dataIds = ["sample_group", "sample_group"];
     $this->adminDaoMock = Mockery::mock('overload:' . AdminDAO::class);
     $this->sysChecksFolderMock = Mockery::mock('overload:' . SysChecksFolder::class);
+    $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
+    $this->workspaceMock->allows('getFileById')->andThrow(new Exception('File not found'));
   }
 
   function test__construct(): void {
@@ -478,9 +514,9 @@ final class ReportTest extends TestCase {
 
     $expectedReviewsCSVReportData = $useNewVersion
       ? self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;reviewer;entry\n" .
-        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
-        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+        "groupname;loginname;code;bookletname;unitname;priority;reviewtime;reviewer;entry;unitlabel;bookletlabel\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\";\"\";\"\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"2021-07-29 10:00:00\";;\"sample booklet review\";\"\";\"\""
       : self::BOM .
         "groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
@@ -513,9 +549,9 @@ final class ReportTest extends TestCase {
 
     $expectedReviewsCSVReportData = $useNewVersion
       ? self::BOM .
-        "groupname;loginname;code;bookletname;unitname;priority;category_content;category_design;category_tech;reviewtime;reviewer;entry\n" .
-        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"FALSE\";\"FALSE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\"\n" .
-        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"TRUE\";\"TRUE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"sample booklet review\""
+        "groupname;loginname;code;bookletname;unitname;priority;category_content;category_design;category_tech;reviewtime;reviewer;entry;unitlabel;bookletlabel\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";\"FALSE\";\"FALSE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"this is a sample unit review\";\"\";\"\"\n" .
+        "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"1\";\"TRUE\";\"TRUE\";\"TRUE\";\"2021-07-29 10:00:00\";;\"sample booklet review\";\"\";\"\""
       : self::BOM .
         "groupname;loginname;code;bookletname;unitname;priority;category: content;category: design;category: tech;reviewtime;entry\n" .
         "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"1\";;;\"X\";\"2021-07-29 10:00:00\";\"this is a sample unit review\"\n" .
@@ -540,6 +576,7 @@ final class ReportTest extends TestCase {
     $expectedReviewsJsonReportData = array_map(
       function($review) {
         array_splice($review, array_search('categories', array_keys($review)), 1);
+        unset($review['reviewer']); // old version doesn't include reviewer
         return $review;
       },
       self::REVIEWS
@@ -583,7 +620,9 @@ final class ReportTest extends TestCase {
           'category_tech' => 'TRUE',
           'reviewtime' => '2021-07-29 10:00:00',
           'reviewer' => null,
-          'entry' => 'this is a sample unit review'
+          'entry' => 'this is a sample unit review',
+          'unitlabel' => '',
+          'bookletlabel' => ''
         ], [
           'groupname' => 'sample_group',
           'loginname' => 'sample_user',
@@ -596,7 +635,9 @@ final class ReportTest extends TestCase {
           'category_tech' => 'TRUE',
           'reviewtime' => '2021-07-29 10:00:00',
           'reviewer' => null,
-          'entry' => 'sample booklet review'
+          'entry' => 'sample booklet review',
+          'unitlabel' => '',
+          'bookletlabel' => ''
         ]
       ];
     } else {

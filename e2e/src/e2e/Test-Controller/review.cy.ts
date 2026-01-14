@@ -25,10 +25,18 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     insertCredentials('Test_Ctrl-2', '123');
     cy.get('[data-cy="login-user"]')
       .click();
-    cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/r/starter`);
   });
 
-  it('start a review-test without booklet selection', () => {
+  it('starter page shows review download button', () => {
+    cy.contains('Reviews downloaden')
+      .should('be.visible');
+  });
+
+  it('start a review-test from booklet selection', () => {
+    cy.get('[data-cy^="booklet-"]')
+      .first()
+      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.url()
@@ -70,7 +78,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .click();
     cy.get('[data-cy="comment-diag-title"]')
       .contains('Kommentar verfassen');
-    cy.get('[data-cy="comment-diag-sender"]')
+    cy.get('[data-cy="comment-diag-reviewer"]')
       .type('tobias');
     cy.get('[data-cy="comment-diag-currentBklt"]')
       .click();
@@ -183,7 +191,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
       .then(sepArrays => {
         expect(sepArrays[0][6]).to.be.equal('category: tech');
         expect(sepArrays[1][5]).to.be.equal('1');
-        expect(sepArrays[1][8]).to.be.equal('tobias: its a new comment');
+        expect(sepArrays[1][8]).to.be.equal('its a new comment');
       });
   });
 });
