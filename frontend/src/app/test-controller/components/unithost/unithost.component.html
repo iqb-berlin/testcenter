@@ -82,13 +82,13 @@
                 {{resourcesToLoadLabels[index]}}
                 <ng-container [ngSwitch]="loading.progress">
                   <span *ngSwitchCase="'UNKNOWN'">
-                    ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
+                    ({{'Wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
                   </span>
                   <span *ngSwitchCase="'PENDING'">
-                    ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
+                    ({{'In der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
                   </span>
                   <span *ngSwitchDefault>
-                    ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
+                    ({{loading.progress}}% {{'Geladen' | customtext:'booklet_unitLoading' | async}})
                   </span>
                 </ng-container>
               </p>

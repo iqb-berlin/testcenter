@@ -49,7 +49,7 @@
   <mat-card appearance="raised" *ngSwitchCase="'LOADING'" class="progress-bar">
     <mat-card-header>
       <mat-card-title>{{ tcs.booklet?.metadata?.label || 'Test' }}</mat-card-title>
-      <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
+      <mat-card-subtitle>{{'Bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <mat-progress-bar
