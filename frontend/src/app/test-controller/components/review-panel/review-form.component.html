@@ -59,7 +59,7 @@
   <div class="action-buttons">
     <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
             [disabled]="reviewForm.invalid">
-      {{ review ? 'Updaten' : 'Speichern' }}
+      {{ review ? 'Aktualisieren' : 'Speichern' }}
     </button>
     @if (review) {
       <button mat-button color="warn" (click)="deleteReview()">

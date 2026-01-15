@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## 17.5.1
+### Bugfix
+* Review-Modus: Bookletkommentare werden in der Listenansicht angezeigt.
+
 ## 17.5.0
 ### Neue Features
 * Review-Modus: Die Review-Oberfläche wurde komplett überarbeitet. Statt eines Dialogs öffnet sich nun ein Seitenbereich, der das gleichzeitige Betrachten der Aufgabe während des Schreibens ermöglicht.
