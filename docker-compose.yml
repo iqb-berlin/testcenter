@@ -83,9 +83,9 @@ services:
         <<: *env-logging-conf
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://backend:8080/version" ]
-      start_period: 60s
-      start_interval: 3s
-      interval: 5m
+      start_period: 600s
+      start_interval: 5s
+      interval: 90s
       timeout: 30s
       retries: 3
     volumes:
@@ -119,9 +119,9 @@ services:
       - db_vol:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
-      start_period: 30s
-      start_interval: 3s
-      interval: 5m
+      start_period: 120s
+      start_interval: 5s
+      interval: 90s
       timeout: 30s
       retries: 3
     networks:
