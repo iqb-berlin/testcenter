@@ -145,19 +145,19 @@
   },
   "booklet_unitLoadingUnknownProgress" : {
     "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt",
-    "defaultvalue" : "wird geladen"
+    "defaultvalue" : "Wird geladen"
   },
   "booklet_unitLoadingPending" : {
     "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist",
-    "defaultvalue" : "in der Warteschleife"
+    "defaultvalue" : "In der Warteschleife"
   },
   "booklet_unitLoading" : {
     "label" : "Untertitel des Ladebalkens, xxx% geladen",
-    "defaultvalue" : "geladen"
+    "defaultvalue" : "Geladen"
   },
   "booklet_loading" : {
     "label" : "Test wird geladen",
-    "defaultvalue" : "bitte warten"
+    "defaultvalue" : "Bitte warten"
   },
   "booklet_lockedBlock" : {
     "label" : "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
@@ -193,7 +193,7 @@
   },
   "syscheck_report_aboutReportId": {
     "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
-    "defaultvalue" : "Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten '        + 'Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!"
+    "defaultvalue" : "Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!"
   },
   "gm_headline" : {
     "label" : "Überschrift: Gruppenmonitor",
@@ -208,11 +208,11 @@
     "defaultvalue" : "Testhefte anzeigen"
   },
   "gm_menu_filter" : {
-    "label" : "Meinueintrag: Sitzungen ausblenden",
+    "label" : "Menüeintrag: Sitzungen ausblenden",
     "defaultvalue" : "Sitzungen ausblenden"
   },
   "gm_menu_cols" : {
-    "label" : "Meinueintrag: Spalten",
+    "label" : "Menüeintrag: Spalten",
     "defaultvalue" : "Spalten"
   },
   "gm_menu_cols_states" : {
@@ -269,11 +269,11 @@
   },
   "gm_control_resume" : {
     "label" : "Control: weiter",
-    "defaultvalue" : "weiter"
+    "defaultvalue" : "Weiter"
   },
   "gm_control_pause" : {
     "label" : "Control: pause",
-    "defaultvalue" : "pause"
+    "defaultvalue" : "Pause"
   },
   "gm_control_goto" : {
     "label" : "Control: Springe zu Block",
@@ -349,7 +349,7 @@
   },
   "gm_filter_target_testState": {
     "label": "Benutzerdefinierter Filter: Ziel - detaillierter Teststatus",
-    "defaultvalue": "detaillierter Teststatus"
+    "defaultvalue": "Detaillierter Teststatus"
   },
   "gm_filter_target_bookletStates": {
     "label": "Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand",

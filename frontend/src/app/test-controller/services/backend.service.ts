@@ -37,23 +37,24 @@ export class BackendService {
     priority: number,
     categories: string,
     entry: string,
+    reviewer: string | null,
     userAgent: string,
     originalUnitId: string
   ): Observable<void> {
     return this.http.put<void>(
       `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review`,
       {
-        priority, categories, entry, page, pagelabel, userAgent, originalUnitId
+        priority, categories, entry, reviewer, page, pagelabel, userAgent, originalUnitId
       }
     );
   }
 
   updateReview(testId: string, unitAlias: string | null, reviewID: number, priority: number,
-               categories: string, entry: string, pagelabel: string | null): Observable<void> {
+               categories: string, entry: string, reviewer: string | null, pagelabel: string | null): Observable<void> {
     return this.http.patch<void>(
       `${this.backendUrl}test/${testId}${unitAlias ? `/unit/${unitAlias}` : ''}/review/${reviewID}`,
       {
-        priority, categories, entry, pagelabel
+        priority, categories, entry, reviewer, pagelabel
       }
     );
   }

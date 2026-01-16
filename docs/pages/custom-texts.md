@@ -65,7 +65,7 @@ Funktioniert nicht? Dann...
 Funktioniert auch nicht? Dann...
 
 3. Melde dich mit deinen Zugangsdaten an einem anderen Gerät neu an. Spreche das aber vorher mit der Lehrkraft bzw. Testleitung ab.|
-|booklet_loading|Test wird geladen|bitte warten|
+|booklet_loading|Test wird geladen|Bitte warten|
 |booklet_loadingBlock|Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde|Aufgabenblock wird geladen|
 |booklet_loadingUnit|Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde|Aufgabe wird geladen|
 |booklet_lockedBlock|Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen|Aufgabenzeit ist abgelaufen|
@@ -80,9 +80,9 @@ Funktioniert auch nicht? Dann...
 |booklet_pausedmessage|Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde|Der Test wurde kurz angehalten.|
 |booklet_requestFullscreen|Text für Dialogfeld 'Vollbild aktivieren?'|Soll das Vollbild aktiviert werden?|
 |booklet_tasklisttitle|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
-|booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|geladen|
-|booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|in der Warteschleife|
-|booklet_unitLoadingUnknownProgress|Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt|wird geladen|
+|booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|Geladen|
+|booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|In der Warteschleife|
+|booklet_unitLoadingUnknownProgress|Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt|Wird geladen|
 |booklet_warningLeaveTextPrompt-testlet|Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
 |booklet_warningLeaveTextPrompt-unit|Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.|Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTextPrompt|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
@@ -106,8 +106,8 @@ Funktioniert auch nicht? Dann...
 |gm_control_goto_tooltip|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
 |gm_control_goto_unlock_blocks_confirm_headline|Control: Springe zu Block - soll Zeit wiederhergestellt werden? - Überschrift|Sprung bestätigen|
 |gm_control_goto_unlock_blocks_confirm_text|Control: Springe zu Block - soll Zeit wiederhergestellt werden?|Zeit wiederherstellen bei Sprung in zeitgesteuerten Block?|
-|gm_control_pause|Control: pause|pause|
-|gm_control_resume|Control: weiter|weiter|
+|gm_control_pause|Control: pause|Pause|
+|gm_control_resume|Control: weiter|Weiter|
 |gm_control_unlock|Control: Entsperren|Test Entsperren|
 |gm_control_unlock_success_warning|Wird angezeigt, wenn Tests entsperrt wurden|ACHTUNG! Die betreffenden Browser und diese Testleiterkonsole müssen ggf. neu gestartet werden.|
 |gm_control_unlock_tooltip|Tooltip: Freigeben|Test Freigeben|
@@ -121,16 +121,16 @@ Funktioniert auch nicht? Dann...
 |gm_filter_target_bookletStates|Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand|Testheft-Zustand|
 |gm_filter_target_groupName|Benutzerdefinierter Filter: Ziel - Gruppe|Gruppe|
 |gm_filter_target_mode|Benutzerdefinierter Filter: Ziel - Modus|Durchführungsmodus|
-|gm_filter_target_testState|Benutzerdefinierter Filter: Ziel - detaillierter Teststatus|detaillierter Teststatus|
+|gm_filter_target_testState|Benutzerdefinierter Filter: Ziel - detaillierter Teststatus|Detaillierter Teststatus|
 |gm_filter_target_unitId|Benutzerdefinierter Filter: Ziel - Aufgaben-Id|Aufgaben-Id|
 |gm_filter_type_equal|Benutzerdefinierter Filter: Typ - gleicht|gleicht|
 |gm_filter_type_regex|Benutzerdefinierter Filter: Typ - Regulärer Ausdruck|matched regulären Ausdruck|
 |gm_filter_type_substring|Benutzerdefinierter Filter: Typ - enthält|enthält|
 |gm_headline|Überschrift: Gruppenmonitor|Gruppenüberwachung|
 |gm_hide_controls_tooltip|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
-|gm_menu_cols|Meinueintrag: Spalten|Spalten|
+|gm_menu_cols|Menüeintrag: Spalten|Spalten|
 |gm_menu_cols_states|Spalte: Booklet-Zustände|Zustände|
-|gm_menu_filter|Meinueintrag: Sitzungen ausblenden|Sitzungen ausblenden|
+|gm_menu_filter|Menüeintrag: Sitzungen ausblenden|Sitzungen ausblenden|
 |gm_multiple_booklet_species_warning|Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist| - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.|
 |gm_scroll_down|Control: Ganz nach unten|Ganz nach unten|
 |gm_selection_info|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
@@ -162,6 +162,6 @@ Funktioniert auch nicht? Dann...
 |syscheck_questionsRequiredMessage|Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden|Bitte prüfen Sie die Eingaben (unvollständig):|
 |syscheck_questionsintro|Aufforderung, die Fragen (Questionnaire) zu beantworten|Bitte bearbeiten Sie die nachfolgenden Fragen.|
 |syscheck_report_aboutPassword|Dialog 'Bericht senden': Text über das Passworteingabefeld|Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!|
-|syscheck_report_aboutReportId|Dialog 'Bericht senden': Text über das Passworteingabefeld|Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten '        + 'Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!|
+|syscheck_report_aboutReportId|Dialog 'Bericht senden': Text über das Passworteingabefeld|Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!|
 |syscheck_report_id|Dialog 'Bericht senden': Platzhalter für das ID-Eingabefeld vor dem Senden des Berichts|Schul-ID|
 |syscheck_unitPrompt|Titelzeile über der Aufgabe|Bitte prüfen Sie die folgenden Aufgaben-Elemente|

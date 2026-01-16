@@ -145,6 +145,7 @@ export interface Review {
   priority: number;
   categories: string;
   entry: string;
+  reviewer: string | null;
   userAgent: string;
 }
 

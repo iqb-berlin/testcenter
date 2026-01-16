@@ -188,7 +188,8 @@ final class AdminDAOTest extends TestCase {
         'page' => null,
         'pagelabel' => null,
         'originalUnitId' => 'UNIT_1',
-        'userAgent' => ''
+        'userAgent' => '',
+        'reviewer' => null
       ],
       [
         'groupname' => 'review_group',
@@ -203,7 +204,8 @@ final class AdminDAOTest extends TestCase {
         'page' => null,
         'pagelabel' => null,
         'originalUnitId' => '',
-        'userAgent' => ''
+        'userAgent' => '',
+        'reviewer' => null
       ]
     ];
 

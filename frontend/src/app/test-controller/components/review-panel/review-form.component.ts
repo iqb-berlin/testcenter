@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  FormControl, FormGroup, ReactiveFormsModule, Validators
+  FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatButton } from '@angular/material/button';
@@ -37,25 +37,33 @@ export class ReviewFormComponent implements OnInit {
   @Input() review?: Review;
   @Output() showList = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
+  @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
-  senderName?: string;
   accountName: string;
   bookletname?: string;
   unitTitle?: string;
   unitAlias?: string;
 
+  REVIEW_FORM_DEFAULTS = {
+    target: 'unit',
+    targetLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']),
+    priority: 0,
+    entry: '',
+    reviewer: undefined
+  };
+
   constructor(private tcs: TestControllerService, private mainDataService: MainDataService,
               private backendService: BackendService, private snackBar: MatSnackBar) {
     this.reviewForm = new FormGroup({
-      target: new FormControl('unit', Validators.required),
-      targetLabel: new FormControl((this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''])),
-      priority: new FormControl(''),
+      target: new FormControl(this.REVIEW_FORM_DEFAULTS.target, Validators.required),
+      targetLabel: new FormControl(this.REVIEW_FORM_DEFAULTS.targetLabel),
+      priority: new FormControl(this.REVIEW_FORM_DEFAULTS.priority),
       tech: new FormControl(),
       content: new FormControl(),
       design: new FormControl(),
-      entry: new FormControl('', Validators.required),
-      sender: new FormControl(this.senderName)
+      entry: new FormControl(this.REVIEW_FORM_DEFAULTS.entry, Validators.required),
+      reviewer: new FormControl(this.REVIEW_FORM_DEFAULTS.reviewer)
     });
     const authData = this.mainDataService.getAuthData();
     if (!authData) {
@@ -68,27 +76,24 @@ export class ReviewFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.review) return; // this means it is a new review, no init needed
+    if (this.review) this.updateFormData(this.review);
+  }
+
+  updateFormData(existingReview: Review): void {
     this.reviewForm.patchValue({
-      target: isUnitReview(this.review) ? (this.review.pagelabel ? 'task' : 'unit') : 'booklet',
-      sender: this.getSender(this.review.entry),
-      targetLabel: isUnitReview(this.review) ? this.review.pagelabel : '',
-      priority: this.review.priority,
-      tech: this.review.categories.includes('tech'),
-      content: this.review.categories.includes('content'),
-      design: this.review.categories.includes('design'),
-      entry: this.getBodyText(this.review.entry)
+      target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
+      reviewer: existingReview.reviewer,
+      targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
+      priority: existingReview.priority,
+      tech: existingReview.categories.includes('tech'),
+      content: existingReview.categories.includes('content'),
+      design: existingReview.categories.includes('design'),
+      entry: existingReview.entry
     });
   }
 
-  private getSender(reviewText: string): string | null {
-    const index = reviewText.indexOf(': ');
-    return index === -1 ? null : reviewText.slice(0, index);
-  }
-
-  private getBodyText(reviewText: string): string | null {
-    const index = reviewText.indexOf(': ');
-    return index === -1 ? reviewText : reviewText.slice(index + 2); // index + whitespace
+  resetFormData(): void {
+    this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
   }
 
   saveReview(): void {
@@ -103,7 +108,8 @@ export class ReviewFormComponent implements OnInit {
         (result.target === 'task') ? result.targetLabel || currentPageLabel : null,
         result.priority,
         this.getSelectedCategories(),
-        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        result.entry,
+        result.reviewer || null,
         UserAgentService.outputWithOs(),
         this.tcs.currentUnit?.id || ''
       ).subscribe(() => {
@@ -111,6 +117,11 @@ export class ReviewFormComponent implements OnInit {
           duration: 5000,
           panelClass: ['snackbar-comment-saved']
         });
+        this.formDir.resetForm({
+          reviewer: this.reviewForm.get('reviewer')?.value,
+          target: this.reviewForm.get('target')?.value,
+          targetLabel: this.reviewForm.get('targetLabel')?.value,
+        })
       });
     } else {
       this.backendService.updateReview(
@@ -119,7 +130,8 @@ export class ReviewFormComponent implements OnInit {
         this.review.id,
         result.priority,
         this.getSelectedCategories(),
-        result.sender ? `${result.sender}: ${result.entry}` : result.entry,
+        result.entry,
+        result.reviewer || null,
         (this.reviewForm.value.target === 'task') ? result.targetLabel || currentPageLabel : null,
       ).subscribe(() => {
         this.snackBar.open('Kommentar geändert', '', {
@@ -128,6 +140,7 @@ export class ReviewFormComponent implements OnInit {
         });
       });
     }
+    this.close.emit();
   }
 
   getSelectedCategories(): string { // TODO wtf is this a string

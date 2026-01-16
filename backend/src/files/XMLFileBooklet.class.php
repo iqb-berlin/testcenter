@@ -78,6 +78,29 @@ class XMLFileBooklet extends XMLFile {
     return $unitIds;
   }
 
+  /**
+   * @return array<string, string> Map of unit alias => label from booklet XML
+   */
+  public function getUnitLabelsMap(): array {
+    if (!$this->isValid()) {
+      return [];
+    }
+    return $this->getUnitLabelsFromNode($this->getXml()->Units[0]);
+  }
+
+  private function getUnitLabelsFromNode(SimpleXMLElement $node): array {
+    $labels = [];
+    foreach ($node->children() as $element) {
+      if ($element->getName() == 'Unit') {
+        $alias = (string) $element['alias'] ?: (string) $element['id'];
+        $labels[$alias] = (string) $element['label'];
+      } else {
+        $labels = array_merge($labels, $this->getUnitLabelsFromNode($element));
+      }
+    }
+    return $labels;
+  }
+
   protected static function assertAllStatesDefined(
     string | SimpleXMLElement | null $result1,
     string | SimpleXMLElement | null $result2,

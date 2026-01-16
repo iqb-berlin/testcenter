@@ -65,6 +65,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             }
           });
         } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
+          // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
+          // so a shortcut jump would not hurt a specific workflow
           if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
             this.backendService.startTest(authData.claims.test[0].id).subscribe({
               next: testId => {
@@ -74,6 +76,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/r/starter']);
               }
             });
+            // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
+            // so a shortcut jump would not hurt a specific workflow
           } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
             this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
           } else {

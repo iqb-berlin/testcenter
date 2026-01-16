@@ -1,6 +1,6 @@
 import { ActivatedRoute } from '@angular/router';
 import {
-  Component, HostListener, Inject, OnDestroy, OnInit
+  Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import {
@@ -28,6 +28,7 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
+import { ReviewPanelComponent } from '../review-panel/review-panel.component';
 
 @Component({
     templateUrl: './test-controller.component.html',
@@ -35,6 +36,8 @@ import { AppError } from '../../../app.interfaces';
     standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
+  @ViewChild(ReviewPanelComponent) reviewComponent?: ReviewPanelComponent;
+
   private subscriptions: { [key: string]: Subscription | null } = {
     errorReporting: null,
     testStatus: null,
@@ -56,7 +59,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     public tcs: TestControllerService,
     private bs: BackendService,
     private sharedBs: SharedBackendService,
-    private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private cts: CustomtextService,
@@ -375,5 +377,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
       await this.setFullScreen();
     });
+  }
+
+  protected resetReviewForm() {
+    if (this.reviewComponent) {
+      this.reviewComponent.resetForm();
+      this.reviewComponent.close.emit();
+    }
   }
 }

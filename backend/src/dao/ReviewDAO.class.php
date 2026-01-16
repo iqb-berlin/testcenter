@@ -38,37 +38,39 @@ class ReviewDAO extends DAO
           unit_reviews.priority,
           unit_reviews.categories,
           unit_reviews.reviewtime,
-          unit_reviews.entry,
           unit_reviews.page,
           unit_reviews.pagelabel,
           units.original_unit_id as originalUnitId,
-          unit_reviews.user_agent as userAgent
+          unit_reviews.user_agent as userAgent,
+          unit_reviews.reviewer,
+          unit_reviews.entry
         from unit_reviews
           left join units on units.test_id = unit_reviews.test_id and units.name = unit_reviews.unit_name
           left join tests on tests.id = unit_reviews.test_id
         where
           unit_reviews.person_id = :person_id
           $unitFilter
-          
+
         union all
-        
-        select 
+
+        select
           '' as unitname,
           tests.name as bookletname,
           test_reviews.priority,
           test_reviews.categories,
           test_reviews.reviewtime,
-          test_reviews.entry,
           null as page,
           null as pagelabel,
           '' as originalUnitId,
-          test_reviews.user_agent as userAgent
+          test_reviews.user_agent as userAgent,
+          test_reviews.reviewer,
+          test_reviews.entry
         from test_reviews
           left join tests on test_reviews.booklet_id = tests.id
         where
           test_reviews.person_id = :person_id
           $testFilter
-          
+
         order by reviewtime asc;
       ",
       $params,

@@ -29,9 +29,9 @@ paths:
               schema:
                 type: string
               example: |-
-                unitname;bookletname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry
-                "UNIT.SAMPLE";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";"mario";"this is a sample unit review"
-                "";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";"luigi";"sample booklet review"
+                unitname;bookletname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry;unitlabel;bookletlabel
+                "UNIT.SAMPLE";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";;"mario: this is a sample unit review";"A Sample Unit to demonstrate the SamplePlayer2";"Sample booklet"
+                "";"BOOKLET.SAMPLE-1";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";;"luigi: sample booklet review";"";"Sample booklet"
             application/json:
               schema:
                 type: array

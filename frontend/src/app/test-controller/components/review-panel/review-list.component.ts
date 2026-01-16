@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatListItem, MatSelectionList } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
 import { BackendService } from '../../services/backend.service';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { BookletReview, Review, UnitReview } from '../../interfaces/test-controller.interfaces';
+import { TestControllerService } from '../../services/test-controller.service';
 
 @Component({
   selector: 'tc-review-list',
@@ -16,9 +17,7 @@ import { BookletReview, Review, UnitReview } from '../../interfaces/test-control
   ],
   template: `
     <div class="wrapper">
-      <button matButton="outlined" class="view-switch-button"
-              (click)="editReview.emit(undefined)">Neuer Kommentar</button>
-      <h2>Kommentare zu dieser Unit</h2>
+      <h3>Kommentare zu dieser Unit</h3>
       <mat-selection-list>
         @for (review of unitReviews$ | async; track review.id) {
           <mat-list-item (click)="editReview.emit(review)">
@@ -26,7 +25,7 @@ import { BookletReview, Review, UnitReview } from '../../interfaces/test-control
           </mat-list-item>
         }
       </mat-selection-list>
-      <h2>alle Kommentare zu diesem Testheft</h2>
+      <h3>alle Kommentare zu diesem Testheft</h3>
       <mat-selection-list>
         @for (review of bookletReviews$ | async; track review.id) {
           <mat-list-item (click)="editReview.emit(review)">
@@ -54,20 +53,24 @@ import { BookletReview, Review, UnitReview } from '../../interfaces/test-control
   `,
 })
 export class ReviewListComponent implements OnInit {
-  @Input() testID!: string;
-  @Input() unitAlias?: string | null = null;
-  @Output() editReview = new EventEmitter<Review | undefined>();
+  @Output() editReview = new EventEmitter<Review>();
   @Output() close = new EventEmitter<void>();
 
   unitReviews$: Observable<UnitReview[]> | undefined;
   bookletReviews$: Observable<BookletReview[]> | undefined;
+  testID!: string;
+  unitAlias?: string | null = null;
 
-  constructor(private backendService: BackendService) { }
+  constructor(private backendService: BackendService, private tcs: TestControllerService) { }
 
   ngOnInit(): void {
-    if (this.unitAlias) {
-      this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias) as Observable<UnitReview[]>;
-    }
+    this.testID = this.tcs.testId;
+    this.unitAlias = this.tcs.currentUnit?.alias;
+    this.loadReviews();
+  }
+
+  loadReviews(): void {
+    this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias || null) as Observable<UnitReview[]>;
     this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
   }
 }

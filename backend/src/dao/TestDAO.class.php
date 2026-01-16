@@ -88,10 +88,11 @@ class TestDAO extends DAO {
     string $categories,
     string $entry,
     string $userAgent,
-    int $personId
+    int $personId,
+    ?string $reviewer = null
   ): void {
     $this->_(
-      'insert into test_reviews (booklet_id, person_id, reviewtime, priority, categories, entry, user_agent) values(:b, :person, :t, :p, :c, :e, :u)',
+      'insert into test_reviews (booklet_id, person_id, reviewtime, priority, categories, entry, reviewer, user_agent) values(:b, :person, :t, :p, :c, :e, :s, :u)',
       [
         ':b' => $testId,
         ':person' => $personId,
@@ -99,6 +100,7 @@ class TestDAO extends DAO {
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
+        ':s' => $reviewer,
         ':u' => $userAgent
       ]
     );
@@ -116,6 +118,7 @@ class TestDAO extends DAO {
     int $personId,
     ?int $page = null,
     ?string $pageLabel = null,
+    ?string $reviewer = null,
   ): void {
     $this->_(
       'insert ignore into units (name, test_id, original_unit_id) values(:u, :t, :o)',
@@ -134,10 +137,11 @@ class TestDAO extends DAO {
             priority,
             categories,
             entry,
+            reviewer,
             page,
             pagelabel,
             user_agent
-        ) values (:unit_name, :person_id, :test_id, :t, :p, :c, :e, :pa, :pl, :ua)
+        ) values (:unit_name, :person_id, :test_id, :t, :p, :c, :e, :s, :pa, :pl, :ua)
           ',
       [
         ':unit_name' => $unitName,
@@ -147,6 +151,7 @@ class TestDAO extends DAO {
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
+        ':s' => $reviewer,
         ':pa' => $page,
         ':pl' => $pageLabel,
         ':ua' => $userAgent,
@@ -156,7 +161,7 @@ class TestDAO extends DAO {
 
   public function getUnitReviews(int $testId, string $unitName, int $personId): array {
     return $this->_(
-      'select 
+      'select
             unit_reviews.id,
             unit_reviews.unit_name,
             unit_reviews.test_id,
@@ -165,14 +170,15 @@ class TestDAO extends DAO {
             unit_reviews.priority,
             unit_reviews.categories,
             unit_reviews.entry,
+            unit_reviews.reviewer,
             unit_reviews.page,
             unit_reviews.pagelabel,
             unit_reviews.user_agent as userAgent,
             units.original_unit_id as originalUnitId
           from unit_reviews
-          left join units on units.test_id = unit_reviews.test_id 
+          left join units on units.test_id = unit_reviews.test_id
               and units.name = unit_reviews.unit_name
-          where unit_reviews.test_id = :test_id 
+          where unit_reviews.test_id = :test_id
             and unit_reviews.unit_name = :unit_name
             and unit_reviews.person_id = :person_id
           order by unit_reviews.reviewtime desc',
@@ -195,6 +201,7 @@ class TestDAO extends DAO {
           priority,
           categories,
           entry,
+          reviewer,
           user_agent as userAgent
         from test_reviews
         where booklet_id = :test_id
@@ -236,6 +243,7 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
+    ?string $reviewer,
     string $userAgent,
     int $personId
   ): void {
@@ -245,6 +253,7 @@ class TestDAO extends DAO {
         priority = :p,
         categories = :c,
         entry = :e,
+        reviewer = :s,
         user_agent = :u,
         person_id = :person_id
       where id = :id',
@@ -253,6 +262,7 @@ class TestDAO extends DAO {
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
+        ':s' => $reviewer,
         ':u' => $userAgent,
         ':person_id' => $personId
       ]
@@ -264,6 +274,7 @@ class TestDAO extends DAO {
     int $priority,
     string $categories,
     string $entry,
+    ?string $reviewer,
     string $userAgent,
     int $personId
   ): void {
@@ -273,6 +284,7 @@ class TestDAO extends DAO {
         priority = :p,
         categories = :c,
         entry = :e,
+        reviewer = :s,
         user_agent = :u,
         person_id = :person_id
       where id = :id',
@@ -281,6 +293,7 @@ class TestDAO extends DAO {
         ':p' => $priority,
         ':c' => $categories,
         ':e' => $entry,
+        ':s' => $reviewer,
         ':u' => $userAgent,
         ':person_id' => $personId
       ]

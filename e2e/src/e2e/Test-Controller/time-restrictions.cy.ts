@@ -57,6 +57,9 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }
     insertCredentials('Test_Ctrl-14', '123');
     cy.get('[data-cy="login-user"]')
       .click();
+    cy.get('[data-cy^="booklet-"]')
+      .first()
+      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')

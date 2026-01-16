@@ -1,6 +1,28 @@
 ---
 layout: default
 ---
+## 17.5.1
+### Bugfix
+* Review-Modus: Bookletkommentare werden in der Listenansicht angezeigt.
+
+## 17.5.0
+### Neue Features
+* Review-Modus: Die Review-Oberfläche wurde komplett überarbeitet. Statt eines Dialogs öffnet sich nun ein Seitenbereich, der das gleichzeitige Betrachten der Aufgabe während des Schreibens ermöglicht.
+* Review-Modus: Neue Listenansicht zeigt alle bisher abgegebenen Kommentare der aktuellen Aufgabe unter dem eingeloggten Nutzer.
+* Review-Modus: Kommentare können nun bearbeitet und gelöscht werden.
+* Review-Modus: Ein Download-Button auf der Startseite ermöglicht das Herunterladen aller eigenen Reviews als CSV-Datei.
+* Review-Ausgabe: Booklet- und Aufgabenlabel werden nun in der CSV Ausgabe angezeigt.
+* CSV: Die genannten Veränderungen gelten für Exporte der einzelnen Personon und die "neue" Version der Admin Exporte
+
+### Verbesserungen
+* Review-Modus: Eingegebene Daten im Formular bleiben beim Wechsel zwischen Formular- und Listenansicht erhalten.
+* Review-Modus: Das Formular wird nach dem Speichern automatisch zurückgesetzt.
+* Review-Modus: Das Review-Panel schließt sich beim Navigieren zu einer anderen Aufgabe automatisch.
+
+### Bugfix
+* CSV-Export: Anführungszeichen in Kommentaren werden nun korrekt exportiert.
+* Seitennavigation innerhalb einer Aufgabe wurde repariert.
+
 ## 17.4.2
 ### Bugfix
 * Wird während des Testladens das Fenster geschlossen, konnte es u.U. dazu kommen, dass die Testperson und die Testleiterkonsole der gesamten Gruppe ausgesperrt wurden. Dies ist nun behoben.
