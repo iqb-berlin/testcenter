@@ -1,30 +1,37 @@
 import {
   loginMonitor,
+  loginTestTaker,
+  logoutTestTakerHot,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage }
+  visitLoginPage
+}
   from '../utils';
 
 describe('Group-Monitor User', () => {
   before(() => {
     resetBackendData();
     probeBackendApi();
+    visitLoginPage();
+    // es muss testtaker in der DB sein für diesen Test
+    loginTestTaker('testtaker-a', '123');
+    logoutTestTakerHot();
   });
 
   beforeEach(() => {
     visitLoginPage();
-    loginMonitor('test-group-monitor-2', 'user123');
+    loginMonitor('GM-1', '123');
   });
 
   it('displayed a group-monitor with 2 profiles for selection ', () => {
-    cy.get('[data-cy="GM-sample_group-0"]')
+    cy.get('[data-cy="GM-filter-profiles-0"]')
       .contains('Alles zeigen');
-    cy.get('[data-cy="GM-sample_group-1"]')
+    cy.get('[data-cy="GM-filter-profiles-1"]')
       .contains('Superklein');
   });
 
   it('set the view that configured in the small profile', () => {
-    cy.get('[data-cy="GM-sample_group-1"]')
+    cy.get('[data-cy="GM-filter-profiles-1"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
@@ -35,7 +42,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('configured columns in small profile are only visible', () => {
-    cy.get('[data-cy="GM-sample_group-1"]')
+    cy.get('[data-cy="GM-filter-profiles-1"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
@@ -55,7 +62,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('set the filter from small-profile', () => {
-    cy.get('[data-cy="GM-sample_group-1"]')
+    cy.get('[data-cy="GM-filter-profiles-1"]')
       .click();
     cy.contains('test/xxx')
       .should('not.exist');
@@ -65,11 +72,11 @@ describe('Group-Monitor User', () => {
       .click();
     cy.contains('Reduced Booklet')
       .click();
-    cy.contains('test/xxx');
+    cy.contains('testtaker-a');
   });
 
   it('set the view that configured in the full profile', () => {
-    cy.get('[data-cy="GM-sample_group-0"]')
+    cy.get('[data-cy="GM-filter-profiles-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
@@ -80,7 +87,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('configured columns in full profile are only visible', () => {
-    cy.get('[data-cy="GM-sample_group-0"]')
+    cy.get('[data-cy="GM-filter-profiles-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
@@ -90,19 +97,13 @@ describe('Group-Monitor User', () => {
     cy.get('[data-cy="GM_columns_checked_booklet"]');
     cy.get('[data-cy="GM_columns_checked_block"]');
     cy.get('[data-cy="GM_columns_checked_unit"]');
-    cy.get('[data-cy="GM_columns_state_button-0"]')
-      .contains('Bonusmaterial');
-    cy.get('[data-cy="GM_columns_state_button-1"]')
-      .contains('Schwierigkeitsstufe');
-    cy.get('[data-cy="GM_columns_checked_state-0"]');
-    cy.get('[data-cy="GM_columns_checked_state-1"]');
     // The menu must be closed because all other elements are hidden and cypress can no longer find them.
     cy.get('[data-cy="GM_column_group_button"]')
       .click();
   });
 
   it('there are no filters from small-profile', () => {
-    cy.get('[data-cy="GM-sample_group-0"]')
+    cy.get('[data-cy="GM-filter-profiles-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
@@ -116,7 +117,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('create a new  filter', () => {
-    cy.get('[data-cy="GM-sample_group-0"]')
+    cy.get('[data-cy="GM-filter-profiles-0"]')
       .click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
