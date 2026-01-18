@@ -57,7 +57,7 @@
 </div>
 
 <mat-sidenav-container [class]="{'tc-body': true, 'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF'}">
-  <mat-sidenav #sidenav mode="over" position="end" opened="false">
+  <mat-sidenav #sidenav mode="over" position="end" opened="false" (opened)="onSidenavOpened()">
     @if (sideNavContent === 'review-form') {
       <tc-review-panel (close)="sidenav.close()"></tc-review-panel>
     } @else {
