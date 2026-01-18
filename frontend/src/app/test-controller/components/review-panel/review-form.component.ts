@@ -41,9 +41,18 @@ export class ReviewFormComponent implements OnInit {
 
   reviewForm: FormGroup;
   accountName: string;
-  bookletname?: string;
-  unitTitle?: string;
-  unitAlias?: string;
+
+  get bookletname(): string | undefined {
+    return this.tcs.booklet?.metadata.label;
+  }
+
+  get unitTitle(): string | undefined {
+    return this.tcs.currentUnit?.label;
+  }
+
+  get unitAlias(): string | undefined {
+    return this.tcs.currentUnit?.alias;
+  }
 
   REVIEW_FORM_DEFAULTS = {
     target: 'unit',
@@ -70,9 +79,6 @@ export class ReviewFormComponent implements OnInit {
       throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // TODO necessary?!
     }
     this.accountName = authData.displayName;
-    this.bookletname = this.tcs.booklet?.metadata.label;
-    this.unitTitle = this.tcs.currentUnit?.label;
-    this.unitAlias = this.tcs.currentUnit?.alias;
   }
 
   ngOnInit(): void {

@@ -98,4 +98,10 @@ export class ReviewPanelComponent {
   resetForm() {
     this.formComponent.resetFormData();
   }
+
+  refreshIfListView(): void {
+    if (this.activeView === 'list' && this.listComponent) {
+      this.listComponent.loadReviews();
+    }
+  }
 }
