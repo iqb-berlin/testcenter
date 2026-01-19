@@ -21,7 +21,7 @@
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
           <mat-form-field [appearance]="'outline'">
-            <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});"/>
+            <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});" [value]="targetLabel"/>
           </mat-form-field>
         </mat-radio-button>
       </mat-radio-group>

@@ -55,9 +55,13 @@ export class ReviewFormComponent implements OnInit {
     return this.tcs.currentUnit?.alias;
   }
 
+  get targetLabel(): string | undefined {
+    return this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']
+  }
+
   REVIEW_FORM_DEFAULTS = {
     target: 'unit',
-    targetLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']),
+    targetLabel: this.targetLabel,
     priority: 0,
     entry: '',
     reviewer: undefined
@@ -105,14 +109,14 @@ export class ReviewFormComponent implements OnInit {
 
   saveReview(): void {
     const result = this.reviewForm.value;
-    const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_NR;
+    const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_ID;
     const currentPageLabel = this.tcs.currentUnit?.pageLabels[currentPageIndex || ''];
     if (!this.review) {
       this.backendService.saveReview(
         this.tcs.testId,
         (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
-        (result.target === 'task') ? currentPageIndex || null : null,
-        (result.target === 'task') ? result.targetLabel || currentPageLabel : null,
+        (result.target === 'task') ? Number(currentPageIndex) || null : null,
+        (result.target === 'task') ? result.targetLabel  : null,
         result.priority,
         this.getSelectedCategories(),
         result.entry,
@@ -139,7 +143,7 @@ export class ReviewFormComponent implements OnInit {
         this.getSelectedCategories(),
         result.entry,
         result.reviewer || null,
-        (this.reviewForm.value.target === 'task') ? result.targetLabel || currentPageLabel : null,
+        (this.reviewForm.value.target === 'task') ? result.targetLabel  : null,
       ).subscribe(() => {
         this.snackBar.open('Kommentar geändert', '', {
           duration: 5000,
