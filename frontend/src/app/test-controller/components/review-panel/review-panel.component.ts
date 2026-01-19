@@ -36,7 +36,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     </mat-toolbar>
 
     <tc-review-form [hidden]="activeView !== 'form'" [review]="selectedReview"
-                    (showList)="onShowList()" (close)="close.emit()">
+                    (showList)="onShowList()" (close)="close.emit()" (delete)="onDelete()">
     </tc-review-form>
 
     <tc-review-list [hidden]="activeView !== 'list'"
@@ -65,6 +65,12 @@ export class ReviewPanelComponent {
 
   protected onBack() {
     this.activeView = 'form';
+  }
+
+  protected onDelete() {
+    this.selectedReview =  undefined;
+    this.formComponent.resetFormData();
+    this.updateHeading();
   }
 
   protected onNew() {

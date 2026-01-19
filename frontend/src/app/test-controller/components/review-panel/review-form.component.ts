@@ -37,6 +37,7 @@ export class ReviewFormComponent implements OnInit {
   @Input() review?: Review;
   @Output() showList = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
+  @Output() delete = new EventEmitter<void>();
   @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
@@ -175,6 +176,7 @@ export class ReviewFormComponent implements OnInit {
           panelClass: ['snackbar-comment-saved']
         });
         this.showList.emit();
+        this.delete.emit();
       }
     );
   }
