@@ -62,6 +62,14 @@ export class ReviewPanelComponent {
   activeView: 'list' | 'form' = 'form';
   selectedReview?: Review;
   heading: string = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+  private isUnitDataDirty: boolean = true;
+
+  onOpen(): void {
+    if (this.isUnitDataDirty) {
+      this.formComponent.resetFormData();
+      this.isUnitDataDirty = false;
+    }
+  }
 
   protected onBack() {
     this.activeView = 'form';
@@ -96,6 +104,6 @@ export class ReviewPanelComponent {
   }
 
   resetForm() {
-    this.formComponent.resetFormData();
+    this.isUnitDataDirty = true;
   }
 }

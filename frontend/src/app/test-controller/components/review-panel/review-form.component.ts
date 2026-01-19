@@ -94,6 +94,8 @@ export class ReviewFormComponent implements OnInit {
 
   resetFormData(): void {
     this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
+    this.unitTitle = this.tcs.currentUnit?.label;
+    this.unitAlias = this.tcs.currentUnit?.alias;
   }
 
   saveReview(): void {
