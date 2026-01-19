@@ -1,6 +1,6 @@
 {
   "name": "iqb-testcenter",
-  "version": "17.5.1",
+  "version": "17.5.2",
   "iqb": {
     "release-channels": {
       "lts": "16.3",
