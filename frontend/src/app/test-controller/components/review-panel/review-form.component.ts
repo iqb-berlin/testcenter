@@ -171,6 +171,7 @@ export class ReviewFormComponent implements OnInit {
           panelClass: ['snackbar-comment-saved']
         });
         this.showList.emit();
+        this.resetFormData();
       }
     );
   }
