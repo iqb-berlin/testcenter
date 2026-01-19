@@ -244,7 +244,6 @@ class TestDAO extends DAO {
     string $categories,
     string $entry,
     ?string $reviewer,
-    string $userAgent,
     int $personId,
     ?string $pagelabel
   ): void {
@@ -255,7 +254,6 @@ class TestDAO extends DAO {
         categories = :c,
         entry = :e,
         reviewer = :s,
-        user_agent = :u,
         person_id = :person_id,
         pagelabel = :pagelabel
       where id = :id',
@@ -265,7 +263,6 @@ class TestDAO extends DAO {
         ':c' => $categories,
         ':e' => $entry,
         ':s' => $reviewer,
-        ':u' => $userAgent,
         ':person_id' => $personId,
         ':pagelabel' => $pagelabel
       ]
@@ -278,7 +275,6 @@ class TestDAO extends DAO {
     string $categories,
     string $entry,
     ?string $reviewer,
-    string $userAgent,
     int $personId
   ): void {
     $this->_(
@@ -288,7 +284,6 @@ class TestDAO extends DAO {
         categories = :c,
         entry = :e,
         reviewer = :s,
-        user_agent = :u,
         person_id = :person_id
       where id = :id',
       [
@@ -297,7 +292,6 @@ class TestDAO extends DAO {
         ':c' => $categories,
         ':e' => $entry,
         ':s' => $reviewer,
-        ':u' => $userAgent,
         ':person_id' => $personId
       ]
     );
