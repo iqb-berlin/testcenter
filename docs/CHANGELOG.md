@@ -1,6 +1,16 @@
 ---
 layout: default
 ---
+## 17.5.2
+### Bugfix
+* Review-Modus: 
+  * Kommentare zur richtigen Unit gespeichert
+  * Kommentarliste wird bei jedem öffnen neu geladen
+  * 'Schließen' Button verursacht KEIN speichern mehr
+  * Es ist nicht mehr möglich einen bereits gelöschten Kommentar zu bearbeiten
+  * Teilaufgabe kann nun korrekterweise bearbeitet werden
+  * Useragent bleibt auch Bearbeiten erhalten
+
 ## 17.5.1
 ### Bugfix
 * Review-Modus: Bookletkommentare werden in der Listenansicht angezeigt.
