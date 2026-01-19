@@ -65,6 +65,7 @@ export class ReviewPanelComponent {
 
   protected onBack() {
     this.activeView = 'form';
+    this.updateHeading();
   }
 
   protected onDelete() {
@@ -76,8 +77,8 @@ export class ReviewPanelComponent {
   protected onNew() {
     this.selectedReview =  undefined;
     this.formComponent.resetFormData();
-    this.updateHeading();
     this.activeView = 'form';
+    this.updateHeading();
   }
 
   protected onShowList() {
