@@ -59,18 +59,17 @@ export class ReviewListComponent implements OnInit {
   unitReviews$: Observable<UnitReview[]> | undefined;
   bookletReviews$: Observable<BookletReview[]> | undefined;
   testID!: string;
-  unitAlias?: string | null = null;
 
   constructor(private backendService: BackendService, private tcs: TestControllerService) { }
 
   ngOnInit(): void {
     this.testID = this.tcs.testId;
-    this.unitAlias = this.tcs.currentUnit?.alias;
     this.loadReviews();
   }
 
   loadReviews(): void {
-    this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias || null) as Observable<UnitReview[]>;
+    const unitAlias = this.tcs.currentUnit?.alias;
+    this.unitReviews$ = this.backendService.getReviews(this.testID, unitAlias || null) as Observable<UnitReview[]>;
     this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
   }
 }
