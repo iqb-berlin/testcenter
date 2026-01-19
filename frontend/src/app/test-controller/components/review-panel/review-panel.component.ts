@@ -73,6 +73,7 @@ export class ReviewPanelComponent {
 
   protected onBack() {
     this.activeView = 'form';
+    this.updateHeading();
   }
 
   protected onNew() {
