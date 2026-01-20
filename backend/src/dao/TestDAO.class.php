@@ -245,7 +245,8 @@ class TestDAO extends DAO {
     string $entry,
     ?string $reviewer,
     string $userAgent,
-    int $personId
+    int $personId,
+    ?string $pagelabel
   ): void {
     $this->_(
       'update unit_reviews
@@ -255,7 +256,8 @@ class TestDAO extends DAO {
         entry = :e,
         reviewer = :s,
         user_agent = :u,
-        person_id = :person_id
+        person_id = :person_id,
+        pagelabel = :pagelabel
       where id = :id',
       [
         ':id' => $reviewId,
@@ -264,7 +266,8 @@ class TestDAO extends DAO {
         ':e' => $entry,
         ':s' => $reviewer,
         ':u' => $userAgent,
-        ':person_id' => $personId
+        ':person_id' => $personId,
+        ':pagelabel' => $pagelabel
       ]
     );
   }
