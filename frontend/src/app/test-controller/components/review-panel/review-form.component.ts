@@ -44,10 +44,10 @@ export class ReviewFormComponent implements OnInit {
   bookletname?: string;
   unitTitle?: string;
   unitAlias?: string;
+  pageID?: string;
 
   REVIEW_FORM_DEFAULTS = {
     target: 'unit',
-    targetLabel: (this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || '']),
     priority: 0,
     entry: '',
     reviewer: undefined
@@ -55,9 +55,16 @@ export class ReviewFormComponent implements OnInit {
 
   constructor(private tcs: TestControllerService, private mainDataService: MainDataService,
               private backendService: BackendService, private snackBar: MatSnackBar) {
+    const authData = this.mainDataService.getAuthData();
+    if (!authData) {
+      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // TODO necessary?!
+    }
+    this.accountName = authData.displayName;
+    this.bookletname = this.tcs.booklet?.metadata.label;
+    this.updateUnitRefs();
     this.reviewForm = new FormGroup({
       target: new FormControl(this.REVIEW_FORM_DEFAULTS.target, Validators.required),
-      targetLabel: new FormControl(this.REVIEW_FORM_DEFAULTS.targetLabel),
+      targetLabel: new FormControl(this.pageID),
       priority: new FormControl(this.REVIEW_FORM_DEFAULTS.priority),
       tech: new FormControl(),
       content: new FormControl(),
@@ -65,18 +72,16 @@ export class ReviewFormComponent implements OnInit {
       entry: new FormControl(this.REVIEW_FORM_DEFAULTS.entry, Validators.required),
       reviewer: new FormControl(this.REVIEW_FORM_DEFAULTS.reviewer)
     });
-    const authData = this.mainDataService.getAuthData();
-    if (!authData) {
-      throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // TODO necessary?!
-    }
-    this.accountName = authData.displayName;
-    this.bookletname = this.tcs.booklet?.metadata.label;
-    this.unitTitle = this.tcs.currentUnit?.label;
-    this.unitAlias = this.tcs.currentUnit?.alias;
   }
 
   ngOnInit(): void {
     if (this.review) this.updateFormData(this.review);
+  }
+
+  updateUnitRefs(): void {
+    this.unitTitle = this.tcs.currentUnit?.label;
+    this.unitAlias = this.tcs.currentUnit?.alias;
+    this.pageID = this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''];
   }
 
   updateFormData(existingReview: Review): void {
@@ -93,9 +98,11 @@ export class ReviewFormComponent implements OnInit {
   }
 
   resetFormData(): void {
-    this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
-    this.unitTitle = this.tcs.currentUnit?.label;
-    this.unitAlias = this.tcs.currentUnit?.alias;
+    this.updateUnitRefs();
+    this.formDir.reset({
+      ...this.REVIEW_FORM_DEFAULTS,
+      targetLabel: this.pageID
+    });
   }
 
   saveReview(): void {
