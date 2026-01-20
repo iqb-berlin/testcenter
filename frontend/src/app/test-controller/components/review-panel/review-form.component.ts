@@ -100,12 +100,13 @@ export class ReviewFormComponent implements OnInit {
 
   saveReview(): void {
     const result = this.reviewForm.value;
-    const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_NR;
+    // PAGE_NR seems to be broken and is always null
+    const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_ID;
     if (!this.review) {
       this.backendService.saveReview(
         this.tcs.testId,
         (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
-        (result.target === 'task') ? currentPageIndex || null : null,
+        (result.target === 'task') ? Number(currentPageIndex) || null : null,
         (result.target === 'task') ? result.targetLabel : null,
         result.priority,
         this.getSelectedCategories(),
