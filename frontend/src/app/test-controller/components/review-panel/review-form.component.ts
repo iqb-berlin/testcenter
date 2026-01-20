@@ -104,7 +104,13 @@ export class ReviewFormComponent implements OnInit {
   }
 
   resetFormData(): void {
-    this.formDir.reset(this.REVIEW_FORM_DEFAULTS);
+    this.formDir.reset({
+      target: 'unit',
+      targetLabel: this.targetLabel,
+      priority: 0,
+      entry: '',
+      reviewer: undefined
+    });
   }
 
   saveReview(): void {
@@ -131,7 +137,7 @@ export class ReviewFormComponent implements OnInit {
         this.formDir.resetForm({
           reviewer: this.reviewForm.get('reviewer')?.value,
           target: this.reviewForm.get('target')?.value,
-          targetLabel: this.reviewForm.get('targetLabel')?.value,
+          targetLabel: this.targetLabel,
         })
       });
     } else {
