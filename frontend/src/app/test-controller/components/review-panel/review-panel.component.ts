@@ -67,6 +67,7 @@ export class ReviewPanelComponent {
   onOpen(): void {
     if (this.isUnitDataDirty) {
       this.formComponent.resetFormData();
+      this.listComponent.loadReviews();
       this.isUnitDataDirty = false;
     }
   }
