@@ -64,6 +64,9 @@ const checkPrerequisites = async done => {
 
 const savePackageJson = async done => {
   packageJson.version = version.full;
+  if (!version.label) {
+    packageJson.iqb['release-channels'].stable = `${version.major}.${version.minor}`;
+  }
   fs.writeFileSync(`${rootPath}/package.json`, JSON.stringify(packageJson, null, 2));
   cliPrint.success(`[x] /package.json updated with ${version.full}`);
   done();
