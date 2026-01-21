@@ -43,6 +43,8 @@ export class ReviewFormComponent {
   reviewForm: FormGroup;
   isEditingReview = false;
   editedReview?: Review;
+  isUnitReview?: boolean;
+
   accountName: string;
   bookletname?: string;
   unitTitle?: string;
@@ -111,6 +113,7 @@ export class ReviewFormComponent {
   editReview(review: Review) {
     this.updateFormData(review);
     this.isEditingReview = true;
+    this.isUnitReview = isUnitReview(review);
     this.editedReview = review;
   }
 
@@ -191,6 +194,4 @@ export class ReviewFormComponent {
       }
     );
   }
-
-  protected readonly isUnitReview = isUnitReview;
 }

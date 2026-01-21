@@ -8,16 +8,16 @@
     <div>
       <mat-radio-group formControlName="target">
         <label>Der Kommentar wird gegeben für:</label>
-        <mat-radio-button value="booklet" [disabled]="editedReview && isUnitReview(editedReview)"
+        <mat-radio-button value="booklet" [disabled]="editedReview && isUnitReview"
                           [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
           aktuelles Testheft "{{ bookletname }}"
         </mat-radio-button>
-        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview(editedReview)"
+        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
                           [matTooltip]="unitAlias"
                           data-cy="comment-diag-currentUnit">
           aktuelle Aufgabe "{{ unitTitle }}"
         </mat-radio-button>
-        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview(editedReview)"
+        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
           <mat-form-field [appearance]="'outline'">
