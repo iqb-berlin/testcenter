@@ -18,35 +18,46 @@ import { BackendService } from '../../services/backend.service';
     AsyncPipe
   ],
   template: `
+    <!-- wrapper is needed so host component can be "hidden". The host styling 
+         "display: flex" may override hidden.-->
     <div class="wrapper">
-      <h3>Kommentare zu dieser Unit</h3>
-      <mat-selection-list>
-        @for (review of unitReviews$ | async; track review.id) {
-          <mat-list-item (click)="editReview.emit(review)">
-            {{ review.entry }}
-          </mat-list-item>
-        }
-      </mat-selection-list>
-      <h3>alle Kommentare zu diesem Testheft</h3>
-      <mat-selection-list>
-        @for (review of bookletReviews$ | async; track review.id) {
-          <mat-list-item (click)="editReview.emit(review)">
-            {{ review.entry }}
-          </mat-list-item>
-        }
-      </mat-selection-list>
+      <div class="scrollable-area">
+        <h3>Kommentare zu dieser Unit</h3>
+        <mat-selection-list>
+          @for (review of unitReviews$ | async; track review.id) {
+            <mat-list-item (click)="editReview.emit(review)">
+              {{ review.entry }}
+            </mat-list-item>
+          }
+        </mat-selection-list>
+        <h3>alle Kommentare zu diesem Testheft</h3>
+        <mat-selection-list>
+          @for (review of bookletReviews$ | async; track review.id) {
+            <mat-list-item (click)="editReview.emit(review)">
+              {{ review.entry }}
+            </mat-list-item>
+          }
+        </mat-selection-list>
+      </div>
       <button mat-button class="close-button" (click)="close.emit()">
         Schließen
       </button>
     </div>
   `,
   styles: `
+    :host {
+      min-height: 0;
+      flex: 1;
+    }
     .wrapper {
       padding: 20px;
       height: 100%;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
+    }
+    .scrollable-area {
+      overflow: auto;
     }
     .close-button {
       margin-top: auto;
