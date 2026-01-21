@@ -58,8 +58,8 @@
   </div>
   <div class="action-buttons">
     <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
-            [disabled]="reviewForm.invalid">
-      {{ review ? 'Aktualisieren' : 'Speichern' }}
+            [disabled]="!reviewForm.dirty || reviewForm.invalid">
+      {{ isEditingReview ? 'Aktualisieren' : 'Speichern' }}
     </button>
     @if (isEditingReview) {
       <button mat-button type="button" color="warn" (click)="deleteReview()">

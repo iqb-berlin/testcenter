@@ -27,10 +27,11 @@ import { Review } from '../../interfaces/test-controller.interfaces';
       <h2 data-cy="comment-diag-title">{{ heading }}</h2>
       <span class="example-spacer"></span>
       <span class="spacer"></span>
-      <button matIconButton [matTooltip]="'Zurück zum Kommentar'" [disabled]="activeView === 'form'"
-              (click)="onBack()">
-        <mat-icon>edit</mat-icon>
-      </button>
+      @if (activeView !== 'form') {
+        <button matIconButton [matTooltip]="'Zurück zum Kommentar'" (click)="onBack()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
       <button matIconButton [matTooltip]="'Neuer Kommentar'" (click)="onNew()">
         <mat-icon>add_circle</mat-icon>
       </button>
