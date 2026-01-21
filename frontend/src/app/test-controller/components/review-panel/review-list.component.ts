@@ -1,11 +1,13 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component, EventEmitter, OnInit, Output
+} from '@angular/core';
 import { MatListItem, MatSelectionList } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
-import { BackendService } from '../../services/backend.service';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { BookletReview, Review, UnitReview } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
+import { BackendService } from '../../services/backend.service';
 
 @Component({
   selector: 'tc-review-list',
@@ -50,7 +52,7 @@ import { TestControllerService } from '../../services/test-controller.service';
       margin-top: auto;
       align-self: start;
     }
-  `,
+  `
 })
 export class ReviewListComponent implements OnInit {
   @Output() editReview = new EventEmitter<Review>();

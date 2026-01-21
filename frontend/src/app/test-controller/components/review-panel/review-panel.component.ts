@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { ReviewFormComponent } from './review-form.component';
-import { ReviewListComponent } from './review-list.component';
-import { Review } from '../../interfaces/test-controller.interfaces';
+import {
+  Component, EventEmitter, Output, ViewChild
+} from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ReviewFormComponent } from './review-form.component';
+import { ReviewListComponent } from './review-list.component';
+import { Review } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   selector: 'tc-review-panel',
@@ -61,7 +63,7 @@ export class ReviewPanelComponent {
 
   activeView: 'list' | 'form' = 'form';
   selectedReview?: Review;
-  heading: string = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+  heading: string = `Kommentar ${this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
   private isUnitDataDirty: boolean = true;
 
   onOpen(): void {
@@ -78,7 +80,7 @@ export class ReviewPanelComponent {
   }
 
   protected onNew() {
-    this.selectedReview =  undefined;
+    this.selectedReview = undefined;
     this.formComponent.resetFormData();
     this.updateHeading();
     this.activeView = 'form';
@@ -99,7 +101,7 @@ export class ReviewPanelComponent {
 
   private updateHeading(): void {
     if (this.activeView === 'form') {
-      this.heading = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+      this.heading = `Kommentar ${this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
     } else {
       this.heading = 'Kommentarübersicht';
     }

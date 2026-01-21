@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnInit, Output, ViewChild
+} from '@angular/core';
 import {
   FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators
 } from '@angular/forms';
@@ -31,7 +33,7 @@ import { isUnitReview, Review } from '../../interfaces/test-controller.interface
     MatCheckbox
   ],
   templateUrl: './review-form.component.html',
-  styleUrl: './review-form.component.css',
+  styleUrl: './review-form.component.css'
 })
 export class ReviewFormComponent implements OnInit {
   @Input() review?: Review;
@@ -127,8 +129,8 @@ export class ReviewFormComponent implements OnInit {
         this.formDir.resetForm({
           reviewer: this.reviewForm.get('reviewer')?.value,
           target: this.reviewForm.get('target')?.value,
-          targetLabel: this.reviewForm.get('targetLabel')?.value,
-        })
+          targetLabel: this.reviewForm.get('targetLabel')?.value
+        });
       });
     } else {
       this.backendService.updateReview(
@@ -139,7 +141,7 @@ export class ReviewFormComponent implements OnInit {
         this.getSelectedCategories(),
         result.entry,
         result.reviewer || null,
-        (this.reviewForm.value.target === 'task') ? result.targetLabel : null,
+        (this.reviewForm.value.target === 'task') ? result.targetLabel : null
       ).subscribe(() => {
         this.snackBar.open('Kommentar geändert', '', {
           duration: 5000,
