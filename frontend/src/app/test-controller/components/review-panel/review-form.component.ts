@@ -44,10 +44,10 @@ export class ReviewFormComponent implements OnInit {
   bookletname?: string;
   unitTitle?: string;
   unitAlias?: string;
-  pageID?: string;
 
   REVIEW_FORM_DEFAULTS = {
     target: 'unit',
+    targetLabel: '',
     priority: 0,
     entry: '',
     reviewer: undefined
@@ -64,7 +64,7 @@ export class ReviewFormComponent implements OnInit {
     this.updateUnitRefs();
     this.reviewForm = new FormGroup({
       target: new FormControl(this.REVIEW_FORM_DEFAULTS.target, Validators.required),
-      targetLabel: new FormControl(this.pageID),
+      targetLabel: new FormControl(this.REVIEW_FORM_DEFAULTS.targetLabel),
       priority: new FormControl(this.REVIEW_FORM_DEFAULTS.priority),
       tech: new FormControl(),
       content: new FormControl(),
@@ -81,14 +81,13 @@ export class ReviewFormComponent implements OnInit {
   updateUnitRefs(): void {
     this.unitTitle = this.tcs.currentUnit?.label;
     this.unitAlias = this.tcs.currentUnit?.alias;
-    this.pageID = this.tcs.currentUnit?.pageLabels[this.tcs.currentUnit.state.CURRENT_PAGE_ID || ''];
   }
 
   updateFormData(existingReview: Review): void {
     this.reviewForm.patchValue({
       target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
       reviewer: existingReview.reviewer,
-      targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : '',
+      targetLabel: isUnitReview(existingReview) ? existingReview.pagelabel : this.REVIEW_FORM_DEFAULTS.targetLabel,
       priority: existingReview.priority,
       tech: existingReview.categories.includes('tech'),
       content: existingReview.categories.includes('content'),
@@ -100,8 +99,7 @@ export class ReviewFormComponent implements OnInit {
   resetFormData(): void {
     this.updateUnitRefs();
     this.formDir.reset({
-      ...this.REVIEW_FORM_DEFAULTS,
-      targetLabel: this.pageID
+      ...this.REVIEW_FORM_DEFAULTS
     });
   }
 
