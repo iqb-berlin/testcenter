@@ -3,11 +3,11 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { TestControllerService } from '../../services/test-controller.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
+import { TestControllerService } from '../../services/test-controller.service';
 import { ReviewFormComponent } from './review-form.component';
 import { ReviewListComponent } from './review-list.component';
 import { Review } from '../../interfaces/test-controller.interfaces';
@@ -40,8 +40,8 @@ import { Review } from '../../interfaces/test-controller.interfaces';
       </button>
     </mat-toolbar>
 
-    <tc-review-form [hidden]="activeView !== 'form'" [review]="selectedReview"
-                    (showList)="onShowList()" (close)="close.emit()">
+    <tc-review-form [hidden]="activeView !== 'form'"
+                    (delete)="onDeleteReview()" (close)="close.emit()">
     </tc-review-form>
 
     <tc-review-list [hidden]="activeView !== 'list'"
@@ -68,8 +68,8 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
 
   activeView: 'list' | 'form' = 'form';
-  selectedReview?: Review;
-  heading: string = `Kommentar ${this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+  editingReview: boolean = false;
+  heading: string = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
   private isUnitDataDirty: boolean = true;
   private unitChangeSubscription: Subscription | null = null;
 
@@ -93,34 +93,39 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected onBack() {
-    this.activeView = 'form';
-    this.updateHeading();
-  }
-
-  protected onNew() {
-    this.selectedReview = undefined;
-    this.formComponent.resetFormData();
-    this.updateHeading();
-    this.activeView = 'form';
-  }
-
   protected onShowList() {
     this.listComponent.loadReviews();
     this.activeView = 'list';
     this.updateHeading();
   }
 
-  protected onEditReview(review: Review) {
-    this.formComponent.updateFormData(review);
+  protected onBack() {
     this.activeView = 'form';
-    this.selectedReview = review;
+    this.updateHeading();
+  }
+
+  protected onNew() {
+    this.editingReview = false;
+    this.formComponent.newReview();
+    this.activeView = 'form';
+    this.updateHeading();
+  }
+
+  protected onDeleteReview() {
+    this.editingReview = false;
+    this.onShowList();
+  }
+
+  protected onEditReview(review: Review) {
+    this.formComponent.editReview(review);
+    this.activeView = 'form';
+    this.editingReview = true;
     this.updateHeading();
   }
 
   private updateHeading(): void {
     if (this.activeView === 'form') {
-      this.heading = `Kommentar ${this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+      this.heading = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
     } else {
       this.heading = 'Kommentarübersicht';
     }

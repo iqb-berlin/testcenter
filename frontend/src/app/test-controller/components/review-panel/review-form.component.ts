@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnInit, Output, ViewChild
+  Component, EventEmitter, Output, ViewChild
 } from '@angular/core';
 import {
   FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators
@@ -35,13 +35,14 @@ import { isUnitReview, Review } from '../../interfaces/test-controller.interface
   templateUrl: './review-form.component.html',
   styleUrl: './review-form.component.css'
 })
-export class ReviewFormComponent implements OnInit {
-  @Input() review?: Review;
-  @Output() showList = new EventEmitter<void>();
+export class ReviewFormComponent {
+  @Output() delete = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
+  isEditingReview = false;
+  editedReview?: Review;
   accountName: string;
   bookletname?: string;
   unitTitle?: string;
@@ -76,16 +77,12 @@ export class ReviewFormComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    if (this.review) this.updateFormData(this.review);
-  }
-
   updateUnitRefs(): void {
     this.unitTitle = this.tcs.currentUnit?.label;
     this.unitAlias = this.tcs.currentUnit?.alias;
   }
 
-  updateFormData(existingReview: Review): void {
+  private updateFormData(existingReview: Review): void {
     this.reviewForm.patchValue({
       target: isUnitReview(existingReview) ? (existingReview.pagelabel ? 'task' : 'unit') : 'booklet',
       reviewer: existingReview.reviewer,
@@ -105,11 +102,23 @@ export class ReviewFormComponent implements OnInit {
     });
   }
 
+  newReview(): void {
+    this.resetFormData();
+    this.isEditingReview = false;
+    this.editedReview = undefined;
+  }
+
+  editReview(review: Review) {
+    this.updateFormData(review);
+    this.isEditingReview = true;
+    this.editedReview = review;
+  }
+
   saveReview(): void {
     const result = this.reviewForm.value;
     // PAGE_NR seems to be broken and is always null
     const currentPageIndex = this.tcs.currentUnit?.state.CURRENT_PAGE_ID;
-    if (!this.review) {
+    if (!this.editedReview) {
       this.backendService.saveReview(
         this.tcs.testId,
         (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
@@ -136,7 +145,7 @@ export class ReviewFormComponent implements OnInit {
       this.backendService.updateReview(
         this.tcs.testId,
         (result.target === 'unit' || result.target === 'task') ? (this.unitAlias as string) : null,
-        this.review.id,
+        this.editedReview.id,
         result.priority,
         this.getSelectedCategories(),
         result.entry,
@@ -170,15 +179,15 @@ export class ReviewFormComponent implements OnInit {
     this.backendService.deleteReview(
       this.tcs.testId,
       this.reviewForm.value.target !== 'booklet' ? (this.unitAlias || null) : null,
-      this.review!.id
+      this.editedReview!.id
     ).subscribe(
       () => {
         this.snackBar.open('Kommentar gelöscht', '', {
           duration: 5000,
           panelClass: ['snackbar-comment-saved']
         });
-        this.showList.emit();
-        this.resetFormData();
+        this.newReview();
+        this.delete.emit();
       }
     );
   }
