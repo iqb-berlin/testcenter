@@ -185,7 +185,7 @@ class TestController extends Controller {
       ? (int) $review['priority']
       : 0;
 
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
 
     self::testDAO()->addUnitReview(
       $testId,
@@ -218,7 +218,7 @@ class TestController extends Controller {
     $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
       ? (int) $review['priority']
       : 0;
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
 
     self::testDAO()->addTestReview($testId, $priority, $review['categories'], $review['entry'], $review['userAgent'], $personId, $review['reviewer']);
 
@@ -229,7 +229,7 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
     $unitName = $request->getAttribute('unit_name');
 
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
     $reviews = self::testDAO()->getUnitReviews($testId, $unitName, $personId);
 
     return $response->withJson($reviews);
@@ -238,7 +238,7 @@ class TestController extends Controller {
   public static function getReviews(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');
 
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
     $reviews = self::testDAO()->getTestReviews($testId, $personId);
 
     return $response->withJson($reviews);
@@ -246,7 +246,7 @@ class TestController extends Controller {
 
   public static function deleteUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
     if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
     }
@@ -258,7 +258,7 @@ class TestController extends Controller {
 
   public static function deleteReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
 
     if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
@@ -270,7 +270,7 @@ class TestController extends Controller {
 
   public static function patchUnitReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
 
     if (!self::testDAO()->unitReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
@@ -305,7 +305,7 @@ class TestController extends Controller {
 
   public static function patchReview(Request $request, Response $response): Response {
     $reviewId = (int) $request->getAttribute('review_id');
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $request->getAttribute('AuthToken')->getId();
 
     if (!self::testDAO()->testReviewExists($reviewId, $personId)) {
       throw new HttpNotFoundException($request, "Review with ID $reviewId not found");
