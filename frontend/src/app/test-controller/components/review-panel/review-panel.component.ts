@@ -1,6 +1,9 @@
 import {
-  Component, EventEmitter, Output, ViewChild
+  Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { TestControllerService } from '../../services/test-controller.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
@@ -56,7 +59,7 @@ import { Review } from '../../interfaces/test-controller.interfaces';
     }
   `
 })
-export class ReviewPanelComponent {
+export class ReviewPanelComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   @ViewChild(ReviewFormComponent) formComponent!: ReviewFormComponent;
   @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
@@ -65,6 +68,19 @@ export class ReviewPanelComponent {
   selectedReview?: Review;
   heading: string = `Kommentar ${this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
   private isUnitDataDirty: boolean = true;
+  private unitChangeSubscription: Subscription | null = null;
+
+  constructor(private tcs: TestControllerService) {}
+
+  ngOnInit(): void {
+    this.unitChangeSubscription = this.tcs.currentUnitSequenceId$
+      .pipe(distinctUntilChanged())
+      .subscribe(() => this.resetForm());
+  }
+
+  ngOnDestroy(): void {
+    this.unitChangeSubscription?.unsubscribe();
+  }
 
   onOpen(): void {
     if (this.isUnitDataDirty) {
