@@ -1,7 +1,7 @@
 import {
   Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { skip, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
@@ -78,8 +78,10 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.unitChangeSubscription = this.tcs.currentUnitSequenceId$
-      .pipe(distinctUntilChanged())
-      .subscribe(() => {
+      .pipe(
+        distinctUntilChanged(),
+        skip(1)
+      ).subscribe(() => {
         this.isUnitDataDirty = true;
         this.close.emit();
       });
