@@ -79,7 +79,10 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.unitChangeSubscription = this.tcs.currentUnitSequenceId$
       .pipe(distinctUntilChanged())
-      .subscribe(() => this.resetForm());
+      .subscribe(() => {
+        this.isUnitDataDirty = true;
+        this.close.emit();
+      });
   }
 
   ngOnDestroy(): void {
@@ -132,7 +135,4 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetForm() {
-    this.isUnitDataDirty = true;
-  }
 }

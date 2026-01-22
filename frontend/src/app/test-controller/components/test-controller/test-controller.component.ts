@@ -379,10 +379,4 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected resetReviewForm() {
-    if (this.reviewComponent) {
-      this.reviewComponent.resetForm();
-      this.reviewComponent.close.emit();
-    }
-  }
 }
