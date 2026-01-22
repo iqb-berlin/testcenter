@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.2/definitions/vo_Unit.xsd">
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.1/definitions/vo_Unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE-2</Id>
     <Label>A sample unit</Label>

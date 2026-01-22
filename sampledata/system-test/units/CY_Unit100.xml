@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.2/definitions/vo_Unit.xsd">
+            xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.1/definitions/vo_Unit.xsd">
   <Metadata lastChange="2022-10-11T09:30:00+00:00">
     <Id>CY-Unit.Sample-100</Id>
     <Label>Start-Unit</Label>

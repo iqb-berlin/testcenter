@@ -70,7 +70,6 @@ export class ReviewListComponent implements OnInit {
   }
 
   loadReviews(): void {
-    this.unitAlias = this.tcs.currentUnit?.alias;
     this.unitReviews$ = this.backendService.getReviews(this.testID, this.unitAlias || null) as Observable<UnitReview[]>;
     this.bookletReviews$ = this.backendService.getReviews(this.testID, null) as Observable<BookletReview[]>;
   }

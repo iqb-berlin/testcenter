@@ -385,10 +385,4 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.reviewComponent.close.emit();
     }
   }
-
-  onSidenavOpened(): void {
-    if (this.sideNavContent === 'review-form' && this.reviewComponent) {
-      this.reviewComponent.refreshIfListView();
-    }
-  }
 }
