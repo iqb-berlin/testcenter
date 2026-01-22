@@ -23,7 +23,6 @@ class ReviewController extends Controller {
       $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::JSON);
       $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
       return $response->withJson($transformedData);
-
     }
 
     // Return as CSV (default)
@@ -31,14 +30,13 @@ class ReviewController extends Controller {
     $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
     $csv = ReviewCSVFormatter::generateCsvReportData($transformedData);
 
-    $bookletName = !empty($reviewData) ? $reviewData[0]['bookletname'] : 'reviews';
-    $filename = "reviews-{$bookletName}-" . date('Y-m-d') . ".csv";
+    if ($csv === Report::BOM) {
+      return $response->withStatus(204);
+    }
 
     return $response
       ->withHeader('Content-Type', 'text/csv;charset=UTF-8')
-      ->withHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
       ->write($csv);
-
   }
 
 }
