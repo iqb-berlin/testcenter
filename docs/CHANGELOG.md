@@ -1,6 +1,24 @@
 ---
 layout: default
 ---
+## 17.5.3-rc
+* Review-Modus:
+  * Teilaufgaben-Feld wird nicht mehr automatisch befüllt, da diese nicht anhand der aktuellen Seite ablesbar ist.
+  * Diverse UX Verbesserungen und kleine Bugfixes in der Bedienung
+  * CSV Output von Personen-abhängigen Kommentaren hat nun die selbe Spalten Struktur wie der Review-CSV des Admin Bereichs
+  * Responsive Design für die Komponente
+  * Das Herunterladen leerer CSVs geht nicht mehr. Stattdessen kommt ein Hinweis, dass keine Kommentare existieren.
+
+## 17.5.2
+### Bugfix
+* Review-Modus: 
+  * Kommentare zur richtigen Unit gespeichert
+  * Kommentarliste wird bei jedem öffnen neu geladen
+  * 'Schließen' Button verursacht KEIN speichern mehr
+  * Es ist nicht mehr möglich einen bereits gelöschten Kommentar zu bearbeiten
+  * Teilaufgabe kann nun korrekterweise bearbeitet werden
+  * Useragent bleibt auch Bearbeiten erhalten
+
 ## 17.5.1
 ### Bugfix
 * Review-Modus: Bookletkommentare werden in der Listenansicht angezeigt.
