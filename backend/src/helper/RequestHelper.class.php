@@ -81,11 +81,4 @@ class RequestHelper {
     return self::$_sessionDAO;
   }
 
-  static function getPersonIdFromRequest(Request $request): int {
-    $authToken = $request->getAttribute('AuthToken');
-    $tokenString = $authToken->getToken();
-
-    $session = self::sessionDAO()->getPersonSessionByToken($tokenString);
-    return $session->getPerson()->getId();
-  }
 }

@@ -2,22 +2,22 @@
   <div class="scrollable-area">
     <div>
       <mat-form-field class="username">
-        <input matInput formControlName="reviewer" placeholder="Mein Name" data-cy="comment-diag-reviewer">
+        <input matInput formControlName="reviewer" placeholder="Mein Name" cdkFocusInitial data-cy="comment-diag-reviewer">
       </mat-form-field>
     </div>
     <div>
       <mat-radio-group formControlName="target">
         <label>Der Kommentar wird gegeben für:</label>
-        <mat-radio-button value="booklet" [disabled]="review && isUnitReview(review)"
+        <mat-radio-button value="booklet" [disabled]="editedReview && isUnitReview"
                           [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
           aktuelles Testheft "{{ bookletname }}"
         </mat-radio-button>
-        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
+        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
                           [matTooltip]="unitAlias"
                           data-cy="comment-diag-currentUnit">
           aktuelle Aufgabe "{{ unitTitle }}"
         </mat-radio-button>
-        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || review && !isUnitReview(review)"
+        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
           <mat-form-field [appearance]="'outline'">
@@ -58,15 +58,15 @@
   </div>
   <div class="action-buttons">
     <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
-            [disabled]="reviewForm.invalid">
-      {{ review ? 'Aktualisieren' : 'Speichern' }}
+            [disabled]="!reviewForm.dirty || reviewForm.invalid">
+      {{ isEditingReview ? 'Aktualisieren' : 'Speichern' }}
     </button>
-    @if (review) {
-      <button mat-button color="warn" (click)="deleteReview()">
+    @if (isEditingReview) {
+      <button mat-button type="button" color="warn" (click)="deleteReview()">
         Kommentar Löschen
       </button>
     }
-    <button mat-button (click)="close.emit()">
+    <button mat-button type="button" (click)="close.emit()">
       Schließen
     </button>
   </div>

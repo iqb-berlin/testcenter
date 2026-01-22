@@ -197,13 +197,14 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   downloadReview() {
     this.bs.downloadReviews()
-      .subscribe((response: Blob) => {
-        if (response.size > 0) {
-          FileService.saveBlobToFile(response, 'reviews.csv');
-        } else {
-          this.ms.show('Keine Daten verfügbar.');
+      .subscribe((response) => {
+          if (response.status === 204 || !response.body) {
+            this.ms.show('Keine Kommentare verfügbar.');
+          } else {
+            FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
+          }
         }
-      });
+      );
   }
 
   ngOnDestroy(): void {

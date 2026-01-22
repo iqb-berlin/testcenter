@@ -83,7 +83,15 @@ export class TestControllerService {
   testlets: { [testletId: string] : Testlet } = {};
   unitAliasMap: { [unitId: string] : number } = {};
 
-  currentUnitSequenceId: number = -Infinity;
+  private _currentUnitSequenceId = -Infinity;
+  readonly currentUnitSequenceId$ = new BehaviorSubject<number>(-Infinity);
+  get currentUnitSequenceId(): number {
+    return this._currentUnitSequenceId;
+  }
+  set currentUnitSequenceId(value: number) {
+    this._currentUnitSequenceId = value;
+    this.currentUnitSequenceId$.next(value);
+  }
   get currentUnit(): Unit | null {
     return this.units[this.currentUnitSequenceId];
   }
@@ -293,7 +301,7 @@ export class TestControllerService {
   reset(): void {
     this.players = {};
 
-    this.currentUnitSequenceId = 0;
+    this.currentUnitSequenceId = -Infinity;
 
     this.booklet = null;
     this.units = {};

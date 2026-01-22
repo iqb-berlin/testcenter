@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.1/definitions/vo_Testtakers.xsd">
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.3-rc/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>Logins für Cypress Test: Test-Controller</Description>
