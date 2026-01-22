@@ -25,7 +25,6 @@
       [forwardAllowed]="navigation.directions.forward"
       [backwardAllowed]="navigation.directions.backward"
       [deprecatedDesign]="tcs.booklet?.config?.controller_design === '2018'"
-      (click)="resetReviewForm()"
     />
   </ng-container>
 
@@ -57,7 +56,7 @@
 </div>
 
 <mat-sidenav-container [class]="{'tc-body': true, 'with-header': tcs.booklet?.config?.unit_screenheader !== 'OFF'}">
-  <mat-sidenav #sidenav mode="over" position="end" opened="false">
+  <mat-sidenav #sidenav mode="over" position="end" opened="false" (openedStart)="reviewComponent?.onOpen()">
     @if (sideNavContent === 'review-form') {
       <tc-review-panel (close)="sidenav.close()"></tc-review-panel>
     } @else {

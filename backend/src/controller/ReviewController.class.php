@@ -8,39 +8,35 @@ use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
-class ReviewController extends Controller
-{
+class ReviewController extends Controller {
 
   public static function getAllReviewsFromPersonExport(Request $request, Response $response): Response {
     $authToken = self::authToken($request);
-    $personId = RequestHelper::getPersonIdFromRequest($request);
+    $personId = $authToken->getId();
     $workspaceId = $authToken->getWorkspaceId();
 
-    $reviewData = self::reviewDAO()->getAllReviewsByPerson($personId);
+    $reviewData = self::reviewDAO()->getReviewsByPerson($personId);
 
     $acceptHeader = $request->getHeaderLine('Accept');
-    $isJson = str_contains($acceptHeader, 'application/json');
-
-    if ($isJson) {
+    if (str_contains($acceptHeader, 'application/json')) {
       // Return as JSON
       $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::JSON);
       $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
       return $response->withJson($transformedData);
-
-    } else {
-      // Return as CSV (default)
-      $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::CSV);
-      $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
-      $csv = ReviewCSVFormatter::generateCsvReportData($transformedData);
-
-      $bookletName = !empty($reviewData) ? $reviewData[0]['bookletname'] : 'reviews';
-      $filename = "reviews-{$bookletName}-" . date('Y-m-d') . ".csv";
-
-      return $response
-        ->withHeader('Content-Type', 'text/csv;charset=UTF-8')
-        ->withHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
-        ->write($csv);
     }
+
+    // Return as CSV (default)
+    $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::CSV);
+    $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
+    $csv = ReviewCSVFormatter::generateCsvReportData($transformedData);
+
+    if ($csv === Report::BOM) {
+      return $response->withStatus(204);
+    }
+
+    return $response
+      ->withHeader('Content-Type', 'text/csv;charset=UTF-8')
+      ->write($csv);
   }
 
 }

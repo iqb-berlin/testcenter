@@ -1,11 +1,16 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { ReviewFormComponent } from './review-form.component';
-import { ReviewListComponent } from './review-list.component';
-import { Review } from '../../interfaces/test-controller.interfaces';
+import {
+  Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild
+} from '@angular/core';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
+import { TestControllerService } from '../../services/test-controller.service';
+import { ReviewFormComponent } from './review-form.component';
+import { ReviewListComponent } from './review-list.component';
+import { Review } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   selector: 'tc-review-panel',
@@ -22,10 +27,11 @@ import { MatTooltip } from '@angular/material/tooltip';
       <h2 data-cy="comment-diag-title">{{ heading }}</h2>
       <span class="example-spacer"></span>
       <span class="spacer"></span>
-      <button matIconButton [matTooltip]="'Zurück zum Kommentar'" [disabled]="activeView === 'form'"
-              (click)="onBack()">
-        <mat-icon>edit</mat-icon>
-      </button>
+      @if (activeView !== 'form') {
+        <button matIconButton [matTooltip]="'Zurück zum Kommentar'" (click)="onBack()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
       <button matIconButton [matTooltip]="'Neuer Kommentar'" (click)="onNew()">
         <mat-icon>add_circle</mat-icon>
       </button>
@@ -35,8 +41,8 @@ import { MatTooltip } from '@angular/material/tooltip';
       </button>
     </mat-toolbar>
 
-    <tc-review-form [hidden]="activeView !== 'form'" [review]="selectedReview"
-                    (showList)="onShowList()" (close)="close.emit()">
+    <tc-review-form [hidden]="activeView !== 'form'"
+                    (delete)="onDeleteReview()" (close)="close.emit()">
     </tc-review-form>
 
     <tc-review-list [hidden]="activeView !== 'list'"
@@ -49,29 +55,46 @@ import { MatTooltip } from '@angular/material/tooltip';
       flex-direction: column;
       height: 100%;
     }
+    .mat-toolbar {
+      flex-shrink: 0;
+    }
     .spacer {
       flex: 1 1 auto;
     }
   `
 })
-export class ReviewPanelComponent {
+export class ReviewPanelComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   @ViewChild(ReviewFormComponent) formComponent!: ReviewFormComponent;
   @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
 
   activeView: 'list' | 'form' = 'form';
-  selectedReview?: Review;
-  heading: string = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+  editingReview: boolean = false;
+  heading: string = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
+  private isUnitDataDirty: boolean = true;
+  private unitChangeSubscription: Subscription | null = null;
 
-  protected onBack() {
-    this.activeView = 'form';
+  constructor(private tcs: TestControllerService) {}
+
+  ngOnInit(): void {
+    this.unitChangeSubscription = this.tcs.currentUnitSequenceId$
+      .pipe(distinctUntilChanged())
+      .subscribe(() => {
+        this.isUnitDataDirty = true;
+        this.close.emit();
+      });
   }
 
-  protected onNew() {
-    this.selectedReview =  undefined;
-    this.formComponent.resetFormData();
-    this.updateHeading();
-    this.activeView = 'form';
+  ngOnDestroy(): void {
+    this.unitChangeSubscription?.unsubscribe();
+  }
+
+  onOpen(): void {
+    if (this.isUnitDataDirty) {
+      this.formComponent.resetFormData();
+      this.listComponent.loadReviews();
+      this.isUnitDataDirty = false;
+    }
   }
 
   protected onShowList() {
@@ -80,22 +103,36 @@ export class ReviewPanelComponent {
     this.updateHeading();
   }
 
-  protected onEditReview(review: Review) {
-    this.formComponent.updateFormData(review);
+  protected onBack() {
     this.activeView = 'form';
-    this.selectedReview = review;
+    this.updateHeading();
+  }
+
+  protected onNew() {
+    this.editingReview = false;
+    this.formComponent.newReview();
+    this.activeView = 'form';
+    this.updateHeading();
+  }
+
+  protected onDeleteReview() {
+    this.editingReview = false;
+    this.onShowList();
+  }
+
+  protected onEditReview(review: Review) {
+    this.formComponent.editReview(review);
+    this.activeView = 'form';
+    this.editingReview = true;
     this.updateHeading();
   }
 
   private updateHeading(): void {
     if (this.activeView === 'form') {
-      this.heading = `Kommentar ${ this.selectedReview ? 'bearbeiten' : 'verfassen'}`;
+      this.heading = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
     } else {
       this.heading = 'Kommentarübersicht';
     }
   }
 
-  resetForm() {
-    this.formComponent.resetFormData();
-  }
 }

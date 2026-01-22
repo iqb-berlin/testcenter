@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { SysCheckInfo, AuthData, AppError } from './app.interfaces';
@@ -54,12 +54,13 @@ export class BackendService {
       .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`);
   }
 
-  downloadReviews(): Observable<Blob> {
+  downloadReviews(): Observable<HttpResponse<Blob>> {
     return this.http.get(`${this.serverUrl}reviews/export`, {
       headers: {
         Accept: 'text/csv'
       },
-      responseType: 'blob'
+      responseType: 'blob',
+      observe: 'response'
     });
   }
 }
