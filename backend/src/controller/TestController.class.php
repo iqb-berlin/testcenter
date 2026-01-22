@@ -283,7 +283,7 @@ class TestController extends Controller {
         'categories' => '',
         'entry' => 'REQUIRED',
         'reviewer' => null,
-        'pagelabel' => null
+        'userAgent' => ''
       ]
     );
 
@@ -296,8 +296,8 @@ class TestController extends Controller {
       $review['categories'],
       $review['entry'],
       $review['reviewer'],
-      $personId,
-      $review['pagelabel']
+      $review['userAgent'],
+      $personId
     );
 
     return $response->withStatus(200);
@@ -318,6 +318,7 @@ class TestController extends Controller {
         'categories' => '',
         'entry' => 'REQUIRED',
         'reviewer' => null,
+        'userAgent' => ''
       ]
     );
 
@@ -331,6 +332,7 @@ class TestController extends Controller {
       $review['categories'],
       $review['entry'],
       $review['reviewer'],
+      $review['userAgent'],
       $personId
     );
 

@@ -21,7 +21,7 @@
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
           <mat-form-field [appearance]="'outline'">
-            <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});" [value]="targetLabel"/>
+            <input matInput formControlName="targetLabel" (click)="reviewForm.patchValue({target: 'task'});"/>
           </mat-form-field>
         </mat-radio-button>
       </mat-radio-group>
@@ -62,11 +62,11 @@
       {{ review ? 'Aktualisieren' : 'Speichern' }}
     </button>
     @if (review) {
-      <button mat-button type="button" color="warn" (click)="deleteReview()">
+      <button mat-button color="warn" (click)="deleteReview()">
         Kommentar Löschen
       </button>
     }
-    <button mat-button type="button" (click)="close.emit()">
+    <button mat-button (click)="close.emit()">
       Schließen
     </button>
   </div>
