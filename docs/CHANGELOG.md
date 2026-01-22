@@ -2,6 +2,7 @@
 layout: default
 ---
 ## 17.5.3-rc
+
 * Review-Modus:
   * Teilaufgaben-Feld wird nicht mehr automatisch befüllt, da diese nicht anhand der aktuellen Seite ablesbar ist.
   * Diverse UX Verbesserungen und kleine Bugfixes in der Bedienung
