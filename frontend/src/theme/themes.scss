@@ -1,9 +1,14 @@
 @use './material-overrides' as material-overrides;
 
+@mixin base-colors {
+  --theme-Gray-05: #f4f2f2;
+}
+
 .zg1-theme {
   --mat-sys-primary: #196175;
   --mat-sys-secondary: #ccdfe5;
 
+  @include base-colors;
   @include material-overrides.overrides;
 }
 
@@ -11,6 +16,7 @@
   --mat-sys-primary: #0B2D84;
   --mat-sys-secondary: #CED5E6;
 
+  @include base-colors;
   @include material-overrides.overrides;
 }
 
@@ -18,5 +24,6 @@
   --mat-sys-primary: #6B369A;
   --mat-sys-secondary: #E1D7EB;
 
+  @include base-colors;
   @include material-overrides.overrides;
 }
