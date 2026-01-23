@@ -60,25 +60,6 @@
   <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
   <tc-alert *ngIf="imageError" level="error" [text]="imageError"></tc-alert>
 
-  <h4>Hintergrundfarbe Anwendung</h4>
-  <mat-form-field appearance="fill">
-    <input matInput formControlName="backgroundBody" placeholder="Farbe" #backgroundInput>
-    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()">
-      <mat-icon>edit</mat-icon>
-    </button>
-  </mat-form-field>
-  <input matInput type="color" hidden #backgroundColorInput
-         formControlName="backgroundBody"
-         (change)="backgroundInput.value = $any($event.target).value">
-
-  <h4>Hintergrundfarbe sekundäre Boxen</h4>
-  <mat-form-field appearance="fill">
-    <input matInput formControlName="backgroundBox" placeholder="Farbe" #backgroundBoxInput>
-    <button mat-icon-button matSuffix (click)="backgroundBoxColorInput.click()">
-      <mat-icon>edit</mat-icon>
-    </button>
-  </mat-form-field>
-
   <h4>Einstellungen für Fehler-Report</h4>
   <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
   <mat-form-field appearance="fill">
@@ -89,11 +70,6 @@
     <mat-label>GitHub-Token</mat-label>
     <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
   </mat-form-field>
-
-
-  <input matInput type="color" hidden #backgroundBoxColorInput
-         formControlName="backgroundBox"
-         (change)="backgroundBoxInput.value = $any($event.target).value">
 
   <button mat-raised-button data-cy="Settings:Submit-ApplicationConfiguration"
           [style.align-self]="'start'"
