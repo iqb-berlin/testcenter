@@ -43,6 +43,7 @@ import { TestModeInterceptor } from './test-mode.interceptor';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HeaderComponent } from './app-root/header/header.component';
+import { FooterComponent } from './app-root/footer/footer.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -78,7 +79,7 @@ import { HeaderComponent } from './app-root/header/header.component';
     AppRoutingModule,
     SharedModule,
     CdkAccordionModule,
-    MatExpansionModule, HeaderComponent], providers: [
+    MatExpansionModule, HeaderComponent, FooterComponent], providers: [
         BackendService,
         MatDialog,
         {
