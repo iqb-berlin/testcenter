@@ -69,8 +69,7 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
 
   activeView: 'list' | 'form' = 'form';
-  editingReview: boolean = false;
-  heading: string = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
+  heading: string = `Kommentar verfassen`;
   private isUnitDataDirty: boolean = true;
   private unitChangeSubscription: Subscription | null = null;
 
@@ -96,7 +95,6 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
       this.formComponent.newReview();
       this.listComponent.loadReviews();
       this.isUnitDataDirty = false;
-      this.editingReview = false;
       this.updateHeading();
     }
   }
@@ -111,26 +109,23 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
   }
 
   protected onNew() {
-    this.editingReview = false;
     this.formComponent.newReview();
     this.updateHeading('form');
   }
 
   protected onDeleteReview() {
-    this.editingReview = false;
     this.onShowList();
   }
 
   protected onEditReview(review: Review) {
     this.formComponent.editReview(review);
-    this.editingReview = true;
     this.updateHeading('form');
   }
 
   private updateHeading(newView?: 'form' | 'list'): void {
     if (newView) { this.activeView = newView; }
     if (this.activeView === 'form') {
-      this.heading = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
+      this.heading = `Kommentar ${this.formComponent.isEditMode ? 'bearbeiten' : 'verfassen'}`;
     } else {
       this.heading = 'Kommentarübersicht';
     }
