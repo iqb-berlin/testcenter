@@ -1,8 +1,3 @@
-<div class="version-label">
-  <span *ngIf="mainDataService.isTestingMode" style="color:red">Testmode!</span>
-  IQB-Testcenter Version {{mainDataService.appConfig?.version}}
-</div>
-
 <div class="flex-row-wrap" [style.justify-content]="'center'" style="gap: 10px; margin-top: 60px;">
   <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
     <mat-card appearance="raised">
@@ -30,62 +25,12 @@
       </mat-card-content>
 
       <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" data-cy="login-user"
+        <button matButton="filled" type="submit" data-cy="login-user"
                 [disabled]="!loginForm.get('name')?.valid">
+          <mat-icon>chevron_right</mat-icon>
           Weiter
         </button>
-        <a [routerLink]="['/r/admin-login']" mat-raised-button color="primary">Admin-Bereich</a>
       </mat-card-actions>
     </mat-card>
   </form>
-
-  <mat-card appearance="outlined" class="status-card">
-    <mat-card-header>
-      <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
-      <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div [innerHTML]="mainDataService.appConfig?.trustedIntroHtml"></div>
-      <tc-status-card></tc-status-card>
-    </mat-card-content>
-
-    <mat-card-actions [style.justify-content]="'space-between'">
-      <a *ngIf="this.mainDataService.sysCheckAvailableForAll"
-         mat-raised-button data-cy="general-sys-check"
-         [routerLink]="['/r/check-starter']">
-        System-Check
-      </a>
-      <a [routerLink]="['/legal-notice']" mat-raised-button>Impressum/Datenschutz</a>
-    </mat-card-actions>
-  </mat-card>
 </div>
-
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="!mainDataService.appConfig">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
-
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="mainDataService.globalWarning">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert level="warning" [text]="mainDataService.globalWarning"></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="unsupportedBrowser.length">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert
-          level="warning"
-          customtext="login_unsupportedBrowser"
-          text="Sie verwenden einen Browser, der nicht offiziell unterstützt wird."
-          [replacements]="unsupportedBrowser"
-      ></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
-
-
