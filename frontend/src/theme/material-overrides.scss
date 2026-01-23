@@ -4,4 +4,7 @@
   @include mat.toolbar-overrides((
     container-background-color: var(--mat-sys-primary)
   ));
+  @include mat.button-overrides((
+    filled-container-shape: 10px
+  ));
 }
