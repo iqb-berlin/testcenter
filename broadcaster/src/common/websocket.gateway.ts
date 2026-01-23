@@ -1,5 +1,5 @@
 import {
-  MessageBody, OnGatewayConnection, OnGatewayDisconnect,
+  MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -13,22 +13,59 @@ import { Logger } from '@nestjs/common';
 import { BroadcastingEvent } from './interfaces';
 
 @WebSocketGateway({ path: '/ws' })
-export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   private readonly logger = new Logger(WebsocketGateway.name);
+  private static readonly MAX_CONNECTIONS = 10000;
+  private static readonly HEARTBEAT_INTERVAL = 30000;
 
   @WebSocketServer()
   private server!: Server; // magically injected
 
-  private clients: { [token: string] : WebSocket } = {};
+  private clients = new Map<string, WebSocket & { isAlive?: boolean }>();
   private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private clientLost$: Subject<string> = new Subject<string>();
+  private heartbeatInterval: NodeJS.Timeout | null = null;
 
-  handleConnection(client: WebSocket, message: IncomingMessage): void {
-    const token = WebsocketGateway.getTokenFromUrl(message.url as string);
+  afterInit(server: Server) {
+    this.startHeartbeat();
+  }
 
-    this.clients[token] = client;
-    this.clientsCount$.next(Object.values(this.clients).length);
-    this.logger.log(`client connected: ${token}`);
+  private startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => {
+      this.clients.forEach((ws, token) => {
+        if (ws.isAlive === false) {
+          this.logger.warn(`Client ${token} inactive, terminating.`);
+          return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping();
+      });
+    }, WebsocketGateway.HEARTBEAT_INTERVAL);
+  }
+
+  handleConnection(client: WebSocket & { isAlive?: boolean }, message: IncomingMessage): void {
+    if (this.clients.size >= WebsocketGateway.MAX_CONNECTIONS) {
+      this.logger.error('Max connections reached. Rejecting client.');
+      client.close(1013, 'Try again later');
+      return;
+    }
+
+    try {
+      const token = WebsocketGateway.getTokenFromUrl(message.url as string);
+
+      client.isAlive = true;
+      client.on('pong', () => {
+        client.isAlive = true;
+      });
+
+      this.clients.set(token, client);
+      this.clientsCount$.next(this.clients.size);
+      this.logger.log(`client connected: ${token}`);
+    } catch (e) {
+      this.logger.error('Connection rejected due to invalid token', e);
+      client.close(1008, 'Invalid token');
+    }
   }
 
   static getTokenFromUrl(url: string): string {
@@ -42,16 +79,17 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   handleDisconnect(client: WebSocket): void {
     let disconnectedToken = '';
-    Object.keys(this.clients).forEach((token: string) => {
-      if (this.clients[token] === client) {
-        delete this.clients[token];
+    for (const [token, ws] of this.clients.entries()) {
+      if (ws === client) {
+        this.clients.delete(token);
         disconnectedToken = token;
+        break;
       }
-    });
+    }
 
     if (disconnectedToken !== '') {
       this.clientLost$.next(disconnectedToken);
-      this.clientsCount$.next(Object.values(this.clients).length);
+      this.clientsCount$.next(this.clients.size);
       this.logger.log(`client disconnected: ${disconnectedToken}`);
     }
   }
@@ -60,25 +98,27 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     const payload = JSON.stringify({ event, data: message });
 
     tokens.forEach((token: string) => {
-      if (typeof this.clients[token] !== 'undefined') {
+      const client = this.clients.get(token);
+      if (client && client.readyState === WebSocket.OPEN) {
         this.logger.log(`sending to client: ${token}`);
-        this.clients[token].send(payload);
+        client.send(payload);
       }
     });
   }
 
   disconnectClient(monitorToken: string): void {
-    if (typeof this.clients[monitorToken] !== 'undefined') {
+    const client = this.clients.get(monitorToken);
+    if (client) {
       this.logger.log(`disconnect client: ${monitorToken}`);
-      this.clients[monitorToken].close();
-      delete this.clients[monitorToken];
+      client.close();
+      this.clients.delete(monitorToken);
     }
   }
 
   disconnectAll(): void {
-    Object.keys(this.clients).forEach((token: string) => {
+    for (const [token, client] of this.clients.entries()) {
       this.disconnectClient(token);
-    });
+    }
   }
 
   getDisconnectionObservable(): Observable<string> {
@@ -86,7 +126,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   getClientTokens(): string[] {
-    return Object.keys(this.clients);
+    return Array.from(this.clients.keys());
   }
 
   @SubscribeMessage('subscribe:client.count')
