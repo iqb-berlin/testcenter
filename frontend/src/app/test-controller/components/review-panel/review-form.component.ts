@@ -108,8 +108,6 @@ export class ReviewFormComponent {
 
   newReview(): void {
     this.resetFormData();
-    this.isEditingReview = false;
-    this.editedReview = undefined;
   }
 
   editReview(review: Review) {
