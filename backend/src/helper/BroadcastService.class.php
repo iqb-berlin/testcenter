@@ -27,6 +27,10 @@ class BroadcastService {
     return BroadcastService::send('push/session-change', json_encode($sessionChange));
   }
 
+  static function sessionChanges(array $sessionChanges): ?string {
+    return BroadcastService::send('push/session-changes', json_encode($sessionChanges));
+  }
+
   static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
     if (!SystemConfig::$broadcaster_url) {
       return null;
