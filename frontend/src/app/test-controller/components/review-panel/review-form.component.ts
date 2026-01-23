@@ -97,17 +97,13 @@ export class ReviewFormComponent {
     });
   }
 
-  resetFormData(): void {
+  newReview(): void {
     this.updateUnitRefs();
     this.isEditingReview = false;
     this.editedReview = undefined;
     this.formDir.reset({
       ...this.REVIEW_FORM_DEFAULTS
     });
-  }
-
-  newReview(): void {
-    this.resetFormData();
   }
 
   editReview(review: Review) {
