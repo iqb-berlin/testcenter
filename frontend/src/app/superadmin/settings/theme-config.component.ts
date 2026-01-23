@@ -14,8 +14,9 @@ import { ThemeService, THEMES, Theme } from '../../shared/services/theme.service
     <mat-radio-group [(ngModel)]="this.themeService.currentTheme" (change)="themeService.setTheme()">
       @for (theme of THEMES; track theme.name) {
         <mat-radio-button [value]="theme.name">
-          {{ theme.name }}
           <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
+          <p class="theme-name">{{ theme.name }}</p>
+          <p class="theme-desc">{{ theme.description }}</p>
         </mat-radio-button>
       }
     </mat-radio-group>
@@ -34,7 +35,13 @@ import { ThemeService, THEMES, Theme } from '../../shared/services/theme.service
       height: 40px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-left: 15px;
+      margin-right: 15px;
+    }
+    .theme-name {
+      font-weight: 600;
+    }
+    .theme-desc {
+      margin-left: 10px;
     }
   `
 })

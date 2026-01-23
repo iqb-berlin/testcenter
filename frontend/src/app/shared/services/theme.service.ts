@@ -14,10 +14,11 @@ export class ThemeService {
 export interface Theme {
   name: string;
   previewColor?: string;
+  description?: string;
 }
 
 export const THEMES: Theme[] = [
-  { name: 'zg1-theme', previewColor: '#196175' },
-  { name: 'zg2-theme', previewColor: '#0B2D84' },
-  { name: 'zg3-theme', previewColor: '#6B369A' }
+  { name: 'zg1-theme', previewColor: '#196175', description: 'Zielgruppe Schüler*innen der Primarstufe' },
+  { name: 'zg2-theme', previewColor: '#0B2D84', description: 'Zielgruppe Schüler*innen der Sekundarstufe I' },
+  { name: 'zg3-theme', previewColor: '#6B369A', description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)' }
 ];
