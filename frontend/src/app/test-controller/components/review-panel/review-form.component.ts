@@ -99,6 +99,8 @@ export class ReviewFormComponent {
 
   resetFormData(): void {
     this.updateUnitRefs();
+    this.isEditingReview = false;
+    this.editedReview = undefined;
     this.formDir.reset({
       ...this.REVIEW_FORM_DEFAULTS
     });

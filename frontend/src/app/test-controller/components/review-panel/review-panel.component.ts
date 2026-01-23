@@ -96,6 +96,8 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
       this.formComponent.resetFormData();
       this.listComponent.loadReviews();
       this.isUnitDataDirty = false;
+      this.editingReview = false;
+      this.updateHeading();
     }
   }
 
