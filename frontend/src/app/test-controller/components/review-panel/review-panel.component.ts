@@ -103,20 +103,17 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
 
   protected onShowList() {
     this.listComponent.loadReviews();
-    this.activeView = 'list';
-    this.updateHeading();
+    this.updateHeading('list');
   }
 
   protected onBack() {
-    this.activeView = 'form';
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
   protected onNew() {
     this.editingReview = false;
     this.formComponent.newReview();
-    this.activeView = 'form';
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
   protected onDeleteReview() {
@@ -126,12 +123,12 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
 
   protected onEditReview(review: Review) {
     this.formComponent.editReview(review);
-    this.activeView = 'form';
     this.editingReview = true;
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
-  private updateHeading(): void {
+  private updateHeading(newView?: 'form' | 'list'): void {
+    if (newView) { this.activeView = newView; }
     if (this.activeView === 'form') {
       this.heading = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
     } else {
