@@ -83,7 +83,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="comment-diag-currentBklt"]')
       .click();
     cy.get('[data-cy="comment-diag-currentUnit"]')
-      .click();
+      .click({ force: true })
     cy.get('[data-cy="comment-diag-priority1"]')
       .contains('dringend')
       .click();
