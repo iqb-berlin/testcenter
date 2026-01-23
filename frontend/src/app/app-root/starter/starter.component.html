@@ -151,15 +151,4 @@
       }
     </mat-card-actions>
   </mat-card>
-
-  <mat-card appearance="outlined">
-    <mat-card-content>
-      <div *ngIf="claims.test && !claims.testGroupMonitor">
-        <p *ngIf="claims.test.length === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
-        <p *ngIf="claims.test.length === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
-        <p *ngIf="claims.test.length > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
-      </div>
-      <tc-status-card data-cy="status-card"></tc-status-card>
-    </mat-card-content>
-  </mat-card>
 </div>

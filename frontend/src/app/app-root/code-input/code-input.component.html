@@ -31,17 +31,4 @@
       </mat-card-actions>
     </mat-card>
   </form>
-
-  <mat-card appearance="outlined" class="status-card">
-    <mat-card-header>
-      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <tc-status-card></tc-status-card>
-    </mat-card-content>
-    <mat-card-actions>
-      <button [routerLink]="['/legal-notice']" mat-raised-button>Impressum/Datenschutz</button>
-    </mat-card-actions>
-  </mat-card>
 </div>
