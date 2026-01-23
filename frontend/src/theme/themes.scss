@@ -1,0 +1,22 @@
+@use './material-overrides' as material-overrides;
+
+.zg1-theme {
+  --mat-sys-primary: #196175;
+  --mat-sys-secondary: #ccdfe5;
+
+  @include material-overrides.overrides;
+}
+
+.zg2-theme {
+  --mat-sys-primary: #0B2D84;
+  --mat-sys-secondary: #CED5E6;
+
+  @include material-overrides.overrides;
+}
+
+.zg3-theme {
+  --mat-sys-primary: #6B369A;
+  --mat-sys-secondary: #E1D7EB;
+
+  @include material-overrides.overrides;
+}

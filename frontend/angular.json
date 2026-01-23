@@ -29,10 +29,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/theme.scss",
-              "src/theme-colors.scss",
-              "src/theme-color-overrides.scss",
-              "src/theme-component-overrides.scss",
+              "src/theme/index.scss",
               "src/styles.css",
               "src/assets/fonts/material-design-icons-3.0.2/material-icons.css",
               "src/assets/fonts/roboto-v29/roboto.css"
@@ -91,10 +88,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/theme.scss",
-              "src/theme-colors.scss",
-              "src/theme-color-overrides.scss",
-              "src/theme-component-overrides.scss",
+              "src/theme/index.scss",
               "src/styles.css",
               "src/assets/fonts/material-design-icons-3.0.2/material-icons.css",
               "src/assets/fonts/roboto-v29/roboto.css"

@@ -1,11 +1,13 @@
 @use '@angular/material' as mat;
-@use './theme-base-colors.scss' as base-colors;
+@use 'base-palettes' as base-palettes;
+
+@use './themes';
 
 html {
   @include mat.theme((
     color: (
-      primary: base-colors.$primary-palette,
-      tertiary: base-colors.$tertiary-palette
+      primary: base-palettes.$primary-palette,
+      tertiary: base-palettes.$tertiary-palette
     ),
     typography: Roboto,
     density: 0,
