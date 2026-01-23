@@ -21,3 +21,7 @@ export interface TestSessionChange {
 export function isSessionChange(arg: any): arg is TestSessionChange {
   return (arg.personId !== undefined) && (arg.timestamp !== undefined) && (arg.groupName !== undefined);
 }
+
+export function isSessionChangeArray(arg: any): arg is TestSessionChange[] {
+  return Array.isArray(arg) && arg.every(isSessionChange);
+}
