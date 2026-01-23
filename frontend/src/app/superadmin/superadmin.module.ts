@@ -39,6 +39,7 @@ import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 import { SharedModule } from '../shared/shared.module';
+import { ThemeConfigComponent } from './settings/theme-config.component';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { SharedModule } from '../shared/shared.module';
     MatDatepickerModule,
     MatDividerModule,
     SharedModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    ThemeConfigComponent
   ],
   exports: [
     SuperadminComponent

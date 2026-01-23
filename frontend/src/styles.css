@@ -1,78 +1,14 @@
-:root {
-  --tc-body-background: gray;
-  --tc-box-background: lightgray;
-  min-height: 100%;
+html, body {
+  height: 100%;
 }
 
 body {
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
   margin: 0;
-  font-family: "Roboto", sans-serif;
-  background: var(--tc-body-background);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.mat-mdc-tooltip {
-  font-size: 100%
-}
-
-.root-body {
-  overflow-x: auto;
-  position: relative;
-  top: 20px;
-  height: calc(100dvh - 20px);
-}
-
-.page-body {
-  overflow-x: auto;
-  position: absolute;
-  width: 100%;
-  top: 70px;
-  bottom: 0;
-}
-
-.page-header {
-  position: absolute;
-  left: 140px;
-  width: calc(100% - 140px);
-  top: 0;
-  padding: 0 10px 0 0;
-}
-
-.page-header mat-toolbar {
-  position: fixed;
-  z-index: 100;
-  top: 4px;
-  right: 90px;
-}
-
-.page-header mat-icon {
-  position: relative;
-  top: -8px;
-  font-size: 36px;
-  padding: 2px;
-}
-
-.page-header p {
-  font-size: 1.5em;
-  color: white;
-}
-
-.spinner {
-  bottom: 0;
-  height: 2em;
-  left: 0;
-  margin: auto;
-  overflow: visible;
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 2em;
-  z-index: 999;
-}
-
-iframe.unitHost { /* has to be global because dynamic created element is not in the scope of the component */
+/* has to be global because dynamic created element is not in the scope of the component */
+iframe.unitHost {
   width: 100%;
   background-color: white;
   border: none;
@@ -97,30 +33,6 @@ iframe.unitHost { /* has to be global because dynamic created element is not in 
 }
 
 .flex-column {
-  display: flex !important;
+  display: flex;
   flex-direction: column;
-}
-
-.flex-fill {
-  flex: 1 1 auto !important;
-}
-
-.table-header {
-  font-size: larger;
-  font-weight: bold;
-}
-
-/* */
-/* Styles that must bridge encapsulation across multiple component-levels, thus cannot be defined within themselves */
-/* */
-
-tc-starter {
-  .mat-expansion-panel-body {
-    padding-left: 0 !important;
-
-    .starter {
-      margin-top: 10px;
-      width: 100%;
-    }
-  }
 }

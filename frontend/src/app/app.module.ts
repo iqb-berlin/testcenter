@@ -30,6 +30,7 @@ import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
+import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { StatusCardComponent } from './app-root/status-card/status-card.component';
@@ -41,12 +42,14 @@ import { StarterComponent } from './app-root/starter/starter.component';
 import { TestModeInterceptor } from './test-mode.interceptor';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { HeaderComponent } from './app-root/header/header.component';
 
 @NgModule({ declarations: [
         AppComponent,
         AppRootComponent,
         SysCheckStarterComponent,
         LoginComponent,
+        AdminLoginComponent,
         CodeInputComponent,
         RouteDispatcherComponent,
         StatusCardComponent,
@@ -54,28 +57,28 @@ import { MatExpansionModule } from '@angular/material/expansion';
         StarterComponent
     ],
     bootstrap: [AppComponent], imports: [ApplicationModule,
-        BrowserModule,
-        BrowserAnimationsModule,
-        MatBadgeModule,
-        MatButtonModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatMenuModule,
-        MatProgressBarModule,
-        MatRadioModule,
-        MatTabsModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        ReactiveFormsModule,
-        RouterModule,
-        AppRoutingModule,
-        SharedModule,
-        CdkAccordionModule,
-        MatExpansionModule], providers: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    RouterModule,
+    AppRoutingModule,
+    SharedModule,
+    CdkAccordionModule,
+    MatExpansionModule, HeaderComponent], providers: [
         BackendService,
         MatDialog,
         {

@@ -11,8 +11,7 @@
         }
         <button
           *ngFor="let workspace of workspaces"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [attr.data-cy]="'workspace-' + workspace.id"
           (click)="buttonGotoWorkspaceAdmin(workspace)"
         >
@@ -28,8 +27,7 @@
         <h4 *ngIf="claims.studyMonitor">Gesamte Studie überwachen</h4>
         <button
           *ngFor="let accessObject of claims.studyMonitor"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [attr.data-cy]="'SM-' + accessObject.id"
           (click)="buttonGotoStudyMonitor(accessObject)"
         >
@@ -43,8 +41,7 @@
         <h4 *ngIf="claims.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_show_monitor' | async }}</h4>
         <button
           *ngFor="let accessObject of claims.testGroupMonitor let i = index"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
           [attr.data-cy]="'GM-' + accessObject.id +'-' + i"
           (click)="buttonGotoMonitor(accessObject)"
@@ -71,8 +68,7 @@
         <h4 *ngIf="claims.attachmentManager && claims.attachmentManager.length">Aufgaben-Anhänge Verwalten</h4>
         <button
           *ngFor="let accessObject of claims.attachmentManager"
-          mat-raised-button color="primary"
-          class="starter"
+          mat-raised-button class="starter"
           (click)="buttonGotoAttachmentManager(accessObject)"
         >
           <div class="starter-title">{{accessObject.label}}</div>
@@ -82,8 +78,7 @@
         <ng-container *ngIf="!claims.testGroupMonitor && claims.test">
           <button
             *ngFor="let b of claims.test"
-             mat-raised-button color="primary"
-             class="starter"
+             mat-raised-button class="starter"
              [disabled]="!!b.flags.locked"
              [attr.aria-label]="'Starte Testheft ' + b.label"
              [attr.data-cy]="'booklet-' + b.id"
@@ -103,14 +98,12 @@
                   {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <button
-                *ngFor="let b of claims.test"
-                mat-raised-button color="primary"
-                class="starter"
-                [disabled]="!!b.flags.locked"
-                [attr.aria-label]="'Starte Testheft ' + b.label"
-                [attr.data-cy]="'booklet-' + b.id"
-                (click)="startTest(b)">
+              <button *ngFor="let b of claims.test"
+                      matButton="elevated" class="starter"
+                      [disabled]="!!b.flags.locked"
+                      [attr.aria-label]="'Starte Testheft ' + b.label"
+                      [attr.data-cy]="'booklet-' + b.id"
+                      (click)="startTest(b)">
                 <div class="starter-title">{{b.label}}</div>
                 <div class="starter-status">
                   {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (claims.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
@@ -124,9 +117,7 @@
           <h4>System-Check</h4>
           <button
             *ngFor="let sc of claims.sysCheck"
-            mat-raised-button
-            class="starter"
-            color="primary"
+            mat-raised-button class="starter"
             [attr.data-cy]="'syscheck-' + sc.id"
             [routerLink]="['/check', sc.workspaceId, sc.id]"
           >
@@ -145,16 +136,16 @@
 
     <mat-card-actions [style.justify-content]="'space-between'">
       @if (isSuperAdmin) {
-        <button mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
+        <button mat-raised-button [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
           Systemverwaltung
         </button>
       }
-      <button mat-raised-button data-cy="change-password" *ngIf="claims.workspaceAdmin" color="primary" (click)="changePassword()">
+      <button mat-raised-button data-cy="change-password" *ngIf="claims.workspaceAdmin" (click)="changePassword()">
         Passwort ändern
       </button>
-      <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
+      <button mat-raised-button data-cy="logout" (click)="resetLogin()">Neu anmelden</button>
       @if (claims.review) {
-        <button mat-raised-button color="secondary" (click)="downloadReview()">
+        <button mat-raised-button (click)="downloadReview()">
           Reviews downloaden
         </button>
       }

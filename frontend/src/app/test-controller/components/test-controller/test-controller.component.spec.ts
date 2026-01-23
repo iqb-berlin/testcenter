@@ -54,7 +54,10 @@ const MockCommandService = {
 const MockMainDataService = {
   progressVisualEnabled: false,
   appWindowHasFocus$,
-  appError$
+  appError$,
+  getAuthData: () => ({
+    displayName: 'testAccountName'
+  })
 };
 
 const MockTestControllerService = {

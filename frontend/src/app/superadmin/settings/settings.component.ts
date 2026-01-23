@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-    template: `
+  template: `
     <div [style.display]="'grid'" [style.grid-template-columns]="'20% 80%'" [style.row-gap.px]="10"
          [style.padding.px]="10">
       <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
@@ -16,8 +16,12 @@ import { Component } from '@angular/core';
       <div [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
         <tc-app-config></tc-app-config>
       </div>
+      <h3 [style.grid-row]="'3 / 4'" [style.grid-column]="'1 / 2'">
+        Theme
+      </h3>
+      <tc-theme-config [style.grid-row]="'3 / 4'" [style.grid-column]="'2 / 3'"></tc-theme-config>
     </div>
   `,
-    standalone: false
+  standalone: false
 })
 export class SettingsComponent {}

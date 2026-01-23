@@ -109,7 +109,6 @@ export class MainDataService {
   ) {
     this.appConfig$.subscribe(appConfig => {
       this.appTitle$.next(appConfig.appTitle);
-      appConfig.applyBackgroundColors();
       this.globalWarning = appConfig.warningMessage;
       const authData = this.getAuthData();
       if (authData) {

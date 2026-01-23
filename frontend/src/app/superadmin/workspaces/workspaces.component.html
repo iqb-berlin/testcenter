@@ -6,7 +6,6 @@
         matTooltip="Arbeitsbereich hinzufügen"
         matTooltipPosition="below"
         data-cy="add-workspace"
-        color="primary"
         (click)="addObject()"
         >
           <mat-icon>add</mat-icon>
@@ -16,7 +15,6 @@
         matTooltip="Markierten Arbeitsbereich löschen"
         matTooltipPosition="below"
         data-cy="delete-workspace"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="deleteObject()"
       >
@@ -27,7 +25,6 @@
         matTooltip="Arbeitsbereich umbenennen"
         matTooltipPosition="below"
         data-cy="rename-workspace"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changeObject()"
       >

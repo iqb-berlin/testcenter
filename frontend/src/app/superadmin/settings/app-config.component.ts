@@ -63,8 +63,6 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       globalWarningText: this.formBuilder.control(''),
       globalWarningExpiredDay: this.formBuilder.control(''),
       globalWarningExpiredHour: this.formBuilder.control(''),
-      backgroundBody: this.formBuilder.control(''),
-      backgroundBox: this.formBuilder.control(''),
       bugReportAuth: this.formBuilder.control(''),
       bugReportTarget: this.formBuilder.control('')
     });
@@ -80,8 +78,6 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         globalWarningText: appConfig.globalWarningText,
         globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
         globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
-        backgroundBody: appConfig.backgroundBody,
-        backgroundBox: appConfig.backgroundBox,
         bugReportAuth: appConfig.bugReportAuth,
         bugReportTarget: appConfig.bugReportTarget
       }, { emitEvent: false });
@@ -108,8 +104,6 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       globalWarningText: this.configForm.get('globalWarningText')?.value,
       globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
-      backgroundBody: this.configForm.get('backgroundBody')?.value,
-      backgroundBox: this.configForm.get('backgroundBox')?.value,
       mainLogo: this.logoImageBase64,
       bugReportTarget: this.configForm.get('bugReportTarget')?.value,
       bugReportAuth: this.configForm.get('bugReportAuth')?.value
@@ -122,7 +116,6 @@ export class AppConfigComponent implements OnInit, OnDestroy {
           return;
         }
         this.mainDataService.appConfig.setAppConfig(appConfig);
-        this.mainDataService.appConfig.applyBackgroundColors();
         this.mainDataService.appTitle$.next(appConfig.appTitle);
         this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
       });

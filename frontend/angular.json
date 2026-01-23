@@ -29,7 +29,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/iqb-theme1.scss",
+              "src/theme/index.scss",
               "src/styles.css",
               "src/assets/fonts/material-design-icons-3.0.2/material-icons.css",
               "src/assets/fonts/roboto-v29/roboto.css"
@@ -88,7 +88,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/iqb-theme1.scss",
+              "src/theme/index.scss",
               "src/styles.css",
               "src/assets/fonts/material-design-icons-3.0.2/material-icons.css",
               "src/assets/fonts/roboto-v29/roboto.css"

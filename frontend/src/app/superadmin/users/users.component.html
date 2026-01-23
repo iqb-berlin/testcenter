@@ -6,7 +6,6 @@
         matTooltip="Administrator:in hinzufügen"
         matTooltipPosition="below"
         data-cy="add-user"
-        color="primary"
         (click)="addObject()"
       >
         <mat-icon>add</mat-icon>
@@ -16,7 +15,6 @@
         matTooltip="Markierte Administrator:in löschen"
         matTooltipPosition="below"
         data-cy="delete-user"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="deleteObject()"
       >
@@ -27,7 +25,6 @@
         data-cy="change-password"
         matTooltip="Kennwort ändern"
         matTooltipPosition="below"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changePassword()"
       >
@@ -38,7 +35,6 @@
         data-cy="change-superadmin"
         matTooltip="Superadmin-Status ändern"
         matTooltipPosition="below"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changeSuperadminStatus()"
       >
@@ -75,7 +71,6 @@
         matTooltipPosition="above"
         [disabled]="!pendingWorkspaceChanges"
         data-cy="save"
-        color="primary"
       >
         <mat-icon>save</mat-icon>
       </button>

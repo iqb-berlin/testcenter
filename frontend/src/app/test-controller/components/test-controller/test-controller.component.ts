@@ -29,6 +29,7 @@ import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
+import { HeaderService } from '../../../core/header.service';
 
 @Component({
     templateUrl: './test-controller.component.html',
@@ -66,6 +67,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private tls: TestLoaderService,
     public dialog: MatDialog,
     private uiVisibilityService: UiVisibilityService,
+    private headerService: HeaderService,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
   }
@@ -128,7 +130,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (!this.isProductionMode) {
         this.debugPane = !!localStorage.getItem('tc-debug');
       }
+      // TODO bugged: for some reason the current unit is not available here.
+      // Needs to be fixed, the code here should be fine.
+      this.headerService.title = this.tcs.currentUnit?.label || undefined;
     });
+
   }
 
   reload() {

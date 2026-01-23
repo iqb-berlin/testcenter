@@ -3,28 +3,8 @@
 }
 
 #iframe-host {
-  position: fixed;
   width: 100%;
-  top: 0;
-  bottom: 0;
-  padding: 0;
-  background-color: white;
-}
-
-.with-header #iframe-host {
-  top: 65px;
-}
-
-.with-title #iframe-host {
-  top: 40px;
-}
-
-.with-header.with-title #iframe-host {
-  top: 105px;
-}
-
-.with-footer #iframe-host {
-  bottom: 46px;
+  height: 100%;
 }
 
 #waiting-room {

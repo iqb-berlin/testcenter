@@ -5,8 +5,6 @@ import customTextsDefaultJSON from '../../../../../definitions/custom-texts.json
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
-  DEFAULT_BACKGROUND_BODY,
-  DEFAULT_BACKGROUND_BOX,
   DEFAULT_LOGO,
   SysConfig
 } from '../interfaces/app-config.interfaces';
@@ -27,8 +25,6 @@ export class AppConfig {
   iqbStandardResponseTypeMax: number = 0;
   mainLogo = DEFAULT_LOGO;
   appTitle = 'IQB-Testcenter';
-  backgroundBody: string = '';
-  backgroundBox: string = '';
   introHtml = '';
   trustedIntroHtml: SafeUrl | null = null;
   legalNoticeHtml = '';
@@ -74,8 +70,6 @@ export class AppConfig {
       this.setCustomTexts({});
       this.setAppConfig({});
     }
-
-    this.applyBackgroundColors();
   }
 
   setCustomTexts(customTexts: KeyValuePairs): void {
@@ -99,8 +93,6 @@ export class AppConfig {
       '<br>Website: www.mustermann.de</p>';
     // TODO does this makes sense
     this.mainLogo = DEFAULT_LOGO;
-    this.backgroundBody = DEFAULT_BACKGROUND_BODY;
-    this.backgroundBox = DEFAULT_BACKGROUND_BOX;
     this.trustedIntroHtml = null;
     this.trustedLegalNoticeHtml = null;
     this.globalWarningText = '';
@@ -111,8 +103,6 @@ export class AppConfig {
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
       if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
-      if (appConfig.backgroundBody) this.backgroundBody = appConfig.backgroundBody;
-      if (appConfig.backgroundBox) this.backgroundBox = appConfig.backgroundBox;
       if (appConfig.introHtml) this.introHtml = appConfig.introHtml;
       if (appConfig.legalNoticeHtml) this.legalNoticeHtml = appConfig.legalNoticeHtml;
       if (appConfig.globalWarningText) this.globalWarningText = appConfig.globalWarningText;
@@ -127,11 +117,6 @@ export class AppConfig {
     this.trustedLegalNoticeHtml = this.sanitizer?.bypassSecurityTrustHtml(this.legalNoticeHtml) ?? '';
   }
 
-  applyBackgroundColors(): void {
-    document.documentElement.style.setProperty('--tc-body-background', this.backgroundBody);
-    document.documentElement.style.setProperty('--tc-box-background', this.backgroundBox);
-  }
-
   static isWarningExpired(warningDay: string, warningHour: string): boolean {
     const calcTimePoint = new Date(warningDay);
     calcTimePoint.setHours(Number(warningHour));
@@ -143,8 +128,6 @@ export class AppConfig {
     return {
       appTitle: this.appTitle,
       mainLogo: this.mainLogo,
-      backgroundBody: this.backgroundBody,
-      backgroundBox: this.backgroundBox,
       introHtml: this.introHtml,
       legalNoticeHtml: this.legalNoticeHtml,
       globalWarningText: this.globalWarningText,
