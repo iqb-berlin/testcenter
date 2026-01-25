@@ -17,10 +17,10 @@ import { AuthAccessType } from '../../app.interfaces';
 import { HeaderService } from '../../core/header.service';
 
 @Component({
-    selector: 'tc-starter',
-    templateUrl: './starter.component.html',
-    styleUrls: ['./starter.component.css'],
-    standalone: false
+  selector: 'tc-starter',
+  templateUrl: './starter.component.html',
+  styleUrls: ['./starter.component.css'],
+  standalone: false
 })
 export class StarterComponent implements OnInit, OnDestroy {
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
@@ -30,6 +30,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
+  availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
@@ -116,6 +117,12 @@ export class StarterComponent implements OnInit, OnDestroy {
         } else if ('test' in this.claims) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
         }
+        this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
+          name: test.label,
+          mode: (test.flags.locked ? 'locked' :
+            (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
+          claim: test
+        }));
       });
     });
     this.headerService.title = 'Übersicht';
@@ -175,10 +182,6 @@ export class StarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
-  resetLogin(): void {
-    this.mds.logOut();
-  }
-
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
     this.bs.getSessionData().subscribe(authData => {
@@ -195,13 +198,13 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   downloadReview() {
     this.bs.downloadReviews()
-      .subscribe((response) => {
-          if (response.status === 204 || !response.body) {
-            this.ms.show('Keine Kommentare verfügbar.');
-          } else {
-            FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
-          }
+      .subscribe(response => {
+        if (response.status === 204 || !response.body) {
+          this.ms.show('Keine Kommentare verfügbar.');
+        } else {
+          FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
         }
+      }
       );
   }
 

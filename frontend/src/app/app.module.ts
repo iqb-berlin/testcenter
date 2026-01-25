@@ -33,7 +33,6 @@ import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { StatusCardComponent } from './app-root/status-card/status-card.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
@@ -44,6 +43,7 @@ import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HeaderComponent } from './app-root/header/header.component';
 import { FooterComponent } from './app-root/footer/footer.component';
+import { TestCardComponent } from './app-root/starter/test-card.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -53,7 +53,6 @@ import { FooterComponent } from './app-root/footer/footer.component';
         AdminLoginComponent,
         CodeInputComponent,
         RouteDispatcherComponent,
-        StatusCardComponent,
         LegalNoticeComponent,
         StarterComponent
     ],
@@ -79,7 +78,7 @@ import { FooterComponent } from './app-root/footer/footer.component';
     AppRoutingModule,
     SharedModule,
     CdkAccordionModule,
-    MatExpansionModule, HeaderComponent, FooterComponent], providers: [
+    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent], providers: [
         BackendService,
         MatDialog,
         {

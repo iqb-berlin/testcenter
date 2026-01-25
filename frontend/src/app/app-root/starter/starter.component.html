@@ -1,154 +1,85 @@
-<div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card appearance="raised">
-    <mat-card-header>
-      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="flex-column" [style.gap.px]="10">
-        @if (claims.workspaceAdmin) {
-          <h4>Studien</h4>
-        }
-        <button
-          *ngFor="let workspace of workspaces"
-          mat-raised-button class="starter"
-          [attr.data-cy]="'workspace-' + workspace.id"
-          (click)="buttonGotoWorkspaceAdmin(workspace)"
-        >
-          {{workspace.label}}
-        </button>
-        <tc-alert
-          *ngIf="claims.workspaceAdmin && !workspaces.length"
-          level="info"
-          text="Aktuell sind keine Studien für Sie freigegeben."
-        >
-        </tc-alert>
+<h2 class="intro">Introtext placeholder</h2>
+<div class="cards">
+  @if (claims.workspaceAdmin) {
+    @for (workspace of workspaces; track workspace.id; let i = $index) {
+      <tc-test-card [name]="workspace.label"
+                    (select)="buttonGotoWorkspaceAdmin(workspace)"></tc-test-card>
+    }
+    @if (!workspaces.length) {
+      <tc-alert level="info" text="Aktuell sind keine Studien für Sie freigegeben."></tc-alert>
+    }
+  }
 
-        <h4 *ngIf="claims.studyMonitor">Gesamte Studie überwachen</h4>
-        <button
-          *ngFor="let accessObject of claims.studyMonitor"
-          mat-raised-button class="starter"
-          [attr.data-cy]="'SM-' + accessObject.id"
-          (click)="buttonGotoStudyMonitor(accessObject)"
-        >
-          <div class="starter-title">{{accessObject.label}}</div>
-          <div class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
-            {{'Studien-Monitor Starten' | customtext: 'gm_selection_text' | async}}
-          </div>
-        </button>
+  @if (claims.studyMonitor) {
+    <h3>Gesamte Studie überwachen</h3>
+    @for (accessObject of claims.studyMonitor; track accessObject.id) {
+      <tc-test-card [name]="accessObject.label" [buttonLabel]="'Studien-Monitor Starten'"
+                    (select)="buttonGotoStudyMonitor(accessObject)">
+      </tc-test-card>
+    }
+  }
 
+  @if (claims.testGroupMonitor) {
+    <h3>Testgruppen-Überwachung</h3>
+    @for (accessObject of claims.testGroupMonitor; track accessObject.id; let i = $index) {
+      <tc-test-card [name]="accessObject.label"
+                    [buttonLabel]="'Gruppen-Monitor Starten'"
+                    [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
+                    (select)="buttonGotoMonitor(accessObject)">
+      </tc-test-card>
+    }
+    <tc-alert *ngIf="claims.testGroupMonitor.length === 0"
+              level="info"
+              text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.">
+    </tc-alert>
+  }
 
-        <h4 *ngIf="claims.testGroupMonitor">{{ 'Testgruppen-Überwachung' | customtext: 'gm_show_monitor' | async }}</h4>
-        <button
-          *ngFor="let accessObject of claims.testGroupMonitor let i = index"
-          mat-raised-button class="starter"
-          [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
-          [attr.data-cy]="'GM-' + accessObject.id +'-' + i"
-          (click)="buttonGotoMonitor(accessObject)"
-        >
-          <div class="starter-title">{{accessObject.label}}</div>
-          <div class="starter-status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
-            {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
-            <ng-container *ngIf="accessObject.flags.subLabel">: {{accessObject.flags.subLabel}}</ng-container>
-          </div>
-          <div class="starter-status" *ngIf="(!!accessObject.flags.expired)">
-            {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired | async}}
-          </div>
-          <div class="starter-status" *ngIf="(!!accessObject.flags.scheduled)">
-            {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled | async}}
-          </div>
-        </button>
-        <tc-alert
-          *ngIf="claims.testGroupMonitor && claims.testGroupMonitor.length === 0"
-          level="info"
-          text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben."
-        >
-        </tc-alert>
+  @if (claims.attachmentManager && claims.attachmentManager.length) {
+    <h4>Aufgaben-Anhänge Verwalten</h4>
+    <button *ngFor="let accessObject of claims.attachmentManager"
+            mat-raised-button class="starter" (click)="buttonGotoAttachmentManager(accessObject)">
+      <div class="starter-title">{{accessObject.label}}</div>
+      <div>Anhänge Verwalten</div>
+    </button>
+  }
 
-        <h4 *ngIf="claims.attachmentManager && claims.attachmentManager.length">Aufgaben-Anhänge Verwalten</h4>
-        <button
-          *ngFor="let accessObject of claims.attachmentManager"
-          mat-raised-button class="starter"
-          (click)="buttonGotoAttachmentManager(accessObject)"
-        >
-          <div class="starter-title">{{accessObject.label}}</div>
-          <div class="starter-status">Anhänge Verwalten</div>
-        </button>
+  @if (claims.test) {
+    @for (booklet of availableBooklets; track booklet.name) {
+      <tc-test-card [name]="booklet.name" [mode]="booklet.mode" (select)="startTest(booklet.claim)"></tc-test-card>
+    }
+  }
 
-        <ng-container *ngIf="!claims.testGroupMonitor && claims.test">
-          <button
-            *ngFor="let b of claims.test"
-             mat-raised-button class="starter"
-             [disabled]="!!b.flags.locked"
-             [attr.aria-label]="'Starte Testheft ' + b.label"
-             [attr.data-cy]="'booklet-' + b.id"
-             (click)="startTest(b)">
-            <div class="starter-title">{{b.label}}</div>
-            <div class="starter-status">
-              {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (claims.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
-            </div>
-          </button>
-        </ng-container>
+  @if (claims.sysCheck) {
+    <h4>System-Check</h4>
+    <button *ngFor="let sc of claims.sysCheck" mat-raised-button class="starter"
+            [attr.data-cy]="'syscheck-' + sc.id" [routerLink]="['/check', sc.workspaceId, sc.id]">
+      <div>{{sc.label}}</div>
+      <div>{{sc.description}}</div>
+    </button>
+  }
+</div>
 
-        <ng-container *ngIf="claims.testGroupMonitor && claims.test">
-          <mat-accordion displayMode="default">
-            <mat-expansion-panel expanded>
-              <mat-expansion-panel-header [collapsedHeight]="'auto'" [expandedHeight]="'auto'">
-                <mat-panel-title>
-                  {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <button *ngFor="let b of claims.test"
-                      matButton="elevated" class="starter"
-                      [disabled]="!!b.flags.locked"
-                      [attr.aria-label]="'Starte Testheft ' + b.label"
-                      [attr.data-cy]="'booklet-' + b.id"
-                      (click)="startTest(b)">
-                <div class="starter-title">{{b.label}}</div>
-                <div class="starter-status">
-                  {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (claims.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
-                </div>
-              </button>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </ng-container>
+@if ((claims.test && !claims.test.length) || !(claims | keyvalue).length) {
+  <tc-alert level="info" customtext="login_noBookletsAvailable"
+            text="Für diese Anmeldung wurde kein Test gefunden.">
+  </tc-alert>
+}
 
-        <ng-container *ngIf="claims.sysCheck">
-          <h4>System-Check</h4>
-          <button
-            *ngFor="let sc of claims.sysCheck"
-            mat-raised-button class="starter"
-            [attr.data-cy]="'syscheck-' + sc.id"
-            [routerLink]="['/check', sc.workspaceId, sc.id]"
-          >
-            <div class="starter-title">{{sc.label}}</div>
-            <div class="starter-status">{{sc.description}}</div>          </button>
-        </ng-container>
-      </div>
-
-      <tc-alert
-        *ngIf="(claims.test && !claims.test.length) || !(claims | keyvalue).length"
-        level="info"
-        customtext="login_noBookletsAvailable"
-        text="Für diese Anmeldung wurde kein Test gefunden."
-      ></tc-alert>
-    </mat-card-content>
-
-    <mat-card-actions [style.justify-content]="'space-between'">
-      @if (isSuperAdmin) {
-        <button mat-raised-button [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
-          Systemverwaltung
-        </button>
-      }
-      <button mat-raised-button data-cy="change-password" *ngIf="claims.workspaceAdmin" (click)="changePassword()">
+<div class="button-box">
+    @if (isSuperAdmin) {
+      <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
+        Systemverwaltung
+      </button>
+    }
+    @if (claims.workspaceAdmin) {
+      <button matButton="tonal" data-cy="change-password" (click)="changePassword()">
         Passwort ändern
       </button>
-      <button mat-raised-button data-cy="logout" (click)="resetLogin()">Neu anmelden</button>
-      @if (claims.review) {
-        <button mat-raised-button (click)="downloadReview()">
-          Reviews downloaden
-        </button>
-      }
-    </mat-card-actions>
-  </mat-card>
+    }
+    <button matButton="tonal" data-cy="logout" (click)="mds.logOut()">Neu anmelden</button>
+    @if (claims.review) {
+      <button matButton="tonal" (click)="downloadReview()">
+        Reviews downloaden
+      </button>
+    }
 </div>

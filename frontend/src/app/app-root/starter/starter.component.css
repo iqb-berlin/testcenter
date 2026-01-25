@@ -1,53 +1,25 @@
-div.starter-title {
-  font-size: 16pt;
-  text-align: center;
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 130%;
-}
-
-div.starter-status {
-  font-size: 8pt;
-  margin-top: 0;
-  color: mediumturquoise;
-  text-align: center;
-}
-
-.mat-mdc-card {
-  width: 400px;
-}
-
-.mat-mdc-raised-button.starter {
-  padding: 1em;
-  height: auto;
+:host {
+  flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.intro {
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 24px;
 }
 
-h4 {
-  margin-bottom: 0.2em;
-}
-
-mat-accordion {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-mat-expansion-panel:not([class*="mat-elevation-z"]) {
-  box-shadow: none;
-}
-
-mat-expansion-panel-header {
-  padding-left: 0;
-}
-
-mat-panel-title {
-  font-size: initial;
-  font-weight: 700;
-}
-
-mat-expansion-panel button {
-  margin-top: 10px;
-  width: 100%;
+.button-box {
+  margin-top: auto;
+  align-self: end;
+  display: flex;
+  gap: 9px;
+  padding: 20px;
 }
