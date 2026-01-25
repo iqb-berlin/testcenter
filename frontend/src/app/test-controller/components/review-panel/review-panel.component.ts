@@ -69,8 +69,7 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewListComponent) listComponent!: ReviewListComponent;
 
   activeView: 'list' | 'form' = 'form';
-  editingReview: boolean = false;
-  heading: string = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
+  heading: string = `Kommentar verfassen`;
   private isUnitDataDirty: boolean = true;
   private unitChangeSubscription: Subscription | null = null;
 
@@ -93,45 +92,40 @@ export class ReviewPanelComponent implements OnInit, OnDestroy {
 
   onOpen(): void {
     if (this.isUnitDataDirty) {
-      this.formComponent.resetFormData();
+      this.formComponent.newReview();
       this.listComponent.loadReviews();
       this.isUnitDataDirty = false;
+      this.updateHeading();
     }
   }
 
   protected onShowList() {
     this.listComponent.loadReviews();
-    this.activeView = 'list';
-    this.updateHeading();
+    this.updateHeading('list');
   }
 
   protected onBack() {
-    this.activeView = 'form';
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
   protected onNew() {
-    this.editingReview = false;
     this.formComponent.newReview();
-    this.activeView = 'form';
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
   protected onDeleteReview() {
-    this.editingReview = false;
     this.onShowList();
   }
 
   protected onEditReview(review: Review) {
     this.formComponent.editReview(review);
-    this.activeView = 'form';
-    this.editingReview = true;
-    this.updateHeading();
+    this.updateHeading('form');
   }
 
-  private updateHeading(): void {
+  private updateHeading(newView?: 'form' | 'list'): void {
+    if (newView) { this.activeView = newView; }
     if (this.activeView === 'form') {
-      this.heading = `Kommentar ${this.editingReview ? 'bearbeiten' : 'verfassen'}`;
+      this.heading = `Kommentar ${this.formComponent.isEditMode ? 'bearbeiten' : 'verfassen'}`;
     } else {
       this.heading = 'Kommentarübersicht';
     }

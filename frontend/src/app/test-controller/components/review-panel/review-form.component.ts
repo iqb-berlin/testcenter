@@ -41,11 +41,10 @@ export class ReviewFormComponent {
   @ViewChild(FormGroupDirective) private formDir!: FormGroupDirective;
 
   reviewForm: FormGroup;
-  isEditingReview = false;
+  isEditMode = false;
   editedReview?: Review;
-  isUnitReview?: boolean;
+  isUnitTarget?: boolean;
 
-  accountName: string;
   bookletname?: string;
   unitTitle?: string;
   unitAlias?: string;
@@ -64,7 +63,6 @@ export class ReviewFormComponent {
     if (!authData) {
       throw new AppError({ description: '', label: 'Nicht Angemeldet!' }); // TODO necessary?!
     }
-    this.accountName = authData.displayName;
     this.bookletname = this.tcs.booklet?.metadata.label;
     this.updateUnitRefs();
     this.reviewForm = new FormGroup({
@@ -97,23 +95,19 @@ export class ReviewFormComponent {
     });
   }
 
-  resetFormData(): void {
+  newReview(): void {
     this.updateUnitRefs();
+    this.isEditMode = false;
+    this.editedReview = undefined;
     this.formDir.reset({
       ...this.REVIEW_FORM_DEFAULTS
     });
   }
 
-  newReview(): void {
-    this.resetFormData();
-    this.isEditingReview = false;
-    this.editedReview = undefined;
-  }
-
   editReview(review: Review) {
     this.updateFormData(review);
-    this.isEditingReview = true;
-    this.isUnitReview = isUnitReview(review);
+    this.isEditMode = true;
+    this.isUnitTarget = isUnitReview(review);
     this.editedReview = review;
   }
 

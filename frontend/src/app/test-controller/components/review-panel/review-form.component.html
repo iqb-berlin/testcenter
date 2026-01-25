@@ -8,16 +8,16 @@
     <div>
       <mat-radio-group formControlName="target">
         <label>Der Kommentar wird gegeben für:</label>
-        <mat-radio-button value="booklet" [disabled]="editedReview && isUnitReview"
+        <mat-radio-button value="booklet" [disabled]="editedReview && isUnitTarget"
                           [matTooltip]="bookletname" data-cy="comment-diag-currentBklt">
           aktuelles Testheft "{{ bookletname }}"
         </mat-radio-button>
-        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
+        <mat-radio-button value="unit" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitTarget"
                           [matTooltip]="unitAlias"
                           data-cy="comment-diag-currentUnit">
           aktuelle Aufgabe "{{ unitTitle }}"
         </mat-radio-button>
-        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitReview"
+        <mat-radio-button value="task" [disabled]="(unitAlias?.length === 0) || editedReview && !isUnitTarget"
                           data-cy="comment-diag-currentPage">
           folgende Teilaufgabe:
           <mat-form-field [appearance]="'outline'">
@@ -59,9 +59,9 @@
   <div class="action-buttons">
     <button mat-raised-button type="submit" color="primary" class="save-button" data-cy="comment-diag-submit"
             [disabled]="!reviewForm.dirty || reviewForm.invalid">
-      {{ isEditingReview ? 'Aktualisieren' : 'Speichern' }}
+      {{ isEditMode ? 'Aktualisieren' : 'Speichern' }}
     </button>
-    @if (isEditingReview) {
+    @if (isEditMode) {
       <button mat-button type="button" color="warn" (click)="deleteReview()">
         Kommentar Löschen
       </button>

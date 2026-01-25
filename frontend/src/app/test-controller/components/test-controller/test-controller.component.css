@@ -37,11 +37,6 @@ h1 {
   color: white;
 }
 
-mat-sidenav {
-  width: 700px;
-}
-
-
 .sidebar {
   min-width: 200px;
   /*width: 500px;*/
