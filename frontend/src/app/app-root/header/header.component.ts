@@ -1,13 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle
+} from '@angular/material/card';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { HeaderService } from '../../core/header.service';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
-import { OverlayModule } from '@angular/cdk/overlay';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 
 @Component({
   selector: 'tc-header',
@@ -28,9 +30,9 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
   template: `
     <mat-toolbar>
       <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div>
+      <div class="logo">
         @if (headerService.showLogo) {
-          <a class="logo" [routerLink]="['/r']" aria-label="Gehe zur Startseite">
+          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
             <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
                  matTooltip="Zur Startseite"/>
           </a>
@@ -41,7 +43,7 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
           <h1>{{ headerService.title }}</h1>
         }
       </div>
-      <div>
+      <div class="icons">
         @if (headerService.showAccountPanel) {
           <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
                   (click)="isOpen = !isOpen">
@@ -81,9 +83,19 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } 
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      --outer-element-width: 8%;
+    }
+    .logo {
+      height: 100%;
+      width: var(--outer-element-width);
     }
     .logo img {
-      width: 100px;
+      height: 100%;
+    }
+    .icons {
+      width: var(--outer-element-width);
+      display: flex;
+      justify-content: end;
     }
     .overlay {
       background-color: lightgray;
