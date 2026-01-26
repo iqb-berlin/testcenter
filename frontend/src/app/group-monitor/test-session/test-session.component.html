@@ -130,6 +130,7 @@
         <ng-container *ngIf="testSession | testletvisible: testletOrUnit">
           {{ '' // the borders around the testlets }}
           <span
+            data-cy="gm-testlet-select"
             [class]="{
               testlet: true,
               selected: isSelectionTheSameBlockAsParentSelection(testletOrUnit) && checked && testletOrUnit.blockId && recursionLevel === 0,
