@@ -8,10 +8,7 @@ import { BackendService } from '../../backend.service';
 
 @Component({
   templateUrl: './login.component.html',
-  styles: [
-    '.mat-mdc-form-field {display: block}',
-    '.mat-mdc-card {width: 400px;}'
-  ],
+  styleUrl: 'login.component.css',
   standalone: false
 })
 

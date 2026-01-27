@@ -1,36 +1,67 @@
-<div class="flex-row-wrap" [style.justify-content]="'center'" style="gap: 10px; margin-top: 60px;">
-  <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
-    <mat-card appearance="raised">
-      <mat-card-header>
-        <mat-card-title>Anmelden</mat-card-title>
-      </mat-card-header>
-      <mat-card-content *ngIf="mainDataService.appConfig">
-        <mat-form-field appearance="outline">
-          <mat-label>Anmeldename</mat-label>
-          <input matInput formControlName="name" autocapitalize="off">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Kennwort</mat-label>
-          <input matInput #pw formControlName="pw"
-                 [type]="showPassword ? 'text' : 'password'"
-                 (keyup)="clearWarning(); checkCapsLock($event)">
-          <button mat-icon-button matSuffix type="button"
-                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
-                  (click)="showPassword = !showPassword">
-            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
-          </button>
-        </mat-form-field>
-        <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
-                  [level]="problemLevel" [text]="problemText"></tc-alert>
-      </mat-card-content>
+<div class="login-page">
+  <div class ="welcome-part">
+    <img src="assets/example_laptop_splash.png">
+    <h1>Willkommen im IQB-Testcenter</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+      dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+      ut aliquip ex ea commodo consequat.</p>
+  </div>
+  <div class="login-part">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
+      <mat-card appearance="raised">
+        <mat-card-header>
+          <mat-card-title>Anmelden</mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngIf="mainDataService.appConfig">
+          <mat-form-field appearance="outline">
+            <mat-label>Anmeldename</mat-label>
+            <input matInput formControlName="name" autocapitalize="off">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Kennwort</mat-label>
+            <input matInput #pw formControlName="pw"
+                   [type]="showPassword ? 'text' : 'password'"
+                   (keyup)="clearWarning(); checkCapsLock($event)">
+            <button mat-icon-button matSuffix type="button"
+                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
+                    (click)="showPassword = !showPassword">
+              <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+            </button>
+          </mat-form-field>
+          <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
+                    [level]="problemLevel" [text]="problemText"></tc-alert>
+        </mat-card-content>
 
-      <mat-card-actions [style.justify-content]="'space-between'">
-        <button matButton="filled" type="submit" data-cy="login-user"
-                [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon>chevron_right</mat-icon>
-          Weiter
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </form>
+        <mat-card-actions [style.justify-content]="'space-between'">
+          <button matButton="filled" type="submit" data-cy="login-user"
+                  [disabled]="!loginForm.get('name')?.valid">
+            <mat-icon>chevron_right</mat-icon>
+            Weiter
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+
+    <div class="help-box">
+      <div class="question-mark">
+        <h1>?</h1>
+      </div>
+      <div class="description">
+        <h2>Sie benötigen Hilfe?</h2>
+        <p>Hier gelangen Sie zur Schritt-für-Schritt-Anleitung</p>
+      </div>
+    </div>
+
+    <div class="button-box">
+      @if (this.mainDataService.sysCheckAvailableForAll) {
+        <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
+          Systemcheck
+        </a>
+      }
+      <a [routerLink]="['/r/admin-login']" mat-raised-button color="primary" data-cy="general-sys-check">
+        Adminbereich
+      </a>
+    </div>
+  </div>
+
 </div>
