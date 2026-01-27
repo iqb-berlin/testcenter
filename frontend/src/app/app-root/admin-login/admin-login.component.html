@@ -42,22 +42,3 @@
     </a>
   </div>
 </div>
-
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="!mainDataService.appConfig">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
-
-<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="mainDataService.globalWarning">
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-content>
-      <tc-alert level="warning" [text]="mainDataService.globalWarning"></tc-alert>
-    </mat-card-content>
-  </mat-card>
-</div>
-
-
-
