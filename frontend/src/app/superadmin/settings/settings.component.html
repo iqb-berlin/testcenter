@@ -1,114 +1,126 @@
-<div [style.display]="'grid'" [style.grid-template-columns]="'20% 80%'" [style.row-gap.px]="10"
-     [style.padding.px]="10">
+<div class="form-grid">
   <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
     Text-Ersetzungen
   </h3>
   <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
     <tc-custom-texts></tc-custom-texts>
   </div>
+</div>
+
+<form [formGroup]="configForm" class="form-grid">
+  <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
+    Warnung auf der Startseite
+  </h3>
+  <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
+    <mat-form-field appearance="fill">
+      <mat-label>Text</mat-label>
+      <textarea matInput formControlName="globalWarningText"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="1"></textarea>
+    </mat-form-field>
+    <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
+      <p>Zeige Warnung bis</p>
+      <mat-form-field>
+        <mat-label>Datum</mat-label>
+        <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Uhrzeit" formControlName="globalWarningExpiredHour">
+          @for (m of expiredHours | keyvalue; track m.key) {
+            <mat-option [value]="m.key">
+              {{m.value}}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (warningIsExpired) {
+        <p [style.color]="'darkgoldenrod'">Zeitpunkt ist in der Vergangenheit.</p>
+      }
+    </div>
+  </div>
 
   <h3 [style.grid-row]="'2 / 3'" [style.grid-column]="'1 / 2'">
-    Konfiguration der Anwendung
+    Name der Anwendung
   </h3>
-  <div [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
-    <form [formGroup]="configForm" class="flex-column">
-      <h4>Warnung auf der Startseite</h4>
-      <div>
-        <mat-form-field appearance="fill">
-          <mat-label>Text</mat-label>
-          <textarea matInput formControlName="globalWarningText"
-                    cdkTextareaAutosize
-                    cdkAutosizeMinRows="1"></textarea>
-        </mat-form-field>
-        <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
-          <p>Zeige Warnung bis</p>
-          <mat-form-field>
-            <mat-label>Datum</mat-label>
-            <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-select placeholder="Uhrzeit" formControlName="globalWarningExpiredHour">
-              @for (m of expiredHours | keyvalue; track m.key) {
-                <mat-option [value]="m.key">
-                  {{m.value}}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          @if (warningIsExpired) {
-            <p [style.color]="'darkgoldenrod'">Zeitpunkt ist in der Vergangenheit.</p>
-          }
-        </div>
-      </div>
+  <mat-form-field appearance="fill" [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
+    <input matInput formControlName="appTitle" placeholder="Name">
+  </mat-form-field>
 
-      <h4>Name der Anwendung</h4>
-      <mat-form-field appearance="fill">
-        <input matInput formControlName="appTitle" placeholder="Name">
-      </mat-form-field>
+  <h3 [style.grid-row]="'3 / 4'" [style.grid-column]="'1 / 2'">
+    Startseite
+  </h3>
+  <mat-form-field [style.grid-row]="'3 / 4'" [style.grid-column]="'2 / 3'"
+                  appearance="fill">
+        <textarea matInput formControlName="introHtml"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="6"></textarea>
+  </mat-form-field>
 
-      <h4>Html-Inhalt für die Startseite rechts</h4>
-      <mat-form-field appearance="fill">
-            <textarea matInput formControlName="introHtml"
-                      cdkTextareaAutosize
-                      cdkAutosizeMinRows="6"></textarea>
-      </mat-form-field>
+  <h3 [style.grid-row]="'4 / 5'" [style.grid-column]="'1 / 2'">
+    Impressum
+  </h3>
+  <mat-form-field appearance="fill" [style.grid-row]="'4 / 5'" [style.grid-column]="'2 / 3'">
+        <textarea matInput formControlName="legalNoticeHtml"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="6"></textarea>
+  </mat-form-field>
 
-      <h4>Html-Inhalt für die Impressum-/Datenschutzseite</h4>
-      <mat-form-field appearance="fill">
-            <textarea matInput formControlName="legalNoticeHtml"
-                      cdkTextareaAutosize
-                      cdkAutosizeMinRows="6"></textarea>
-      </mat-form-field>
-
-      <h4>Logo</h4>
-      <div class="flex-row" [style.gap.px]="5">
-        <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
-                (click)="hiddenimgfileinput.click()">
-          <mat-icon>cloud_upload</mat-icon>
-        </button>
-        <button mat-mini-fab matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
-                (click)="removeLogoImg()">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-      <img class="logo-img" [src]="logoImageBase64" />
-      <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
-      @if (imageError){
-        <tc-alert level="error" [text]="imageError"></tc-alert>
-      }
-
-      <h4>Einstellungen für Fehler-Report</h4>
-      <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Ziel-Repository</mat-label>
-        <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label>GitHub-Token</mat-label>
-        <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
-      </mat-form-field>
-
-      <mat-radio-group class="theme-config" formControlName="themeName">
-        @for (theme of THEMES; track theme.name) {
-          <mat-radio-button [value]="theme.name">
-            <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
-            <p class="theme-name">{{ theme.name }}</p>
-            <p class="theme-desc">{{ theme.description }}</p>
-          </mat-radio-button>
-        }
-      </mat-radio-group>
-
-      <div class="actions" [class.sticky-actions]="configForm.dirty">
-        <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
-                [disabled]="!configForm.dirty" (click)="saveData()">
-          Speichern
-        </button>
-        <button matFab extended [disabled]="!configForm.dirty" (click)="resetForm()">
-          Zurücksetzen
-        </button>
-      </div>
-    </form>
+  <h3 [style.grid-row]="'5 / 6'" [style.grid-column]="'1 / 2'">
+    Fehler-Report
+  </h3>
+  <div [style.grid-row]="'5 / 6'" [style.grid-column]="'2 / 3'">
+    <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
+    <mat-form-field appearance="fill">
+      <mat-label>Ziel-Repository</mat-label>
+      <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>GitHub-Token</mat-label>
+      <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
+    </mat-form-field>
   </div>
-</div>
+
+  <h3 [style.grid-row]="'6 / 7'" [style.grid-column]="'1 / 2'">
+    Theming
+  </h3>
+  <div [style.grid-row]="'6 / 7'" [style.grid-column]="'2 / 3'">
+    <h4>Theme</h4>
+    <mat-radio-group class="theme-config" formControlName="themeName">
+      @for (theme of THEMES; track theme.name) {
+        <mat-radio-button [value]="theme.name">
+          <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
+          <p class="theme-name">{{ theme.name }}</p>
+          <p class="theme-desc">{{ theme.description }}</p>
+        </mat-radio-button>
+      }
+    </mat-radio-group>
+    <h4>Logo</h4>
+    <div class="flex-row" [style.gap.px]="5">
+      <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
+              (click)="hiddenimgfileinput.click()">
+        <mat-icon>cloud_upload</mat-icon>
+      </button>
+      <button mat-mini-fab matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
+              (click)="removeLogoImg()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <img class="logo-img" [src]="logoImageBase64" />
+    <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
+    @if (imageError){
+      <tc-alert level="error" [text]="imageError"></tc-alert>
+    }
+  </div>
+
+  <div class="actions" [class.sticky-actions]="configForm.dirty">
+    <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
+            [disabled]="!configForm.dirty" (click)="saveData()">
+      Speichern
+    </button>
+    <button matFab extended [disabled]="!configForm.dirty" (click)="resetForm()">
+      Zurücksetzen
+    </button>
+  </div>
+</form>

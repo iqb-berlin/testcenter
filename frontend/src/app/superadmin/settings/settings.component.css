@@ -1,3 +1,10 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: 18% 80%;
+  row-gap: 10px;
+  padding: 10px;
+}
+
 .logo-img {
   width: 100px;
   margin: 20px;
