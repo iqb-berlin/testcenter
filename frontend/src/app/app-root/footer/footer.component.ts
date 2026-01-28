@@ -13,7 +13,6 @@ import { Router, RouterLink } from '@angular/router';
   ],
   template: `
     <footer>
-      footer works!
       <div class="version-label">
         <span *ngIf="mainDataService.isTestingMode" style="color:red">Testmode!</span>
         IQB-Testcenter Version {{mainDataService.appConfig?.version}}
@@ -35,6 +34,9 @@ import { Router, RouterLink } from '@angular/router';
       background: var(--theme-Gray-05, #F4F2F2);
       display: flex;
       flex-direction: row;
+    }
+    footer button {
+      max-height: 100%;
     }
   `
 })
