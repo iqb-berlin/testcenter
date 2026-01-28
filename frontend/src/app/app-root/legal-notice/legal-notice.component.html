@@ -1,31 +1,3 @@
-<div>
-  <div class="flex-row" [style.justify-content]="'center'">
-    <mat-card appearance="raised">
-      <mat-card-header>
-        <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-        <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
-      </mat-card-header>
+<h2>Rechtliches</h2>
+<div class="body-text" [innerHTML]="mds.appConfig?.trustedLegalNoticeHtml"></div>
 
-      <mat-card-content>
-        <div [innerHTML]="mds.appConfig?.trustedLegalNoticeHtml"></div>
-        <b>Angaben zu dieser Web-Anwendung:</b>
-        <ul>
-          <li>Version {{mds.appConfig?.version}}</li>
-          <li>
-            Verona Player Interface: Versionen {{mds.appConfig?.veronaPlayerApiVersionMin}}
-            bis {{mds.appConfig?.veronaPlayerApiVersionMax}} unterstützt
-          </li>
-          <li *ngIf="!isProductionMode">Build-Modus: Entwicklung</li>
-          <li>Live-Modus aktiviert: {{translations[mds.sysStatus.broadcastingService]}}</li>
-          <li>Schnelles Dateiladen: {{translations[mds.sysStatus.fileService]}}</li>
-          <li>Dateicache: {{translations[mds.sysStatus.cacheService]}}</li>
-        </ul>
-      </mat-card-content>
-      <mat-card-actions>
-        <button [routerLink]="['/']" mat-raised-button>
-          <mat-icon>arrow_back</mat-icon> zurück zur Startseite
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-</div>

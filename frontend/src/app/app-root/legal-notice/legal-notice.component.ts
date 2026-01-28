@@ -1,31 +1,28 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../../shared/shared.module';
-import { ServiceStatus } from '../../shared/interfaces/service-status.interfaces';
+import { HeaderService } from '../../core/header.service';
 
 @Component({
-    templateUrl: './legal-notice.component.html',
-    styles: [
-        'mat-card { width: 500px; }',
-        'ul { margin-top: 0; }'
-    ],
-    standalone: false
+  templateUrl: './legal-notice.component.html',
+  styles: `
+    :host {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .body-text {
+      font-size: larger;
+    }
+  `,
+  standalone: false
 })
 export class LegalNoticeComponent implements OnInit {
-  readonly translations: { [status in ServiceStatus]: string } = {
-    on: 'An',
-    off: 'Aus',
-    unreachable: 'Nicht erreichbar',
-    unknown: 'Unbekannt'
-  };
-
-  constructor(
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
-    @Inject('BACKEND_URL') public backendUrl: string,
-    public mds: MainDataService
-  ) { }
+  constructor(public mds: MainDataService, private headerService: HeaderService) { }
 
   ngOnInit(): void {
     setTimeout(() => this.mds.appSubTitle$.next('Impressum/Datenschutz'));
     this.mds.refreshSysStatus();
+    this.headerService.title = 'Impressum';
   }
 }
