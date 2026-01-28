@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { CustomtextService, MainDataService, UserAgentService } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
+import { ThemeService } from './shared/services/theme.service';
 
 @Component({
     selector: 'tc-root',
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private backendService: BackendService,
     private customtextService: CustomtextService,
     private titleService: Title,
+    private themeService: ThemeService,
     private sanitizer: DomSanitizer,
     private route: ActivatedRoute) { }
 
@@ -68,6 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.backendService.getSysConfig()
         .subscribe(sysConfig => {
           this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
+          this.themeService.setTheme(sysConfig.appConfig.themeName);
         });
 
       // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.

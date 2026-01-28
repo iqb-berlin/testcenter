@@ -1,20 +1,36 @@
 import {
   Component, Input, Output, OnDestroy, OnInit, EventEmitter
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { MatFormField, MatInput } from '@angular/material/input';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatDivider } from '@angular/material/list';
 
 @Component({
-    selector: 'tc-custom-text',
-    template: `
-    <div class="flex-row"  [style.align-items]="'center'" [style.margin-bottom.px]="10">
+  selector: 'tc-custom-text',
+  imports: [
+    MatFormField,
+    MatInput,
+    CdkTextareaAutosize,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatDivider
+  ],
+  template: `
+    <div class="flex-row" [style.align-items]="'center'" [style.margin-bottom.px]="10">
       <div class="flex-column" [style.width.%]="40">
-        <p>{{ctLabel}}</p>
-        <em [style.font-size]="'smaller'">({{ctKey}})</em>
+        <p>{{ ctLabel }}</p>
+        <em [style.font-size]="'smaller'">({{ ctKey }})</em>
       </div>
       <mat-form-field [style.width.%]="50">
-        <textarea matInput cdkTextareaAutosize [formControl]="inputControl">
-        </textarea>
+      <textarea matInput cdkTextareaAutosize [formControl]="inputControl">
+      </textarea>
       </mat-form-field>
       <button mat-icon-button matTooltip="Auf Standard setzen"
               [style.width.%]="10"
@@ -24,8 +40,7 @@ import { Subscription } from 'rxjs';
       </button>
     </div>
     <mat-divider></mat-divider>
-    `,
-    standalone: false
+  `
 })
 
 export class EditCustomTextComponent implements OnInit, OnDestroy {

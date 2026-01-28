@@ -1,11 +1,19 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomtextService, MainDataService, customTextDefaults } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { EditCustomTextComponent } from './edit-custom-text.component';
 import { AppError, KeyValuePairs } from '../../app.interfaces';
 import { AppConfig } from '../../shared/classes/app.config';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from '@angular/material/expansion';
+import { MatButton } from '@angular/material/button';
+import { KeyValuePipe } from '@angular/common';
 
 export interface CustomTextData {
   key: string,
@@ -20,32 +28,44 @@ export interface CustomTextDataGroup {
 }
 
 @Component({
-    selector: 'tc-custom-texts',
-    template: `
+  selector: 'tc-custom-texts',
+  imports: [
+    ReactiveFormsModule,
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    EditCustomTextComponent,
+    MatButton,
+    KeyValuePipe
+  ],
+  template: `
     <form [formGroup]="customTextsForm">
       <mat-accordion>
-        <mat-expansion-panel *ngFor="let ctGroup of customTextGroups | keyvalue">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <h4>{{ctGroup.value.label}}</h4>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <tc-custom-text *ngFor="let ct of ctGroup.value.texts"
-                           [parentForm]="customTextsForm"
-                           [ctKey]="ct.key"
-                           [ctLabel]="ct.label"
-                           [ctDefaultValue]="ct.defaultValue"
-                           [ctInitialValue]="ct.value"
-                           (valueChange)="valueChanged($event)">
-          </tc-custom-text>
-          <button mat-raised-button [disabled]="!dataChanged" (click)="saveData()">
-            Speichern
-          </button>
-        </mat-expansion-panel>
+        @for (ctGroup of customTextGroups | keyvalue; track ctGroup.value.label) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <h4>{{ ctGroup.value.label }}</h4>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @for (ct of ctGroup.value.texts; track ct.key) {
+              <tc-custom-text [parentForm]="customTextsForm"
+                              [ctKey]="ct.key"
+                              [ctLabel]="ct.label"
+                              [ctDefaultValue]="ct.defaultValue"
+                              [ctInitialValue]="ct.value"
+                              (valueChange)="valueChanged($event)">
+              </tc-custom-text>
+            }
+            <button mat-raised-button [disabled]="!dataChanged" (click)="saveData()">
+              Speichern
+            </button>
+          </mat-expansion-panel>
+        }
       </mat-accordion>
     </form>
-  `,
-    standalone: false
+  `
 })
 
 export class EditCustomTextsComponent {

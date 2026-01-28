@@ -38,6 +38,7 @@ export class AppConfig {
   bugReportTarget: string = '';
   broadcastingServiceUri: string = '';
   fileServiceUri: string = '';
+  themeName: string = '';
 
   get warningMessage(): string {
     if (this.globalWarningExpiredDay) {
@@ -47,14 +48,9 @@ export class AppConfig {
     return this.globalWarningText;
   }
 
-  constructor(
-    sysConfig: SysConfig,
-    cts: CustomtextService,
-    sanitizer: DomSanitizer
-  ) {
+  constructor(sysConfig: SysConfig, cts: CustomtextService, sanitizer: DomSanitizer) {
     this.sanitizer = sanitizer;
     this.cts = cts;
-
     if (sysConfig) {
       this.customTexts = sysConfig.customTexts;
       this.setCustomTexts(sysConfig.customTexts);
@@ -100,6 +96,7 @@ export class AppConfig {
     this.globalWarningExpiredHour = '';
     this.bugReportAuth = '';
     this.bugReportTarget = '';
+    this.themeName = 'zg1-theme';
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
       if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
@@ -112,6 +109,7 @@ export class AppConfig {
       }
       if (appConfig.bugReportAuth) this.bugReportAuth = appConfig.bugReportAuth;
       if (appConfig.bugReportTarget) this.bugReportTarget = appConfig.bugReportTarget;
+      if (appConfig.themeName) this.themeName = appConfig.themeName;
     }
     this.trustedIntroHtml = this.sanitizer?.bypassSecurityTrustHtml(this.introHtml) ?? '';
     this.trustedLegalNoticeHtml = this.sanitizer?.bypassSecurityTrustHtml(this.legalNoticeHtml) ?? '';
@@ -134,7 +132,8 @@ export class AppConfig {
       globalWarningExpiredDay: this.globalWarningExpiredDay,
       globalWarningExpiredHour: this.globalWarningExpiredHour,
       bugReportAuth: this.bugReportAuth,
-      bugReportTarget: this.bugReportTarget
+      bugReportTarget: this.bugReportTarget,
+      themeName: this.themeName
     };
   }
 }

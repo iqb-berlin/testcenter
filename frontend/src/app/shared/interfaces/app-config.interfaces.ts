@@ -10,6 +10,7 @@ export interface AppSettingsObject {
   globalWarningExpiredHour: string,
   bugReportTarget: string,
   bugReportAuth: string
+  themeName: string;
 }
 
 export type AppSettings = AppSettingsObject | Record<string, never>;
