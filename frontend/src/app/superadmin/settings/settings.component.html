@@ -100,11 +100,15 @@
         }
       </mat-radio-group>
 
-      <button mat-raised-button data-cy="Settings:Submit-ApplicationConfiguration"
-              [style.align-self]="'start'"
-              [disabled]="!dataChanged" (click)="saveData()">
-        Speichern
-      </button>
+      <div class="actions" [class.sticky-actions]="configForm.dirty">
+        <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
+                [disabled]="!configForm.dirty" (click)="saveData()">
+          Speichern
+        </button>
+        <button matFab extended [disabled]="!configForm.dirty" (click)="resetForm()">
+          Zurücksetzen
+        </button>
+      </div>
     </form>
   </div>
 </div>

@@ -1,0 +1,44 @@
+.logo-img {
+  width: 100px;
+  margin: 20px;
+}
+.mat-mdc-form-field {
+  display: block;
+}
+.theme-config {
+  display: flex;
+  flex-direction: column;
+  .theme-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-right: 15px;
+  }
+  .theme-name {
+    font-weight: 600;
+  }
+  .theme-desc {
+    margin-left: 10px;
+  }
+}
+:host ::ng-deep .theme-config label {
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  gap: 20px;
+  border-radius: 8px;
+}
+
+.sticky-actions {
+  position: sticky;
+  bottom: 1%;
+  padding: 16px;
+  background-color: var(--mat-sys-secondary);
+  border-top: 1px solid rgba(0,0,0,.12);
+}

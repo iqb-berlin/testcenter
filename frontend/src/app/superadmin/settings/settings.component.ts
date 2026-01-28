@@ -8,7 +8,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatButton, MatMiniFabButton } from '@angular/material/button';
+import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
@@ -40,47 +40,17 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     MatRadioGroup,
     MatRadioButton,
     FormsModule,
-    MatButton,
     SharedModule,
-    EditCustomTextsComponent
+    EditCustomTextsComponent,
+    MatFabButton
   ],
   templateUrl: 'settings.component.html',
-  styles: `
-    .logo-img {
-      width: 100px;
-      margin: 20px;
-    }
-    .mat-mdc-form-field {
-      display: block;
-    }
-    .theme-config {
-      display: flex;
-      flex-direction: column;
-      .theme-preview {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        margin-right: 15px;
-      }
-      .theme-name {
-        font-weight: 600;
-      }
-      .theme-desc {
-        margin-left: 10px;
-      }
-    }
-    :host ::ng-deep .theme-config label {
-      display: flex;
-      align-items: center;
-    }
-  `
+  styleUrls: ['settings.component.css']
 })
 export class SettingsComponent {
   private configDataChangedSubscription: Subscription | null = null;
   protected readonly THEMES: Theme[] = THEMES;
   configForm: FormGroup;
-  dataChanged = false;
   warningIsExpired = false;
   imageError: string | null = '';
   logoImageBase64 = '';
@@ -151,7 +121,6 @@ export class SettingsComponent {
           this.configForm.get('globalWarningExpiredDay')?.value,
           this.configForm.get('globalWarningExpiredHour')?.value
         );
-        this.dataChanged = true;
       });
     });
   }
@@ -172,7 +141,8 @@ export class SettingsComponent {
     this.backendService.setAppConfig(appConfig)
       .subscribe(() => {
         this.snackBar.open('Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 });
-        this.dataChanged = false;
+        this.configForm.markAsPristine();
+        this.configForm.markAsUntouched();
         if (!this.mainDataService.appConfig) {
           return;
         }
@@ -181,6 +151,21 @@ export class SettingsComponent {
         this.themeService.setTheme(appConfig.themeName);
         this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
       });
+  }
+
+  async resetForm(): Promise<void> {
+    const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
+    this.configForm.reset({
+      appTitle: appConfig.appTitle,
+      introHtml: appConfig.introHtml,
+      legalNoticeHtml: appConfig.legalNoticeHtml,
+      globalWarningText: appConfig.globalWarningText,
+      globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
+      globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
+      bugReportAuth: appConfig.bugReportAuth,
+      bugReportTarget: appConfig.bugReportTarget,
+      themeName: appConfig.themeName
+    });
   }
 
   imgFileChange(fileInput: Event): void {
@@ -229,7 +214,6 @@ export class SettingsComponent {
             return false;
           }
           this.logoImageBase64 = e.target.result;
-          this.dataChanged = true;
           return true;
         };
       };
@@ -239,7 +223,6 @@ export class SettingsComponent {
 
   removeLogoImg(): void {
     this.logoImageBase64 = DEFAULT_LOGO;
-    this.dataChanged = true;
   }
 
   ngOnDestroy(): void {
