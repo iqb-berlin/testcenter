@@ -1,6 +1,7 @@
 @use './material-overrides' as material-overrides;
 
 @mixin base-colors {
+  --mat-sys-on-primary: #FFFFFFFF;
   --theme-Gray-05: #f4f2f2;
 }
 

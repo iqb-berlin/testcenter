@@ -103,7 +103,10 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
     .overlay dt {
       font-weight: bold;
     }
-  `,
+    h1 {
+      color: var(--mat-sys-on-primary);
+    }
+  `
 })
 export class HeaderComponent implements OnDestroy {
   protected isOpen: boolean = false;
