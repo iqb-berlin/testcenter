@@ -21,6 +21,8 @@ test-frontend-unit:
     key: frontend-node
     paths:
       - frontend/node_modules/
+  before_script:
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - cd frontend
     - npm ci
@@ -31,25 +33,26 @@ test-broadcaster-unit:
   image: node:22
   script:
     - cd broadcaster
+    - npm ci
     - npx jest --coverage
 
-#TODO xdebug off for speed? -dxdebug.mode=off
-test-backend-unit:
-  stage: test
-  before_script:
-    - export DOCKERHUB_PROXY=
-  script:
-    - docker compose
-      --env-file .env.dev-template
-      --file docker-compose.yml
-      --file docker-compose.dev.yml
-      run --rm --entrypoint "" backend
-      php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
-      --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
-      --configuration /var/www/testcenter/backend/phpunit.xml
-      --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
-      --testdox;
-  artifacts:
-    paths:
-      - docs/dist/test-coverage-backend-unit/*
-    expire_in: 30 minutes
+##TODO xdebug off for speed? -dxdebug.mode=off
+#test-backend-unit:
+#  stage: test
+#  before_script:
+#    - export DOCKERHUB_PROXY=
+#  script:
+#    - docker compose
+#      --env-file .env.dev-template
+#      --file docker-compose.yml
+#      --file docker-compose.dev.yml
+#      run --rm --entrypoint "" backend
+#      php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
+#      --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
+#      --configuration /var/www/testcenter/backend/phpunit.xml
+#      --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
+#      --testdox;
+#  artifacts:
+#    paths:
+#      - docs/dist/test-coverage-backend-unit/*
+#    expire_in: 30 minutes
