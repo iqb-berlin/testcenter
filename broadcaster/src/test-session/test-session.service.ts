@@ -43,6 +43,19 @@ export class TestSessionService {
     this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
   }
 
+  applySessionChanges(sessionChanges: TestSessionChange[]): void {
+    const groupsToBroadcast: string[] = [];
+    sessionChanges.forEach(sessionChange => {
+      this.addSessionChange(sessionChange);
+      if (!groupsToBroadcast.includes(sessionChange.groupName)) {
+        groupsToBroadcast.push(sessionChange.groupName);
+      }
+    });
+    groupsToBroadcast.forEach(groupName => {
+      this.broadcastTestSessionsToGroupMonitors(groupName);
+    });
+  }
+
   private addSessionChange(sessionChange: TestSessionChange): void {
     const group: string = sessionChange.groupName;
     const testId = sessionChange.testId;
