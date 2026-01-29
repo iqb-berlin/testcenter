@@ -3,8 +3,8 @@ stages:
   - test
 #  - deploy
 
-include:
-  - local: scripts/ci/workflows.yml
+#include:
+#  - local: scripts/ci/workflows.yml
 
 image: docker:28.2
 services:
