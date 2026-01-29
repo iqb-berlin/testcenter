@@ -19,7 +19,7 @@ build-backend:
   script:
     - docker build --progress plain --pull --target dev --file backend/Dockerfile
       --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push --all-tags ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
   after_script:
     - docker logout $CI_REGISTRY;
 
