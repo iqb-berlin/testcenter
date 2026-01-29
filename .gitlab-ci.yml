@@ -10,41 +10,47 @@ variables:
   DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
 
+.docker_login:
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+
+
 build-backend:
   stage: build
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  extends: .docker_login
   script:
     - docker build --progress plain --pull --target dev --file backend/Dockerfile
       --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  after_script:
-    - docker logout $CI_REGISTRY;
 
-#build-file-server:
-#  stage: build
-#  variables:
-#    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-#  script:
-#    - docker build
-#      --progress plain
-#      --pull
-#      --file file-server/Dockerfile
-#      --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push --all-tags ${FILE_SERVER_IMAGE_NAME}
-#
-#build-frontend:
-#  stage: build
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-#  before_script:
-#    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-#  script:
-#    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
-#      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push --all-tags ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+build-file-server:
+  stage: build
+  variables:
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
+  extends: .docker_login
+  script:
+    - docker build
+      --progress plain
+      --pull
+      --file file-server/Dockerfile
+      --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
+    - docker push ${FILE_SERVER_IMAGE_NAME}
+
+build-frontend:
+  stage: build
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+  extends: .docker_login
+  before_script:
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  script:
+    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
+      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
+    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
 
 #test-frontend-unit:
 #  stage: test
