@@ -24,11 +24,20 @@ test-frontend-unit:
   script:
     - cd frontend
     - npm ci
-    - ng test --watch=false
+    - npm run test
+
+test-broadcaster-unit:
+  stage: test
+  image: node:22
+  script:
+    - cd broadcaster
+    - npx jest --coverage
 
 #TODO xdebug off for speed? -dxdebug.mode=off
 test-backend-unit:
   stage: test
+  before_script:
+    - export DOCKERHUB_PROXY=
   script:
     - docker compose
       --env-file .env.dev-template
