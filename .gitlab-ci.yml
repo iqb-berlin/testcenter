@@ -38,12 +38,12 @@ build-file-server:
       --pull
       --file file-server/Dockerfile
       --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push ${FILE_SERVER_IMAGE_NAME}
+    - docker push ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
 
 build-frontend:
   stage: build
   variables:
-    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   extends: .docker_login
   before_script:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
@@ -51,6 +51,47 @@ build-frontend:
     - docker build --progress plain --pull --target dev --file frontend/Dockerfile
       --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+
+test-backend-api:
+  stage: test
+  needs:
+    - build-backend
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+  before_script:
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+  script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file test/docker-compose.api-test.yml
+      run --rm task-runner-backend npm run backend:api-test
+
+test-file-server-api:
+  stage: test
+  needs:
+    - build-backend
+    - build-file-server
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
+  before_script:
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
+  script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file test/docker-compose.api-test.yml
+      run --rm task-runner-file-server npm run file-server:api-test
+
+#########################################
 
 #test-frontend-unit:
 #  stage: test
@@ -66,45 +107,6 @@ build-frontend:
 #    - cd frontend
 #    - npm ci
 #    - npm run test
-#
-#test-backend-api:
-#  stage: test
-#  needs:
-#    - build-backend
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#  before_script:
-#    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      --file test/docker-compose.api-test.yml
-#      run --rm task-runner-backend npm run backend:api-test
-#
-#test-file-server-api:
-#  stage: test
-#  needs:
-#    - build-backend
-#    - build-file-server
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-#  before_script:
-#    - chmod 0755 scripts/database/000-create-test-db.sh
-#    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-#    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      --file test/docker-compose.api-test.yml
-#      run --rm task-runner-file-server npm run file-server:api-test
 
 #test-broadcaster-unit:
 #  stage: test
