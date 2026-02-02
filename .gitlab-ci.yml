@@ -20,7 +20,7 @@ workflow:
     - if: $CI_COMMIT_TAG
       variables:
         PIPELINE_TYPE: "pre-release"
-    - if: $CI_COMMIT_TAG =~ /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/
+    - if: '$CI_COMMIT_TAG =~ /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/'
       variables:
         PIPELINE_TYPE: "release"
     # Pull requests
@@ -214,6 +214,8 @@ build-doc:
 pages-test:
   stage: deploy
   rules:
+   - if: '$PIPELINE_TYPE == "pre-release"'
+     when: on_success
    - if: '$PIPELINE_TYPE == "web"'
      when: on_success
    - when: never
