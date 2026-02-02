@@ -33,6 +33,11 @@ export class WebsocketService {
             this.wsConnected$.next('connected');
           }
         },
+        closeObserver: {
+          next: () => {
+            this.wsConnected$.next('disconnected');
+          }
+        },
         url: this.wsUrl
       });
 
