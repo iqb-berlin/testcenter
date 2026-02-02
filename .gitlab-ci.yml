@@ -105,21 +105,21 @@ build-file-server:
 #  after_script:
 #    - *docker_logout
 
-build-e2e:
-  stage: build
-  variables:
-    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-  before_script:
-    - *docker_login
-  script:
-    - docker build --progress plain --pull
-      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${E2E_IMAGE_NAME}:latest
-      --file e2e/Dockerfile
-      --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-      --tag ${E2E_IMAGE_NAME}:latest .
-    - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
-  after_script:
-    - *docker_logout
+#build-e2e:
+#  stage: build
+#  variables:
+#    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+#  before_script:
+#    - *docker_login
+#  script:
+#    - docker build --progress plain --pull
+#      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${E2E_IMAGE_NAME}:latest
+#      --file e2e/Dockerfile
+#      --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+#      --tag ${E2E_IMAGE_NAME}:latest .
+#    - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
+#  after_script:
+#    - *docker_logout
 
 #test-backend-initialization:
 #  stage: test
@@ -179,9 +179,12 @@ build-e2e:
 #    - *docker_logout
 
 build-doc:
+  rules:
+    - when: never # only run when dependency
   stage: deploy
   image: node:22
   script:
+    - npm ci
     - npm run frontend:update-compodoc
     - npm run broadcaster:update-compodoc
     - npm run backend:update-specs
