@@ -11,6 +11,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 .docker_login: &docker_login
+  - export DOCKERHUB_PROXY=
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 .docker_logout: &docker_logout
   - docker logout "$CI_REGISTRY"
@@ -59,7 +60,6 @@ build-frontend:
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
-    - export DOCKERHUB_PROXY=
     - *docker_login
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
@@ -142,11 +142,18 @@ test-backend-initialization:
   after_script:
     - *docker_logout
 
-.test-e2e:
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-  after_script:
-    - docker logout "$CI_REGISTRY"
+.prepare-e2e-test: &prepare-e2e-test
+  - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  - chmod 0755 scripts/database/000-create-test-db.sh
+  - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+  - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
+  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
+  - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
+  - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+  - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
 
 test-e2e-booklet-configuration:
   stage: test
@@ -164,18 +171,8 @@ test-e2e-booklet-configuration:
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
     - export SPEC=Booklet-Config/**/*
-    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - chmod 0755 scripts/database/000-create-test-db.sh
     - *docker_login
-    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-    - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
-    - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
+    - *prepare-e2e-test
   script:
     - docker compose
       --env-file .env.dev-template
@@ -183,6 +180,8 @@ test-e2e-booklet-configuration:
       --file docker-compose.dev.yml
       --file e2e/docker-compose.system-test-headless.yml
       up --abort-on-container-exit --exit-code-from=e2e
+  after_script:
+    - *docker_logout
   artifacts:
     when: always
     paths:
