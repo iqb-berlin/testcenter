@@ -1,3 +1,8 @@
+#TODO schneller pre-release
+#TODO brauchen unit tests fuer doku
+#TODO Tags auf anderen Branches sollten kein release, schon garkein doklu update triggern
+#TODO falls doku bauen failt, ist der rest auch wertlos
+
 stages:
   - build
   - test
@@ -12,6 +17,9 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
       variables:
         PIPELINE_TYPE: "pr"
+    - if: $CI_PIPELINE_SOURCE == "web"
+      variables:
+        PIPELINE_TYPE: "manual"
     # Otherwise, don't run
     - when: always
 
@@ -37,7 +45,8 @@ build-backend:
       when: on_success
     - if: '$PIPELINE_TYPE == "pr"'
       when: on_success
-    - when: manual
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
     - when: never # only run when a rule matches
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
