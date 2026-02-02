@@ -186,7 +186,7 @@ build-doc:
     - when: never
   image: node:22
   script:
-    - npm ci
+    - npm i
     - npm run frontend:update-compodoc
     - npm run broadcaster:update-compodoc
     - npm run backend:update-specs
