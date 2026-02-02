@@ -13,7 +13,7 @@ workflow:
       variables:
         PIPELINE_TYPE: "pr"
     # Otherwise, don't run
-    - when: never
+    - when: always
 
 
 image: docker:28.2
