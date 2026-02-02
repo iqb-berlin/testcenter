@@ -10,21 +10,23 @@ variables:
   DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
 
-.docker_login:
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-  after_script:
-    - docker logout "$CI_REGISTRY"
+.docker_login: &docker_login
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+.docker_logout: &docker_logout
+  - docker logout "$CI_REGISTRY"
 
 build-backend:
   stage: build
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-  extends: .docker_login
+  before_script:
+    - *docker_login
   script:
     - docker build --progress plain --pull --target dev --file backend/Dockerfile
       --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  after_script:
+    - *docker_logout
 
 #TODO needed?
 #build-broadcaster:
@@ -43,30 +45,36 @@ build-file-server:
   stage: build
   variables:
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-  extends: .docker_login
+  before_script:
+    - *docker_login
   script:
     - docker build --progress plain --pull --file file-server/Dockerfile
       --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  after_script:
+    - *docker_logout
 
 build-frontend:
   stage: build
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-  extends: .docker_login
   before_script:
     - export DOCKERHUB_PROXY=
+    - *docker_login
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - docker build --progress plain --pull --target dev --file frontend/Dockerfile
       --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  after_script:
+    - *docker_logout
 
 build-e2e:
   stage: build
   variables:
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-  extends: .docker_login
+  before_script:
+    - *docker_login
   script:
     - docker build --progress plain --pull
       --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${E2E_IMAGE_NAME}:latest
@@ -74,7 +82,8 @@ build-e2e:
       --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
       --tag ${E2E_IMAGE_NAME}:latest .
     - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
-
+  after_script:
+    - *docker_logout
 
 test-backend-initialization:
   stage: test
@@ -82,7 +91,8 @@ test-backend-initialization:
     - build-backend
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-  extends: .docker_login
+  before_script:
+    - *docker_login
   script:
     - TEST_NAME=general/db-versions
       docker compose
@@ -129,7 +139,14 @@ test-backend-initialization:
       --renew-anon-volumes
       --abort-on-container-exit
       --exit-code-from=initialization-test-backend
+  after_script:
+    - *docker_logout
 
+.test-e2e:
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  after_script:
+    - docker logout "$CI_REGISTRY"
 
 test-e2e-booklet-configuration:
   stage: test
@@ -145,11 +162,11 @@ test-e2e-booklet-configuration:
     BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-  extends: .docker_login
   before_script:
     - export SPEC=Booklet-Config/**/*
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
     - chmod 0755 scripts/database/000-create-test-db.sh
+    - *docker_login
     - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
