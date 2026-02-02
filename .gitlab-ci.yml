@@ -7,6 +7,7 @@
 stages:
   - build
   - test
+  - deploy
 
 workflow:
   rules:
@@ -20,7 +21,7 @@ workflow:
         PIPELINE_TYPE: "pr"
     - if: $CI_PIPELINE_SOURCE == "web"
       variables:
-        PIPELINE_TYPE: "manual"
+        PIPELINE_TYPE: "web"
     # Otherwise, don't run
     - when: always
 
@@ -176,6 +177,44 @@ build-e2e:
 #      --exit-code-from=initialization-test-backend
 #  after_script:
 #    - *docker_logout
+
+build-doc:
+  stage: deploy
+  image: node:22
+  script:
+    - npm run frontend:update-compodoc
+    - npm run broadcaster:update-compodoc
+    - npm run backend:update-specs
+    - npm run create-docs
+  artifacts:
+    paths:
+      - docs/index.md
+      - docs/pages/booklet-config.md
+      - docs/pages/test-mode.md
+      - docs/dist/api/index.html
+      - docs/dist/api/specs.yml
+      - docs/dist/custom-texts.md
+      - docs/dist/test-session-super-states.html
+      - docs/dist/compodoc-frontend/*
+      - docs/dist/compodoc-broadcaster/*
+    expire_in: 30 minutes
+
+pages-test:
+  stage: deploy
+  rules:
+   - if: '$PIPELINE_TYPE == "web"'
+     when: on_success
+  needs:
+    - build-doc
+  script:
+    - docker build --progress plain --pull --target jekyll
+      --file docs/Dockerfile
+      --tag ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE} .
+    - mkdir public
+    - docker run --volume $(pwd)/public/:/usr/src/testcenter/public/ --volume $(pwd)/docs/:/usr/src/testcenter/docs/ ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE};
+  artifacts:
+    paths:
+      - public
 
 .prepare-e2e-test: &prepare-e2e-test
   - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
