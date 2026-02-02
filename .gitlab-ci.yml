@@ -149,7 +149,7 @@ test-backend-initialization:
   - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
   - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
   - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
-  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
+#  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
   - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
   - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
   - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
@@ -166,7 +166,7 @@ test-e2e-booklet-configuration:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
+#    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
   before_script:
