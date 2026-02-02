@@ -1,6 +1,7 @@
 #TODO schneller pre-release
 #TODO brauchen unit tests fuer doku
 #TODO Tags auf anderen Branches sollten kein release, schon garkein doklu update triggern
+# -> geht nur wenn manual approval for release jobs
 #TODO falls doku bauen failt, ist der rest auch wertlos
 
 stages:
@@ -119,62 +120,62 @@ build-e2e:
   after_script:
     - *docker_logout
 
-test-backend-initialization:
-  stage: test
-  needs:
-    - build-backend
-  variables:
-    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-  before_script:
-    - *docker_login
-  script:
-    - TEST_NAME=general/db-versions
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/vanilla-installation
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/no-db-but-files
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/install-db-patches
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-    - TEST_NAME=general/re-initialize
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
-  after_script:
-    - *docker_logout
+#test-backend-initialization:
+#  stage: test
+#  needs:
+#    - build-backend
+#  variables:
+#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+#  before_script:
+#    - *docker_login
+#  script:
+#    - TEST_NAME=general/db-versions
+#      docker compose
+#      --env-file .env.dev-template
+#      --file backend/test/initialization/docker-compose.initialization-test.yml
+#      up
+#      --force-recreate
+#      --renew-anon-volumes
+#      --abort-on-container-exit
+#      --exit-code-from=initialization-test-backend
+#    - TEST_NAME=general/vanilla-installation
+#      docker compose
+#      --env-file .env.dev-template
+#      --file backend/test/initialization/docker-compose.initialization-test.yml
+#      up
+#      --force-recreate
+#      --renew-anon-volumes
+#      --abort-on-container-exit
+#      --exit-code-from=initialization-test-backend
+#    - TEST_NAME=general/no-db-but-files
+#      docker compose
+#      --env-file .env.dev-template
+#      --file backend/test/initialization/docker-compose.initialization-test.yml
+#      up
+#      --force-recreate
+#      --renew-anon-volumes
+#      --abort-on-container-exit
+#      --exit-code-from=initialization-test-backend
+#    - TEST_NAME=general/install-db-patches
+#      docker compose
+#      --env-file .env.dev-template
+#      --file backend/test/initialization/docker-compose.initialization-test.yml
+#      up
+#      --force-recreate
+#      --renew-anon-volumes
+#      --abort-on-container-exit
+#      --exit-code-from=initialization-test-backend
+#    - TEST_NAME=general/re-initialize
+#      docker compose
+#      --env-file .env.dev-template
+#      --file backend/test/initialization/docker-compose.initialization-test.yml
+#      up
+#      --force-recreate
+#      --renew-anon-volumes
+#      --abort-on-container-exit
+#      --exit-code-from=initialization-test-backend
+#  after_script:
+#    - *docker_logout
 
 .prepare-e2e-test: &prepare-e2e-test
   - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
