@@ -208,7 +208,8 @@ pages-test:
    - if: '$PIPELINE_TYPE == "web"'
      when: on_success
   needs:
-    - build-doc
+    - job: build-doc
+      optional: true
   script:
     - docker build --progress plain --pull --target jekyll
       --file docs/Dockerfile
