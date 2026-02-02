@@ -40,26 +40,26 @@ variables:
 .docker_logout: &docker_logout
   - docker logout "$CI_REGISTRY"
 
-build-backend:
-  stage: build
-  rules:
-    - if: '$PIPELINE_TYPE == "release"'
-      when: on_success
-    - if: '$PIPELINE_TYPE == "pr"'
-      when: on_success
-    - if: '$PIPELINE_TYPE == "web"'
-      when: on_success
-    - when: never # only run when a rule matches
-  variables:
-    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-  before_script:
-    - *docker_login
-  script:
-    - docker build --progress plain --pull --target dev --file backend/Dockerfile
-      --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  after_script:
-    - *docker_logout
+#build-backend:
+#  stage: build
+#  rules:
+#    - if: '$PIPELINE_TYPE == "release"'
+#      when: on_success
+#    - if: '$PIPELINE_TYPE == "pr"'
+#      when: on_success
+#    - if: '$PIPELINE_TYPE == "web"'
+#      when: on_success
+#    - when: never # only run when a rule matches
+#  variables:
+#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+#  before_script:
+#    - *docker_login
+#  script:
+#    - docker build --progress plain --pull --target dev --file backend/Dockerfile
+#      --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
+#    - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+#  after_script:
+#    - *docker_logout
 
 #TODO needed?
 #build-broadcaster:
@@ -179,9 +179,11 @@ build-file-server:
 #    - *docker_logout
 
 build-doc:
-  rules:
-    - when: never # only run when dependency
   stage: deploy
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
   image: node:22
   script:
     - npm ci
@@ -207,15 +209,15 @@ pages-test:
   rules:
    - if: '$PIPELINE_TYPE == "web"'
      when: on_success
+   - when: never
   needs:
-    - job: build-doc
-      optional: true
+    - build-doc
   script:
     - docker build --progress plain --pull --target jekyll
       --file docs/Dockerfile
-      --tag ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE} .
+      --tag ${CI_REGISTRY_IMAGE}/jekyll .
     - mkdir public
-    - docker run --volume $(pwd)/public/:/usr/src/testcenter/public/ --volume $(pwd)/docs/:/usr/src/testcenter/docs/ ${CI_REGISTRY_IMAGE}/${JEKYLL_PAGES_IMAGE};
+    - docker run --volume $(pwd)/public/:/usr/src/testcenter/public/ --volume $(pwd)/docs/:/usr/src/testcenter/docs/ ${CI_REGISTRY_IMAGE}/jekyll;
   artifacts:
     paths:
       - public
