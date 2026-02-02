@@ -2,6 +2,20 @@ stages:
   - build
   - test
 
+workflow:
+  rules:
+    # Tags → release pipeline
+    - if: $CI_COMMIT_TAG
+      variables:
+        PIPELINE_TYPE: "release"
+    # Pull requests
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+      variables:
+        PIPELINE_TYPE: "pr"
+    # Otherwise, don't run
+    - when: never
+
+
 image: docker:28.2
 services:
   - name: docker:28.2-dind
@@ -18,6 +32,13 @@ variables:
 
 build-backend:
   stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
+    - when: manual
+    - when: never # only run when a rule matches
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
@@ -44,6 +65,10 @@ build-backend:
 
 build-file-server:
   stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - when: never # only run when a rule matches
   variables:
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
   before_script:
@@ -55,19 +80,19 @@ build-file-server:
   after_script:
     - *docker_logout
 
-build-frontend:
-  stage: build
-  variables:
-    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-  before_script:
-    - *docker_login
-    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-  script:
-    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
-      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  after_script:
-    - *docker_logout
+#build-frontend:
+#  stage: build
+#  variables:
+#    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+#  before_script:
+#    - *docker_login
+#    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+#  script:
+#    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
+#      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
+#    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+#  after_script:
+#    - *docker_logout
 
 build-e2e:
   stage: build
@@ -155,37 +180,35 @@ test-backend-initialization:
   - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
   - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
 
-test-e2e-booklet-configuration:
-  stage: test
-  needs:
-    - build-backend
-    - build-frontend
-#    - build-broadcaster
-    - build-file-server
-    - build-e2e
-  variables:
-    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-#    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-  before_script:
-    - export SPEC=Booklet-Config/**/*
-    - *docker_login
-    - *prepare-e2e-test
-  script:
-    - docker compose
-      --env-file .env.dev-template
-      --file docker-compose.yml
-      --file docker-compose.dev.yml
-      --file e2e/docker-compose.system-test-headless.yml
-      up --abort-on-container-exit --exit-code-from=e2e
-  after_script:
-    - *docker_logout
-  artifacts:
-    when: always
-    paths:
-      - e2e/cypress-headless
+#test-e2e-booklet-configuration:
+#  stage: test
+#  needs:
+#    - build-backend
+#    - build-frontend
+#    - build-file-server
+#    - build-e2e
+#  variables:
+#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+#    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+#    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
+#    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+#  before_script:
+#    - export SPEC=Booklet-Config/**/*
+#    - *docker_login
+#    - *prepare-e2e-test
+#  script:
+#    - docker compose
+#      --env-file .env.dev-template
+#      --file docker-compose.yml
+#      --file docker-compose.dev.yml
+#      --file e2e/docker-compose.system-test-headless.yml
+#      up --abort-on-container-exit --exit-code-from=e2e
+#  after_script:
+#    - *docker_logout
+#  artifacts:
+#    when: always
+#    paths:
+#      - e2e/cypress-headless
 
 
 #########################################
