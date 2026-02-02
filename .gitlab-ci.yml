@@ -4,6 +4,11 @@
 # -> geht nur wenn manual approval for release jobs
 #TODO falls doku bauen failt, ist der rest auch wertlos
 
+variables:
+  DOCKER_TLS_CERTDIR: ''
+  DOCKER_DRIVER: overlay2
+#  RELEASE_TAG_REGEX: /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/
+
 stages:
   - build
   - test
@@ -13,6 +18,9 @@ workflow:
   rules:
     # Tags → release pipeline
     - if: $CI_COMMIT_TAG
+      variables:
+        PIPELINE_TYPE: "pre-release"
+    - if: $CI_COMMIT_TAG =~ /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/
       variables:
         PIPELINE_TYPE: "release"
     # Pull requests
@@ -30,9 +38,7 @@ image: docker:28.2
 services:
   - name: docker:28.2-dind
 
-variables:
-  DOCKER_TLS_CERTDIR: ''
-  DOCKER_DRIVER: overlay2
+
 
 .docker_login: &docker_login
   - export DOCKERHUB_PROXY=
@@ -199,7 +205,7 @@ build-doc:
       - docs/pages/test-mode.md
       - docs/dist/api/index.html
       - docs/dist/api/specs.yml
-      - docs/dist/custom-texts.md
+      - docs/dist/custom-texts.md # TODO falscher Pfad
       - docs/dist/test-session-super-states.html
       - docs/dist/compodoc-frontend/*
       - docs/dist/compodoc-broadcaster/*
@@ -214,6 +220,7 @@ pages-test:
   needs:
     - build-doc
   script:
+    - echo "$PIPELINE_TYPE"
     - docker build --progress plain --pull --target jekyll
       --file docs/Dockerfile
       --tag ${CI_REGISTRY_IMAGE}/jekyll .
@@ -222,6 +229,9 @@ pages-test:
   artifacts:
     paths:
       - public
+#  pages:  # specifies that this is a Pages job and publishes the default public directory
+#    path_prefix: "$CI_COMMIT_BRANCH"
+
 
 .prepare-e2e-test: &prepare-e2e-test
   - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
