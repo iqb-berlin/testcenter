@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebsocketService } from '../websocket/websocket.service';
-import { ConnectionStatus, ConnectionStatusWs } from '../../interfaces/websocket-backend.interfaces';
+import { ConnectionStatus } from '../../interfaces/websocket-backend.interfaces';
 
 @Injectable()
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {
@@ -120,12 +120,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
     this.wsConnectionStatusSubscription = this.wsConnected$
       .pipe(
-        tap((wsConnected: ConnectionStatusWs) => {
-          if (wsConnected === 'disconnected') {
+        tap((wsConnected: boolean) => {
+          if (!wsConnected) {
             this.scheduleNextPoll();
           }
         }),
-        map((wsc: ConnectionStatusWs): ConnectionStatus => (wsc === 'connected' ? 'ws-online' : 'ws-offline'))
+        map((wsConnected: boolean): ConnectionStatus => (wsConnected ? 'ws-online' : 'ws-offline'))
       )
       .subscribe(this.connectionStatus$);
   }

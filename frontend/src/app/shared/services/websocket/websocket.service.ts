@@ -5,7 +5,6 @@ import {
 } from 'rxjs';
 import { catchError, map, share } from 'rxjs/operators';
 import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
-import { ConnectionStatusWs } from '../../interfaces/websocket-backend.interfaces';
 
 interface WsMessage {
   event: string;
@@ -15,12 +14,11 @@ interface WsMessage {
 export class WebsocketService {
   protected wsUrl = '';
   private wsSubject$: WebSocketSubject<any> | null = null;
-  wsConnected$ = new BehaviorSubject<ConnectionStatusWs>('connecting');
+  wsConnected$ = new BehaviorSubject<boolean>(false);
   private wsSubscription: Subscription | null = null;
 
   connect(): void {
     if (!this.wsSubject$) {
-      this.wsConnected$.next('connecting');
       this.wsSubject$ = webSocket({
         deserializer(event: MessageEvent): any {
           return JSON.parse(event.data);
@@ -30,12 +28,12 @@ export class WebsocketService {
         },
         openObserver: {
           next: () => {
-            this.wsConnected$.next('connected');
+            this.wsConnected$.next(true);
           }
         },
         closeObserver: {
           next: () => {
-            this.wsConnected$.next('disconnected');
+            this.wsConnected$.next(false);
           }
         },
         url: this.wsUrl
@@ -56,7 +54,7 @@ export class WebsocketService {
   }
 
   protected completeConnection(): void {
-    this.wsConnected$.next('disconnected');
+    this.wsConnected$.next(false);
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
     }
@@ -67,7 +65,7 @@ export class WebsocketService {
   }
 
   protected errorConnection(): void {
-    this.wsConnected$.next('disconnected');
+    this.wsConnected$.next(false);
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
     }
