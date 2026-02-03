@@ -7,7 +7,6 @@
 variables:
   DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
-#  RELEASE_TAG_REGEX: /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/
 
 stages:
   - build
@@ -33,12 +32,9 @@ workflow:
     # Otherwise, don't run
     - when: always
 
-
 image: docker:28.2
 services:
   - name: docker:28.2-dind
-
-
 
 .docker_login: &docker_login
   - export DOCKERHUB_PROXY=
@@ -46,154 +42,20 @@ services:
 .docker_logout: &docker_logout
   - docker logout "$CI_REGISTRY"
 
-#build-backend:
-#  stage: build
-#  rules:
-#    - if: '$PIPELINE_TYPE == "release"'
-#      when: on_success
-#    - if: '$PIPELINE_TYPE == "pr"'
-#      when: on_success
-#    - if: '$PIPELINE_TYPE == "web"'
-#      when: on_success
-#    - when: never # only run when a rule matches
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#  before_script:
-#    - *docker_login
-#  script:
-#    - docker build --progress plain --pull --target dev --file backend/Dockerfile
-#      --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#  after_script:
-#    - *docker_logout
-
-#TODO needed?
-#build-broadcaster:
-#  stage: build
-#  variables:
-#    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
-#  extends: .docker_login
-#  script:
-#    - export DOCKERHUB_PROXY=
-#    - docker build --progress plain --pull --target dev
-#      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${BROADCASTER_IMAGE_NAME}:dev
-#      --file broadcaster/Dockerfile --tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-
-build-file-server:
-  stage: build
-  rules:
-    - if: '$PIPELINE_TYPE == "release"'
-      when: on_success
-    - when: never # only run when a rule matches
-  variables:
-    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-  before_script:
-    - *docker_login
-  script:
-    - docker build --progress plain --pull --file file-server/Dockerfile
-      --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  after_script:
-    - *docker_logout
-
-#build-frontend:
-#  stage: build
-#  variables:
-#    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-#  before_script:
-#    - *docker_login
-#    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-#  script:
-#    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
-#      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#  after_script:
-#    - *docker_logout
-
-#build-e2e:
-#  stage: build
-#  variables:
-#    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-#  before_script:
-#    - *docker_login
-#  script:
-#    - docker build --progress plain --pull
-#      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${E2E_IMAGE_NAME}:latest
-#      --file e2e/Dockerfile
-#      --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-#      --tag ${E2E_IMAGE_NAME}:latest .
-#    - docker push --quiet --all-tags ${E2E_IMAGE_NAME}
-#  after_script:
-#    - *docker_logout
-
-#test-backend-initialization:
-#  stage: test
-#  needs:
-#    - build-backend
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#  before_script:
-#    - *docker_login
-#  script:
-#    - TEST_NAME=general/db-versions
-#      docker compose
-#      --env-file .env.dev-template
-#      --file backend/test/initialization/docker-compose.initialization-test.yml
-#      up
-#      --force-recreate
-#      --renew-anon-volumes
-#      --abort-on-container-exit
-#      --exit-code-from=initialization-test-backend
-#    - TEST_NAME=general/vanilla-installation
-#      docker compose
-#      --env-file .env.dev-template
-#      --file backend/test/initialization/docker-compose.initialization-test.yml
-#      up
-#      --force-recreate
-#      --renew-anon-volumes
-#      --abort-on-container-exit
-#      --exit-code-from=initialization-test-backend
-#    - TEST_NAME=general/no-db-but-files
-#      docker compose
-#      --env-file .env.dev-template
-#      --file backend/test/initialization/docker-compose.initialization-test.yml
-#      up
-#      --force-recreate
-#      --renew-anon-volumes
-#      --abort-on-container-exit
-#      --exit-code-from=initialization-test-backend
-#    - TEST_NAME=general/install-db-patches
-#      docker compose
-#      --env-file .env.dev-template
-#      --file backend/test/initialization/docker-compose.initialization-test.yml
-#      up
-#      --force-recreate
-#      --renew-anon-volumes
-#      --abort-on-container-exit
-#      --exit-code-from=initialization-test-backend
-#    - TEST_NAME=general/re-initialize
-#      docker compose
-#      --env-file .env.dev-template
-#      --file backend/test/initialization/docker-compose.initialization-test.yml
-#      up
-#      --force-recreate
-#      --renew-anon-volumes
-#      --abort-on-container-exit
-#      --exit-code-from=initialization-test-backend
-#  after_script:
-#    - *docker_logout
+include:
+  - local: scripts/ci/backend.yml
+  - local: scripts/ci/frontend.yml
 
 build-doc:
   stage: deploy
   rules:
-    - if: '$PIPELINE_TYPE == "web"'
+    - if: '$PIPELINE_TYPE == "release"'
       when: on_success
     - when: never
   image: node:22
   script:
     - npm i
-    - mkdir tmp # TODO weg
+    - mkdir tmp
     - npm run frontend:update-compodoc
     - npm run broadcaster:update-compodoc
     - npm run backend:update-specs
@@ -214,9 +76,7 @@ build-doc:
 pages-test:
   stage: deploy
   rules:
-   - if: '$PIPELINE_TYPE == "pre-release"'
-     when: on_success
-   - if: '$PIPELINE_TYPE == "web"'
+   - if: '$PIPELINE_TYPE == "release"'
      when: on_success
    - when: never
   needs:
@@ -233,136 +93,3 @@ pages-test:
       - public
 #  pages:  # specifies that this is a Pages job and publishes the default public directory
 #    path_prefix: "$CI_COMMIT_BRANCH"
-
-
-.prepare-e2e-test: &prepare-e2e-test
-  - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-  - chmod 0755 scripts/database/000-create-test-db.sh
-  - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-  - docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-frontend:current
-#  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
-  - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-  - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-  - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
-  - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
-
-#test-e2e-booklet-configuration:
-#  stage: test
-#  needs:
-#    - build-backend
-#    - build-frontend
-#    - build-file-server
-#    - build-e2e
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
-#    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-#    E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
-#  before_script:
-#    - export SPEC=Booklet-Config/**/*
-#    - *docker_login
-#    - *prepare-e2e-test
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      --file e2e/docker-compose.system-test-headless.yml
-#      up --abort-on-container-exit --exit-code-from=e2e
-#  after_script:
-#    - *docker_logout
-#  artifacts:
-#    when: always
-#    paths:
-#      - e2e/cypress-headless
-
-
-#########################################
-
-#test-backend-api:
-#  stage: test
-#  needs:
-#    - build-backend
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#  before_script:
-#    - export DOCKERHUB_PROXY=
-#    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      --file test/docker-compose.api-test.yml
-#      run --rm task-runner-backend npm run backend:api-test
-
-#test-file-server-api:
-#  stage: test
-#  needs:
-#    - build-backend
-#    - build-file-server
-#  variables:
-#    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
-#    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
-#  before_script:
-#    - export DOCKERHUB_PROXY=
-#    - chmod 0755 scripts/database/000-create-test-db.sh
-#    - docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-#    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
-#    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-file-server:current
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      --file test/docker-compose.api-test.yml
-#      run --rm task-runner-file-server npm run file-server:api-test
-
-
-#test-frontend-unit:
-#  stage: test
-#  image: node:22
-#  cache:
-#    key: frontend-node
-#    paths:
-#      - frontend/node_modules/
-#  before_script:
-#    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-#    - RUN apt-get update && apt-get install -y --no-install-recommends chromium
-#  script:
-#    - cd frontend
-#    - npm ci
-#    - npm run test
-
-#test-broadcaster-unit:
-#  stage: test
-#  image: node:22
-#  script:
-#    - cd broadcaster
-#    - npm ci
-#    - npx jest --coverage
-
-##TODO xdebug off for speed? -dxdebug.mode=off
-#test-backend-unit:
-#  stage: test
-#  before_script:
-#    - export DOCKERHUB_PROXY=
-#  script:
-#    - docker compose
-#      --env-file .env.dev-template
-#      --file docker-compose.yml
-#      --file docker-compose.dev.yml
-#      run --rm --entrypoint "" backend
-#      php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
-#      --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
-#      --configuration /var/www/testcenter/backend/phpunit.xml
-#      --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
-#      --testdox;
-#  artifacts:
-#    paths:
-#      - docs/dist/test-coverage-backend-unit/*
-#    expire_in: 30 minutes

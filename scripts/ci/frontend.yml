@@ -1,0 +1,36 @@
+build-frontend:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  variables:
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+  before_script:
+    - *docker_login
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  script:
+    - docker build --progress plain --pull --target dev --file frontend/Dockerfile
+      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
+    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+  after_script:
+    - *docker_logout
+
+test-frontend-unit:
+  stage: test
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  image: node:22
+  cache:
+    key: frontend-node
+    paths:
+      - frontend/node_modules/
+  before_script:
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - RUN apt-get update && apt-get install -y --no-install-recommends chromium
+  script:
+    - cd frontend
+    - npm ci
+    - npm run test
