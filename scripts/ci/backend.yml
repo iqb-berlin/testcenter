@@ -7,13 +7,13 @@ build-backend:
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
   before_script:
-    - *docker_login
+    - !reference [ .docker_login, before_script ]
   script:
     - docker build --progress plain --pull --target dev --file backend/Dockerfile
       --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
   after_script:
-    - *docker_logout
+    - !reference [ .docker_login, after_script ]
 
 #TODO needed?
 #build-broadcaster:

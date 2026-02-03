@@ -36,11 +36,18 @@ image: docker:28.2
 services:
   - name: docker:28.2-dind
 
-.docker_login: &docker_login
-  - export DOCKERHUB_PROXY=
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-.docker_logout: &docker_logout
-  - docker logout "$CI_REGISTRY"
+.docker_login:
+  before_script:
+    - export DOCKERHUB_PROXY=
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  after_script:
+    - docker logout "$CI_REGISTRY"
+
+#.docker_login: &docker_login
+#  - export DOCKERHUB_PROXY=
+#  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+#.docker_logout: &docker_logout
+#  - docker logout "$CI_REGISTRY"
 
 include:
   - local: scripts/ci/backend.yml
