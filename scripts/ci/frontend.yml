@@ -7,14 +7,14 @@ build-frontend:
   variables:
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
   before_script:
-    - *docker_login
+    - !reference [ .docker_login, before_script ]
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - docker build --progress plain --pull --target dev --file frontend/Dockerfile
       --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
     - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
   after_script:
-    - *docker_logout
+    - !reference [ .docker_login, after_script ]
 
 test-frontend-unit:
   stage: test
