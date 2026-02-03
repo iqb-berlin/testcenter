@@ -52,6 +52,7 @@ services:
 include:
   - local: scripts/ci/backend.yml
   - local: scripts/ci/frontend.yml
+  - local: scripts/ci/e2e.yml
 
 build-doc:
   stage: deploy
