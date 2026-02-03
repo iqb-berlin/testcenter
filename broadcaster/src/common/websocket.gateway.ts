@@ -1,5 +1,8 @@
 import {
-  MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -16,7 +19,7 @@ import { BroadcastingEvent } from './interfaces';
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
   private readonly logger = new Logger(WebsocketGateway.name);
   private static readonly MAX_CONNECTIONS = 10000;
-  private static readonly HEARTBEAT_INTERVAL = 30000;
+  private static readonly HEARTBEAT_INTERVAL = 15000;
 
   @WebSocketServer()
   private server!: Server; // magically injected
@@ -24,14 +27,13 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   private clients = new Map<string, WebSocket & { isAlive?: boolean }>();
   private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private clientLost$: Subject<string> = new Subject<string>();
-  private heartbeatInterval: NodeJS.Timeout | null = null;
 
   afterInit(server: Server) {
     this.startHeartbeat();
   }
 
   private startHeartbeat() {
-    this.heartbeatInterval = setInterval(() => {
+    setInterval(() => {
       this.clients.forEach((ws, token) => {
         if (ws.isAlive === false) {
           this.logger.warn(`Client ${token} inactive, terminating.`);
