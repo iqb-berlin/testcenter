@@ -16,13 +16,34 @@ build-e2e:
     - docker push --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
   after_script:
     - !reference [ .docker_login, after_script ]
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
 
 .e2e-variables:
+  stage: test
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  needs:
+    - build-backend
+    - build-frontend
+    - build-file-server
+    - build-e2e
   variables:
     BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
     FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
     FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
     E2E_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/testcenter-e2e"
+  script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file e2e/docker-compose.system-test-headless.yml
+      up --abort-on-container-exit --exit-code-from=e2e
 
 .e2e-test:
   before_script:
@@ -39,31 +60,20 @@ build-e2e:
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
 
 test-e2e-booklet-configuration:
-  stage: test
-  rules:
-    - if: '$PIPELINE_TYPE == "web"'
-      when: on_success
-    - when: never
-  needs:
-    - build-backend
-    - build-frontend
-    - build-file-server
-    - build-e2e
   extends: .e2e-variables
   before_script:
     - !reference [ .docker_login, before_script ]
     - !reference [ .e2e-test, before_script ]
     - export SPEC=Booklet-Config/**/*
-  script:
-    - docker compose
-      --env-file .env.dev-template
-      --file docker-compose.yml
-      --file docker-compose.dev.yml
-      --file e2e/docker-compose.system-test-headless.yml
-      up --abort-on-container-exit --exit-code-from=e2e
   after_script:
     - !reference [ .docker_login, after_script ]
-  artifacts:
-    when: always
-    paths:
-      - e2e/cypress-headless
+
+test-e2e-group-monitor:
+  extends: .e2e-variables
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Group-Monitor/**/*
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
