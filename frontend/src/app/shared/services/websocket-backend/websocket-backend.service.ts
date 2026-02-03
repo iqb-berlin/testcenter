@@ -14,14 +14,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected abstract wsChannelName: string;
   protected abstract initialData: T;
 
-  data$: BehaviorSubject<T> | null = null;
+  data$: BehaviorSubject<T> | null = null; //if null, then the ws is disconnected
   connectionStatus$: BehaviorSubject<ConnectionStatus> = new BehaviorSubject<ConnectionStatus>('initial');
 
   private wsConnectionStatusSubscription: Subscription | null = null;
   private wsDataSubscription: Subscription | null = null;
   private pollingTimeoutId: number | null = null;
-
-  protected connectionClosed = true;
 
   constructor(
     @Inject('BROADCASTER_URL') protected broadcasterUrl: string,
@@ -44,7 +42,6 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
   private pollEndpointAndSubscribeWs(): void {
-    this.connectionClosed = false;
 
     this.unsubscribeFromWebsocket();
 
@@ -90,7 +87,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
     this.pollingTimeoutId = window.setTimeout(
       () => {
-        if (!this.connectionClosed) {
+        if (this.data$) {
           this.pollEndpointAndSubscribeWs();
         }
       },
