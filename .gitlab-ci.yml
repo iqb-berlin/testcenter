@@ -1,8 +1,8 @@
-#TODO schneller pre-release
 #TODO brauchen unit tests fuer doku
-#TODO Tags auf anderen Branches sollten kein release, schon garkein doklu update triggern
-# -> geht nur wenn manual approval for release jobs
-#TODO falls doku bauen failt, ist der rest auch wertlos
+# dependency proxy
+#      --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}/
+#      --build-arg BUILDKIT_INLINE_CACHE=1
+#      --cache-from ${BACKEND_IMAGE_NAME}:latest
 
 variables:
   DOCKER_TLS_CERTDIR: ''
@@ -15,21 +15,18 @@ stages:
 
 workflow:
   rules:
-    # Tags → release pipeline
     - if: $CI_COMMIT_TAG
       variables:
         PIPELINE_TYPE: "pre-release"
     - if: '$CI_COMMIT_TAG =~ /^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))$/'
       variables:
         PIPELINE_TYPE: "release"
-    # Pull requests
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
       variables:
         PIPELINE_TYPE: "pr"
     - if: $CI_PIPELINE_SOURCE == "web"
       variables:
         PIPELINE_TYPE: "web"
-    # Otherwise, don't run
     - when: always
 
 image: docker:28.2
@@ -42,12 +39,6 @@ services:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   after_script:
     - docker logout "$CI_REGISTRY"
-
-#.docker_login: &docker_login
-#  - export DOCKERHUB_PROXY=
-#  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
-#.docker_logout: &docker_logout
-#  - docker logout "$CI_REGISTRY"
 
 include:
   - local: scripts/ci/backend.yml
@@ -101,3 +92,57 @@ pages-test:
       - public
 #  pages:  # specifies that this is a Pages job and publishes the default public directory
 #    path_prefix: "$CI_COMMIT_BRANCH"
+
+.push-prod-template:
+  stage: deploy
+  variables:
+    BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
+    FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
+    BROADCASTER_IMAGE_NAME: "iqbberlin/testcenter-broadcaster"
+    FILE_SERVER_IMAGE_NAME: "iqbberlin/testcenter-file-server"
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}
+  after_script:
+    - !reference [ .docker_logout, after_script ]
+
+push-pre-release:
+  extends: .push-prod-template
+  rules:
+    - if: '$PIPELINE_TYPE == "pre-release"'
+      when: on_success
+    - when: never
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push -q ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
+
+push-release:
+  extends: .push-prod-template
+#  needs:
+#    - pages
+  rules:
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - when: never
+  script:
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:latest
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:latest
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:latest
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:latest
+    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+    - docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME}
+    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}

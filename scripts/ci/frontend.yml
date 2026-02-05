@@ -16,9 +16,31 @@ build-frontend:
   after_script:
     - !reference [ .docker_login, after_script ]
 
+build-frontend-prod:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  variables:
+    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  script:
+    - docker build --progress plain --pull
+      --file frontend/Dockerfile
+      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} .
+    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
 test-frontend-unit:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -29,7 +51,7 @@ test-frontend-unit:
       - frontend/node_modules/
   before_script:
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
-    - RUN apt-get update && apt-get install -y --no-install-recommends chromium
+    - apt-get update && apt-get install -y --no-install-recommends chromium
   script:
     - cd frontend
     - npm ci
