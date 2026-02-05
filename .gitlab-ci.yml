@@ -107,7 +107,7 @@ pages-test:
     - docker pull -q ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}
     - docker pull -q ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}
   after_script:
-    - !reference [ .docker_logout, after_script ]
+    - !reference [ .docker_login, after_script ]
 
 push-pre-release:
   extends: .push-prod-template
