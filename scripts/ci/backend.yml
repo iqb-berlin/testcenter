@@ -15,6 +15,26 @@ build-backend:
   after_script:
     - !reference [ .docker_login, after_script ]
 
+build-backend-prod:
+  stage: build
+  rules:
+     - if: '$PIPELINE_TYPE == "pre-release"'
+       when: on_success
+     - if: '$PIPELINE_TYPE == "release"'
+       when: on_success
+     - when: never
+  variables:
+    BACKEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-backend"
+  before_script:
+    - !reference [ .docker_login, before_script ]
+  script:
+    - docker build --progress plain --pull
+      --file backend/Dockerfile
+      --tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} .
+    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
+  after_script:
+    - !reference [ .docker_login, after_script ]
+
 #TODO needed?
 #build-broadcaster:
 #  stage: build
@@ -27,6 +47,26 @@ build-backend:
 #      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${BROADCASTER_IMAGE_NAME}:dev
 #      --file broadcaster/Dockerfile --tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
 #    - docker push --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+
+build-broadcaster-prod:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "pre-release"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - when: never
+  variables:
+    BROADCASTER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-broadcaster"
+  before_script:
+    - !reference [ .docker_login, before_script ]
+  script:
+    - docker build --progress plain --pull
+      --file broadcaster/Dockerfile
+      --tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} .
+    - docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME}
+  after_script:
+    - !reference [ .docker_login, after_script ]
 
 build-file-server:
   stage: build
@@ -45,10 +85,32 @@ build-file-server:
   after_script:
     - !reference [ .docker_login, after_script ]
 
+build-file-server-prod:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "pre-release"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - when: never
+  variables:
+    FILE_SERVER_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-file-server"
+  before_script:
+    - !reference [ .docker_login, before_script ]
+  script:
+    - docker build --progress plain --pull
+      --file file-server/Dockerfile
+      --tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} .
+    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
+  after_script:
+    - !reference [ .docker_login, after_script ]
+
 ##TODO xdebug off for speed? -dxdebug.mode=off
 test-backend-unit:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -75,6 +137,8 @@ test-backend-unit:
 test-backend-initialization:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -136,6 +200,8 @@ test-backend-initialization:
 test-backend-api:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -160,6 +226,8 @@ test-backend-api:
 test-file-server-api:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -189,6 +257,8 @@ test-file-server-api:
 test-broadcaster-unit:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never

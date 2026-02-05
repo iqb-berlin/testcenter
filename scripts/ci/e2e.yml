@@ -21,9 +21,11 @@ build-e2e:
     paths:
       - e2e/cypress-headless
 
-.e2e-variables:
+.e2e-test-template:
   stage: test
   rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
     - when: never
@@ -44,6 +46,8 @@ build-e2e:
       --file docker-compose.dev.yml
       --file e2e/docker-compose.system-test-headless.yml
       up --abort-on-container-exit --exit-code-from=e2e
+  after_script:
+    - !reference [ .docker_login, after_script ]
 
 .e2e-test:
   before_script:
@@ -60,20 +64,57 @@ build-e2e:
     - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
 
 test-e2e-booklet-configuration:
-  extends: .e2e-variables
+  extends: .e2e-test-template
   before_script:
     - !reference [ .docker_login, before_script ]
     - !reference [ .e2e-test, before_script ]
     - export SPEC=Booklet-Config/**/*
-  after_script:
-    - !reference [ .docker_login, after_script ]
 
 test-e2e-group-monitor:
-  extends: .e2e-variables
+  extends: .e2e-test-template
   before_script:
     - !reference [ .docker_login, before_script ]
     - !reference [ .e2e-test, before_script ]
     - export SPEC=Group-Monitor/**/*
-  after_script:
-    - docker logout $CI_DEPENDENCY_PROXY_SERVER
-    - docker logout $REGISTRY
+
+test-e2e-session-management:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Session-Management/**/*
+
+test-e2e-super-admin:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Super-Admin/**/*
+
+test-e2e-sys-check:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Sys-Check/**/*
+
+test-e2e-test-controller:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Test-Controller/**/*
+
+test-e2e-workspace-admin:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Workspace-Admin/**/*
+
+test-e2e-misc:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .docker_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=*
