@@ -255,7 +255,8 @@ class TestDAO extends DAO {
         entry = :e,
         reviewer = :s,
         person_id = :person_id,
-        pagelabel = :pagelabel
+        pagelabel = :pagelabel,
+        reviewtime = :t
       where id = :id',
       [
         ':id' => $reviewId,
@@ -264,7 +265,8 @@ class TestDAO extends DAO {
         ':e' => $entry,
         ':s' => $reviewer,
         ':person_id' => $personId,
-        ':pagelabel' => $pagelabel
+        ':pagelabel' => $pagelabel,
+        ':t' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
   }
@@ -284,7 +286,8 @@ class TestDAO extends DAO {
         categories = :c,
         entry = :e,
         reviewer = :s,
-        person_id = :person_id
+        person_id = :person_id,
+        reviewtime = :t
       where id = :id',
       [
         ':id' => $reviewId,
@@ -292,7 +295,8 @@ class TestDAO extends DAO {
         ':c' => $categories,
         ':e' => $entry,
         ':s' => $reviewer,
-        ':person_id' => $personId
+        ':person_id' => $personId,
+        ':t' => TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
   }

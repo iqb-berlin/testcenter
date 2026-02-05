@@ -1,23 +1,24 @@
 ---
 layout: default
 ---
-## 17.5.3-rc
+## 17.5.3
 * Review-Modus:
   * Teilaufgaben-Feld wird nicht mehr automatisch befüllt, da diese nicht anhand der aktuellen Seite ablesbar ist.
-  * Diverse UX Verbesserungen und kleine Bugfixes in der Bedienung
-  * CSV Output von Personen-abhängigen Kommentaren hat nun die selbe Spalten Struktur wie der Review-CSV des Admin Bereichs
-  * Responsive Design für die Komponente
+  * Diverse UX Verbesserungen und kleine Bugfixes in der Bedienung.
+  * CSV Output von Personen-abhängigen Kommentaren hat nun die selbe Spalten Struktur wie der Review-CSV des Admin Bereichs.
+  * Responsive Design für die Komponente.
   * Das Herunterladen leerer CSVs geht nicht mehr. Stattdessen kommt ein Hinweis, dass keine Kommentare existieren.
+  * Das Feld 'reviewtime' stellt nun verlässlich den Zeitpunkt der letzten Änderung eines Kommentars dar.
 
 ## 17.5.2
 ### Bugfix
 * Review-Modus: 
-  * Kommentare zur richtigen Unit gespeichert
-  * Kommentarliste wird bei jedem öffnen neu geladen
-  * 'Schließen' Button verursacht KEIN speichern mehr
-  * Es ist nicht mehr möglich einen bereits gelöschten Kommentar zu bearbeiten
-  * Teilaufgabe kann nun korrekterweise bearbeitet werden
-  * Useragent bleibt auch Bearbeiten erhalten
+  * Kommentare zur richtigen Unit gespeichert.
+  * Kommentarliste wird bei jedem öffnen neu geladen, man bekommt keine veralteten Zustand mehr.
+  * 'Schließen' Button verursacht KEIN speichern mehr.
+  * Es ist nicht mehr möglich einen bereits gelöschten Kommentar zu bearbeiten.
+  * Teilaufgabe kann nun korrekterweise bearbeitet werden.
+  * Useragent bleibt auch nach Bearbeiten erhalten.
 
 ## 17.5.1
 ### Bugfix
@@ -25,21 +26,21 @@ layout: default
 
 ## 17.5.0
 ### Neue Features
-* Review-Modus: Die Review-Oberfläche wurde komplett überarbeitet. Statt eines Dialogs öffnet sich nun ein Seitenbereich, der das gleichzeitige Betrachten der Aufgabe während des Schreibens ermöglicht.
-* Review-Modus: Neue Listenansicht zeigt alle bisher abgegebenen Kommentare der aktuellen Aufgabe unter dem eingeloggten Nutzer.
-* Review-Modus: Kommentare können nun bearbeitet und gelöscht werden.
-* Review-Modus: Ein Download-Button auf der Startseite ermöglicht das Herunterladen aller eigenen Reviews als CSV-Datei.
-* Review-Ausgabe: Booklet- und Aufgabenlabel werden nun in der CSV Ausgabe angezeigt.
-* CSV: Die genannten Veränderungen gelten für Exporte der einzelnen Personon und die "neue" Version der Admin Exporte
+* Review-Modus: 
+  * Die Review-Oberfläche wurde komplett überarbeitet. Statt eines Dialogs öffnet sich nun ein Seitenbereich, der das gleichzeitige Betrachten der Aufgabe während des Kommentierens ermöglicht.
+  * Neue Listenansicht zeigt alle bisher abgegebenen Kommentare der aktuellen Unit und Booklets unter dem eingeloggten Nutzer.
+  * Kommentare können nun bearbeitet und gelöscht werden. 
+  * Ein Download-Button auf der Startseite ermöglicht das Herunterladen aller eigenen Kommentare als CSV-Datei. 
 
 ### Verbesserungen
-* Review-Modus: Eingegebene Daten im Formular bleiben beim Wechsel zwischen Formular- und Listenansicht erhalten.
-* Review-Modus: Das Formular wird nach dem Speichern automatisch zurückgesetzt.
-* Review-Modus: Das Review-Panel schließt sich beim Navigieren zu einer anderen Aufgabe automatisch.
+* API: Booklet- und Unitlabel werden nun in der Review-CSV Ausgabe angezeigt.
+  * Die genannten Veränderungen in der Review-CSV gelten für Exporte der einzelnen Personon und "neues Format" des Admins.
+    * GET `/workspace/{ws_id}/report/review`
+    * GET `/reviews/export`
 
 ### Bugfix
-* CSV-Export: Anführungszeichen in Kommentaren werden nun korrekt exportiert.
-* Seitennavigation innerhalb einer Aufgabe wurde repariert.
+  * Review-CSV-Export: Anführungszeichen in Kommentaren werden nun korrekt exportiert.
+  * Seitennavigation innerhalb einer Aufgabe wurde repariert.
 
 ## 17.4.2
 ### Bugfix
