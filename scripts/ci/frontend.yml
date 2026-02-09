@@ -5,27 +5,29 @@ build-frontend:
       when: on_success
     - when: never
   variables:
-    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
   before_script:
-    - !reference [ .docker_login, before_script ]
+    - !reference [ .gitlab_login, before_script ]
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - docker build --progress plain --pull --target dev --file frontend/Dockerfile
-      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-    - docker push ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${TAG} .
+    - docker push ${TAG}
   after_script:
-    - !reference [ .docker_login, after_script ]
+    - !reference [ .gitlab_login, after_script ]
 
 build-frontend-prod:
   stage: build
   rules:
-    - if: '$PIPELINE_TYPE == "web"'
+    - if: '$PIPELINE_TYPE == "pre-release"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "release"'
       when: on_success
     - when: never
   variables:
-    FRONTEND_IMAGE_NAME: "${CI_REGISTRY_IMAGE}/iqbberlin/testcenter-frontend"
+    FRONTEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}"
   before_script:
-    - !reference [ .docker_login, before_script ]
+    - !reference [ .gitlab_login, before_script ]
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - docker build --progress plain --pull
