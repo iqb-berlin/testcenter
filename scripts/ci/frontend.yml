@@ -25,15 +25,15 @@ build-frontend-prod:
       when: on_success
     - when: never
   variables:
-    FRONTEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}"
+    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
     - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
   script:
     - docker build --progress plain --pull
       --file frontend/Dockerfile
-      --tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} .
-    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
+      --tag ${TAG} .
+    - docker push --quiet ${TAG}
   after_script:
     - docker logout $CI_DEPENDENCY_PROXY_SERVER
     - docker logout $REGISTRY
