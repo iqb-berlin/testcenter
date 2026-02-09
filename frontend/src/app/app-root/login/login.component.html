@@ -7,42 +7,58 @@
       ut aliquip ex ea commodo consequat.</p>
   </div>
   <div class="login-part">
-    <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
-      <mat-card appearance="raised">
-        <mat-card-header>
-          <mat-card-title>Anmelden</mat-card-title>
-        </mat-card-header>
-        <mat-card-content *ngIf="mainDataService.appConfig">
-          <mat-form-field appearance="outline">
-            <mat-label>Anmeldename</mat-label>
-            <input matInput formControlName="name" autocapitalize="off">
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Kennwort</mat-label>
-            <input matInput #pw formControlName="pw"
-                   [type]="showPassword ? 'text' : 'password'"
-                   (keyup)="clearWarning(); checkCapsLock($event)">
-            <button mat-icon-button matSuffix type="button"
-                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
-                    (click)="showPassword = !showPassword">
-              <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
-            </button>
-          </mat-form-field>
-          <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
+    @if (!name) {
+      <form [formGroup]="loginForm" (ngSubmit)="nameInput()">
+        <h2>
+          Anmeldenamen eingeben
+        </h2>
+        <mat-form-field appearance="outline">
+          <mat-label>Anmeldename</mat-label>
+          <input matInput formControlName="name" autocapitalize="off">
+        </mat-form-field>
+        @if (problemText) {
+          <tc-alert [attr.data-cy]="'login-problem:' + problemCode"
                     [level]="problemLevel" [text]="problemText"></tc-alert>
-        </mat-card-content>
-
-        <mat-card-actions [style.justify-content]="'space-between'">
-          <button matButton="filled" type="submit" data-cy="login-user"
-                  [disabled]="!loginForm.get('name')?.valid">
-            <mat-icon>chevron_right</mat-icon>
-            Weiter
+        }
+        <button matButton="filled" type="submit" data-cy="login-user"
+                [disabled]="!loginForm.get('name')?.valid">
+          <mat-icon>chevron_right</mat-icon>
+          Weiter
+        </button>
+      </form>
+    }
+    @else {
+      <form [formGroup]="loginForm" (ngSubmit)="passwordInput()">
+        <div class="password-headline">
+          <button matButton="outlined" type="reset" (click)="name = null;"><</button>
+          <h2>
+            Kennwort eingeben (Benutzer: {{ name }} )
+          </h2>
+        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Kennwort</mat-label>
+          <input matInput #pw formControlName="pw"
+                 [type]="showPassword ? 'text' : 'password'"
+                 (keyup)="clearWarning(); checkCapsLock($event)">
+          <button mat-icon-button matSuffix type="button"
+                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
+                  (click)="showPassword = !showPassword">
+            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
           </button>
-        </mat-card-actions>
-      </mat-card>
-    </form>
+        </mat-form-field>
+        @if (problemText) {
+          <tc-alert [attr.data-cy]="'login-problem:' + problemCode"
+                    [level]="problemLevel" [text]="problemText"></tc-alert>
+        }
+        <button matButton="filled" type="submit" data-cy="login-user"
+                [disabled]="!loginForm.get('name')?.valid">
+          <mat-icon>chevron_right</mat-icon>
+          Anmelden
+        </button>
+      </form>
+    }
 
-    <div class="help-box">
+    <a class="help-box">
       <div class="question-mark">
         <h1>?</h1>
       </div>
@@ -50,7 +66,7 @@
         <h2>Sie benötigen Hilfe?</h2>
         <p>Hier gelangen Sie zur Schritt-für-Schritt-Anleitung</p>
       </div>
-    </div>
+    </a>
 
     <div class="button-box">
       @if (this.mainDataService.sysCheckAvailableForAll) {
