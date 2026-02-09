@@ -5,15 +5,17 @@ build-e2e:
       when: on_success
     - when: never
   variables:
-    E2E_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
+#    E2E_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
+    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
     - docker build --progress plain --pull
-      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${E2E_IMAGE_NAME}:latest
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:latest
       --file e2e/Dockerfile
-      --tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} .
-    - docker push --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}
+      --tag ${TAG} .
+    - docker push --quiet ${TAG}
   after_script:
     - !reference [ .gitlab_login, after_script ]
   artifacts:
@@ -22,7 +24,7 @@ build-e2e:
       - e2e/cypress-headless
 
 .e2e-test-template:
-  stage: test
+  stage: test-e2e
   rules:
     - if: '$PIPELINE_TYPE == "pr"'
       when: on_success
