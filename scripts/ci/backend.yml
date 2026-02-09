@@ -206,7 +206,7 @@ test-backend-api:
   needs:
     - build-backend
   variables:
-    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}_dev"
+    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
   before_script:
     - !reference [ .gitlab_login, before_script ]
     - docker pull --quiet ${TAG}
@@ -233,8 +233,8 @@ test-file-server-api:
     - build-backend
     - build-file-server
   variables:
-    BACKEND_TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}_dev"
-    FILE_SERVER_TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}_dev"
+    BACKEND_TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
+    FILE_SERVER_TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
   before_script:
     - !reference [ .gitlab_login, before_script ]
     - chmod 0755 scripts/database/000-create-test-db.sh
