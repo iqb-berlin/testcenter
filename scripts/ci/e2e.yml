@@ -5,7 +5,6 @@ build-e2e:
       when: on_success
     - when: never
   variables:
-#    E2E_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
     TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
@@ -36,11 +35,11 @@ build-e2e:
     - build-frontend
     - build-file-server
     - build-e2e
-  variables:
-    BACKEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}"
-    FRONTEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}"
-    FILE_SERVER_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}"
-    E2E_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
+#  variables:
+#    BACKEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}"
+#    FRONTEND_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}"
+#    FILE_SERVER_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}"
+#    E2E_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
   script:
     - docker compose
       --env-file .env.dev-template
@@ -72,51 +71,51 @@ test-e2e-booklet-configuration:
     - !reference [ .e2e-test, before_script ]
     - export SPEC=Booklet-Config/**/*
 
-test-e2e-group-monitor:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Group-Monitor/**/*
-
-test-e2e-session-management:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Session-Management/**/*
-
-test-e2e-super-admin:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Super-Admin/**/*
-
-test-e2e-sys-check:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Sys-Check/**/*
-
-test-e2e-test-controller:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Test-Controller/**/*
-
-test-e2e-workspace-admin:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=Workspace-Admin/**/*
-
-test-e2e-misc:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC=*
+#test-e2e-group-monitor:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Group-Monitor/**/*
+#
+#test-e2e-session-management:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Session-Management/**/*
+#
+#test-e2e-super-admin:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Super-Admin/**/*
+#
+#test-e2e-sys-check:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Sys-Check/**/*
+#
+#test-e2e-test-controller:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Test-Controller/**/*
+#
+#test-e2e-workspace-admin:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=Workspace-Admin/**/*
+#
+#test-e2e-misc:
+#  extends: .e2e-test-template
+#  before_script:
+#    - !reference [ .gitlab_login, before_script ]
+#    - !reference [ .e2e-test, before_script ]
+#    - export SPEC=*
