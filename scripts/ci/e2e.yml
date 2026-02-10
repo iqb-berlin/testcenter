@@ -5,7 +5,7 @@ build-e2e:
       when: on_success
     - when: never
   variables:
-    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}"
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
