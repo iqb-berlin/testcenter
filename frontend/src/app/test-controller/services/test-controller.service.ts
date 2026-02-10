@@ -1029,7 +1029,7 @@ export class TestControllerService {
     return of(true);
   }
 
-  canDeactivateUnit(nextStateUrl: string, ignoreRouterState: boolean = false): Observable<boolean> {
+  canDeactivateUnit(nextStateUrl: string, ignoreRouterState?: boolean): Observable<boolean> {
     if (nextStateUrl === '/r/route-dispatcher') {
       return of(true);
     }
