@@ -62,8 +62,8 @@ build-e2e:
     #- docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FILE_SERVER_IMAGE_NAME}:current
-    - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev testcenter-e2e
 
 test-e2e-booklet-configuration:
   extends: .e2e-test-template
