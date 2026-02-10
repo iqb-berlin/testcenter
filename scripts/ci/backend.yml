@@ -5,13 +5,19 @@ build-backend:
       when: on_success
     - when: never
   variables:
-    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
-    - docker build --progress plain --pull --target dev --file backend/Dockerfile
-      --tag ${TAG} .
-    - docker push ${TAG}
+    - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${IMAGE_NAME}:dev      
+      --target dev --file backend/Dockerfile
+      --tag ${TAG}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push -all-tags ${IMAGE_NAME}
   after_script:
     - !reference [ .gitlab_login, after_script ]
 
@@ -74,13 +80,19 @@ build-file-server:
       when: on_success
     - when: never
   variables:
-    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev"
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
-    - docker build --progress plain --pull --file file-server/Dockerfile
-      --tag ${TAG} .
-    - docker push ${TAG}
+    - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${IMAGE_NAME}:dev
+      --file file-server/Dockerfile
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push --all-tags ${IMAGE_NAME}
   after_script:
     - !reference [ .gitlab_login, after_script ]
 
