@@ -54,16 +54,16 @@ build-e2e:
     - chmod 0755 scripts/database/000-create-test-db.sh
     #-docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
     #- docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FRONTEND_IMAGE_NAME}:current
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FRONTEND_IMAGE_NAME}:current
     #  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
     #- docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FILE_SERVER_IMAGE_NAME}:current
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FILE_SERVER_IMAGE_NAME}:current
     - docker pull --quiet ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
-    - docker tag ${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA} testcenter-e2e
 
 test-e2e-booklet-configuration:
   extends: .e2e-test-template
