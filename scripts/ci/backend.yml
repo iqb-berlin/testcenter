@@ -14,7 +14,7 @@ build-backend:
       --build-arg BUILDKIT_INLINE_CACHE=1
       --cache-from ${IMAGE_NAME}:dev      
       --target dev --file backend/Dockerfile
-      --tag ${TAG}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
       --tag ${IMAGE_NAME}:dev
       .
     - docker push -all-tags ${IMAGE_NAME}
