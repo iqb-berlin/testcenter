@@ -1,14 +1,8 @@
-#TODO brauchen unit tests fuer doku
-# dependency proxy
-#      --build-arg REGISTRY_PATH=${DOCKER_HUB_PROXY}/
-#      --build-arg BUILDKIT_INLINE_CACHE=1
-#      --cache-from ${BACKEND_IMAGE_NAME}:latest
-#DOCKERHUB_PROXY=
-
 variables:
   DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
   GITLAB_REGISTRY_IMAGE_BASE: $CI_REGISTRY_IMAGE
+  DEP_PROXY_PREFIX: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}
   BACKEND_IMAGE_NAME: "iqbberlin/testcenter-backend"
   FRONTEND_IMAGE_NAME: "iqbberlin/testcenter-frontend"
   BROADCASTER_IMAGE_NAME: "iqbberlin/testcenter-broadcaster"
@@ -37,16 +31,26 @@ workflow:
         PIPELINE_TYPE: "web"
     - when: always
 
-image: docker:28.2
+image: ${DEP_PROXY_PREFIX}/docker:28.2
+
 services:
-  - name: docker:28.2-dind
+  - name: ${DEP_PROXY_PREFIX}/docker:28.2-dind
+    variables:
+      HEALTHCHECK_TCP_PORT: "2375"
+    entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh --mtu=1392" ]
+    alias: docker
+
 
 .gitlab_login:
   before_script:
-    - export DOCKERHUB_PROXY=
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    #- export DOCKERHUB_PROXY=
+    - echo $CI_DEPENDENCY_PROXY_PASSWORD | docker login -u $CI_DEPENDENCY_PROXY_USER
+      --password-stdin $CI_DEPENDENCY_PROXY_SERVER
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER
+      --password-stdin $CI_REGISTRY
   after_script:
-    - docker logout "$CI_REGISTRY"
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $CI_REGISTRY
 
 .dockerhub_login:
   before_script:

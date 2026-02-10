@@ -5,16 +5,19 @@ build-e2e:
       when: on_success
     - when: never
   variables:
-    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}"
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}"
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
     - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
       --build-arg BUILDKIT_INLINE_CACHE=1
-      --cache-from ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:latest
+      --cache-from ${IMAGE_NAME}:dev
       --file e2e/Dockerfile
-      --tag ${TAG} .
-    - docker push --quiet ${TAG}
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push --quiet all-tags ${IMAGE_NAME}
   after_script:
     - !reference [ .gitlab_login, after_script ]
   artifacts:
