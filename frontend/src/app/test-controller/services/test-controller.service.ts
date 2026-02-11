@@ -450,6 +450,7 @@ export class TestControllerService {
       this.timers[testlet.id] = timeGivenByGm;
     }
     testlet.locks.time = false;
+    this.updateLocks();
   }
 
   startTimer(testlet: Testlet): void {
