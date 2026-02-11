@@ -204,9 +204,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           // parse the last word as integer
           this.tcs.restoreTime(targetUnit.parent, parseInt(params[2].trim().split(' ').pop()!, 10));
         }
-        targetUnit.parent.locks.afterLeave = false;
+        this.tcs.updateSingleLock(targetUnit.parent, 'afterLeave', false);
         targetUnit.lockedAfterLeaving = false;
-        this.tcs.clearTestlet(targetUnit.parent.id);
+        this.tcs.clearCodeLock(targetUnit.parent.id);
       }
       return this.tcs.setUnitNavigationRequest(gotoTarget, true);
     }
@@ -250,8 +250,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           if (this.tcs.currentUnit) {
-            this.tcs.currentUnit.parent.locks.time = true;
-            this.tcs.updateLocks();
+            this.tcs.updateSingleLock(this.tcs.currentUnit.parent, 'time', true);
           }
           return this.tcs.setUnitNavigationRequest(
             UnitNavigationTarget.NEXT ?? UnitNavigationTarget.END,
@@ -271,8 +270,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions && this.tcs.currentUnit) {
-          this.tcs.currentUnit.parent.locks.time = true;
-          this.tcs.updateLocks();
+          this.tcs.updateSingleLock(this.tcs.currentUnit.parent, 'time', true);
         }
         return true;
       case MaxTimerEvent.INTERRUPTED:

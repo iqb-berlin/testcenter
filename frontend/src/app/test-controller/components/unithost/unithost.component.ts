@@ -513,7 +513,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const givenCode = this.clearCode.toUpperCase().trim();
 
     if (requiredCode === givenCode) {
-      this.tcs.clearTestlet(this.tcs.currentUnit.parent.locked.through.id);
+      this.tcs.clearCodeLock(this.tcs.currentUnit.parent.locked.through.id);
       this.clearCode = '';
       this.runUnit();
     } else {
