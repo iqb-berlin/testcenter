@@ -149,7 +149,7 @@ export class SettingsComponent {
         this.mainDataService.appConfig.setAppConfig(appConfig);
         this.mainDataService.appTitle$.next(appConfig.appTitle);
         this.themeService.setTheme(appConfig.themeName);
-        this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
+        this.mainDataService.globalWarning = this.mainDataService.appConfig.getWarningMessage();
       });
   }
 
