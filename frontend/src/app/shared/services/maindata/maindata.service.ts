@@ -109,7 +109,7 @@ export class MainDataService {
   ) {
     this.appConfig$.subscribe(appConfig => {
       this.appTitle$.next(appConfig.appTitle);
-      this.globalWarning = appConfig.warningMessage;
+      this.globalWarning = appConfig.getWarningMessage();
       const authData = this.getAuthData();
       if (authData) {
         this.cts.addCustomTexts(authData.customTexts);
