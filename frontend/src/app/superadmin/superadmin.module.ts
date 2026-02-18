@@ -35,7 +35,6 @@ import {
   SuperadminPasswordRequestComponent
 } from './superadmin-password-request/superadmin-password-request.component';
 import { SharedModule } from '../shared/shared.module';
-import { ThemeConfigComponent } from './settings/theme-config.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +73,6 @@ import { ThemeConfigComponent } from './settings/theme-config.component';
     MatDividerModule,
     SharedModule,
     MatProgressBarModule,
-    ThemeConfigComponent,
     FormsModule
   ],
   exports: [
