@@ -73,6 +73,10 @@ $app->patch('/system/config/custom-texts', [SystemController::class, 'patchCusto
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
 
+$app->patch('/system/config/custom-images', [SystemController::class, 'patchCustomImages'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
+
 $app->get('/system/time', [SystemController::class, 'getTime']);
 
 $app->get('/system/status', [SystemController::class, 'getStatus']);

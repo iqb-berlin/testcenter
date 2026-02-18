@@ -8,7 +8,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
+import { MatButton, MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
@@ -20,6 +20,7 @@ import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.in
 import { Theme, THEMES, ThemeService } from '../../shared/services/theme.service';
 import { SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
+import { CustomImagesService } from '../../shared/services/custom-images.service';
 
 @Component({
   imports: [
@@ -42,14 +43,15 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     FormsModule,
     SharedModule,
     EditCustomTextsComponent,
-    MatFabButton
+    MatFabButton,
+    MatButton
   ],
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.css']
 })
 export class SettingsComponent {
   private configDataChangedSubscription: Subscription | null = null;
-  protected readonly THEMES: Theme[] = THEMES;
+  customImageForm: FormGroup;
   configForm: FormGroup;
   warningIsExpired = false;
   imageError: string | null = '';
@@ -82,8 +84,12 @@ export class SettingsComponent {
   };
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
-              private themeService: ThemeService,
+              public themeService: ThemeService, private customImageService: CustomImagesService,
               private snackBar: MatSnackBar, private mainDataService: MainDataService) {
+    this.customImageForm = this.formBuilder.group({
+      loginIntro: this.formBuilder.control(''),
+      starterIntro: this.formBuilder.control('')
+    });
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       introHtml: this.formBuilder.control(''),
@@ -98,6 +104,10 @@ export class SettingsComponent {
   }
 
   ngOnInit(): void {
+    this.customImageForm.setValue({
+      loginIntro: this.customImageService.images.loginIntro || '',
+      starterIntro: this.customImageService.images.starterIntro || ''
+    });
     setTimeout(async () => {
       const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
       this.configForm.setValue({
@@ -125,7 +135,14 @@ export class SettingsComponent {
     });
   }
 
-  saveData(): void {
+  protected saveCustomImages() {
+    this.customImageService.save(this.customImageForm.value)
+      .subscribe(() => {
+        this.snackBar.open('Konfiguration gespeichert', 'Info', { duration: 3000 });
+      });
+  }
+
+  saveAppConfig(): void {
     const appConfig: AppSettings = {
       appTitle: this.configForm.get('appTitle')?.value,
       introHtml: this.configForm.get('introHtml')?.value,
@@ -153,7 +170,7 @@ export class SettingsComponent {
       });
   }
 
-  async resetForm(): Promise<void> {
+  async resetAppConfigForm(): Promise<void> {
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.reset({
       appTitle: appConfig.appTitle,
