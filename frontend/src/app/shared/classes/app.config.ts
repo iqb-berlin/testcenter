@@ -19,6 +19,7 @@ const customTextsDefault = customTextsDefaultJSON as {
 export class AppConfig {
   sanitizer: DomSanitizer;
   cts: CustomtextService;
+  defaultThemeName: string;
   customTexts: KeyValuePairs = {};
   version = '';
   veronaPlayerApiVersionMin: number = 0;
@@ -40,9 +41,10 @@ export class AppConfig {
   fileServiceUri: string = '';
   themeName: string = '';
 
-  constructor(sysConfig: SysConfig, cts: CustomtextService, sanitizer: DomSanitizer) {
+  constructor(sysConfig: SysConfig, cts: CustomtextService, defaultThemeName: string, sanitizer: DomSanitizer) {
     this.sanitizer = sanitizer;
     this.cts = cts;
+    this.defaultThemeName = defaultThemeName;
     this.setCustomTexts(sysConfig.customTexts);
     this.setAppConfig(sysConfig.appConfig);
     this.customTexts = sysConfig.customTexts;
@@ -82,7 +84,7 @@ export class AppConfig {
     this.globalWarningExpiredHour = '';
     this.bugReportAuth = '';
     this.bugReportTarget = '';
-    this.themeName = 'zg1-theme';
+    this.themeName = this.defaultThemeName;
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
       if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
