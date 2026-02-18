@@ -1,8 +1,8 @@
 <div class="form-grid">
-  <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
+  <h3>
     Text-Ersetzungen
   </h3>
-  <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
+  <div>
     <tc-custom-texts></tc-custom-texts>
   </div>
 </div>
@@ -27,10 +27,10 @@
 </form>
 
 <form [formGroup]="configForm" class="form-grid">
-  <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
+  <h3>
     Warnung auf der Startseite
   </h3>
-  <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
+  <div>
     <mat-form-field appearance="fill">
       <mat-label>Text</mat-label>
       <textarea matInput formControlName="globalWarningText"
@@ -60,17 +60,17 @@
     </div>
   </div>
 
-  <h3 [style.grid-row]="'2 / 3'" [style.grid-column]="'1 / 2'">
+  <h3>
     Name der Anwendung
   </h3>
-  <mat-form-field appearance="fill" [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
+  <mat-form-field appearance="fill">
     <input matInput formControlName="appTitle" placeholder="Name">
   </mat-form-field>
 
-  <h3 [style.grid-row]="'3 / 4'" [style.grid-column]="'1 / 2'">
+  <h3>
     Logo
   </h3>
-  <div [style.grid-row]="'3 / 4'" [style.grid-column]="'2 / 3'">
+  <div>
     <div class="flex-row" [style.gap.px]="5">
       <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
               (click)="hiddenimgfileinput.click()">
@@ -88,29 +88,26 @@
     }
   </div>
 
-  <h3 [style.grid-row]="'4 / 5'" [style.grid-column]="'1 / 2'">
+  <h3>
     Startseite
   </h3>
-  <mat-form-field [style.grid-row]="'4 / 5'" [style.grid-column]="'2 / 3'"
-                  appearance="fill">
+  <mat-form-field appearance="fill">
         <textarea matInput formControlName="introHtml"
-                  cdkTextareaAutosize
-                  cdkAutosizeMinRows="6"></textarea>
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
 
-  <h3 [style.grid-row]="'5 / 6'" [style.grid-column]="'1 / 2'">
+  <h3>
     Impressum
   </h3>
-  <mat-form-field appearance="fill" [style.grid-row]="'4 / 5'" [style.grid-column]="'2 / 3'">
+  <mat-form-field appearance="fill">
         <textarea matInput formControlName="legalNoticeHtml"
-                  cdkTextareaAutosize
-                  cdkAutosizeMinRows="6"></textarea>
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
 
-  <h3 [style.grid-row]="'6 / 7'" [style.grid-column]="'1 / 2'">
+  <h3>
     Fehler-Report
   </h3>
-  <div [style.grid-row]="'5 / 6'" [style.grid-column]="'2 / 3'">
+  <div>
     <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
     <mat-form-field appearance="fill">
       <mat-label>Ziel-Repository</mat-label>
@@ -122,10 +119,10 @@
     </mat-form-field>
   </div>
 
-  <h3 [style.grid-row]="'7 / 8'" [style.grid-column]="'1 / 2'">
+  <h3>
     Theming
   </h3>
-  <div [style.grid-row]="'7 / 8'" [style.grid-column]="'2 / 3'">
+  <div>
     <h4>Theme</h4>
     <mat-radio-group class="theme-config" formControlName="themeName">
       @for (theme of themeService.availableThemes; track theme.name) {
