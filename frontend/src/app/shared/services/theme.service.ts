@@ -1,24 +1,61 @@
 import { Injectable } from '@angular/core';
+import { CustomImages } from '../interfaces/custom-images.interface';
+import { AppError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
-  currentTheme = THEMES[0].name;
+  activeTheme: Theme;
+  availableThemes = THEMES;
 
-  setTheme(themeName?: string) {
-    document.body.className = themeName || this.currentTheme;
+  constructor() {
+    this.activeTheme = THEMES[0];
+    document.body.className = this.activeTheme.cssClassName;
+  }
+
+  setTheme(themeName: string) {
+    const newTheme = THEMES.find(theme => theme.name === themeName);
+    if (!newTheme) {
+      throw new AppError({
+        type: 'warning',
+        description: '',
+        label: `Theme "${themeName}" konnte nicht geladen werden.`
+      });
+    }
+    this.activeTheme = newTheme;
+    document.body.className = this.activeTheme.cssClassName;
   }
 }
 
 export interface Theme {
   name: string;
+  cssClassName: string;
   previewColor?: string;
   description?: string;
+  imagePaths?: Partial<Record<keyof CustomImages, string>>
 }
 
 export const THEMES: Theme[] = [
-  { name: 'zg1-theme', previewColor: '#196175', description: 'Zielgruppe Schüler*innen der Primarstufe' },
-  { name: 'zg2-theme', previewColor: '#0B2D84', description: 'Zielgruppe Schüler*innen der Sekundarstufe I' },
-  { name: 'zg3-theme', previewColor: '#6B369A', description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)' }
+  {
+    name: 'Primar',
+    cssClassName: 'theme-primar',
+    previewColor: '#196175',
+    description: 'Zielgruppe Schüler*innen der Primarstufe',
+    imagePaths: {
+      starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg'
+    }
+  },
+  {
+    name: 'Sekundar',
+    cssClassName: 'theme-sekundar',
+    previewColor: '#0B2D84',
+    description: 'Zielgruppe Schüler*innen der Sekundarstufe I'
+  },
+  {
+    name: 'Erwachsene',
+    cssClassName: 'theme-adult',
+    previewColor: '#6B369A',
+    description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)'
+  }
 ];

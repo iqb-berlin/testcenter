@@ -69,7 +69,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.backendService.getSysConfig()
         .subscribe((sysConfig: SysConfig) => {
-          this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
+          this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
+                                                          this.themeService.availableThemes[0].name,
+                                                          this.sanitizer);
           this.themeService.setTheme(sysConfig.appConfig.themeName);
         });
 
