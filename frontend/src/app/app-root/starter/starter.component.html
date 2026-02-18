@@ -1,8 +1,15 @@
-<h2 class="intro">Introtext placeholder</h2>
+<div class="intro">
+  <img class="companion-image" [src]="themeService.activeTheme.imagePaths?.starterCompanion" alt="companion-image"/>
+  <div class="flex-column">
+    <p class="intro-heading">Schön, dass du da bist!</p>
+    <p>Komm, wir legen los. Wähle einen Teil aus.</p>
+  </div>
+</div>
+
 <div class="cards">
   @if (claims.workspaceAdmin) {
     @for (workspace of workspaces; track workspace.id; let i = $index) {
-      <tc-test-card [name]="workspace.label"
+      <tc-test-card [name]="workspace.label" [index]="i"
                     (select)="buttonGotoWorkspaceAdmin(workspace)"></tc-test-card>
     }
     @if (!workspaces.length) {
@@ -44,8 +51,9 @@
   }
 
   @if (claims.test) {
-    @for (booklet of availableBooklets; track booklet.name) {
-      <tc-test-card [name]="booklet.name" [mode]="booklet.mode" (select)="startTest(booklet.claim)"></tc-test-card>
+    @for (booklet of availableBooklets; track booklet.name; let i = $index) {
+      <tc-test-card [name]="booklet.name" [index]="i" [mode]="booklet.mode"
+                    (select)="startTest(booklet.claim)"></tc-test-card>
     }
   }
 

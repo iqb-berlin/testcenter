@@ -16,25 +16,35 @@ import { MatIcon } from '@angular/material/icon';
   ],
   template: `
     <mat-card>
-      <mat-card-header>
-        <p>{{ name }}</p>
-      </mat-card-header>
-      <mat-card-actions>
-        <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
-          @if (mode) {
-            <mat-icon>{{ icons[mode] }}</mat-icon>
-          }
-          {{ buttonLabel ? buttonLabel : mode ? labels[mode] : 'Bearbeiten' }}
-        </button>
-      </mat-card-actions>
+      @if (index !== undefined) {
+        <div class="number">{{index + 1}}</div>
+      }
+      <div class="flex-column">
+        <mat-card-header>
+          <p>{{ name }}</p>
+        </mat-card-header>
+        <mat-card-actions>
+          <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
+            @if (mode) {
+              <mat-icon>{{ icons[mode] }}</mat-icon>
+            }
+            {{ buttonLabel ? buttonLabel : mode ? labels[mode] : 'Bearbeiten' }}
+          </button>
+        </mat-card-actions>
+      </div>
     </mat-card>
   `,
   styles: `
     mat-card {
-      width: 600px;
       padding: 16px 24px;
       border-radius: 4px;
       border: 1px solid var(--mat-sys-primary);
+      flex-direction: row;
+      align-items: center;
+      gap: 24px;
+    }
+    .number {
+      font-size: 57px;
     }
     mat-card-header {
       padding: 0;
@@ -46,6 +56,7 @@ import { MatIcon } from '@angular/material/icon';
 })
 export class TestCardComponent {
   @Input() name!: string;
+  @Input() index?: number;
   @Input() buttonLabel?: string;
   @Input() mode?: 'start' | 'continue' | 'view' | 'locked';
   @Input() disabled?: boolean = false;
