@@ -10,6 +10,7 @@ import {
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
 import { ThemeService } from './shared/services/theme.service';
+import { CustomImagesService } from './shared/services/custom-images.service';
 
 @Component({
   selector: 'tc-root',
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private backendService: BackendService,
               private customtextService: CustomtextService,
               private titleService: Title,
+              private customImageService: CustomImagesService,
               private themeService: ThemeService,
               private sanitizer: DomSanitizer,
               private route: ActivatedRoute) { }
@@ -72,6 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
                                                           this.themeService.availableThemes[0].name,
                                                           this.sanitizer);
+          this.customImageService.registerImages(sysConfig.customImages);
           this.themeService.setTheme(sysConfig.appConfig.themeName);
         });
 

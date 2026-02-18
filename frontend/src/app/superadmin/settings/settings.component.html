@@ -7,6 +7,25 @@
   </div>
 </div>
 
+<form [formGroup]="customImageForm" class="form-grid">
+  <h3>
+    Bild-Ersetzungen
+  </h3>
+  <div>
+    <mat-form-field appearance="fill">
+      <mat-label>loginIntro</mat-label>
+      <textarea matInput formControlName="loginIntro"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>starterIntro</mat-label>
+      <textarea matInput formControlName="starterIntro"></textarea>
+    </mat-form-field>
+    <button mat-raised-button (click)="saveCustomImages()">
+      Bild-Ersetzungen speichern
+    </button>
+  </div>
+</form>
+
 <form [formGroup]="configForm" class="form-grid">
   <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
     Warnung auf der Startseite
@@ -109,7 +128,7 @@
   <div [style.grid-row]="'7 / 8'" [style.grid-column]="'2 / 3'">
     <h4>Theme</h4>
     <mat-radio-group class="theme-config" formControlName="themeName">
-      @for (theme of THEMES; track theme.name) {
+      @for (theme of themeService.availableThemes; track theme.name) {
         <mat-radio-button [value]="theme.name">
           <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
           <p class="theme-name">{{ theme.name }}</p>
@@ -121,10 +140,10 @@
 
   <div class="actions" [class.sticky-actions]="configForm.dirty">
     <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
-            [disabled]="!configForm.dirty" (click)="saveData()">
+            [disabled]="!configForm.dirty" (click)="saveAppConfig()">
       Speichern
     </button>
-    <button matFab extended [disabled]="!configForm.dirty" (click)="resetForm()">
+    <button matFab extended [disabled]="!configForm.dirty" (click)="resetAppConfigForm()">
       Zurücksetzen
     </button>
   </div>

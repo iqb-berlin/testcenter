@@ -1,4 +1,5 @@
 import { KeyValuePairs } from '../../app.interfaces';
+import { CustomImages } from './custom-images.interface';
 
 export interface AppSettingsObject {
   appTitle: string,
@@ -18,6 +19,7 @@ export type AppSettings = AppSettingsObject | Record<string, never>;
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
+  customImages: Record<keyof CustomImages, string>
   appConfig: AppSettings;
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
