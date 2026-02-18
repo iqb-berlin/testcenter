@@ -3,16 +3,32 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
 }
 
 .intro {
-  text-align: center;
+  width: 684px;
+  margin: 48px 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  .companion-image {
+    width: 94px;
+    height: 94px;
+    flex-shrink: 0;
+    aspect-ratio: 1/1;
+  }
+
+  .intro-heading {
+    font-weight: 700;
+  }
 }
 
 .cards {
+  width: 684px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 24px;
 }
 

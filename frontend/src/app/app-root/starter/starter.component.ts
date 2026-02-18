@@ -15,11 +15,12 @@ import { FileService } from '../../shared/services/file.service';
 import { MessageService } from '../../shared/services/message.service';
 import { AuthAccessType } from '../../app.interfaces';
 import { HeaderService } from '../../core/header.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 @Component({
   selector: 'tc-starter',
   templateUrl: './starter.component.html',
-  styleUrls: ['./starter.component.css'],
+  styleUrls: ['./starter.component.scss'],
   standalone: false
 })
 export class StarterComponent implements OnInit, OnDestroy {
@@ -35,6 +36,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
               public pcs: PasswordChangeService, private dialog: MatDialog,
+              public themeService: ThemeService,
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
