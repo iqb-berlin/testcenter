@@ -28,9 +28,9 @@ import {
 import { AppError } from '../../../app.interfaces';
 
 @Component({
-    templateUrl: './unithost.component.html',
-    styleUrls: ['./unithost.component.css'],
-    standalone: false
+  templateUrl: './unithost.component.html',
+  styleUrls: ['./unithost.component.css'],
+  standalone: false
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
@@ -38,30 +38,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
   private postMessageTarget: Window = window;
-  leaveWarning = false;
-
   resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   resourcesToLoadLabels: string[] = [];
-
   pages: { [id: string]: string } = {};
   pageLabels: string[] = [];
   currentPageIndex: number = -1;
-
   clearCode: string = '';
 
-  constructor(
-    public tcs: TestControllerService,
-    private mds: MainDataService,
-    @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
-    private bs: BackendService,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar
-  ) {
-  }
+  constructor(public tcs: TestControllerService, private mds: MainDataService,
+              @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
+              private bs: BackendService, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
-    this.leaveWarning = false;
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
@@ -89,44 +78,33 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageTarget = messageEvent.source as Window;
     const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
-      // eslint-disable-next-line no-console
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
-      // return;
     }
 
     switch (msgType) {
       case 'vopReadyNotification':
         await this.handleReadyNotification(msgData);
         break;
-
       case 'vopStateChangedNotification':
         this.handleStateChangedNotification(msgData);
         break;
-
       case 'vopUnitNavigationRequestedNotification':
         this.handleUnitNavigationRequestedNotification(msgData);
         break;
-
       case 'vopWindowFocusChangedNotification':
         this.handleWindowFocusChangedNotification(msgData);
         break;
-
       case 'vopRuntimeErrorNotification':
         this.handleRuntimeError(msgData);
         break;
-
       default:
-        // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
         break;
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async handleReadyNotification(msgData: any): Promise<void> {
-    // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
-    // eslint-disable-next-line no-case-declarations
     const playerApiVersionMajor = parseInt(playerApiVersion.split('.').shift() ?? '', 10);
 
     if (
@@ -212,11 +190,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
         // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
         // by the player itself ot the host. To maintain backwards-compatibility we check this here.
         Object.keys(msg.unitState.dataParts).forEach(dataPartId => {
-            if (!msg.unitState || !msg.unitState.dataParts) return;
-            if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
-              msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
-            }
-          });
+          if (!msg.unitState || !msg.unitState.dataParts) return;
+          if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
+            msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
+          }
+        });
         this.tcs.updateUnitStateDataParts(
           unit.sequenceId,
           msg.unitState.dataParts,
@@ -230,14 +208,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleUnitNavigationRequestedNotification(msgData: any): void {
     // support Verona2 and Verona3 version
     const target = msgData.target ? `#${msgData.target}` : msgData.targetRelative;
     this.tcs.setUnitNavigationRequest(target);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleWindowFocusChangedNotification(msgData: any): void {
     if (msgData.hasFocus) {
       this.tcs.windowFocusState$.next('PLAYER');
@@ -264,7 +240,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.pageLabels = Object.values(this.pages);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private handleRuntimeError(msg: VopRuntimeErrorNotification): void {
     const unit = (msg.sessionId in this.tcs.unitAliasMap) ?
       this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]) :
@@ -295,7 +270,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     };
     const runTimeErrorReactionMap:
-      { [code in typeof VeronaPlayerRuntimeErrorCodes[number]]: keyof typeof reactions } = {
+    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]]: keyof typeof reactions } = {
       'session-id-missing': 'raiseError',
       'unit-definition-missing': 'raiseError',
       'wrong-session-id': 'raiseError',
@@ -390,8 +365,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.startTimerIfNecessary();
-
-    this.leaveWarning = false;
     this.prepareIframe();
     this.tcs.updateNavigationState();
   }
@@ -449,7 +422,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
     if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
-    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.bs.backendUrl; // @TODO: extract to 'file-server.service' class
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(navigationState.targets)
         .filter(isVeronaNavigationTarget)
