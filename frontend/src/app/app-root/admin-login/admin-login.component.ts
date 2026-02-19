@@ -15,7 +15,6 @@ import { HeaderService } from '../../core/header.service';
 
 export class AdminLoginComponent implements OnInit {
   static oldLoginName = '';
-  private routingSubscription: Subscription | null = null;
   problemText = '';
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
@@ -31,8 +30,7 @@ export class AdminLoginComponent implements OnInit {
     public mainDataService: MainDataService,
     private headerService: HeaderService,
     private backendService: BackendService,
-    private router: Router,
-    private route: ActivatedRoute
+    private router: Router
   ) { }
 
   ngOnInit(): void {

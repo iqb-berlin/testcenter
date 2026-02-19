@@ -23,7 +23,6 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
-
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -31,7 +30,6 @@ import { BackendService } from './backend.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
@@ -50,7 +48,6 @@ import { TestCardComponent } from './app-root/starter/test-card.component';
     AppComponent,
     AppRootComponent,
     SysCheckStarterComponent,
-    LoginComponent,
     AdminLoginComponent,
     CodeInputComponent,
     RouteDispatcherComponent,

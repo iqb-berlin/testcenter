@@ -1,0 +1,114 @@
+.mat-mdc-form-field {
+  display: block
+}
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.welcome-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+  width: 35%;
+  background-color: var(--mat-sys-secondary);
+  text-align: center;
+}
+
+.welcome-part img {
+  width: 90%;
+  height: 60%;
+  align-items: center;
+}
+
+.login-part {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  margin-left: 64px;
+  gap: 32px;
+  width: 65%;
+}
+
+.login-part form {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 80%;
+  gap: 32px;
+}
+
+.password-headline {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  gap: 24px;
+}
+
+.password-headline > h2 {
+}
+
+.password-headline > button {
+  font-size: 20px;
+}
+
+.login-part mat-form-field {
+}
+
+.login-part > form > button {
+  width: 15%;
+  background-color: var(--mat-sys-primary);
+  color: white;
+}
+
+.help-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 24px;
+  padding: 10px;
+  padding-left: 24px;
+  border: 1px solid var(--mat-sys-primary);
+  border-radius: 10px;
+  width: 80%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.help-box mat-card-header {
+  color: var(--mat-sys-primary);
+  font-weight: bold;
+}
+
+.question-mark svg {
+  fill: var(--mat-sys-primary);
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button-box {
+  align-self: end;
+  display: flex;
+  gap: 9px;
+  margin-top: auto;
+  padding-bottom: 12px;
+  margin-right: 24px;
+}
