@@ -1,11 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MainDataService, SharedModule, UserAgentService } from '../../shared/shared.module';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import {
+  MainDataService,
+  WideMessageDialogComponent,
+  MessageDialogData,
+  SharedModule,
+  UserAgentService
+} from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 
@@ -17,7 +26,11 @@ import { BackendService } from '../../backend.service';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatDialogModule,
     RouterLink,
+    MatButton,
+    MatIconButton,
+    MatCardModule,
     SharedModule
   ]
 })
@@ -32,6 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   showPassword = false;
   unsupportedBrowser: [string, string] | [] = [];
   name: string | null = null;
+  readonly dialog = inject(MatDialog);
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -106,6 +120,21 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.problemLevel = 'error';
         this.name = null;
         this.loginForm.reset();
+      }
+    });
+  }
+
+  openDialog() {
+    const dialog = this.dialog.open(WideMessageDialogComponent, {
+      width: '80%',
+      data: <MessageDialogData>{
+        title: 'Anleitung',
+        content: '<ul> ' +
+          ' <li> Geben Sie in Schritt 1 Ihren Anmeldenamen in das Eingabefeld ein. Klicken Sie dann auf den Button "Weiter".' +
+          ' <li> Sie gelangen nun in den nächsten Schritt.".' +
+          ' <li> Geben Sie in Schritt 2 Ihr Kennwort in das Eingabefeld ein. Klicken Sie dann auf den Button "Anmelden".' +
+          ' <li> Die Startseite des Testcenters wird sich im Anschluss der erfolgreichen Anmeldung öffnen.' +
+          ' </ul> '
       }
     });
   }
