@@ -7,6 +7,7 @@ local uri = ngx.var.uri
 
 local fileName
 local token
+local wsId
 
 token, wsId, fileName = string.match(uri, "^/file/([^/]+)/ws_(%d+)/Resource/(.+)$")
 
