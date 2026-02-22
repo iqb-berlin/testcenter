@@ -32,7 +32,7 @@
 </ng-container>
 
 <div class="sidebar-bottom">
-  <ng-container *ngIf="tcs.testMode.canChangeStateOptions">
+  <ng-container *ngIf="tcs.testMode.canChangeStateOptions && (tcs.booklet?.states | keyvalue)?.length">
     <h3>Zustände</h3>
     <div *ngFor="let state of (tcs.booklet?.states || {}) | keyvalue">
       <mat-form-field>
