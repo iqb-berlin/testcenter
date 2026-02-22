@@ -137,7 +137,11 @@ class SystemConfig {
         if (($key == 'version') and (getEnv('VERSION') !== self::$system_version)) {
           continue;
         }
-        $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
+        if (is_bool($value)) {
+          $value = $value ? 'yes' : 'no';
+        } elseif (is_string($value)) {
+          $value = '"' . addcslashes($value, '"') . '"';
+        }
         $output .= "$key=$value\n";
       }
     }
