@@ -527,8 +527,9 @@ class SessionDAO extends DAO {
       ]
     );
 
-    $code = $bookletDef['code'];
+    $code = (string) $bookletDef['code'];
     $codes2booklets = JSON::decode($bookletDef['codes_to_booklets'], true);
+    $codes2booklets = array_combine(array_map('strval', array_keys($codes2booklets)), array_values($codes2booklets));
 
     return $codes2booklets and isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
   }

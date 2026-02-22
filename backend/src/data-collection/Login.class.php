@@ -25,6 +25,7 @@ class Login extends DataCollectionTypeSafe {
   ) {
     $this->validForMinutes = $validForMinutes ?? 0;
     $this->customTexts = $customTexts ?? new stdClass();
+    $this->testNames = array_combine(array_map('strval', array_keys($testNames)), array_values($testNames));
   }
 
   public function getName(): string {
