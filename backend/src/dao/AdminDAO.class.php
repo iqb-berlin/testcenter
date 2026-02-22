@@ -560,8 +560,14 @@ class AdminDAO extends DAO {
     );
   }
 
-  public function getResultStats(int $workspaceId): array {
-    $resultStats = $this->_('
+  public function getResultStats(int $workspaceId, ?string $groupName = null): array {
+    $groupFilter = $groupName ? 'and login_sessions.group_name = :groupName' : '';
+    $params = [':workspaceId' => $workspaceId];
+    if ($groupName) {
+      $params[':groupName'] = $groupName;
+    }
+
+    $resultStats = $this->_("
       select
         group_name,
         group_label,
@@ -579,7 +585,7 @@ class AdminDAO extends DAO {
           max(tests.timestamp_server) as timestamp_server
         from
           tests
-          left join person_sessions 
+          left join person_sessions
             on person_sessions.id = tests.person_id
           inner join login_sessions
             on login_sessions.id = person_sessions.login_sessions_id
@@ -589,11 +595,12 @@ class AdminDAO extends DAO {
             on units.name = unit_reviews.unit_name and unit_reviews.test_id = units.test_id
           left join test_reviews
             on tests.id = test_reviews.booklet_id
-          left join login_session_groups on 
+          left join login_session_groups on
             login_sessions.group_name = login_session_groups.group_name
               and login_sessions.workspace_id = login_session_groups.workspace_id
         where
           login_sessions.workspace_id = :workspaceId
+          $groupFilter
           and (
             tests.laststate is not null
               or unit_reviews.entry is not null
@@ -602,10 +609,8 @@ class AdminDAO extends DAO {
           and tests.running = 1
           group by tests.name, person_sessions.id, login_sessions.group_name, group_label
       ) as byGroup
-      group by group_name',
-      [
-        ':workspaceId' => $workspaceId
-      ],
+      group by group_name",
+      $params,
       true
     );
 

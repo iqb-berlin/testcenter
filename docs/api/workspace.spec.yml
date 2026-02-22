@@ -323,6 +323,12 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: group
+          description: filter results by group name
+          required: false
+          schema:
+            type: string
 
       responses:
         "200":
