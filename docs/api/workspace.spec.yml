@@ -323,6 +323,13 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: groups
+          description: comma-separated list of group names to filter results by
+          required: false
+          schema:
+            type: string
+          example: "sample_group,review_group"
 
       responses:
         "200":
