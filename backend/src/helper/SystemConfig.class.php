@@ -138,7 +138,7 @@ class SystemConfig {
           continue;
         }
         $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
-        $output .= "$key=$value\n";
+        $output .= "$key=\"$value\"\n";
       }
     }
     file_put_contents(ROOT_DIR . '/backend/config/config.ini', $output);
