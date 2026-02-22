@@ -89,12 +89,11 @@ class SessionDAO extends DAO {
 
   public function getLogin(string $name, string $password): Login | FailedLogin {
     $result = $this->_(
-      'select         
+      'select
               logins.name,
               logins.mode,
               logins.group_name,
               logins.group_label,
-              login_session_groups.token as group_token,
               logins.codes_to_booklets,
               logins.workspace_id,
               logins.valid_to,
@@ -103,11 +102,9 @@ class SessionDAO extends DAO {
               logins.custom_texts,
               logins.password,
               logins.monitors
-            from 
+            from
               logins
-              left join login_sessions on (logins.name = login_sessions.name and logins.group_name = login_sessions.group_name)  
-              left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
-            where 
+            where
               logins.name = :name',
       [
         ':name' => $name
