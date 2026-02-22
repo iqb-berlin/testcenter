@@ -134,15 +134,15 @@ Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?
  * **"OFF" - Nein.**
 
 ### unit_responses_buffer_time
-Speicherfrequenz für Antworten in Ms.
+Speicherfrequenz für Antworten in ms.
  * **5000**
 
 ### unit_state_buffer_time
-Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
+Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in ms.
  * **6000**
 
 ### test_state_buffer_time
-Speicherfrequenz für Test-Zustände in Ms.
+Speicherfrequenz für Test-Zustände in ms.
  * **1000**
 
 ### ui_mode
