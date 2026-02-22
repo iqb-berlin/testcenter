@@ -124,24 +124,43 @@ class AdminDAO extends DAO {
 
   public function deleteResultDataByPersonAndBooklet(int $workspaceId, array $setsToDelete): void {
     $placeholders = [];
-    $params = [':workspace_id' => $workspaceId];
+    $setParams = [];
     foreach ($setsToDelete as $index => $set) {
       $placeholders[] = "(:login_name_$index, :code_$index, :name_suffix_$index, :booklet_name_$index)";
-      $params[":login_name_$index"] = $set['loginName'];
-      $params[":code_$index"] = $set['code'];
-      $params[":name_suffix_$index"] = $set['nameSuffix'];
-      $params[":booklet_name_$index"] = $set['bookletName'];
+      $setParams[":login_name_$index"] = $set['loginName'];
+      $setParams[":code_$index"] = $set['code'];
+      $setParams[":name_suffix_$index"] = $set['nameSuffix'];
+      $setParams[":booklet_name_$index"] = $set['bookletName'];
     }
+
+    $inClause = implode(',', $placeholders);
 
     $this->_(
       "
-      delete tests 
+      update login_session_groups
+        inner join login_sessions on
+          login_sessions.group_name = login_session_groups.group_name
+          and login_sessions.workspace_id = login_session_groups.workspace_id
+        inner join person_sessions on person_sessions.login_sessions_id = login_sessions.id
+        inner join tests on tests.person_id = person_sessions.id
+      set login_session_groups.timestamp_server = :timestamp
+      where login_sessions.workspace_id = :workspace_id
+        and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in ($inClause)",
+      array_merge($setParams, [
+        ':workspace_id' => $workspaceId,
+        ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
+      ])
+    );
+
+    $this->_(
+      "
+      delete tests
        from tests
        inner join person_sessions on tests.person_id = person_sessions.id
        inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
        where login_sessions.workspace_id = :workspace_id
-          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
-      $params
+          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in ($inClause)",
+      array_merge($setParams, [':workspace_id' => $workspaceId])
     );
   }
 
@@ -570,16 +589,17 @@ class AdminDAO extends DAO {
         max(num_units) as num_units_max,
         sum(num_units) as num_units_total,
         avg(num_units) as num_units_mean,
-        max(timestamp_server) as lastchange
+        greatest(ifnull(max(timestamp_server), max(group_timestamp)), ifnull(max(group_timestamp), max(timestamp_server))) as lastchange
       from (
         select
           login_sessions.group_name,
           group_label,
           count(distinct units.name, units.test_id) as num_units,
-          max(tests.timestamp_server) as timestamp_server
+          max(tests.timestamp_server) as timestamp_server,
+          login_session_groups.timestamp_server as group_timestamp
         from
           tests
-          left join person_sessions 
+          left join person_sessions
             on person_sessions.id = tests.person_id
           inner join login_sessions
             on login_sessions.id = person_sessions.login_sessions_id
@@ -589,7 +609,7 @@ class AdminDAO extends DAO {
             on units.name = unit_reviews.unit_name and unit_reviews.test_id = units.test_id
           left join test_reviews
             on tests.id = test_reviews.booklet_id
-          left join login_session_groups on 
+          left join login_session_groups on
             login_sessions.group_name = login_session_groups.group_name
               and login_sessions.workspace_id = login_session_groups.workspace_id
         where
@@ -600,7 +620,7 @@ class AdminDAO extends DAO {
               or test_reviews.entry is not null
           )
           and tests.running = 1
-          group by tests.name, person_sessions.id, login_sessions.group_name, group_label
+          group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.timestamp_server
       ) as byGroup
       group by group_name',
       [
