@@ -1,6 +1,11 @@
 ---
 layout: default
 ---
+## [next]
+### Verbesserungen
+* GET /workspace/{ws_id}/results
+  * Dieser Endpunkt nimmt nun einen Parameter `?groups=`, der eine Komma-separierte Liste annimmt, mit Namen von TT-Gruppen (group_name), um die Results nur dieser Gruppen anzuzeigen, statt alle Gruppen gleichzeitig zu ziehen. Wird der Parameter ausgelassen, werden wie zuvor alle Gruppen gelistet (rückwärtskompatibel)
+
 ## 17.5.3
 * Review-Modus:
   * Teilaufgaben-Feld wird nicht mehr automatisch befüllt, da diese nicht anhand der aktuellen Seite ablesbar ist.

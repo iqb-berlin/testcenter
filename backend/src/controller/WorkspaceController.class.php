@@ -74,7 +74,10 @@ class WorkspaceController extends Controller {
 
   public static function getResults(Request $request, Response $response): Response {
     $workspaceId = (int) $request->getAttribute('ws_id');
-    $results = self::adminDAO()->getResultStats($workspaceId);
+    $groups = $request->getParam('groups', '') === ''
+      ? []
+      : explode(',', $request->getParam('groups', ''));
+    $results = self::adminDAO()->getResultStats($workspaceId, $groups);
 
     return $response->withJson($results);
   }
