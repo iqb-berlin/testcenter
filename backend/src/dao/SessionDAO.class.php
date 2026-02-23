@@ -435,12 +435,13 @@ class SessionDAO extends DAO {
   public function getOrCreateGroupToken(int $workspaceId, string $groupName, string $groupLabel): string {
     $newGroupToken = Token::generate('group', $groupName);
     $this->_(
-      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token) values (?, ?, ?, ?)',
+      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token, last_modified) values (?, ?, ?, ?, ?)',
       [
         $groupName,
         $workspaceId,
         $groupLabel,
-        $newGroupToken
+        $newGroupToken,
+        TimeStamp::toSQLFormat(TimeStamp::now())
       ]
     );
 

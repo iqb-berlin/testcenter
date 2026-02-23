@@ -133,6 +133,18 @@ class AdminDAO extends DAO {
       $params[":booklet_name_$index"] = $set['bookletName'];
     }
 
+    $affectedGroups = $this->_(
+      "
+      select distinct login_sessions.group_name
+       from tests
+       inner join person_sessions on tests.person_id = person_sessions.id
+       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+       where login_sessions.workspace_id = :workspace_id
+          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")",
+      $params,
+      true
+    );
+
     $this->_(
       "
       delete tests 
@@ -143,6 +155,20 @@ class AdminDAO extends DAO {
           and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
       $params
     );
+
+    foreach ($affectedGroups as $row) {
+      $this->_('
+        update login_session_groups 
+        set last_modified = :now
+        where workspace_id = :workspace_id 
+          and group_name = :group_name',
+        [
+          ':now' => TimeStamp::toSQLFormat(TimeStamp::now()),
+          ':workspace_id' => $workspaceId,
+          ':group_name' => $row['group_name']
+        ]
+      );
+    }
   }
 
   /** @return WorkspaceData[] */
@@ -443,6 +469,8 @@ class AdminDAO extends DAO {
     $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
     $bindParams = array_merge([$workspaceId], $groups, [$workspaceId], $groups);
 
+
+
     // TODO: use data class
     return $this->_("
         SELECT
@@ -570,13 +598,17 @@ class AdminDAO extends DAO {
         max(num_units) as num_units_max,
         sum(num_units) as num_units_total,
         avg(num_units) as num_units_mean,
-        max(timestamp_server) as lastchange
+        GREATEST(
+          max(timestamp_server),
+          max(group_last_modified)
+        ) as lastchange
       from (
         select
           login_sessions.group_name,
           group_label,
           count(distinct units.name, units.test_id) as num_units,
-          max(tests.timestamp_server) as timestamp_server
+          max(tests.timestamp_server) as timestamp_server,
+          login_session_groups.last_modified as group_last_modified
         from
           tests
           left join person_sessions 
@@ -600,7 +632,7 @@ class AdminDAO extends DAO {
               or test_reviews.entry is not null
           )
           and tests.running = 1
-          group by tests.name, person_sessions.id, login_sessions.group_name, group_label
+          group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
       group by group_name',
       [
