@@ -161,7 +161,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
       this.pageService.pagesUpdated.subscribe(() => {
         this.pageNavContext = {
-          label: this.pageService.getCurrentPage().label,
+          label: this.pageService.getCurrentPage()?.label,
           isForwardAllowed: !this.pageService.isLastPage(),
           isBackwardAllowed: !this.pageService.isFirstPage()
         };

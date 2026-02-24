@@ -10,7 +10,7 @@ export class PageService {
   pages: Array<Verona6ValidPage> = [];
   currentPageIndex: number = -1;
 
-  getCurrentPage(): Verona6ValidPage {
+  getCurrentPage(): Verona6ValidPage | undefined {
     return this.pages[this.currentPageIndex];
   }
 
