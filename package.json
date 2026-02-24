@@ -71,7 +71,10 @@
           "plugin:cypress/recommended"
         ]
       }
-    ]
+    ],
+    "rules": {
+      "function-call-argument-newline": "OFF"
+    }
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.11",
