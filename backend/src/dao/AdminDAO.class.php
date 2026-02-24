@@ -133,6 +133,18 @@ class AdminDAO extends DAO {
       $params[":booklet_name_$index"] = $set['bookletName'];
     }
 
+    $affectedGroups = $this->_(
+      "
+      select distinct login_sessions.group_name
+       from tests
+       inner join person_sessions on tests.person_id = person_sessions.id
+       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+       where login_sessions.workspace_id = :workspace_id
+          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")",
+      $params,
+      true
+    );
+
     $this->_(
       "
       delete tests 
@@ -143,6 +155,20 @@ class AdminDAO extends DAO {
           and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
       $params
     );
+
+    foreach ($affectedGroups as $row) {
+      $this->_('
+        update login_session_groups 
+        set last_modified = :now
+        where workspace_id = :workspace_id 
+          and group_name = :group_name',
+        [
+          ':now' => TimeStamp::toSQLFormat(TimeStamp::now()),
+          ':workspace_id' => $workspaceId,
+          ':group_name' => $row['group_name']
+        ]
+      );
+    }
   }
 
   /** @return WorkspaceData[] */
@@ -443,6 +469,8 @@ class AdminDAO extends DAO {
     $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
     $bindParams = array_merge([$workspaceId], $groups, [$workspaceId], $groups);
 
+
+
     // TODO: use data class
     return $this->_("
         SELECT
@@ -560,8 +588,21 @@ class AdminDAO extends DAO {
     );
   }
 
-  public function getResultStats(int $workspaceId): array {
-    $resultStats = $this->_('
+  public function getResultStats(int $workspaceId, array $groups = []): array {
+    $groupFilter = '';
+    $params = [':workspaceId' => $workspaceId];
+
+    if (count($groups)) {
+      $placeholders = [];
+      foreach ($groups as $index => $group) {
+        $key = ":group$index";
+        $placeholders[] = $key;
+        $params[$key] = $group;
+      }
+      $groupFilter = 'and login_sessions.group_name in (' . implode(',', $placeholders) . ')';
+    }
+
+    $resultStats = $this->_("
       select
         group_name,
         group_label,
@@ -570,16 +611,20 @@ class AdminDAO extends DAO {
         max(num_units) as num_units_max,
         sum(num_units) as num_units_total,
         avg(num_units) as num_units_mean,
-        max(timestamp_server) as lastchange
+        GREATEST(
+          max(timestamp_server),
+          max(group_last_modified)
+        ) as lastchange
       from (
         select
           login_sessions.group_name,
           group_label,
           count(distinct units.name, units.test_id) as num_units,
-          max(tests.timestamp_server) as timestamp_server
+          max(tests.timestamp_server) as timestamp_server,
+          login_session_groups.last_modified as group_last_modified
         from
           tests
-          left join person_sessions 
+          left join person_sessions
             on person_sessions.id = tests.person_id
           inner join login_sessions
             on login_sessions.id = person_sessions.login_sessions_id
@@ -589,23 +634,22 @@ class AdminDAO extends DAO {
             on units.name = unit_reviews.unit_name and unit_reviews.test_id = units.test_id
           left join test_reviews
             on tests.id = test_reviews.booklet_id
-          left join login_session_groups on 
+          left join login_session_groups on
             login_sessions.group_name = login_session_groups.group_name
               and login_sessions.workspace_id = login_session_groups.workspace_id
         where
           login_sessions.workspace_id = :workspaceId
+          $groupFilter
           and (
             tests.laststate is not null
               or unit_reviews.entry is not null
               or test_reviews.entry is not null
           )
           and tests.running = 1
-          group by tests.name, person_sessions.id, login_sessions.group_name, group_label
+          group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
-      group by group_name',
-      [
-        ':workspaceId' => $workspaceId
-      ],
+      group by group_name",
+      $params,
       true
     );
 

@@ -22,11 +22,11 @@ insert into logins (name, password, mode, workspace_id, codes_to_booklets, sourc
 values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00', '2032-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
 
-insert into login_session_groups (group_label, group_name, token, workspace_id)
-values ('Sample Group', 'sample_group', 'group-token', 1);
+insert into login_session_groups (group_label, group_name, token, workspace_id, last_modified)
+values ('Sample Group', 'sample_group', 'group-token', 1, '1970-01-01 00:00:01');
 
-insert into login_session_groups (group_label, group_name, token, workspace_id)
-values ('Review Group', 'review_group', 'review-group-token', 1);
+insert into login_session_groups (group_label, group_name, token, workspace_id, last_modified)
+values ('Review Group', 'review_group', 'review-group-token', 1, '1970-01-01 00:00:01');
 
 
 insert into login_sessions (name, workspace_id, group_name, token)

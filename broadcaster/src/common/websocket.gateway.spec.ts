@@ -13,19 +13,28 @@ describe('websocketGateway handle connection and disconnection (single client)',
     key: 'ClientKey',
     token: 'tokenstring',
     close: jest.fn(),
-    send: jest.fn()
+    send: jest.fn(),
+    on: jest.fn(),
+    terminate: jest.fn(),
+    readyState: 1
   } as unknown as WebSocket;
   const client2 = {
     key: 'ClientKey2',
     token: 'tokenstring2',
     close: jest.fn(),
-    send: jest.fn()
+    send: jest.fn(),
+    on: jest.fn(),
+    terminate: jest.fn(),
+    readyState: 1
   } as unknown as WebSocket;
   const client3 = {
     key: 'ClientKey3',
     token: 'tokenstring2',
     close: jest.fn(),
-    send: jest.fn()
+    send: jest.fn(),
+    on: jest.fn(),
+    terminate: jest.fn(),
+    readyState: 1
   } as unknown as WebSocket;
   const incomingMessage = {
     url: 'www.test.de/ws?token=clientToken'
@@ -53,7 +62,7 @@ describe('websocketGateway handle connection and disconnection (single client)',
   it('it should handle a connection', () => {
     const spyLogger = jest.spyOn(websocketGateway['logger'], 'log');
     expect(websocketGateway.handleConnection(client, incomingMessage)).toBeUndefined(); // TODO ??
-    expect(websocketGateway['clients']['clientToken']).toStrictEqual(client);
+    expect(websocketGateway['clients'].get('clientToken')).toStrictEqual(client);
     expect(websocketGateway['clientsCount$'].next).toBeDefined(); // TODO warum auf next testen?
     expect(websocketGateway['clientsCount$'].value).toEqual(1);
     expect(spyLogger).toHaveBeenCalled();
@@ -62,11 +71,11 @@ describe('websocketGateway handle connection and disconnection (single client)',
   it('should handle more than one connection', () => {
     const spyLogger = jest.spyOn(websocketGateway['logger'], 'log');
     expect(websocketGateway.handleConnection(client as WebSocket, incomingMessage)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken']).toStrictEqual(client);
+    expect(websocketGateway['clients'].get('clientToken')).toStrictEqual(client);
     expect(websocketGateway['clientsCount$'].next).toBeDefined();
     expect(websocketGateway['clientsCount$'].value).toEqual(1);
     expect(websocketGateway.handleConnection(client2, incomingMessage2)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken2']).toStrictEqual(client2);
+    expect(websocketGateway['clients'].get('clientToken2')).toStrictEqual(client2);
     expect(websocketGateway['clientsCount$'].value).toEqual(2);
     expect(spyLogger).toHaveBeenCalled();
   });
@@ -74,20 +83,20 @@ describe('websocketGateway handle connection and disconnection (single client)',
   it('should handle a disconnect (empty client list)', () => {
     websocketGateway.handleConnection(client, incomingMessage);
     expect(websocketGateway.handleDisconnect(client)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken']).toBeUndefined();
+    expect(websocketGateway['clients'].get('clientToken')).toBeUndefined();
     // TODO wenn der client nicht bekannt ist, sollte auch nix gefeuert werden(?)
     // expect(websocketGateway['clientLost$'].value).toStrictEqual('clientToken');
     expect(websocketGateway['clientsCount$'].value).toEqual(0);
   });
 
-  it('should handle a disconnect (empty client list)', () => {
+  it('should handle a disconnect (non-empty client list)', () => {
     const spyLogger = jest.spyOn(websocketGateway['logger'], 'log');
     const spyClientLost = jest.spyOn(websocketGateway['clientLost$'], 'next');
     websocketGateway.handleConnection(client, incomingMessage);
     websocketGateway.handleConnection(client2, incomingMessage2);
     expect(websocketGateway.handleDisconnect(client)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken']).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken2']).toStrictEqual(client2);
+    expect(websocketGateway['clients'].get('clientToken')).toBeUndefined();
+    expect(websocketGateway['clients'].get('clientToken2')).toStrictEqual(client2);
     expect(websocketGateway['clientsCount$'].value).toEqual(1);
     expect(spyLogger).toHaveBeenCalled();
     expect(spyClientLost).toHaveBeenCalledWith('clientToken');
@@ -97,8 +106,8 @@ describe('websocketGateway handle connection and disconnection (single client)',
     const monitorToken : string = 'clientToken';
     websocketGateway.handleConnection(client, incomingMessage);
     expect(websocketGateway.disconnectClient(monitorToken)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken']).toBeUndefined();
-    expect(websocketGateway['clients']).toStrictEqual({});
+    expect(websocketGateway['clients'].get('clientToken')).toBeUndefined();
+    expect(websocketGateway['clients'].size).toEqual(0);
   });
 
   it('should disconnect a client (more than one client)', () => {
@@ -106,20 +115,16 @@ describe('websocketGateway handle connection and disconnection (single client)',
     websocketGateway.handleConnection(client, incomingMessage);
     websocketGateway.handleConnection(client2, incomingMessage2);
     expect(websocketGateway.disconnectClient(monitorToken)).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken']).toBeUndefined();
-    expect(websocketGateway['clients']['clientToken2']).toStrictEqual(client2);
-    expect(websocketGateway['clients']).toStrictEqual({
-      clientToken2: {
-        ...client2
-      }
-    });
+    expect(websocketGateway['clients'].get('clientToken')).toBeUndefined();
+    expect(websocketGateway['clients'].get('clientToken2')).toStrictEqual(client2);
+    expect(websocketGateway['clients'].size).toEqual(1);
   });
 
   it('should disconnect all Clients', () => {
     websocketGateway.handleConnection(client, incomingMessage);
     websocketGateway.handleConnection(client2, incomingMessage2);
     websocketGateway.disconnectAll();
-    expect(websocketGateway['clients']).toStrictEqual({});
+    expect(websocketGateway['clients'].size).toEqual(0);
   });
 
   it('should return disconnections as observable', () => {
@@ -139,8 +144,8 @@ describe('websocketGateway handle connection and disconnection (single client)',
     websocketGateway.handleConnection(client, incomingMessage);
     websocketGateway.handleConnection(client2, incomingMessage2);
     const spyLogger = jest.spyOn(websocketGateway['logger'], 'log');
-    const spySend = jest.spyOn(websocketGateway['clients']['clientToken'], 'send');
-    const spySend2 = jest.spyOn(websocketGateway['clients']['clientToken2'], 'send');
+    const spySend = jest.spyOn(client, 'send');
+    const spySend2 = jest.spyOn(client2, 'send');
     const event = 'test-sessions' as BroadcastingEvent;
     const message = {};
     const tokens = websocketGateway.getClientTokens();

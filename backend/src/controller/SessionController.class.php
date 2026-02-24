@@ -111,6 +111,7 @@ class SessionController extends Controller {
 
     $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
     $bookletFiles = [];
+    $sessionChanges = [];
     /** @var $bookletFiles XMLFileBooklet[] */
 
     foreach ($members as $member) {
@@ -164,10 +165,11 @@ class SessionController extends Controller {
 
           $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);
           $sessionMessage->setTestState((array) $test->state, $testName->name);
-          BroadcastService::sessionChange($sessionMessage);
+          $sessionChanges[] = $sessionMessage;
         }
       }
     }
+    BroadcastService::sessionChanges($sessionChanges);
   }
 
   private static function getWorkspace(int $workspaceId): Workspace {

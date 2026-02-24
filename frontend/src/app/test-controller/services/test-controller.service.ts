@@ -35,6 +35,7 @@ import {
   StateReportEntry,
   TestControllerState,
   Testlet,
+  TestletLockType,
   TestletLockTypes,
   TestStateKey,
   TestStateUpdate,
@@ -395,28 +396,26 @@ export class TestControllerService {
     return this.players[fileName];
   }
 
-  clearTestlet(testletId: string): void {
+  clearCodeLock(testletId: string): void {
     if (!this.testlets[testletId] || !this.testlets[testletId].restrictions.codeToEnter?.code) {
       return;
     }
-    this.testlets[testletId].locks.code = false;
-    this.updateLocks();
+    this.updateSingleLock(this.testlets[testletId], 'code', false);
     const unlockedTestlets = Object.values(this.testlets)
       .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
       .map(t => t.id);
     this.setTestState('TESTLETS_CLEARED_CODE', JSON.stringify(unlockedTestlets));
   }
 
-  leaveLockTestlet(testletId: string): void {
-    this.testlets[testletId].locks.afterLeave = true;
-    this.updateLocks();
+  activateTestletLeaveLock(testletId: string): void {
+    this.updateSingleLock(this.testlets[testletId], 'afterLeave', true);
     const lockedTestlets = Object.values(this.testlets)
       .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
       .map(t => t.id);
     this.setTestState('TESTLETS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedTestlets));
   }
 
-  leaveLockUnit(unitSequenceId: number): void {
+  activateUnitLeaveLock(unitSequenceId: number): void {
     this.units[unitSequenceId].lockedAfterLeaving = true;
     const lockedUnits = Object.values(this.units)
       .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
@@ -449,7 +448,7 @@ export class TestControllerService {
     if (this.timers[testlet.id] <= 0) {
       this.timers[testlet.id] = timeGivenByGm;
     }
-    testlet.locks.time = false;
+    this.updateSingleLock(testlet, 'time', false);
   }
 
   startTimer(testlet: Testlet): void {
@@ -635,7 +634,12 @@ export class TestControllerService {
     return this.setUnitNavigationRequest(target, true);
   }
 
-  updateLocks(): void {
+  updateSingleLock(testlet: Testlet, key: TestletLockType, value: boolean): void {
+    testlet.locks[key] = value;
+    this.updateAllLocks();
+  }
+
+  updateAllLocks(): void {
     const activatedLockTypes = TestletLockTypes;
 
     const updateLocks = (testlet: Testlet, parents: Testlet[] = []): void => {
@@ -837,8 +841,7 @@ export class TestControllerService {
   }
 
   onStateOptionChanged(): void {
-    this.updateShowLocks();
-    this.updateLocks();
+    this.updateAllShowLocks();
     this.saveConditionsTestState();
   }
 
@@ -860,7 +863,7 @@ export class TestControllerService {
       });
   }
 
-  private updateShowLocks(): void {
+  private updateAllShowLocks(): void {
     Object.values(this.testlets)
       .forEach(testlet => {
         if (!testlet.restrictions.show) return;
@@ -869,6 +872,7 @@ export class TestControllerService {
           this.booklet?.states[testlet.restrictions.show.if].current;
         testlet.locks.show = current !== testlet.restrictions.show.is;
       });
+    this.updateAllLocks();
   }
 
   private saveConditionsTestState(): void {
@@ -986,10 +990,10 @@ export class TestControllerService {
     const leaveLock = () => {
       if (this.testMode.forceNaviRestrictions) {
         if (lockScope === 'testlet') {
-          this.leaveLockTestlet(currentUnit.parent.id);
+          this.activateTestletLeaveLock(currentUnit.parent.id);
         }
         if (lockScope === 'unit') {
-          this.leaveLockUnit(currentUnit.sequenceId);
+          this.activateUnitLeaveLock(currentUnit.sequenceId);
         }
       } else {
         this.ms.show(`${lockScope} würde im Testmodus nun gesperrt werden.`);
@@ -1029,7 +1033,7 @@ export class TestControllerService {
     return of(true);
   }
 
-  canDeactivateUnit(nextStateUrl: string, ignoreRouterState: boolean = false): Observable<boolean> {
+  canDeactivateUnit(nextStateUrl: string, ignoreRouterState?: boolean): Observable<boolean> {
     if (nextStateUrl === '/r/route-dispatcher') {
       return of(true);
     }

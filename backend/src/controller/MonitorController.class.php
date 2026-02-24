@@ -47,10 +47,7 @@ class MonitorController extends Controller {
     $token = BroadcastService::registerChannel('monitor', ["groups" => $groupNames]);
 
     if ($token !== null) {
-      foreach ($sessionChangeMessages as $sessionChangeMessage) {
-        BroadcastService::sessionChange($sessionChangeMessage);
-      }
-
+      BroadcastService::sessionChanges($sessionChangeMessages->asArray());
       $response = $response->withHeader('SubscribeToken', $token);
     }
 

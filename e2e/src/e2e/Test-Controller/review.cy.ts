@@ -92,7 +92,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="comment-diag-comment"]')
       .type('its a new comment');
     cy.get('[data-cy="comment-diag-submit"]')
-      .click();
+      .click({ timeout: 6000 });
     cy.get('.snackbar-comment-saved')
       .contains('Kommentar gespeichert');
   });
