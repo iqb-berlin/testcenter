@@ -2,18 +2,9 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject,
-  forkJoin,
-  from,
-  fromEvent,
-  interval,
-  lastValueFrom,
-  merge,
-  Observable,
-  of,
-  Subject,
-  Subscription, tap,
-  timer
+  BehaviorSubject, forkJoin, from, interval,
+  lastValueFrom, merge, Observable, of, Subject,
+  Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -71,11 +62,8 @@ import { ConditionUtil } from '../util/condition.util';
 export class TestControllerService {
   testId = '';
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
-
   workspaceId = 0;
-
   totalLoadingProgress = 0;
-
   testMode = new TestMode();
 
   // TODO hide those behind functions, this will be way easier with ts 5.5
@@ -89,10 +77,12 @@ export class TestControllerService {
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
+
   set currentUnitSequenceId(value: number) {
     this._currentUnitSequenceId = value;
     this.currentUnitSequenceId$.next(value);
   }
+
   get currentUnit(): Unit | null {
     return this.units[this.currentUnitSequenceId];
   }
@@ -430,7 +420,6 @@ export class TestControllerService {
     const unit = this.units[unitSequenceId];
 
     if (!unit) {
-      // eslint-disable-next-line no-console
       console.error(`Unit not found: ${unitSequenceId}`);
       throw new AppError({
         label: `Unit not found: ${unitSequenceId}`,
@@ -464,7 +453,7 @@ export class TestControllerService {
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
 
-    let timeTicker$ = this.createTicker();
+    const timeTicker$ = this.createTicker();
     this.timerIntervalSubscription = timeTicker$
       .pipe(
         takeUntil(
@@ -530,22 +519,20 @@ export class TestControllerService {
       return new Observable(subscriber => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const eventHandler = (event) => {
+        const eventHandler = event => {
           subscriber.next(event.data);
         };
 
         workerTimer.addEventListener('message', eventHandler);
         workerTimer.postMessage('on');
 
-        return function unsubscribe () {
+        return function unsubscribe() {
           workerTimer.postMessage('off');
           workerTimer.removeEventListener('message', eventHandler);
         };
       });
-    } else {
-      return interval(1000);
     }
-
+    return interval(1000);
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
@@ -593,13 +580,11 @@ export class TestControllerService {
           this.booklet?.config.lock_test_on_termination === 'ON'
         );
       default:
-        // eslint-disable-next-line no-case-declarations
         const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
         return this.router.navigate(
           [`/t/${this.testId}/u/${navString}`],
           {
             state: { force },
-            // eslint-disable-next-line no-bitwise
             queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
             //  unit shall be reloaded even if we are there already there
           }
@@ -903,7 +888,7 @@ export class TestControllerService {
         this.ms.show(text);
         return true;
       }
-    }
+    };
 
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
@@ -977,7 +962,6 @@ export class TestControllerService {
       }
     });
     return dialogCDRef.afterClosed().pipe(map(() => false));
-
   }
 
   private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {

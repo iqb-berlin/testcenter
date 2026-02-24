@@ -11,17 +11,13 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-  CustomtextService,
-  MainDataService, UserAgentService,
-  BackendService as SharedBackendService
+  ConfirmDialogComponent, ConfirmDialogData,
+  CustomtextService, MainDataService, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
   Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
-  UnitNavigationTarget,
-  WindowFocusState
+  UnitNavigationTarget, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -29,16 +25,15 @@ import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
-import { AppError } from '../../../app.interfaces';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
 import { HeaderService } from '../../../core/header.service';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 
 @Component({
-    templateUrl: './test-controller.component.html',
-    styleUrls: ['./test-controller.component.css'],
-    standalone: false
+  templateUrl: './test-controller.component.html',
+  styleUrls: ['./test-controller.component.css'],
+  standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewPanelComponent) reviewComponent?: ReviewPanelComponent;
@@ -69,25 +64,23 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     label: ''
   };
 
-  constructor(
-    public mainDataService: MainDataService,
-    public tcs: TestControllerService,
-    private bs: BackendService,
-    private sharedBs: SharedBackendService,
-    private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private cts: CustomtextService,
-    public cmd: CommandService,
-    private tls: TestLoaderService,
-    public dialog: MatDialog,
-    private uiVisibilityService: UiVisibilityService,
-    private headerService: HeaderService,
-    public pageService: PageService,
-    private apiService: VeronaAPIService,
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
-  ) {
+  constructor(public mainDataService: MainDataService,
+              public tcs: TestControllerService,
+              private bs: BackendService,
+              private sharedBs: SharedBackendService,
+              private snackBar: MatSnackBar,
+              private route: ActivatedRoute,
+              private cts: CustomtextService,
+              public cmd: CommandService,
+              private tls: TestLoaderService,
+              public dialog: MatDialog,
+              private uiVisibilityService: UiVisibilityService,
+              private headerService: HeaderService,
+              public pageService: PageService,
+              private apiService: VeronaAPIService,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitizer: DomSanitizer,
+              @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) {
     this.matIconRegistry.addSvgIcon(
       'clock_loader_60',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
@@ -178,7 +171,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   reload() {
     this.sharedBs.clearCache('cache').subscribe();
-    // eslint-disable-next-line
     // @ts-ignore: force reload with 'true' only works for firefox so far, that's why we clear cache manually
     setTimeout(() => { window.location.reload(true); }, 100);
   }
