@@ -12,21 +12,17 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
     "noUncheckedIndexedAccess": false,
-    "strictFunctionTypes": true,
     "noImplicitOverride": true,
-    "target": "es2022",
+    "target": "es2023",
     "typeRoots": [
       "node_modules/@types"
     ],
     "types": [
-      "cypress",
       "jasmine"
     ],
     "lib": [
-      "es2022",
+      "es2023",
       "dom"
     ],
     "paths": {
