@@ -3,6 +3,7 @@
 @mixin base-colors {
   --mat-sys-on-primary: #FFFFFFFF;
   --theme-Gray-05: #f4f2f2;
+  --mat-sys-state-on-surface-opacity-10: rgba(39, 26, 43, 0.10);
 }
 
 .theme-primar {

@@ -1,59 +1,61 @@
 <tc-debug-pane *ngIf="debugPane" />
 
-<div *ngIf="tcs.booklet?.config?.unit_screenheader !== 'OFF'" class="header flex-row" data-cy="unit-screenheader">
-  <ng-container *ngIf="tcs.currentUnit && tcs.booklet">
-    <h2 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_UNIT_TITLE'">{{tcs.currentUnit.label}}</h2>
-    <h2 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_BOOKLET_TITLE'">{{tcs.booklet.metadata.label || ''}}</h2>
-    <h2 *ngIf="tcs.booklet.config?.unit_screenheader ==='WITH_BLOCK_TITLE'">{{tcs.currentUnit.parent.blockLabel || ''}}</h2>
-  </ng-container>
+@if (tcs.booklet?.config?.unit_screenheader !== 'OFF') {
+  <div class="nav-header flex-row">
+    <ng-container *ngIf="tcs.navigation$ | async as navigation">
+      <tc-unit-nav-bar
+        *ngIf="(tcs.booklet?.config?.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === 'RUNNING')"
+        [booklet]="tcs.booklet"
+        [showInnerBox]="tcs.booklet?.config?.unit_navibuttons !== 'ARROWS_ONLY'"
+        [prevButtonVisible]="true"
+        [nextButtonVisible]="true"
+        [prevButtonEnabled]="!!navigation.targets.previous"
+        [nextButtonEnabled]="!!navigation.targets.next"
+        [forwardAllowed]="navigation.directions.forward"
+        [backwardAllowed]="navigation.directions.backward"/>
+    </ng-container>
 
-  <div class="divider">
+    <tc-navigation-control [navContext]="unitNavContext"
+                           (back)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+                           (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
+    </tc-navigation-control>
+    <tc-navigation-control [navContext]="pageNavContext"
+                           (back)="gotoPreviousPage()"
+                           (forward)="gotoNextPage()">
+    </tc-navigation-control>
+
+    <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
+            (click)="sideNavContent = 'review-form'; sidenav.toggle()">
+      <mat-icon>rate_review</mat-icon>
+    </button>
+  </div>
+
+  <div class="toolbar-header flex-row" data-cy="unit-screenheader">
+    <h2>{{currentUnit?.label}}</h2>
+
     <p *ngIf="tcs.testMode.showTimeLeft || (tcs.booklet?.config?.unit_show_time_left === 'ON')" data-cy="time-value">
       {{timerValue?.timeLeftString}}
     </p>
+
+    <button matButton [style.margin-left]="'auto'" data-cy="unit-menu"
+            (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)">
+      <mat-icon svgIcon="clock_loader_60"></mat-icon>
+      Bearbeitungsstand
+    </button>
+
+    <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
+        <span>Vollbild</span>
+      </button>
+      <button mat-menu-item (click)="reload()" data-cy="reloadPage">
+        <span>Neu laden</span>
+      </button>
+    </mat-menu>
   </div>
-
-  <ng-container *ngIf="tcs.navigation$ | async as navigation">
-    <tc-unit-nav-bar
-      *ngIf="(tcs.booklet?.config?.unit_navibuttons !== 'OFF') && ((tcs.state$ | async) === 'RUNNING')"
-      [booklet]="tcs.booklet"
-      [showInnerBox]="tcs.booklet?.config?.unit_navibuttons !== 'ARROWS_ONLY'"
-      [prevButtonVisible]="tcs.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY'"
-      [nextButtonVisible]="true"
-      [prevButtonEnabled]="!!navigation.targets.previous"
-      [nextButtonEnabled]="!!navigation.targets.next"
-      [forwardAllowed]="navigation.directions.forward"
-      [backwardAllowed]="navigation.directions.backward"
-      [deprecatedDesign]="tcs.booklet?.config?.controller_design === '2018'"
-    />
-  </ng-container>
-
-  <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
-          (click)="sideNavContent = 'review-form'; sidenav.toggle()">
-    <mat-icon>rate_review</mat-icon>
-  </button>
-  <button
-    mat-button
-    (click)="reload()"
-    *ngIf="tcs.booklet?.config?.show_reload_button !== 'OFF'"
-    matTooltip="Seite neu laden"
-    data-cy="reloadPage">
-    <mat-icon>replay</mat-icon>
-  </button>
-  <button
-    mat-button
-    (click)="toggleFullScreen()"
-    *ngIf="tcs.booklet?.config?.show_fullscreen_button !== 'OFF'"
-    matTooltip="Vollbild"
-    data-cy="fullscreen">
-    <mat-icon>{{mainDataService.isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
-  </button>
-  <button mat-button (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)"
-    *ngIf="(tcs.booklet?.config?.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-    matTooltip="Zur Aufgabenliste" data-cy="unit-menu">
-    <mat-icon>menu</mat-icon>
-  </button>
-</div>
+}
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="over" position="end" opened="false" (openedStart)="reviewComponent?.onOpen()">

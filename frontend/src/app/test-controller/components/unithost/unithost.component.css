@@ -21,23 +21,6 @@
   margin-top: 0.1em
 }
 
-.unit-title h2 {
-  font-weight: normal;
-  text-align: center;
-  background-color: white;
-  margin: 0;
-  padding: 5px;
-}
-
-.is-waiting #iframe-host,
-.is-waiting .unit-title {
+.is-waiting #iframe-host {
   visibility: hidden;
-}
-
-.page-navigation {
-  position: absolute;
-  width: 100%;
-  height: 46px;
-  bottom: 0;
-  font-size: 1.2em;
 }

@@ -1,0 +1,15 @@
+<button matIconButton class="nav-button previous-button"
+   matTooltip="Zurück"
+   [disabled]="!navContext.isBackwardAllowed"
+   (click)="back.emit()">
+  <i class="material-icons">keyboard_arrow_left</i>
+</button>
+
+{{ navContext.label }}
+
+<button matIconButton class="nav-button next-button"
+   matTooltip="Weiter"
+   [disabled]="!navContext.isForwardAllowed"
+   (click)="forward.emit()">
+  <i class="material-icons">keyboard_arrow_right</i>
+</button>

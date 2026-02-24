@@ -8,27 +8,6 @@
   flex: 1;
 }
 
-.divider {
-  color: lightgray;
-  margin: 0 auto 0 auto;
-}
-
-.header {
-  color: white;
-  height: 65px;
-  padding-left: 116px;
-  align-items: center;
-}
-
-.header .mdc-fab[disabled="true"],
-.header .mdc-button[disabled="true"] {
-  background-color: darkgray;
-}
-
-.header .mat-mdc-button.mat-unthemed {
-  color: white;
-}
-
 mat-sidenav {
   width: 700px;
 }

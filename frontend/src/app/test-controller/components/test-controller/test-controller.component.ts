@@ -2,6 +2,8 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
@@ -17,7 +19,7 @@ import {
 } from '../../../shared/shared.module';
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
-  Command, MaxTimerEvent,
+  Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
   UnitNavigationTarget,
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
@@ -30,6 +32,8 @@ import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { AppError } from '../../../app.interfaces';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
 import { HeaderService } from '../../../core/header.service';
+import { PageService } from '../../services/page.service';
+import { VeronaAPIService } from '../../services/verona-api.service';
 
 @Component({
     templateUrl: './test-controller.component.html',
@@ -55,6 +59,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   debugPane = false;
   sideNavContent: 'unit-menu' | 'review-form' = 'unit-menu';
 
+  currentUnit: Unit | null = null;
+
+  unitNavContext: NavControlContext = {
+    label: ''
+  };
+
+  pageNavContext: NavControlContext = {
+    label: ''
+  };
+
   constructor(
     public mainDataService: MainDataService,
     public tcs: TestControllerService,
@@ -68,8 +82,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private uiVisibilityService: UiVisibilityService,
     private headerService: HeaderService,
+    public pageService: PageService,
+    private apiService: VeronaAPIService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
+    this.matIconRegistry.addSvgIcon(
+      'clock_loader_60',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        'assets/icons/clock_loader_60.svg'
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -130,11 +154,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (!this.isProductionMode) {
         this.debugPane = !!localStorage.getItem('tc-debug');
       }
-      // TODO bugged: for some reason the current unit is not available here.
-      // Needs to be fixed, the code here should be fine.
-      this.headerService.title = this.tcs.currentUnit?.label || undefined;
-    });
 
+      this.tcs.currentUnitSequenceId$.subscribe(() => {
+        this.currentUnit = this.tcs.currentUnit;
+        this.unitNavContext = {
+          label: this.currentUnit?.label
+        };
+        this.headerService.title = this.tcs.booklet?.metadata.label;
+      });
+      this.tcs.navigation$.subscribe((nav: NavigationState) => {
+        this.unitNavContext.isBackwardAllowed = !!nav.targets.previous;
+        this.unitNavContext.isForwardAllowed = !!nav.targets.next;
+      });
+      this.pageService.pagesUpdated.subscribe(() => {
+        this.pageNavContext = {
+          label: this.pageService.getCurrentPage().label,
+          isForwardAllowed: !this.pageService.isLastPage(),
+          isBackwardAllowed: !this.pageService.isFirstPage()
+        };
+      });
+    });
   }
 
   reload() {
@@ -383,4 +422,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  gotoNextPage(): void {
+    this.gotoPage(this.pageService.currentPageIndex += 1);
+  }
+
+  gotoPreviousPage(): void {
+    this.gotoPage(this.pageService.currentPageIndex -= 1);
+  }
+
+  gotoPage(targetPageIndex: number): void {
+    this.pageService.currentPageIndex = targetPageIndex;
+    this.apiService.sendPageNav(this.tcs.currentUnit?.alias,
+      Object.keys(this.pageService.pages)[this.pageService.currentPageIndex]);
+  }
+
+  protected readonly unitNavigationTarget = UnitNavigationTarget;
 }
