@@ -14,7 +14,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": true,
-    "target": "es2023",
+    "target": "es2022",
     "typeRoots": [
       "node_modules/@types"
     ],
