@@ -99,7 +99,7 @@ class SessionController extends Controller {
 
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
 
-    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
+    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, (string)$body['code']);
     CacheService::removeAuthentication($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
     CacheService::storeAuthentication($personSession);
@@ -131,7 +131,7 @@ class SessionController extends Controller {
 
       $membersBooklets = $member->getLogin()->testNames();
       foreach ($membersBooklets as $code => $testNames) {
-        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code, true, false);
+        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, (string)$code, true, false);
 
         foreach ($testNames as $testNameStr) {
           /** @var $testNameStr string */

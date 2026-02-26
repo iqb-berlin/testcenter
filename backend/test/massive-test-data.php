@@ -173,7 +173,7 @@ try {
         }
 
         if (method_exists($sessionDAO, 'createOrUpdatePersonSession')) {
-          $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, $code);
+          $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, (string) $code);
           $personSessions[] = $personSession;
           if ($reLoginIndex > DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) {
             $sessionDAO->_("update person_sessions set name_suffix='1' where id=" . $personSession->getPerson()->getId());
