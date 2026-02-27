@@ -44,6 +44,11 @@
                       </xs:element>
                       <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType" />
                     </xs:choice>
+                    <xs:element name="ViewSettings" minOccurs="0">
+                      <xs:complexType>
+                        <xs:attribute name="monitorBookletVisibility" type="GroupMonitorBookletVisibilityType" />
+                      </xs:complexType>
+                    </xs:element>
                   </xs:sequence>
                   <xs:attribute name="name" type="xs:string" use="required"/>
                   <xs:attribute name="pw" type="xs:string"/>
@@ -306,6 +311,14 @@
       <xs:enumeration value="full"/>
       <xs:enumeration value="medium"/>
       <xs:enumeration value="small"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupMonitorBookletVisibilityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="visible"/>
+      <xs:enumeration value="collapsed"/>
+      <xs:enumeration value="hidden"/>
     </xs:restriction>
   </xs:simpleType>
 

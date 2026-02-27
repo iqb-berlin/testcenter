@@ -324,7 +324,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"new_token","displayName":"Sample Group\/test-monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"new_token","displayName":"Sample Group\/test-monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":{"monitorBookletVisibility":"visible"}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -503,7 +503,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":{"monitorBookletVisibility":"visible"}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
   }

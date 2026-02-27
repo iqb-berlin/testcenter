@@ -193,6 +193,7 @@ class AccessSet extends DataCollectionTypeSafe {
       } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
         $flags['scheduled'] = $group->_expired->timestamp * 1000;
       }
+      $flags['monitorBookletVisibility'] = $login->getViewSettings()['monitorBookletVisibility'] ?? 'visible';
       if (count($profiles)) {
         foreach ($profiles as $profile) {
           $profileFlags = $flags;

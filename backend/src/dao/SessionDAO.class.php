@@ -101,7 +101,8 @@ class SessionDAO extends DAO {
               logins.valid_for,
               logins.custom_texts,
               logins.password,
-              logins.monitors
+              logins.monitors,
+              logins.view_settings
             from
               logins
             where
@@ -134,7 +135,8 @@ class SessionDAO extends DAO {
       TimeStamp::fromSQLFormat($result['valid_from']),
       (int) $result['valid_for'],
       JSON::decode($result['custom_texts']),
-      JSON::decode($result['monitors'], true)
+      JSON::decode($result['monitors'], true),
+      JSON::decode($result['view_settings'], true) ?? []
     );
 
 
@@ -210,7 +212,8 @@ class SessionDAO extends DAO {
                     logins.valid_for,
                     logins.valid_to,
                     logins.valid_from,
-                    logins.monitors
+                    logins.monitors,
+                    logins.view_settings
                 from
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
@@ -245,7 +248,8 @@ class SessionDAO extends DAO {
         TimeStamp::fromSQLFormat($loginSession['valid_from']),
         (int) $loginSession['valid_for'],
         JSON::decode($loginSession['custom_texts']),
-        JSON::decode($loginSession['monitors'], true)
+        JSON::decode($loginSession['monitors'], true),
+        JSON::decode($loginSession['view_settings'], true) ?? []
       )
     );
   }
@@ -377,6 +381,7 @@ class SessionDAO extends DAO {
                 logins.valid_from,
                 logins.valid_for,
                 logins.monitors,
+                logins.view_settings,
                 person_sessions.id as "person_id",
                 person_sessions.code,
                 person_sessions.valid_until,
@@ -416,7 +421,8 @@ class SessionDAO extends DAO {
           Timestamp::fromSQLFormat($personSession['valid_from']),
           $personSession['valid_for'],
           JSON::decode($personSession['custom_texts']),
-          JSON::decode($personSession['monitors'], true)
+          JSON::decode($personSession['monitors'], true),
+          JSON::decode($personSession['view_settings'], true) ?? []
         )
       ),
       new Person(

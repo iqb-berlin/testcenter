@@ -24,6 +24,7 @@ export interface AccessObject {
     profile?: string;
     mode?: 'RW' | 'RO';
     subLabel?: string;
+    monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
   };
   workspaceId: string;
   description: string;

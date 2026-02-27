@@ -25,6 +25,7 @@ import { AuthAccessType } from '../../app.interfaces';
 export class StarterComponent implements OnInit, OnDestroy {
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
   workspaces: AccessObject[] = [];
+  monitorBookletVisibility: 'visible' | 'collapsed' | 'hidden' = 'visible';
   private getMonitorDataSubscription: Subscription | null = null;
   private getBookletDataSubscription: Subscription | null = null;
   private getWorkspaceDataSubscription: Subscription | null = null;
@@ -52,12 +53,12 @@ export class StarterComponent implements OnInit, OnDestroy {
         this.claims = authData.claims;
         this.mds.setAuthData(authData);
 
-        if (
-          'attachmentManager' in this.claims ||
-          'workspaceMonitor' in this.claims ||
-          'testGroupMonitor' in this.claims
-        ) {
+        if ('attachmentManager' in this.claims ||
+            'workspaceMonitor' in this.claims ||
+            'testGroupMonitor' in this.claims) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+          this.monitorBookletVisibility =
+            this.claims.testGroupMonitor?.[0]?.flags?.monitorBookletVisibility || 'visible';
         } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
           this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
           if (this.getWorkspaceDataSubscription !== null) {
@@ -117,7 +118,9 @@ export class StarterComponent implements OnInit, OnDestroy {
               });
             });
           }
-        } else if ('test' in this.claims) {
+        }
+
+        else if ('test' in this.claims) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
         }
       });
