@@ -1085,7 +1085,7 @@ test-frontend-unit:
     - docker logout $REGISTRY
   artifacts:
     paths:
-      - docs/dist/test-coverage-frontend-unit/*
+      - docs/dist/test-coverage-frontend-unit/**/*
     expire_in: 30 minutes
 
 test-broadcaster-unit:
