@@ -215,7 +215,7 @@ try {
     if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
       $sampleWorkspace->setWorkspaceHash();
-      CLI::p("{$stats['valid']} files were stored.");
+      CLI::p(array_sum($stats['valid']) . ' files were stored.');
     }
 
     CLI::success("Sample content files created.");
