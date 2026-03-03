@@ -9,7 +9,7 @@
   <BookletConfig>
     <Config key="logPolicy">debug</Config>
     <Config key="pagingMode">concat-scroll-snap</Config>
-    <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
+    <Config key="page_navibuttons">FULL</Config>
     <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>
 
@@ -24,7 +24,7 @@
       </Restrictions>
       <Unit id="UNIT.SAMPLE-2" label="A very Simple Sample Unit" labelshort="2nd Sample Unit" />
     </Testlet>
-    
+
     <Testlet id="a_testlet_with_restrictions" label="First Block">
       <Restrictions>
         <CodeToEnter code="sample">Please insert the word `sample`.</CodeToEnter>

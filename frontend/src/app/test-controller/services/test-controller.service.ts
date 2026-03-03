@@ -677,7 +677,7 @@ export class TestControllerService {
       null;
 
     let forward: NavigationDirectionValue = 'yes';
-    let backward: NavigationDirectionValue = (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') ? 'yes' : 'no';
+    let backward: NavigationDirectionValue = 'yes';
     if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'forward').length) {
       forward = 'markedNo';
     }
@@ -685,8 +685,7 @@ export class TestControllerService {
       backward = 'markedNo';
     }
 
-    previous = backward !== 'no' ? previous : null;
-    first = backward !== 'no' ? previous : null;
+    first = previous;
 
     return {
       directions: { forward, backward },

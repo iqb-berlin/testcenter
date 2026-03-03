@@ -3,8 +3,8 @@ export class BookletConfigData {
   loading_mode: 'LAZY' | 'EAGER' = 'LAZY';
   logPolicy: 'disabled' | 'lean' | 'rich' | 'debug' = 'rich';
   pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap' = 'separate';
-  page_navibuttons: 'OFF' | 'SEPARATE_BOTTOM' = 'SEPARATE_BOTTOM';
-  unit_navibuttons: 'OFF' | 'ARROWS_ONLY' | 'FORWARD_ONLY' | 'FULL' = 'FULL';
+  page_navibuttons: 'OFF' | 'INDEX' | 'FULL' = 'INDEX';
+  unit_navibuttons: 'OFF' | 'INDEX' | 'LABEL' = 'INDEX';
   unit_menu: 'OFF' | 'FULL' = 'OFF';
   force_presentation_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
   force_response_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
