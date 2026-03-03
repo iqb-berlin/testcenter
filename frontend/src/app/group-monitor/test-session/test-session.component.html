@@ -136,7 +136,7 @@
               marked: isMarked(testletOrUnit) && testletOrUnit.blockId && recursionLevel === 0
             }"
             (mouseenter)="mark(testletOrUnit)"
-            (click)="select($event, testletOrUnit)"
+            (click)="select(testletOrUnit)"
             matTooltip="{{testletOrUnit.label}}"
           >
             <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit, recursionLevl: 1}"></ng-container>
@@ -190,7 +190,7 @@
           matTooltip="{{testSession.current.unit?.label}}"
           matTooltipPosition="above"
           (mouseenter)="mark(testletOrUnit)"
-          (click)="select($event, testletOrUnit)"
+          (click)="select(testletOrUnit)"
         >
           {{testSession | position : testletOrUnit}}
         </span>
@@ -205,7 +205,7 @@
             marked: isMarked(testletOrUnit)
           }"
           (mouseenter)="mark(testletOrUnit)"
-          (click)="select($event, testletOrUnit)"
+          (click)="select(testletOrUnit)"
         >{{testSession | position : testletOrUnit}}</span>
       </ng-template>
     </span>

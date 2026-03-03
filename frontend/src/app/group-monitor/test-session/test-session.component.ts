@@ -21,8 +21,8 @@ interface TestletContext {
   standalone: false
 })
 export class TestSessionComponent {
-  @Input() testSession: TestSession = {} as TestSession;
-  @Input() displayOptions: TestViewDisplayOptions = {} as TestViewDisplayOptions;
+  @Input() testSession!: TestSession;
+  @Input() displayOptions!: TestViewDisplayOptions;
   @Input() marked: Selected | null = null;
   @Input() selected: Selected | null = null;
   @Input() checked: boolean = false;
@@ -58,12 +58,14 @@ export class TestSessionComponent {
   isSelectionTheSameBlockAsParentSelection(testletOrNull: Testlet | null = null): boolean {
     return !!testletOrNull && //  is something Nowselected?
       (this.selected?.element?.blockId === testletOrNull?.blockId) && // is nowselected already in parentselection?
-      (this.selected?.originSession.booklet.species === this.testSession.booklet.species); // is nowselected same species as parentselection (is it the same block 1? == same col)
+      // is nowselected same species as parentselection (is it the same block 1? == same col)
+      (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
   returnClicks(testletOrNull: Testlet | null = null): 'first' | 'second' | 'third' {
     const isSelectionInSameSession = this.isSelectionTheSameBlockAsParentSelection(testletOrNull) &&
-      (this.selected?.originSession.data.testId === this.testSession.data.testId); // is the nowSelection the same Session (row in Table)
+      // is the nowSelection the same Session (row in Table)
+      (this.selected?.originSession.data.testId === this.testSession.data.testId);
 
     if (isSelectionInSameSession && this.selected?.nthClick === 'first') {
       return 'second';
@@ -81,7 +83,7 @@ export class TestSessionComponent {
       (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
-  select($event: Event, testletOrNull: Testlet | null): void {
+  select(testletOrNull: Testlet | null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
       return;
     }

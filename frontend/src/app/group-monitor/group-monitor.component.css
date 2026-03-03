@@ -174,7 +174,7 @@
 
 #shield-child {
   position: fixed;
-  inset: 0px;
+  inset: 0;
   width: 12rem;
   height: 5rem;
   max-width: 100vw;

@@ -98,7 +98,6 @@ export class TestSessionUtil {
     try {
       return JSON.parse(stateValueString);
     } catch (error) {
-      // console.warn(`state ${key} is no valid JSON`, stateValueString, error);
       return null;
     }
   }

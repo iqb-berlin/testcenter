@@ -20,11 +20,11 @@ import { CustomtextService, TestMode } from '../../../shared/shared.module';
 import { TestSessionManager } from '../../test-session-manager/test-session-manager.service';
 
 @Component({
-    templateUrl: './add-filter-dialog.component.html',
-    styleUrls: [
-        'add-filter-dialog.component.css'
-    ],
-    standalone: false
+  templateUrl: './add-filter-dialog.component.html',
+  styleUrls: [
+    'add-filter-dialog.component.css'
+  ],
+  standalone: false
 })
 export class AddFilterDialogComponent implements OnInit {
   constructor(

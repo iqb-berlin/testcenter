@@ -7,7 +7,8 @@
   <p>
     Die maximale Zeit Ihrer aktuellen Auswahl beträgt: {{ dialogData.remainingTime }} Minute(n)
   </p>
-  <input matInput type="number" id="setTimer" required min="1"  [max]="dialogData.remainingTime" [formControl]="setTime"> <span> Minute(n)</span>
+  <input matInput type="number" id="setTimer" required min="1" [max]="dialogData.remainingTime" [formControl]="setTime">
+  <span> Minute(n)</span>
 </mat-dialog-content>
 
 <mat-dialog-actions>

@@ -14,9 +14,7 @@ import {
 export class BookletService extends BookletParserService<Unit, Testlet, BookletStateOption, BookletState, Booklet> {
   private readonly booklets: { [k: string]: Observable<Booklet | BookletError> } = {};
 
-  constructor(
-    private bs: BackendService
-  ) {
+  constructor(private bs: BackendService) {
     super();
   }
 
@@ -29,7 +27,6 @@ export class BookletService extends BookletParserService<Unit, Testlet, BookletS
     } else {
       this.booklets[bookletName] = this.bs.getBooklet(bookletName)
         .pipe(
-          // eslint-disable-next-line max-len
           map((response: string | BookletError) => (typeof response === 'string' ? this.parseXml(response) : response)),
           shareReplay(1)
         );

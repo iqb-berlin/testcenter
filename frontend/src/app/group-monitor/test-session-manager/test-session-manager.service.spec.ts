@@ -44,12 +44,10 @@ class MockBackendService {
 }
 
 @Pipe({
-    name: 'customtext',
-    standalone: false
+  name: 'customtext',
+  standalone: false
 })
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class MockCustomtextPipe {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(defaultValue: string, ..._: string[]): Observable<string> {
     return of<string>(defaultValue);
   }

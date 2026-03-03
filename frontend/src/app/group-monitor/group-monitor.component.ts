@@ -41,12 +41,12 @@ import { ComponentUtilService } from '../shared/services/component-util.service'
 import { HeaderService } from '../core/header.service';
 
 @Component({
-    selector: 'tc-group-monitor',
-    templateUrl: './group-monitor.component.html',
-    styleUrls: [
-        './group-monitor.component.css'
-    ],
-    standalone: false
+  selector: 'tc-group-monitor',
+  templateUrl: './group-monitor.component.html',
+  styleUrls: [
+    './group-monitor.component.css'
+  ],
+  standalone: false
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   connectionStatus$: Observable<ConnectionStatus> | null = null;
