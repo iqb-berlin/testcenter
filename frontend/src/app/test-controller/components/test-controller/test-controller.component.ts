@@ -57,11 +57,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   currentUnit: Unit | null = null;
 
   unitNavContext: NavControlContext = {
-    label: ''
+    labelMode: 'index',
+    label: '',
+    currentIndex: 0,
+    maxIndex: 0
   };
 
   pageNavContext: NavControlContext = {
-    label: ''
+    labelMode: 'index',
+    label: '',
+    currentIndex: 0,
+    maxIndex: 0
   };
 
   constructor(public mainDataService: MainDataService,
@@ -151,7 +157,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.tcs.currentUnitSequenceId$.subscribe(() => {
         this.currentUnit = this.tcs.currentUnit;
         this.unitNavContext = {
-          label: this.currentUnit?.label
+          labelMode: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'index' : 'label',
+          label: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'Aufgabe' : this.currentUnit?.label || '',
+          currentIndex: this.tcs.currentUnitSequenceId - 1,
+          maxIndex: Object.keys(this.tcs.units).length
         };
         this.headerService.title = this.tcs.booklet?.metadata.label;
       });
@@ -161,7 +170,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
       this.pageService.pagesUpdated.subscribe(() => {
         this.pageNavContext = {
-          label: this.pageService.getCurrentPage()?.label,
+          labelMode: (this.tcs.booklet?.config.page_navibuttons === 'INDEX') ? 'index' : 'full',
+          label: 'Teilaufgabe',
+          currentIndex: this.pageService.currentPageIndex,
+          maxIndex: this.pageService.pages.length,
           isForwardAllowed: !this.pageService.isLastPage(),
           isBackwardAllowed: !this.pageService.isFirstPage()
         };

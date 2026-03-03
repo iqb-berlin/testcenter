@@ -303,7 +303,10 @@ export interface BufferEvent {
 }
 
 export interface NavControlContext {
-  label?: string;
+  labelMode: 'index' | 'label' | 'full';
+  label: string;
+  currentIndex: number;
+  maxIndex: number;
   isBackwardAllowed?: boolean;
   isForwardAllowed?: boolean;
 }
