@@ -1,4 +1,13 @@
-exports.superStates = {
+import { TestSessionSuperState } from '../group-monitor.interfaces';
+
+export interface IconData {
+  icon: string;
+  tooltip: string;
+  class?: string;
+  description?: string;
+}
+
+export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   pending: {
     tooltip: 'Test noch nicht gestartet',
     icon: 'person_outline',

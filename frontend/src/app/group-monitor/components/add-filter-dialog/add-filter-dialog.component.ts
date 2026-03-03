@@ -10,14 +10,11 @@ import {
   testSessionFilterTargetLists,
   testSessionFilterTypeLists,
   testSessionFilterTypes,
-  TestSessionSuperState,
   isTestSessionFilter,
   isAdvancedTestSessionFilterTarget,
   isAdvancedTestSessionFilterType,
   TestSessionFilterSubValueSelect
 } from '../../group-monitor.interfaces';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { superStates } from '../../test-session/super-states';
 import { CustomtextService, TestMode } from '../../../shared/shared.module';
 import { TestSessionManager } from '../../test-session-manager/test-session-manager.service';
@@ -60,14 +57,7 @@ export class AddFilterDialogComponent implements OnInit {
     all: testSessionFilterTypes
   };
 
-  readonly superStates = superStates as {
-    [key in TestSessionSuperState]: {
-      description: string;
-      icon: string;
-      tooltip: string;
-      class: string;
-    }
-  };
+  readonly superStates = superStates;
 
   readonly lists: { [key in TestSessionFilterTarget]: string[] } = {
     blockId: [],

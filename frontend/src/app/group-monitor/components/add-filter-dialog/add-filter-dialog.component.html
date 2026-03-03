@@ -92,10 +92,10 @@
       <mat-option
         *ngFor="let superState of superStates | keyvalue"
         [value]="superState.key"
-        class="super-state {{superState.value.class}}"
+        class="super-state {{superState.value?.class}}"
       >
-        <mat-icon>{{superState.value.icon}}</mat-icon>
-        {{superState.value.tooltip}}
+        <mat-icon>{{superState.value?.icon}}</mat-icon>
+        {{superState.value?.tooltip}}
       </mat-option>
     </mat-select>
   </mat-form-field>

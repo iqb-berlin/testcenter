@@ -3,20 +3,11 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  Testlet, TestViewDisplayOptions, Selected, TestSession, TestSessionSuperState, isBooklet, isTestlet
+  Testlet, TestViewDisplayOptions, Selected, TestSession, isBooklet, isTestlet, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { superStates } from './super-states';
+import { IconData, superStates } from './super-states';
 import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
-
-interface IconData {
-  icon: string,
-  tooltip: string,
-  class?: string,
-  description?: string
-}
 
 interface TestletContext {
   $implicit: Testlet,
@@ -41,7 +32,7 @@ export class TestSessionComponent {
   @Output() selectedElement$ = new EventEmitter<Selected>();
   @Output() checked$ = new EventEmitter<boolean>();
 
-  superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
+  superStateIcons: Partial<Record<TestSessionSuperState, IconData>> = superStates;
 
   // TODO use pipes for the following functions
   stateString = TestSessionUtil.stateString;
