@@ -9,10 +9,11 @@ import { SysConfig } from './shared/shared.module';
   providedIn: 'root'
 })
 export class BackendService {
-  constructor(
-    @Inject('BACKEND_URL') private readonly serverUrl: string,
-    private http: HttpClient
-  ) {}
+  constructor(@Inject('BACKEND_URL') private readonly serverUrl: string, private http: HttpClient) { }
+
+  adminLogin(name: string, password: string | undefined = undefined): Observable<AuthData> {
+    return this.http.put<AuthData>(`${this.serverUrl}session/admin`, { name, password });
+  }
 
   login(loginType: 'admin' | 'login', name: string, password: string | undefined = undefined): Observable<AuthData> {
     return this.http.put<AuthData>(`${this.serverUrl}session/${loginType}`, { name, password });

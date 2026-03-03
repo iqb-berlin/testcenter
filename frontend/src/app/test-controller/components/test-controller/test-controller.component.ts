@@ -2,6 +2,8 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
@@ -9,17 +11,13 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-  CustomtextService,
-  MainDataService, UserAgentService,
-  BackendService as SharedBackendService
+  ConfirmDialogComponent, ConfirmDialogData,
+  CustomtextService, MainDataService, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
-  Command, MaxTimerEvent,
-  UnitNavigationTarget,
-  WindowFocusState
+  Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
+  UnitNavigationTarget, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -27,13 +25,15 @@ import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
-import { AppError } from '../../../app.interfaces';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
+import { HeaderService } from '../../../core/header.service';
+import { PageService } from '../../services/page.service';
+import { VeronaAPIService } from '../../services/verona-api.service';
 
 @Component({
-    templateUrl: './test-controller.component.html',
-    styleUrls: ['./test-controller.component.css'],
-    standalone: false
+  templateUrl: './test-controller.component.html',
+  styleUrls: ['./test-controller.component.css'],
+  standalone: false
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   @ViewChild(ReviewPanelComponent) reviewComponent?: ReviewPanelComponent;
@@ -54,20 +54,45 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   debugPane = false;
   sideNavContent: 'unit-menu' | 'review-form' = 'unit-menu';
 
-  constructor(
-    public mainDataService: MainDataService,
-    public tcs: TestControllerService,
-    private bs: BackendService,
-    private sharedBs: SharedBackendService,
-    private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private cts: CustomtextService,
-    public cmd: CommandService,
-    private tls: TestLoaderService,
-    public dialog: MatDialog,
-    private uiVisibilityService: UiVisibilityService,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
-  ) {
+  currentUnit: Unit | null = null;
+
+  unitNavContext: NavControlContext = {
+    labelMode: 'index',
+    label: '',
+    currentIndex: 0,
+    maxIndex: 0
+  };
+
+  pageNavContext: NavControlContext = {
+    labelMode: 'index',
+    label: '',
+    currentIndex: 0,
+    maxIndex: 0
+  };
+
+  constructor(public mainDataService: MainDataService,
+              public tcs: TestControllerService,
+              private bs: BackendService,
+              private sharedBs: SharedBackendService,
+              private snackBar: MatSnackBar,
+              private route: ActivatedRoute,
+              private cts: CustomtextService,
+              public cmd: CommandService,
+              private tls: TestLoaderService,
+              public dialog: MatDialog,
+              private uiVisibilityService: UiVisibilityService,
+              private headerService: HeaderService,
+              public pageService: PageService,
+              private apiService: VeronaAPIService,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitizer: DomSanitizer,
+              @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) {
+    this.matIconRegistry.addSvgIcon(
+      'clock_loader_60',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        'assets/icons/clock_loader_60.svg'
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -128,12 +153,36 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (!this.isProductionMode) {
         this.debugPane = !!localStorage.getItem('tc-debug');
       }
+
+      this.tcs.currentUnitSequenceId$.subscribe(() => {
+        this.currentUnit = this.tcs.currentUnit;
+        this.unitNavContext = {
+          labelMode: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'index' : 'label',
+          label: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'Aufgabe' : this.currentUnit?.label || '',
+          currentIndex: this.tcs.currentUnitSequenceId - 1,
+          maxIndex: Object.keys(this.tcs.units).length
+        };
+        this.headerService.title = this.tcs.booklet?.metadata.label;
+      });
+      this.tcs.navigation$.subscribe((nav: NavigationState) => {
+        this.unitNavContext.isBackwardAllowed = !!nav.targets.previous;
+        this.unitNavContext.isForwardAllowed = !!nav.targets.next;
+      });
+      this.pageService.pagesUpdated.subscribe(() => {
+        this.pageNavContext = {
+          labelMode: (this.tcs.booklet?.config.page_navibuttons === 'INDEX') ? 'index' : 'full',
+          label: 'Teilaufgabe',
+          currentIndex: this.pageService.currentPageIndex,
+          maxIndex: this.pageService.pages.length,
+          isForwardAllowed: !this.pageService.isLastPage(),
+          isBackwardAllowed: !this.pageService.isFirstPage()
+        };
+      });
     });
   }
 
   reload() {
     this.sharedBs.clearCache('cache').subscribe();
-    // eslint-disable-next-line
     // @ts-ignore: force reload with 'true' only works for firefox so far, that's why we clear cache manually
     setTimeout(() => { window.location.reload(true); }, 100);
   }
@@ -377,4 +426,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  gotoNextPage(): void {
+    this.gotoPage(this.pageService.currentPageIndex += 1);
+  }
+
+  gotoPreviousPage(): void {
+    this.gotoPage(this.pageService.currentPageIndex -= 1);
+  }
+
+  gotoPage(targetPageIndex: number): void {
+    this.pageService.currentPageIndex = targetPageIndex;
+    this.apiService.sendPageNav(this.tcs.currentUnit?.alias,
+      Object.keys(this.pageService.pages)[this.pageService.currentPageIndex]);
+  }
+
+  protected readonly unitNavigationTarget = UnitNavigationTarget;
 }

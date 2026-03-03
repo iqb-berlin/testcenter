@@ -21,6 +21,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -30,82 +32,88 @@ import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
+import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { StatusCardComponent } from './app-root/status-card/status-card.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
 import { StarterComponent } from './app-root/starter/starter.component';
 import { TestModeInterceptor } from './test-mode.interceptor';
-import { CdkAccordionModule } from '@angular/cdk/accordion';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { HeaderComponent } from './app-root/header/header.component';
+import { FooterComponent } from './app-root/footer/footer.component';
+import { TestCardComponent } from './app-root/starter/test-card.component';
 
-@NgModule({ declarations: [
-        AppComponent,
-        AppRootComponent,
-        SysCheckStarterComponent,
-        LoginComponent,
-        CodeInputComponent,
-        RouteDispatcherComponent,
-        StatusCardComponent,
-        LegalNoticeComponent,
-        StarterComponent
-    ],
-    bootstrap: [AppComponent], imports: [ApplicationModule,
-        BrowserModule,
-        BrowserAnimationsModule,
-        MatBadgeModule,
-        MatButtonModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatMenuModule,
-        MatProgressBarModule,
-        MatRadioModule,
-        MatTabsModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        ReactiveFormsModule,
-        RouterModule,
-        AppRoutingModule,
-        SharedModule,
-        CdkAccordionModule,
-        MatExpansionModule], providers: [
-        BackendService,
-        MatDialog,
-        {
-            provide: ErrorHandler,
-            useClass: AppErrorHandler
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthInterceptor,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: ErrorInterceptor,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: RetryInterceptor,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: TestModeInterceptor,
-            multi: true
-        },
-        {
-            provide: LocationStrategy,
-            useClass: HashLocationStrategy
-        },
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    AppRootComponent,
+    SysCheckStarterComponent,
+    LoginComponent,
+    AdminLoginComponent,
+    CodeInputComponent,
+    RouteDispatcherComponent,
+    LegalNoticeComponent,
+    StarterComponent
+  ],
+  bootstrap: [AppComponent],
+  imports: [
+    ApplicationModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatBadgeModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    RouterModule,
+    AppRoutingModule,
+    SharedModule,
+    CdkAccordionModule,
+    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent],
+  providers: [
+    BackendService,
+    MatDialog,
+    {
+      provide: ErrorHandler,
+      useClass: AppErrorHandler
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RetryInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TestModeInterceptor,
+      multi: true
+    },
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    },
+    provideHttpClient(withInterceptorsFromDi())
+  ]
+})
 export class AppModule { }

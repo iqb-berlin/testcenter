@@ -8,12 +8,8 @@ import { MainDataService } from './shared/shared.module';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private mainDataService: MainDataService
-  ) {
-  }
+  constructor(private mainDataService: MainDataService) { }
 
-  // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     let tokenStr = '';
     const authData = this.mainDataService.getAuthData();

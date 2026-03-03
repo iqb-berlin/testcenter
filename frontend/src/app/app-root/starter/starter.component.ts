@@ -14,13 +14,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '../../shared/services/file.service';
 import { MessageService } from '../../shared/services/message.service';
 import { AuthAccessType } from '../../app.interfaces';
-
+import { HeaderService } from '../../core/header.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 @Component({
-    selector: 'tc-starter',
-    templateUrl: './starter.component.html',
-    styleUrls: ['./starter.component.css'],
-    standalone: false
+  selector: 'tc-starter',
+  templateUrl: './starter.component.html',
+  styleUrls: ['./starter.component.scss'],
+  standalone: false
 })
 export class StarterComponent implements OnInit, OnDestroy {
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
@@ -30,16 +31,13 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  constructor(
-    private router: Router,
-    private bs: BackendService,
-    public cts: CustomtextService,
-    public mds: MainDataService,
-    public ds: SysCheckDataService,
-    public pcs: PasswordChangeService,
-    private dialog: MatDialog,
-    private ms: MessageService
-  ) { }
+  availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
+
+  constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
+              public mds: MainDataService, public ds: SysCheckDataService,
+              public pcs: PasswordChangeService, private dialog: MatDialog,
+              public themeService: ThemeService,
+              private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
     this.ds.networkReports = [];
@@ -79,6 +77,7 @@ export class StarterComponent implements OnInit, OnDestroy {
                 this.mds.logOut();
               }
 
+              // TODO is this subscription ever unsubscribed?
               this.pcs.showPasswordChangeDialog(
                 { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
                 { disableClose: true }
@@ -120,8 +119,16 @@ export class StarterComponent implements OnInit, OnDestroy {
         } else if ('test' in this.claims) {
           this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
         }
+        this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
+          name: test.label,
+          mode: (test.flags.locked ? 'locked' :
+            (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
+          claim: test
+        }));
       });
     });
+    this.headerService.title = 'Übersicht';
+    this.headerService.showAccountPanel = true;
   }
 
   startTest(test: AccessObject): void {
@@ -177,10 +184,6 @@ export class StarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
-  resetLogin(): void {
-    this.mds.logOut();
-  }
-
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
     this.bs.getSessionData().subscribe(authData => {
@@ -197,17 +200,18 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   downloadReview() {
     this.bs.downloadReviews()
-      .subscribe((response) => {
-          if (response.status === 204 || !response.body) {
-            this.ms.show('Keine Kommentare verfügbar.');
-          } else {
-            FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
-          }
+      .subscribe(response => {
+        if (response.status === 204 || !response.body) {
+          this.ms.show('Keine Kommentare verfügbar.');
+        } else {
+          FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
         }
+      }
       );
   }
 
   ngOnDestroy(): void {
+    this.headerService.reset();
     if (this.getMonitorDataSubscription !== null) {
       this.getMonitorDataSubscription.unsubscribe();
     }

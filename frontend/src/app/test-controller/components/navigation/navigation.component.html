@@ -1,0 +1,29 @@
+<button matIconButton class="nav-button previous-button"
+   matTooltip="Zurück"
+   [disabled]="!navContext.isBackwardAllowed"
+   (click)="back.emit()">
+  <i class="material-icons">keyboard_arrow_left</i>
+</button>
+
+<div class="label">
+  {{ navContext.label }}
+
+  @if (navContext.labelMode === 'index') {
+    {{navContext.currentIndex + 1}}/{{navContext.maxIndex}}
+  }
+
+  @if (navContext.labelMode === 'full') {
+    <mat-tab-group [selectedIndex]="navContext.currentIndex">
+      @for (item of maxTabs; track item) {
+        <mat-tab label="{{item}}"></mat-tab>
+      }
+    </mat-tab-group>
+  }
+</div>
+
+<button matIconButton class="nav-button next-button"
+   matTooltip="Weiter"
+   [disabled]="!navContext.isForwardAllowed"
+   (click)="forward.emit()">
+  <i class="material-icons">keyboard_arrow_right</i>
+</button>

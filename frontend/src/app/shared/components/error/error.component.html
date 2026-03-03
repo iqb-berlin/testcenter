@@ -101,7 +101,6 @@
       <button
         *ngIf="!sendingResult && errorDetailsOpen"
         mat-raised-button
-        color="accent"
         (click)="submitReport()"
       >
         Fehlerbericht Senden
@@ -110,7 +109,6 @@
       <button
         *ngIf="errorDetailsOpen"
         mat-raised-button
-        color="accent"
         (click)="downloadReport()"
       >
         Fehlerbericht Herunterladen
@@ -119,7 +117,6 @@
 
     <button
       mat-raised-button
-      color="primary"
       (click)="closeClick()"
       data-cy="close"
     >

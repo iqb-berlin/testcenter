@@ -3,20 +3,11 @@ import {
 } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  Testlet, TestViewDisplayOptions, Selected, TestSession, TestSessionSuperState, isBooklet, isTestlet
+  Testlet, TestViewDisplayOptions, Selected, TestSession, isBooklet, isTestlet, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { superStates } from './super-states';
+import { IconData, superStates } from './super-states';
 import { UnitDef } from '../../shared/interfaces/booklet.interfaces';
-
-interface IconData {
-  icon: string,
-  tooltip: string,
-  class?: string,
-  description?: string
-}
 
 interface TestletContext {
   $implicit: Testlet,
@@ -24,14 +15,14 @@ interface TestletContext {
 }
 
 @Component({
-    selector: 'tc-test-session',
-    templateUrl: './test-session.component.html',
-    styleUrls: ['./test-session.component.css'],
-    standalone: false
+  selector: 'tc-test-session',
+  templateUrl: './test-session.component.html',
+  styleUrls: ['./test-session.component.css'],
+  standalone: false
 })
 export class TestSessionComponent {
-  @Input() testSession: TestSession = {} as TestSession;
-  @Input() displayOptions: TestViewDisplayOptions = {} as TestViewDisplayOptions;
+  @Input() testSession!: TestSession;
+  @Input() displayOptions!: TestViewDisplayOptions;
   @Input() marked: Selected | null = null;
   @Input() selected: Selected | null = null;
   @Input() checked: boolean = false;
@@ -41,7 +32,7 @@ export class TestSessionComponent {
   @Output() selectedElement$ = new EventEmitter<Selected>();
   @Output() checked$ = new EventEmitter<boolean>();
 
-  superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
+  superStateIcons: Partial<Record<TestSessionSuperState, IconData>> = superStates;
 
   // TODO use pipes for the following functions
   stateString = TestSessionUtil.stateString;
@@ -67,12 +58,14 @@ export class TestSessionComponent {
   isSelectionTheSameBlockAsParentSelection(testletOrNull: Testlet | null = null): boolean {
     return !!testletOrNull && //  is something Nowselected?
       (this.selected?.element?.blockId === testletOrNull?.blockId) && // is nowselected already in parentselection?
-      (this.selected?.originSession.booklet.species === this.testSession.booklet.species); // is nowselected same species as parentselection (is it the same block 1? == same col)
+      // is nowselected same species as parentselection (is it the same block 1? == same col)
+      (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
   returnClicks(testletOrNull: Testlet | null = null): 'first' | 'second' | 'third' {
     const isSelectionInSameSession = this.isSelectionTheSameBlockAsParentSelection(testletOrNull) &&
-      (this.selected?.originSession.data.testId === this.testSession.data.testId); // is the nowSelection the same Session (row in Table)
+      // is the nowSelection the same Session (row in Table)
+      (this.selected?.originSession.data.testId === this.testSession.data.testId);
 
     if (isSelectionInSameSession && this.selected?.nthClick === 'first') {
       return 'second';
@@ -90,7 +83,7 @@ export class TestSessionComponent {
       (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
-  select($event: Event, testletOrNull: Testlet | null): void {
+  select(testletOrNull: Testlet | null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
       return;
     }

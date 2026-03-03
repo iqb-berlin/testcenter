@@ -85,7 +85,11 @@ class MockCustomtextPipe {
 }
 
 class MockMainDataService {
+  appTitle$ = new BehaviorSubject<string>('Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
+  getAuthData = () => ({
+    displayName: 'testAccountName'
+  });
 }
 
 describe('GroupMonitorComponent', () => {

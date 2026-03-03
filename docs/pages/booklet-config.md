@@ -15,7 +15,7 @@ into the booklet-file. Example:
 </Metadata>
 <BookletConfig>
     <Config key="force_responses_complete">OFF</CustomText>
-    <Config key="unit_navibuttons">ARROWS_ONLY</CustomText>
+    <Config key="unit_navibuttons">LABEL</CustomText>
 ...
 </BookletConfig>
 ```
@@ -43,14 +43,14 @@ pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopSta
 ### page_navibuttons
 Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
  * "OFF" - Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)
- * **"SEPARATE_BOTTOM" - Seitennavigation über getrennte Button-Leiste - unten**
+ * **"INDEX" - Seitennavigation zeigt nur Pfeile und den aktuellen Index**
+ * "FULL" - Seitennavigation zeigt horizontale Liste aller Seiten
 
 ### unit_navibuttons
 Navigationsbuttons für die Navigation zwischen den Aufgaben
  * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
- * "ARROWS_ONLY" - Nur die Buttons für 'Weiter' und 'Zurück' anzeigen
- * "FORWARD_ONLY" - Nur der Vorwärtsbutton soll gezeigt werden
- * **"FULL" - Buttons für 'Weiter' und 'Zurück' und dazwischen kleine Buttons für jede Aufgabe anzeigen**
+ * "INDEX" - Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben,
+ * **"LABEL" - Der Anzeigename der aktuellen Aufgabe wird angezeigt**
 
 ### unit_menu
 Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden

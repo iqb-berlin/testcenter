@@ -257,16 +257,18 @@ export abstract class BookletParserService<
     const lockAfterLeavingElem = restrictionsElement ?
       this.xmlGetChildIfExists(restrictionsElement, 'LockAfterLeaving', true) :
       null;
-    const lockAfterLeaving =
+    const lockAfterLeaving: {
+      readonly confirm: boolean;
+      readonly scope: 'testlet' | 'unit'
+    } | undefined =
       lockAfterLeavingElem ?
         {
           confirm: this.xmlGetBooleanAttribute(lockAfterLeavingElem, 'confirm', false),
-          scope: lockAfterLeavingElem.getAttribute('scope') || 'testlet'
+          // 'unit' | 'testlet' is defined in the booklet.xsd; can't be anything else.
+          scope: lockAfterLeavingElem.getAttribute('scope') as 'unit' | 'testlet' || 'testlet'
         } :
         context.parents
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore - findLast is not known in ts-lib es2022, es2023 is not available in ts 5.1
-          .findLast(testlet => testlet.restrictions.lockAfterLeaving) || undefined;
+          .findLast(testlet => testlet.restrictions.lockAfterLeaving)?.restrictions.lockAfterLeaving;
 
     return {
       codeToEnter,

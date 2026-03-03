@@ -38,6 +38,7 @@ import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.comp
 import { PropertiesPipe } from './pipes/properties.pipe';
 import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
 import { ReviewPanelComponent } from './components/review-panel/review-panel.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -69,7 +70,8 @@ export { TestControllerService } from './services/test-controller.service';
     MatAutocompleteModule,
     MatSelectModule,
     NgIf,
-    ReviewPanelComponent
+    ReviewPanelComponent,
+    NavigationComponent
   ],
   declarations: [
     UnithostComponent,
