@@ -31,7 +31,7 @@ import { Router, RouterLink } from '@angular/router';
     footer {
       height: 24px;
       padding: 16px;
-      background: var(--theme-Gray-05, #F4F2F2);
+      background: var(--theme-gray-05, #F4F2F2);
       display: flex;
       flex-direction: row;
     }
