@@ -25,21 +25,19 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.mainDataService.appSubTitle$.next('');
-      this.routingSubscription = this.route.params.subscribe((params: Params) => {
-        this.workspaceDataService.workspaceId$.next(params.ws);
-        const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
-        this.workspaceDataService.wsName = workspace.label;
-        this.workspaceDataService.wsRole = workspace.flags.mode || 'ro';
-        this.mainDataService.appSubTitle$.next(
-          `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
-        );
-      });
-      this.headerService.title =
-        `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`;
-      this.headerService.showAccountPanel = true;
+    this.mainDataService.appSubTitle$.next('');
+    this.routingSubscription = this.route.params.subscribe((params: Params) => {
+      this.workspaceDataService.workspaceId$.next(params.ws);
+      const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
+      this.workspaceDataService.wsName = workspace.label;
+      this.workspaceDataService.wsRole = workspace.flags.mode || 'ro';
+      this.mainDataService.appSubTitle$.next(
+        `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
+      );
     });
+    this.headerService.title =
+      `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`;
+    this.headerService.showAccountPanel = true;
   }
 
   ngOnDestroy(): void {

@@ -41,91 +41,89 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.ds.networkReports = [];
-    setTimeout(() => {
-      this.bs.getSessionData().subscribe(authData => {
-        if (!authData || !authData.token) {
-          this.mds.logOut();
-          return;
+    this.bs.getSessionData().subscribe(authData => {
+      if (!authData || !authData.token) {
+        this.mds.logOut();
+        return;
+      }
+      this.claims = authData.claims;
+      this.mds.setAuthData(authData);
+
+      if (
+        'attachmentManager' in this.claims ||
+        'workspaceMonitor' in this.claims ||
+        'testGroupMonitor' in this.claims
+      ) {
+        this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+      } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
+        this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
+        if (this.getWorkspaceDataSubscription !== null) {
+          this.getWorkspaceDataSubscription.unsubscribe();
         }
-        this.claims = authData.claims;
-        this.mds.setAuthData(authData);
+        this.workspaces = authData.claims.workspaceAdmin;
+        this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
-        if (
-          'attachmentManager' in this.claims ||
-          'workspaceMonitor' in this.claims ||
-          'testGroupMonitor' in this.claims
-        ) {
-          this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-        } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
-          this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
-          if (this.getWorkspaceDataSubscription !== null) {
-            this.getWorkspaceDataSubscription.unsubscribe();
-          }
-          this.workspaces = authData.claims.workspaceAdmin;
-          this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
+        if (authData.pwSetByAdmin && !this.isSuperAdmin) {
+          this.dialog.open(ConfirmDialogComponent, {
+            data: <MessageDialogData>{
+              title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
+              content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
+              type: 'info'
+            },
+            disableClose: true
+          }).afterClosed().subscribe(errorCode => {
+            if (!errorCode) {
+              this.mds.logOut();
+            }
 
-          if (authData.pwSetByAdmin && !this.isSuperAdmin) {
-            this.dialog.open(ConfirmDialogComponent, {
-              data: <MessageDialogData>{
-                title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
-                content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
-                type: 'info'
-              },
-              disableClose: true
-            }).afterClosed().subscribe(errorCode => {
-              if (!errorCode) {
-                this.mds.logOut();
+            // TODO is this subscription ever unsubscribed?
+            this.pcs.showPasswordChangeDialog(
+              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
+              { disableClose: true }
+            ).subscribe(error => {
+              if (error) {
+                const dialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Sie müssen Ihr Passwort einmalig ändern',
+                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                    type: 'error'
+                  }
+                });
+
+                setTimeout(() => {
+                  dialog.close();
+                  this.mds.logOut();
+                }, 1500);
               }
 
-              // TODO is this subscription ever unsubscribed?
-              this.pcs.showPasswordChangeDialog(
-                { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
-                { disableClose: true }
-              ).subscribe(error => {
-                if (error) {
-                  const dialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Sie müssen Ihr Passwort einmalig ändern',
-                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                      type: 'error'
-                    }
-                  });
+              if (!error) {
+                const dialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Passwort erfolgreich geändert',
+                    content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+                    type: 'info'
+                  }
+                });
 
-                  setTimeout(() => {
-                    dialog.close();
-                    this.mds.logOut();
-                  }, 1500);
-                }
-
-                if (!error) {
-                  const dialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Passwort erfolgreich geändert',
-                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-                      type: 'info'
-                    }
-                  });
-
-                  setTimeout(() => {
-                    dialog.close();
-                    this.mds.logOut();
-                  }, 1500);
-                }
-              });
+                setTimeout(() => {
+                  dialog.close();
+                  this.mds.logOut();
+                }, 1500);
+              }
             });
-          }
-        } else if ('test' in this.claims) {
-          this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
+          });
         }
-        this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
-          name: test.label,
-          mode: (test.flags.locked ? 'locked' :
-            (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
-          claim: test
-        }));
-      });
+      } else if ('test' in this.claims) {
+        this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
+      }
+      this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
+        name: test.label,
+        mode: (test.flags.locked ? 'locked' :
+          (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
+        claim: test
+      }));
     });
     this.headerService.title = 'Übersicht';
     this.headerService.showAccountPanel = true;

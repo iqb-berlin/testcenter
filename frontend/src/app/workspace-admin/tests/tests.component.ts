@@ -41,12 +41,10 @@ export class TestsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.workspaceSubscription = this.workspaceDataService.workspaceId$.subscribe(workspaceId => {
-        if (workspaceId) {
-          this.loadTestSessions(workspaceId);
-        }
-      });
+    this.workspaceSubscription = this.workspaceDataService.workspaceId$.subscribe(workspaceId => {
+      if (workspaceId) {
+        this.loadTestSessions(workspaceId);
+      }
     });
   }
 

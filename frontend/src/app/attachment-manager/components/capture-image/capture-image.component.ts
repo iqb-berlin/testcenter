@@ -90,7 +90,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    setTimeout(() => { this.runCamera(); });
+    this.runCamera();
   }
 
   ngOnDestroy(): void {

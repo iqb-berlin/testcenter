@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormsModule, ReactiveFormsModule
 } from '@angular/forms';
@@ -49,7 +49,7 @@ import { CustomImagesService } from '../../shared/services/custom-images.service
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.css']
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   private configDataChangedSubscription: Subscription | null = null;
   customImageForm: FormGroup;
   configForm: FormGroup;
@@ -103,35 +103,33 @@ export class SettingsComponent {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.customImageForm.setValue({
       loginIntro: this.customImageService.images.loginIntro || '',
       starterIntro: this.customImageService.images.starterIntro || ''
     });
-    setTimeout(async () => {
-      const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
-      this.configForm.setValue({
-        appTitle: appConfig.appTitle,
-        introHtml: appConfig.introHtml,
-        legalNoticeHtml: appConfig.legalNoticeHtml,
-        globalWarningText: appConfig.globalWarningText,
-        globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
-        globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
-        bugReportAuth: appConfig.bugReportAuth,
-        bugReportTarget: appConfig.bugReportTarget,
-        themeName: appConfig.themeName
-      }, { emitEvent: false });
+    const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
+    this.configForm.setValue({
+      appTitle: appConfig.appTitle,
+      introHtml: appConfig.introHtml,
+      legalNoticeHtml: appConfig.legalNoticeHtml,
+      globalWarningText: appConfig.globalWarningText,
+      globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
+      globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
+      bugReportAuth: appConfig.bugReportAuth,
+      bugReportTarget: appConfig.bugReportTarget,
+      themeName: appConfig.themeName
+    }, { emitEvent: false });
+    this.warningIsExpired = AppConfig.isWarningExpired(
+      appConfig.globalWarningExpiredDay,
+      appConfig.globalWarningExpiredHour
+    );
+    this.logoImageBase64 = appConfig.mainLogo;
+    this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
       this.warningIsExpired = AppConfig.isWarningExpired(
-        appConfig.globalWarningExpiredDay,
-        appConfig.globalWarningExpiredHour
+        this.configForm.get('globalWarningExpiredDay')?.value,
+        this.configForm.get('globalWarningExpiredHour')?.value
       );
-      this.logoImageBase64 = appConfig.mainLogo;
-      this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
-        this.warningIsExpired = AppConfig.isWarningExpired(
-          this.configForm.get('globalWarningExpiredDay')?.value,
-          this.configForm.get('globalWarningExpiredHour')?.value
-        );
-      });
     });
   }
 

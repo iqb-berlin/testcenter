@@ -35,16 +35,14 @@ export class StudyMonitorComponent {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.wsIdSubscription = this.route.params.subscribe(params => {
-        this.updateTable(params.ws);
+    this.wsIdSubscription = this.route.params.subscribe(params => {
+      this.updateTable(params.ws);
 
-        this.intervalId = setInterval(() => {
-          this.updateTable(params.ws);
-        }, 10000);
-      });
-      this.headerService.title = 'Studienmonitor';
+      this.intervalId = setInterval(() => {
+        this.updateTable(params.ws);
+      }, 10000);
     });
+    this.headerService.title = 'Studienmonitor';
   }
 
   ngOnDestroy(): void {

@@ -29,13 +29,11 @@ export class CodeInputComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.mds.appSubTitle$.next('Bitte Code eingeben');
-      const element = <HTMLElement>document.querySelector('.mat-input-element[formControlName="code"]');
-      if (element) {
-        element.focus();
-      }
-    });
+    this.mds.appSubTitle$.next('Bitte Code eingeben');
+    const element = <HTMLElement>document.querySelector('.mat-input-element[formControlName="code"]');
+    if (element) {
+      element.focus();
+    }
   }
 
   codeinput(): void {

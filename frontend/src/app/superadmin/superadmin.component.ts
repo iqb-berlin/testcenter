@@ -17,7 +17,7 @@ export class SuperadminComponent implements OnInit {
   ];
 
   ngOnInit():void {
-    setTimeout(() => this.mds.appSubTitle$.next('Systemverwaltung'));
+    this.mds.appSubTitle$.next('Systemverwaltung');
     this.headerService.title = 'Systemverwaltung';
     this.headerService.showAccountPanel = true;
   }

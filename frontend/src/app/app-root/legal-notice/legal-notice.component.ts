@@ -21,7 +21,7 @@ export class LegalNoticeComponent implements OnInit {
   constructor(public mds: MainDataService, private headerService: HeaderService) { }
 
   ngOnInit(): void {
-    setTimeout(() => this.mds.appSubTitle$.next('Impressum/Datenschutz'));
+    this.mds.appSubTitle$.next('Impressum/Datenschutz');
     this.mds.refreshSysStatus();
     this.headerService.title = 'Impressum';
   }

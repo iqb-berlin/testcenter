@@ -36,56 +36,54 @@ export class AppComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.appErrorSubscription = this.mainDataService.appError$
-        .subscribe(err => {
-          if (err.type === 'fatal') {
-            this.mainDataService.quit();
-          }
-          if (!this.disableGlobalErrorDisplay()) {
-            this.showError = true;
-          }
-        });
-
-      this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])
-        .subscribe(titles => {
-          if (titles[1]) {
-            this.titleService.setTitle(`${titles[0]} | ${titles[1]}`);
-          } else {
-            this.titleService.setTitle(titles[0]);
-          }
-        });
-
-      window.addEventListener('message', (event: MessageEvent) => {
-        const msgData = event.data;
-        const msgType = msgData.type;
-        if ((msgType !== undefined) && (msgType !== null)) {
-          if ((msgType.startsWith('vo'))) {
-            this.mainDataService.postMessage$.next(event);
-          }
+    this.appErrorSubscription = this.mainDataService.appError$
+      .subscribe(err => {
+        if (err.type === 'fatal') {
+          this.mainDataService.quit();
+        }
+        if (!this.disableGlobalErrorDisplay()) {
+          this.showError = true;
         }
       });
 
-      this.setupFocusListeners();
-      this.setupFullScreenListener();
+    this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])
+      .subscribe(titles => {
+        if (titles[1]) {
+          this.titleService.setTitle(`${titles[0]} | ${titles[1]}`);
+        } else {
+          this.titleService.setTitle(titles[0]);
+        }
+      });
 
-      this.backendService.getSysConfig()
-        .subscribe((sysConfig: SysConfig) => {
-          this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
-                                                          this.themeService.availableThemes[0].name,
-                                                          this.sanitizer);
-          this.customImageService.registerImages(sysConfig.customImages);
-          this.themeService.setTheme(sysConfig.appConfig.themeName);
-        });
-
-      // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
-      this.backendService.checkIfSysCheckModeExists()
-        .subscribe(doesSysCheckModeExist => {
-          this.mainDataService.sysCheckAvailableForAll = !doesSysCheckModeExist;
-        });
-
-      this.checkBrowser();
+    window.addEventListener('message', (event: MessageEvent) => {
+      const msgData = event.data;
+      const msgType = msgData.type;
+      if ((msgType !== undefined) && (msgType !== null)) {
+        if ((msgType.startsWith('vo'))) {
+          this.mainDataService.postMessage$.next(event);
+        }
+      }
     });
+
+    this.setupFocusListeners();
+    this.setupFullScreenListener();
+
+    this.backendService.getSysConfig()
+      .subscribe((sysConfig: SysConfig) => {
+        this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
+                                                        this.themeService.availableThemes[0].name,
+                                                        this.sanitizer);
+        this.customImageService.registerImages(sysConfig.customImages);
+        this.themeService.setTheme(sysConfig.appConfig.themeName);
+      });
+
+    // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
+    this.backendService.checkIfSysCheckModeExists()
+      .subscribe(doesSysCheckModeExist => {
+        this.mainDataService.sysCheckAvailableForAll = !doesSysCheckModeExist;
+      });
+
+    this.checkBrowser();
   }
 
   private disableGlobalErrorDisplay(): boolean {

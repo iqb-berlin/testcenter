@@ -57,9 +57,7 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.updateObjectList();
-    });
+    this.updateObjectList();
   }
 
   addObject(): void {

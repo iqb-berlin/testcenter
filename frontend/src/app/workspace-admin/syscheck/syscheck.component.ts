@@ -35,12 +35,10 @@ export class SyscheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.wsIdSubscription = this.wds.workspaceId$
-        .subscribe(() => {
-          this.updateTable();
-        });
-    });
+    this.wsIdSubscription = this.wds.workspaceId$
+      .subscribe(() => {
+        this.updateTable();
+      });
   }
 
   ngOnDestroy(): void {
