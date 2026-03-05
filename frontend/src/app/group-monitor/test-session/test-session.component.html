@@ -12,9 +12,7 @@
 
 <td class="super-state" (contextmenu)="deselectForce($event)">
   <div class="vertical-align-middle" *ngIf="superStateIcons[testSession.state] as iconData">
-    <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
-      {{iconData.icon}}
-    </mat-icon>
+    <mat-icon [svgIcon]="iconData.icon" class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}"></mat-icon>
   </div>
 </td>
 
@@ -53,10 +51,10 @@
     <mat-icon
       class="unit-badge"
       *ngIf="testSession | timeleft : current.parent as timeLeft"
+      svgIcon="schedule"
       matBadge="{{timeLeft | number: '1.0-0'}}"
       matTooltip="{{'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip':timeLeft:(current.parent.restrictions.timeMax?.minutes || 0) | async}}"
-    >schedule
-    </mat-icon>
+    ></mat-icon>
   </div>
 </td>
 
@@ -242,9 +240,7 @@
     [matTooltip]="(testSession | iscodeclear : testlet) ? ('Block wurde geöffnet' | customtext: 'gm_codetoenter_unlock_tooltip' | async)! : (('Freigabewort' | customtext:'booklet_codeToEnterTitle' | async) + ': ' + codeToEnter.code.toUpperCase())"
     matTooltipPosition="above"
   >
-    <mat-icon>
-      {{(testSession | iscodeclear : testlet) ? 'lock_open' : 'lock'}}
-    </mat-icon>
+    <mat-icon [svgIcon]="(testSession | iscodeclear : testlet) ? 'lock_open' : 'lock'"></mat-icon>
   </span>
 
   <span
@@ -254,25 +250,24 @@
     <ng-container *ngIf="(testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testlet.id)); else: timerNotStarted">
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] === 0"
+        svgIcon="timer_off"
         matTooltip="{{'Zeit abgelaufen' | customtext:'gm_timeup_tooltip' | async}}"
-        matTooltipPosition="above"
-      >timer_off</mat-icon>
+        matTooltipPosition="above"></mat-icon>
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] < 0"
+        svgIcon="timer_off"
         matTooltip="{{'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]*-1:timeMax.minutes | async}}"
-        matTooltipPosition="above"
-      >timer_off</mat-icon>
+        matTooltipPosition="above"></mat-icon>
       <mat-icon
         *ngIf="testSession.timeLeft[testlet.id] > 0"
+        svgIcon="timer"
         matTooltip="{{'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]:timeMax.minutes | async}}"
-        matTooltipPosition="above"
-      >timer</mat-icon>
+        matTooltipPosition="above"></mat-icon>
     </ng-container>
     <ng-template #timerNotStarted>
-      <mat-icon
+      <mat-icon svgIcon="timer"
         matTooltip="{{'Zeitgesteuerter Block: %s Minute(n)' | customtext:'gm_timemax_tooltip':timeMax.minutes | async}}"
-        matTooltipPosition="above"
-      >timer</mat-icon>
+        matTooltipPosition="above"></mat-icon>
     </ng-template>
   </span>
 </ng-template>
@@ -280,24 +275,18 @@
 <td class="current-unit" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
     <h2 matTooltip="{{current.unit?.label}}">{{current.unit?.id}}</h2>
-    <mat-icon
+    <mat-icon svgIcon="visibility"
       class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'PRESENTATION_PROGRESS', 'complete')"
-      matTooltip="Vollständig betrachtet / angehört"
-    >remove_red_eye
-    </mat-icon>
-    <mat-icon
+      matTooltip="Vollständig betrachtet / angehört"></mat-icon>
+    <mat-icon svgIcon="done_all"
       class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'RESPONSE_PROGRESS', 'complete')"
-      matTooltip="Fertig beantwortet"
-    >done_all
-    </mat-icon>
-    <mat-icon class="unit-badge"
+      matTooltip="Fertig beantwortet"></mat-icon>
+    <mat-icon  svgIcon="description" class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'CURRENT_PAGE_NR')"
       matBadge="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
-      matTooltip="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_ID'])}}"
-    >description
-    </mat-icon>
+      matTooltip="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_ID'])}}"></mat-icon>
   </div>
 </td>
 

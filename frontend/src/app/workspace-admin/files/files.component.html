@@ -39,11 +39,11 @@
                   <button mat-button [attr.data-cy]="element.name" (click)="download(element)">{{element.name}}</button>
                   <span class="vertical-align-middle">
                     <ng-container *ngIf="element.report.error && element.report.error?.length; else: noError">
-                      <mat-icon class="report-error">error</mat-icon>
+                      <mat-icon svgIcon="error" class="report-error"></mat-icon>
                     </ng-container>
                     <ng-template #noError>
                       <ng-container *ngIf="(element.report.warning && element.report.warning?.length) || !getDependenciesOfFile(element).length">
-                        <mat-icon class="report-warning">warning</mat-icon>
+                        <mat-icon svgIcon="warning" class="report-warning"></mat-icon>
                       </ng-container>
                     </ng-template>
                   </span>
@@ -115,7 +115,7 @@
         [disabled]="(wds.wsRole !== 'RW') || !files || !enableInteraction"
         data-cy="delete-files"
       >
-        <mat-icon *ngIf="enableInteraction;else deleteSpinner">delete</mat-icon>
+        <mat-icon *ngIf="enableInteraction;else deleteSpinner" svgIcon="delete"></mat-icon>
         <ng-template #deleteSpinner><mat-spinner [diameter]="15" ></mat-spinner></ng-template>
         Löschen
       </button>
@@ -127,7 +127,7 @@
         [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files.length)"
         data-cy="upload-files"
       >
-        <mat-icon>cloud_upload</mat-icon>
+        <mat-icon svgIcon="upload"></mat-icon>
         Hochladen
       </button>
     </div>

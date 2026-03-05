@@ -11,7 +11,7 @@
 <div class="tab tab-main" *ngIf="activeWindows.includes('main')" cdkDrag>
   <h1>
     Main
-    <mat-icon class="close" (click)="closeWindow('main')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('main')"></mat-icon>
   </h1>
   <div><b>STATUS:</b> {{tcs.state$ | async}}</div>
   <div>
@@ -31,7 +31,7 @@
 <div class="tab tab-config" *ngIf="activeWindows.includes('config')" cdkDrag>
   <h1>
     Booklet-Config
-    <mat-icon class="close" (click)="closeWindow('config')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('config')"></mat-icon>
   </h1>
   <div *ngFor="let row of bookletConfig"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
@@ -39,7 +39,7 @@
 <div class="tab tab-testmode" *ngIf="activeWindows.includes('testmode')" cdkDrag>
   <h1>
     Test-Mode
-    <mat-icon class="close" (click)="closeWindow('testmode')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('testmode')"></mat-icon>
   </h1>
   <div *ngFor="let row of testMode"><b>{{row[0]}}: </b>{{row[1]}}</div>
 </div>
@@ -47,7 +47,7 @@
 <div class="tab tab-booklet" *ngIf="activeWindows.includes('booklet')" cdkDrag>
   <h1>
     Booklet
-    <mat-icon class="close" (click)="closeWindow('booklet')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('booklet')"></mat-icon>
   </h1>
   <ng-container *ngIf="tcs.booklet as booklet">
     <ng-container *ngIf="tcs.booklet.units as units">
@@ -60,7 +60,7 @@
 <div class="tab tab-unit" *ngIf="activeWindows.includes('unit')" cdkDrag>
   <h1>
     Current Unit
-    <mat-icon class="close" (click)="closeWindow('unit')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('unit')"></mat-icon>
   </h1>
   <ng-container [ngTemplateOutlet]="unitTemplate" [ngTemplateOutletContext]="{item: tcs.currentUnit, single: true}">
   </ng-container>
@@ -69,7 +69,7 @@
 <div class="tab tab-customtexts" *ngIf="activeWindows.includes('customtexts')" cdkDrag>
   <h1>
     Customtexts
-    <mat-icon class="close" (click)="closeWindow('customtexts')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('customtexts')"></mat-icon>
   </h1>
   <input type="text" matInput [(ngModel)]="searchCustomText" placeholder="insert custom text token" [matAutocomplete]="auto">
   <div><b>{{'' | customtext:searchCustomText | async }}</b></div>
@@ -85,7 +85,7 @@
 <div class="tab tab-variables" *ngIf="activeWindows.includes('variables')" cdkDrag (click)="res()">
   <h1>
     Tracked Variables
-    <mat-icon class="close" (click)="closeWindow('variables')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('variables')"></mat-icon>
   </h1>
   <table>
     <thead>
@@ -119,7 +119,7 @@
 <div class="tab tab-states" *ngIf="activeWindows.includes('states')" cdkDrag>
   <h1>
     Booklet States
-    <mat-icon class="close" (click)="closeWindow('states')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('states')"></mat-icon>
   </h1>
   <table *ngIf="tcs.booklet?.states as bookletStates">
     <ng-container *ngFor="let state of bookletStates | keyvalue">
@@ -163,7 +163,7 @@
 <div class="tab tab-system" *ngIf="activeWindows.includes('system')" cdkDrag>
   <h1>
     System-Status
-    <mat-icon class="close" (click)="closeWindow('system')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('system')"></mat-icon>
   </h1>
   <div><b>broadcastingService: </b>{{mds.sysStatus.broadcastingService}}</div>
   <div><b>cacheService: </b>{{mds.sysStatus.cacheService}}</div>
@@ -174,7 +174,7 @@
 <div class="tab tab-system" *ngIf="activeWindows.includes('tools')" cdkDrag>
   <h1>
     Tools
-    <mat-icon class="close" (click)="closeWindow('tools')">close</mat-icon>
+    <mat-icon svgIcon="close" class="close" (click)="closeWindow('tools')"></mat-icon>
   </h1>
   <h2>Test Condition</h2>
   <p>Insert condition like '&lt;If&gt;&lt;Score of="03" from=&lt;D22S013&gt;/>&lt;Is lowerThan="627.5"/&gt;&lt;/If&gt;'</p>
@@ -244,9 +244,8 @@
     matTooltip="SHOW IF {{testlet.restrictions.show.if}} IS {{testlet.restrictions.show.is}}"
   >I</span>
 
-  <mat-icon class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')">
-    {{ openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_more' : 'expand_less' }}
-  </mat-icon>
+  <mat-icon [svgIcon]="openPanes.includes(testlet.id + '@@@@@@TESTLET') ? 'expand_all' : 'collapse_all'"
+            class='more-btn' (click)="toggleMore(testlet.id + '@@@@@@TESTLET')"></mat-icon>
 
   <table *ngIf="openPanes.includes(testlet.id + '@@@@@@TESTLET')">
     <ng-container *ngFor="let prop of testlet | properties">
@@ -284,9 +283,8 @@
   <div class="unit" *ngIf="unit" [class]="{current: unit.sequenceId === tcs.currentUnitSequenceId}">
     <span class="title">
       {{unit.sequenceId}}:<b> {{unit.alias}} {{unit.alias != unit.id ? ' (' + unit.id + ')' : ''}}</b>
-      <mat-icon class='more-btn' (click)="toggleMore(unit.alias)" *ngIf="!single">
-        {{ openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less' }}
-      </mat-icon>
+      <mat-icon [svgIcon]="openPanes.includes(unit.alias) ? 'expand_more' : 'expand_less'"
+                class='more-btn' (click)="toggleMore(unit.alias)" *ngIf="!single"></mat-icon>
     </span>
     <table *ngIf="openPanes.includes(unit.alias) || single">
 

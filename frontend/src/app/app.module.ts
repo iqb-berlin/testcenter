@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ApplicationModule, ErrorHandler, NgModule } from '@angular/core';
@@ -10,7 +10,7 @@ import {
   MatDialog, MatDialogModule
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -116,4 +116,11 @@ import { TestCardComponent } from './app-root/starter/test-card.component';
     provideHttpClient(withInterceptorsFromDi())
   ]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private matIconRegistry: MatIconRegistry,
+              private domSanitizer: DomSanitizer) {
+    this.matIconRegistry.addSvgIconSet(
+      this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/material-icons.svg')
+    );
+  }
+}

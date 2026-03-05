@@ -8,7 +8,7 @@
         data-cy="add-user"
         (click)="addObject()"
       >
-        <mat-icon>add</mat-icon>
+        <mat-icon svgIcon="add"></mat-icon>
       </button>
       <button
         mat-fab
@@ -18,7 +18,7 @@
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="deleteObject()"
       >
-        <mat-icon>delete</mat-icon>
+        <mat-icon svgIcon="delete"></mat-icon>
       </button>
       <button
         mat-fab
@@ -28,7 +28,7 @@
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changePassword()"
       >
-        <mat-icon>edit</mat-icon>
+        <mat-icon svgIcon="edit"></mat-icon>
       </button>
       <button
         mat-fab
@@ -38,7 +38,7 @@
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changeSuperadminStatus()"
       >
-        <mat-icon>supervisor_account</mat-icon>
+        <mat-icon svgIcon="supervisor_account"></mat-icon>
       </button>
     </div>
 
@@ -72,7 +72,7 @@
         [disabled]="!pendingWorkspaceChanges"
         data-cy="save"
       >
-        <mat-icon>save</mat-icon>
+        <mat-icon svgIcon="save"></mat-icon>
       </button>
     </div>
 

@@ -2,8 +2,6 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
@@ -84,16 +82,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               private headerService: HeaderService,
               public pageService: PageService,
               private apiService: VeronaAPIService,
-              private matIconRegistry: MatIconRegistry,
-              private domSanitizer: DomSanitizer,
-              @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) {
-    this.matIconRegistry.addSvgIcon(
-      'clock_loader_60',
-      this.domSanitizer.bypassSecurityTrustResourceUrl(
-        'assets/icons/clock_loader_60.svg'
-      )
-    );
-  }
+              @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   ngOnInit(): void {
     setTimeout(() => {

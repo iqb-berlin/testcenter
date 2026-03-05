@@ -2,7 +2,7 @@
    matTooltip="Zurück"
    [disabled]="!navContext.isBackwardAllowed"
    (click)="back.emit()">
-  <i class="material-icons">keyboard_arrow_left</i>
+  <mat-icon svgIcon="keyboard_arrow_left"></mat-icon>
 </button>
 
 <div class="label">
@@ -25,5 +25,5 @@
    matTooltip="Weiter"
    [disabled]="!navContext.isForwardAllowed"
    (click)="forward.emit()">
-  <i class="material-icons">keyboard_arrow_right</i>
+  <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
 </button>

@@ -47,7 +47,7 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
         @if (headerService.showAccountPanel) {
           <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
                   (click)="isOpen = !isOpen">
-            <mat-icon>person</mat-icon>
+            <mat-icon svgIcon="person"></mat-icon>
           </button>
           <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
                        [cdkConnectedOverlayOpen]="isOpen" (detach)="isOpen = false">

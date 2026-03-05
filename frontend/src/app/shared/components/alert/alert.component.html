@@ -1,6 +1,6 @@
 <div class="alert">
   <div class="vertical-align-middle">
-    <mat-icon class="alert-{{level}}">{{icons[level]}}</mat-icon>
+    <mat-icon [svgIcon]="icons[level]" class="alert-{{level}}"></mat-icon>
       <span [innerHTML]="displayText$ | async"></span>
   </div>
 </div>

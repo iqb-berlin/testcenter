@@ -26,7 +26,7 @@ import { MatIcon } from '@angular/material/icon';
         <mat-card-actions>
           <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
             @if (mode) {
-              <mat-icon>{{ icons[mode] }}</mat-icon>
+              <mat-icon [svgIcon]="icons[mode]"></mat-icon>
             }
             {{ buttonLabel ? buttonLabel : mode ? labels[mode] : 'Bearbeiten' }}
           </button>

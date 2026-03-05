@@ -5,6 +5,7 @@ import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { MatIconButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { NavControlContext } from '../../interfaces/test-controller.interfaces';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'tc-navigation-control',
@@ -13,7 +14,8 @@ import { NavControlContext } from '../../interfaces/test-controller.interfaces';
     MatIconButton,
     MatTooltip,
     MatTabGroup,
-    MatTab
+    MatTab,
+    MatIcon
   ],
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.css'

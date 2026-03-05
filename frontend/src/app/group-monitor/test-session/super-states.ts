@@ -10,7 +10,7 @@ export interface IconData {
 export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   pending: {
     tooltip: 'Test noch nicht gestartet',
-    icon: 'person_outline',
+    icon: 'person',
     description: 'The test has not been started yet.'
   },
   locked: {
@@ -54,20 +54,20 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   idle: {
     tooltip: 'Test ist 5 Minuten oder länger inaktiv!',
-    icon: 'hourglass_full',
+    icon: 'hourglass',
     description: 'The participant was idle for five minutes or longer. This state can only be displayed on polling ' +
       'mode and is intended to be a fallback for the case that the participant\'s browser or computer was shut down ' +
       'and not able to report the lost connection. It\' s not appropriate to measure testees behaviour.'
   },
   connection_websocket: {
     tooltip: 'Test läuft, Verbindung ist live',
-    icon: 'play_circle_filled',
+    icon: 'play_circle',
     class: 'success',
     description: 'Test runs and participant is connected in live mode (= WebSocket).'
   },
   connection_polling: {
     tooltip: 'Test läuft',
-    icon: 'play_circle_outline',
+    icon: 'play_circle',
     class: 'success',
     description: 'Test runs and participant is connected in the polling mode connection. This si a fallback for the ' +
       'case that the live-mode is not possible due to the supervisor\'s browser or a technical error. It works the ' +
@@ -76,7 +76,7 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   ok: {
     tooltip: 'Test läuft',
-    icon: 'play_circle_filled',
+    icon: 'play_circle',
     description: 'Test seems to run but the connection type is unknown. This is is more or less a fallback state ' +
       'which indicates, that nothing is known about the test except for it\'s existence. This could be the case in ' +
       'various error-scenarios or misconfigurations but should not happen in general. It should be investigated, ' +

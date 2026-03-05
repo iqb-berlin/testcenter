@@ -26,7 +26,7 @@
 
     <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
             (click)="sideNavContent = 'review-form'; sidenav.toggle()">
-      <mat-icon>rate_review</mat-icon>
+      <mat-icon svgIcon="rate_review"></mat-icon>
     </button>
   </div>
 
@@ -44,13 +44,15 @@
     </button>
 
     <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
-      <mat-icon>more_vert</mat-icon>
+      <mat-icon svgIcon="more_vert"></mat-icon>
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
+        <mat-icon svgIcon="arrows_output"></mat-icon>
         <span>Vollbild</span>
       </button>
       <button mat-menu-item (click)="reload()" data-cy="reloadPage">
+        <mat-icon svgIcon="autorenew"></mat-icon>
         <span>Neu laden</span>
       </button>
     </mat-menu>

@@ -94,7 +94,7 @@
         [value]="superState.key"
         class="super-state {{superState.value?.class}}"
       >
-        <mat-icon>{{superState.value?.icon}}</mat-icon>
+        <mat-icon [svgIcon]="superState.value?.icon || ''"></mat-icon>
         {{superState.value?.tooltip}}
       </mat-option>
     </mat-select>

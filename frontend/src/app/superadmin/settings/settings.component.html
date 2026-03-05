@@ -74,11 +74,11 @@
     <div class="flex-row" [style.gap.px]="5">
       <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
               (click)="hiddenimgfileinput.click()">
-        <mat-icon>cloud_upload</mat-icon>
+        <mat-icon svgIcon="upload"></mat-icon>
       </button>
       <button mat-mini-fab matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
               (click)="removeLogoImg()">
-        <mat-icon>delete</mat-icon>
+        <mat-icon svgIcon="delete"></mat-icon>
       </button>
     </div>
     <img class="logo-img" [src]="logoImageBase64" />

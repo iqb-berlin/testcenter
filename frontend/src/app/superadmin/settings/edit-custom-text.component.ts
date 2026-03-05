@@ -36,7 +36,7 @@ import { MatDivider } from '@angular/material/list';
               [style.width.%]="10"
               [disabled]="inputControl.value === ctDefaultValue"
               (click)="setToDefault()">
-        <mat-icon>undo</mat-icon>
+        <mat-icon svgIcon="undo"></mat-icon>
       </button>
     </div>
     <mat-divider></mat-divider>
