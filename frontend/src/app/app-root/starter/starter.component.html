@@ -95,9 +95,9 @@
           </button>
         </ng-container>
 
-        <ng-container *ngIf="claims.testGroupMonitor && claims.test">
+        @if (claims.testGroupMonitor && claims.test && monitorBookletVisibility !== 'hidden') {
           <mat-accordion displayMode="default">
-            <mat-expansion-panel expanded>
+            <mat-expansion-panel [expanded]="monitorBookletVisibility !== 'collapsed'">
               <mat-expansion-panel-header [collapsedHeight]="'auto'" [expandedHeight]="'auto'">
                 <mat-panel-title>
                   {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
@@ -118,7 +118,7 @@
               </button>
             </mat-expansion-panel>
           </mat-accordion>
-        </ng-container>
+        }
 
         <ng-container *ngIf="claims.sysCheck">
           <h4>System-Check</h4>

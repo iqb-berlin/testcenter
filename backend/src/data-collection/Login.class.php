@@ -21,7 +21,8 @@ class Login extends DataCollectionTypeSafe {
     protected int $validFrom = 0,
     int | null $validForMinutes = 0,
     object | null $customTexts = null,
-    protected array $profiles = []
+    protected array $profiles = [],
+    protected array $viewSettings = []
   ) {
     $this->validForMinutes = $validForMinutes ?? 0;
     $this->customTexts = $customTexts ?? new stdClass();
@@ -82,6 +83,10 @@ class Login extends DataCollectionTypeSafe {
 
   public function getProfiles(): array {
     return $this->profiles;
+  }
+
+  public function getViewSettings(): array {
+    return $this->viewSettings;
   }
 
   public function codeExists(string $code): bool {
