@@ -58,6 +58,7 @@ class MonitorController extends Controller {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
     $personId = $authToken->getId();
+    $allowedGroups = array_keys($request->getAttribute('groups'));
 
     $body = RequestHelper::getFields($request, [
       'keyword' => 'REQUIRED',
@@ -69,9 +70,10 @@ class MonitorController extends Controller {
     $command = new Command(-1, $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
 
     foreach (array_unique($body['testIds']) as $testId) {
-      if (!self::adminDAO()->getTest($testId)) {
-        throw new HttpNotFoundException(
-          $request, "Test `$testId` not found. `{$command->getKeyword()}` not committed."
+      $testSession = self::testDAO()->getTestSession($testId);
+      if (!in_array($testSession['group_name'], $allowedGroups)) {
+        throw new HttpForbiddenException(
+          $request, "Access denied for test `$testId`. `{$command->getKeyword()}` not committed."
         );
       }
     }
