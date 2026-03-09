@@ -1,11 +1,11 @@
 ---
 layout: default
 ---
-## [next]
-### Neue Features
+## 17.6.0-rc
+### Neue Funktionen
 * Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).
 
-### Verbesserungen
+### Änderungen
 * GET /workspace/{ws_id}/results
   * Dieser Endpunkt nimmt nun einen Parameter `?groups=`, der eine Komma-separierte Liste annimmt, mit Namen von TT-Gruppen (group_name), um die Results nur dieser Gruppen anzuzeigen, statt alle Gruppen gleichzeitig zu ziehen. Wird der Parameter ausgelassen, werden wie zuvor alle Gruppen gelistet (rückwärtskompatibel)
 
