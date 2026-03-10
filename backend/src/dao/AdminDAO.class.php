@@ -243,41 +243,59 @@ class AdminDAO extends DAO {
   }
 
   public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray {
-    $groupSelector = false;
-    if (count($groups)) {
-      $groupSelector = "'" . implode("', '", $groups) . "'";
+    $sql = 'SELECT
+               person_sessions.id as "person_id",
+               login_sessions.name as "loginName",
+               login_sessions.id as "login_sessions_id",
+               logins.name,
+               logins.mode,
+               logins.group_name,
+               logins.group_label,
+               logins.workspace_id,
+               person_sessions.code,
+               person_sessions.name_suffix,
+               tests.id as "test_id",
+               tests.name as "booklet_name",
+               tests.locked,
+               tests.running,
+               tests.laststate as "testState",
+               tests.timestamp_server as "test_timestamp_server"
+          FROM person_sessions
+               LEFT JOIN tests ON person_sessions.id = tests.person_id
+               LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+               LEFt JOIN logins on logins.name = login_sessions.name
+          WHERE
+              login_sessions.workspace_id = :workspaceId
+              AND tests.id is not null';
+
+    $params = [':workspaceId' => $workspaceId];
+
+    if ($groups) {
+      $groupPlaceholders = [];
+      $index = 0;
+      foreach ($groups as $groupName) {
+        $placeholder = ":g$index";
+        $groupPlaceholders[] = $placeholder;
+        $params[$placeholder] = $groupName;
+        $index++;
+      }
+      $sql .= ' AND logins.group_name IN (' . implode(', ', $groupPlaceholders) . ')';
     }
 
-    $modeSelector = "'" . implode("', '", Mode::getByCapability('monitorable')) . "'";
+    $modes = Mode::getByCapability('monitorable');
+    if ($modes) {
+      $modePlaceholders = [];
+      $index = 0;
+      foreach ($modes as $mode) {
+        $placeholder = ":m$index";
+        $modePlaceholders[] = $placeholder;
+        $params[$placeholder] = $mode;
+        $index++;
+      }
+      $sql .= ' AND logins.mode IN (' . implode(', ', $modePlaceholders) . ')';
+    }
 
-    $sql = 'SELECT
-                 person_sessions.id as "person_id",
-                 login_sessions.name as "loginName",
-                 login_sessions.id as "login_sessions_id",
-                 logins.name,
-                 logins.mode,
-                 logins.group_name,
-                 logins.group_label,
-                 logins.workspace_id,
-                 person_sessions.code,
-                 person_sessions.name_suffix,
-                 tests.id as "test_id",
-                 tests.name as "booklet_name",
-                 tests.locked,
-                 tests.running,
-                 tests.laststate as "testState",
-                 tests.timestamp_server as "test_timestamp_server"
-            FROM person_sessions
-                 LEFT JOIN tests ON person_sessions.id = tests.person_id
-                 LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-                 LEFt JOIN logins on logins.name = login_sessions.name
-            WHERE
-                login_sessions.workspace_id = :workspaceId
-                AND tests.id is not null'
-      . ($groupSelector ? " AND logins.group_name IN ($groupSelector)" : '')
-      . " AND logins.mode IN ($modeSelector)";
-
-    $testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId], true);
+    $testSessionsData = $this->_($sql, $params, true);
 
     $sessionChangeMessages = new SessionChangeMessageArray();
 
