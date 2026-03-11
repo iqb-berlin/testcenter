@@ -4,6 +4,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
+import { ThemeService } from '../../shared/services/theme.service';
 
 @Component({
   selector: 'tc-test-card',
@@ -32,6 +33,10 @@ import { MatIcon } from '@angular/material/icon';
           </button>
         </mat-card-actions>
       </div>
+      @if (mode === 'locked') {
+        <img class="done-image" [src]="themeService.activeTheme.imagePaths?.starterCardDone"
+             alt="companion-test-done"/>
+      }
     </mat-card>
   `,
   styles: `
@@ -51,6 +56,11 @@ import { MatIcon } from '@angular/material/icon';
     }
     :host ::ng-deep mat-card button .mat-icon {
       vertical-align: bottom;
+    }
+    .done-image {
+      position: absolute;
+      right: 1px;
+      bottom: 1px;
     }
   `
 })
@@ -75,4 +85,6 @@ export class TestCardComponent {
     view: 'Ansehen',
     locked: 'gesperrt'
   };
+
+  constructor(public themeService: ThemeService) { }
 }
