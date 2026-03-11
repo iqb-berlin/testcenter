@@ -28,7 +28,7 @@ try {
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     throw new InvalidArgumentException("Initialize is already running.");
   }
   if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
@@ -215,7 +215,11 @@ try {
     if (!$args['skip_read_workspace_files']) {
       $stats = $sampleWorkspace->storeAllFiles();
       $sampleWorkspace->setWorkspaceHash();
-      CLI::p("{$stats['valid']} files were stored.");
+      array_map(
+        fn($k, $v) => CLI::p("$v ($k) files were stored."),
+        array_keys($stats['valid']),
+        array_values($stats['valid'])
+      );
     }
 
     CLI::success("Sample content files created.");
@@ -256,14 +260,14 @@ try {
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     unlink(ROOT_DIR . '/backend/config/init.lock');
   }
   file_put_contents(ROOT_DIR . '/backend/config/error.lock', $e->getMessage());
   exit(1);
 }
 
-if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
   unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
