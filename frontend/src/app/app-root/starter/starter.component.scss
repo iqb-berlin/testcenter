@@ -32,6 +32,22 @@
   gap: 24px;
 }
 
+.scroll-button {
+  position: sticky;
+  bottom: 24px;
+  right: 24px;
+  align-self: end;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sentinel {
+  width: 100%;
+  height: 1px;
+}
+
 .button-box {
   margin-top: auto;
   align-self: end;

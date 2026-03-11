@@ -73,6 +73,15 @@
   </tc-alert>
 }
 
+<div #bottomSentinel class="sentinel"></div>
+
+@if (showScrollButton) {
+  <button class="scroll-button" (click)="scrollDown()">
+    Unten geht es weiter
+    <mat-icon svgIcon="arrow_cool_down"></mat-icon>
+  </button>
+}
+
 <div class="button-box">
     @if (isSuperAdmin) {
       <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>

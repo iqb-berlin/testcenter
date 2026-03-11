@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import {
@@ -23,7 +23,8 @@ import { ThemeService } from '../../shared/services/theme.service';
   styleUrls: ['./starter.component.scss'],
   standalone: false
 })
-export class StarterComponent implements OnInit, OnDestroy {
+export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('bottomSentinel') sentinel!: ElementRef;
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
   workspaces: AccessObject[] = [];
   private getMonitorDataSubscription: Subscription | null = null;
@@ -32,6 +33,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   problemText: string = '';
   isSuperAdmin = false;
   availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
+  showScrollButton = false;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
@@ -129,6 +131,14 @@ export class StarterComponent implements OnInit, OnDestroy {
     this.headerService.showAccountPanel = true;
   }
 
+  ngAfterViewInit() {
+    const observer = new IntersectionObserver(([entry]) => {
+      // show button when sentinel is NOT visible
+      this.showScrollButton = !entry.isIntersecting;
+    });
+    observer.observe(this.sentinel.nativeElement);
+  }
+
   startTest(test: AccessObject): void {
     this.bs.startTest(test.id).subscribe(testId => {
       if ('workspaceMonitor' in test || 'testGroupMonitor' in test || 'attachmentManager' in test) {
@@ -206,6 +216,15 @@ export class StarterComponent implements OnInit, OnDestroy {
         }
       }
       );
+  }
+
+  // static not possible because it is used in the template
+  // eslint-disable-next-line class-methods-use-this
+  scrollDown() {
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
   }
 
   ngOnDestroy(): void {
