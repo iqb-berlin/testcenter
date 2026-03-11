@@ -1,10 +1,14 @@
+# [next]
+## Änderungen
+* Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
+
 # 17.6.0
 ## Neue Funktionen
 * Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).
 * GET /workspace/{ws_id}/results
   * Dieser Endpunkt nimmt nun einen Parameter `?groups=`, der eine Komma-separierte Liste annimmt, mit Namen von TT-Gruppen (group_name), um die Results nur dieser Gruppen anzuzeigen, statt alle Gruppen gleichzeitig zu ziehen. Wird der Parameter ausgelassen, werden wie zuvor alle Gruppen gelistet (rückwärtskompatibel)
 
-## Verbesserungen
+## Änderungen
 * Testtakers.xml:
   * `<Login code="..." />` kann nun auch aus rein numerischen Werten bestehen.
 
