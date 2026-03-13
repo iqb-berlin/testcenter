@@ -1,6 +1,4 @@
-import {
-  Inject, Injectable, OnDestroy, SkipSelf
-} from '@angular/core';
+import { Inject, Injectable, OnDestroy, SkipSelf } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
@@ -15,13 +13,14 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected abstract initialData: T;
 
   data$: BehaviorSubject<T> | null = null;
+  private wsDataSubscription: Subscription | null = null;
+
   connectionStatus$: BehaviorSubject<ConnectionStatus> = new BehaviorSubject<ConnectionStatus>('initial');
 
-  private wsConnectionStatusSubscription: Subscription | null = null;
-  private wsDataSubscription: Subscription | null = null;
+  private wsOpenSubscription: Subscription | null = null;
   private pollingTimeoutId: number | null = null;
 
-  protected connectionClosed = true;
+  protected connectionManuallyEnded = true;
 
   constructor(
     @Inject('BROADCASTER_URL') protected broadcasterUrl: string,
@@ -44,7 +43,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
   private pollEndpointAndSubscribeWs(): void {
-    this.connectionClosed = false;
+    this.connectionManuallyEnded = false;
 
     this.unsubscribeFromWebsocket();
 
@@ -72,7 +71,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
   cutConnection(): void {
-    this.connectionClosed = true;
+    this.connectionManuallyEnded = true;
     this.unsubscribeFromWebsocket();
     this.completeConnection();
 
@@ -91,7 +90,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
     this.pollingTimeoutId = window.setTimeout(
       () => {
-        if (!this.connectionClosed) {
+        if (!this.connectionManuallyEnded) {
           this.pollEndpointAndSubscribeWs();
         }
       },
@@ -100,9 +99,9 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
   private unsubscribeFromWebsocket() {
-    if (this.wsConnectionStatusSubscription) {
-      this.wsConnectionStatusSubscription.unsubscribe();
-      this.wsConnectionStatusSubscription = null;
+    if (this.wsOpenSubscription) {
+      this.wsOpenSubscription.unsubscribe();
+      this.wsOpenSubscription = null;
     }
 
     if (this.wsDataSubscription) {
@@ -119,7 +118,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     this.wsDataSubscription = this.getChannel<T>(this.wsChannelName)
       .subscribe((dataObject: T) => this.data$?.next(dataObject)); // subscribe only next, not complete!
 
-    this.wsConnectionStatusSubscription = this.wsConnected$
+    this.wsOpenSubscription = this.wsOpen$
       .pipe(
         tap((wsConnected: boolean) => {
           if (!wsConnected) {

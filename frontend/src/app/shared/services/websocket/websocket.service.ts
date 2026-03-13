@@ -14,8 +14,8 @@ interface WsMessage {
 export class WebsocketService {
   protected wsUrl = '';
   private wsSubject$: WebSocketSubject<any> | null = null;
-  wsConnected$ = new BehaviorSubject<boolean>(false);
-  private wsSubscription: Subscription | null = null;
+  wsOpen$ = new BehaviorSubject<boolean>(false);
+  private wsSubjectSubscription: Subscription | null = null;
 
   connect(): void {
     if (!this.wsSubject$) {
@@ -28,18 +28,18 @@ export class WebsocketService {
         },
         openObserver: {
           next: () => {
-            this.wsConnected$.next(true);
+            this.wsOpen$.next(true);
           }
         },
         closeObserver: {
           next: () => {
-            this.wsConnected$.next(false);
+            this.wsOpen$.next(false);
           }
         },
         url: this.wsUrl
       });
 
-      this.wsSubscription = this.wsSubject$
+      this.wsSubjectSubscription = this.wsSubject$
         .subscribe({
           next: () => {
           },
@@ -54,9 +54,9 @@ export class WebsocketService {
   }
 
   protected completeConnection(): void {
-    this.wsConnected$.next(false);
-    if (this.wsSubscription) {
-      this.wsSubscription.unsubscribe();
+    this.wsOpen$.next(false);
+    if (this.wsSubjectSubscription) {
+      this.wsSubjectSubscription.unsubscribe();
     }
     if (this.wsSubject$) {
       this.wsSubject$.complete();
@@ -65,9 +65,9 @@ export class WebsocketService {
   }
 
   protected errorConnection(): void {
-    this.wsConnected$.next(false);
-    if (this.wsSubscription) {
-      this.wsSubscription.unsubscribe();
+    this.wsOpen$.next(false);
+    if (this.wsSubjectSubscription) {
+      this.wsSubjectSubscription.unsubscribe();
     }
     if (this.wsSubject$) {
       this.wsSubject$.error('An error occured. The websocket connection will be closed.');
