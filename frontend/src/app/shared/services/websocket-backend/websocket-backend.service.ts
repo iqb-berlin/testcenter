@@ -61,8 +61,8 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
         }
         this.data$.next(response.body);
         if (response.headers.has('SubscribeToken')) {
-          this.wsUrl = this.broadcasterUrl + "ws?token=" + response.headers.get('SubscribeToken') as string;
-          console.log('Websocket URL: ' + this.wsUrl);
+          this.wsUrl = `${this.broadcasterUrl}ws?token=${response.headers.get('SubscribeToken')}` as string;
+          console.log(`Websocket URL: ${this.wsUrl}`);
           this.subScribeToWsChannel();
         } else {
           this.connectionStatus$.next('polling-sleep');
@@ -72,6 +72,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
   cutConnection(): void {
+    this.connectionClosed = true;
     this.unsubscribeFromWebsocket();
     this.completeConnection();
 
