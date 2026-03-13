@@ -1,6 +1,10 @@
 ---
 layout: default
 ---
+## [next]
+### Verbeseserungen
+* Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
+
 ## 17.6.0-rc2
 ### Neue Funktionen
 * Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).
