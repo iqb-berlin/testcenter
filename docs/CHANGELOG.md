@@ -1,26 +1,23 @@
----
-layout: default
----
-## 17.6.0-rc2
-### Neue Funktionen
+# 17.6.0
+## Neue Funktionen
 * Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).
 * GET /workspace/{ws_id}/results
   * Dieser Endpunkt nimmt nun einen Parameter `?groups=`, der eine Komma-separierte Liste annimmt, mit Namen von TT-Gruppen (group_name), um die Results nur dieser Gruppen anzuzeigen, statt alle Gruppen gleichzeitig zu ziehen. Wird der Parameter ausgelassen, werden wie zuvor alle Gruppen gelistet (rückwärtskompatibel)
 
-### Verbesserungen
-* Zeiten der Healthchecks wurden angepasst. Die Docker Container sollten dadurch bei einem `make up` schneller hochfahren.
-* Reliabilität und Performance der Testleitungskonsole wurden verbessert.
-* Performance Verbesserung der Datenbank.
-* GET /getResults
-  * Das Löschen einzelner Testläufe über den Admin-Bereich führt nun zu einem aktualisierten timestamp in diesem Endpunkt.
+## Verbesserungen
 * Testtakers.xml:
   * `<Login code="..." />` kann nun auch aus rein numerischen Werten bestehen.
 
-### Bugfixes
+## Fehlerbehebungen
 * Testleitungskonsole:
   * Navigieren in einen derzeit geöffneten Block navigiert nun wieder erfolgreich in die erste Unit des Blocks.
   * Navigieren in einen zuvor gesperrten Block (Zeitsperre, LockAfterLeaving) nun in allen Fällen möglich.
   * "Zustände" Text im Unit-Menu (zB im Review Modus) wird nur noch angezeigt, wenn das Booklet adaptives Testen nutzt.
+
+## Technisches
+* GET /getResults
+  * Das Löschen einzelner Testläufe über den Admin-Bereich führt nun zu einem aktualisierten timestamp in diesem Endpunkt.
+* Zeiten der Healthchecks wurden angepasst. Die Docker Container sollten dadurch bei einem `make up` schneller hochfahren.
 
 ## 17.5.3
 * Review-Modus:
