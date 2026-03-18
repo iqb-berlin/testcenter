@@ -147,7 +147,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
 
-    this.tcs.updateUnitState(
+    this.tcs.AddToUnitStateBuffer(
       this.tcs.currentUnit.sequenceId,
       [{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]
     );
@@ -163,7 +163,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     }
 
-    const navigation = await this.tcs.closeBuffer('handleReadyNotification');
+    const navigation = await this.tcs.closeAllBuffers('handleReadyNotification');
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
@@ -191,7 +191,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         const pageNr = Object.keys(this.pages).indexOf(pageId) + 1; // human-readable in logs & group monitor
         const pageCount = Object.keys(this.pages).length;
         if (Object.keys(this.pages).length > 1 && this.pages[msg.playerState.currentPage]) {
-          this.tcs.updateUnitState(unit.sequenceId, [
+          this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
             { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: pageNr.toString() },
             { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: pageId },
             { key: 'PAGE_COUNT', timeStamp: Date.now(), content: pageCount.toString() }
@@ -203,7 +203,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (msg.unitState) {
       const timeStamp = Date.now();
 
-      this.tcs.updateUnitState(unit.sequenceId, [
+      this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
         { key: 'PRESENTATION_PROGRESS', timeStamp, content: msg.unitState.presentationProgress || '' },
         { key: 'RESPONSE_PROGRESS', timeStamp, content: msg.unitState.responseProgress || '' }
       ]);
@@ -217,7 +217,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
             }
           });
-        this.tcs.updateUnitStateDataParts(
+        this.tcs.AddToUnitStateDataPartsBuffer(
           unit.sequenceId,
           msg.unitState.dataParts,
           msg.unitState.unitStateDataType || ''
@@ -373,8 +373,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.resourcesLoading$.next([]);
 
-    this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
-    this.tcs.updateUnitState(
+    this.tcs.addToTestStateBuffer('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
+    this.tcs.AddToUnitStateBuffer(
       this.tcs.currentUnit.sequenceId,
       [{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]
     );

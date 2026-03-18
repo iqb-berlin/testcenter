@@ -37,7 +37,7 @@ export class UnitActivateGuard implements CanActivate {
         this.messageService.show(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       }
       // looking for alternatives where to go
-      const navigation = await this.tcs.closeBuffer('canActivate');
+      const navigation = await this.tcs.closeAllBuffers('canActivate');
       if (this.tcs.currentUnit && !TestControllerService.unitIsInaccessible(this.tcs.currentUnit)) {
         // current unit is accessible, so we just stay here
         return false;
