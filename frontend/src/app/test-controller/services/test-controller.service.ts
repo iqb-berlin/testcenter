@@ -89,10 +89,12 @@ export class TestControllerService {
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
+
   set currentUnitSequenceId(value: number) {
     this._currentUnitSequenceId = value;
     this.currentUnitSequenceId$.next(value);
   }
+
   get currentUnit(): Unit | null {
     return this.units[this.currentUnitSequenceId];
   }
@@ -157,9 +159,9 @@ export class TestControllerService {
       .pipe(
         bufferWhen(closingSignal.factory),
         map(TestStateUtil.sortDataParts),
-        withLatestFrom(closingSignal.tracker$)
+        withLatestFrom(closingSignal.closingId$)
       )
-      .subscribe(([buffer, closer]) => {
+      .subscribe(([buffer, closingId]) => {
         let trackedVariablesChanged = false;
         buffer
           .forEach(changedDataPartsPerUnit => {
@@ -174,7 +176,7 @@ export class TestControllerService {
           this.evaluateConditions();
         }
 
-        this.bufferEventBus$.next({ type: 'unitData', event: 'closed', id: String(closer) });
+        this.bufferEventBus$.next({ type: 'unitData', event: 'closed', id: closingId });
 
         if (this.testMode.saveResponses) {
           forkJoin(
@@ -187,28 +189,31 @@ export class TestControllerService {
             ))
           )
             .subscribe({
-              complete: () => this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: String(closer) })
+              complete: () => this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: closingId })
             });
         } else {
-          this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: String(closer) });
+          this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: closingId });
         }
       });
   }
 
   private createClosingSignal(
     configSetting: keyof BookletConfigData
-  ): { tracker$: Observable<string>, factory: () => Observable<string> } {
-    const tracker$ = new Subject<string>();
+  ): { closingId$: Observable<string>, factory: () => Observable<string> } {
+    const closingId$ = new Subject<string>();
 
     const factory = () => {
       const closer$ = merge(
-        timer(Number(this.booklet?.config[configSetting] || 100000)).pipe(map(() => 'timer')),
+        timer(Number(this.booklet?.config[configSetting] || 100000)).pipe(map(() => configSetting)),
         this.closeBuffers$
       );
-      closer$.subscribe(tracker$);
+      // the calling site 'bufferWhen' doesn't expose what caused the close. Forwarding the closing value
+      // into closingId$ lets withLatestFrom(closingId$) in each buffer pipe
+      // retrieve which closingId triggered the flush alongside the buffered data.
+      closer$.subscribe(closingId$);
       return closer$;
     };
-    return { tracker$, factory };
+    return { closingId$, factory };
   }
 
   setupUnitStateBuffer(): void {
@@ -218,18 +223,18 @@ export class TestControllerService {
       .pipe(
         bufferWhen(closingSignal.factory),
         map(TestStateUtil.sort),
-        withLatestFrom(closingSignal.tracker$)
+        withLatestFrom(closingSignal.closingId$)
       )
-      .subscribe(([buffer, closer]) => {
-        this.bufferEventBus$.next({ type: 'unitState', event: 'closed', id: String(closer) });
+      .subscribe(([buffer, closingId]) => {
+        this.bufferEventBus$.next({ type: 'unitState', event: 'closed', id: closingId });
         if (!this.testMode.saveResponses) {
-          this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) });
+          this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: closingId });
         } else {
           from(buffer).pipe(
             concatMap(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id))
           ).subscribe(
             {
-              complete: () => this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: String(closer) })
+              complete: () => this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: closingId })
             }
           );
         }
@@ -243,25 +248,25 @@ export class TestControllerService {
       .pipe(
         bufferWhen(closingSignal.factory),
         map(TestStateUtil.sort),
-        withLatestFrom(closingSignal.tracker$)
+        withLatestFrom(closingSignal.closingId$)
       )
-      .subscribe(([buffer, closer]) => {
-        this.bufferEventBus$.next({ type: 'testState', event: 'closed', id: String(closer) });
+      .subscribe(([buffer, closingId]) => {
+        this.bufferEventBus$.next({ type: 'testState', event: 'closed', id: closingId });
         if (!this.testMode.saveResponses) {
-          this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: String(closer) });
+          this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId });
         } else {
           forkJoin(
             buffer
               .filter(patch => !!patch.testId)
               .map(patch => this.bs.patchTestState(patch))
           ).subscribe(
-            () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: String(closer) }); }
+            () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId }); }
           );
         }
       });
   }
 
-  setTestState(key: TestStateKey, content: string): void {
+  addToTestStateBuffer(key: TestStateKey, content: string): void {
     if (this.testState[key] === content) return;
     this.testState[key] = content;
     this.testStateBuffer$.next(<TestStateUpdate>{
@@ -276,7 +281,7 @@ export class TestControllerService {
     delete this.subscriptions[name];
   }
 
-  async closeBuffer(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<NavigationState> {
+  async closeAllBuffers(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<NavigationState> {
     const closingSignalId = `${reasonType}:${Math.random()}`;
 
     const closingBufferListener = this.bufferEventBus$
@@ -295,6 +300,8 @@ export class TestControllerService {
         map(([collectedEvents, navigation]) => navigation)
       );
 
+    // setTimeout defers by one tick to ensure closingBufferListener is subscribed
+    // before the closeBuffers$ signal is emitted, avoiding a race condition.
     setTimeout(() => this.closeBuffers$.next(closingSignalId));
     return lastValueFrom(closingBufferListener);
   }
@@ -322,7 +329,7 @@ export class TestControllerService {
     this.currentTimerId = '';
   }
 
-  updateUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
+  AddToUnitStateDataPartsBuffer(unitSequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
     const unit = this.getUnit(unitSequenceId);
 
     const changedParts: KeyValuePairString = {};
@@ -347,7 +354,7 @@ export class TestControllerService {
     this.updateNavigationState(); // now, not after buffer is closed, because it affects forward/backward, not choice
   }
 
-  updateUnitState(unitSequenceId: number, unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
+  AddToUnitStateBuffer(unitSequenceId: number, unitStateUpdate: StateReportEntry<UnitStateKey>[]): void {
     const unit = this.getUnit(unitSequenceId);
 
     const setUnitState = (stateKey: string, value: string): void => {
@@ -404,7 +411,7 @@ export class TestControllerService {
     const unlockedTestlets = Object.values(this.testlets)
       .filter(t => t.restrictions.codeToEnter?.code && !t.locks.code)
       .map(t => t.id);
-    this.setTestState('TESTLETS_CLEARED_CODE', JSON.stringify(unlockedTestlets));
+    this.addToTestStateBuffer('TESTLETS_CLEARED_CODE', JSON.stringify(unlockedTestlets));
   }
 
   activateTestletLeaveLock(testletId: string): void {
@@ -412,7 +419,7 @@ export class TestControllerService {
     const lockedTestlets = Object.values(this.testlets)
       .filter(t => (t.restrictions.lockAfterLeaving?.scope === 'testlet') && t.locks.afterLeave)
       .map(t => t.id);
-    this.setTestState('TESTLETS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedTestlets));
+    this.addToTestStateBuffer('TESTLETS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedTestlets));
   }
 
   activateUnitLeaveLock(unitSequenceId: number): void {
@@ -420,7 +427,7 @@ export class TestControllerService {
     const lockedUnits = Object.values(this.units)
       .filter(u => (u.parent.restrictions.lockAfterLeaving?.scope === 'unit') && u.lockedAfterLeaving)
       .map(u => u.sequenceId);
-    this.setTestState('UNITS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedUnits));
+    this.addToTestStateBuffer('UNITS_LOCKED_AFTER_LEAVE', JSON.stringify(lockedUnits));
   }
 
   getUnit(unitSequenceId: number): Unit {
@@ -464,7 +471,7 @@ export class TestControllerService {
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
 
-    let timeTicker$ = this.createTicker();
+    const timeTicker$ = this.createTicker();
     this.timerIntervalSubscription = timeTicker$
       .pipe(
         takeUntil(
@@ -530,22 +537,20 @@ export class TestControllerService {
       return new Observable(subscriber => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const eventHandler = (event) => {
+        const eventHandler = event => {
           subscriber.next(event.data);
         };
 
         workerTimer.addEventListener('message', eventHandler);
         workerTimer.postMessage('on');
 
-        return function unsubscribe () {
+        return function unsubscribe() {
           workerTimer.postMessage('off');
           workerTimer.removeEventListener('message', eventHandler);
         };
       });
-    } else {
-      return interval(1000);
     }
-
+    return interval(1000);
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
@@ -555,13 +560,38 @@ export class TestControllerService {
     if (!(navigationSuccessful || force)) return true;
 
     this.state$.next((this.state$.getValue() === 'PAUSED') ? 'TERMINATED_PAUSED' : 'TERMINATED');
-    await this.closeBuffer(`terminateTest:${logEntryKey}`, 'saved');
+    // todo race condition: between state$.next() and the subsequent closingBufferListener, the automatic test_state_buffer_time could already flush the testState. This is handled by complete() instead of next() but could be improved overall.
+    await this.closeAllBuffers(`terminateTest:${logEntryKey}`, 'saved');
 
     if (lockTest) {
       await lastValueFrom(this.bs.lockTest(this.testId, Date.now(), logEntryKey));
     }
 
     return this.router.navigate(['/r/starter'], { state: { force: force } });
+  }
+
+  async executeGotoCommand(params: string[]): Promise<boolean> {
+    this.state$.next('RUNNING');
+    let gotoTarget = '';
+    if ((params.length > 1) && (params[0] === 'id')) {
+      gotoTarget = (this.unitAliasMap[params[1]]).toString(10);
+    } else if (params.length >= 1) {
+      gotoTarget = params[0];
+    }
+    if (gotoTarget && gotoTarget !== '0') {
+      const targetUnit = this.units[parseInt(gotoTarget, 10)];
+      if (targetUnit) {
+        if (targetUnit.parent.timerId !== this.currentUnit?.parent.timerId) {
+          this.cancelTimer();
+          this.restoreTime(targetUnit.parent, parseInt(params[2].trim().split(' ').pop()!, 10));
+        }
+        this.updateSingleLock(targetUnit.parent, 'afterLeave', false);
+        targetUnit.lockedAfterLeaving = false;
+        this.clearCodeLock(targetUnit.parent.id);
+      }
+      return this.setUnitNavigationRequest(gotoTarget, true);
+    }
+    return Promise.reject();
   }
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
@@ -572,19 +602,19 @@ export class TestControllerService {
     switch (navString) {
       case UnitNavigationTarget.PAUSE:
       case UnitNavigationTarget.ERROR:
-        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
+        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
         return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
       case UnitNavigationTarget.NEXT:
-        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} NEXT`);
+        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
         return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.next}`], { state: { force } });
       case UnitNavigationTarget.PREVIOUS:
-        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} PREVIOUS`);
+        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} PREVIOUS`);
         return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.previous}`], { state: { force } });
       case UnitNavigationTarget.FIRST:
-        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} FIRST`);
+        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} FIRST`);
         return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.first}`], { state: { force } });
       case UnitNavigationTarget.LAST:
-        navigation = await this.closeBuffer(`setUnitNavigationRequest(${navString} LAST`);
+        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} LAST`);
         return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.last}`], { state: { force } });
       case UnitNavigationTarget.END:
         return this.terminateTest(
@@ -883,7 +913,7 @@ export class TestControllerService {
           return agg;
         }, <{ [state: string]: string }>{});
     if (!Object.keys(bookletStates).length) return;
-    this.setTestState('BOOKLET_STATES', JSON.stringify(bookletStates));
+    this.addToTestStateBuffer('BOOKLET_STATES', JSON.stringify(bookletStates));
   }
 
   private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
@@ -903,7 +933,7 @@ export class TestControllerService {
         this.ms.show(text);
         return true;
       }
-    }
+    };
 
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
@@ -977,7 +1007,6 @@ export class TestControllerService {
       }
     });
     return dialogCDRef.afterClosed().pipe(map(() => false));
-
   }
 
   private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {

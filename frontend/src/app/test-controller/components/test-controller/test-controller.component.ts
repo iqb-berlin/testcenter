@@ -80,7 +80,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.testStatus = this.tcs.state$
         .pipe(distinctUntilChanged())
-        .subscribe(status => this.tcs.setTestState('CONTROLLER', status));
+        .subscribe(status => this.tcs.addToTestStateBuffer('CONTROLLER', status));
 
       this.subscriptions.appWindowHasFocus = this.mainDataService.appWindowHasFocus$
         .subscribe(hasFocus => {
@@ -152,9 +152,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         return;
       }
       if (newState === 'UNKNOWN') {
-        this.tcs.setTestState('FOCUS', 'HAS_NOT');
+        this.tcs.addToTestStateBuffer('FOCUS', 'HAS_NOT');
       } else {
-        this.tcs.setTestState('FOCUS', 'HAS');
+        this.tcs.addToTestStateBuffer('FOCUS', 'HAS');
       }
     });
   }
@@ -166,7 +166,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
-        this.tcs.setTestState('CONNECTION', isWsConnected ? 'WEBSOCKET' : 'POLLING');
+        this.tcs.addToTestStateBuffer('CONNECTION', isWsConnected ? 'WEBSOCKET' : 'POLLING');
       });
   }
 
@@ -235,7 +235,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.timerValue = timer;
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
-        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
+        this.tcs.addToTestStateBuffer('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         return true;
       case MaxTimerEvent.ENDED:
         if (this.tcs.shouldShowConfirmationUI()) {
@@ -246,7 +246,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
-        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
+        this.tcs.addToTestStateBuffer('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           if (this.tcs.currentUnit) {
@@ -267,7 +267,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.tcs.timers[timer.id] = 0;
         // attention: TODO store timer as well in localStorage to prevent F5-cheating
-        this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
+        this.tcs.addToTestStateBuffer('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions && this.tcs.currentUnit) {
           this.tcs.updateSingleLock(this.tcs.currentUnit.parent, 'time', true);
@@ -281,7 +281,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.timers[timer.id] = timer.timeLeftSeconds / 60;
         if ((timer.timeLeftSeconds % 15) === 0) {
           // attention: TODO store timer as well in localStorage to prevent F5-cheating
-          this.tcs.setTestState('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
+          this.tcs.addToTestStateBuffer('TESTLETS_TIMELEFT', JSON.stringify(this.tcs.timers));
         }
         if (this.tcs.timerWarningPoints.includes(minute) && this.tcs.shouldShowConfirmationUI()) {
           const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
