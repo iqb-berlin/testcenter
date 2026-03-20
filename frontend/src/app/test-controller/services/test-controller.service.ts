@@ -22,8 +22,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet,
-  BufferEvent,
-  BufferEventType,
+  BufferFlushEvent,
+  BufferFlushEventType,
   bufferTypes,
   isTestlet,
   KeyValuePairNumber,
@@ -130,11 +130,11 @@ export class TestControllerService {
     }
   });
 
-  private readonly bufferEventBus$ = new Subject<BufferEvent>();
-  private readonly closeBuffers$ = new Subject<string>();
+  private readonly bufferClosed$ = new Subject<string>();
   private readonly unitDataPartsBuffer$ = new Subject<UnitDataParts>();
   private readonly unitStateBuffer$ = new Subject<UnitStateUpdate>();
   private readonly testStateBuffer$ = new Subject<TestStateUpdate>();
+  private readonly bufferFlushEventsOnClose$ = new Subject<BufferFlushEvent>();
   private readonly subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
@@ -176,7 +176,7 @@ export class TestControllerService {
           this.evaluateConditions();
         }
 
-        this.bufferEventBus$.next({ type: 'unitData', event: 'closed', id: closingId });
+        this.bufferFlushEventsOnClose$.next({ type: 'unitData', event: 'closed', id: closingId });
 
         if (this.testMode.saveResponses) {
           forkJoin(
@@ -189,10 +189,10 @@ export class TestControllerService {
             ))
           )
             .subscribe({
-              complete: () => this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: closingId })
+              complete: () => this.bufferFlushEventsOnClose$.next({ type: 'unitData', event: 'saved', id: closingId })
             });
         } else {
-          this.bufferEventBus$.next({ type: 'unitData', event: 'saved', id: closingId });
+          this.bufferFlushEventsOnClose$.next({ type: 'unitData', event: 'saved', id: closingId });
         }
       });
   }
@@ -205,7 +205,7 @@ export class TestControllerService {
     const factory = () => {
       const closer$ = merge(
         timer(Number(this.booklet?.config[configSetting] || 100000)).pipe(map(() => configSetting)),
-        this.closeBuffers$
+        this.bufferClosed$
       );
       // the calling site 'bufferWhen' doesn't expose what caused the close. Forwarding the closing value
       // into closingId$ lets withLatestFrom(closingId$) in each buffer pipe
@@ -226,15 +226,15 @@ export class TestControllerService {
         withLatestFrom(closingSignal.closingId$)
       )
       .subscribe(([buffer, closingId]) => {
-        this.bufferEventBus$.next({ type: 'unitState', event: 'closed', id: closingId });
+        this.bufferFlushEventsOnClose$.next({ type: 'unitState', event: 'closed', id: closingId });
         if (!this.testMode.saveResponses) {
-          this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: closingId });
+          this.bufferFlushEventsOnClose$.next({ type: 'unitState', event: 'saved', id: closingId });
         } else {
           from(buffer).pipe(
             concatMap(patch => this.bs.patchUnitState(patch, this.units[this.unitAliasMap[patch.unitAlias]].id))
           ).subscribe(
             {
-              complete: () => this.bufferEventBus$.next({ type: 'unitState', event: 'saved', id: closingId })
+              complete: () => this.bufferFlushEventsOnClose$.next({ type: 'unitState', event: 'saved', id: closingId })
             }
           );
         }
@@ -251,16 +251,16 @@ export class TestControllerService {
         withLatestFrom(closingSignal.closingId$)
       )
       .subscribe(([buffer, closingId]) => {
-        this.bufferEventBus$.next({ type: 'testState', event: 'closed', id: closingId });
+        this.bufferFlushEventsOnClose$.next({ type: 'testState', event: 'closed', id: closingId });
         if (!this.testMode.saveResponses) {
-          this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId });
+          this.bufferFlushEventsOnClose$.next({ type: 'testState', event: 'saved', id: closingId });
         } else {
           forkJoin(
             buffer
               .filter(patch => !!patch.testId)
               .map(patch => this.bs.patchTestState(patch))
           ).subscribe({
-            complete: () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId }); }
+            complete: () => { this.bufferFlushEventsOnClose$.next({ type: 'testState', event: 'saved', id: closingId }); }
           });
         }
       });
@@ -281,10 +281,11 @@ export class TestControllerService {
     delete this.subscriptions[name];
   }
 
-  async closeAllBuffers(reasonType: string, trackEvent: BufferEventType = 'closed'): Promise<NavigationState> {
+  // todo when calling closeAllBuffers, the resulting closingSignalId could result in an empty array, because the timer flush could have already happened in the meantime. Check if it is critical to know who exactly is reponsible for flushing the buffers
+  async closeAllBuffers(reasonType: string, trackEvent: BufferFlushEventType = 'closed'): Promise<NavigationState> {
     const closingSignalId = `${reasonType}:${Math.random()}`;
 
-    const closingBufferListener = this.bufferEventBus$
+    const closingBufferListener = this.bufferFlushEventsOnClose$
       .pipe(
         scan(
           (agg, current) => {
@@ -293,16 +294,17 @@ export class TestControllerService {
             }
             return agg;
           },
-          new Set<BufferEvent>()
+          new Set<BufferFlushEvent>()
         ),
-        takeWhile(collectedEvents => collectedEvents.size < bufferTypes.length, true),
+        // After setting bufferClosed.next(), all three buffers will be closed, each emitting a 'closed' event and possibly a 'saved' event. Because closeAllBuffers() only tracks one kind of event, the happy path should produce N events of bufferTypes.length
+        takeWhile(flushedBuffers => flushedBuffers.size < bufferTypes.length, true),
         withLatestFrom(this.navigation$),
-        map(([collectedEvents, navigation]) => navigation)
+        map(([_, navigation]) => navigation)
       );
 
     // setTimeout defers by one tick to ensure closingBufferListener is subscribed
-    // before the closeBuffers$ signal is emitted, avoiding a race condition.
-    setTimeout(() => this.closeBuffers$.next(closingSignalId));
+    // before the bufferClosed$ signal is emitted, avoiding a race condition.
+    setTimeout(() => this.bufferClosed$.next(closingSignalId));
     return lastValueFrom(closingBufferListener);
   }
 
