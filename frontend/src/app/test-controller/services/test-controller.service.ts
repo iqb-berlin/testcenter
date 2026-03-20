@@ -259,9 +259,9 @@ export class TestControllerService {
             buffer
               .filter(patch => !!patch.testId)
               .map(patch => this.bs.patchTestState(patch))
-          ).subscribe(
-            () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId }); }
-          );
+          ).subscribe({
+            complete: () => { this.bufferEventBus$.next({ type: 'testState', event: 'saved', id: closingId }); }
+          });
         }
       });
   }
