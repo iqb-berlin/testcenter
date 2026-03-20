@@ -22,7 +22,7 @@
         }
         <button matButton="filled" type="submit" data-cy="login-user"
                 [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon>chevron_right</mat-icon>
+          <mat-icon svgIcon="chevron_right"></mat-icon>
           Weiter
         </button>
       </form>
@@ -43,7 +43,7 @@
           <button mat-icon-button matSuffix type="button"
                   [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
                   (click)="showPassword = !showPassword">
-            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+            <mat-icon svgIcon="visibility"></mat-icon>
           </button>
         </mat-form-field>
         @if (problemText) {
@@ -52,7 +52,7 @@
         }
         <button matButton="filled" type="submit" data-cy="login-user"
                 [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon>chevron_right</mat-icon>
+          <mat-icon svgIcon="chevron_right"></mat-icon>
           Anmelden
         </button>
       </form>
