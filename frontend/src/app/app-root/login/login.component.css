@@ -14,7 +14,7 @@
   height: 100%;
 }
 
-.welcome-part {
+.welcome-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,13 +25,13 @@
   text-align: center;
 }
 
-.welcome-part img {
+.welcome-section img {
   width: 90%;
   height: 60%;
   align-items: center;
 }
 
-.login-part {
+.login-section {
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -41,7 +41,7 @@
   width: 65%;
 }
 
-.login-part form {
+.login-section form {
   margin-top: 64px;
   display: flex;
   flex-direction: column;
@@ -65,10 +65,10 @@
   font-size: 20px;
 }
 
-.login-part mat-form-field {
+.login-section mat-form-field {
 }
 
-.login-part > form > button {
+.login-section > form > button {
   width: 15%;
   background-color: var(--mat-sys-primary);
   color: white;
@@ -104,7 +104,7 @@
   justify-content: center;
 }
 
-.button-box {
+.button-section {
   align-self: end;
   display: flex;
   gap: 9px;

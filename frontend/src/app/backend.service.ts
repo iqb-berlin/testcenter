@@ -15,7 +15,7 @@ export class BackendService {
     return this.http.put<AuthData>(`${this.serverUrl}session/admin`, { name, password });
   }
 
-  login(name: string, password: string | undefined = undefined): Observable<AuthData> {
+  login(name: string, password?: string): Observable<AuthData> {
     return this.http.put<AuthData>(`${this.serverUrl}session/login`, { name, password });
   }
 

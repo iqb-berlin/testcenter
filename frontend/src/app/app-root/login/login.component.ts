@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import {
@@ -28,8 +28,7 @@ import { BackendService } from '../../backend.service';
     MatIconModule,
     MatDialogModule,
     RouterLink,
-    MatButton,
-    MatIconButton,
+    MatButtonModule,
     MatCardModule,
     SharedModule
   ]
@@ -44,7 +43,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemCode = 0;
   showPassword = false;
   unsupportedBrowser: [string, string] | [] = [];
-  name: string | null = null;
+  username: string | null = null;
   readonly dialog = inject(MatDialog);
 
   loginForm = new FormGroup({
@@ -82,17 +81,17 @@ export class LoginComponent implements OnInit, OnDestroy {
       },
       error: error => {
         this.problemCode = error.code;
-        this.name = loginData.name ?? '';
+        this.username = loginData.name ?? '';
       }
     });
   }
 
   passwordInput(): void {
     const loginData = this.loginForm.value;
-    if (!this.name) {
+    if (!this.username) {
       return;
     }
-    loginData.name = this.name;
+    loginData.name = this.username;
     this.problemText = '';
     this.problemCode = 0;
     this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
@@ -118,14 +117,14 @@ export class LoginComponent implements OnInit, OnDestroy {
           throw error;
         }
         this.problemLevel = 'error';
-        this.name = null;
+        this.username = null;
         this.loginForm.reset();
       }
     });
   }
 
   openDialog() {
-    const dialog = this.dialog.open(WideMessageDialogComponent, {
+    this.dialog.open(WideMessageDialogComponent, {
       width: '80%',
       data: <MessageDialogData>{
         title: 'Anleitung',

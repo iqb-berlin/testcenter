@@ -1,13 +1,13 @@
 <div class="login-page">
-  <div class ="welcome-part">
+  <div class ="welcome-section">
     <img src="assets/example_laptop_splash.png">
     <h1>Willkommen im IQB-Testcenter</h1>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
       dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
       ut aliquip ex ea commodo consequat.</p>
   </div>
-  <div class="login-part">
-    @if (!name) {
+  <div class="login-section">
+    @if (!username) {
       <form [formGroup]="loginForm" (ngSubmit)="nameInput()">
         <h2>
           Anmeldenamen eingeben
@@ -30,9 +30,9 @@
     @else {
       <form [formGroup]="loginForm" (ngSubmit)="passwordInput()">
         <div class="password-headline">
-          <button matButton="outlined" type="reset" (click)="name = null;"><</button>
+          <button matButton="outlined" type="reset" (click)="username = null;"><</button>
           <h2>
-            Kennwort eingeben (Benutzer: {{ name }} )
+            Kennwort eingeben (Benutzer: {{ username }} )
           </h2>
         </div>
         <mat-form-field appearance="outline">
@@ -70,7 +70,7 @@
       </div>
     </mat-card>
 
-    <div class="button-box">
+    <div class="button-section">
       @if (this.mainDataService.sysCheckAvailableForAll) {
         <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
           Systemcheck
