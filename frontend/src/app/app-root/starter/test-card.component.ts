@@ -47,6 +47,8 @@ import { ThemeService } from '../../shared/services/theme.service';
       flex-direction: row;
       align-items: center;
       gap: 24px;
+      /*this might be a glogal setting, but since there are so many usages of cards change it only here, for now.*/
+      background-color: #FFF;
     }
     .number {
       font-size: 57px;
