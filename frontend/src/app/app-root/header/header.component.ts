@@ -30,7 +30,7 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
   template: `
     <mat-toolbar>
       <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div>
+      <div class="side">
         @if (headerService.showAccountPanel) {
           <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
                   (click)="isOpen = !isOpen">
@@ -59,20 +59,18 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
                   <button matButton>SHARE</button>
                 </mat-card-actions>
               </mat-card>
-
-              
             </div>
           </ng-template>
         }
       </div>
-      <div>
+      <div class="center">
         @if (headerService.title) {
           <h1>{{ headerService.title }}</h1>
         }
       </div>
-      <div>
+      <div class="side logo">
         @if (headerService.showLogo) {
-          <a class="logo" [routerLink]="['/r']" aria-label="Gehe zur Startseite">
+          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
             <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
                  matTooltip="Zur Startseite"/>
           </a>
@@ -85,19 +83,26 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      --outer-element-width: 8%;
+    }
+    .side {
+      width: 15%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .center {
+      width: 85%;
+      display: flex;
+      justify-content: center;
     }
     .logo {
+      justify-content: end;
+    }
+    .logo a {
       height: 100%;
-      width: var(--outer-element-width);
     }
     .logo img {
       height: 100%;
-    }
-    .icons {
-      width: var(--outer-element-width);
-      display: flex;
-      justify-content: end;
     }
     .overlay {
       background-color: lightgray;
