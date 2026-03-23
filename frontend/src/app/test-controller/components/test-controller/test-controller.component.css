@@ -4,6 +4,17 @@
   flex-direction: column;
 }
 
+.toolbar-header .toolbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: var(--mat-sys-primary);
+}
+
+.toolbar-header .toolbar-right p {
+  margin-right: 20px;
+}
+
 .mat-drawer-container {
   flex: 1;
 }

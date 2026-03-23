@@ -33,29 +33,33 @@
   <div class="toolbar-header flex-row" data-cy="unit-screenheader">
     <h2>{{currentUnit?.label}}</h2>
 
-    <p *ngIf="tcs.testMode.showTimeLeft || (tcs.booklet?.config?.unit_show_time_left === 'ON')" data-cy="time-value">
-      {{timerValue?.timeLeftString}}
-    </p>
+    <div class="toolbar-right">
+      @if (tcs.testMode.showTimeLeft || (tcs.booklet?.config?.unit_show_time_left === 'ON')) {
+        <p data-cy="time-value">
+          Verbleibende Zeit: {{timerValue?.timeLeftString}}
+        </p>
+      }
 
-    <button matButton [style.margin-left]="'auto'" data-cy="unit-menu"
-            (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)">
-      <mat-icon svgIcon="clock_loader_60"></mat-icon>
-      Bearbeitungsstand
-    </button>
+      <button matButton data-cy="unit-menu"
+              (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)">
+        <mat-icon svgIcon="clock_loader_60"></mat-icon>
+        Bearbeitungsstand
+      </button>
 
-    <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
-      <mat-icon svgIcon="more_vert"></mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
-        <mat-icon svgIcon="arrows_output"></mat-icon>
-        <span>Vollbild</span>
+      <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
+        <mat-icon svgIcon="more_vert"></mat-icon>
       </button>
-      <button mat-menu-item (click)="reload()" data-cy="reloadPage">
-        <mat-icon svgIcon="autorenew"></mat-icon>
-        <span>Neu laden</span>
-      </button>
-    </mat-menu>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
+          <mat-icon svgIcon="arrows_output"></mat-icon>
+          <span>Vollbild</span>
+        </button>
+        <button mat-menu-item (click)="reload()" data-cy="reloadPage">
+          <mat-icon svgIcon="autorenew"></mat-icon>
+          <span>Neu laden</span>
+        </button>
+      </mat-menu>
+    </div>
   </div>
 }
 
