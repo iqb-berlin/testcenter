@@ -10,6 +10,7 @@ body {
 /* has to be global because dynamic created element is not in the scope of the component */
 iframe.unitHost {
   width: 100%;
+  height: 100%;
   background-color: white;
   border: none;
   margin: 0;

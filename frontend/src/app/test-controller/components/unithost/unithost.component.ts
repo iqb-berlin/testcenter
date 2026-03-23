@@ -2,7 +2,7 @@ import {
   BehaviorSubject, combineLatest, merge, Subscription
 } from 'rxjs';
 import {
-  Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef, Inject
+  Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -26,6 +26,7 @@ import {
 import { AppError } from '../../../app.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
+import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -44,6 +45,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
+              public themeService: ThemeService,
               private bs: BackendService, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
@@ -363,13 +365,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
-  }
-
-  private adjustIframeSize(): void {
-    this.iFrameItemplayer?.setAttribute('height', String(this.iFrameHostElement.nativeElement.clientHeight));
   }
 
   private reload(): void {
@@ -377,13 +374,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
     this.open(this.tcs.currentUnitSequenceId);
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
-      this.adjustIframeSize();
-    }
   }
 
   private getPlayerConfig(navigationState: NavigationState): VeronaPlayerConfig {

@@ -44,7 +44,8 @@ export const THEMES: Theme[] = [
     description: 'Zielgruppe Schüler*innen der Primarstufe',
     imagePaths: {
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
-      starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png'
+      starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
+      loadingProgress: 'assets/theme-images/theme-primar/loading.png'
     }
   },
   {

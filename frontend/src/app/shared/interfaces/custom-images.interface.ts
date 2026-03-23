@@ -4,7 +4,7 @@ export interface CustomImages {
   starterCompanion?: string; // image on top of the list of available tests
   starterCardDone?: string; // on the card when test is done
   // testDone?: string;
-  // progress?: string;
+  loadingProgress?: string;
   // pause?: string;
   // logout?: string;
 }
