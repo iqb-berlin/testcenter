@@ -30,20 +30,7 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
   template: `
     <mat-toolbar>
       <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div class="logo">
-        @if (headerService.showLogo) {
-          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
-                 matTooltip="Zur Startseite"/>
-          </a>
-        }
-      </div>
       <div>
-        @if (headerService.title) {
-          <h1>{{ headerService.title }}</h1>
-        }
-      </div>
-      <div class="icons">
         @if (headerService.showAccountPanel) {
           <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
                   (click)="isOpen = !isOpen">
@@ -72,8 +59,23 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
                   <button matButton>SHARE</button>
                 </mat-card-actions>
               </mat-card>
+
+              
             </div>
           </ng-template>
+        }
+      </div>
+      <div>
+        @if (headerService.title) {
+          <h1>{{ headerService.title }}</h1>
+        }
+      </div>
+      <div>
+        @if (headerService.showLogo) {
+          <a class="logo" [routerLink]="['/r']" aria-label="Gehe zur Startseite">
+            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
+                 matTooltip="Zur Startseite"/>
+          </a>
         }
       </div>
     </mat-toolbar>
