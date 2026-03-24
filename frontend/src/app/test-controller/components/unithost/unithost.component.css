@@ -1,33 +1,14 @@
-:host {
-  width: 100%
-}
-
 #iframe-host {
-  position: fixed;
   width: 100%;
-  top: 0;
-  bottom: 0;
-  padding: 0;
-  background-color: white;
+  height: 100%;
 }
 
-.with-header #iframe-host {
-  top: 65px;
+iframe {
+  width: 100%;
+  height: 100%;
 }
 
-.with-title #iframe-host {
-  top: 40px;
-}
-
-.with-header.with-title #iframe-host {
-  top: 105px;
-}
-
-.with-footer #iframe-host {
-  bottom: 46px;
-}
-
-#waiting-room {
+.lock-overlay {
   position: absolute;
   left: 0;
   right: 0;
@@ -37,27 +18,29 @@
   max-width: 50%;
 }
 
-#waiting-room .progress-bar-sub-text {
-  margin-top: 0.1em
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 64px;
 }
 
-.unit-title h2 {
-  font-weight: normal;
-  text-align: center;
-  background-color: white;
-  margin: 0;
-  padding: 5px;
+.progress-container h2 {
+  font-size: 57px;
+  font-weight: 400;
 }
 
-.is-waiting #iframe-host,
-.is-waiting .unit-title {
-  visibility: hidden;
+.progress-image {
+  align-self: start;
+  width: 250px;
+  height: 250px;
+  aspect-ratio: 1/1;
+  position: relative;
+  transform: translateX(-50%);
+  transition: left 0.2s linear;
 }
 
-.page-navigation {
-  position: absolute;
-  width: 100%;
-  height: 46px;
-  bottom: 0;
-  font-size: 1.2em;
+.progress-container .loading-progress-text {
+  margin-top: -20px;
+  font-size: 30px;
 }

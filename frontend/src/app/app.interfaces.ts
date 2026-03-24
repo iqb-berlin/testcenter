@@ -61,7 +61,8 @@ export const TestModeNames = ['prepare', 'api', 'integration', 'prepare-integrat
 
 export type TestModeName = typeof TestModeNames[number];
 
-export const isTestModeName = (str: string): str is TestModeName => (TestModeNames as readonly string[]).includes(str);
+export const isTestModeName =
+  (str: string): str is TestModeName => (TestModeNames as readonly string[]).includes(str);
 
 export interface AppErrorInterface {
   label: string;

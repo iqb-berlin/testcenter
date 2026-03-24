@@ -95,12 +95,10 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.wsIdSubscription = this.wds.workspaceId$
-        .subscribe(() => {
-          this.updateFileList();
-        });
-    });
+    this.wsIdSubscription = this.wds.workspaceId$
+      .subscribe(() => {
+        this.updateFileList();
+      });
   }
 
   ngOnDestroy(): void {

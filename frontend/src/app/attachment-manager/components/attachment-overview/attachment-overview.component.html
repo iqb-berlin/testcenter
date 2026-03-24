@@ -8,7 +8,7 @@
         matTooltipPosition="above"
         (click)="sidebarClick()"
       >
-        <mat-icon>close</mat-icon>
+        <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
 
@@ -53,12 +53,12 @@
 
       <ng-container *ngIf="selectedAttachment.attachmentFileIds.length">
         <div class="toolbar-section" style="text-align: center">
-          <button mat-mini-fab color="primary" aria-label="Previous instance from this image-attachment" (click)="previousAttachmentId()">
-            <mat-icon>chevron_left</mat-icon>
+          <button mat-mini-fab aria-label="Previous instance from this image-attachment" (click)="previousAttachmentId()">
+            <mat-icon svgIcon="chevron_left"></mat-icon>
           </button>
           {{selectedAttachmentFileIndex + 1 }} / {{selectedAttachment.attachmentFileIds.length}}
-          <button mat-mini-fab color="primary" aria-label="Next instance from this image-attachment" (click)="nextAttachmentId()">
-            <mat-icon>chevron_right</mat-icon>
+          <button mat-mini-fab aria-label="Next instance from this image-attachment" (click)="nextAttachmentId()">
+            <mat-icon svgIcon="chevron_right"></mat-icon>
           </button>
         </div>
 
@@ -71,23 +71,21 @@
         <button
           mat-raised-button
           class="control"
-          color="primary"
           *ngIf="selectedAttachment.attachmentType === 'capture-image'"
           (click)="$event.stopPropagation(); downloadPageTemplate()"
           matTooltip="Seitenvorlage neu ausdrucken"
         >
-          <mat-icon>description</mat-icon>
+          <mat-icon svgIcon="description"></mat-icon>
           Seitenvorlage
         </button>
         <button
           mat-raised-button
           class="control"
-          color="primary"
           *ngIf="selectedAttachment.dataType !== 'missing'"
           (click)="deleteAttachment()"
           matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
         >
-          <mat-icon>delete</mat-icon>
+          <mat-icon svgIcon="delete"></mat-icon>
           {{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}
         </button>
       </div>
@@ -103,8 +101,8 @@
       </div>
       <div class="toolbar-section" *ngIf="attachmentTypes.includes('capture-image')">
         <h3>{{'Werkzeuge' | customtext:'am_tools_headline' | async}}</h3>
-        <button mat-raised-button color="primary" (click)="downloadAllPageTemplates()">
-          <mat-icon>library_books</mat-icon>
+        <button mat-raised-button (click)="downloadAllPageTemplates()">
+          <mat-icon svgIcon="library_books"></mat-icon>
           Alle Seitenvorlagen herunterladen
         </button>
       </div>
@@ -121,7 +119,7 @@
             matTooltipPosition="above"
             (click)="addClick()"
         >
-          <mat-icon>add-circle-material</mat-icon>
+          <mat-icon svgIcon="add-circle"></mat-icon>
         </button>
       </div>
 

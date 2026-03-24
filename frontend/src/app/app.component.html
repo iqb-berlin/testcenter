@@ -1,31 +1,28 @@
-<div class="logo" *ngIf="shouldShowLogo">
-  <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-    <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" matTooltip="Zur Startseite" alt="Logo der Anwendung"/>
-  </a>
-</div>
+<tc-header></tc-header>
 
-<div id="main-alert-container" *ngIf="showError">
-  <error [onBeforeClose]="closeErrorBox.bind(this)"></error>
-</div>
+@if (showError) {
+  <div id="main-alert-container">
+    <error [onBeforeClose]="closeErrorBox.bind(this)"></error>
+  </div>
+}
 
 <router-outlet></router-outlet>
 
-<!-- current css positioning demand this banner to come after <router-outlet> -->
-<div
-  id="el"
-  class="browser-banner"
-  *ngIf="unsupportedBrowser.length && showBrowserBanner"
-  (click)="closeBanner()"
->
-  <div class="browser-banner-inner">
-    <ng-container *ngIf="('Ihr Browser ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version.' | customtext: 'login_unsupportedBrowserBanner' : unsupportedBrowser[0] : unsupportedBrowser[1]  | async)?.trim() as oldBrowserText">
-      {{ oldBrowserText }}
-      <button>X</button>
-    </ng-container>
+@if (unsupportedBrowser.length && showBrowserBanner) {
+  <div id="el" class="browser-banner"
+       (click)="closeBanner()">
+    <div class="browser-banner-inner">
+      <ng-container *ngIf="('Ihr Browser ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version.' | customtext: 'login_unsupportedBrowserBanner' : unsupportedBrowser[0] : unsupportedBrowser[1]  | async)?.trim() as oldBrowserText">
+        {{ oldBrowserText }}
+        <button>X</button>
+      </ng-container>
+    </div>
   </div>
-</div>
+}
 
-<div
-  style="background: red; position: fixed; bottom: 4px; right: 4px; height: 4px; width: 4px; border-radius: 2px"
-  *ngIf="mainDataService.isTestingMode"
-></div>
+@if (mainDataService.isTestingMode) {
+  <div style="background: red; position: fixed; bottom: 4px; right: 4px; height: 4px; width: 4px; border-radius: 2px">
+  </div>
+}
+
+<tc-footer></tc-footer>

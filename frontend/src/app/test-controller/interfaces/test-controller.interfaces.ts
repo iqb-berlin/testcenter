@@ -238,7 +238,6 @@ export interface Unit extends UnitDef {
   // Since we have to handle both differently, we keep it separated here. Maybe this will change in the future.
   loadingProgress: { [resourceId in LoadingQueueEntryTypeType]?: Observable<LoadingProgress> };
   lockedAfterLeaving: boolean;
-  pageLabels: { [id: string]: string };
 }
 
 export const TestletLockTypes = ['show', 'time', 'code', 'afterLeave'] as const;
@@ -301,4 +300,13 @@ export interface BufferFlushEvent {
   event: BufferFlushEventType;
   type: BufferType;
   id: string;
+}
+
+export interface NavControlContext {
+  labelMode: 'index' | 'label' | 'full';
+  label: string;
+  currentIndex: number;
+  maxIndex: number;
+  isBackwardAllowed?: boolean;
+  isForwardAllowed?: boolean;
 }

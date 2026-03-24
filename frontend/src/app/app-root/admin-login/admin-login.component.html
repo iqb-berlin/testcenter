@@ -1,0 +1,63 @@
+<div class="login-wrapper">
+  <form [formGroup]="loginForm" (ngSubmit)="adminLogin()" [style.display]="'flex'">
+    <mat-card appearance="raised">
+      <mat-card-header>
+        <mat-card-title>Admin-Bereich</mat-card-title>
+      </mat-card-header>
+      <mat-card-content *ngIf="mainDataService.appConfig">
+        <mat-form-field appearance="outline">
+          <mat-label>Anmeldename</mat-label>
+          <input matInput formControlName="name" autocapitalize="off">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Kennwort</mat-label>
+          <input matInput #pw formControlName="pw"
+                 [type]="showPassword ? 'text' : 'password'"
+                 (keyup)="clearWarning(); checkCapsLock($event)">
+          <button mat-icon-button matSuffix type="button"
+                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
+                  (click)="showPassword = !showPassword">
+            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+          </button>
+        </mat-form-field>
+        <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
+                  [level]="problemLevel" [text]="problemText"></tc-alert>
+      </mat-card-content>
+
+      <mat-card-actions [style.justify-content]="'space-between'">
+        <button mat-raised-button type="submit" color="primary" id="admin" data-cy="login-admin"
+                [disabled]="loginForm.invalid">
+          Weiter
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+
+  <div class="button-box">
+    <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
+      Systemcheck
+    </a>
+    <a [routerLink]="['/r/login']" mat-raised-button color="primary" data-cy="general-sys-check">
+      Testtakerbereich
+    </a>
+  </div>
+</div>
+
+<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="!mainDataService.appConfig">
+  <mat-card appearance="raised" class="status-card">
+    <mat-card-content>
+      <tc-alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></tc-alert>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div class="flex-row-wrap" style="margin-top: 0.7em; justify-content: center; gap: 10px" *ngIf="mainDataService.globalWarning">
+  <mat-card appearance="raised" class="status-card">
+    <mat-card-content>
+      <tc-alert level="warning" [text]="mainDataService.globalWarning"></tc-alert>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+

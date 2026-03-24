@@ -1,10 +1,9 @@
 import { KeyValuePairs } from '../../app.interfaces';
+import { CustomImages } from './custom-images.interface';
 
 export interface AppSettingsObject {
   appTitle: string,
   mainLogo: string,
-  backgroundBody: string,
-  backgroundBox: string,
   introHtml: string,
   legalNoticeHtml: string,
   globalWarningText: string,
@@ -12,6 +11,7 @@ export interface AppSettingsObject {
   globalWarningExpiredHour: string,
   bugReportTarget: string,
   bugReportAuth: string
+  themeName: string;
 }
 
 export type AppSettings = AppSettingsObject | Record<string, never>;
@@ -19,6 +19,7 @@ export type AppSettings = AppSettingsObject | Record<string, never>;
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
+  customImages: Record<keyof CustomImages, string>
   appConfig: AppSettings;
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
@@ -30,6 +31,3 @@ export interface SysConfig {
 }
 
 export const DEFAULT_LOGO = 'assets/IQB-LogoA.png';
-export const DEFAULT_BACKGROUND_BODY =
-  '#003333 linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5)';
-export const DEFAULT_BACKGROUND_BOX = 'lightgray';

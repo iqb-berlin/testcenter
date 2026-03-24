@@ -37,12 +37,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.wsIdSubscription = this.workspaceDataService.workspaceId$
-        .subscribe(() => {
-          this.updateTable();
-        });
-    });
+    this.wsIdSubscription = this.workspaceDataService.workspaceId$
+      .subscribe(() => {
+        this.updateTable();
+      });
   }
 
   ngOnDestroy(): void {

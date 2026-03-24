@@ -1,17 +1,14 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-continue */
-/* eslint-disable no-cond-assign */
 import { Pipe, PipeTransform } from '@angular/core';
 import {
   isUnit, Testlet, TestSession, Unit
 } from '../group-monitor.interfaces';
 
 @Pipe({
-    name: 'position',
-    standalone: false
+  name: 'position',
+  standalone: false
 })
 export class PositionPipe implements PipeTransform {
+  // eslint-disable-next-line class-methods-use-this
   transform(testSession: TestSession, root: Testlet): string {
     const c = {
       hiddenUnits: 0,

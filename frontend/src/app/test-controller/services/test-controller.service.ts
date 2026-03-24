@@ -2,18 +2,9 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject,
-  forkJoin,
-  from,
-  fromEvent,
-  interval,
-  lastValueFrom,
-  merge,
-  Observable,
-  of,
-  Subject,
-  Subscription, tap,
-  timer
+  BehaviorSubject, forkJoin, from, interval,
+  lastValueFrom, merge, Observable, of, Subject,
+  Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -71,11 +62,8 @@ import { ConditionUtil } from '../util/condition.util';
 export class TestControllerService {
   testId = '';
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
-
   workspaceId = 0;
-
   totalLoadingProgress = 0;
-
   testMode = new TestMode();
 
   // TODO hide those behind functions, this will be way easier with ts 5.5
@@ -439,7 +427,6 @@ export class TestControllerService {
     const unit = this.units[unitSequenceId];
 
     if (!unit) {
-      // eslint-disable-next-line no-console
       console.error(`Unit not found: ${unitSequenceId}`);
       throw new AppError({
         label: `Unit not found: ${unitSequenceId}`,
@@ -625,13 +612,11 @@ export class TestControllerService {
           this.booklet?.config.lock_test_on_termination === 'ON'
         );
       default:
-        // eslint-disable-next-line no-case-declarations
         const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
         return this.router.navigate(
           [`/t/${this.testId}/u/${navString}`],
           {
             state: { force },
-            // eslint-disable-next-line no-bitwise
             queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
             //  unit shall be reloaded even if we are there already there
           }
@@ -724,7 +709,7 @@ export class TestControllerService {
       null;
 
     let forward: NavigationDirectionValue = 'yes';
-    let backward: NavigationDirectionValue = (this.booklet?.config?.unit_navibuttons !== 'FORWARD_ONLY') ? 'yes' : 'no';
+    let backward: NavigationDirectionValue = 'yes';
     if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'forward').length) {
       forward = 'markedNo';
     }
@@ -732,8 +717,7 @@ export class TestControllerService {
       backward = 'markedNo';
     }
 
-    previous = backward !== 'no' ? previous : null;
-    first = backward !== 'no' ? previous : null;
+    first = previous;
 
     return {
       directions: { forward, backward },

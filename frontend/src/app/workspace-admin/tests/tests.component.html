@@ -70,13 +70,12 @@
   <div class="sidebar">
     <div class="buttons">
       <button
-        color="primary"
         mat-raised-button
         (click)="deleteSelectedSessions()"
         matTooltip="Markierte Test-Sessions löschen"
         matTooltipPosition="above"
         [disabled]="(workspaceDataService.wsRole !== 'RW') || !testSessions || !hasSelectedSessions()">
-        <mat-icon>delete</mat-icon>
+        <mat-icon svgIcon="delete"></mat-icon>
         Löschen
       </button>
     </div>

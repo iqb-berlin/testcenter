@@ -11,11 +11,8 @@ import { BackendService } from './backend.service';
 
 @Injectable()
 export class RouteDispatcherActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService,
-    private backendService: BackendService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService,
+              private backendService: BackendService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -61,17 +58,9 @@ export class RouteDispatcherActivateGuard {
 
 @Injectable()
 export class DirectLoginActivateGuard {
-  constructor(
-    private mds: MainDataService,
-    private bs: BackendService,
-    private router: Router
-  ) {
-  }
+  constructor(private mds: MainDataService, private bs: BackendService, private router: Router) { }
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | boolean {
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const name = state.url.substr(1);
     if (name.length > 0 && name.indexOf('/') < 0) {
       return this.bs.login('login', name)
@@ -91,10 +80,7 @@ export class DirectLoginActivateGuard {
   providedIn: 'root'
 })
 export class CodeInputComponentActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -118,10 +104,7 @@ export class CodeInputComponentActivateGuard {
   providedIn: 'root'
 })
 export class AdminComponentActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -145,10 +128,7 @@ export class AdminComponentActivateGuard {
   providedIn: 'root'
 })
 export class AdminOrSuperAdminComponentActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -172,10 +152,7 @@ export class AdminOrSuperAdminComponentActivateGuard {
   providedIn: 'root'
 })
 export class SuperAdminComponentActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -199,10 +176,7 @@ export class SuperAdminComponentActivateGuard {
   providedIn: 'root'
 })
 export class TestComponentActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) { }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
@@ -226,10 +200,7 @@ export class TestComponentActivateGuard {
   providedIn: 'root'
 })
 export class GroupMonitorActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) {}
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): boolean {
     const authData = this.mainDataService.getAuthData();
@@ -246,10 +217,7 @@ export class GroupMonitorActivateGuard {
   providedIn: 'root'
 })
 export class StarterActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) {}
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): boolean {
     const authData = this.mainDataService.getAuthData();
@@ -266,11 +234,7 @@ export class StarterActivateGuard {
   providedIn: 'root'
 })
 export class StudyMonitorActivateGuard {
-  constructor(
-    private router: Router,
-    private mainDataService: MainDataService
-  ) {
-  }
+  constructor(private router: Router, private mainDataService: MainDataService) { }
 
   canActivate(): boolean {
     const authData = this.mainDataService.getAuthData();

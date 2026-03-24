@@ -27,7 +27,6 @@
 #video-clip {
   border-width: 1px;
   border-style: solid;
-  border-color: var(--tc-body-background);
   overflow: hidden;
   max-height: 100%;
   max-width: 100%;

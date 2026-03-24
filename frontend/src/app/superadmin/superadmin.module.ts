@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -34,10 +34,6 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
 import {
   SuperadminPasswordRequestComponent
 } from './superadmin-password-request/superadmin-password-request.component';
-import { SettingsComponent } from './settings/settings.component';
-import { AppConfigComponent } from './settings/app-config.component';
-import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
-import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
@@ -48,11 +44,7 @@ import { SharedModule } from '../shared/shared.module';
     NewworkspaceComponent,
     EditworkspaceComponent,
     WorkspacesComponent,
-    SettingsComponent,
-    SuperadminPasswordRequestComponent,
-    AppConfigComponent,
-    EditCustomTextsComponent,
-    EditCustomTextComponent
+    SuperadminPasswordRequestComponent
   ],
   imports: [
     CommonModule,
@@ -80,7 +72,8 @@ import { SharedModule } from '../shared/shared.module';
     MatDatepickerModule,
     MatDividerModule,
     SharedModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    FormsModule
   ],
   exports: [
     SuperadminComponent

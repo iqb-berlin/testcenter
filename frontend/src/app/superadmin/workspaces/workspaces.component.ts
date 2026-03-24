@@ -53,9 +53,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.updateWorkspaceList();
-    });
+    this.updateWorkspaceList();
   }
 
   addObject(): void {

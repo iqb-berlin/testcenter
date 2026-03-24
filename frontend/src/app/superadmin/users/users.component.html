@@ -6,43 +6,39 @@
         matTooltip="Administrator:in hinzufügen"
         matTooltipPosition="below"
         data-cy="add-user"
-        color="primary"
         (click)="addObject()"
       >
-        <mat-icon>add</mat-icon>
+        <mat-icon svgIcon="add"></mat-icon>
       </button>
       <button
         mat-fab
         matTooltip="Markierte Administrator:in löschen"
         matTooltipPosition="below"
         data-cy="delete-user"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="deleteObject()"
       >
-        <mat-icon>delete</mat-icon>
+        <mat-icon svgIcon="delete"></mat-icon>
       </button>
       <button
         mat-fab
         data-cy="change-password"
         matTooltip="Kennwort ändern"
         matTooltipPosition="below"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changePassword()"
       >
-        <mat-icon>edit</mat-icon>
+        <mat-icon svgIcon="edit"></mat-icon>
       </button>
       <button
         mat-fab
         data-cy="change-superadmin"
         matTooltip="Superadmin-Status ändern"
         matTooltipPosition="below"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changeSuperadminStatus()"
       >
-        <mat-icon>supervisor_account</mat-icon>
+        <mat-icon svgIcon="supervisor_account"></mat-icon>
       </button>
     </div>
 
@@ -75,9 +71,8 @@
         matTooltipPosition="above"
         [disabled]="!pendingWorkspaceChanges"
         data-cy="save"
-        color="primary"
       >
-        <mat-icon>save</mat-icon>
+        <mat-icon svgIcon="save"></mat-icon>
       </button>
     </div>
 

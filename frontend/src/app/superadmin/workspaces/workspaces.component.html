@@ -6,32 +6,29 @@
         matTooltip="Arbeitsbereich hinzufügen"
         matTooltipPosition="below"
         data-cy="add-workspace"
-        color="primary"
         (click)="addObject()"
         >
-          <mat-icon>add</mat-icon>
+          <mat-icon svgIcon="add"></mat-icon>
       </button>
       <button
         mat-fab
         matTooltip="Markierten Arbeitsbereich löschen"
         matTooltipPosition="below"
         data-cy="delete-workspace"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="deleteObject()"
       >
-        <mat-icon>delete</mat-icon>
+        <mat-icon svgIcon="delete"></mat-icon>
       </button>
       <button
         mat-fab
         matTooltip="Arbeitsbereich umbenennen"
         matTooltipPosition="below"
         data-cy="rename-workspace"
-        color="primary"
         [disabled]="!tableSelectionRow.hasValue()"
         (click)="changeObject()"
       >
-        <mat-icon>edit</mat-icon>
+        <mat-icon svgIcon="edit"></mat-icon>
       </button>
     </div>
 
@@ -64,7 +61,7 @@
       <div>Zugriffsrechte für "{{ selectedWorkspaceName }}":</div>
         <button mat-fab  matTooltip="Speichern"
             matTooltipPosition="above" data-cy="save" [disabled]="!pendingUserChanges" (click)="saveUsers()" >
-          <mat-icon>save</mat-icon>
+          <mat-icon svgIcon="save"></mat-icon>
         </button>
     </div>
 

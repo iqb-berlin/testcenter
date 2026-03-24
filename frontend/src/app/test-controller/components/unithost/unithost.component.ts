@@ -2,7 +2,7 @@ import {
   BehaviorSubject, combineLatest, merge, Subscription
 } from 'rxjs';
 import {
-  Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef, Inject
+  Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,8 +15,6 @@ import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
 import {
   isVeronaNavigationTarget,
-  Verona5ValidPages,
-  Verona6ValidPages,
   VeronaNavigationDeniedReason,
   VeronaPlayerConfig,
   VeronaPlayerRuntimeErrorCodes,
@@ -26,42 +24,32 @@ import {
   VopStateChangedNotification
 } from '../../interfaces/verona.interfaces';
 import { AppError } from '../../../app.interfaces';
+import { PageService } from '../../services/page.service';
+import { VeronaAPIService } from '../../services/verona-api.service';
+import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
-    templateUrl: './unithost.component.html',
-    styleUrls: ['./unithost.component.css'],
-    standalone: false
+  templateUrl: './unithost.component.html',
+  styleUrls: ['./unithost.component.css'],
+  standalone: false
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
   @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
-  private postMessageTarget: Window = window;
-  leaveWarning = false;
-
   resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   resourcesToLoadLabels: string[] = [];
-
-  pages: { [id: string]: string } = {};
-  pageLabels: string[] = [];
-  currentPageIndex: number = -1;
-
   clearCode: string = '';
 
-  constructor(
-    public tcs: TestControllerService,
-    private mds: MainDataService,
-    @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
-    private bs: BackendService,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar
-  ) {
-  }
+  constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
+              private apiService: VeronaAPIService,
+              @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
+              public themeService: ThemeService,
+              private bs: BackendService, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
-    this.leaveWarning = false;
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
@@ -86,47 +74,36 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const msgData = messageEvent.data;
     const msgType = msgData.type;
 
-    this.postMessageTarget = messageEvent.source as Window;
+    this.apiService.postMessageTarget = messageEvent.source as Window;
     const dontNeedSessionId = ['vopReadyNotification', 'vopWindowFocusChangedNotification'];
     if ((!dontNeedSessionId.includes(msgType)) && (!(msgData.sessionId in this.tcs.unitAliasMap))) {
-      // eslint-disable-next-line no-console
       console.warn('wrong player session id: ', msgData.sessionId, msgData, this.tcs.unitAliasMap);
-      // return;
     }
 
     switch (msgType) {
       case 'vopReadyNotification':
         await this.handleReadyNotification(msgData);
         break;
-
       case 'vopStateChangedNotification':
         this.handleStateChangedNotification(msgData);
         break;
-
       case 'vopUnitNavigationRequestedNotification':
         this.handleUnitNavigationRequestedNotification(msgData);
         break;
-
       case 'vopWindowFocusChangedNotification':
         this.handleWindowFocusChangedNotification(msgData);
         break;
-
       case 'vopRuntimeErrorNotification':
         this.handleRuntimeError(msgData);
         break;
-
       default:
-        // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
         break;
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async handleReadyNotification(msgData: any): Promise<void> {
-    // eslint-disable-next-line no-case-declarations
     const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
-    // eslint-disable-next-line no-case-declarations
     const playerApiVersionMajor = parseInt(playerApiVersion.split('.').shift() ?? '', 10);
 
     if (
@@ -173,7 +150,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState,
       playerConfig: this.getPlayerConfig(navigation)
     };
-    this.postMessageTarget.postMessage(msg, '*');
+    this.apiService.postMessageTarget.postMessage(msg, '*');
   }
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {
@@ -181,23 +158,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (msg.playerState) {
       if (unit.sequenceId === this.tcs.currentUnit?.sequenceId) {
-        this.readPages(msg.playerState.validPages || []);
-        this.currentPageIndex = Object.keys(this.pages).indexOf(msg.playerState.currentPage || '');
-        unit.pageLabels = this.pages;
+        this.pageService.update(msg.playerState.validPages || [], msg.playerState.currentPage);
       }
 
-      if (typeof msg.playerState.currentPage !== 'undefined') {
-        const pageId: string = String(msg.playerState.currentPage);
-        const pageNr = Object.keys(this.pages).indexOf(pageId) + 1; // human-readable in logs & group monitor
-        const pageCount = Object.keys(this.pages).length;
-        if (Object.keys(this.pages).length > 1 && this.pages[msg.playerState.currentPage]) {
-          this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
-            { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: pageNr.toString() },
-            { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: pageId },
-            { key: 'PAGE_COUNT', timeStamp: Date.now(), content: pageCount.toString() }
-          ]);
-        }
-      }
+      this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
+        { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(msg.playerState.currentPage) },
+        { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
+        { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
+      ]);
     }
 
     if (msg.unitState) {
@@ -230,14 +198,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleUnitNavigationRequestedNotification(msgData: any): void {
     // support Verona2 and Verona3 version
     const target = msgData.target ? `#${msgData.target}` : msgData.targetRelative;
     this.tcs.setUnitNavigationRequest(target);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleWindowFocusChangedNotification(msgData: any): void {
     if (msgData.hasFocus) {
       this.tcs.windowFocusState$.next('PLAYER');
@@ -248,23 +214,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private readPages(validPages: Verona5ValidPages | Verona6ValidPages): void {
-    this.pages = {};
-    if (!Array.isArray(validPages)) {
-      // Verona 2-5
-      this.pages = validPages;
-    } else {
-      // Verona >= 6
-      // covers also some versions of aspect who send a corrupted format
-      validPages
-        .forEach((page, index) => {
-          this.pages[String(page.id ?? index)] = page.label ?? String(index + 1);
-        });
-    }
-    this.pageLabels = Object.values(this.pages);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   private handleRuntimeError(msg: VopRuntimeErrorNotification): void {
     const unit = (msg.sessionId in this.tcs.unitAliasMap) ?
       this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]) :
@@ -295,7 +244,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     };
     const runTimeErrorReactionMap:
-      { [code in typeof VeronaPlayerRuntimeErrorCodes[number]]: keyof typeof reactions } = {
+    { [code in typeof VeronaPlayerRuntimeErrorCodes[number]]: keyof typeof reactions } = {
       'session-id-missing': 'raiseError',
       'unit-definition-missing': 'raiseError',
       'wrong-session-id': 'raiseError',
@@ -316,10 +265,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (!this.tcs.currentUnit) {
       throw new Error(`No such unit: ${unitSequenceId}`);
     }
-
-    this.currentPageIndex = -1;
-    this.pages = {};
-    this.pageLabels = [];
 
     this.mds.appSubTitle$.next(this.tcs.currentUnit.label);
 
@@ -390,8 +335,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     this.startTimerIfNecessary();
-
-    this.leaveWarning = false;
     this.prepareIframe();
     this.tcs.updateNavigationState();
   }
@@ -422,13 +365,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.tcs.currentUnit.playerFileName));
-  }
-
-  private adjustIframeSize(): void {
-    this.iFrameItemplayer?.setAttribute('height', String(this.iFrameHostElement.nativeElement.clientHeight));
   }
 
   private reload(): void {
@@ -438,18 +376,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.open(this.tcs.currentUnitSequenceId);
   }
 
-  @HostListener('window:resize')
-  onResize(): void {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
-      this.adjustIframeSize();
-    }
-  }
-
   private getPlayerConfig(navigationState: NavigationState): VeronaPlayerConfig {
     if (!this.tcs.currentUnit) throw new Error('Unit not loaded');
     if (!this.tcs.booklet) throw new Error('Booklet not loaded');
     const groupToken = this.mds.getAuthData()?.groupToken;
-    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.bs.backendUrl; // @TODO: extract to 'file-server.service' class
+    const resourceUri = this.mds.appConfig?.fileServiceUri ? this.fileServerUrl : this.bs.backendUrl;
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: Object.keys(navigationState.targets)
         .filter(isVeronaNavigationTarget)
@@ -472,23 +403,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     return playerConfig;
   }
 
-  gotoNextPage(): void {
-    this.gotoPage(++this.currentPageIndex);
-  }
-
-  gotoPreviousPage(): void {
-    this.gotoPage(--this.currentPageIndex);
-  }
-
-  gotoPage(targetPageIndex: number): void {
-    this.currentPageIndex = targetPageIndex;
-    this.postMessageTarget?.postMessage({
-      type: 'vopPageNavigationCommand',
-      sessionId: this.tcs.currentUnit?.alias,
-      target: Object.keys(this.pages)[targetPageIndex]
-    }, '*');
-  }
-
   private handleNavigationDenial(
     navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }
   ): void {
@@ -496,7 +410,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.postMessageTarget.postMessage({
+    this.apiService.postMessageTarget.postMessage({
       type: 'vopNavigationDeniedNotification',
       sessionId: this.tcs.currentUnit?.alias,
       reason: navigationDenial.reason
@@ -538,7 +452,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private updatePlayerConfig(navigationState: NavigationState): void {
-    this.postMessageTarget.postMessage({
+    this.apiService.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.tcs.currentUnit?.alias,
       playerConfig: this.getPlayerConfig(navigationState)

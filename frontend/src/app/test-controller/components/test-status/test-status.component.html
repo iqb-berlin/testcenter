@@ -11,10 +11,10 @@
       </p>
     </mat-card-content>
     <mat-card-actions [style.justify-content]="'space-between'">
-      <button mat-raised-button data-cy="resumeTest-1" color="primary" (click)="continueTest()">
+      <button mat-raised-button data-cy="resumeTest-1" (click)="continueTest()">
         {{ 'Test fortsetzen'  | customtext:'login_testResumeButtonLabel' | async}}
       </button>
-      <button mat-raised-button data-cy="endTest-1" color="primary" (click)="terminateTest()">
+      <button mat-raised-button data-cy="endTest-1" (click)="terminateTest()">
         {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
       </button>
     </mat-card-actions>
@@ -46,18 +46,9 @@
     <p style="white-space: pre-wrap">{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }}</p>
   </error>
 
-  <mat-card appearance="raised" *ngSwitchCase="'LOADING'" class="progress-bar">
-    <mat-card-header>
-      <mat-card-title>{{ tcs.booklet?.metadata?.label || 'Test' }}</mat-card-title>
-      <mat-card-subtitle>{{'Bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
-    </mat-card-header>
+  <mat-card *ngSwitchCase="'LOADING'">
     <mat-card-content>
-      <mat-progress-bar
-        color="primary"
-        mode="determinate"
-        [value]="tcs.totalLoadingProgress">
-      </mat-progress-bar>
-      {{tcs.totalLoadingProgress.toFixed(2)}}%
+      <tc-alert level="info" text="Test wird gestartet"></tc-alert>
     </mat-card-content>
   </mat-card>
 

@@ -12,17 +12,16 @@ export interface TimeRestrictionDialogData {
 }
 
 @Component({
-    selector: 'time-restriction-dialog',
-    templateUrl: './time-restriction-dialog.component.html',
-    styleUrls: ['./time-restriction-dialog.component.css'],
-    standalone: false
+  selector: 'time-restriction-dialog',
+  templateUrl: './time-restriction-dialog.component.html',
+  standalone: false
 })
 export class TimeRestrictionDialogComponent implements OnInit {
   showcancel: boolean = true;
   setTime = new FormControl(this.dialogData.remainingTime, [Validators.max(this.dialogData.remainingTime)]);
 
   constructor(@Inject(MAT_DIALOG_DATA) public dialogData: TimeRestrictionDialogData) {
-    console.log(dialogData.remainingTime)
+    console.log(dialogData.remainingTime);
   }
 
   ngOnInit() {

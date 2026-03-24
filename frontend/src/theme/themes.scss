@@ -1,0 +1,33 @@
+@use './material-overrides' as material-overrides;
+
+@mixin base-colors {
+  --mat-sys-on-primary: #FFFFFFFF;
+  --mat-sys-surface: #FFF;
+  --theme-gray-05: #f4f2f2;
+  --theme-gray-80: #534856;
+  --mat-sys-state-on-surface-opacity-10: rgba(39, 26, 43, 0.10);
+}
+
+.theme-primar {
+  --mat-sys-primary: #196175;
+  --mat-sys-secondary: #ccdfe5;
+
+  @include base-colors;
+  @include material-overrides.overrides;
+}
+
+.theme-sekundar {
+  --mat-sys-primary: #0B2D84;
+  --mat-sys-secondary: #CED5E6;
+
+  @include base-colors;
+  @include material-overrides.overrides;
+}
+
+.theme-adult {
+  --mat-sys-primary: #6B369A;
+  --mat-sys-secondary: #E1D7EB;
+
+  @include base-colors;
+  @include material-overrides.overrides;
+}

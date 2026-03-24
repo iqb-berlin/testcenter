@@ -29,15 +29,15 @@ import { Review } from '../../interfaces/test-controller.interfaces';
       <span class="spacer"></span>
       @if (activeView !== 'form') {
         <button matIconButton [matTooltip]="'Zurück zum Kommentar'" (click)="onBack()">
-          <mat-icon>edit</mat-icon>
+          <mat-icon svgIcon="edit"></mat-icon>
         </button>
       }
       <button matIconButton [matTooltip]="'Neuer Kommentar'" (click)="onNew()">
-        <mat-icon>add_circle</mat-icon>
+        <mat-icon svgIcon="add_circle"></mat-icon>
       </button>
       <button matIconButton [matTooltip]="'Kommentarübersicht'" [disabled]="activeView === 'list'"
               (click)="onShowList()">
-        <mat-icon>list_alt</mat-icon>
+        <mat-icon svgIcon="list_alt"></mat-icon>
       </button>
     </mat-toolbar>
 

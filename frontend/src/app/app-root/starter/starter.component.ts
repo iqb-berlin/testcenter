@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import {
@@ -14,15 +14,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '../../shared/services/file.service';
 import { MessageService } from '../../shared/services/message.service';
 import { AuthAccessType } from '../../app.interfaces';
-
+import { HeaderService } from '../../core/header.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 @Component({
-    selector: 'tc-starter',
-    templateUrl: './starter.component.html',
-    styleUrls: ['./starter.component.css'],
-    standalone: false
+  selector: 'tc-starter',
+  templateUrl: './starter.component.html',
+  styleUrls: ['./starter.component.scss'],
+  standalone: false
 })
-export class StarterComponent implements OnInit, OnDestroy {
+export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('bottomSentinel') sentinel!: ElementRef;
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
   workspaces: AccessObject[] = [];
   monitorBookletVisibility: 'visible' | 'collapsed' | 'hidden' = 'visible';
@@ -31,100 +33,113 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  constructor(
-    private router: Router,
-    private bs: BackendService,
-    public cts: CustomtextService,
-    public mds: MainDataService,
-    public ds: SysCheckDataService,
-    public pcs: PasswordChangeService,
-    private dialog: MatDialog,
-    private ms: MessageService
-  ) { }
+  availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
+  showScrollButton = false;
+
+  constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
+              public mds: MainDataService, public ds: SysCheckDataService,
+              public pcs: PasswordChangeService, private dialog: MatDialog,
+              public themeService: ThemeService,
+              private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
     this.ds.networkReports = [];
-    setTimeout(() => {
-      this.bs.getSessionData().subscribe(authData => {
-        if (!authData || !authData.token) {
-          this.mds.logOut();
-          return;
+    this.bs.getSessionData().subscribe(authData => {
+      if (!authData || !authData.token) {
+        this.mds.logOut();
+        return;
+      }
+      this.claims = authData.claims;
+      this.mds.setAuthData(authData);
+
+      if (
+        'attachmentManager' in this.claims ||
+        'workspaceMonitor' in this.claims ||
+        'testGroupMonitor' in this.claims
+      ) {
+        this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+        this.monitorBookletVisibility =
+          this.claims.testGroupMonitor?.[0]?.flags?.monitorBookletVisibility || 'visible';
+      } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
+        this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
+        if (this.getWorkspaceDataSubscription !== null) {
+          this.getWorkspaceDataSubscription.unsubscribe();
         }
-        this.claims = authData.claims;
-        this.mds.setAuthData(authData);
+        this.workspaces = authData.claims.workspaceAdmin;
+        this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
-        if ('attachmentManager' in this.claims ||
-            'workspaceMonitor' in this.claims ||
-            'testGroupMonitor' in this.claims) {
-          this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-          this.monitorBookletVisibility =
-            this.claims.testGroupMonitor?.[0]?.flags?.monitorBookletVisibility || 'visible';
-        } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
-          this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
-          if (this.getWorkspaceDataSubscription !== null) {
-            this.getWorkspaceDataSubscription.unsubscribe();
-          }
-          this.workspaces = authData.claims.workspaceAdmin;
-          this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
+        if (authData.pwSetByAdmin && !this.isSuperAdmin) {
+          this.dialog.open(ConfirmDialogComponent, {
+            data: <MessageDialogData>{
+              title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
+              content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
+              type: 'info'
+            },
+            disableClose: true
+          }).afterClosed().subscribe(errorCode => {
+            if (!errorCode) {
+              this.mds.logOut();
+            }
 
-          if (authData.pwSetByAdmin && !this.isSuperAdmin) {
-            this.dialog.open(ConfirmDialogComponent, {
-              data: <MessageDialogData>{
-                title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
-                content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
-                type: 'info'
-              },
-              disableClose: true
-            }).afterClosed().subscribe(errorCode => {
-              if (!errorCode) {
-                this.mds.logOut();
+            // TODO is this subscription ever unsubscribed?
+            this.pcs.showPasswordChangeDialog(
+              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
+              { disableClose: true }
+            ).subscribe(error => {
+              if (error) {
+                const dialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Sie müssen Ihr Passwort einmalig ändern',
+                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                    type: 'error'
+                  }
+                });
+
+                setTimeout(() => {
+                  dialog.close();
+                  this.mds.logOut();
+                }, 1500);
               }
 
-              this.pcs.showPasswordChangeDialog(
-                { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
-                { disableClose: true }
-              ).subscribe(error => {
-                if (error) {
-                  const dialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Sie müssen Ihr Passwort einmalig ändern',
-                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                      type: 'error'
-                    }
-                  });
+              if (!error) {
+                const dialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Passwort erfolgreich geändert',
+                    content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+                    type: 'info'
+                  }
+                });
 
-                  setTimeout(() => {
-                    dialog.close();
-                    this.mds.logOut();
-                  }, 1500);
-                }
-
-                if (!error) {
-                  const dialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Passwort erfolgreich geändert',
-                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-                      type: 'info'
-                    }
-                  });
-
-                  setTimeout(() => {
-                    dialog.close();
-                    this.mds.logOut();
-                  }, 1500);
-                }
-              });
+                setTimeout(() => {
+                  dialog.close();
+                  this.mds.logOut();
+                }, 1500);
+              }
             });
-          }
+          });
         }
-
-        else if ('test' in this.claims) {
-          this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
-        }
-      });
+      } else if ('test' in this.claims) {
+        this.mds.appSubTitle$.next(this.cts.getCustomText('login_subtitle'))
+      }
+      this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
+        name: test.label,
+        mode: (test.flags.locked ? 'locked' :
+          (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
+        claim: test
+      }));
     });
+    this.headerService.title = 'Übersicht';
+    this.headerService.showAccountPanel = true;
+  }
+
+  ngAfterViewInit() {
+    const observer = new IntersectionObserver(([entry]) => {
+      // show button when sentinel is NOT visible
+      this.showScrollButton = !entry.isIntersecting;
+    });
+    observer.observe(this.sentinel.nativeElement);
   }
 
   startTest(test: AccessObject): void {
@@ -180,10 +195,6 @@ export class StarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
-  resetLogin(): void {
-    this.mds.logOut();
-  }
-
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
     this.bs.getSessionData().subscribe(authData => {
@@ -200,17 +211,27 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   downloadReview() {
     this.bs.downloadReviews()
-      .subscribe((response) => {
-          if (response.status === 204 || !response.body) {
-            this.ms.show('Keine Kommentare verfügbar.');
-          } else {
-            FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
-          }
+      .subscribe(response => {
+        if (response.status === 204 || !response.body) {
+          this.ms.show('Keine Kommentare verfügbar.');
+        } else {
+          FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
         }
+      }
       );
   }
 
+  // static not possible because it is used in the template
+  // eslint-disable-next-line class-methods-use-this
+  scrollDown() {
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  }
+
   ngOnDestroy(): void {
+    this.headerService.reset();
     if (this.getMonitorDataSubscription !== null) {
       this.getMonitorDataSubscription.unsubscribe();
     }
