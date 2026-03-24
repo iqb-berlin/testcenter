@@ -32,6 +32,12 @@
   gap: 24px;
 }
 
+:host ::ng-deep .mat-expansion-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .scroll-button {
   position: sticky;
   bottom: 24px;

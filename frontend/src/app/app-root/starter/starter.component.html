@@ -26,6 +26,13 @@
     }
   }
 
+  <ng-template #testCardList>
+    @for (booklet of availableBooklets; track booklet.name; let i = $index) {
+      <tc-test-card [name]="booklet.name" [index]="i" [mode]="booklet.mode"
+                    (select)="startTest(booklet.claim)"></tc-test-card>
+    }
+  </ng-template>
+
   @if (claims.testGroupMonitor) {
     <h3>Testgruppen-Überwachung</h3>
     @for (accessObject of claims.testGroupMonitor; track accessObject.id; let i = $index) {
@@ -39,6 +46,18 @@
               level="info"
               text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.">
     </tc-alert>
+    @if (claims.test && monitorBookletVisibility !== 'hidden') {
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="monitorBookletVisibility !== 'collapsed'">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ 'Testhefte anzeigen' | customtext : 'gm_show_test' | async }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-container [ngTemplateOutlet]="testCardList"></ng-container>
+        </mat-expansion-panel>
+      </mat-accordion>
+    }
   }
 
   @if (claims.attachmentManager && claims.attachmentManager.length) {
@@ -50,11 +69,8 @@
     </button>
   }
 
-  @if (claims.test) {
-    @for (booklet of availableBooklets; track booklet.name; let i = $index) {
-      <tc-test-card [name]="booklet.name" [index]="i" [mode]="booklet.mode"
-                    (select)="startTest(booklet.claim)"></tc-test-card>
-    }
+  @if (claims.test && !claims.testGroupMonitor) {
+    <ng-container [ngTemplateOutlet]="testCardList"></ng-container>
   }
 
   @if (claims.sysCheck) {

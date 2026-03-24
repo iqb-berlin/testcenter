@@ -58,6 +58,8 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         'testGroupMonitor' in this.claims
       ) {
         this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+        this.monitorBookletVisibility =
+          this.claims.testGroupMonitor?.[0]?.flags?.monitorBookletVisibility || 'visible';
       } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
         this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
         if (this.getWorkspaceDataSubscription !== null) {
