@@ -6,20 +6,20 @@ insert into `workspaces` values (1,'example_workspace', '', 'mixed');
 insert into `workspace_users` values (1, 1, 'RW');
 
 
-insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('test', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
+values ('test', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '', null);
 
-insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('test-expired', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2000-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
+values ('test-expired', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2000-01-02 10:00:00', null, 'sample_group', 'Sample Group', '', null);
 
-insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('monitor', 'pw_hash', 'monitor-group', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
+values ('monitor', 'pw_hash', 'monitor-group', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '', null);
 
-insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
+values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '', null);
 
-insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00', '2032-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
+values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00', '2032-01-02 10:00:00', null, 'sample_group', 'Sample Group', '', null);
 
 
 insert into login_session_groups (group_label, group_name, token, workspace_id, last_modified)

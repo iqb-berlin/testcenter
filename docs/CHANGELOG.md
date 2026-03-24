@@ -1,10 +1,27 @@
----
-layout: default
----
-## [next]
-### Verbesserungen
+# [next]
+## Änderungen
+* Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
+
+# 17.6.0
+## Neue Funktionen
+* Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).
 * GET /workspace/{ws_id}/results
   * Dieser Endpunkt nimmt nun einen Parameter `?groups=`, der eine Komma-separierte Liste annimmt, mit Namen von TT-Gruppen (group_name), um die Results nur dieser Gruppen anzuzeigen, statt alle Gruppen gleichzeitig zu ziehen. Wird der Parameter ausgelassen, werden wie zuvor alle Gruppen gelistet (rückwärtskompatibel)
+
+## Änderungen
+* Testtakers.xml:
+  * `<Login code="..." />` kann nun auch aus rein numerischen Werten bestehen.
+
+## Fehlerbehebungen
+* Testleitungskonsole:
+  * Navigieren in einen derzeit geöffneten Block navigiert nun wieder erfolgreich in die erste Unit des Blocks.
+  * Navigieren in einen zuvor gesperrten Block (Zeitsperre, LockAfterLeaving) nun in allen Fällen möglich.
+  * "Zustände" Text im Unit-Menu (zB im Review Modus) wird nur noch angezeigt, wenn das Booklet adaptives Testen nutzt.
+
+## Technisches
+* GET /getResults
+  * Das Löschen einzelner Testläufe über den Admin-Bereich führt nun zu einem aktualisierten timestamp in diesem Endpunkt.
+* Zeiten der Healthchecks wurden angepasst. Die Docker Container sollten dadurch bei einem `make up` schneller hochfahren.
 
 ## 17.5.3
 * Review-Modus:
@@ -17,7 +34,7 @@ layout: default
 
 ## 17.5.2
 ### Bugfix
-* Review-Modus: 
+* Review-Modus:
   * Kommentare zur richtigen Unit gespeichert.
   * Kommentarliste wird bei jedem öffnen neu geladen, man bekommt keine veralteten Zustand mehr.
   * 'Schließen' Button verursacht KEIN speichern mehr.
@@ -31,11 +48,11 @@ layout: default
 
 ## 17.5.0
 ### Neue Features
-* Review-Modus: 
+* Review-Modus:
   * Die Review-Oberfläche wurde komplett überarbeitet. Statt eines Dialogs öffnet sich nun ein Seitenbereich, der das gleichzeitige Betrachten der Aufgabe während des Kommentierens ermöglicht.
   * Neue Listenansicht zeigt alle bisher abgegebenen Kommentare der aktuellen Unit und Booklets unter dem eingeloggten Nutzer.
-  * Kommentare können nun bearbeitet und gelöscht werden. 
-  * Ein Download-Button auf der Startseite ermöglicht das Herunterladen aller eigenen Kommentare als CSV-Datei. 
+  * Kommentare können nun bearbeitet und gelöscht werden.
+  * Ein Download-Button auf der Startseite ermöglicht das Herunterladen aller eigenen Kommentare als CSV-Datei.
 
 ### Verbesserungen
 * API: Booklet- und Unitlabel werden nun in der Review-CSV Ausgabe angezeigt.
@@ -67,7 +84,7 @@ layout: default
 
 ## 17.2.0
 ### Neue Features
-* Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt. 
+* Ein neuer Bookletparameter `ui_mode`. Ist dieser mit `NONE` aktiviert, so werden alle bisher verplichtenden Meldungen und andere interaktive UI Elemente unterdrückt.
   * Alle Snackbar Einblendungen werden unterdrückt.
   * Das Logo wird im laufenden Test ausgeblendet. Das Logo erscheint noch im Pause-Bildschirm, den man mit der Testleitungskonsole aktivieren kann. Damit wird auch bei Fehlen des Logos im Laufenden Betrieb sichergestellt, dass ein SuS auf den Startbildschirm zurückkehren kann.
 
@@ -111,7 +128,7 @@ layout: default
 * Images vom iqbberlin/... wurden im Namen geändert
   * iqbberlin/testcenter-file-service -> iqbberlin/file-server
   * iqbberlin/testcenter-broadcasting-service -> iqbberlin/testcenter-broadcaster
-* Docker compose 
+* Docker compose
   * Die Container-Namen und auch die Volume Namen werden nun dynamisch erzeugt, statt statische Namen zu verwenden, "testcenter-backend" wird zu "<project>-backend-<nummer>"
 * Makefile
   * Umbenamung von make commands
@@ -122,14 +139,14 @@ layout: default
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem Netzwerk u. U. zu geringfügigen Datenverlust
   führen.
-* Testleitungskonsole: Error beim Sperren/Fortsetzen behoben. 
+* Testleitungskonsole: Error beim Sperren/Fortsetzen behoben.
 
 ### Sicherheit
 * Upgrade von MySQL 8.0 auf 8.4
 
 ### Verbesserungen
 * Alle Container laufen mit einem nicht-root User - höhere Sicherheit
-* Kubernetes: 
+* Kubernetes:
   * Alle Deployments nehmen Konfigurationen aus der values.yaml, um deren Resource Management zu steuern.
   * Backend, Frontend und File Server lassen sich nun bedingungslos skalieren über die values.yaml
   * Pods starten schneller, da die Probes alle enger getaktet wurden, neue healthchecks wurden eingeführt
@@ -139,7 +156,7 @@ layout: default
 
 ## 16.3.0
 ### neue Features
-* Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen. 
+* Booklet-Xml: Neue Möglichkeit für `<TimeMax leave="allowed">` -"allowed" ermöglicht es einen zeitbeschränkten Block ohne Popups oder weitere Hinweise zu verlassen.
 
 ### Verbesserungen
 * Das Backend nutzt opcache und macht das ganze Testcenter damit performanter.
@@ -147,7 +164,7 @@ layout: default
 
 ### Bugfixes
 * Der Button für den globalen Systemcheck sollte nun ordnungsgemäß nur angezeigt werden, wenn es kein Login mit dem Modus `sys-check-login` gibt. Beim Löschen oder Hinzufügen einer neuen Testtakers.xml sollte dieser Zustand auch direkt ohne Neuladen der App angezeigt werden.
- 
+
 ## 16.2.0
 ### neue Features
 * Neue `<BookletConfig>` in der Booklet.xml:
@@ -166,7 +183,7 @@ layout: default
 ### Verbesserung
 * Testleitungskonsole: Die Testhefte werden sind nun in einem Akkordion-Element positioniert und können nach einem extra Klick angezeigt werden. Das räumt visuell das Starter-Menü auf und rückt den Fokus auf die eigentliche Funktionalität der Testleitungkonsole zurück.
 * Links zu externen Seiten wurden gelöscht, um das Navigieren auf fremde Seiten zu vermeiden, während man sich in der PWA befindet.
- 
+
 ### Bugfix
 * Werden in der Testtakers.xml die Werte für `validTo` geändert, dann wird dies nun sowohl auf der Login-Ebene, als auch auf der individuellen Session-Ebene angewandt. Es verhält sich nun wie erwartet.
 * Die Häufigkeit mit der fälschlicherweise die gleichen Tests (Booklets) mehrmals pro Person angezeigt werden, ist minimiert worden.
@@ -214,14 +231,14 @@ layout: default
 ## 15.6.0
 ### Verbesserungen
 * Unterschiedliche Custom Texts wurden aufeinander abgestimmt, sodass das Ändern eines Labels auch andere Stellen beeinflusst, die das gleiche Label tragen sollten
-* Die e2e Tests laufen nun schneller und sind verständlicher geschrieben 
+* Die e2e Tests laufen nun schneller und sind verständlicher geschrieben
 
 ### Bugfix
 * `ARROWS_ONLY` innerhalb der Booklet Konfigurationen verhält sich nun wie erwartet
 * Zeitgesteuerte Blöcke werden in Demo- und ähnlichen Modi wieder nicht mehr gesperrt, wie es sein soll.
 * Navigation in der Verzweigung funktionierte nicht korrekt in Kombination mit der Freigabewort-Beschränkung, wenn das
   Freigabewort in einer höheren Schachtelungstiefe als den optionalen Testlets gesetzt wurde.
-* Verzweigung funktioniert mit Codierschemata, auch wenn Variablen umbenannt worden sind. 
+* Verzweigung funktioniert mit Codierschemata, auch wenn Variablen umbenannt worden sind.
 * Text im Feld von `<codeToEnter>` (Booklet.XML) wird bei der Codeeingabe angezeigt, wenn gegeben.
 
 ## 15.5.0
@@ -241,7 +258,7 @@ layout: default
   * Deselektierung aller Blöcke passiert nicht mehr mit einem Klick auf einen beliebigen Punkt in der angezeigten Tabelle
   * Das Auswählen aller Blöcke bei einem einmaligen Klick sollte nun viel weniger auftreten
 * Die Buttons des Dialogfelds, das erscheint bevor man einen Block zu sperrenden Block verlässt, wurden farblich und textlich verändert, sodass der Default Button nun die Aktion 'Auf der Seite bleiben' darstellt.
- 
+
 ### Bugfix
 * Sobald ein Arbeitsplatz im Adminbereich mehr als 1000 Dateien beinhaltet, werden die kumulativen Dateigrößen nicht mehr berechnet, um das Einfrieren des Browsers zu verhindern. Ein Hinweis im Frontend weist darauf hin, dass die Berechnung nicht stattgefunden hat.
 
@@ -275,18 +292,18 @@ layout: default
 * Entlastung des Servers durch deutliche Reduktion von redundanten Calls.
 * Überarbeiteter Testcontroller reduziert fehlerhafte und seltsame Zustände im Fall von sehr langsamen oder
   sehr schnellen Vorgängen im laufenden Test.
-* Es werden viel mehr Datentypen abseits von `text/html` durch den File-Service komprimiert. Dadurch wird das Laden 
-  vieler Dateitypen nun schneller.  
+* Es werden viel mehr Datentypen abseits von `text/html` durch den File-Service komprimiert. Dadurch wird das Laden
+  vieler Dateitypen nun schneller.
 * Für eine bessere Lesbarkeit und intuitivere Konfiguration wird die Ordnerstruktur der Installation geändert. Diese
   wurden bereits in Version 15.3.4 eingeführt und werden nun weiter ausgebaut.
 * Gruppen-Monitor:
   * Ein bereits gesperrtes Testlet wird nun wieder entsperrt, wenn der Gruppen-Monitor einen Teilnehmer dorthin
-    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, beginnt die Zeit wieder von vorn. In diesem Fall muss 
-    die Bewegung vom Testleiter bestätigt werden.  
+    navigiert. Handelt es sich um einen zeitgesteuertes Testlet, beginnt die Zeit wieder von vorn. In diesem Fall muss
+    die Bewegung vom Testleiter bestätigt werden.
   * Neue custom texts: 'gm_control_goto_unlock_blocks_confirm_headline' und 'gm_control_goto_unlock_blocks_confirm_text'
   * Kommandos vom Gruppen-Monitor erscheinen nun im Testlog. Dies dient vor allem der Nachvollziehbarkeit der
     Ereignisse, wenn zum Beispiel ein bereits geschlossener zeitgesteuerter Block wieder geöffnet wurde.
-  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird die Auswahl der Testteilnehmer nicht mehr für den 
+  * Wird der "Springe zu"-Knopf im Gruppenmonitor verwendet, wird die Auswahl der Testteilnehmer nicht mehr für den
     folgenden Block beibehalten. Dieses Verhalten kann durch eine neue Einstellung in der Testtakers.xml im Gruppen-
     Monitor-Profil ausgewählt werden `autoselectNextBlock="no"`.
   * Diverse visuelle Verbesserungen
@@ -298,18 +315,18 @@ layout: default
   dass der Monitor erreicht wird.
 * Beim Hochladen einer Testtakers-Datei, die Logins oder Gruppen-Ids verwendet, die bereits auf einem anderen Workspace
   vergeben sind, werden die bereits bestehenden Logins und Workspace korrekt in der Fehlermeldung benannt.
-* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem bestehenden Login verändert wurde, 
+* Wurde eine Testtaker-Datei erneut hochgeladen, in der eine Gruppen-Id zu einem bestehenden Login verändert wurde,
   konnte dieser login sich nicht mehr einloggen. Nun wird die Gruppe-Id bestehender Logins aktualisiert.
 * Seitenzahl im Studienmonitor wird korrekt angezeigt.
 * Beim Wegspeichern von Antworten und Unit-States wird der TimeStamp der Erhebung beachtet, nicht die Reihenfolge
   in der die Daten beim Server ankommen. Dies konnte bei verzögertem netzwerk u. U. zu geringfügigen Datenverlust
   führen.
 * Durch extrem schnelle Beenden und Erneutes starten eines Tests war es möglich, Restriktionen zu umgehen.
-* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher 
+* Im Systemcheck XML: Das Attribut `required` wird nun korrekt ausgewertet, wenn es auf `false` gesetzt ist. Vorher
   wurde die Existenz des Attributs als `true` interpretiert.
-* Unit-XML Validierung: Wird beim `from` Attribut eine Unit-ID einer nicht einzigartigen Unit angegeben, die mehrfach 
-  genutzt wird, so ist dies richtigerweise ein Fehler. Dieser Fehler wird nun bereits während der Validierung beim 
-  Hochladen angezeigt, und nicht erst beim Abspielen der Unit. Referenzierungen in geschachtelten Bedingungen werden 
+* Unit-XML Validierung: Wird beim `from` Attribut eine Unit-ID einer nicht einzigartigen Unit angegeben, die mehrfach
+  genutzt wird, so ist dies richtigerweise ein Fehler. Dieser Fehler wird nun bereits während der Validierung beim
+  Hochladen angezeigt, und nicht erst beim Abspielen der Unit. Referenzierungen in geschachtelten Bedingungen werden
   nun auch besser validiert.
 
 ## 15.3.4
@@ -326,7 +343,7 @@ layout: default
   Super-Admin erneut auf.
 
 ### Verbesserungen
-* Wenn ein Passwort geändert wird, sei es über den Super-Admin oder über den eigenen Workspace-Admin, dann wird das  
+* Wenn ein Passwort geändert wird, sei es über den Super-Admin oder über den eigenen Workspace-Admin, dann wird das
   Passwort zur Sicherheit ein weiteres Mal abgefragt. Dies soll Fehler beim Schreiben des neuen Passworts verhindern.
 * Im Super-Admin wird über eine kleine Snackbar über das erfolgreiche Ändern des Passwortes informiert.
 * Neue Version des Verona Simple Player 6.0.2 in den Sampledata hinterlegt.
@@ -334,18 +351,18 @@ layout: default
 ### Bugfixes
 * Automatisches Senden von Fehlerberichten funktioniert wieder. (Es muss dazu vom Administrator der Testcenter-Instanz
   eingerichtet worden sein.)
-* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können 
+* Ein 'sys-check-login' Login kann genutzt werden, um mehrere Sessions gleichzeititig zu starten. Mehrere Geräte können
   sich mit einem gemeinsamen Systemcheck Login einloggen.
 * Der Netzwerktest innerhalb des Systemchecks wird beim Verlassen des Systemchecks zurückgesetzt und startet automatisch
   beim Wiedereintritt neu.
 * Je nachdem, ob man eingeloggt oder uneingeloggt den Systemcheck betritt, wird man beim Neuladen der Website auf die
   entsprechende Startpage für (Un-)Eingeloggte weitergeleitet.
-  
+
 ### API Changes
 * `GET /workspace/{ws_id}/report/response` gibt nun auch `originalUnitId` aus
 * `DELETE /workspace/{ws_id}/sys-check/reports`:
   * gibt bei 200 immer ein Array mit [deleted, did_not_exist, not_allowed, was_used] aus
-* `GET /session` 
+* `GET /session`
   * gibt unter dem Admintoken nun `id: int|null` aus
   * gibt unter dem Admintoken nun `pwSetByAdmin: boolean|null` aus
 * `PATCH /user/{user_id}/password` kann nun als Super-Admin oder Workspace-Admin (unter Vorbehalt, dass die zu ändernde
@@ -356,7 +373,7 @@ layout: default
 ### neue Features
 * Die Navigation des SystemChecks wurde überarbeitet.
   * Wenn SysChecks über den "sys-check-login" Modus durchgeführt werden, werden die Login Name und Passwort genutzt, um
-    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort 
+    das Senden der SystemCheck-Berichte zu authorisieren. In diesen Szenarien fallen das Eingeben von Report-Passwort
     und Schul-ID aus.
   * "sys-check-login" Logins können auch mit Passwort geschützt werden
   * Die Anmeldung im Syscheck über die URL/<loginname> ist möglich, wenn kein Passwort gesetzt ist
@@ -364,7 +381,7 @@ layout: default
 * Konfigurierbare Testleitungskonsole und Filter nach Sitzungen:
   * schnelles Filtern nach Person
   * Eigene Filter können definiert werden
-  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden 
+  * Layout und Filter können in Profiles für Gruppen-Monitor-Accounst vorbelegt werden
 
 ### Bugfixes
 * Wenn man sich über einen Link einloggt, wird nun richtigerweise direkt in den Test/SystemCheck weitergeleitet, sofern
@@ -389,29 +406,29 @@ layout: default
     erzeugen. Das alte ist (noch) ebenfalls verfügbar.
 
 * Workspace-Dateiübersicht:
-  * Mit einem Klick auf eine Datei werden nun alle abhängigen Dateien gekennzeichnet. 
-    Damit lässt sich feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei 
+  * Mit einem Klick auf eine Datei werden nun alle abhängigen Dateien gekennzeichnet.
+    Damit lässt sich feststellen, welche Dateien vorher bzw. zeitgleich gelöscht werden müssen, um eine Datei
     erfolgreich zu löschen ohne den 'Löschen' Button erst clicken zu müssen wird.
   * Die Dateien werden schneller angezeigt, da bestimmte Angaben, zum Beispiel die Gesamtgröße eines Booklets erst
     später berechnet werden.
-  
+
 * Neuer Modus: `sys-check-login`
   * SysChecks sind nun erst verfügbar, wenn man sich eingeloggt hat in diesem Modus.
   * Rückwärtskompatibilität: Gibt es in der gesamten Instanz keinen Login in diesem Modus, so stehen alle SysChecks
     wie gehabt auf der Startseite ohne login bereit.
 
 ### Bugfix
-* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des Uploads wurde nicht mehr korrekt aufgehoben.   
+* Wenn es zum Timeout kam, wurde die Sperrung des Workspaces während des Uploads wurde nicht mehr korrekt aufgehoben.
 
 ### Verbesserungen
-* Nach dem Speichern eines SysCheck-Berichts wird ein deutliches Feedback gegeben, dass der Bericht gespeichert wurde. 
+* Nach dem Speichern eines SysCheck-Berichts wird ein deutliches Feedback gegeben, dass der Bericht gespeichert wurde.
 * Die Uploadgeschwindigkeit für einzelne Dateien im Workspace-Admin wurde erheblich verbessert.
 * Systemstart radikal beschleunigt, indem nur veränderte Workspaces neu eingelesen werden.
 
 ### Deployment
 * dpgk, welches aus nicht-Debian Versionen fehlt, wird für den updater nicht mehr benötigt.
-* Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA". 
-  Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren 
+* Es wurden weitere Umgebungsvariablen eingeführt. Diese lauten "OVERWRITE_INSTALLATION", "SKIP_READ_FILES", "SKIP_DB_INTEGRITY" und "NO_SAMPLE_DATA".
+  Der default Wert all dieser Variablen ist "no". Wenn einer der Variablen auf "yes" gesetzt wird so werden zusätzliche Parameter beim Initialisieren
   des Backends mitgegeben. Diese Umgebungsvariablen können nur manuell gesetzt werden und die einzelnen Parameter sind im .env File genauer beschrieben.
 * Das benötigte PHP memory_limit für den Datei-Upload im Workspace-Admin wurde verringert, da dieser nun effizienter arbeitet.
 
@@ -428,37 +445,37 @@ layout: default
 
 ## 15.1.7
 ### neue Features
-* Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun 
-  alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen. 
-  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eines Super-Admins, ohne jedoch die Rechte zu haben, die 
-  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.  
+* Logins mit der Rolle "monitor-study" haben eine neue Ansicht bekommen. Solche Accounts können von ihrer Startseite nun
+  alle bisher abgegeben Antworten und Ergebnisse von gestarteten Tests innerhalb ihres zugeordneten Workspace sehen.
+  Die Ansicht entspricht der Ergebnisse/Antworten Ansicht eines Super-Admins, ohne jedoch die Rechte zu haben, die
+  Ergebnisse zu downloaden oder zu löschen. Die Ansicht aktualisiert sich alle 10 Sekunden.
 
 ### Sicherheit
-* Im Response-Body aller Fehlermeldungen werden HTML-Zeichen maskiert. Damit sollten alle Reflected Cross-Site 
+* Im Response-Body aller Fehlermeldungen werden HTML-Zeichen maskiert. Damit sollten alle Reflected Cross-Site
   Scripting Attacken, die aus der Anzeige von unsicheren HTML-Tags entstehen, verhindert werden.
 * Eine 0.5s Verzögerung wurde für den Login eines Super Admin eingeführt. Dies ist eine Maßnahme gegen Brute-Force-
   Attacken. Es folgen später weitere Maßnahmen, um auch DOS von verteilten Netzwerken zu verhindern.
 * Unsichere TLS-Cipher-Suites entfernt
 
 ### Bugfix
-* SQL error beim Angabe eines falschen Dateipfades beim Löschen von Dateien wurde behoben. Es wird nun richtigerweise 
+* SQL error beim Angabe eines falschen Dateipfades beim Löschen von Dateien wurde behoben. Es wird nun richtigerweise
   auf den falschen Pfad innerhalb eines 207 response hingewiesen.
 
 ### API
-* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspace-Id zurück. `[PUT] /user` gibt analog dazu die 
+* `[PUT] /workspace` gibt bei einem StatusCode 200 auch die angelegte Workspace-Id zurück. `[PUT] /user` gibt analog dazu die
   userId zurück.
 
 ### Administration
-* Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen 
+* Es existiert nun eine neue Umgebungsvariable 'DOCKERHUB_PROXY' die gesetzt werden kann, falls die Docker Images über einen
   Proxy geladen werden. Der Standardwert ist ein leerer String.
-* Der automatische Neustart abgestürzter Container lässt sich nun mitteln .env-Vriable einstellen (Restart Policy). 
+* Der automatische Neustart abgestürzter Container lässt sich nun mitteln .env-Vriable einstellen (Restart Policy).
 
 ## 15.1.6
 ### neue Features
 * Booklet-XML: Die Zeitbeschränkung erhält einen neuen Schalter `leave`.
   * `<TimeMax minutes="1" leave="forbidden" />` führt dazu, dass vor Ablauf der Zeit *gar nicht* aus dem Testlet
     heraus navigiert werden kann.
-  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem gleichen Verhalten wie vorher, wie auch 
+  * `<TimeMax minutes="1" leave="confirm" />` führt zu dem gleichen Verhalten wie vorher, wie auch
     `<TimeMax minutes="1" />`, nämlich das vor Verlassen (und Sperrung) eine Sicherheitsabfrage erfolgt.
 
 ### Verbesserungen
@@ -467,7 +484,7 @@ layout: default
 
 ### XML-Austauschformate
 * Unit-XML: Element `<ValuePositionLabels>` wird in der Varaiblenliste akzeptiert, so wie es die aktuellen Versionen
-  vom IQB-Studio liefern. 
+  vom IQB-Studio liefern.
 
 ## 15.1.5
 ### Bugfixes
@@ -486,7 +503,7 @@ layout: default
   Behebung des enormen Speicherbedarfs beim Uplaod wird folgen.
 
 ### Deployment
-* Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann. 
+* Es existiert eine neue Umgebungsvariable (RESTART_POLICY) mit der man die Neustart-Richtlinien aller Docker-Container setzen kann.
   Der Default-Wert ist 'no'. Erlaubte Werte sind: ['no','on-failure','always','unless-stopped'].
 
 
@@ -501,7 +518,7 @@ layout: default
   Fehlermeldungen führte, wenn man den test neu öffnete. Dies ist nun behoben.
 * Globale (d.h. in der Systemverwaltung gesetzte CustomTexts) werden jetzt (wieder) direkt übernommen, ohne, dass die
   Seite neugeladen werden muss (#482)
-  
+
 
 ## 15.1.3
 ### Bugfixes
@@ -692,7 +709,7 @@ layout: default
 
 ### Sicherheit
 * Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
-* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitslücke behoben.  
+* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitslücke behoben.
 
 ### Bugfixes
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
@@ -732,7 +749,7 @@ layout: default
 ### Bugfixes
 * "Leerzeilen-Problem" gelöst: Unter bestimmten Umständen konnten, wenn z. B. mehrere Sessions eines logins im
   `hot-run-restart`-Modus gleichzeitig gestartet werden, doppelte Sessions erzeugt werden. Der Effekt waren zusätzliche
-  "Leerzeilen" in den Ergebnisdaten.   
+  "Leerzeilen" in den Ergebnisdaten.
 * Startvorgang bricht nicht mehr ab, wenn fehlerhafte XMLs im Workspace liegen.
 
 ## 14.3.0
@@ -1079,13 +1096,13 @@ This update makes the Tescenter Verona3- and 4 compatible.
   * `[GET] /workspace/{ws_id}/sys-check/reports`
 
 ### XSD
-* in the `Booklet.xml`-format a new restriction is allowed: `<DenyNavigationOnIncomplete>`. It forbids the leaving of  
+* in the `Booklet.xml`-format a new restriction is allowed: `<DenyNavigationOnIncomplete>`. It forbids the leaving of
   units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes
   `presentation` and `response` may have the values `OFF`, `ON` and `ALWAYS`. Always tells the testcenter, to check
   the completeness and response-progress everytime the unit shall be left regardless of teh direction. `ON` only checks
   if the testee want to proceed forwards.
 * The `Booklet.xsd` now validates correctly that `<unit>`-id must only be unique if no alias is set and otherwise the
-  alias must be unique.  
+  alias must be unique.
 
 ### Database
 * The unit-data now gets stored in an additional table `test_data`, not in `tests` anymore to allow chunkwise updates.
@@ -1121,7 +1138,7 @@ Adds the missing second endpoint for the customization-module.
 
 
 ## 11.1.0
-This update provides the API for the customziation-module.   
+This update provides the API for the customziation-module.
 
 ### Endpoints
 * contains the new endpoint `[PATCH] /system/config/app`, which updates the key-value-store for the frontend analogous to customTexts.
@@ -1201,7 +1218,7 @@ The role `monitor-study` / `workspaceMonitor` was removed completely and all fun
   * `[patch] \test\{test_id}\state`
   * `[put] \test\{test_id}\log`
   * `[patch] \test\{test_id}\unit\{unit_name}\state`
-  * `[put] \test\{test_id}\unit\{unit_name}\log`  
+  * `[put] \test\{test_id}\unit\{unit_name}\log`
     were changed:
   * They all take items in the form
   ```

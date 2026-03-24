@@ -294,10 +294,10 @@ export const isEqualNavigation = (a: NavigationState, b: NavigationState): boole
 
 export const bufferTypes = ['testState', 'unitState', 'unitData'] as const;
 export type BufferType = typeof bufferTypes[number];
-export const bufferEventTypes = ['closed', 'saved'] as const;
-export type BufferEventType = typeof bufferEventTypes[number];
-export interface BufferEvent {
-  event: BufferEventType;
+export const bufferFlushEventTypes = ['closed', 'saved'] as const;
+export type BufferFlushEventType = typeof bufferFlushEventTypes[number];
+export interface BufferFlushEvent {
+  event: BufferFlushEventType;
   type: BufferType;
   id: string;
 }

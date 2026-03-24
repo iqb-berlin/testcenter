@@ -124,7 +124,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       throw new Error(`Could not start player, because Unit is missing (${this.tcs.currentUnitSequenceId})!`);
     }
 
-    this.tcs.updateUnitState(
+    this.tcs.AddToUnitStateBuffer(
       this.tcs.currentUnit.sequenceId,
       [{ key: 'PLAYER', timeStamp: Date.now(), content: 'RUNNING' }]
     );
@@ -140,7 +140,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitState.responseProgress = this.tcs.currentUnit.state.RESPONSE_PROGRESS;
     }
 
-    const navigation = await this.tcs.closeBuffer('handleReadyNotification');
+    const navigation = await this.tcs.closeAllBuffers('handleReadyNotification');
 
     const msg: VopStartCommand = {
       type: 'vopStartCommand',
@@ -161,7 +161,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.pageService.update(msg.playerState.validPages || [], msg.playerState.currentPage);
       }
 
-      this.tcs.updateUnitState(unit.sequenceId, [
+      this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
         { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(msg.playerState.currentPage) },
         { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
         { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
@@ -171,7 +171,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (msg.unitState) {
       const timeStamp = Date.now();
 
-      this.tcs.updateUnitState(unit.sequenceId, [
+      this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
         { key: 'PRESENTATION_PROGRESS', timeStamp, content: msg.unitState.presentationProgress || '' },
         { key: 'RESPONSE_PROGRESS', timeStamp, content: msg.unitState.responseProgress || '' }
       ]);
@@ -180,12 +180,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
         // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
         // by the player itself ot the host. To maintain backwards-compatibility we check this here.
         Object.keys(msg.unitState.dataParts).forEach(dataPartId => {
-          if (!msg.unitState || !msg.unitState.dataParts) return;
-          if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
-            msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
-          }
-        });
-        this.tcs.updateUnitStateDataParts(
+            if (!msg.unitState || !msg.unitState.dataParts) return;
+            if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
+              msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
+            }
+          });
+        this.tcs.AddToUnitStateDataPartsBuffer(
           unit.sequenceId,
           msg.unitState.dataParts,
           msg.unitState.unitStateDataType || ''
@@ -318,8 +318,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.resourcesLoading$.next([]);
 
-    this.tcs.setTestState('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
-    this.tcs.updateUnitState(
+    this.tcs.addToTestStateBuffer('CURRENT_UNIT_ID', this.tcs.currentUnit.alias);
+    this.tcs.AddToUnitStateBuffer(
       this.tcs.currentUnit.sequenceId,
       [{ key: 'PLAYER', timeStamp: Date.now(), content: 'LOADING' }]
     );

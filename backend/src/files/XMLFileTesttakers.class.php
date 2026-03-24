@@ -169,15 +169,17 @@ class XMLFileTesttakers extends XMLFile {
     $mode = (string) $loginElement['mode'];
     $name = (string) $loginElement['name'];
 
-    $booklets = match ($mode) {
+    $codes2Booklets = match ($mode) {
       'monitor-group' => ['' => $this->collectBookletsOfGroup($workspaceId, $name)],
       default => self::collectTestNamesPerCode($loginElement)
     };
 
-    $monitors = match ($mode) {
+    $monitorProfiles = match ($mode) {
       'monitor-group', 'monitor-study' => $this->collectProfiles($loginElement),
       default => []
     };
+
+    $viewSettings = $this->parseViewSettings($loginElement);
 
     return new Login(
       $name,
@@ -185,14 +187,21 @@ class XMLFileTesttakers extends XMLFile {
       $mode ?? 'run-demo',
       (string) $groupElement['id'],
       (string) $groupElement['label'] ?? (string) $groupElement['id'],
-      $booklets,
+      $codes2Booklets,
       $workspaceId,
       isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
       TimeStamp::fromXMLFormat((string) $groupElement['validFrom']),
       (int) ($groupElement['validFor'] ?? 0),
       $this->getCustomTexts(),
-      $monitors
+      $monitorProfiles,
+      $viewSettings
     );
+  }
+
+  private function parseViewSettings(SimpleXMLElement $loginElem): array {
+    $el = $loginElem->ViewSettings;
+    if (!$el) return [];
+    return ['monitorBookletVisibility' => ((string) $el['monitorBookletVisibility']) ?: 'visible'];
   }
 
   // TODO write unit test

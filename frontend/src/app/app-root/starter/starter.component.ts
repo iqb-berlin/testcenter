@@ -27,6 +27,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bottomSentinel') sentinel!: ElementRef;
   claims: { [accessType in AuthAccessType]?: AccessObject[] } = {};
   workspaces: AccessObject[] = [];
+  monitorBookletVisibility: 'visible' | 'collapsed' | 'hidden' = 'visible';
   private getMonitorDataSubscription: Subscription | null = null;
   private getBookletDataSubscription: Subscription | null = null;
   private getWorkspaceDataSubscription: Subscription | null = null;

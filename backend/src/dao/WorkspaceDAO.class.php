@@ -90,7 +90,8 @@ class WorkspaceDAO extends DAO {
       valid_from,
       valid_to,
       valid_for,
-      monitors
+      monitors,
+      view_settings
     ) values';
 
     foreach ($logins as $login) {
@@ -114,7 +115,8 @@ class WorkspaceDAO extends DAO {
           TimeStamp::toSQLFormat($login->getValidFrom()),
           TimeStamp::toSQLFormat($login->getValidTo()),
           $login->getValidForMinutes(),
-          json_encode($login->getProfiles())
+          json_encode($login->getProfiles()),
+          json_encode($login->getViewSettings())
         ]
       );
       $sql .= '(' . implode(', ', $loginValues) . '),';
