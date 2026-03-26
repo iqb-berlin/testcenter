@@ -14,6 +14,9 @@ class SystemConfig {
   public static string $cacheServer_password = "";
   public static string $cacheServer_includeFiles = "";
   public static string $password_salt = "t";
+  public static int $password_min_length = 7;
+  public static string $password_regex_check = "/.*/";
+  public static string $admin_init_password = 'user123';
   public static string $system_version;
   public static int $system_veronaMax;
   public static int $system_veronaMin;
@@ -26,6 +29,8 @@ class SystemConfig {
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
+
+
   // TODO server URL
 
   public static function read(): void {
@@ -74,6 +79,10 @@ class SystemConfig {
     $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
+    $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
+    $config['password']['regex_check'] = self::stringEnv('PASSWORD_REGEX_CHECK');
+    $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
+
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
       $config['broadcaster']['url'] = 'http://broadcaster:3000';
