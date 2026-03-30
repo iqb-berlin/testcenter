@@ -40,14 +40,6 @@ class XMLSchema {
     }
   }
 
-  private static function accessDefinitionsDir($schemaData): string {
-    $filePath = ROOT_DIR . "/definitions/vo_{$schemaData['type']}.xsd";
-
-    if (file_exists($filePath)) {
-      return $filePath;
-    }
-
-    return "";
   }
 
   private static function accessSchemaCache(array $schemaData): string {
