@@ -53,9 +53,9 @@
                     [level]="problemLevel" [text]="problemText"></tc-alert>
         }
         <button matButton="filled" type="submit" data-cy="login-user"
-                [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon svgIcon="chevron_right"></mat-icon>
-          Anmelden
+                [disabled]="!loginForm.get('name')?.valid || user === 'sync'">
+          <mat-icon svgIcon="chevron_right" [ngClass]="{'rotate' : user === 'sync'}">chevron_right</mat-icon>
+          Weiter
         </button>
       </form>
     }

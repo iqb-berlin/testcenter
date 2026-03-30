@@ -1,18 +1,19 @@
 import {
   Component, OnDestroy, OnInit, inject
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { solveChallengeWorkers } from 'altcha-lib';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { FooterService } from '@shared/services/footer.service';
@@ -39,6 +40,7 @@ import {
     SharedModule,
     AlertComponent,
     AsyncPipe,
+    NgClass,
     CustomtextPipe
   ]
 })
@@ -51,6 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  user = 'school';
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
@@ -114,10 +117,55 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!this.username) {
       return;
     }
-    loginData.name = this.username;
+    const name = this.username;
+    const password = loginData.pw ?? '';
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
+
+    if (!this.mainDataService.appConfig?.bruteForceProtection.includes('login')) {
+      this.backendService.login(name, password).subscribe(this.getLoginSubscription());
+      return;
+    }
+
+    this.user = 'sync';
+    this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
+      next: challenge => {
+        solveChallengeWorkers(
+          `${window.document.baseURI}/altcha-lib/dist/worker.js`,
+          8,
+          challenge.challenge,
+          challenge.salt,
+          challenge.algorithm,
+          challenge.maxNumber
+        ).then(solvedChallenge => {
+          if (!solvedChallenge) {
+            this.problemText = 'Problem bei der Anmeldung.';
+            return;
+          }
+          this.backendService.createSession(
+            challenge.algorithm,
+            challenge.challenge,
+            challenge.salt,
+            challenge.signature,
+            solvedChallenge.number
+          ).subscribe(this.getLoginSubscription());
+        }, error => {
+          this.problemText = 'Problem bei der Anmeldung.';
+          throw error;
+        }).finally(() => {
+          this.user = 'school';
+        });
+      },
+      error: error => {
+        this.problemText = 'Problem bei der Anmeldung.';
+        this.user = 'school';
+        throw error;
+      }
+    });
+  }
+
+  private getLoginSubscription(): Partial<Observer<AuthData>> {
+    return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
@@ -125,6 +173,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.navigateAfterLogin(authData);
       },
       error: error => {
+        this.user = 'school';
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
@@ -144,7 +193,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.username = null;
         this.loginForm.reset();
       }
-    });
+    };
   }
 
   checkCapsLock(event: KeyboardEvent): void {

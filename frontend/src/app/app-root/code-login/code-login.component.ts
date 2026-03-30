@@ -4,10 +4,10 @@ import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
-import { ThemeService } from '@shared/services/theme.service';
 import { AsyncPipe } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { AssetService } from '@shared/services/asset.service';
+import { solveChallengeWorkers } from 'altcha-lib';
 
 @Component({
   imports: [
@@ -65,30 +65,69 @@ export class CodeLoginComponent {
     this.problemText = '';
     this.problemCode = 0;
 
-    this.bs.codeLogin(code).subscribe({
-      next: authData => {
-        const authDataTyped = authData as AuthData;
-        this.mds.setAuthData(authDataTyped);
-        if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
-          this.bs.startTest(authData.claims.test[0].id).subscribe(testId => {
-            this.router.navigate(['/t', testId]);
+    if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
+      this.bs.createChallenge({ code }).subscribe({
+        next: challenge => {
+          solveChallengeWorkers(
+            `${window.document.baseURI}/altcha-lib/dist/worker.js`,
+            8,
+            challenge.challenge,
+            challenge.salt,
+            challenge.algorithm,
+            challenge.maxNumber
+          ).then(solvedChallenge => {
+            if (!solvedChallenge) {
+              this.problemText = 'Problem bei der Anmeldung.';
+              this.loading = false;
+              return;
+            }
+            this.bs.createSession(
+              challenge.algorithm,
+              challenge.challenge,
+              challenge.salt,
+              challenge.signature,
+              solvedChallenge.number
+            ).subscribe(this.codeSubscription);
+          }, error => {
+            this.problemText = 'Problem bei der Anmeldung.';
+            this.loading = false;
+            throw error;
           });
-        } else {
-          this.router.navigate(['/r']);
-        }
-      },
-      error: (error: AppError) => {
-        this.problemCode = error.code || 777;
-        if (error.code === 400) {
-          this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
-        } else if (error.code === 429) {
-          this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
-        } else {
+        },
+        error: error => {
           this.problemText = 'Problem bei der Anmeldung.';
+          this.loading = false;
           throw error;
         }
-        this.loading = false;
-      }
-    });
+      });
+      return;
+    }
+
+    this.bs.codeLogin(code).subscribe(this.codeSubscription);
   }
+
+  private codeSubscription = {
+    next: (authData: AuthData) => {
+      this.mds.setAuthData(authData);
+      if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
+        this.bs.startTest(authData.claims.test[0].id).subscribe(testId => {
+          this.router.navigate(['/t', testId]);
+        });
+      } else {
+        this.router.navigate(['/r']);
+      }
+    },
+    error: (error: AppError) => {
+      this.problemCode = error.code || 777;
+      if (error.code === 400) {
+        this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
+      } else if (error.code === 429) {
+        this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
+      } else {
+        this.problemText = 'Problem bei der Anmeldung.';
+        throw error;
+      }
+      this.loading = false;
+    }
+  };
 }

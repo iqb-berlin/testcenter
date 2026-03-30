@@ -1,15 +1,21 @@
+import { NgClass } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl, FormGroup, ReactiveFormsModule, Validators
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MainDataService } from '@shared/services/maindata/maindata.service';
-import { BackendService } from '@app/backend.service';
-import { HeaderService } from '@shared/services/header.service';
-import { AlertComponent, UserAgentService } from '@shared/shared.module';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { Observer } from 'rxjs';
+import { solveChallengeWorkers } from 'altcha-lib';
+import { AuthData } from '@app/app.interfaces';
+import { BackendService } from '@app/backend.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { HeaderService } from '@shared/services/header.service';
 import { FooterService } from '@shared/services/footer.service';
+import { AlertComponent, UserAgentService } from '@shared/shared.module';
 
 @Component({
   templateUrl: './admin-login.component.html',
@@ -23,7 +29,8 @@ import { FooterService } from '@shared/services/footer.service';
     MatIcon,
     RouterLink,
     MatButton,
-    AlertComponent
+    AlertComponent,
+    NgClass
   ],
   styleUrl: './admin-login.component.css'
 })
@@ -34,6 +41,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  admin = 'person';
   unsupportedBrowser: [string, string] | [] = [];
 
   loginForm = new FormGroup({
@@ -59,15 +67,62 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     if (!loginData.name || !loginData.pw) {
       return;
     }
-    AdminLoginComponent.oldLoginName = loginData.name;
+    const name = loginData.name;
+    const password = loginData.pw;
+    AdminLoginComponent.oldLoginName = name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.adminLogin(loginData.name, loginData.pw).subscribe({
+
+    if (!this.mainDataService.appConfig?.bruteForceProtection.includes('admin')) {
+      this.backendService.adminLogin(name, password).subscribe(this.getAdminLoginSubscription());
+      return;
+    }
+
+    this.admin = 'sync';
+    this.backendService.createChallenge({ loginType: 'admin', name, password }).subscribe({
+      next: challenge => {
+        solveChallengeWorkers(
+          `${window.document.baseURI}/altcha-lib/dist/worker.js`,
+          8,
+          challenge.challenge,
+          challenge.salt,
+          challenge.algorithm,
+          challenge.maxNumber
+        ).then(solvedChallenge => {
+          if (!solvedChallenge) {
+            this.problemText = 'Problem bei der Anmeldung.';
+            return;
+          }
+          this.backendService.createSession(
+            challenge.algorithm,
+            challenge.challenge,
+            challenge.salt,
+            challenge.signature,
+            solvedChallenge.number
+          ).subscribe(this.getAdminLoginSubscription());
+        }, error => {
+          this.problemText = 'Problem bei der Anmeldung.';
+          throw error;
+        }).finally(() => {
+          this.admin = 'person';
+        });
+      },
+      error: error => {
+        this.problemText = 'Problem bei der Anmeldung.';
+        this.admin = 'person';
+        throw error;
+      }
+    });
+  }
+
+  private getAdminLoginSubscription(): Partial<Observer<AuthData>> {
+    return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
         this.router.navigate(['/r/starter']);
       },
       error: error => {
+        this.admin = 'person';
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
@@ -86,7 +141,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
         this.problemLevel = 'error';
         this.loginForm.reset();
       }
-    });
+    };
   }
 
   checkCapsLock(event: KeyboardEvent): void {
