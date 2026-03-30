@@ -81,6 +81,7 @@ class XMLFile extends File {
     $schemaUrl = (string) $this->getXml()->attributes('xsi', true)->noNamespaceSchemaLocation;
 
     if (empty($schemaUrl)) {
+      $this->schema = null;
       $this->report('error', 'File has no link to XSD-schema.');
       return;
     }
@@ -101,6 +102,11 @@ class XMLFile extends File {
 
   private function validateAgainstSchema(): void {
     $this->readSchema();
+
+    if(!$this->schema){
+      return;
+    }
+
     $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
 
     if (!$schemaFilePath) {

@@ -47,9 +47,9 @@ class XMLSchema {
     return $schemaData;
   }
 
-  static function getSchemaFilePath(?array $schemaData): string {
+  static function getSchemaFilePath(?array $schemaData): ?string {
     if (!$schemaData) {
-      return '';
+      return null;
     }
 
     if (!SystemConfig::$debug_allowExternalXmlSchema or !$schemaData['isExternal']) {
