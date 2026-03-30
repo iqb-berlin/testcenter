@@ -33,13 +33,7 @@ class XMLSchema {
       return null;
     }
 
-    if (!SystemConfig::$debug_allowExternalXmlSchema or !$schemaData['isExternal']) {
-      return XMLSchema::accessDefinitionsDir($schemaData);
-    } else {
-      return XMLSchema::accessSchemaCache($schemaData);
-    }
-  }
-
+    return XMLSchema::accessSchemaCache($schemaData);
   }
 
   private static function accessSchemaCache(array $schemaData): string {
