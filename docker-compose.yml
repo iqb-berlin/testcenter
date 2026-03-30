@@ -80,6 +80,7 @@ services:
       MYSQL_HOST: db
       MYSQL_PORT: 3306
       PASSWORD_SALT: ${PASSWORD_SALT}
+      SERVER_KEY: ${SERVER_KEY:-Secret}
     logging:
       options:
         <<: *env-logging-conf

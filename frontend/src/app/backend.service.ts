@@ -24,14 +24,12 @@ export class BackendService {
     salt: Challenge['salt'],
     signature: Challenge['signature'],
     number: number
-  ): Observable<AuthData>
-  {
+  ): Observable<AuthData> {
     return this.http.put<AuthData>(`${this.serverUrl}session`, { algorithm, challenge, salt, signature, number });
   }
 
-
   adminLogin(name: string, password: string | undefined = undefined): Observable<AuthData> {
-    return this.login('admin', name, password);
+    return this.http.put<AuthData>(`${this.serverUrl}session/admin`, { name, password });
   }
 
   login(name: string, password?: string): Observable<AuthData> {
