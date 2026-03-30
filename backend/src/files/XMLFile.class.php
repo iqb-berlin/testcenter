@@ -80,45 +80,38 @@ class XMLFile extends File {
 
     $schemaUrl = (string) $this->getXml()->attributes('xsi', true)->noNamespaceSchemaLocation;
 
-    if (!$schemaUrl) {
-      $this->fallBackToCurrentSchemaVersion('File has no link to XSD-Schema.');
+    if (empty($schemaUrl)) {
+      $this->schema = null;
+      $this->report('error', 'File has no link to XSD-schema.');
       return;
     }
 
     $this->schema = XMLSchema::parseSchemaUrl($schemaUrl);
 
     if (!$this->schema) {
-      $this->report('error', 'File has no valid link to XSD-schema.');
+      $this->report('error', 'XSD schema URL could not be resolved.');
       return;
     }
 
-    if ($this->schema['type'] !== $this->getRootTagName()) {
-      $this->report('error', 'File has no valid link to XSD-schema.');
-      return;
-    }
+    $expectedType = $this->schema['type'];
 
-    if (!$this->schema['version']) {
-      $this->fallBackToCurrentSchemaVersion("Version of XSD-schema missing.");
-      return;
+    if ($expectedType !== $this->getRootTagName()) {
+      $this->report('error', "Different xsd root-tag. Expected: `$expectedType` ");
     }
-
-    if (!Version::isCompatible($this->schema['version'])) {
-      $this->fallBackToCurrentSchemaVersion("Outdated or wrong version of XSD-schema (`{$this->schema['version']}`).");
-    }
-  }
-
-  private function fallBackToCurrentSchemaVersion(string $message): void {
-    $currentVersion = SystemConfig::$system_version;
-    $this->report('warning', "$message Current version (`$currentVersion`) will be used instead.");
-    $this->schema = XMLSchema::getLocalSchema($this->getRootTagName());
   }
 
   private function validateAgainstSchema(): void {
     $this->readSchema();
+
+    if(!$this->schema){
+      return;
+    }
+
     $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
+
     if (!$schemaFilePath) {
-      $this->fallBackToCurrentSchemaVersion("XSD-Schema (`{$this->schema['version']}`) could not be obtained.");
-      $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
+      $this->report('error', 'XSD schema could not be downloaded.');
+      return;
     }
 
     $xmlReader = new XMLReader();
@@ -166,19 +159,6 @@ class XMLFile extends File {
     return $this->rootTagName;
   }
 
-  // Sometimes we have constraints for XML-formats which can not modelled in XMLschema 1.0
-  // XMLSchema 1.1 is not supported by PHP (nor by IDEA although there is a setting for it),
-  // and there is no plugin or suitable external library for this (the saxon/c open source
-  // version does not allow XMLschema 1.1, and xerces only have bindings for java and perl).
-  //
-  // Those constraints can be defined in the constraints array in a file extending this.
-  // A constraint is an associative array consisting of the elements
-  // 'description', 'xpath1', 'xpath2' and 'compare'.
-  // The results of both Xpaths get compared itemwise. The may be a list of strings (of attributes where queries)
-  // or nodes. PHP/simpleXML does not support Xpaths containing comparison operators themselves.
-  // 'compare' may contain a comparison operators
-  // ('==', '!=', '>', '<', '>=', '<=') or the name of a comparison function which must be a static member
-  // of this.
   public function validateConstraints(): void {
     foreach ($this::constraints as $constraint) {
       $this->validateConstraint(
