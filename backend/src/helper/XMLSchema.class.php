@@ -48,20 +48,18 @@ class XMLSchema {
     return XMLSchema::accessSchemaCache($schemaData);
   }
 
-  private static function accessSchemaCache(array $schemaData): string {
-    if (!$schemaData['isExternal']) {
-      return '';
-    }
-
-    $folder = DATA_DIR . "/.schemas/{$schemaData['type']}/v{$schemaData['mayor']}/";
-    $fileName = "{$schemaData['type']}-{$schemaData['version']}.xsd";
+  private static function accessSchemaCache(array $schemaData): ?string {
+    $folder = DATA_DIR . "/.schemas/{$schemaData['repo']}/{$schemaData['version']}/";
+    $fileName = "{$schemaData['repo']}.xsd";
 
     if (file_exists("$folder$fileName")) {
-      if (!filesize("$folder$fileName")) {
-        return "";
-      }
-
       return "$folder$fileName";
+    }
+
+    $fileContent = ExternalFile::download($schemaData['uri']);
+
+    if (!$fileContent) {
+      return null;
     }
 
     Folder::createPath($folder);
@@ -70,10 +68,8 @@ class XMLSchema {
       throw new Exception("`$folder` is not writeable!");
     }
 
-    $fileContent = ExternalFile::download($schemaData['uri']);
-
     file_put_contents("$folder$fileName", $fileContent);
 
-    return $fileContent ? "$folder$fileName" : '';
+    return "$folder $fileName";
   }
 }
