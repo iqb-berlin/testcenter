@@ -14,7 +14,7 @@ export class ThemeService {
     document.body.className = this.activeTheme.cssClassName;
   }
 
-  setTheme(themeName: string) {
+  setTheme(themeName: string = this.availableThemes[0].name) {
     const newTheme = THEMES.find(theme => theme.name === themeName);
     if (!newTheme) {
       throw new AppError({
