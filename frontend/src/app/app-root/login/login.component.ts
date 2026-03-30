@@ -1,16 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { MainDataService, UserAgentService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { solveChallengeWorkers } from 'altcha-lib';
 
 @Component({
   templateUrl: './login.component.html',
   styles: [
     '.mat-mdc-form-field {display: block}',
-    '.mat-mdc-card {width: 400px;}'
+    '.mat-mdc-card {width: 400px;}',
+    '.rotate {animation: spin 3s linear infinite}'
   ],
   standalone: false
 })
@@ -23,6 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  user = 'school';
   unsupportedBrowser: [string, string] | [] = [];
 
   loginForm = new FormGroup({
@@ -44,28 +47,80 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.checkBrowser();
   }
 
-  login(loginType: 'admin' | 'login' = 'login'): void {
+  login(): void {
     const loginData = this.loginForm.value;
     if (!loginData.name) {
       return;
     }
+    const name = loginData.name
     LoginComponent.oldLoginName = loginData.name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginType, loginData.name, loginData.pw ?? '').subscribe({
+    if (loginData.pw) {
+      const password = loginData.pw
+      if (this.mainDataService.appConfig?.bruteForceProtection.includes('login')) {
+
+        this.user='sync'
+        this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe ({
+          next: challenge => {
+            const promise = solveChallengeWorkers(
+              window.document.baseURI + '/altcha-lib/dist/worker.js',
+              8, // no. of workers
+              challenge.challenge,
+              challenge.salt,
+              challenge.algorithm,
+              challenge.maxNumber
+            );
+            promise.then(solvedChallenge => {
+              this.backendService.createSession(
+                challenge.algorithm,
+                challenge.challenge,
+                challenge.salt,
+                challenge.signature,
+                solvedChallenge!.number
+              ).subscribe(this.getLoginSubscription());
+            }, error => {
+              this.problemText = 'Problem bei der Anmeldung.';
+              throw error;
+            }).finally(() => {
+              this.user = 'school'
+            })
+          },
+          error: error => {
+            this.problemText = 'Problem bei der Anmeldung.';
+            this.user = 'school'
+            throw error;
+          }
+        });
+      } else {
+        this.backendService.login('login', name, password).subscribe(this.getLoginSubscription());
+      }
+    } else {
+      this.backendService.login('login', name).subscribe(this.getLoginSubscription());
+    }
+  }
+
+
+  getLoginSubscription(): Partial<Observer<AuthData>> {
+    return {
       next: authData => {
-        const authDataTyped = authData as AuthData;
+
+        const authDataTyped = authData;
         this.mainDataService.setAuthData(authDataTyped);
+
         if (this.returnTo) {
+
           this.router.navigateByUrl(this.returnTo).then(navOk => {
+
             if (!navOk) {
               this.router.navigate(['/r']);
             }
           });
-        } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
-          // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
-          // so a shortcut jump would not hurt a specific workflow
-          if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
+        }
+        else if (!authData.flags.includes('codeRequired')) {
+
+          if (authData.claims?.test.length === 1 && Object.keys(authData.claims).length === 1) {
+
             this.backendService.startTest(authData.claims.test[0].id).subscribe({
               next: testId => {
                 this.router.navigate(['/t', testId]);
@@ -74,11 +129,14 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/r/starter']);
               }
             });
-            // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
-            // so a shortcut jump would not hurt a specific workflow
-          } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
+          }
+          else if (
+            authData.claims.sysCheck?.length === 1
+            && Object.keys(authData.claims).length === 1)
+          {
             this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
-          } else {
+          }
+          else {
             this.router.navigate(['/r/starter']);
           }
         } else {
@@ -86,26 +144,34 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       },
       error: error => {
+        this.user='school'
         this.problemCode = error.code;
+
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-        } else if (error.code === 401) {
+        }
+        else if (error.code === 401) {
           this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-        } else if (error.code === 204) {
+        }
+        else if (error.code === 204) {
           this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-        } else if (error.code === 410) {
+        }
+        else if (error.code === 410) {
           this.problemText = 'Anmeldedaten sind abgelaufen';
-        } else if (error.code === 429) {
+        }
+        else if (error.code === 429) {
           this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
-        } else {
+        }
+        else {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
         this.problemLevel = 'error';
         this.loginForm.reset();
       }
-    });
+    }
   }
+
 
   checkCapsLock(event: KeyboardEvent): void {
     // some newer edge versions does fire a keyup event when clicking into the textfield, which does not

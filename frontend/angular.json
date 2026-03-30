@@ -26,7 +26,12 @@
               "browserslist-useragent"
             ],
             "assets": [
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/altcha-lib",
+                "output": "altcha-lib"
+              }
             ],
             "styles": [
               "src/theme/index.scss",

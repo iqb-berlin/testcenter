@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { MainDataService, UserAgentService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 import { HeaderService } from '../../core/header.service';
+import { solveChallengeWorkers } from 'altcha-lib';
 
 @Component({
   templateUrl: './admin-login.component.html',
@@ -16,10 +17,12 @@ import { HeaderService } from '../../core/header.service';
 export class AdminLoginComponent implements OnInit {
   static oldLoginName = '';
   private routingSubscription: Subscription | null = null;
+  returnTo = '';
   problemText = '';
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  admin = 'person';
   unsupportedBrowser: [string, string] | [] = [];
 
   loginForm = new FormGroup({
@@ -37,6 +40,8 @@ export class AdminLoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.headerService.title = 'Anmelden';
+    this.routingSubscription = this.route.params
+      .subscribe(params => { this.returnTo = params.returnTo; });
     this.checkBrowser();
   }
 
@@ -45,35 +50,107 @@ export class AdminLoginComponent implements OnInit {
     if (!loginData.name || !loginData.pw) {
       return;
     }
+
+    const name = loginData.name
     AdminLoginComponent.oldLoginName = loginData.name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.adminLogin(loginData.name, loginData.pw).subscribe({
+
+    if (loginData.pw) {
+      const password = loginData.pw;
+      if (this.mainDataService.appConfig?.bruteForceProtection.includes("admin")) {
+
+        this.admin = 'sync';
+
+        this.backendService.createChallenge({ loginType: "admin", name, password }).subscribe ({
+          next: challenge => {
+            const promise = solveChallengeWorkers(
+              window.document.baseURI + '/altcha-lib/dist/worker.js',
+              8, // no. of workers
+              challenge.challenge,
+              challenge.salt,
+              challenge.algorithm,
+              challenge.maxNumber
+            );
+
+            promise.then(solvedChallenge => {
+              this.backendService.createSession(
+                challenge.algorithm,
+                challenge.challenge,
+                challenge.salt,
+                challenge.signature,
+                solvedChallenge!.number
+              ).subscribe(this.getAdminLoginSubscription());
+            }, error => {
+              this.problemText = 'Problem bei der Anmeldung.';
+              throw error;
+            }).finally( () => {
+              this.admin='person'
+            })
+          },
+          error: error => {
+            this.problemText = 'Problem bei der Anmeldung.';
+            this.admin='person'
+            throw error;
+          }
+        });
+      }
+      else {
+        this.backendService.adminLogin(name, password).subscribe(this.getAdminLoginSubscription());
+      }
+    }
+    else {
+      this.backendService.adminLogin(name).subscribe(this.getAdminLoginSubscription());
+    }
+  }
+
+  getAdminLoginSubscription(): Partial<Observer<AuthData>> {
+    return {
       next: authData => {
-        const authDataTyped = authData as AuthData;
+
+        const authDataTyped = authData;
         this.mainDataService.setAuthData(authDataTyped);
-        this.router.navigate(['/r/starter']);
+
+        if (this.returnTo) {
+
+          this.router.navigateByUrl(this.returnTo).then(navOk => {
+
+            if (!navOk) {
+              this.router.navigate(['/r']);
+            }
+          });
+        }
+        else {
+          this.router.navigate(['/r']);
+        }
       },
       error: error => {
+        this.admin = 'person'
         this.problemCode = error.code;
+
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-        } else if (error.code === 401) {
+        }
+        else if (error.code === 401) {
           this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-        } else if (error.code === 204) {
+        }
+        else if (error.code === 204) {
           this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-        } else if (error.code === 410) {
+        }
+        else if (error.code === 410) {
           this.problemText = 'Anmeldedaten sind abgelaufen';
-        } else if (error.code === 429) {
+        }
+        else if (error.code === 429) {
           this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
-        } else {
+        }
+        else {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
         this.problemLevel = 'error';
         this.loginForm.reset();
       }
-    });
+    }
   }
 
   checkCapsLock(event: KeyboardEvent): void {

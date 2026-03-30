@@ -21,7 +21,7 @@
         ></tc-alert>
       </mat-card-content>
       <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid || continue === 'sync'"
                 data-cy="continue">
           Weiter
         </button>
