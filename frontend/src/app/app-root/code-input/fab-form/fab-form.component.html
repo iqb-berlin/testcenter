@@ -1,0 +1,36 @@
+<div class="header-section">
+  <h2>Wähle aus</h2>
+  <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
+</div>
+
+<div class="selected-values">
+  <!-- only used for proper centering of the fieldset -->
+  <div class="spacer"></div>
+  <fieldset>
+    <legend>Code</legend>
+    @for (item of selectedValues(); track $index) {
+      <button mat-fab [class.filled]="item">
+        @if (visualMode == 'keypad-numbers') {
+          {{ item }}
+        } @else {
+          <mat-icon [svgIcon]="item !== null ? buttonIcons[item] : ''"></mat-icon>
+        }
+      </button>
+    }
+  </fieldset>
+  <button mat-fab class="delete-button" (click)="clearSelection()">
+    <mat-icon svgIcon="delete_forever"></mat-icon>
+  </button>
+</div>
+
+<div class="button-grid">
+  @for (item of buttonIcons | keyvalue; track item.key) {
+    <button mat-fab (click)="onSelect(item.key)">
+      @if (visualMode == 'keypad-numbers') {
+        {{ item.key }}
+      } @else {
+        <mat-icon [svgIcon]="item.value"></mat-icon>
+      }
+    </button>
+  }
+</div>

@@ -1,47 +1,37 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { MainDataService } from '../../shared/shared.module';
 import { AppError, AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { ThemeService } from '../../shared/services/theme.service';
+import { TextFieldFormComponent } from './text-field-form.component';
+import { FabFormComponent } from './fab-form/fab-form.component';
 
 @Component({
-    templateUrl: './code-input.component.html',
-    styles: [
-        '.mat-mdc-card {width: 400px;}'
-    ],
-    standalone: false
+  templateUrl: './code-input.component.html',
+  styleUrl: './code-input.component.scss',
+  imports: [
+    TextFieldFormComponent,
+    FabFormComponent
+  ],
+  standalone: true
 })
-export class CodeInputComponent implements OnInit {
-  @ViewChild('codeInputControl') codeInputControl!: FormControl;
+export class CodeInputComponent {
+  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
   problemText = '';
   problemCode = 0;
 
-  codeinputform = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(2)])
-  });
-
-  constructor(
-    private router: Router,
-    public cts: CustomtextService,
-    public bs: BackendService,
-    public mds: MainDataService
-  ) { }
-
-  ngOnInit(): void {
-    this.mds.appSubTitle$.next('Bitte Code eingeben');
-    const element = <HTMLElement>document.querySelector('.mat-input-element[formControlName="code"]');
-    if (element) {
-      element.focus();
-    }
+  constructor(private router: Router, public bs: BackendService, public mds: MainDataService,
+              public themeService: ThemeService) {
+    this.mode = this.themeService.activeTheme.codeInputMode || 'text-field';
   }
 
-  codeinput(): void {
-    const codeData = this.codeinputform.value;
+  protected onSubmit(code: string | null) {
+    if (!code) return;
     this.problemText = '';
     this.problemCode = 0;
 
-    this.bs.codeLogin(codeData.code ?? '').subscribe({
+    this.bs.codeLogin(code).subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mds.setAuthData(authDataTyped);
@@ -65,9 +55,5 @@ export class CodeInputComponent implements OnInit {
         }
       }
     });
-  }
-
-  resetLogin(): void {
-    this.mds.logOut();
   }
 }

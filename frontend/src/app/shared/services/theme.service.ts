@@ -33,6 +33,7 @@ export interface Theme {
   cssClassName: string;
   previewColor?: string;
   description?: string;
+  codeInputMode?: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
   imagePaths?: Partial<Record<keyof CustomImages, string>>
 }
 
@@ -42,9 +43,12 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
+    codeInputMode: 'keypad-symbols',
     imagePaths: {
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
       starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
+      codeInputIllustration: 'assets/theme-images/theme-primar/code-input-illu.png',
+      codeInputCompanion: 'assets/theme-images/theme-primar/code-input-companion',
       loadingProgress: 'assets/theme-images/theme-primar/loading.png'
     }
   },

@@ -33,7 +33,6 @@ import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
-import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { RetryInterceptor } from './retry.interceptor';
@@ -52,7 +51,6 @@ import { TestCardComponent } from './app-root/starter/test-card.component';
     SysCheckStarterComponent,
     LoginComponent,
     AdminLoginComponent,
-    CodeInputComponent,
     RouteDispatcherComponent,
     LegalNoticeComponent,
     StarterComponent
