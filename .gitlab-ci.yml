@@ -43,7 +43,6 @@ services:
 
 .gitlab_login:
   before_script:
-    #- export DOCKERHUB_PROXY=
     - echo $CI_DEPENDENCY_PROXY_PASSWORD | docker login -u $CI_DEPENDENCY_PROXY_USER
       --password-stdin $CI_DEPENDENCY_PROXY_SERVER
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER
@@ -90,7 +89,7 @@ build-doc:
       - docs/dist/compodoc-broadcaster/*
     expire_in: 30 minutes
 
-pages-test:
+pages:
   stage: deploy
   rules:
    - if: '$PIPELINE_TYPE == "release"'
@@ -108,8 +107,8 @@ pages-test:
   artifacts:
     paths:
       - public
-#  pages:  # specifies that this is a Pages job and publishes the default public directory
-#    path_prefix: "$CI_COMMIT_BRANCH"
+  pages:  # specifies that this is a Pages job and publishes the default public directory
+    path_prefix: "$CI_COMMIT_BRANCH"
 
 .push-prod-template:
   stage: deploy
@@ -142,8 +141,8 @@ push-pre-release:
 
 push-release:
   extends: .push-prod-template
-#  needs:
-#    - pages
+  needs:
+    - pages
   rules:
     - if: '$PIPELINE_TYPE == "release"'
       when: on_success
