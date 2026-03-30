@@ -80,23 +80,23 @@ class XMLFile extends File {
 
     $schemaUrl = (string) $this->getXml()->attributes('xsi', true)->noNamespaceSchemaLocation;
 
-    if (!$schemaUrl) {
-      $this->report('warning', 'File has no link to XSD-Schema.');
+    if (empty($schemaUrl)) {
+      $this->report('error', 'File has no link to XSD-schema.');
       return;
     }
 
     $this->schema = XMLSchema::parseSchemaUrl($schemaUrl);
 
     if (!$this->schema) {
-      $this->report('error', 'File has no valid link to XSD-schema.');
+      $this->report('error', 'XSD schema URL could not be resolved.');
       return;
     }
 
-    if ($this->schema['type'] !== $this->getRootTagName()) {
-      $this->report('error', 'File has no valid link to XSD-schema.');
-      return;
-    }
+    $expectedType = $this->schema['type'];
 
+    if ($expectedType !== $this->getRootTagName()) {
+      $this->report('error', "Different xsd root-tag. Expected: `$expectedType` ");
+    }
   }
 
   private function validateAgainstSchema(): void {
