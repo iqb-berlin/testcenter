@@ -25,29 +25,10 @@ class XMLSchema {
       "uri" => $schemaUri
     ];
 
-    if ($schemaData['version'] and $schemaData['type'] and ($schemaData['version'] === SystemConfig::$system_version)) {
-      return XMLSchema::getLocalSchema($schemaData['type']);
-    }
-
     return $schemaData;
   }
 
-  static function getLocalSchema(string $type): array {
-    if (!file_exists(ROOT_DIR . "/definitions/vo_$type.xsd")) {
-      throw new Exception("Unknown XML type: `$type`");
-    }
-
-    $currentVersion = SystemConfig::$system_version;
-    $schemaData = Version::split($currentVersion);
-    $schemaData["version"] = $currentVersion;
-    $schemaData["isExternal"] = false;
-    $schemaData["type"] = $type;
-    $schemaData["uri"] = false;
-
-    return $schemaData;
-  }
-
-  static function getSchemaFilePath(?array $schemaData): ?string {
+ static function getSchemaFilePath(?array $schemaData): ?string {
     if (!$schemaData) {
       return null;
     }
