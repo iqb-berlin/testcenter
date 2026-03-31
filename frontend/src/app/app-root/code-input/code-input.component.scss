@@ -1,0 +1,80 @@
+:host {
+  display: flex;
+  height: 100%;
+
+  > * {
+    width: 50%;
+    padding: 24px;
+  }
+}
+.left-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  tc-code-text-field-form {
+    width: 556px;
+    align-self: center;
+  }
+
+  .companion {
+    width: 116px;
+    height: 232px;
+    display: flex;
+    gap: 25px;
+
+    .companion-image {
+      align-self: end;
+      width: 174px;
+      height: 166px;
+      aspect-ratio: 87/83;
+    }
+
+    .companion-speech-bubble {
+      width: 268px;
+      height: 137px;
+    }
+
+    &.error .companion-speech-bubble {
+        filter: brightness(0) saturate(100%) invert(92%) sepia(14%) saturate(300%) hue-rotate(300deg) brightness(102%) contrast(96%);
+    }
+
+    .bubble-text {
+      position: absolute;
+      width: 250px;
+      left: 230px;
+
+      .bubble-title {
+        text-align: center;
+        color: var(--mat-sys-primary);
+        font-size: 14px;
+        margin-bottom: 0;
+      }
+
+      .bubble-body {
+        margin-top: 5px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+    }
+
+    &.error .bubble-text .bubble-body {
+        color: var(--mat-sys-error);
+        font-size: 14px;
+      }
+  }
+}
+
+.right-side {
+  display: flex;
+  justify-content: center;
+
+  img {
+    max-height: 70%;
+  }
+}
+
+.rotate {
+  animation: spin 3s linear infinite
+}

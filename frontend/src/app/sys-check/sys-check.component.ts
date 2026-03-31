@@ -4,6 +4,7 @@ import { CustomtextService, MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
 import { AppError } from '../app.interfaces';
+import { HeaderService } from '../core/header.service';
 
 @Component({
     templateUrl: './sys-check.component.html',
@@ -18,13 +19,15 @@ export class SysCheckComponent implements OnInit {
     public ds: SysCheckDataService,
     private route: ActivatedRoute,
     private mds: MainDataService,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    private headerService: HeaderService
   ) {
   }
 
   ngOnInit(): void {
     this.ds.networkReports = [];
     setTimeout(() => this.mds.appSubTitle$.next('System-Check'));
+    this.headerService.title = 'Systemcheck';
     this.route.paramMap.subscribe((params: ParamMap) => {
       const sysCheckId = params.get('sys-check-name');
       const workspaceId = params.get('workspace-id');

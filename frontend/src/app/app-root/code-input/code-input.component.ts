@@ -1,35 +1,27 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { MainDataService } from '../../shared/shared.module';
 import { AppError, AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { ThemeService } from '../../shared/services/theme.service';
+import { TextFieldFormComponent } from './text-field-form.component';
+import { FabFormComponent } from './fab-form/fab-form.component';
 import { solveChallengeWorkers } from "altcha-lib";
 
 @Component({
-    templateUrl: './code-input.component.html',
-    styles: [
-        '.mat-mdc-card {width: 400px;}',
-        '.rotate {animation: spin 3s linear infinite}'
-    ],
-    standalone: false
+  templateUrl: './code-input.component.html',
+  styleUrl: './code-input.component.scss',
+  imports: [
+    TextFieldFormComponent,
+    FabFormComponent
+  ],
+  standalone: true
 })
 export class CodeInputComponent implements OnInit {
-  @ViewChild('codeInputControl') codeInputControl!: FormControl;
+  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
   problemText = '';
   problemCode = 0;
   continue = 'arrow_forward';
-
-  codeinputform = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(2)])
-  });
-
-  constructor(
-    private router: Router,
-    public cts: CustomtextService,
-    public bs: BackendService,
-    public mds: MainDataService
-  ) { }
 
   private codeSubscription = {
     next: (authData: AuthData) => {
@@ -57,6 +49,10 @@ export class CodeInputComponent implements OnInit {
     }
   }
 
+  constructor(private router: Router, public bs: BackendService, public mds: MainDataService,
+              public themeService: ThemeService) {
+    this.mode = this.themeService.activeTheme.codeInputMode || 'text-field';
+  }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -68,15 +64,14 @@ export class CodeInputComponent implements OnInit {
     });
   }
 
-  codeinput(): void {
-    const codeData = this.codeinputform.value;
+  protected onSubmit(code: string | null) {
     this.problemText = '';
     this.problemCode = 0;
-    if (codeData.code) {
-      if (this.mds.appConfig && this.mds.appConfig.bruteForceProtection.includes('person')) {
+    if (code) {
+      if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
 
         this.continue = 'sync'
-        this.bs.createChallenge({ code: codeData.code }).subscribe ({
+        this.bs.createChallenge({ code: code }).subscribe ({
           next: challenge => {
             const promise = solveChallengeWorkers(window.document.baseURI+'/altcha-lib/dist/worker.js', 8, challenge.challenge, challenge.salt, challenge.algorithm, challenge.maxNumber)
             promise.then( s => {
@@ -95,15 +90,10 @@ export class CodeInputComponent implements OnInit {
           }
         });
       } else {
-        this.bs.codeLogin(codeData.code).subscribe(this.codeSubscription);
+        this.bs.codeLogin(code).subscribe(this.codeSubscription);
       }
     } else  {
       this.bs.codeLogin('').subscribe(this.codeSubscription);
     }
-  }
-
-
-  resetLogin(): void {
-    this.mds.logOut();
   }
 }
