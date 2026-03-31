@@ -62,7 +62,7 @@ export class AdminLoginComponent implements OnInit {
 
         this.admin = 'sync';
 
-        this.backendService.createChallenge({ loginType: "admin", name, password }).subscribe ({
+        this.backendService.createChallenge({ loginType: "admin", name, password }).subscribe({
           next: challenge => {
             const promise = solveChallengeWorkers(
               window.document.baseURI + '/altcha-lib/dist/worker.js',

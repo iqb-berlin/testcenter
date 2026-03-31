@@ -102,7 +102,6 @@ class SystemConfig {
 
     $sessions = self::stringEnv('BRUTE_FORCE_PROTECTION');
     $config['bruteForceProtection']['sessions'] = $sessions;
-    CLI::p("Got `$sessions` for brute force protection");
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

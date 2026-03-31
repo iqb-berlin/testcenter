@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (this.mainDataService.appConfig?.bruteForceProtection.includes('login')) {
 
         this.user='sync'
-        this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe ({
+        this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
           next: challenge => {
             const promise = solveChallengeWorkers(
               window.document.baseURI + '/altcha-lib/dist/worker.js',

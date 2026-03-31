@@ -71,7 +71,7 @@ export class CodeInputComponent implements OnInit {
       if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
 
         this.continue = 'sync'
-        this.bs.createChallenge({ code: code }).subscribe ({
+        this.bs.createChallenge({ code: code }).subscribe({
           next: challenge => {
             const promise = solveChallengeWorkers(window.document.baseURI+'/altcha-lib/dist/worker.js', 8, challenge.challenge, challenge.salt, challenge.algorithm, challenge.maxNumber)
             promise.then( s => {
