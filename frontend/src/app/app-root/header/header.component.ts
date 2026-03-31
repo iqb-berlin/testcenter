@@ -3,10 +3,9 @@ import { RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle
-} from '@angular/material/card';
 import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatDivider } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { HeaderService } from '../../core/header.service';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
@@ -20,47 +19,39 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
     MatIconButton,
     MatIcon,
     OverlayModule,
-    MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardContent,
-    MatCardActions,
-    MatButton
+    MatButton,
+    MatMenu,
+    MatMenuTrigger,
+    MatDivider
   ],
   template: `
     <mat-toolbar>
       <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
       <div class="side">
         @if (headerService.showAccountPanel) {
-          <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
-                  (click)="isOpen = !isOpen">
+          <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu">
             <mat-icon svgIcon="person"></mat-icon>
           </button>
-          <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
-                       [cdkConnectedOverlayOpen]="isOpen" (detach)="isOpen = false">
-            <div class="overlay">
-              <mat-card class="example-card" appearance="outlined">
-                <mat-card-header>
-                  <div mat-card-avatar class="example-header-image"></div>
-                  <mat-card-title>Nutzerinformationen</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <dl>
-                    <dt>Anmeldename:</dt>
-                    <dd>{{ headerService.accountName }}</dd>
-                    <dt>Gruppe:</dt>
-                    <dd>TODO</dd>
-                    <dt>Berechtigung:</dt>
-                    <dd>TODO</dd>
-                  </dl>
-                </mat-card-content>
-                <mat-card-actions>
-                  <button matButton>LIKE</button>
-                  <button matButton>SHARE</button>
-                </mat-card-actions>
-              </mat-card>
+          <mat-menu #accountMenu="matMenu" class="account-menu">
+            <div class="heading">
+              <div>Nutzerinformationen</div>
+              <button matIconButton>
+                <mat-icon svgIcon="close"></mat-icon>
+              </button>
             </div>
-          </ng-template>
+            <dl>
+              <dt>Anmeldename:</dt>
+              <dd>{{ mainDataService.getAuthData()?.loginName }}</dd>
+              <dt>Gruppe:</dt>
+              <dd>{{ mainDataService.getAuthData()?.groupLabel }}</dd>
+              <dt>Version:</dt>
+              <dd>{{ mainDataService.appConfig?.version }}</dd>
+            </dl>
+            <mat-divider></mat-divider>
+            <button matButton="tonal" class="logout-button" (click)="mainDataService.logOut()">
+              Abmelden
+            </button>
+          </mat-menu>
         }
       </div>
       <div class="center">
@@ -78,45 +69,9 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
       </div>
     </mat-toolbar>
   `,
-  styles: `
-    mat-toolbar {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .side {
-      width: 15%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
-    .center {
-      width: 85%;
-      display: flex;
-      justify-content: center;
-    }
-    .logo {
-      justify-content: end;
-    }
-    .logo a {
-      height: 100%;
-    }
-    .logo img {
-      height: 100%;
-    }
-    .overlay {
-      background-color: lightgray;
-    }
-    .overlay dt {
-      font-weight: bold;
-    }
-    h1 {
-      color: var(--mat-sys-on-primary);
-    }
-  `
+  styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
-  protected isOpen: boolean = false;
   constructor(public headerService: HeaderService, public mainDataService: MainDataService) { }
 
   ngOnDestroy(): void {

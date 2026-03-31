@@ -1,0 +1,40 @@
+mat-toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.side {
+  width: 15%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.center {
+  width: 85%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  justify-content: end;
+}
+
+.logo a {
+  height: 100%;
+}
+
+.logo img {
+  height: 100%;
+}
+
+h1 {
+  color: var(--mat-sys-on-primary);
+}
+
+.account-button {
+  background-color: var(--mat-sys-on-primary);
+  color: var(--mat-sys-primary);
+  border-radius: 12px;
+}
