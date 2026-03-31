@@ -22,6 +22,7 @@ class TestEnvironment {
       SystemConfig::$debug_useStaticTokens = true;
       SystemConfig::$debug_useInsecurePasswords = true;
       SystemConfig::$debug_allowExternalXmlSchema = false;
+      SystemConfig::$bruteForceProtection_sessions = [];
       SystemConfig::$debug_fastLoginReuse = true;
       self::makeRandomStatic();
       DB::connectToTestDB();
