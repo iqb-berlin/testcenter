@@ -229,6 +229,8 @@ paths:
               example:
                 token:  "static_person_xxx"
                 displayName: "sample_group/test/xxx"
+                loginName: "xxx"
+                groupLabel: "sample_group"
                 access:
                   test:
                     - BOOKLET.SAMPLE-1
