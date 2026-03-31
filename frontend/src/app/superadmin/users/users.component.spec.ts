@@ -11,6 +11,7 @@ import { BackendService } from '../backend.service';
 import { UsersComponent } from './users.component';
 import { MainDataService, PasswordChangeService } from '../../shared/shared.module';
 import { UserData } from '../superadmin.interfaces';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -24,6 +25,7 @@ class MockBackendService {
     }]);
   }
 }
+
 class MockPasswordChangeService {
   // eslint-disable-next-line class-methods-use-this
   showPasswordChangeDialog(): void { }
@@ -35,15 +37,16 @@ describe('UsersComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    declarations: [UsersComponent],
-    imports: [
+      declarations: [UsersComponent],
+      imports: [
         MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatCheckboxModule,
-        MatIconModule
-    ],
-    providers: [
+        MatIconModule,
+        MatIconTestingModule
+      ],
+      providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
@@ -54,8 +57,8 @@ describe('UsersComponent', () => {
         },
         MainDataService,
         provideHttpClient(withInterceptorsFromDi())
-    ]
-})
+      ]
+    })
       .compileComponents();
   }));
 

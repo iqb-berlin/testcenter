@@ -37,6 +37,7 @@ import { TemplateContextDirective } from '../shared/directives/template-context.
 import { TimeLeftPipe } from './test-session/timeleft.pipe';
 import { PositionPipe } from './test-session/position.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -118,16 +119,18 @@ describe('GroupMonitorComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         MatTableModule,
-        MatSlideToggleModule],
-    providers: [
+        MatSlideToggleModule,
+        MatIconTestingModule
+      ],
+      providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },
         { provide: MatDialog, useValue: new MockMatDialog() },
         { provide: BackendService, useValue: new MockBackendService() },
         { provide: MainDataService, useValue: new MockMainDataService() },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
-    ]
-})
+      ]
+    })
       .compileComponents();
   }));
 

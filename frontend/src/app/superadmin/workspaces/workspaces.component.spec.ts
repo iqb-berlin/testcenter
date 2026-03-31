@@ -5,6 +5,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { Observable, of } from 'rxjs';
 import { BackendService } from '../backend.service';
 import { WorkspacesComponent } from './workspaces.component';
@@ -24,21 +25,23 @@ describe('WorkspacesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    declarations: [WorkspacesComponent],
-    imports: [MatDialogModule,
+      declarations: [WorkspacesComponent],
+      imports: [MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatCheckboxModule,
-        MatIconModule],
-    providers: [
+        MatIconModule,
+        MatIconTestingModule
+      ],
+      providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
         },
         MainDataService,
         provideHttpClient(withInterceptorsFromDi())
-    ]
-})
+      ]
+    })
       .compileComponents();
   }));
 
