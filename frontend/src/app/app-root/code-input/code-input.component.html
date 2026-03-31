@@ -1,34 +1,30 @@
-<div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-    <mat-card appearance="raised">
-      <mat-card-header>
-        <mat-card-title>
-          {{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}
-        </mat-card-title>
-        <mat-card-subtitle>
-          {{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-form-field appearance="outline">
-          <input matInput formControlName="code" customAutofocus autocapitalize="off"> <!-- no placeholder! -->
-        </mat-form-field>
-        <tc-alert
-          *ngIf="problemText"
-          [attr.data-cy]="'login-code-problem:' + problemCode"
-          level="error"
-          [text]="problemText"
-        ></tc-alert>
-      </mat-card-content>
-      <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
-                data-cy="continue">
-          Weiter
-        </button>
-        <button type="button" mat-raised-button data-cy="logout" (click)="resetLogin()">
-          Neu anmelden
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </form>
+<div class="left-side">
+  @if (mode === 'text-field') {
+    <tc-code-text-field-form (submitCode)="onSubmit($event)"></tc-code-text-field-form>
+  } @else {
+    <tc-code-keypad-form [visualMode]="mode" (submitCode)="onSubmit($event)" (clearInput)="problemText = ''">
+    </tc-code-keypad-form>
+  }
+
+  <div class="companion" [class.error]="problemText">
+    <img src="assets/images/bird-character.png" alt="Helper character" class="companion-image">
+    <img src="assets/images/speech-bubble.svg" alt="speech bubble" class="companion-speech-bubble">
+    <div class="bubble-text">
+      @if (!problemText) {
+        <p class="bubble-title">Brauchst du Hilfe?</p>
+      }
+      <p class="bubble-body">
+        @if (problemText) {
+          {{ problemText }}
+        } @else {
+          Deine Lehrerin oder dein Lehrer hilft dir weiter.
+            Melde dich bei ihm/ihr oder klicke auf mich drauf!
+        }
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="right-side">
+  <img [src]="themeService.activeTheme.imagePaths?.codeInputIllustration" alt="Code input illustration">
 </div>

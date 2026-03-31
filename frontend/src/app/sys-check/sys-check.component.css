@@ -1,16 +1,6 @@
-.sys-check-body {
-  position: absolute;
-  width: 100%;
-}
-
 .header {
   justify-content: center;
   align-items: center;
   gap: 15px;
   padding-top: 10px;
-  color: white;
-}
-
-button .mat-icon {
-  transform: scale(1.5);
 }

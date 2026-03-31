@@ -12,7 +12,7 @@ import {
     <button mat-stroked-button [disabled]="currentPageIndex == 0"
                         [attr.data-cy]="'page-navigation-backward'"
                         (click)="navPrevious.emit()">
-      <i class="material-icons">chevron_left</i>
+      <i class="material-icons"><</i>
     </button>
 
     <mat-button-toggle-group [value]="currentPageIndex" [hideSingleSelectionIndicator]="true">
@@ -30,7 +30,7 @@ import {
     <button mat-stroked-button [disabled]="currentPageIndex == pageLabels.length - 1"
             [attr.data-cy]="'page-navigation-forward'"
             (click)="navNext.emit()">
-      <i class="material-icons">chevron_right</i>
+      <i class="material-icons">></i>
     </button>
   `,
     styles: [`
