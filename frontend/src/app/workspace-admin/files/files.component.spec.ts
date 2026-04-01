@@ -17,6 +17,7 @@ import { GetFileResponseData } from '../workspace.interfaces';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { IqbFilesUploadInputForDirective } from './iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -50,6 +51,7 @@ describe('FilesComponent', () => {
         MatTableModule,
         MatIconModule,
         MatCheckboxModule,
+        MatProgressSpinner,
         SharedModule,
         NoopAnimationsModule,
         MatIconTestingModule

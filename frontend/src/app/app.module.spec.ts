@@ -10,8 +10,19 @@ describe('AppModule', () => {
     TestBed.configureTestingModule({
       providers: [
         AppModule,
-        MatIconRegistry,
-        DomSanitizer
+        AppModule,
+        {
+          provide: MatIconRegistry,
+          useValue: {
+            addSvgIconSet: () => {}
+          }
+        },
+        {
+          provide: DomSanitizer,
+          useValue: {
+            bypassSecurityTrustResourceUrl: () => 'safe-url'
+          }
+        }
       ]
     });
 
