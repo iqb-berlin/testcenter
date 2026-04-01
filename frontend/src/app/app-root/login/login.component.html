@@ -26,8 +26,8 @@
 
       <mat-card-actions [style.justify-content]="'space-between'">
         <button matButton="filled" type="submit" data-cy="login-user"
-                [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon>chevron_right</mat-icon>
+                [disabled]="!loginForm.get('name')?.valid || user === 'sync'">
+          <mat-icon [ngClass]="{'rotate' : user === 'sync'}">{{ user }}</mat-icon>
           Weiter
         </button>
       </mat-card-actions>

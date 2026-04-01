@@ -27,7 +27,8 @@
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
     "ext-zip": "*",
-    "ext-zend-opcache" : "*"
+    "ext-zend-opcache" : "*",
+    "altcha-org/altcha": "^1.3"
   },
   "require-dev": {
     "amphp/parallel": "2.3.2",

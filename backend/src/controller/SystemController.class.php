@@ -94,6 +94,7 @@ class SystemController extends Controller {
         'customImages' => (object) $meta['customImages'],
         'appConfig' => (object) $meta['appConfig'],
         'baseUrl' => Server::getUrl(),
+        'bruteForceProtection' => SystemConfig::$bruteForceProtection_sessions,
         'veronaPlayerApiVersionMin' => SystemConfig::$system_veronaMin,
         'veronaPlayerApiVersionMax' => SystemConfig::$system_veronaMax,
         'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,

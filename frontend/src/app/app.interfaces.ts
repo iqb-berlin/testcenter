@@ -90,6 +90,14 @@ export class AppError extends Error implements AppErrorInterface {
   }
 }
 
+export interface Challenge {
+  algorithm: 'SHA-1'|'SHA-256'|'SHA-512',
+  challenge: string,
+  maxNumber: number,
+  salt: string,
+  signature: string
+}
+
 export class WrappedError extends Error {
   promise: Promise<never> | null = null;
   rejection: Error | null = null;
