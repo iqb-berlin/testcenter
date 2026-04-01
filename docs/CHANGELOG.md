@@ -2,6 +2,10 @@
 ## Änderungen
 * Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
 
+Technisches
+## Änderungen
+* Der API-Endpunkt `/session/login` liefert zusätzlich die Parameter `loginName` und `groupLabel`. Der Parameter `displayName` ist als deprecated ausgezeichnet und wird in zukünftigen Versionen nicht mehr verfügbar sein. Der Wert kann aber weiterhin aus den beiden neuen Feldern erstellt werden.
+
 # 17.6.0
 ## Neue Funktionen
 * Testtakers-XML: `<Login>` akzeptiert nun ein optionales Kind-Element `<ViewSettings monitorBookletVisibility="visible|collapsed|hidden"/>` für `monitor-group`-Logins. Damit kann gesteuert werden, ob die Testheft-Liste im Startmenu sichtbar, eingeklappt oder nicht sichtbar angezeigt wird (Standard: `visible`).

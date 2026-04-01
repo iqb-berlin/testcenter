@@ -33,6 +33,8 @@ export interface AccessObject {
 export interface AuthData {
   token: string;
   displayName: string;
+  loginName: string;
+  groupLabel: string;
   id?: number;
   pwSetByAdmin?: boolean;
   customTexts: KeyValuePairs;

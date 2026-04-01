@@ -9,6 +9,8 @@ class AccessSet extends DataCollectionTypeSafe {
 
   protected string $token;
   protected string $displayName;
+  protected string $loginName;
+  protected ?string $groupLabel;
   protected ?int $id;
   protected ?bool $pwSetByAdmin;
   protected object $customTexts;
@@ -19,6 +21,8 @@ class AccessSet extends DataCollectionTypeSafe {
   public function __construct(
     string $token,
     string $displayName,
+    string $loginName,
+    ?string $groupLabel,
     array $flags = [],
     stdClass $customTexts = null,
     ?string $groupToken = null,
@@ -27,6 +31,8 @@ class AccessSet extends DataCollectionTypeSafe {
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
+    $this->loginName = $loginName;
+    $this->groupLabel = $groupLabel;
     $this->flags = array_map(function ($flag) {
       return (string) $flag;
     }, $flags);
@@ -49,9 +55,14 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginWithPerson->getPerson()->getNameSuffix()
     );
 
+    $groupLabel = $login->getGroupLabel();
+    $loginName = $login->getName();
+
     $accessSet = new AccessSet(
       $loginWithPerson->getPerson()->getToken(),
       $displayName,
+      $loginName,
+      $groupLabel,
       [],
       $login->getCustomTexts() ?? new stdClass()
     );
@@ -95,6 +106,8 @@ class AccessSet extends DataCollectionTypeSafe {
     $accessSet = new AccessSet(
       token: $admin->getToken(),
       displayName: $admin->getName(),
+      loginName: $admin->getName(),
+      groupLabel: null,
       id: $admin->getId(),
       pwSetByAdmin: $admin->isPwSetByAdmin(),
     );
@@ -124,6 +137,8 @@ class AccessSet extends DataCollectionTypeSafe {
     return new AccessSet(
       $loginSession->getToken(),
       "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
+      $loginSession->getLogin()->getName(),
+      $loginSession->getLogin()->getGroupLabel(),
       $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
       $loginSession->getLogin()->getCustomTexts(),
       $loginSession->getGroupToken()

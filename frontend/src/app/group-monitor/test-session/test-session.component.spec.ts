@@ -2,6 +2,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { TestSessionComponent } from './test-session.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
 import { unitTestExampleSessions } from '../unit-test-example-data.spec';
@@ -15,7 +16,7 @@ describe('TestViewComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TestSessionComponent, TemplateContextDirective, PositionPipe],
-      imports: [MatIconModule, MatTooltipModule, MatCheckboxModule]
+      imports: [MatIconModule, MatTooltipModule, MatCheckboxModule, MatIconTestingModule]
     })
       .compileComponents();
   }));
