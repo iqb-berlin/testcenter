@@ -29,15 +29,13 @@ class XMLSchema {
 
     $type = $typeMap[$urlParts[1]];
 
-    $schemaData = [
+    return [
       "isExternal" => true,
       "repo"       => $repo,
       "type"       => $type,
       "version"    => $urlParts[2],
       "uri"        => $schemaUri
     ];
-
-    return $schemaData;
   }
 
  static function getSchemaFilePath(?array $schemaData): ?string {
