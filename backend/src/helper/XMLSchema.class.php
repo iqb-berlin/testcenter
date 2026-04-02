@@ -68,6 +68,6 @@ class XMLSchema {
 
     file_put_contents("$folder$fileName", $fileContent);
 
-    return "$folder $fileName";
+    return "$folder$fileName";
   }
 }
