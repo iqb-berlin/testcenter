@@ -10,13 +10,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import {
   MainDataService,
-  WideMessageDialogComponent,
-  MessageDialogData,
-  SharedModule,
-  UserAgentService
+  UserAgentService, SharedModule
 } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.component';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -124,17 +122,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   openDialog() {
-    this.dialog.open(WideMessageDialogComponent, {
-      width: '80%',
-      data: <MessageDialogData>{
-        title: 'Anleitung',
-        content: '<ul> ' +
-          ' <li> Geben Sie in Schritt 1 Ihren Anmeldenamen in das Eingabefeld ein. Klicken Sie dann auf den Button "Weiter".' +
-          ' <li> Sie gelangen nun in den nächsten Schritt.".' +
-          ' <li> Geben Sie in Schritt 2 Ihr Kennwort in das Eingabefeld ein. Klicken Sie dann auf den Button "Anmelden".' +
-          ' <li> Die Startseite des Testcenters wird sich im Anschluss der erfolgreichen Anmeldung öffnen.' +
-          ' </ul> '
-      }
+    this.dialog.open(LoginHelpDialogComponent, {
+      autoFocus: 'dialog'
     });
   }
 

@@ -2,16 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { WideMessageDialogComponent } from './wide-message-dialog.component';
+import { LoginHelpDialogComponent } from './login-help-dialog.component';
 
 describe('MessageDialogComponent', () => {
-  let fixture: ComponentFixture<WideMessageDialogComponent>;
-  let component: WideMessageDialogComponent;
+  let fixture: ComponentFixture<LoginHelpDialogComponent>;
+  let component: LoginHelpDialogComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
-        WideMessageDialogComponent
+        LoginHelpDialogComponent
       ],
       providers: [
         {
@@ -26,7 +26,7 @@ describe('MessageDialogComponent', () => {
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
-    fixture = TestBed.createComponent(WideMessageDialogComponent);
+    fixture = TestBed.createComponent(LoginHelpDialogComponent);
     component = fixture.debugElement.componentInstance;
   });
 

@@ -14,7 +14,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
-import { WideMessageDialogComponent } from './components/wide-message-dialog/wide-message-dialog.component';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
@@ -30,7 +29,6 @@ import { TemplateContextDirective } from './directives/template-context.directiv
 @NgModule({ declarations: [
         ConfirmDialogComponent,
         MessageDialogComponent,
-        WideMessageDialogComponent,
         BytesPipe,
         CustomtextPipe,
         BlockConditionPipe,
@@ -46,7 +44,6 @@ import { TemplateContextDirective } from './directives/template-context.directiv
     exports: [
         ConfirmDialogComponent,
         MessageDialogComponent,
-        WideMessageDialogComponent,
         BytesPipe,
         CustomtextPipe,
         BlockConditionPipe,
@@ -79,7 +76,6 @@ export { BackendService } from './services/backend.service';
 export { CustomtextService } from './services/customtext/customtext.service';
 export { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
 export { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
-export { WideMessageDialogComponent } from './components/wide-message-dialog/wide-message-dialog.component';
 export { MessageDialogData } from './interfaces/message-dialog.interfaces';
 export { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 export { ConfirmDialogData } from './interfaces/confirm-dialog.interfaces';
