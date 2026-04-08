@@ -10,7 +10,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import {
   MainDataService,
-  UserAgentService, SharedModule
+  UserAgentService, SharedModule, AlertComponent
 } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
@@ -28,7 +28,8 @@ import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.compon
     RouterLink,
     MatButtonModule,
     MatCardModule,
-    SharedModule
+    SharedModule,
+    AlertComponent
   ]
 })
 

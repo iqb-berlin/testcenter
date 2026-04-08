@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MainDataService } from '../../shared/shared.module';
-import { HeaderService } from '../../core/header.service';
+import { MainDataService } from '@shared/shared.module';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
   templateUrl: './legal-notice.component.html',
@@ -14,8 +14,7 @@ import { HeaderService } from '../../core/header.service';
     .body-text {
       font-size: larger;
     }
-  `,
-  standalone: false
+  `
 })
 export class LegalNoticeComponent implements OnInit {
   constructor(public mds: MainDataService, private headerService: HeaderService) { }

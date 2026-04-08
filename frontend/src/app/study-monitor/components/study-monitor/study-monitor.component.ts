@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ResultData } from '../../../workspace-admin/workspace.interfaces';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 import { BackendService } from '../../services/backend.service';
-import { HeaderService } from '../../../core/header.service';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
     templateUrl: './study-monitor.component.html',

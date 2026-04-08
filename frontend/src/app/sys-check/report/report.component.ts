@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
@@ -10,22 +14,24 @@ import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interf
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
 @Component({
-    templateUrl: './report.component.html',
-    styleUrls: ['./report.component.css', '../sys-check.component.css'],
-    standalone: false
+  templateUrl: './report.component.html',
+  imports: [
+    MatCardModule,
+    NgIf,
+    CustomtextPipe,
+    AsyncPipe,
+    NgForOf,
+    MatButton,
+    RouterLink
+  ],
+  styleUrls: ['./report.component.css', '../sys-check.component.css']
 })
 export class ReportComponent implements OnInit {
   isReportSaved = false;
   questionnaireDataWarnings: ReportEntry[] = [];
 
-  constructor(
-    private backendService: BackendService,
-    public dataService: SysCheckDataService,
-    private dialog: MatDialog,
-    private mds: MainDataService,
-    private router: Router
-  ) {
-  }
+  constructor(private backendService: BackendService, public dataService: SysCheckDataService,
+              private dialog: MatDialog, private mds: MainDataService, private router: Router) { }
 
   saveReport(): void {
     const confirmDialogRef = () => this.dialog.open(ConfirmDialogComponent, {

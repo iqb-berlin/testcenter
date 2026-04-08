@@ -1,17 +1,22 @@
 import {
   Component, EventEmitter, Input, Output
 } from '@angular/core';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { AsyncPipe } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
-    selector: 'tc-page-nav',
-    template: `
+  selector: 'tc-page-nav',
+  template: `
     <span [style.color]="'white'" [style.padding-right.px]="8">
-        {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
+        {{ ''  | customtext:'login_pagesNaviPrompt' | async }}
     </span>
 
     <button mat-stroked-button [disabled]="currentPageIndex == 0"
-                        [attr.data-cy]="'page-navigation-backward'"
-                        (click)="navPrevious.emit()">
+            [attr.data-cy]="'page-navigation-backward'"
+            (click)="navPrevious.emit()">
       <i class="material-icons"><</i>
     </button>
 
@@ -33,12 +38,29 @@ import {
       <i class="material-icons">></i>
     </button>
   `,
-    styles: [`
-    .selected-value {background-color: var(--accent) !important;}
-    button { height: 34px !important; margin-bottom: 2px;}
-    mat-button-toggle-group {height: 34px; align-items: center;}
-  `],
-    standalone: false
+  imports: [
+    CustomtextPipe,
+    AsyncPipe,
+    MatButton,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    MatTooltip
+  ],
+  styles: [`
+    .selected-value {
+      background-color: var(--accent) !important;
+    }
+
+    button {
+      height: 34px !important;
+      margin-bottom: 2px;
+    }
+
+    mat-button-toggle-group {
+      height: 34px;
+      align-items: center;
+    }
+  `]
 })
 export class PageNavBarComponent {
   @Input() pageLabels: string[] = [];

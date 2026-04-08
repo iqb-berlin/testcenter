@@ -4,7 +4,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { ThemeService } from '../../shared/services/theme.service';
+import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
   selector: 'tc-test-card',

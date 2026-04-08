@@ -7,8 +7,8 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { HeaderService } from '../../core/header.service';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { HeaderService } from '@shared/services/header.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 
 @Component({
   selector: 'tc-header',

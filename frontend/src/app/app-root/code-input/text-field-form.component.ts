@@ -8,7 +8,7 @@ import {
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
+import { CustomtextPipe, SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'tc-code-text-field-form',
@@ -22,7 +22,8 @@ import { SharedModule } from '../../shared/shared.module';
     MatIcon,
     MatLabel,
     MatIconButton,
-    MatSuffix
+    MatSuffix,
+    CustomtextPipe
   ],
   template: `
     <h2>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</h2>

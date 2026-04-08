@@ -18,7 +18,7 @@ import { BackendService } from '../backend.service';
 import { AppConfig } from '../../shared/classes/app.config';
 import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
 import { Theme, THEMES, ThemeService } from '../../shared/services/theme.service';
-import { SharedModule } from '../../shared/shared.module';
+import { AlertComponent, SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
 import { CustomImagesService } from '../../shared/services/custom-images.service';
 
@@ -44,7 +44,8 @@ import { CustomImagesService } from '../../shared/services/custom-images.service
     SharedModule,
     EditCustomTextsComponent,
     MatFabButton,
-    MatButton
+    MatButton,
+    AlertComponent
   ],
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.css']

@@ -7,12 +7,14 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { MainDataService } from '@shared/shared.module';
+import { AppError } from '@app/app.interfaces';
+import { ThemeService } from '@shared/services/theme.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { BackendService } from '../../services/backend.service';
 import {
   Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
 } from '../../interfaces/test-controller.interfaces';
-import { BackendService } from '../../services/backend.service';
-import { TestControllerService } from '../../services/test-controller.service';
-import { MainDataService } from '../../../shared/shared.module';
 import {
   isVeronaNavigationTarget,
   VeronaNavigationDeniedReason,
@@ -23,10 +25,8 @@ import {
   VopStartCommand,
   VopStateChangedNotification
 } from '../../interfaces/verona.interfaces';
-import { AppError } from '../../../app.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
-import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -81,24 +81,24 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     switch (msgType) {
-      case 'vopReadyNotification':
-        await this.handleReadyNotification(msgData);
-        break;
-      case 'vopStateChangedNotification':
-        this.handleStateChangedNotification(msgData);
-        break;
-      case 'vopUnitNavigationRequestedNotification':
-        this.handleUnitNavigationRequestedNotification(msgData);
-        break;
-      case 'vopWindowFocusChangedNotification':
-        this.handleWindowFocusChangedNotification(msgData);
-        break;
-      case 'vopRuntimeErrorNotification':
-        this.handleRuntimeError(msgData);
-        break;
-      default:
-        console.log(`processMessagePost ignored message: ${msgType}`);
-        break;
+    case 'vopReadyNotification':
+      await this.handleReadyNotification(msgData);
+      break;
+    case 'vopStateChangedNotification':
+      this.handleStateChangedNotification(msgData);
+      break;
+    case 'vopUnitNavigationRequestedNotification':
+      this.handleUnitNavigationRequestedNotification(msgData);
+      break;
+    case 'vopWindowFocusChangedNotification':
+      this.handleWindowFocusChangedNotification(msgData);
+      break;
+    case 'vopRuntimeErrorNotification':
+      this.handleRuntimeError(msgData);
+      break;
+    default:
+      console.log(`processMessagePost ignored message: ${msgType}`);
+      break;
     }
   }
 
@@ -180,11 +180,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
         // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
         // by the player itself ot the host. To maintain backwards-compatibility we check this here.
         Object.keys(msg.unitState.dataParts).forEach(dataPartId => {
-            if (!msg.unitState || !msg.unitState.dataParts) return;
-            if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
-              msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
-            }
-          });
+          if (!msg.unitState || !msg.unitState.dataParts) return;
+          if (typeof msg.unitState.dataParts[dataPartId] !== 'string') {
+            msg.unitState.dataParts[dataPartId] = JSON.stringify(msg.unitState.dataParts[dataPartId]);
+          }
+        });
         this.tcs.AddToUnitStateDataPartsBuffer(
           unit.sequenceId,
           msg.unitState.dataParts,

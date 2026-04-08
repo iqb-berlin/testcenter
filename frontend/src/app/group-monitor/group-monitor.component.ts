@@ -38,7 +38,7 @@ import {
   TimeRestrictionDialogData
 } from './time-restriction-dialog/time-restriction-dialog.component';
 import { ComponentUtilService } from '../shared/services/component-util.service';
-import { HeaderService } from '../core/header.service';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
   selector: 'tc-group-monitor',

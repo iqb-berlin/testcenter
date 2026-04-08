@@ -11,12 +11,57 @@ import { AuthData } from '../../../app.interfaces';
 import { IqbVariableUtil } from '../../util/iqb-variable.util';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { ConditionUtil } from '../../util/condition.util';
+import { CdkDrag } from '@angular/cdk/drag-drop';
+import {
+  AsyncPipe,
+  DecimalPipe,
+  JsonPipe,
+  KeyValuePipe,
+  NgForOf,
+  NgIf,
+  NgTemplateOutlet,
+  SlicePipe
+} from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { SchemeAsTextPipe } from '@app/test-controller/pipes/scheme-as-text.pipe';
+import { PropertiesPipe } from '@app/test-controller/pipes/properties.pipe';
+import { MatInput } from '@angular/material/input';
+import { MatTooltip } from '@angular/material/tooltip';
+import { BlockConditionPipe } from '@shared/pipes/block-condition.pipe';
+import { TemplateContextDirective } from '@shared/directives/template-context.directive';
+import { TrustPipe } from '@shared/pipes/trust.pipe';
 
 @Component({
-    templateUrl: './debug-pane.component.html',
-    styleUrls: ['./debug-pane.component.css'],
-    selector: 'tc-debug-pane',
-    standalone: false
+  templateUrl: './debug-pane.component.html',
+  styleUrls: ['./debug-pane.component.css'],
+  selector: 'tc-debug-pane',
+  imports: [
+    CdkDrag,
+    NgForOf,
+    NgIf,
+    MatIcon,
+    AsyncPipe,
+    KeyValuePipe,
+    DecimalPipe,
+    NgTemplateOutlet,
+    FormsModule,
+    CustomtextPipe,
+    MatAutocomplete,
+    MatOption,
+    SchemeAsTextPipe,
+    SlicePipe,
+    PropertiesPipe,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatTooltip,
+    BlockConditionPipe,
+    TemplateContextDirective,
+    JsonPipe,
+    TrustPipe
+  ]
 })
 export class DebugPaneComponent implements OnInit {
   constructor(

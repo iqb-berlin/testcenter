@@ -24,7 +24,7 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
-import { HeaderService } from '../../../core/header.service';
+import { HeaderService } from '@shared/services/header.service';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 

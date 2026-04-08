@@ -1,15 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { BackendService } from '@app/backend.service';
-import { HeaderService } from '@app/core/header.service';
-import { UserAgentService } from '@shared/shared.module';
+import { HeaderService } from '@shared/services/header.service';
+import { AlertComponent, UserAgentService } from '@shared/shared.module';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   templateUrl: './admin-login.component.html',
-  styleUrl: './admin-login.component.css',
-  standalone: false
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatIconButton,
+    MatIcon,
+    RouterLink,
+    MatButton,
+    AlertComponent
+  ],
+  styleUrl: './admin-login.component.css'
 })
 
 export class AdminLoginComponent implements OnInit {

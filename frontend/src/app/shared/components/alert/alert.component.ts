@@ -6,12 +6,17 @@ import { map } from 'rxjs/operators';
 import { CustomtextPipe } from '../../pipes/customtext/customtext.pipe';
 import { CustomtextService } from '../../services/customtext/customtext.service';
 import { AlertLevel } from '../../interfaces/alert.interfaces';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'tc-alert',
-    templateUrl: 'alert.component.html',
-    styleUrls: ['alert.component.css'],
-    standalone: false
+  selector: 'tc-alert',
+  templateUrl: 'alert.component.html',
+  imports: [
+    MatIcon,
+    AsyncPipe
+  ],
+  styleUrls: ['alert.component.css']
 })
 export class AlertComponent implements OnChanges {
   @Input() text: string = '';

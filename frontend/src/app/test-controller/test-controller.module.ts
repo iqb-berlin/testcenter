@@ -24,20 +24,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
 import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
-import { TestStatusComponent } from './components/test-status/test-status.component';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
 import { UnitActivateGuard } from './routing/unit-activate.guard';
 import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
 import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
 import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
-import { DebugPaneComponent } from './components/debug-pane/debug-pane.component';
-import { UnitInaccessiblePipe } from './pipes/unit-inaccessible.pipe';
-import { UnitNavBarComponent } from './components/unit-nav-bar/unit-nav-bar.component';
-import { PropertiesPipe } from './pipes/properties.pipe';
-import { SchemeAsTextPipe } from './pipes/scheme-as-text.pipe';
 import { ReviewPanelComponent } from './components/review-panel/review-panel.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
+import { DebugPaneComponent } from '@app/test-controller/components/debug-pane/debug-pane.component';
+import { UnitInaccessiblePipe } from '@app/test-controller/pipes/unit-inaccessible.pipe';
+import { TemplateContextDirective } from '@shared/directives/template-context.directive';
+import { UnitNavBarComponent } from '@app/test-controller/components/unit-nav-bar/unit-nav-bar.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -59,7 +57,6 @@ export { TestControllerService } from './services/test-controller.service';
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
-    SharedModule,
     DragDropModule,
     MatButtonToggleModule,
     FormsModule,
@@ -70,18 +67,18 @@ export { TestControllerService } from './services/test-controller.service';
     MatSelectModule,
     NgIf,
     ReviewPanelComponent,
-    NavigationComponent
+    NavigationComponent,
+    AlertComponent,
+    CustomtextPipe,
+    DebugPaneComponent,
+    UnitInaccessiblePipe,
+    TemplateContextDirective,
+    UnitNavBarComponent
   ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,
-    TestStatusComponent,
-    UnitMenuComponent,
-    DebugPaneComponent,
-    UnitInaccessiblePipe,
-    UnitNavBarComponent,
-    PropertiesPipe,
-    SchemeAsTextPipe
+    UnitMenuComponent
   ],
   providers: [
     UnitActivateGuard,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UiVisibilityService } from '../shared/services/ui-visibility.service';
+import { UiVisibilityService } from './ui-visibility.service';
 
 @Injectable({
   providedIn: 'root'

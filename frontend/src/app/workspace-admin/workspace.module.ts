@@ -19,7 +19,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, SharedModule } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { BackendService as RootBackendService } from '../backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -60,7 +60,8 @@ import {
     MatCardModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    AlertComponent
   ],
   exports: [
     WorkspaceComponent

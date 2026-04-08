@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { MatButton } from '@angular/material/button';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'tc-footer',
   imports: [
-    NgIf,
     MatButton,
     RouterLink
   ],
   template: `
     <footer>
       <div class="version-label">
-        <span *ngIf="mainDataService.isTestingMode" style="color:red">Testmode!</span>
+        @if (mainDataService.isTestingMode) {
+          <span style="color:red">Testmode!</span>
+        }
         IQB-Testcenter Version {{mainDataService.appConfig?.version}}
       </div>
       <div class="all-buttons">
@@ -43,6 +43,6 @@ import { Router, RouterLink } from '@angular/router';
   `
 })
 export class FooterComponent {
-  constructor(public mainDataService: MainDataService, private router: Router) {
+  constructor(public mainDataService: MainDataService) {
   }
 }

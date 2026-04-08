@@ -1,4 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import {
@@ -6,16 +8,15 @@ import {
   CustomtextService,
   MainDataService, MessageDialogComponent, MessageDialogData,
   PasswordChangeService
-} from '../../shared/shared.module';
-import { BackendService } from '../../backend.service';
-import { AccessObject } from '../../app.interfaces';
-import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
+} from '@shared/shared.module';
+import { BackendService } from '@app/backend.service';
+import { AccessObject, AuthAccessType } from '@app/app.interfaces';
 import { MatDialog } from '@angular/material/dialog';
-import { FileService } from '../../shared/services/file.service';
-import { MessageService } from '../../shared/services/message.service';
-import { AuthAccessType } from '../../app.interfaces';
-import { HeaderService } from '../../core/header.service';
-import { ThemeService } from '../../shared/services/theme.service';
+import { FileService } from '@shared/services/file.service';
+import { MessageService } from '@shared/services/message.service';
+import { HeaderService } from '@shared/services/header.service';
+import { ThemeService } from '@shared/services/theme.service';
+import { SysCheckDataService } from '@app/sys-check/sys-check-data.service';
 
 @Component({
   selector: 'tc-starter',

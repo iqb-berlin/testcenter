@@ -4,7 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MainDataService } from '../../../shared/services/maindata/maindata.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 
 @Component({
   selector: 'tc-code-keypad-form',

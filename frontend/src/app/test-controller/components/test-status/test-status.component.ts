@@ -1,13 +1,32 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  AsyncPipe, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault
+} from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import {
+  AlertComponent, CustomtextPipe, CustomtextService, MainDataService
+} from '@shared/shared.module';
+import { AppError } from '@app/app.interfaces';
+import { UiVisibilityService } from '@shared/services/ui-visibility.service';
+import { ErrorComponent } from '@shared/components/error/error.component';
 import { TestControllerService } from '../../services/test-controller.service';
-import { CustomtextService, MainDataService } from '../../../shared/shared.module';
-import { AppError } from '../../../app.interfaces';
-import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 
 @Component({
-    templateUrl: './test-status.component.html',
-    styleUrls: ['./test-status.component.css'],
-    standalone: false
+  templateUrl: './test-status.component.html',
+  imports: [
+    NgSwitch,
+    MatCardModule,
+    AsyncPipe,
+    NgSwitchDefault,
+    NgIf,
+    MatButton,
+    CustomtextPipe,
+    NgSwitchCase,
+    AlertComponent,
+    ErrorComponent
+  ],
+  styleUrls: ['./test-status.component.css']
 })
 
 export class TestStatusComponent implements OnInit, OnDestroy {

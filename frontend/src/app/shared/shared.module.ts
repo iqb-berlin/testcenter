@@ -13,64 +13,44 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
-import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
-import { AlertComponent } from './components/alert/alert.component';
-import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { PageNavBarComponent } from './components/page-nav-bar/page-nav-bar.component';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { NewPasswordComponent } from './components/newpassword/new-password.component';
-import { TrustPipe } from './pipes/trust.pipe';
-import { BlockConditionPipe } from './pipes/block-condition.pipe';
-import { TemplateContextDirective } from './directives/template-context.directive';
 
-@NgModule({ declarations: [
-        ConfirmDialogComponent,
-        MessageDialogComponent,
-        BytesPipe,
-        CustomtextPipe,
-        BlockConditionPipe,
-        AlertComponent,
-        ErrorComponent,
-        TemplateContextDirective,
-        PageNavBarComponent,
-        TrustPipe,
-        PageNavBarComponent,
-        AutofocusDirective,
-        NewPasswordComponent
-    ],
-    exports: [
-        ConfirmDialogComponent,
-        MessageDialogComponent,
-        BytesPipe,
-        CustomtextPipe,
-        BlockConditionPipe,
-        AlertComponent,
-        ErrorComponent,
-        TemplateContextDirective,
-        PageNavBarComponent,
-        TrustPipe,
-        PageNavBarComponent,
-        AutofocusDirective,
-        NewPasswordComponent
-    ], imports: [CommonModule,
-        MatDialogModule,
-        MatIconModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatExpansionModule,
-        MatSnackBarModule,
-        MatCardModule,
-        FormsModule,
-        MatInputModule,
-        MatTooltipModule,
-        MatButtonToggleModule,
-        ReactiveFormsModule], providers: [
-        BackendService,
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+@NgModule({
+  declarations: [
+    ConfirmDialogComponent,
+    BytesPipe,
+    AutofocusDirective,
+    NewPasswordComponent
+  ],
+  exports: [
+    ConfirmDialogComponent,
+    BytesPipe,
+    AutofocusDirective,
+    NewPasswordComponent
+  ],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatExpansionModule,
+    MatSnackBarModule,
+    MatCardModule,
+    FormsModule,
+    MatInputModule,
+    MatTooltipModule,
+    MatButtonToggleModule,
+    ReactiveFormsModule
+  ],
+  providers: [
+    BackendService,
+    provideHttpClient(withInterceptorsFromDi())
+  ]
+})
 export class SharedModule {}
 export { BackendService } from './services/backend.service';
 export { CustomtextService } from './services/customtext/customtext.service';

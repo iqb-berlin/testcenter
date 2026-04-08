@@ -30,9 +30,7 @@ import { BackendService } from './backend.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
@@ -47,9 +45,7 @@ import { TestCardComponent } from './app-root/starter/test-card.component';
     AppComponent,
     AppRootComponent,
     SysCheckStarterComponent,
-    AdminLoginComponent,
     RouteDispatcherComponent,
-    LegalNoticeComponent,
     StarterComponent
   ],
   bootstrap: [AppComponent],
