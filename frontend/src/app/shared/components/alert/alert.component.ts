@@ -1,4 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 import {
   Observable, ReplaySubject, Subject, Subscription
 } from 'rxjs';
@@ -6,8 +8,6 @@ import { map } from 'rxjs/operators';
 import { CustomtextPipe } from '../../pipes/customtext/customtext.pipe';
 import { CustomtextService } from '../../services/customtext/customtext.service';
 import { AlertLevel } from '../../interfaces/alert.interfaces';
-import { MatIcon } from '@angular/material/icon';
-import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'tc-alert',

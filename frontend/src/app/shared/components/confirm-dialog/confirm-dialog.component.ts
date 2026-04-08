@@ -1,12 +1,16 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
 import { ConfirmDialogData } from '../../interfaces/confirm-dialog.interfaces';
 
 @Component({
-    selector: 'tc-confirm-dialog',
-    templateUrl: './confirm-dialog.component.html',
-    styleUrls: ['./confirm-dialog.component.css'],
-    standalone: false
+  selector: 'tc-confirm-dialog',
+  templateUrl: './confirm-dialog.component.html',
+  imports: [
+    MatDialogModule,
+    MatButton
+  ],
+  styleUrls: ['./confirm-dialog.component.css']
 })
 export class ConfirmDialogComponent implements OnInit {
   showcancel = true;

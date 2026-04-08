@@ -22,7 +22,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
-import { UnithostComponent } from './components/unithost/unithost.component';
 import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
@@ -76,7 +75,6 @@ export { TestControllerService } from './services/test-controller.service';
     UnitNavBarComponent
   ],
   declarations: [
-    UnithostComponent,
     TestControllerComponent,
     UnitMenuComponent
   ],

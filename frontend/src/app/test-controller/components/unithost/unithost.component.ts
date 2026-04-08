@@ -7,7 +7,7 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { MainDataService } from '@shared/shared.module';
+import { AlertComponent, CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -27,11 +27,28 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormField, MatInput } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   templateUrl: './unithost.component.html',
-  styleUrls: ['./unithost.component.css'],
-  standalone: false
+  imports: [
+    AsyncPipe,
+    MatProgressBar,
+    MatCardModule,
+    MatFormField,
+    CustomtextPipe,
+    MatInput,
+    AlertComponent,
+    FormsModule,
+    MatButton,
+    NgIf
+  ],
+  styleUrls: ['./unithost.component.css']
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {

@@ -2,9 +2,10 @@ import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
-  ConfirmDialogComponent,
+  AlertComponent,
+  ConfirmDialogComponent, CustomtextPipe,
   CustomtextService,
   MainDataService, MessageDialogComponent, MessageDialogData,
   PasswordChangeService
@@ -17,12 +18,37 @@ import { MessageService } from '@shared/services/message.service';
 import { HeaderService } from '@shared/services/header.service';
 import { ThemeService } from '@shared/services/theme.service';
 import { SysCheckDataService } from '@app/sys-check/sys-check-data.service';
+import { TestCardComponent } from '@app/app-root/starter/test-card.component';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from '@angular/material/expansion';
+import { AsyncPipe, KeyValuePipe, NgForOf, NgTemplateOutlet } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'tc-starter',
   templateUrl: './starter.component.html',
-  styleUrls: ['./starter.component.scss'],
-  standalone: false
+  imports: [
+    TestCardComponent,
+    AlertComponent,
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    CustomtextPipe,
+    AsyncPipe,
+    NgTemplateOutlet,
+    NgForOf,
+    MatButton,
+    RouterLink,
+    MatIcon,
+    KeyValuePipe
+  ],
+  styleUrls: ['./starter.component.scss']
 })
 export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bottomSentinel') sentinel!: ElementRef;

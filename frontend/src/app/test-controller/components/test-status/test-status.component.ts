@@ -10,7 +10,7 @@ import {
 import { AppError } from '@app/app.interfaces';
 import { UiVisibilityService } from '@shared/services/ui-visibility.service';
 import { ErrorComponent } from '@shared/components/error/error.component';
-import { TestControllerService } from '../../services/test-controller.service';
+import { TestControllerService } from '@app/test-controller';
 
 @Component({
   templateUrl: './test-status.component.html',

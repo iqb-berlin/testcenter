@@ -5,16 +5,6 @@ import { Router, RouterState } from '@angular/router';
 import {
   interval, Observable, Subscription, take
 } from 'rxjs';
-import UAParser from 'ua-parser-js';
-import { AppError } from '@app/app.interfaces';
-import { MainDataService } from '../../services/maindata/maindata.service';
-import { BugReportService } from '../../services/bug-report.service';
-import { BugReportResult } from '../../interfaces/bug-report.interfaces';
-import { FileService } from '../../services/file.service';
-import { MatCardModule } from '@angular/material/card';
-import { AlertComponent } from '@shared/components/alert/alert.component';
-import { MatButton, MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import {
   AsyncPipe,
   DatePipe,
@@ -25,7 +15,17 @@ import {
   NgSwitchCase,
   NgSwitchDefault
 } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import UAParser from 'ua-parser-js';
+import { AppError } from '@app/app.interfaces';
+import { AlertComponent } from '@shared/components/alert/alert.component';
+import { MainDataService } from '../../services/maindata/maindata.service';
+import { BugReportService } from '../../services/bug-report.service';
+import { BugReportResult } from '../../interfaces/bug-report.interfaces';
+import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'error',

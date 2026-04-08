@@ -12,22 +12,16 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { BackendService } from './services/backend.service';
 import { AutofocusDirective } from './directives/autofocus.directive';
 import { NewPasswordComponent } from './components/newpassword/new-password.component';
 
 @NgModule({
   declarations: [
-    ConfirmDialogComponent,
-    BytesPipe,
     AutofocusDirective,
     NewPasswordComponent
   ],
   exports: [
-    ConfirmDialogComponent,
-    BytesPipe,
     AutofocusDirective,
     NewPasswordComponent
   ],

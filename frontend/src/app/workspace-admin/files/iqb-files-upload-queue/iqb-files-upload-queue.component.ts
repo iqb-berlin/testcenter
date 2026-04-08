@@ -3,12 +3,24 @@ import {
 } from '@angular/core';
 import { IqbFilesUploadComponent } from '../iqb-files-upload/iqb-files-upload.component';
 import { UploadStatus } from '../files.interfaces';
+import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatButton } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'tc-files-upload-queue',
-    templateUrl: 'iqb-files-upload-queue.component.html',
-    styleUrls: ['../iqb-files.scss'],
-    standalone: false
+  selector: 'tc-files-upload-queue',
+  templateUrl: 'iqb-files-upload-queue.component.html',
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardContent,
+    IqbFilesUploadComponent,
+    MatCardActions,
+    MatButton,
+    NgIf
+  ],
+  styleUrls: ['../iqb-files.scss']
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads!: QueryList<IqbFilesUploadComponent>;
