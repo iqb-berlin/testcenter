@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { MainDataService, UserAgentService } from '../../shared/shared.module';
-import { AuthData } from '../../app.interfaces';
-import { BackendService } from '../../backend.service';
-import { HeaderService } from '../../core/header.service';
+import { Router } from '@angular/router';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { BackendService } from '@app/backend.service';
+import { HeaderService } from '@app/core/header.service';
+import { UserAgentService } from '@shared/shared.module';
 
 @Component({
   templateUrl: './admin-login.component.html',
@@ -26,12 +25,8 @@ export class AdminLoginComponent implements OnInit {
     pw: new FormControl('', [Validators.required])
   });
 
-  constructor(
-    public mainDataService: MainDataService,
-    private headerService: HeaderService,
-    private backendService: BackendService,
-    private router: Router
-  ) { }
+  constructor(public mainDataService: MainDataService, private headerService: HeaderService,
+              private backendService: BackendService, private router: Router) { }
 
   ngOnInit(): void {
     this.headerService.title = 'Anmelden';
@@ -48,8 +43,7 @@ export class AdminLoginComponent implements OnInit {
     this.problemCode = 0;
     this.backendService.adminLogin(loginData.name, loginData.pw).subscribe({
       next: authData => {
-        const authDataTyped = authData as AuthData;
-        this.mainDataService.setAuthData(authDataTyped);
+        this.mainDataService.setAuthData(authData);
         this.router.navigate(['/r/starter']);
       },
       error: error => {
