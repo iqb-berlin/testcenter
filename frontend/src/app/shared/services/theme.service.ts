@@ -43,7 +43,7 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
-    codeInputMode: 'keypad-symbols',
+    codeInputMode: 'text-field',
     imagePaths: {
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
       starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
