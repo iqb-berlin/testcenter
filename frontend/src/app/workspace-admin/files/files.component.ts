@@ -30,20 +30,6 @@ import { BackendService } from '../backend.service';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { FileDeletionReport } from './files.interfaces';
 import { FileService } from '../../shared/services/file.service';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { NgIf } from '@angular/common';
-import {
-  MatAccordion,
-  MatExpansionPanel, MatExpansionPanelDescription,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle
-} from '@angular/material/expansion';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { MatIcon } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatButton } from '@angular/material/button';
-import { MatTooltip } from '@angular/material/tooltip';
 
 interface FileStats {
   invalid: {
@@ -58,33 +44,8 @@ interface FileStats {
 
 @Component({
   templateUrl: './files.component.html',
-  imports: [
-    MatProgressBar,
-    NgIf,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
-    MatTable,
-    MatHeaderCell,
-    MatSort,
-    MatCheckbox,
-    MatCell,
-    MatIcon,
-    MatCardModule,
-    AlertComponent,
-    MatColumnDef,
-    MatHeaderCellDef,
-    MatCellDef,
-    MatProgressSpinner,
-    MatHeaderRow,
-    MatRow,
-    MatButton,
-    MatTooltip,
-    IqbFilesUploadQueueComponent
-  ],
-  styleUrls: ['./files.component.css']
+  styleUrls: ['./files.component.css'],
+  standalone: false
 })
 export class FilesComponent implements OnInit, OnDestroy {
   files: { [type in IQBFileType]: MatTableDataSource<IQBFile> };

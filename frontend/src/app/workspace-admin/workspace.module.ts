@@ -34,6 +34,7 @@ import { IqbFilesUploadQueueComponent } from './files/iqb-files-upload-queue/iqb
 import {
   IqbFilesUploadInputForDirective
 } from './files/iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
+import { BytesPipe } from '@shared/pipes/bytes/bytes.pipe';
 
 @NgModule({
   imports: [
@@ -61,7 +62,8 @@ import {
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    AlertComponent
+    AlertComponent,
+    BytesPipe
   ],
   exports: [
     WorkspaceComponent

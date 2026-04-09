@@ -15,14 +15,8 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 @Component({
   selector: 'tc-files-upload',
   templateUrl: './iqb-files-upload.component.html',
-  imports: [
-    NgIf,
-    NgForOf,
-    MatProgressBar,
-    AlertComponent,
-    KeyValuePipe
-  ],
-  styleUrls: ['../iqb-files.scss']
+  styleUrls: ['../iqb-files.scss'],
+  standalone: false
 })
 export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @HostBinding('class') myclass = 'iqb-files-upload';
