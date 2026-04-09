@@ -11,6 +11,7 @@ import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
 import { ThemeService } from './shared/services/theme.service';
 import { CustomImagesService } from './shared/services/custom-images.service';
+import { FooterService } from '@shared/services/footer.service';
 
 @Component({
   selector: 'tc-root',
@@ -33,7 +34,8 @@ export class AppComponent implements OnInit, OnDestroy {
               private customImageService: CustomImagesService,
               private themeService: ThemeService,
               private sanitizer: DomSanitizer,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              public footerService: FooterService) { }
 
   ngOnInit(): void {
     this.appErrorSubscription = this.mainDataService.appError$

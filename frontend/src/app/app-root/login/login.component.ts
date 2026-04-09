@@ -15,6 +15,7 @@ import {
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.component';
+import { FooterService } from '@shared/services/footer.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -54,7 +55,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     public mainDataService: MainDataService,
     private backendService: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private footerService: FooterService
   ) { }
 
   ngOnInit(): void {
@@ -62,6 +64,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
     this.checkBrowser();
+    this.footerService.showFooter.set(true);
   }
 
   nameInput(): void {
@@ -186,6 +189,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.footerService.showFooter.set(false);
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
