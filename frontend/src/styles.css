@@ -38,6 +38,10 @@ iframe.unitHost {
   flex-direction: column;
 }
 
+.mdc-button.mat-tonal-button {
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
 /*Styling for account panel. It is an overlay and therefore out of the component's scope*/
 .account-menu {
   width: 330px;

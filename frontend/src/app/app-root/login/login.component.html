@@ -1,10 +1,12 @@
 <div class="login-page">
   <div class ="welcome-section">
-    <img src="assets/example_laptop_splash.png">
-    <h1>Willkommen im IQB-Testcenter</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-      dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-      ut aliquip ex ea commodo consequat.</p>
+    <img src="assets/login-illustration.png" alt="illustration image">
+    <div>
+      <p class="heading">Willkommen im IQB-Testcenter</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+        ut aliquip ex ea commodo consequat.</p>
+    </div>
   </div>
   <div class="login-section">
     @if (!username) {
@@ -72,14 +74,13 @@
 
     <div class="button-section">
       @if (this.mainDataService.sysCheckAvailableForAll) {
-        <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
+        <button matButton="tonal" [routerLink]="['/r/check-starter']" data-cy="general-sys-check">
           Systemcheck
-        </a>
+        </button>
       }
-      <a [routerLink]="['/r/admin-login']" mat-raised-button color="primary" data-cy="general-sys-check">
+      <button matButton="tonal" [routerLink]="['/r/admin-login']" data-cy="general-sys-check">
         Adminbereich
-      </a>
+      </button>
     </div>
   </div>
-
 </div>

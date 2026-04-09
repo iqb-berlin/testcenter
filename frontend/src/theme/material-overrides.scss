@@ -8,4 +8,7 @@
     filled-container-shape: 10px,
     tonal-container-shape: 10px
   ));
+  @include mat.card-overrides((
+    elevated-container-color: var(--mat-sys-surface)
+  ));
 }

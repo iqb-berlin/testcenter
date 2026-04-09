@@ -4,8 +4,6 @@
 
 :host {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .login-page {
@@ -18,17 +16,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
   height: 100%;
-  width: 35%;
+  width: 25%;
   background-color: var(--mat-sys-secondary);
-  text-align: center;
+  gap: 48px;
+  box-sizing: border-box;
+  padding: 64px 24px;
 }
 
 .welcome-section img {
-  width: 90%;
-  height: 60%;
-  align-items: center;
+  width: 100%;
+}
+
+.welcome-section .heading {
+  text-align: center;
+  font-size: 30px;
 }
 
 .login-section {
@@ -37,7 +39,7 @@
   justify-content: start;
   align-items: start;
   margin-left: 64px;
-  gap: 32px;
+  gap: 60px;
   width: 65%;
 }
 
@@ -47,7 +49,7 @@
   flex-direction: column;
   text-align: left;
   width: 80%;
-  gap: 32px;
+  gap: 24px;
 }
 
 .password-headline {
