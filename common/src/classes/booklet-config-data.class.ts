@@ -2,7 +2,6 @@
 export class BookletConfigData {
   loading_mode: 'LAZY' | 'EAGER' = 'LAZY';
   logPolicy: 'disabled' | 'lean' | 'rich' | 'debug' = 'rich';
-  browserBehaviour: 'standard' | 'preventNav' = 'standard';
   pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap' = 'separate';
   page_navibuttons: 'OFF' | 'INDEX' | 'FULL' = 'INDEX';
   unit_navibuttons: 'OFF' | 'INDEX' | 'LABEL' = 'INDEX';

@@ -17,14 +17,6 @@
     },
     "defaultvalue": "rich"
   },
-  "browserBehaviour": {
-    "label": "Verhalten bei Browser-Navigation",
-    "options": {
-      "standard": "Standardverhalten des Browsers verwenden",
-      "preventNav": "Navigationselemente des Browsers (Zurück Button, direkte URL Eingabe) werden im Testverlauf verhindert"
-    },
-    "defaultvalue": "standard"
-  },
   "pagingMode": {
     "label": "pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)",
     "options": {

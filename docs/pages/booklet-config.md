@@ -34,11 +34,6 @@ Erfassen und Speichern von Log-Daten
  * **"rich" - Alles außer debug-Informationen**
  * "debug" - Auch debug-Informationen
 
-### browserBehaviour
-Verhalten bei Browser-Navigation
- * **"standard" - Standardverhalten des Browsers verwenden**
- * "preventNav" - Navigationselemente des Browsers (Zurück Button, direkte URL Eingabe) werden im Testverlauf verhindertNavigationselemente des Browsers (Zurück Button, direkte URL Eingabe) werden im Testverlauf verhindert
-
 ### pagingMode
 pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
  * **"separate" - pages are separated**
@@ -54,8 +49,8 @@ Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
 ### unit_navibuttons
 Navigationsbuttons für die Navigation zwischen den Aufgaben
  * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
- * **"INDEX" - Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben**
- * "LABEL" - Der Anzeigename der aktuellen Aufgabe wird angezeigt
+ * "INDEX" - Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben,
+ * **"LABEL" - Der Anzeigename der aktuellen Aufgabe wird angezeigt**
 
 ### unit_menu
 Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
