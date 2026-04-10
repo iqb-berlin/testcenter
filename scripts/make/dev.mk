@@ -84,6 +84,15 @@ logs:
 			--file docker-compose.dev.yml\
 		logs --follow $(service)
 
+## Open DB console
+connect-db:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.prod\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
+
 composer-install:
 	docker run --rm --interactive --tty\
 			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
