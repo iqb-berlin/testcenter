@@ -17,7 +17,6 @@ class XMLSchemaTest extends TestCase {
 
   function setUp(): void {
     VfsForTest::setUp();
-    $this->testUrls['local_full'] = ROOT_DIR . '/definitions/vo_SysCheck.xsd';
   }
 
   function tearDown(): void {
@@ -25,129 +24,81 @@ class XMLSchemaTest extends TestCase {
   }
 
   private $testUrls = [
-    'valid' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_SysCheck.xsd',
-    'valid_with_label' => 'https://raw.githubusercontent.com/iqb-berlin/testcenterd/130.0.0-alpha/definitions/vo_SysCheck.xsd',
-    'valid_but_not_existing' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/500.0.100/definitions/vo_SysCheck.xsd',
-    'valid_but_minor_not_existing' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1000/definitions/vo_SysCheck.xsd',
-    'valid_incomplete_version' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.1/definitions/vo_SysCheck.xsd',
-    'changed_repo_name' => 'https://raw.githubusercontent.com/iqb-berlin/future-repo/11.12.13/definitions/SysCheck.xsd',
-    'local' => '../definitions/vo_SysCheck.xsd',
-    'invalid' => 'http://www.topografix.com/GPX/1/0',
+    'valid_booklet' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4',
+    'valid_unit' => 'https://w3id.org/iqb/spec/unit-xml/17.4',
+    'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtakers-xml/17.6',
+    'valid_syscheck' => 'https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4',
+    'valid_unknown_repo' => 'https://w3id.org/iqb/spec/testcenter-unknown-xml/17.4',
+    'invalid_old_github' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.3/definitions/vo_Booklet.xsd',
+    'invalid_no_version' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml',
+    'invalid_wrong_domain' => 'http://www.topografix.com/GPX/1/0',
     'empty' => ''
   ];
 
-  function test_parseSchemaUrl() {
+  function test_parseSchemaUrl_validUrls(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_booklet']);
     $this->assertEquals([
-      "isExternal" => true,
-      "version" => '5.0.1',
-      "mayor" => 5,
-      "minor" => 0,
-      "patch" => 1,
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['valid'],
-      "label" => ''
-    ], XMLSchema::parseSchemaUrl($this->testUrls['valid']));
+      'isExternal' => true,
+      'repo' => 'testcenter-booklet-xml',
+      'type' => 'Booklet',
+      'version' => '17.4',
+      'uri' => $this->testUrls['valid_booklet']
+    ], $result);
 
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_unit']);
     $this->assertEquals([
-      "isExternal" => true,
-      "version" => '11.12.13',
-      "mayor" => 11,
-      "minor" => 12,
-      "patch" => 13,
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['changed_repo_name'],
-      "label" => ''
-    ], XMLSchema::parseSchemaUrl($this->testUrls['changed_repo_name']));
-
-    $this->assertEquals([
-      "isExternal" => false,
-      "version" => '',
-      "mayor" => 0,
-      "minor" => 0,
-      "patch" => 0,
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['local'],
-      "label" => ''
-    ], XMLSchema::parseSchemaUrl($this->testUrls['local']));
-
-    $this->assertEquals([
-      "isExternal" => false,
-      "version" => '',
-      "mayor" => 0,
-      "minor" => 0,
-      "patch" => 0,
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['local_full'],
-      "label" => ''
-    ], XMLSchema::parseSchemaUrl($this->testUrls['local_full']));
-
-    $this->assertEquals([
-      "isExternal" => true,
-      "version" => '',
-      "mayor" => 0,
-      "minor" => 0,
-      "patch" => 0,
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['valid_incomplete_version'],
-      "label" => ''
-    ], XMLSchema::parseSchemaUrl($this->testUrls['valid_incomplete_version']));
-
-    $this->assertEquals([
-      "isExternal" => true,
-      "version" => '130.0.0-alpha',
-      "mayor" => 130,
-      "minor" => 0,
-      "patch" => 0,
-      "label" => 'alpha',
-      "type" => 'SysCheck',
-      "uri" => $this->testUrls['valid_with_label']
-    ], XMLSchema::parseSchemaUrl($this->testUrls['valid_with_label']));
-
-    $this->assertNull(XMLSchema::parseSchemaUrl($this->testUrls['invalid']));
-    $this->assertNull(XMLSchema::parseSchemaUrl($this->testUrls['empty']));
+      'isExternal' => true,
+      'repo' => 'unit-xml',
+      'type' => 'Unit',
+      'version' => '17.4',
+      'uri' => $this->testUrls['valid_unit']
+    ], $result);
   }
 
-  function test_schemaCache() {
-    SystemConfig::$debug_allowExternalXmlSchema = true;
-    $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid']));
-    $this->assertEquals("vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", $result);
+  function test_parseSchemaUrl_emptyUrl(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['empty']);
+    $this->assertNull($result);
+  }
+
+  function test_parseSchemaUrl_invalidOldGithubUrl(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_old_github']);
+    $this->assertNull($result);
+  }
+
+  function test_parseSchemaUrl_invalidNoVersion(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_no_version']);
+    $this->assertNull($result);
+  }
+
+  function test_parseSchemaUrl_invalidWrongDomain(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_wrong_domain']);
+    $this->assertNull($result);
+  }
+
+  function test_schemaCache(): void {
+    $result = XMLSchema::getSchemaFilePath(
+      XMLSchema::parseSchemaUrl($this->testUrls['valid_booklet'])
+    );
     $this->assertEquals(
-      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
-      $this->readFirstChars($result, 66)
+      "vfs://root/data/.schemas/testcenter-booklet-xml/17.4/testcenter-booklet-xml.xsd",
+      $result
     );
 
-    XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid_but_not_existing']));
-
-    $this->assertTrue(file_exists("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd"));
-    $this->assertTrue(filesize("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd") == 0);
-
-    // fake cache file
-    copy("vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", "vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1000.xsd");
-    $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid_but_minor_not_existing']));
-    $this->assertEquals(
-      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
-      $this->readFirstChars($result, 66)
-    );
-
-    $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['local']));
-    $this->assertEquals(ROOT_DIR . "/definitions/vo_SysCheck.xsd", $result);
-    $this->assertEquals(
-      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
-      $this->readFirstChars($result, 66)
-    );
-
-    $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['local_full']));
-    $this->assertEquals(ROOT_DIR . "/definitions/vo_SysCheck.xsd", $result);
-    $this->assertEquals(
-      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
-      $this->readFirstChars($result, 66)
+    $this->assertStringStartsWith(
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+      file_get_contents($result)
     );
   }
 
-  private function readFirstChars($filePath, $chars = 50): string {
-    $fileHandle = fopen($filePath, 'r');
-    $data = fread($fileHandle, $chars);
-    fclose($fileHandle);
-    return $data;
+  function test_schemaCache_downloadFails(): void {
+    $result = XMLSchema::getSchemaFilePath(
+      XMLSchema::parseSchemaUrl($this->testUrls['valid_unknown_repo'])
+    );
+    $this->assertNull($result);
+  }
+
+  function test_getSchemaFilePath_null(): void {
+    $result = XMLSchema::getSchemaFilePath(null);
+    $this->assertNull($result);
   }
 }
