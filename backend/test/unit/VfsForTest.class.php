@@ -107,7 +107,9 @@ class VfsForTest {
         "testtakers-broken.xml" =>
           str_replace('<Metadata', '###BREAK###', $testtakersFileContents),
         "testtakers-missing-booklet.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
           . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
           . '<Group id="a_group" label="A"><Login mode="run-hot-return" name="a_login">'
           . '<Booklet>BOOKLET.MISSING</Booklet></Login></Group></Testtakers>',
@@ -126,30 +128,40 @@ class VfsForTest {
           . '<Label>Unit with missing DefintionRef</Label></Metadata>'
           . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
         "unit-unused-and-missing-player.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_player</Id>'
-          . '<Label>Unit with missing player</Label></Metadata>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">'
+          . '<Metadata><Id>unit_unused_and_missing_player</Id><Label>Unit with missing player</Label></Metadata>' // <Metadata> wurde ergänzt
           . '<Definition player="missing-player">{}</Definition></Unit>',
         "resource-unused.voud" =>
           '{}',
         "testtakers-duplicate-login-name.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
           . '<Metadata><Description>Teststakers with duplicate login in same file</Description></Metadata>'
           . '<Group id="some_group" label="A">'
           . '<Login mode="monitor-group" name="duplicate_login" pw="13245678"></Login>'
           . '<Login mode="monitor-group" name="duplicate_login" pw="13245678"></Login>'
           . '</Group></Testtakers>',
         "testtakers-duplicate-login-name-cross-file-1.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
           . '<Metadata><Description>Teststakers with id which is used on other file in same ws (1/2)</Description></Metadata>'
           . '<Group id="unique_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
           . '</Login></Group></Testtakers>',
         "testtakers-duplicate-login-name-cross-file-2.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
           . '<Metadata><Description>Teststakers with id which is used on other file in same ws (2/2)</Description></Metadata>'
           . '<Group id="unique_group_2" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
           . '</Login></Group></Testtakers>',
         "testtakers-duplicate-login-name-cross-ws.xml" =>
-          '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+          '<?xml version="1.0" encoding="utf-8"?>'
+          . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
           . '<Metadata><Description>Teststakers with id which is used on other ws</Description></Metadata>'
           . '<Group id="another_group" label="A"><Login mode="monitor-group" name="another_login" pw="13245678">'
           . '</Login></Group></Testtakers>'
