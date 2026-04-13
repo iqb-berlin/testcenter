@@ -34,7 +34,13 @@ class XMLFilesUnitTest extends TestCase {
 //    }
 
   function test_getPlayerIfExists() {
-    $unitString = '<Unit><Metadata><Id>i</Id><Label>l</Label></Metadata><Definition player="%s">a</Definition></Unit>';
+    $unitString = (
+      "<Unit xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/unit-xml/17.4\">"
+      . "<Metadata><Id>i</Id><Label>l</Label></Metadata>"
+      . "<Definition player='%s'>a</Definition>"
+      . "</Unit>"
+   );
 
     $workspaceCache = new WorkspaceCacheMock([
       'SUPER-PLAYER-1.7.HTML',
