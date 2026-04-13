@@ -19,7 +19,8 @@ class XMLFileTesttakersExposed extends XMLFileTesttakers {
  */
 class XMLFilesTesttakersTest extends TestCase {
   private $exampleXML1 = <<<END
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">
   <Metadata>
     <Description>example</Description>
   </Metadata>
@@ -44,7 +45,8 @@ class XMLFilesTesttakersTest extends TestCase {
 END;
 
   private $exampleXML2 = <<<END
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">
   <Metadata>
     <Description>example</Description>
   </Metadata>
