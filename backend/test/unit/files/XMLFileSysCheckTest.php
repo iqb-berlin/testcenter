@@ -54,7 +54,9 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getCustomTexts() {
-    $xml = "<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
+    $xml = "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . "<Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
       . "<CustomText key='some'>thing</CustomText>"
       . "<CustomText key='any'>way</CustomText>"
       . "</Config></SysCheck>";
@@ -69,17 +71,30 @@ class XMLFileSysCheckTest extends TestCase {
     $result = $xmlFile->getSkipNetwork();
     $this->assertFalse($result);
 
-    $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config skipnetwork='true'></Config></SysCheck>");
+    $xmlFile = XMLFileSysCheck::fromString(
+      "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . "<Metadata><Id>x</Id><Label>l</Label></Metadata>"
+      . "<Config skipnetwork='true'></Config>"
+      . "</SysCheck>"
+    );
     $result = $xmlFile->getSkipNetwork();
     $this->assertTrue($result);
 
-    $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata></SysCheck>");
+    $xmlFile = XMLFileSysCheck::fromString(
+      "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . "<Metadata><Id>x</Id><Label>l</Label></Metadata>"
+      . "</SysCheck>"
+    );
     $result = $xmlFile->getSkipNetwork();
     $this->assertFalse($result);
   }
 
   function test_getQuestions() {
-    $xml = "<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
+    $xml = "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . "<Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
       . '<Q id="1" type="header" prompt="some_title" required="true"/>'
       . '<Q id="2" type="string" prompt="or_so">1#2#3</Q>'
       . "</Config></SysCheck>";

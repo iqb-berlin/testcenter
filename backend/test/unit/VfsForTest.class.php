@@ -109,7 +109,7 @@ class VfsForTest {
         "testtakers-missing-booklet.xml" =>
           '<?xml version="1.0" encoding="utf-8"?>'
           . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">'
           . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
           . '<Group id="a_group" label="A"><Login mode="run-hot-return" name="a_login">'
           . '<Booklet>BOOKLET.MISSING</Booklet></Login></Group></Testtakers>',
@@ -138,7 +138,7 @@ class VfsForTest {
         "testtakers-duplicate-login-name.xml" =>
           '<?xml version="1.0" encoding="utf-8"?>'
           . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">'
           . '<Metadata><Description>Teststakers with duplicate login in same file</Description></Metadata>'
           . '<Group id="some_group" label="A">'
           . '<Login mode="monitor-group" name="duplicate_login" pw="13245678"></Login>'
@@ -147,21 +147,21 @@ class VfsForTest {
         "testtakers-duplicate-login-name-cross-file-1.xml" =>
           '<?xml version="1.0" encoding="utf-8"?>'
           . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">'
           . '<Metadata><Description>Teststakers with id which is used on other file in same ws (1/2)</Description></Metadata>'
           . '<Group id="unique_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
           . '</Login></Group></Testtakers>',
         "testtakers-duplicate-login-name-cross-file-2.xml" =>
           '<?xml version="1.0" encoding="utf-8"?>'
           . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">'
           . '<Metadata><Description>Teststakers with id which is used on other file in same ws (2/2)</Description></Metadata>'
           . '<Group id="unique_group_2" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
           . '</Login></Group></Testtakers>',
         "testtakers-duplicate-login-name-cross-ws.xml" =>
           '<?xml version="1.0" encoding="utf-8"?>'
           . '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">'
+          . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">'
           . '<Metadata><Description>Teststakers with id which is used on other ws</Description></Metadata>'
           . '<Group id="another_group" label="A"><Login mode="monitor-group" name="another_login" pw="13245678">'
           . '</Login></Group></Testtakers>'

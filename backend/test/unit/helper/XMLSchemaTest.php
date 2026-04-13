@@ -26,7 +26,7 @@ class XMLSchemaTest extends TestCase {
   private $testUrls = [
     'valid_booklet' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4',
     'valid_unit' => 'https://w3id.org/iqb/spec/unit-xml/17.4',
-    'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtakers-xml/17.6',
+    'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtakers-xml/18.0',
     'valid_syscheck' => 'https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4',
     'valid_unknown_repo' => 'https://w3id.org/iqb/spec/testcenter-unknown-xml/17.4',
     'invalid_old_github' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.3/definitions/vo_Booklet.xsd',
