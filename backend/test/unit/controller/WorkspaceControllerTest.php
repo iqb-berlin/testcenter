@@ -50,6 +50,7 @@ final class WorkspaceControllerTest extends TestCase {
     if (!defined('DATA_DIR')) {
       define('DATA_DIR', ROOT_DIR . '/data');
     }
+    require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/test-helper/RequestCreator.class.php";
     require_once "test/unit/test-helper/ResponseCreator.class.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
