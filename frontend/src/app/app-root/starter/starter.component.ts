@@ -250,9 +250,11 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // static not possible because it is used in the template
   // eslint-disable-next-line class-methods-use-this
-  scrollDown() {
-    window.scrollBy({
-      top: window.innerHeight,
+  scrollDown(): void {
+    const scrollableContainer = document.querySelector('tc-starter')?.parentElement;
+    if (!scrollableContainer) return;
+    scrollableContainer.scrollBy({
+      top: 300,
       behavior: 'smooth'
     });
   }
