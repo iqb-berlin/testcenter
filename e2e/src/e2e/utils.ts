@@ -55,7 +55,7 @@ export const deleteDownloadsFolder = () => {
 export const visitLoginPage = () => {
   const loginUrl = `${Cypress.config().baseUrl}/#/r/login/?testMode=true`;
   cy.visit(loginUrl);
-  cy.get('[data-cy="login-admin"]')
+  cy.get('[data-cy="login-user"]')
     .should('be.visible');
   cy.get('[formcontrolname="name"]')
     .should(`be.visible`);
@@ -211,6 +211,7 @@ export const openSampleWorkspace2 = () => {
 };
 
 export const loginSuperAdmin = () => {
+  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
   insertCredentials('super', 'user123');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
@@ -223,6 +224,7 @@ export const loginSuperAdmin = () => {
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string) => {
+  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   insertCredentials(username, password);
@@ -236,19 +238,46 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
 
 export const loginTestTaker =
   (name: string, password: string): void => {
-    insertCredentials(name, password);
-    cy.intercept('PUT', `${Cypress.env('urls').backend}/test`).as('testId');
-    cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
+    cy.get('[formcontrolname="name"]')
+      .should(`be.visible`)
+      .clear()
+      .type(name);
     cy.get('[data-cy="login-user"]')
       .click();
+
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/test`).as('testId');
+    cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
+
+    if (password) {
+      cy.get('[formcontrolname="pw"]')
+        .should(`be.visible`)
+        .clear()
+        .type(password);
+      cy.get('[data-cy="login-user"]')
+        .click();
+    }
+    
     cy.wait(['@commands']);
   };
 
 export const loginMonitor =
   (name: string, password: string): void => {
-    insertCredentials(name, password);
+    cy.get('[formcontrolname="name"]')
+      .should(`be.visible`)
+      .clear()
+      .type(name);
     cy.get('[data-cy="login-user"]')
       .click();
+
+    if (password) {
+      cy.get('[formcontrolname="pw"]')
+        .should(`be.visible`)
+        .clear()
+        .type(password);
+      cy.get('[data-cy="login-user"]')
+        .click();
+    }
+    
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="logout"]')
       .should('be.visible');
