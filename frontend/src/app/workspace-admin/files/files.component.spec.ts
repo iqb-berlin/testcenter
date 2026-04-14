@@ -9,7 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MainDataService, SharedModule } from '../../shared/shared.module';
+import { AlertComponent, MainDataService, SharedModule } from '../../shared/shared.module';
 import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
@@ -54,7 +54,8 @@ describe('FilesComponent', () => {
         MatProgressSpinner,
         SharedModule,
         NoopAnimationsModule,
-        MatIconTestingModule
+        MatIconTestingModule,
+        AlertComponent
       ],
       providers: [
         {

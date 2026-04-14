@@ -1,41 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { matIconRegistryMock } from '@app/test-controller/test/icon-registry-mock';
 import { LoginHelpDialogComponent } from './login-help-dialog.component';
 
-describe('MessageDialogComponent', () => {
+describe('LoginHelpDialogComponent', () => {
   let fixture: ComponentFixture<LoginHelpDialogComponent>;
   let component: LoginHelpDialogComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        LoginHelpDialogComponent
+      imports: [
+        LoginHelpDialogComponent, MatIconModule
       ],
       providers: [
         {
-          provide: MAT_DIALOG_DATA,
-          useValue: {
-            type: 0,
-            title: '',
-            content: 'content',
-            closebuttonlabel: 'close'
-          }
+          provide: MatIconRegistry,
+          useValue: matIconRegistryMock
         }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      ]
     }).compileComponents();
     fixture = TestBed.createComponent(LoginHelpDialogComponent);
-    component = fixture.debugElement.componentInstance;
+    component = fixture.componentInstance;
   });
 
-  it('should create a component', async () => {
+  it('should create a component', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should take default properties for those which are omitted on #ngOnInit()', async () => {
-    component.ngOnInit();
-    expect(component.msgdata.title).toEqual('Hinweis');
   });
 });

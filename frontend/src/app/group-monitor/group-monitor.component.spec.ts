@@ -102,9 +102,6 @@ describe('GroupMonitorComponent', () => {
       declarations: [
         GroupMonitorComponent,
         TestSessionComponent,
-        CustomtextPipe,
-        AlertComponent,
-        TemplateContextDirective,
         TimeLeftPipe,
         PositionPipe
       ],
@@ -120,7 +117,10 @@ describe('GroupMonitorComponent', () => {
         MatCheckboxModule,
         MatTableModule,
         MatSlideToggleModule,
-        MatIconTestingModule
+        MatIconTestingModule,
+        AlertComponent,
+        TemplateContextDirective,
+        CustomtextPipe
       ],
       providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },
