@@ -15,7 +15,7 @@ import { RouterLink } from '@angular/router';
         @if (mainDataService.isTestingMode) {
           <span style="color:red">Testmode!</span>
         }
-        IQB-Testcenter Version {{mainDataService.appConfig?.version}}
+        Version {{mainDataService.appConfig?.version}}
       </div>
       <div class="all-buttons">
         <button matButton [routerLink]="['/legal-notice']">Barrierefreiheit</button>

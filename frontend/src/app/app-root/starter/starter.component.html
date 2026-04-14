@@ -99,20 +99,19 @@
 }
 
 <div class="button-box">
-    @if (isSuperAdmin) {
-      <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
-        Systemverwaltung
-      </button>
-    }
-    @if (claims.workspaceAdmin) {
-      <button matButton="tonal" data-cy="change-password" (click)="changePassword()">
-        Passwort ändern
-      </button>
-    }
-    <button matButton="tonal" data-cy="logout" (click)="mds.logOut()">Neu anmelden</button>
-    @if (claims.review) {
-      <button matButton="tonal" (click)="downloadReview()">
-        Reviews downloaden
-      </button>
-    }
+  @if (isSuperAdmin) {
+    <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
+      Systemverwaltung
+    </button>
+  }
+  @if (claims.workspaceAdmin) {
+    <button matButton="tonal" data-cy="change-password" (click)="changePassword()">
+      Passwort ändern
+    </button>
+  }
+  @if (claims.review) {
+    <button matButton="tonal" (click)="downloadReview()">
+      Reviews downloaden
+    </button>
+  }
 </div>
