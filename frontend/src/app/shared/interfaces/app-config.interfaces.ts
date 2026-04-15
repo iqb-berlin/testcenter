@@ -30,4 +30,4 @@ export interface SysConfig {
   fileServiceUri: string;
 }
 
-export const DEFAULT_LOGO = 'assets/IQB-LogoA.png';
+export const DEFAULT_LOGO = 'assets/IQB-Logo-2025.png';
