@@ -1,4 +1,5 @@
 import {
+  clickCardButton,
   loginMonitor,
   loginTestTaker,
   logoutTestTakerHot,
@@ -31,8 +32,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('set the view that configured in the small profile', () => {
-    cy.get('[data-cy="GM-filter-profiles-1"]')
-      .click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_activity_button"]')
@@ -42,8 +42,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('configured columns in small profile are only visible', () => {
-    cy.get('[data-cy="GM-filter-profiles-1"]')
-      .click();
+    clickCardButton('GM-filter-profiles-1', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_columns_button"]')
@@ -62,8 +61,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('set the filter from small-profile', () => {
-    cy.get('[data-cy="GM-filter-profiles-1"]')
-      .click();
+    clickCardButton('GM-filter-profiles-1', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.contains('test/xxx')
       .should('not.exist');
     cy.get('[data-cy="GM_setting_button"]')
@@ -76,8 +74,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('set the view that configured in the full profile', () => {
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_activity_button"]')
@@ -87,8 +84,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('configured columns in full profile are only visible', () => {
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_columns_button"]')
@@ -103,8 +99,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('there are no filters from small-profile', () => {
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_filter_button"]')
@@ -117,8 +112,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('create a new  filter', () => {
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_filter_button"]')

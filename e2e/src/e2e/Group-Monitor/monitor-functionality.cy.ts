@@ -24,7 +24,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
   it('group-monitor login', () => {
     visitLoginPage();
     loginMonitor('GM-1', '123');
-    clickCardButton('groupMonitor-card', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
+    clickCardButton('groupMonitor-card-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.contains('testtaker-a');
   });
 
@@ -100,7 +100,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
 
   it('button: unlock', () => {
     loginMonitor('GM-1', '123');
-    clickCardButton('groupMonitor-card', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
+    clickCardButton('groupMonitor-card-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     const testId = Cypress.env('savedTestId');
     cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, req => {
       req.continue(res => {
