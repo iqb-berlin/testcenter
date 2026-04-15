@@ -31,7 +31,7 @@
             "styles": [
               "src/theme/index.scss",
               "src/styles.css",
-              "src/assets/fonts/roboto-v29/roboto.css"
+              "src/assets/fonts/fonts.css"
             ],
             "scripts": [
               "./node_modules/ua-parser-js/dist/ua-parser.min.js"
@@ -89,7 +89,7 @@
             "styles": [
               "src/theme/index.scss",
               "src/styles.css",
-              "src/assets/fonts/roboto-v29/roboto.css"
+              "src/assets/fonts/fonts.css"
             ],
             "scripts": [
               "./node_modules/ua-parser-js/dist/ua-parser.min.js"

@@ -4,7 +4,7 @@ html, body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 /* has to be global because dynamic created element is not in the scope of the component */
