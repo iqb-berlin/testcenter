@@ -1,5 +1,5 @@
 import {
-  cleanUp,
+  cleanUp, clickCardButton,
   giveTestId,
   loginMonitor,
   loginTestTaker,
@@ -24,8 +24,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
   it('group-monitor login', () => {
     visitLoginPage();
     loginMonitor('GM-1', '123');
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('groupMonitor-card', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.contains('testtaker-a');
   });
 
@@ -101,8 +100,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
 
   it('button: unlock', () => {
     loginMonitor('GM-1', '123');
-    cy.get('[data-cy="GM-filter-profiles-0"]')
-      .click();
+    clickCardButton('groupMonitor-card', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     const testId = Cypress.env('savedTestId');
     cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, req => {
       req.continue(res => {

@@ -137,9 +137,9 @@ export const logoutAdmin = () => cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       cy.get('[data-cy="logout"]')
         .click();
-      cy.get('[data-cy="login-admin"]').should('be.visible');
+      cy.get('[data-cy="login-admin-form"]');
     }
-    cy.get('[data-cy="login-admin"]').should('be.visible');
+    cy.get('[data-cy="login-admin-form"]');
   });
 
 export const logoutTestTakerHot = (): Chainable => {
@@ -160,11 +160,12 @@ export const logoutTestTakerHot = (): Chainable => {
     cy.get('[data-cy="endTest-1"]').click();
     cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
-    cy.contains('Status:').should('be.visible');
-    cy.get('[data-cy="logout"]').click();
+    cy.contains('Übersicht').should('be.visible');
+    cy.get('[data-cy="account-button"]').click();
+    cy.get('[data-cy="logout-button"]').click();
     cy.wait('@waitForDeleteSession');
 
-    return cy.get('[data-cy="login-admin"]').should('be.visible');
+    return cy.get('[data-cy="login-admin-form"]');
   });
 };
 
@@ -182,15 +183,16 @@ export const logoutTestTakerDemo = (): Chainable => {
         .click();
     }
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
-    cy.contains('Status:').should('be.visible');
-    cy.get('[data-cy="logout"]').click();
+    cy.contains('Übersicht').should('be.visible');
+    cy.get('[data-cy="account-button"]').click();
+    cy.get('[data-cy="logout-button"]').click();
     cy.wait('@waitForDeleteSession');
 
-    return cy.get('[data-cy="login-admin"]').should('be.visible');
+    return cy.get('[data-cy="login-admin-form"]');
   });
 };
 
-export const clickCardButton = (cardType: 'workspace-card' | 'booklet-card', cardLabel: string, buttonText: string) => {
+export const clickCardButton = (cardType: 'workspace-card' | 'booklet-card' | 'groupMonitor-card', cardLabel: string, buttonText: string) => {
   cy.contains(`[data-cy^="${cardType}-"]`, cardLabel)
     .find('[data-cy="card-button"]')
     .as('cardButton');
@@ -285,7 +287,7 @@ export const loginMonitor =
     }
 
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.get('[data-cy="logout"]')
+    cy.get('[data-cy="account-button"]')
       .should('be.visible');
   };
 

@@ -21,9 +21,9 @@
 
   @if (claims.studyMonitor) {
     <h3>Gesamte Studie überwachen</h3>
-    @for (accessObject of claims.studyMonitor; track accessObject.id) {
-      <tc-test-card [name]="accessObject.label" [buttonLabel]="'Studien-Monitor Starten'"
-                    (select)="buttonGotoStudyMonitor(accessObject)">
+    @for (studyMonitor of claims.studyMonitor; track studyMonitor.id) {
+      <tc-test-card [name]="studyMonitor.label" [buttonLabel]="'Studien-Monitor Starten'"
+                    (select)="buttonGotoStudyMonitor(studyMonitor)">
       </tc-test-card>
     }
   }
@@ -40,11 +40,12 @@
 
   @if (claims.testGroupMonitor) {
     <h3>Testgruppen-Überwachung</h3>
-    @for (accessObject of claims.testGroupMonitor; track accessObject.id; let i = $index) {
-      <tc-test-card [name]="accessObject.label"
+    @for (groupMonitor of claims.testGroupMonitor; track groupMonitor.id; let i = $index) {
+      <tc-test-card [name]="groupMonitor.label"
                     [buttonLabel]="'Gruppen-Monitor Starten'"
-                    [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
-                    (select)="buttonGotoMonitor(accessObject)">
+                    [disabled]="(!!groupMonitor.flags.scheduled) || (!!groupMonitor.flags.expired)"
+                    (select)="buttonGotoMonitor(groupMonitor)"
+                    [attr.data-cy]="'groupMonitor-card-' + groupMonitor.label">
       </tc-test-card>
     }
     <tc-alert *ngIf="claims.testGroupMonitor.length === 0"
