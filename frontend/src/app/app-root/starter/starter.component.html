@@ -9,7 +9,9 @@
 <div class="cards">
   @if (claims.workspaceAdmin) {
     @for (workspace of workspaces; track workspace.id; let i = $index) {
-      <tc-test-card [name]="workspace.label" [index]="i"
+      <tc-test-card [name]="workspace.label"
+                    [index]="i"
+                    [attr.data-cy]="'workspace-card-' + workspace.label"
                     (select)="buttonGotoWorkspaceAdmin(workspace)"></tc-test-card>
     }
     @if (!workspaces.length) {
@@ -28,7 +30,10 @@
 
   <ng-template #testCardList>
     @for (booklet of availableBooklets; track booklet.name; let i = $index) {
-      <tc-test-card [name]="booklet.name" [index]="i" [mode]="booklet.mode"
+      <tc-test-card [name]="booklet.name"
+                    [index]="i"
+                    [mode]="booklet.mode"
+                    [attr.data-cy]="'booklet-card-'+ booklet.name"
                     (select)="startTest(booklet.claim)"></tc-test-card>
     }
   </ng-template>
