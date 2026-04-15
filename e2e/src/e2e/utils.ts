@@ -192,8 +192,8 @@ export const logoutTestTakerDemo = (): Chainable => {
   });
 };
 
-export const clickCardButton = (cardType: 'workspace-card' | 'booklet-card' | 'groupMonitor-card', cardLabel: string, buttonText: string) => {
-  cy.contains(`[data-cy^="${cardType}-"]`, cardLabel)
+export const clickCardButton = (element: string, cardLabel: string, buttonText: string) => {
+  cy.contains(`[data-cy^="${element}"]`, cardLabel)
     .find('[data-cy="card-button"]')
     .as('cardButton');
 
