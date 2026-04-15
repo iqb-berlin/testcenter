@@ -20,6 +20,7 @@ export class NavigationComponent implements OnChanges {
   @Input() navContext!: NavControlContext;
   @Output() back: EventEmitter<void> = new EventEmitter<void>();
   @Output() forward: EventEmitter<void> = new EventEmitter<void>();
+  @Input() dataCy?: string;
 
   maxListTabs?: number[];
 

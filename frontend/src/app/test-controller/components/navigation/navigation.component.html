@@ -2,6 +2,7 @@
   <button matIconButton class="nav-button previous-button"
      matTooltip="Zurück"
      [disabled]="!navContext.isBackwardAllowed"
+     [attr.data-cy]="dataCy + '-backward'"
      (click)="back.emit()">
     <mat-icon svgIcon="keyboard_arrow_left"></mat-icon>
   </button>
@@ -27,6 +28,7 @@
   <button matIconButton class="nav-button next-button"
      matTooltip="Weiter"
      [disabled]="!navContext.isForwardAllowed"
+     [attr.data-cy]="dataCy + '-forward'"
      (click)="forward.emit()">
     <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
   </button>

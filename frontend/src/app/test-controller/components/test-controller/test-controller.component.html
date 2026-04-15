@@ -3,12 +3,14 @@
 <div class="nav-header flex-row">
   @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN') {
     <tc-navigation-control [navContext]="unitNavContext"
+                           dataCy="unit-navigation"
                            (back)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
                            (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
     </tc-navigation-control>
   }
   @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN') {
     <tc-navigation-control [navContext]="pageNavContext"
+                           dataCy="page-navigation"
                            (back)="gotoPreviousPage()"
                            (forward)="gotoNextPage()">
     </tc-navigation-control>
