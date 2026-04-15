@@ -1,6 +1,6 @@
 import Chainable = Cypress.Chainable;
 
-export const cleanUp = (): Chainable =>  {
+export const cleanUp = (): Chainable => {
   cy.clearCookies();
   cy.clearLocalStorage();
   cy.clearAllSessionStorage();
@@ -9,43 +9,39 @@ export const cleanUp = (): Chainable =>  {
 };
 
 export const sendMonitorCommand = ({
-                                     method = 'PUT',
-                                     url = 'http://localhost/api/monitor/command',
-                                     expectedStatus = 201,
-                                     keyword = '',
-                                     args = [],
-                                     testIds = [],
-                                     authToken = 'static:person:filter-profiles_GM-1_'
-                                   } = {}) => {
-  return cy.request({
-    method,
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json, text/plain, */*',
-      'AuthToken': authToken,
-      'TestMode': 'integration'
-    },
-    body: {
-      keyword: keyword,
-      arguments: args,
-      timestamp: Date.now() / 1000,
-      testIds: testIds.map(id => Number(id))
-    }
-  }).then((response) => {
-    if (expectedStatus !== null) {
-      expect(response.status).to.eq(expectedStatus);
-    }
-    return response;
-  });
-};
+  method = 'PUT',
+  url = 'http://localhost/api/monitor/command',
+  expectedStatus = 201,
+  keyword = '',
+  args = [],
+  testIds = [],
+  authToken = 'static:person:filter-profiles_GM-1_'
+} = {}) => cy.request({
+  method,
+  url,
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json, text/plain, */*',
+    AuthToken: authToken,
+    TestMode: 'integration'
+  },
+  body: {
+    keyword: keyword,
+    arguments: args,
+    timestamp: Date.now() / 1000,
+    testIds: testIds.map(id => Number(id))
+  }
+}).then(response => {
+  if (expectedStatus !== null) {
+    expect(response.status).to.eq(expectedStatus);
+  }
+  return response;
+});
 
-export const giveTestId = (): Chainable => {
-  return cy.wait('@testId').then((interception) => {
-    const testId = interception.response?.body;
-    Cypress.env('savedTestId', testId);
-  });
-}
+export const giveTestId = (): Chainable => cy.wait('@testId').then(interception => {
+  const testId = interception.response?.body;
+  Cypress.env('savedTestId', testId);
+});
 
 export const deleteDownloadsFolder = () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
@@ -58,7 +54,7 @@ export const visitLoginPage = () => {
   cy.get('[data-cy="login-user"]')
     .should('be.visible');
   cy.get('[formcontrolname="name"]')
-    .should(`be.visible`);
+    .should('be.visible');
   cy.contains('Testmode!').should('be.visible');
   cy.url().should('include', '/#/r/login');
   cy.url().should('include', 'testMode=true');
@@ -66,15 +62,15 @@ export const visitLoginPage = () => {
 };
 
 export const visitLoginPageWithProdDb = () => {
-   cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
- };
+  cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
+};
 
 export const probeBackendApi = () => {
-    cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
-      .as('waitForConfig');
-    cy.visit(Cypress.config('baseUrl'));
-    cy.wait('@waitForConfig', { timeout: 30000 });
-  };
+  cy.intercept({ url: new RegExp(`${Cypress.env('urls').backend}/(system/config|sys-check-mode)`) })
+    .as('waitForConfig');
+  cy.visit(Cypress.config('baseUrl'));
+  cy.wait('@waitForConfig', { timeout: 30000 });
+};
 
 export const resetBackendData = () => {
   cy.log('🔄 Setze Backend-Daten zurück');
@@ -95,12 +91,10 @@ export const resetBackendData = () => {
     .then(() => cy.log('✅ Broadcasting-Service geflushed'));
 };
 
-export const disableSimplePlayersInternalDebounce = (): Chainable => {
-  return modifyPlayer([{
-    replace: 'const overridePlayerSettings = (location.search);',
-    with: 'const overridePlayerSettings = "?debounceStateMessages=0&debounceKeyboardEvents=0"'
-  }]);
-};
+export const disableSimplePlayersInternalDebounce = (): Chainable => modifyPlayer([{
+  replace: 'const overridePlayerSettings = (location.search);',
+  with: 'const overridePlayerSettings = "?debounceStateMessages=0&debounceKeyboardEvents=0"'
+}]);
 
 export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]): Chainable => {
   cy.intercept(
@@ -123,12 +117,12 @@ export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]
 
 export const insertCredentials = (username: string, password = '') => {
   cy.get('[formcontrolname="name"]')
-    .should(`be.visible`)
+    .should('be.visible')
     .clear()
     .type(username);
   if (password) {
     cy.get('[formcontrolname="pw"]')
-      .should(`be.visible`)
+      .should('be.visible')
       .clear()
       .type(password);
   }
@@ -194,7 +188,7 @@ export const logoutTestTakerDemo = (): Chainable => {
 
     return cy.get('[data-cy="login-admin"]').should('be.visible');
   });
-}
+};
 
 export const clickCardButton = (cardType: 'workspace-card' | 'booklet-card', cardLabel: string, buttonText: string) => {
   cy.contains(`[data-cy^="${cardType}-"]`, cardLabel)
@@ -251,7 +245,7 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
 export const loginTestTaker =
   (name: string, password: string): void => {
     cy.get('[formcontrolname="name"]')
-      .should(`be.visible`)
+      .should('be.visible')
       .clear()
       .type(name);
     cy.get('[data-cy="login-user"]')
@@ -262,20 +256,20 @@ export const loginTestTaker =
 
     if (password) {
       cy.get('[formcontrolname="pw"]')
-        .should(`be.visible`)
+        .should('be.visible')
         .clear()
         .type(password);
       cy.get('[data-cy="login-user"]')
         .click();
     }
-    
+
     cy.wait(['@commands']);
   };
 
 export const loginMonitor =
   (name: string, password: string): void => {
     cy.get('[formcontrolname="name"]')
-      .should(`be.visible`)
+      .should('be.visible')
       .clear()
       .type(name);
     cy.get('[data-cy="login-user"]')
@@ -283,13 +277,13 @@ export const loginMonitor =
 
     if (password) {
       cy.get('[formcontrolname="pw"]')
-        .should(`be.visible`)
+        .should('be.visible')
         .clear()
         .type(password);
       cy.get('[data-cy="login-user"]')
         .click();
     }
-    
+
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="logout"]')
       .should('be.visible');
@@ -434,10 +428,9 @@ export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> 
     .its('0.contentDocument.body')
     .should('not.be.empty')
     .then(cy.wrap)
-    .as('iframeBody')
-  return cy.get('@iframeBody')
+    .as('iframeBody');
+  return cy.get('@iframeBody');
 };
-
 
 export const forwardTo = (expectedLabel: string) => {
   cy.get('[data-cy="unit-navigation-forward"]')
@@ -460,14 +453,12 @@ export const gotoPage = (pageIndex: number) => {
     .should('have.class', 'selected-value');
 };
 
-export const readBlockTime = (): Chainable=> {
-  return cy.get('[data-cy="time-value"]')
-    .invoke('text')
-    .then(currTimeStr => {
-      const currBlockTimeStr = currTimeStr.replace(/0:/, '');
-      return +currBlockTimeStr;
-    });
-};
+export const readBlockTime = (): Chainable => cy.get('[data-cy="time-value"]')
+  .invoke('text')
+  .then(currTimeStr => {
+    const currBlockTimeStr = currTimeStr.replace(/0:/, '');
+    return +currBlockTimeStr;
+  });
 
 export const selectFromDropdown = (dropdownLabel: string, optionName: string) => {
   cy.contains('mat-form-field', dropdownLabel).find('mat-select').click();
@@ -479,4 +470,3 @@ export const reload = () => cy.url()
 
 export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*="unit-nav-item"]')
   .each((item, index) => cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`));
-

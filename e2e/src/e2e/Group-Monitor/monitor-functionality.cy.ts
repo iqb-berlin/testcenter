@@ -15,7 +15,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
     resetBackendData();
     probeBackendApi();
     visitLoginPage();
-    // es muss ein testtaker in der DB sein für diesen Test
+    // one test needs to be started for the group monitor to gain functionality
     loginTestTaker('testtaker-a', '123');
     giveTestId();
     logoutTestTakerHot();
@@ -39,21 +39,21 @@ describe('Check monitor functions', { testIsolation: false }, () => {
 
   it('button: pause', () => {
     const testId = Cypress.env('savedTestId');
-    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, (req) => {
-      req.continue((res) => {
-      expect(req.body.testIds).to.include(Number(testId));
-      expect(req.body.keyword).to.equal('pause');
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, req => {
+      req.continue(res => {
+        expect(req.body.testIds).to.include(Number(testId));
+        expect(req.body.keyword).to.equal('pause');
       });
-      }).as('PauseCommand');
-      cy.get('[data-cy="GM_pause_button"]')
-        .click();
-      cy.wait('@PauseCommand');
+    }).as('PauseCommand');
+    cy.get('[data-cy="GM_pause_button"]')
+      .click();
+    cy.wait('@PauseCommand');
   });
 
   it('button: resume', () => {
     const testId = Cypress.env('savedTestId');
-    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, (req) => {
-      req.continue((res) => {
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, req => {
+      req.continue(res => {
         expect(req.body.testIds).to.include(Number(testId));
         expect(req.body.keyword).to.equal('resume');
       });
@@ -67,8 +67,8 @@ describe('Check monitor functions', { testIsolation: false }, () => {
     const testId = Cypress.env('savedTestId');
     cy.get('[data-cy="gm-testlet-select"]')
       .click({ force: true });
-    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, (req) => {
-      req.continue((res) => {
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, req => {
+      req.continue(res => {
         expect(req.body.testIds).to.include(Number(testId));
         expect(req.body.arguments[1]).to.equal('CY-Unit.Sample-101');
         expect(req.body.keyword).to.equal('goto');
@@ -83,8 +83,8 @@ describe('Check monitor functions', { testIsolation: false }, () => {
   it('button: test terminate', () => {
     cy.get('[data-cy="gm-testlet-select"]')
       .click({ force: true });
-    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, (req) => {
-      req.continue((res) => {
+    cy.intercept('PUT', `${Cypress.env('urls').backend}/monitor/command`, req => {
+      req.continue(res => {
         expect(req.body.arguments[0]).to.equal('lock');
         expect(req.body.keyword).to.equal('terminate');
       });
@@ -104,8 +104,8 @@ describe('Check monitor functions', { testIsolation: false }, () => {
     cy.get('[data-cy="GM-filter-profiles-0"]')
       .click();
     const testId = Cypress.env('savedTestId');
-    cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, (req) => {
-      req.continue((res) => {
+    cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, req => {
+      req.continue(res => {
         expect(req.body.testIds).to.include(Number(testId));
       });
     }).as('unlockCommand');
