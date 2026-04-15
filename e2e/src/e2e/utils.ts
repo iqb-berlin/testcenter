@@ -196,6 +196,18 @@ export const logoutTestTakerDemo = (): Chainable => {
   });
 }
 
+export const clickCardButton = (cardType: 'workspace-card' | 'booklet-card', cardLabel: string, buttonText: string) => {
+  cy.contains(`[data-cy^="${cardType}-"]`, cardLabel)
+    .find('[data-cy="card-button"]')
+    .as('cardButton');
+
+  cy.get('@cardButton')
+    .invoke('text')
+    .should('include', buttonText);
+
+  return cy.get('@cardButton');
+};
+
 export const openSampleWorkspace = (workspace: number) => {
   cy.get(`[data-cy="workspace-${workspace}"]`)
     .click();
