@@ -1,7 +1,7 @@
 import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { groupBy, Subscription } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import {
   AlertComponent,
@@ -273,4 +273,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getWorkspaceDataSubscription.unsubscribe();
     }
   }
+
+  protected readonly groupBy = groupBy;
 }

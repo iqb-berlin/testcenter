@@ -22,7 +22,7 @@ import { ThemeService } from '@shared/services/theme.service';
       }
       <div class="flex-column">
         <mat-card-header>
-          <p>{{ name }}</p>
+          <p>{{ name + (subLabel ? ' ('+subLabel+')' : '')}}</p>
         </mat-card-header>
         <mat-card-actions>
           <button matButton="filled" [disabled]="disabled" (click)="select.emit()" data-cy="card-button">
@@ -66,6 +66,7 @@ import { ThemeService } from '@shared/services/theme.service';
 })
 export class TestCardComponent {
   @Input() name!: string;
+  @Input() subLabel?: string;
   @Input() index?: number;
   @Input() buttonLabel?: string;
   @Input() mode?: 'start' | 'continue' | 'view' | 'locked';

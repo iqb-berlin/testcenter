@@ -42,6 +42,7 @@
     <h3>Testgruppen-Überwachung</h3>
     @for (groupMonitor of claims.testGroupMonitor; track groupMonitor.id; let i = $index) {
       <tc-test-card [name]="groupMonitor.label"
+                    [subLabel]="groupMonitor.flags.subLabel"
                     [buttonLabel]="'Gruppen-Monitor Starten'"
                     [disabled]="(!!groupMonitor.flags.scheduled) || (!!groupMonitor.flags.expired)"
                     (select)="buttonGotoMonitor(groupMonitor)"
