@@ -8,7 +8,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatButton, MatFabButton, MatMiniFabButton } from '@angular/material/button';
+import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
@@ -17,10 +17,9 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
 import { BackendService } from '../backend.service';
 import { AppConfig } from '../../shared/classes/app.config';
 import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
-import { Theme, THEMES, ThemeService } from '../../shared/services/theme.service';
+import { ThemeService } from '../../shared/services/theme.service';
 import { AlertComponent, SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
-import { CustomImagesService } from '../../shared/services/custom-images.service';
 
 @Component({
   imports: [
@@ -44,7 +43,6 @@ import { CustomImagesService } from '../../shared/services/custom-images.service
     SharedModule,
     EditCustomTextsComponent,
     MatFabButton,
-    MatButton,
     AlertComponent
   ],
   templateUrl: 'settings.component.html',
@@ -52,7 +50,6 @@ import { CustomImagesService } from '../../shared/services/custom-images.service
 })
 export class SettingsComponent implements OnInit {
   private configDataChangedSubscription: Subscription | null = null;
-  customImageForm: FormGroup;
   configForm: FormGroup;
   warningIsExpired = false;
   imageError: string | null = '';
@@ -85,12 +82,8 @@ export class SettingsComponent implements OnInit {
   };
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
-              public themeService: ThemeService, private customImageService: CustomImagesService,
+              public themeService: ThemeService,
               private snackBar: MatSnackBar, private mainDataService: MainDataService) {
-    this.customImageForm = this.formBuilder.group({
-      loginIntro: this.formBuilder.control(''),
-      starterIntro: this.formBuilder.control('')
-    });
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       introHtml: this.formBuilder.control(''),
@@ -105,10 +98,6 @@ export class SettingsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.customImageForm.setValue({
-      loginIntro: this.customImageService.images.loginIntro || '',
-      starterIntro: this.customImageService.images.starterIntro || ''
-    });
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.setValue({
       appTitle: appConfig.appTitle,
@@ -132,13 +121,6 @@ export class SettingsComponent implements OnInit {
         this.configForm.get('globalWarningExpiredHour')?.value
       );
     });
-  }
-
-  protected saveCustomImages() {
-    this.customImageService.save(this.customImageForm.value)
-      .subscribe(() => {
-        this.snackBar.open('Konfiguration gespeichert', 'Info', { duration: 3000 });
-      });
   }
 
   saveAppConfig(): void {

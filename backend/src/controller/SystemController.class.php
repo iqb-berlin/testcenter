@@ -72,7 +72,7 @@ class SystemController extends Controller {
   }
 
   public static function getConfig(Request $request, Response $response): Response {
-    $meta = self::adminDAO()->getMeta(['customTexts', 'customImages', 'appConfig']);
+    $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
 
     $browsers = [];
     try {
@@ -91,7 +91,6 @@ class SystemController extends Controller {
       [
         'version' => SystemConfig::$system_version,
         'customTexts' => (object) $meta['customTexts'],
-        'customImages' => (object) $meta['customImages'],
         'appConfig' => (object) $meta['appConfig'],
         'baseUrl' => Server::getUrl(),
         'veronaPlayerApiVersionMin' => SystemConfig::$system_veronaMin,
@@ -119,10 +118,6 @@ class SystemController extends Controller {
 
   public static function patchCustomTexts(Request $request, Response $response): Response {
     return SystemController::updateMeta('customTexts', $request, $response);
-  }
-
-  public static function patchCustomImages(Request $request, Response $response): Response {
-    return SystemController::updateMeta('customImages', $request, $response);
   }
 
   private static function updateMeta(string $category, Request $request, Response $response): Response {
