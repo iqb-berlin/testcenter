@@ -22,7 +22,7 @@
 
 <div class="toolbar-header flex-row" data-cy="unit-screenheader">
   @if (tcs.booklet?.config?.toolbar_show_unit_title !== 'FALSE') {
-    <p>{{currentUnit?.label}}</p>
+    <p data-cy="unit-title">{{currentUnit?.label}}</p>
   }
 
   <div class="toolbar-right">
