@@ -32,7 +32,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('set the view that configured in the small profile', () => {
-    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
+    clickCardButton('GM-filter-profiles-1', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_activity_button"]')
