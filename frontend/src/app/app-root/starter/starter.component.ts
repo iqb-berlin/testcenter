@@ -60,7 +60,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
+  availableBooklets?: { name: string; id:string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
   showScrollButton = false;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
@@ -152,6 +152,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
         name: test.label,
+        id: test.id,
         mode: (test.flags.locked ? 'locked' :
           (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
         claim: test
