@@ -11,7 +11,7 @@ import {
   selectFromDropdown,
   visitLoginPage,
   insertCredentials,
-  deleteTesttakersFiles, logoutAdmin
+  deleteTesttakersFiles, logoutAdmin, logout
 } from '../utils';
 
 describe('Sys-Check', () => {
@@ -114,8 +114,7 @@ describe('Sys-Check', () => {
     deleteTesttakersFiles(2);
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
     cy.window().then((win) => {
       win.location.href = 'about:blank'
     });

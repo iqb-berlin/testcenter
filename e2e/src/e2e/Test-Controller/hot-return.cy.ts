@@ -7,7 +7,7 @@ import {
   getResultFileRows,
   gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
+  loginTestTaker, logout,
   logoutFromRunningTestWithConfirmation,
   openSampleWorkspace,
   probeBackendApi,
@@ -162,8 +162,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       .click();
     cy.get('[data-cy="booklet-CY-BKLT_TC-3"]')
       .contains('gesperrt');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
     cy.get('[data-cy="login-admin"]')
       .should('be.visible');
     });
@@ -250,8 +249,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
-      cy.get('[data-cy="logout"]')
-        .click();
+      logout();
       cy.get('[data-cy="login-admin"]')
         .should('be.visible');
     });

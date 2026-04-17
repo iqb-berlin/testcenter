@@ -6,7 +6,7 @@ import {
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
-  sendMonitorCommand
+  sendMonitorCommand, logout
 } from '../utils';
 
 describe('Check testtaker behavior', { testIsolation: false }, () => {
@@ -91,8 +91,7 @@ describe('Check testtaker behavior', { testIsolation: false }, () => {
       args: [],
       testIds: [testId]
     });
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
     cy.get('[formcontrolname="name"]')
       .should(`be.visible`);
     visitLoginPage();

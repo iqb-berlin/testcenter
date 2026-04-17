@@ -135,8 +135,7 @@ export const logoutAdmin = () => cy.url()
         .click();
       cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-      cy.get('[data-cy="logout"]')
-        .click();
+      logout();
       cy.get('[data-cy="login-admin-form"]');
     }
     cy.get('[data-cy="login-admin-form"]');
@@ -161,8 +160,7 @@ export const logoutFromRunningTestWithConfirmation = (): Chainable => {
     cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
     cy.contains('Übersicht').should('be.visible');
-    cy.get('[data-cy="account-button"]').click();
-    cy.get('[data-cy="logout-button"]').click();
+    logout();
     cy.wait('@waitForDeleteSession');
 
     return cy.get('[data-cy="login-admin-form"]');
@@ -184,8 +182,7 @@ export const logoutFromTestNoConfirmation = (): Chainable => {
     }
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
     cy.contains('Übersicht').should('be.visible');
-    cy.get('[data-cy="account-button"]').click();
-    cy.get('[data-cy="logout-button"]').click();
+    logout();
     cy.wait('@waitForDeleteSession');
 
     return cy.get('[data-cy="login-admin-form"]');
@@ -486,3 +483,8 @@ export const reload = () => cy.url()
 
 export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*="unit-nav-item"]')
   .each((item, index) => cy.wrap(item).should('have.attr', 'data-cy', `unit-nav-item:${expectations[index]}`));
+
+export const logout = () => {
+  cy.get('[data-cy="account-button"]').click();
+  cy.get('[data-cy="logout-button"]').click();
+}

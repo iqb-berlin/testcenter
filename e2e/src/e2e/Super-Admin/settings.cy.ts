@@ -1,6 +1,6 @@
 import {
   clickSuperadminSettings,
-  loginSuperAdmin,
+  loginSuperAdmin, logout,
   probeBackendApi,
   resetBackendData, visitLoginPage,
   visitLoginPageWithProdDb
@@ -46,8 +46,7 @@ describe('Settings (setting-tab)', () => {
       .click();
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     cy.contains('Maintenance works');
@@ -67,7 +66,6 @@ describe('Settings (setting-tab)', () => {
       .click();
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
   });
 });
