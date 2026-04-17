@@ -25,7 +25,7 @@ import { ThemeService } from '@shared/services/theme.service';
           <p>{{ name + (subLabel ? ' ('+subLabel+')' : '')}}</p>
         </mat-card-header>
         <mat-card-actions>
-          <button matButton="filled" [disabled]="disabled" (click)="select.emit()" data-cy="card-button">
+          <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
             @if (mode) {
               <mat-icon [svgIcon]="icons[mode]"></mat-icon>
             }
