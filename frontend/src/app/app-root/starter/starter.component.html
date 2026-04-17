@@ -46,7 +46,7 @@
                     [buttonLabel]="'Gruppen-Monitor Starten'"
                     [disabled]="(!!groupMonitor.flags.scheduled) || (!!groupMonitor.flags.expired)"
                     (select)="buttonGotoMonitor(groupMonitor)"
-                    [attr.data-cy]="'GM-filter-profiles-' + i">
+                    [attr.data-cy]="'gm-card-' + i">
       </tc-test-card>
     }
     <tc-alert *ngIf="claims.testGroupMonitor.length === 0"
