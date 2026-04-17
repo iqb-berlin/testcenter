@@ -33,7 +33,7 @@
       <tc-test-card [name]="booklet.name"
                     [index]="i"
                     [mode]="booklet.mode"
-                    [attr.data-cy]="'booklet-card-'+ booklet.name"
+                    [attr.data-cy]="'booklet-'+ booklet.id"
                     (select)="startTest(booklet.claim)"></tc-test-card>
     }
   </ng-template>
