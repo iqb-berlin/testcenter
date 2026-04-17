@@ -7,7 +7,7 @@ import {
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage, cleanUp, logoutTestTakerDemo, insertCredentials
+  visitLoginPage, cleanUp, logoutFromTestNoConfirmation, insertCredentials
 } from '../utils';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -95,7 +95,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('navigate back to the booklet view and check out', () => {
-    logoutTestTakerDemo();
+    logoutFromTestNoConfirmation();
   });
 
   it('a response file is not generated', () => {

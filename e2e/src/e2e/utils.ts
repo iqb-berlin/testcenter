@@ -142,7 +142,7 @@ export const logoutAdmin = () => cy.url()
     cy.get('[data-cy="login-admin-form"]');
   });
 
-export const logoutTestTakerHot = (): Chainable => {
+export const logoutFromRunningTestWithConfirmation = (): Chainable => {
   const baseUrl = Cypress.config().baseUrl;
   const backendUrl = Cypress.env('urls').backend;
 
@@ -169,7 +169,7 @@ export const logoutTestTakerHot = (): Chainable => {
   });
 };
 
-export const logoutTestTakerDemo = (): Chainable => {
+export const logoutFromTestNoConfirmation = (): Chainable => {
   const baseUrl = Cypress.config().baseUrl;
   const backendUrl = Cypress.env('urls').backend;
 

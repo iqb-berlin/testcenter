@@ -8,7 +8,7 @@ import {
   gotoPage,
   loginSuperAdmin,
   loginTestTaker,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -266,7 +266,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     after(() => {
-     logoutTestTakerHot();
+     logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {
@@ -349,7 +349,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {

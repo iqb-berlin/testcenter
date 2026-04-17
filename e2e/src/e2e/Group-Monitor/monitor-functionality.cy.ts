@@ -3,7 +3,7 @@ import {
   giveTestId,
   loginMonitor,
   loginTestTaker,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -18,7 +18,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
     // one test needs to be started for the group monitor to gain functionality
     loginTestTaker('testtaker-a', '123');
     giveTestId();
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   it('group-monitor login', () => {

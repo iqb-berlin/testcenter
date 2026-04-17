@@ -1,7 +1,7 @@
 import {
   insertCredentials,
   loginTestTaker,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData,
   useTestDBSetDate,
@@ -95,14 +95,14 @@ describe('check "valid for" restrictions', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
     loginTestTaker('SM-12', '123');
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   it('a second login must be possible if the time has not expired', () => {
     // UnixTimestamp: 31.05.2023 10:30 + 9 Minuten
     useTestDBSetDate('1685522340');
     loginTestTaker('SM-12', '123');
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   it('login after time is not possible', () => {

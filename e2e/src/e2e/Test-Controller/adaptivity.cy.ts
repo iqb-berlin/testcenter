@@ -4,7 +4,7 @@ import {
   expectUnitMenuToBe,
   forwardTo,
   getFromIframe, insertCredentials,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData, visitLoginPage
 } from '../utils';
@@ -63,7 +63,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('start adaptive booklet with predefined states', () => {
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
     insertCredentials('test-review', 'user123');

@@ -6,7 +6,7 @@ import {
   forwardTo,
   getFromIframe,
   loginSuperAdmin,
-  logoutTestTakerDemo,
+  logoutFromTestNoConfirmation,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -147,7 +147,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('.snackbar-demo-mode')
       .contains('Schließen')
       .click();
-    logoutTestTakerDemo();
+    logoutFromTestNoConfirmation();
   });
 
   it('there are no responses in the response file', () => {

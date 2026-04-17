@@ -2,7 +2,7 @@ import {
   clickCardButton,
   loginMonitor,
   loginTestTaker,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -16,7 +16,7 @@ describe('Group-Monitor User', () => {
     visitLoginPage();
     // es muss testtaker in der DB sein für diesen Test
     loginTestTaker('testtaker-a', '123');
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   beforeEach(() => {
