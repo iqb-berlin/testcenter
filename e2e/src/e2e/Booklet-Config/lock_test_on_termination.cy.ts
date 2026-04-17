@@ -26,7 +26,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    clickCardButton('booklet-card', 'Bklt-config-1', 'Fortsetzen').click();
+    clickCardButton('booklet-card', 'Bklt-config-1', 'Fortsetzen');
   });
 
   it('ON', () => {

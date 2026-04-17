@@ -99,7 +99,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('there are no filters from small-profile', () => {
-    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten');
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_filter_button"]')
@@ -112,7 +112,7 @@ describe('Group-Monitor User', () => {
   });
 
   it('create a new  filter', () => {
-    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten').click();
+    clickCardButton('GM-filter-profiles-0', 'Filter-Profiles', 'Gruppen-Monitor Starten');
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_filter_button"]')

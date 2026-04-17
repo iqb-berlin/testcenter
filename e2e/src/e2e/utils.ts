@@ -192,16 +192,30 @@ export const logoutTestTakerDemo = (): Chainable => {
   });
 };
 
-export const clickCardButton = (element: string, cardLabel: string, buttonText: string) => {
-  cy.contains(`[data-cy^="${element}"]`, cardLabel)
-    .find('[data-cy="card-button"]')
-    .as('cardButton');
+export const clickCardButton = (element: string, cardLabel?: string, buttonText?: string) => {
+  if (!cardLabel && !buttonText) {
+    return cy.get(`[data-cy^="${element}"]`)
+      .find('button')
+      .click();
+  }
 
-  cy.get('@cardButton')
-    .invoke('text')
-    .should('include', buttonText);
+  if (!buttonText) {
+    return cy.contains(`[data-cy^="${element}"]`, cardLabel)
+      .find('button')
+      .click();
+  }
 
-  return cy.get('@cardButton');
+  if (!cardLabel) {
+    return cy.get(`[data-cy^="${element}"]`)
+      .find('button')
+      .should('contain.text', buttonText)
+      .click();
+  }
+
+  return cy.contains(`[data-cy^="${element}"]`, cardLabel)
+    .find('button')
+    .should('contain.text', buttonText)
+    .click()
 };
 
 export const openSampleWorkspace = (workspace: number) => {
