@@ -24,57 +24,46 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
     MatMenuTrigger,
     MatDivider
   ],
-  template: `
-    <mat-toolbar>
-      <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div class="side">
-        @if (headerService.showAccountPanel) {
-          <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu">
-            <mat-icon svgIcon="person"></mat-icon>
-          </button>
-          <mat-menu #accountMenu="matMenu" class="account-menu">
-            <div class="heading">
-              <div>Nutzerinformationen</div>
-              <button matIconButton>
-                <mat-icon svgIcon="close"></mat-icon>
-              </button>
-            </div>
-            <dl>
-              <dt>Anmeldename:</dt>
-              <dd>{{ mainDataService.getAuthData()?.loginName }}</dd>
-              <dt>Gruppe:</dt>
-              <dd>{{ mainDataService.getAuthData()?.groupLabel }}</dd>
-              <dt>Version:</dt>
-              <dd>{{ mainDataService.appConfig?.version }}</dd>
-            </dl>
-            <mat-divider></mat-divider>
-            <button matButton="tonal" class="logout-button" (click)="mainDataService.logOut()">
-              Abmelden
-            </button>
-          </mat-menu>
-        }
-      </div>
-      <div class="center">
-        @if (headerService.title) {
-          <h1>{{ headerService.title }}</h1>
-        }
-      </div>
-      <div class="side logo">
-        @if (headerService.showLogo) {
-          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
-                 matTooltip="Zur Startseite"/>
-          </a>
-        }
-      </div>
-    </mat-toolbar>
-  `,
+  templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
-  constructor(public headerService: HeaderService, public mainDataService: MainDataService) { }
+  userRights: string[] = [];
+
+  constructor(public headerService: HeaderService, public mainDataService: MainDataService) {
+    this.mainDataService.authData$.subscribe(authData => {
+      if (!authData) return;
+      if (authData.claims.workspaceAdmin) {
+        this.userRights.push('Verwaltung von Testinhalten');
+      }
+      if (authData.claims.superAdmin) {
+        this.userRights.push('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen');
+      }
+      if (authData.claims.test) {
+        if (authData.claims.test.length > 1) {
+          this.userRights.push('Ausführung/Ansicht von Befragungen oder Testheften');
+        } else {
+          this.userRights.push('Ausführung/Ansicht einer Befragung oder eines Testheftes');
+        }
+      }
+      if (authData.claims.workspaceMonitor) {
+        if (authData.claims.workspaceMonitor.length > 1) {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung von Befragungen oder Kompetenztests');
+        } else {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung einer Befragung oder eines Kompetenztests');
+        }
+      }
+      if (authData.claims.testGroupMonitor) {
+        this.userRights.push('Beobachtung/Prüfung einer Testgruppe');
+      }
+      if (authData.flags.indexOf('codeRequired') >= 0) {
+        this.userRights.push('Code-Eingabe erforderlich');
+      }
+    });
+  }
 
   ngOnDestroy(): void {
+    this.userRights = [];
     this.headerService.reset();
   }
 }
