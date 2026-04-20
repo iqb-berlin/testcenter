@@ -249,6 +249,7 @@ export const openSampleWorkspace2 = () => {
 
 export const loginSuperAdmin = () => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
+  cy.wait(1); // seems to be unreliable without
   oneStepLogin('super', 'user123');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
@@ -256,8 +257,9 @@ export const loginSuperAdmin = () => {
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  cy.get('[data-cy="card-login-name"]')
-    .contains('super');
+  cy.get('[data-cy="account-button"]').click();
+  cy.contains('super');
+  cy.get('body').type('{esc}');
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string) => {
