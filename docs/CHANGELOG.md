@@ -1,9 +1,25 @@
 # [next]
 ## Änderungen
 * Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
+* Neue booklet parameter:
+  *   navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
+  *   navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+  *   navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
+  *   navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+* entfernte Bookletparameter:
+  * unit_navibuttons ersetzt durch "navbar_unit_label"
+  * page_navibuttons ersetzt durch "navbar_page_label"
+  * controller_design
+  * unit_screenheader ersetzt durch "header_content"
+  * unit_title ersetzt durch "toolbar_show_unit_title"
+  * unit_menu ersetzt durch "toolbar_show_unit_list"
+  * unit_show_time_left -> "toolbar_show_time_left"
+  * ui_mode -> silent_mode
+  * show_fullscreen_button -> toolbar_show_fullscreen_button
+  * show_reload_button -> toolbar_show_reload_button
 
-Technisches
-## Änderungen
+##Technisches
+### Änderungen
 * Der API-Endpunkt `/session/login` liefert zusätzlich die Parameter `loginName` und `groupLabel`. Der Parameter `displayName` ist als deprecated ausgezeichnet und wird in zukünftigen Versionen nicht mehr verfügbar sein. Der Wert kann aber weiterhin aus den beiden neuen Feldern erstellt werden.
 
 # 17.6.0

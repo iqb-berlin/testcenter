@@ -34,32 +34,6 @@
     },
     "defaultvalue": "separate"
   },
-  "page_navibuttons": {
-    "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
-    "options": {
-      "OFF": "Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)",
-      "INDEX": "Seitennavigation zeigt nur Pfeile und den aktuellen Index",
-      "FULL": "Seitennavigation zeigt horizontale Liste aller Seiten"
-    },
-    "defaultvalue": "INDEX"
-  },
-  "unit_navibuttons": {
-    "label": "Navigationsbuttons für die Navigation zwischen den Aufgaben",
-    "options": {
-      "OFF": "Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)",
-      "INDEX": "Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben",
-      "LABEL": "Der Anzeigename der aktuellen Aufgabe wird angezeigt"
-    },
-    "defaultvalue": "INDEX"
-  },
-  "unit_menu": {
-    "label": "Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden",
-    "options": {
-      "OFF": "Nein",
-      "FULL": "Ja"
-    },
-    "defaultvalue": "OFF"
-  },
   "force_presentation_complete": {
     "label": "Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde",
     "options": {
@@ -75,41 +49,6 @@
       "OFF": "Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.",
       "ALWAYS": "Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert.",
       "ON": "Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll."
-    },
-    "defaultvalue": "OFF"
-  },
-  "controller_design": {
-    "label": "Über diesen Parameter können verschiedene Design-Einstellungen gemeinsam festgelegt werden",
-    "options": {
-      "2018": "Runde Schalter für die Unit-Navigation",
-      "2022": "Eckige Schalter für die Unit-Navigation"
-    },
-    "defaultvalue": "2022"
-  },
-  "unit_screenheader": {
-    "label": "Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.",
-    "options": {
-      "OFF": "Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).",
-      "WITH_UNIT_TITLE": "Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)",
-      "WITH_BOOKLET_TITLE": "Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)",
-      "WITH_BLOCK_TITLE": "Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)",
-      "EMPTY": "Seitenkopf wird angezeigt (leer)"
-    },
-    "defaultvalue": "EMPTY"
-  },
-  "unit_title": {
-    "label": "Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",
-    "options": {
-      "OFF": "Keine Titelzeile",
-      "ON": "Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML)."
-    },
-    "defaultvalue": "ON"
-  },
-  "unit_show_time_left": {
-    "label": "Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.",
-    "options": {
-      "OFF": "Die verbleibende Zeit wird nicht angezeigt.",
-      "ON": "Die verbleibende Zeit wird angezeigt."
     },
     "defaultvalue": "OFF"
   },
@@ -159,22 +98,6 @@
     },
     "defaultvalue": "OFF"
   },
-  "show_fullscreen_button": {
-    "label": "Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?",
-    "options": {
-      "ON": "Ja.",
-      "OFF": "Nein."
-    },
-    "defaultvalue": "OFF"
-  },
-  "show_reload_button": {
-    "label": "Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?",
-    "options": {
-      "ON": "Ja.",
-      "OFF": "Nein."
-    },
-    "defaultvalue": "OFF"
-  },
   "unit_responses_buffer_time": {
     "label": "Speicherfrequenz für Antworten in Ms.",
     "options": {},
@@ -190,12 +113,97 @@
     "options": {},
     "defaultvalue": "1000"
   },
-  "ui_mode": {
-    "label": "Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+  "header_content": {
+    "label": "Legt fest, was im Kopfbereich als Titel angezeigt wird",
     "options": {
-      "ALL": "Alle UI-Elemente anzeigen (Standard-Verhalten)",
-      "NONE": "Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen"
+      "NONE": "Titel auf der Kopfzeile bleibt leer",
+      "BOOKLET_LABEL": "Titel des Testhefts/Booklets",
+      "BLOCK_LABEL": "Titel des Aufgabenblocks",
+      "UNIT_LABEL": "Titel der Unit"
     },
-    "defaultvalue": "ALL"
+    "defaultvalue": "NONE"
+  },
+  "navbar_unit_label": {
+    "label": "Darstellung der aktiven Aufgabe/Unit auf der Navigationsleiste.",
+    "options": {
+      "HIDDEN": "Anzeige der aktiven Unit wird ausgeblendet (übernimmt ggf. die Aufgabe selbst)",
+      "INDEX": "Index der aktuellen Unit und die Gesamtzahl der Units",
+      "LABEL": "Der Anzeigename der aktuellen Unit wird angezeigt"
+    },
+    "defaultvalue": "INDEX"
+  },
+  "navbar_unit_controls_hidden": {
+    "label": "Ausblenden der Elemente für die Navigation zwischen Units. Wenn gesetzt, wird nur die Beschriftung angezeigt, aber keine Knöpfe. Einstellung greift nur, wenn das Element nicht ausgeblendet ist.",
+    "options": {
+      "TRUE": "Navigationselemente sind ausgeblendet",
+      "FALSE": "Navigationselemente sind benutzbar"
+    },
+    "defaultvalue": "FALSE"
+  },
+  "navbar_page_label": {
+    "label": "Darstellung der aktiven Seite/Teilaufgabe (innerhalb einer Aufgabe)",
+    "options": {
+      "HIDDEN": "Anzeige der aktiven Seite/Teilaufgabe wird ausgeblendet",
+      "INDEX": "Index der aktuellen Seite/Teilaufgabe und die Gesamtzahl der Seiten",
+      "LABEL": "Der Anzeigename der aktuellen Seite",
+      "LIST": "Seiten werden als horizontale Liste angezeigt"
+    },
+    "defaultvalue": "INDEX"
+  },
+  "navbar_page_controls_hidden": {
+    "label": "Ausblenden der Elemente für die Navigation zwischen Seiten/Teilaufgaben. Wenn gesetzt, wird nur die Beschriftung angezeigt, aber keine Knöpfe. Einstellung greift nur, wenn das Element nicht ausgeblendet ist.",
+    "options": {
+      "TRUE": "Navigationselemente sind ausgeblendet",
+      "FALSE": "Navigationselemente sind benutzbar"
+    },
+    "defaultvalue": "FALSE"
+  },
+  "toolbar_show_unit_title": {
+    "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",
+    "options": {
+      "TRUE": "Titel der Unit wird aangezeigt",
+      "FALSE": "Titel wird ausgeblendet"
+    },
+    "defaultvalue": "TRUE"
+  },
+  "toolbar_show_unit_list": {
+    "label": "Listenansicht aller Units via Werkzeugleiste",
+    "options": {
+      "TRUE": "Element zum Einblenden der Liste wird angezeigt.",
+      "FALSE": "Element zum Einblenden der Liste ist nicht verfügbar."
+    },
+    "defaultvalue": "FALSE"
+  },
+  "toolbar_show_fullscreen_button": {
+    "label": "Knopf für Vollbilddarstellung via Werkzeugleiste",
+    "options": {
+      "TRUE": "Element wird angezeigt.",
+      "FALSE": "Element wird ausgeblendet."
+    },
+    "defaultvalue": "FALSE"
+  },
+  "toolbar_show_reload_button": {
+    "label": "Knopf für 'Seite neu laden' via Werkzeugleiste",
+    "options": {
+      "TRUE": "Element wird angezeigt.",
+      "FALSE": "Element wird ausgeblendet."
+    },
+    "defaultvalue": "FALSE"
+  },
+  "toolbar_show_time_left": {
+    "label": "Anzeige verbleibender Zeit (falls definiert) auf der Werkzeugleiste",
+    "options": {
+      "TRUE": "Die verbleibende Zeit wird angezeigt.",
+      "FALSE": "Die verbleibende Zeit wird ausgeblendet."
+    },
+    "defaultvalue": "FALSE"
+  },
+  "silent_mode": {
+    "label": "Unterdrückung von Einblendungen, z.B. Dialoge",
+    "options": {
+      "TRUE": "Einblendungen werden unterdrückt.",
+      "FALSE": "Normales Anzeigeverhalten"
+    },
+    "defaultvalue": "FALSE"
   }
 }

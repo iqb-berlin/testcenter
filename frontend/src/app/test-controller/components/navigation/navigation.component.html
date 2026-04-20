@@ -1,29 +1,33 @@
-<button matIconButton class="nav-button previous-button"
-   matTooltip="Zurück"
-   [disabled]="!navContext.isBackwardAllowed"
-   (click)="back.emit()">
-  <mat-icon svgIcon="keyboard_arrow_left"></mat-icon>
-</button>
+@if (!navContext.readonly) {
+  <button matIconButton class="nav-button previous-button"
+     matTooltip="Zurück"
+     [disabled]="!navContext.isBackwardAllowed"
+     (click)="back.emit()">
+    <mat-icon svgIcon="keyboard_arrow_left"></mat-icon>
+  </button>
+}
 
-<div class="label">
-  {{ navContext.label }}
+<div class="label-container" [class.readonly]="navContext.readonly" [class.list]="navContext.labelMode === 'LIST'">
+  <div class="label">
+    {{ navContext.label }}
 
-  @if (navContext.labelMode === 'index') {
-    {{navContext.currentIndex + 1}}/{{navContext.maxIndex}}
-  }
+    @if (navContext.labelMode === 'INDEX') {
+      {{navContext.currentIndex + 1}}/{{navContext.maxIndex}}
+    }
+  </div>
 
-  @if (navContext.labelMode === 'full') {
-    <mat-tab-group [selectedIndex]="navContext.currentIndex">
-      @for (item of maxTabs; track item) {
-        <mat-tab label="{{item}}"></mat-tab>
-      }
-    </mat-tab-group>
+  @if (navContext.labelMode === 'LIST') {
+    @for (item of maxListTabs; track item) {
+      <div class="list-item" [class.selected]="navContext.currentIndex === $index">{{item}}</div>
+    }
   }
 </div>
 
-<button matIconButton class="nav-button next-button"
-   matTooltip="Weiter"
-   [disabled]="!navContext.isForwardAllowed"
-   (click)="forward.emit()">
-  <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
-</button>
+@if (!navContext.readonly) {
+  <button matIconButton class="nav-button next-button"
+     matTooltip="Weiter"
+     [disabled]="!navContext.isForwardAllowed"
+     (click)="forward.emit()">
+    <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
+  </button>
+}
