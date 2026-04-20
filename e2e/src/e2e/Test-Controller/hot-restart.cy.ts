@@ -7,9 +7,9 @@ import {
   getResultFileRows,
   gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
+  loginTestTaker, logout,
   logoutAdmin,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -163,8 +163,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="booklet-CY-BKLT_TC-4"]')
         .contains('gesperrt');
-      cy.get('[data-cy="logout"]')
-        .click();
+      logout();
       cy.get('[data-cy="login-admin"]')
         .should('be.visible');
     });
@@ -251,8 +250,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
-      cy.get('[data-cy="logout"]')
-        .click();
+      logout();
       cy.get('[data-cy="login-admin"]')
         .should('be.visible');
     });
@@ -267,7 +265,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {
@@ -350,7 +348,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {

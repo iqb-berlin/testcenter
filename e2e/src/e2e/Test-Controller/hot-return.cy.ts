@@ -7,8 +7,8 @@ import {
   getResultFileRows,
   gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
-  logoutTestTakerHot,
+  loginTestTaker, logout,
+  logoutFromRunningTestWithConfirmation,
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
@@ -162,8 +162,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       .click();
     cy.get('[data-cy="booklet-CY-BKLT_TC-3"]')
       .contains('gesperrt');
-    cy.get('[data-cy="logout"]')
-      .click();
+    logout();
     cy.get('[data-cy="login-admin"]')
       .should('be.visible');
     });
@@ -250,8 +249,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
-      cy.get('[data-cy="logout"]')
-        .click();
+      logout();
       cy.get('[data-cy="login-admin"]')
         .should('be.visible');
     });
@@ -266,7 +264,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     after(() => {
-     logoutTestTakerHot();
+     logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {
@@ -349,7 +347,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {

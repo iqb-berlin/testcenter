@@ -7,7 +7,7 @@ import {
   openSampleWorkspace,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage, cleanUp, logoutTestTakerDemo, insertCredentials
+  visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
 } from '../utils';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -17,9 +17,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    insertCredentials('Test_Ctrl-1', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('Test_Ctrl-1', '123');
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   });
 
@@ -95,7 +93,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('navigate back to the booklet view and check out', () => {
-    logoutTestTakerDemo();
+    logoutFromTestNoConfirmation();
   });
 
   it('a response file is not generated', () => {

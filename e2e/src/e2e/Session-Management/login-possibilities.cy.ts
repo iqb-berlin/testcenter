@@ -1,5 +1,5 @@
 import {
-  insertCredentials,
+  twoStepLogin,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -16,26 +16,19 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login without existing password is not possible', () => {
-    insertCredentials('SM-2', '');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-2', '');
     cy.get('[data-cy="login-problem:400"]')
       .contains('Anmeldedaten sind nicht gültig');
   });
 
   it('login with wrong password is not possible', () => {
-    insertCredentials('SM-2', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-2', '123');
     cy.get('[data-cy="login-problem:400"]')
       .contains('Anmeldedaten sind nicht gültig');
   });
 
   it('login with name and right password, the booklet start immediately', () => {
-    insertCredentials('SM-2', '101');
-    cy.wait(10000);
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-2', '101');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="logo"]')
@@ -46,9 +39,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login only with a name', () => {
-    insertCredentials('SM-1', '');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-1', '');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="logo"]')
@@ -76,9 +67,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with wrong code is not possible', () => {
-    insertCredentials('SM-5', '102');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-5', '102');
     cy.get('[formcontrolname="code"]')
       .type('123');
     cy.get('[data-cy="continue"]')
@@ -88,9 +77,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with right code and password', () => {
-    insertCredentials('SM-5', '102');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-5', '102');
     cy.get('[formcontrolname="code"]')
       .type('as_code01');
     cy.get('[data-cy="continue"]')
@@ -104,9 +91,7 @@ describe('Check Login Possibilities', () => {
   });
 
   it('login with code on login page', () => {
-    insertCredentials('SM-6', '');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-6', '');
     cy.get('[formcontrolname="code"]')
       .clear()
       .type('as_code02');
