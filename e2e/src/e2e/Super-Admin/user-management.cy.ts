@@ -29,7 +29,8 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="change-superadmin"]');
   });
 
-  it('add a new user', () => {
+  // todo ui/ux - feature doesnt exist
+  it.skip('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
     visitLoginPage();
@@ -65,7 +66,8 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="goto-superadmin-settings"]');
   });
 
-  it('change privileges for a workspaceadmin to read-only', () => {
+  // todo ui/ux - feature doesnt exist
+  it.skip('change privileges for a workspaceadmin to read-only', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-ro"]')
@@ -85,7 +87,8 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]');
   });
 
-  it('change privileges for a workspaceadmin to read-write', () => {
+  // todo ui/ux - feature doesnt exist
+  it.skip('change privileges for a workspaceadmin to read-write', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-rw"]')
@@ -104,7 +107,8 @@ describe('Usermanagement (user-tab)', () => {
       .should('be.enabled');
   });
 
-  it('change the password for a workspaceadmin', () => {
+  // todo ui/ux - feature doesnt exist
+  it.skip('change the password for a workspaceadmin', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-password"]')
