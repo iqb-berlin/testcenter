@@ -2,7 +2,7 @@
   <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
   <div class="side">
     @if (headerService.showAccountPanel) {
-      <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu">
+      <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu" data-cy="account-button">
         <mat-icon svgIcon="person"></mat-icon>
       </button>
       <mat-menu #accountMenu="matMenu" class="account-menu">
@@ -25,7 +25,7 @@
           <dd>{{ mainDataService.appConfig?.version }}</dd>
         </dl>
         <mat-divider></mat-divider>
-        <button matButton="tonal" class="logout-button" (click)="mainDataService.logOut()">
+        <button matButton="tonal" class="logout-button" (click)="mainDataService.logOut()" data-cy="logout-button">
           Abmelden
         </button>
       </mat-menu>
