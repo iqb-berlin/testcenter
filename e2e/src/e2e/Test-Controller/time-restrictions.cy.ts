@@ -1,7 +1,7 @@
 import {
   cleanUp,
   disableSimplePlayersInternalDebounce,
-  getFromIframe, insertCredentials,
+  getFromIframe, twoStepLogin,
   loginTestTaker,
   logoutFromTestNoConfirmation,
   logoutFromRunningTestWithConfirmation,
@@ -31,9 +31,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }
   });
 
  it('demo: time is expired, the block will not be locked, there is only a warning message.', () => {
-    insertCredentials('Test_Ctrl-13', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('Test_Ctrl-13', '123');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')
@@ -54,9 +52,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }
   });
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
-    insertCredentials('Test_Ctrl-14', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('Test_Ctrl-14', '123');
     cy.get('[data-cy^="booklet-"]')
       .first()
       .click();

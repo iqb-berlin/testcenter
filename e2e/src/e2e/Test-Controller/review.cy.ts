@@ -11,7 +11,7 @@ import {
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
-  insertCredentials
+  twoStepLogin
 } from '../utils';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -22,9 +22,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    insertCredentials('Test_Ctrl-2', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('Test_Ctrl-2', '123');
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r/starter`);
   });
 

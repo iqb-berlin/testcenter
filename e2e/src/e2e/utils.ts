@@ -115,7 +115,7 @@ export const modifyPlayer = (rules: { replace: string | RegExp, with: string }[]
   return cy.wrap(null);
 };
 
-export const insertCredentials = (username: string, password = '') => {
+export const oneStepLogin = (username: string, password = '') => {
   cy.get('[formcontrolname="name"]')
     .should('be.visible')
     .clear()
@@ -125,6 +125,24 @@ export const insertCredentials = (username: string, password = '') => {
       .should('be.visible')
       .clear()
       .type(password);
+  }
+};
+
+export const twoStepLogin = (username: string, password = '') => {
+  cy.get('[formcontrolname="name"]')
+    .should('be.visible')
+    .clear()
+    .type(username);
+  cy.get('[data-cy="login-user"]')
+    .click();
+
+  if (password) {
+    cy.get('[formcontrolname="pw"]')
+      .should('be.visible')
+      .clear()
+      .type(password);
+    cy.get('[data-cy="login-user"]')
+      .click();
   }
 };
 
@@ -231,7 +249,7 @@ export const openSampleWorkspace2 = () => {
 
 export const loginSuperAdmin = () => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
-  insertCredentials('super', 'user123');
+  oneStepLogin('super', 'user123');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
@@ -246,7 +264,7 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-  insertCredentials(username, password);
+  oneStepLogin(username, password);
   cy.get('[data-cy="login-admin"]')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
@@ -257,46 +275,15 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
 
 export const loginTestTaker =
   (name: string, password: string): void => {
-    cy.get('[formcontrolname="name"]')
-      .should('be.visible')
-      .clear()
-      .type(name);
-    cy.get('[data-cy="login-user"]')
-      .click();
-
     cy.intercept('PUT', `${Cypress.env('urls').backend}/test`).as('testId');
     cy.intercept(new RegExp(`${Cypress.env('urls').backend}/test/\\d+/commands`)).as('commands');
-
-    if (password) {
-      cy.get('[formcontrolname="pw"]')
-        .should('be.visible')
-        .clear()
-        .type(password);
-      cy.get('[data-cy="login-user"]')
-        .click();
-    }
-
+    twoStepLogin(name, password);
     cy.wait(['@commands']);
   };
 
 export const loginMonitor =
   (name: string, password: string): void => {
-    cy.get('[formcontrolname="name"]')
-      .should('be.visible')
-      .clear()
-      .type(name);
-    cy.get('[data-cy="login-user"]')
-      .click();
-
-    if (password) {
-      cy.get('[formcontrolname="pw"]')
-        .should('be.visible')
-        .clear()
-        .type(password);
-      cy.get('[data-cy="login-user"]')
-        .click();
-    }
-
+    twoStepLogin(name, password);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
     cy.get('[data-cy="account-button"]')
       .should('be.visible');

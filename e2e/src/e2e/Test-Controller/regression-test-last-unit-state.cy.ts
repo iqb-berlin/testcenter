@@ -1,7 +1,7 @@
 import {
   cleanUp,
   forwardTo,
-  getFromIframe, insertCredentials,
+  getFromIframe, twoStepLogin,
   modifyPlayer,
   probeBackendApi,
   resetBackendData,
@@ -31,9 +31,7 @@ describe('Test Controller', { testIsolation: true }, () => {
 
   it('should not confuse response data if a last package was sent with window:unload', () => {
     visitLoginPage();
-    insertCredentials('test', 'user123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('test', 'user123');
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
