@@ -3,7 +3,7 @@ import {
   getResultFileRows,
   loginSuperAdmin,
   loginTestTaker,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -56,7 +56,7 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
 
   it('generated responses file exist in workspace with saved session-login', () => {
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('Hote-Modes');

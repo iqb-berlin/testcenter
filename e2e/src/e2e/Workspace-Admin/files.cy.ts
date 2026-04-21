@@ -3,7 +3,7 @@ import {
   deleteFilesSampleWorkspace,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   reload,
   resetBackendData,
@@ -20,7 +20,7 @@ describe('Workspace-Admin-files', () => {
   beforeEach(() => {
     visitLoginPage();
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
   });
 
   it('download files', () => {

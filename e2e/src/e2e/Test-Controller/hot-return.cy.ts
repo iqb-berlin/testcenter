@@ -9,7 +9,7 @@ import {
   loginSuperAdmin,
   loginTestTaker, logout,
   logoutFromRunningTestWithConfirmation,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -429,7 +429,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
 
     it('check responses and logs', () => {
       loginSuperAdmin();
-      openSampleWorkspace(1);
+      openWorkspace('workspace-card-sample_workspace', 1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
       cy.contains('Hot-Return');

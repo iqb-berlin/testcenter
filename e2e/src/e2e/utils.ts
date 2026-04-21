@@ -233,18 +233,9 @@ export const clickCardButton = (element: string, cardLabel?: string, buttonText?
     .click()
 };
 
-export const openSampleWorkspace = (workspace: number) => {
-  cy.get(`[data-cy="workspace-${workspace}"]`)
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/admin/${workspace}/files`);
-};
-
-export const openSampleWorkspace2 = () => {
-  cy.get('[data-cy="workspace-2"]')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/admin/2/files`);
+export const openWorkspace = (workspaceName: string, workspaceNumber: number) => {
+  clickCardButton(workspaceName);
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/${workspaceNumber}/files`);
 };
 
 export const loginSuperAdmin = () => {
@@ -312,14 +303,6 @@ export const addWorkspaceAdmin = (username: string, password: string) => {
   cy.get('[type="submit"]')
     .click();
   cy.wait('@waitForNewUser');
-};
-
-export const uploadFileFromFixtureToWorkspace = (fileName: string, workspace: number) => {
-  loginSuperAdmin();
-  openSampleWorkspace(workspace);
-  cy.get('[data-cy="upload-file-select"]')
-    .selectFile(`${Cypress.config('fixturesFolder')}/${fileName}`, { force: true });
-  logoutAdmin();
 };
 
 export const deleteFilesSampleWorkspace = () => {
@@ -410,15 +393,6 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
       .then(splitCsvID);
   }
   throw new Error(`Unknown filetype: ${fileType}`);
-};
-
-export const getFromIframeAlt = (selector: string): Chainable<JQuery<HTMLElement>> => {
-  cy.get('iframe')
-    .its('0.contentDocument.body')
-    .as('iframeBody')
-    .should('be.visible');
-  return cy.get('@iframeBody')
-    .find(selector);
 };
 
 export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {

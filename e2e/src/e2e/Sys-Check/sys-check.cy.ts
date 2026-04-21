@@ -5,7 +5,7 @@
 
 import {
   loginSuperAdmin,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   selectFromDropdown,
@@ -83,7 +83,7 @@ describe('Sys-Check', () => {
 
   it('dont display the starter page if there is only 1 syscheck-file in workspace', () => {
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
       .click();
     cy.get('[data-cy="delete-files"]')
@@ -98,11 +98,11 @@ describe('Sys-Check', () => {
 
   it('a global system-check button must be visible, if there is no sc-login in TT', () => {
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     deleteTesttakersFiles(1);
     cy.get('[data-cy="logo"]')
       .click();
-    openSampleWorkspace(2);
+    openWorkspace('workspace-card-second_workspace', 2);
     deleteTesttakersFiles(2);
     cy.get('[data-cy="logo"]')
       .click();

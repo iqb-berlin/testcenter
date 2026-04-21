@@ -4,7 +4,7 @@ import {
   forwardTo,
   getFromIframe,
   loginSuperAdmin,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
@@ -99,7 +99,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('a response file is not generated', () => {
     visitLoginPage();
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('Demo');
