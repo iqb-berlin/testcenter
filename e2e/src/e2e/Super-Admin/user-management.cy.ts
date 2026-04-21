@@ -1,5 +1,5 @@
 import {
-  addWorkspaceAdmin,
+  addWorkspaceAdmin, clickCardButton,
   clickSuperadminSettings,
   loginSuperAdmin,
   loginWorkspaceAdmin,
@@ -29,8 +29,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="change-superadmin"]');
   });
 
-  // todo ui/ux - feature doesnt exist
-  it.skip('add a new user', () => {
+  it('add a new user', () => {
     addWorkspaceAdmin('newTest', 'user123');
     logoutAdmin();
     visitLoginPage();
@@ -66,8 +65,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="goto-superadmin-settings"]');
   });
 
-  // todo ui/ux - feature doesnt exist
-  it.skip('change privileges for a workspaceadmin to read-only', () => {
+  it('change privileges for a workspaceadmin to read-only', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-ro"]')
@@ -77,8 +75,7 @@ describe('Usermanagement (user-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.disabled');
@@ -87,8 +84,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]');
   });
 
-  // todo ui/ux - feature doesnt exist
-  it.skip('change privileges for a workspaceadmin to read-write', () => {
+  it('change privileges for a workspaceadmin to read-write', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="workspace-1-role-rw"]')
@@ -98,8 +94,7 @@ describe('Usermanagement (user-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled');
@@ -107,8 +102,7 @@ describe('Usermanagement (user-tab)', () => {
       .should('be.enabled');
   });
 
-  // todo ui/ux - feature doesnt exist
-  it.skip('change the password for a workspaceadmin', () => {
+  it('change the password for a workspaceadmin', () => {
     cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-password"]')
