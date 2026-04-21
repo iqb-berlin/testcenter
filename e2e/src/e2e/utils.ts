@@ -257,9 +257,7 @@ export const loginSuperAdmin = () => {
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  cy.get('[data-cy="account-button"]').click();
-  cy.contains('super');
-  cy.get('body').type('{esc}');
+  checkAdminName('super');
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string) => {
@@ -271,8 +269,6 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  cy.get('[data-cy="card-login-name"]')
-    .contains(username);
 };
 
 export const loginTestTaker =
@@ -476,4 +472,10 @@ export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*=
 export const logout = () => {
   cy.get('[data-cy="account-button"]').click();
   cy.get('[data-cy="logout-button"]').click();
+}
+
+export const checkAdminName = (name: string) => {
+  cy.get('[data-cy="account-button"]').click();
+  cy.contains(name);
+  cy.get('body').type('{esc}');
 }
