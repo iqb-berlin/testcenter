@@ -112,6 +112,8 @@ describe('Sys-Check', () => {
       win.location.href = 'about:blank'
     });
     visitLoginPage();
+    cy.get('[data-cy="login-admin-form"]')
+      .click();
     cy.get('[data-cy="general-sys-check"]')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
