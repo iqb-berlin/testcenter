@@ -248,7 +248,7 @@ export const loginSuperAdmin = () => {
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-  checkAdminName('super');
+  checkUserName('super');
 };
 
 export const loginWorkspaceAdmin = (username: string, password: string) => {
@@ -448,7 +448,7 @@ export const logout = () => {
   cy.get('[data-cy="logout-button"]').click();
 };
 
-export const checkAdminName = (name: string) => {
+export const checkUserName = (name: string) => {
   cy.get('[data-cy="account-button"]').click();
   cy.contains(name);
   cy.get('body').type('{esc}');
