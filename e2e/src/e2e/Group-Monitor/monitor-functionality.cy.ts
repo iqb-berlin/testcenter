@@ -23,7 +23,7 @@ describe('Check monitor functions', { testIsolation: false }, () => {
 
   it('group-monitor login', () => {
     visitLoginPage();
-    loginMonitor('GM-1', '123');
+    loginMonitor('GM-1', '');
     clickCardButton('gm-card-0');
     cy.contains('testtaker-a');
   });

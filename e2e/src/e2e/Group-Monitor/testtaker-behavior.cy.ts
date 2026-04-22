@@ -15,7 +15,7 @@ describe('Check testtaker behavior', { testIsolation: false }, () => {
     resetBackendData();
     probeBackendApi();
     visitLoginPage();
-    loginMonitor('GM-1', '123');
+    loginMonitor('GM-1', '');
   });
 
   it('testtaker login', () => {

@@ -21,7 +21,7 @@ describe('Group-Monitor User', () => {
 
   beforeEach(() => {
     visitLoginPage();
-    loginMonitor('GM-1', '123');
+    loginMonitor('GM-1', '');
   });
 
   it('displayed a group-monitor with 2 profiles for selection ', () => {
