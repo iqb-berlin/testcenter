@@ -182,12 +182,11 @@ describe('Workspace-Admin-files', () => {
     cy.contains('erfolgreich gelöscht.');
     cy.get('[data-cy="upload-file-select"]')
       .selectFile([
-          '../sampledata/Unit.xml',
-          '../sampledata/verona-player-simple-6.0.html',
-          '../sampledata/SAMPLE_UNITCONTENTS.HTM',
-          '../sampledata/sample_resource_package.itcr.zip'
-        ],
-        { force: true }
+        '../sampledata/Unit.xml',
+        '../sampledata/verona-player-simple-6.0.html',
+        '../sampledata/SAMPLE_UNITCONTENTS.HTM',
+        '../sampledata/sample_resource_package.itcr.zip'
+      ], { force: true }
       );
     cy.get('[data-cy="close-upload-report"]')
       .click();
