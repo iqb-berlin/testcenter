@@ -230,7 +230,7 @@ export const clickCardButton = (element: string, cardLabel?: string, buttonText?
   return cy.contains(`[data-cy^="${element}"]`, cardLabel)
     .find('button')
     .should('contain.text', buttonText)
-    .click()
+    .click();
 };
 
 export const openWorkspace = (workspaceName: string, workspaceNumber: number) => {
@@ -446,10 +446,10 @@ export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*=
 export const logout = () => {
   cy.get('[data-cy="account-button"]').click();
   cy.get('[data-cy="logout-button"]').click();
-}
+};
 
 export const checkAdminName = (name: string) => {
   cy.get('[data-cy="account-button"]').click();
   cy.contains(name);
   cy.get('body').type('{esc}');
-}
+};
