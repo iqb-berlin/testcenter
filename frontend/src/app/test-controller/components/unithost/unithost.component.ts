@@ -175,7 +175,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (msg.playerState) {
       if (unit.sequenceId === this.tcs.currentUnit?.sequenceId) {
-        this.pageService.update(msg.playerState.validPages || [], msg.playerState.currentPage);
+        this.pageService.updateValidPages(msg.playerState.validPages || [], msg.playerState.currentPage);
       }
 
       this.tcs.AddToUnitStateBuffer(unit.sequenceId, [

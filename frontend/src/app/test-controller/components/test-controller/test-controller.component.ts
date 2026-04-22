@@ -434,9 +434,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   gotoPage(targetPageIndex: number): void {
-    this.pageService.currentPageIndex = targetPageIndex;
+    this.pageService.setCurrentPage(targetPageIndex);
     this.apiService.sendPageNav(this.tcs.currentUnit?.alias,
-      Object.keys(this.pageService.pages)[this.pageService.currentPageIndex]);
+      this.pageService.pages[this.pageService.currentPageIndex].id);
   }
 
   protected readonly unitNavigationTarget = UnitNavigationTarget;
