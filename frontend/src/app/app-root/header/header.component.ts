@@ -33,6 +33,7 @@ export class HeaderComponent implements OnDestroy {
   constructor(public headerService: HeaderService, public mainDataService: MainDataService) {
     this.mainDataService.authData$.subscribe(authData => {
       if (!authData) return;
+      this.userRights = [];
       if (authData.claims.workspaceAdmin) {
         this.userRights.push('Verwaltung von Testinhalten');
       }
