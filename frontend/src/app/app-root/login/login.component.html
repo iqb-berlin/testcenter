@@ -73,11 +73,6 @@
     </mat-card>
 
     <div class="button-section">
-      @if (this.mainDataService.sysCheckAvailableForAll) {
-        <button matButton="tonal" [routerLink]="['/r/check-starter']">
-          Systemcheck
-        </button>
-      }
       <button matButton="tonal" [routerLink]="['/r/admin-login']" data-cy="login-admin-form">
         Adminbereich
       </button>
