@@ -17,6 +17,7 @@
   * ui_mode -> silent_mode
   * show_fullscreen_button -> toolbar_show_fullscreen_button
   * show_reload_button -> toolbar_show_reload_button
+* viewsettings umgebaut TODO
 
 ##Technisches
 ### Änderungen
