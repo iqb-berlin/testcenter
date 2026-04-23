@@ -10,7 +10,7 @@ import {
   loginTestTaker, logout,
   logoutAdmin,
   logoutFromRunningTestWithConfirmation,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -430,7 +430,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
     it('download a responses/log file with groupname: Hot-Restart', () => {
       loginSuperAdmin();
-      openSampleWorkspace(1);
+      openWorkspace('workspace-card-sample_workspace', 1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
       cy.contains('Hot-Restart');

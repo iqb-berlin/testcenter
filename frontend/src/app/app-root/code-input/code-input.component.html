@@ -13,7 +13,7 @@
       @if (!problemText) {
         <p class="bubble-title">Brauchst du Hilfe?</p>
       }
-      <p class="bubble-body">
+      <p class="bubble-body" [attr.data-cy]="'login-code-problem:'+problemCode">
         @if (problemText) {
           {{ problemText }}
         } @else {

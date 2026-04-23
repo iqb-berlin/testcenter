@@ -21,7 +21,7 @@ describe('Group-Monitor User', () => {
 
   beforeEach(() => {
     visitLoginPage();
-    loginMonitor('GM-1', '123');
+    loginMonitor('GM-1', '');
   });
 
   it('displayed a group-monitor with 2 profiles for selection ', () => {
@@ -98,9 +98,8 @@ describe('Group-Monitor User', () => {
       .click();
   });
 
-  //todo
-  it.skip('there are no filters from small-profile', () => {
-    clickCardButton('gm-card-1');
+  it('there are no filters from small-profile in full-profile available', () => {
+    clickCardButton('gm-card-0');
     cy.get('[data-cy="GM_setting_button"]')
       .click({ force: true });
     cy.get('[data-cy="GM_filter_button"]')

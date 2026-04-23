@@ -7,7 +7,7 @@ import {
   getFromIframe,
   loginSuperAdmin,
   logoutFromTestNoConfirmation,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
@@ -151,7 +151,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('there are no responses in the response file', () => {
     visitLoginPage();
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('Review');

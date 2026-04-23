@@ -1,4 +1,5 @@
 import {
+  clickCardButton,
   clickSuperadminSettings,
   loginSuperAdmin,
   loginWorkspaceAdmin,
@@ -59,8 +60,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
     cy.get('[data-cy="upload-files"]')
       .should('be.disabled');
     cy.get('[data-cy="delete-files"]')
@@ -79,8 +79,8 @@ describe('Management Workspaces (workspace-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
+    cy.get('[data-cy="upload-files"]')
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled');
     cy.get('[data-cy="delete-files"]')
