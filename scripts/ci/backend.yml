@@ -3,6 +3,8 @@ build-backend:
   rules:
     - if: '$PIPELINE_TYPE == "web"'
       when: on_success
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
     - when: never
   variables:
     IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}"
