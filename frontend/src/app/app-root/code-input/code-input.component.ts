@@ -16,13 +16,17 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   ]
 })
 export class CodeInputComponent {
-  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
+  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'text-field';
+  length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
 
   constructor(private router: Router, public bs: BackendService, public mds: MainDataService,
               public themeService: ThemeService) {
-    this.mode = this.themeService.activeTheme.codeInputMode || 'text-field';
+    this.bs.getSessionData().subscribe((authData: AuthData) => {
+      this.mode = authData.viewSettings.codeInput?.type || 'text-field';
+      this.length = authData.viewSettings.codeInput?.length;
+    });
   }
 
   protected onSubmit(code: string | null) {

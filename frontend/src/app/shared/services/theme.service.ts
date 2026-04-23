@@ -33,7 +33,6 @@ export interface Theme {
   cssClassName: string;
   previewColor?: string;
   description?: string;
-  codeInputMode?: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
   imagePaths?: Partial<Record<keyof CustomImages, string>>
 }
 
@@ -43,7 +42,6 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
-    codeInputMode: 'text-field',
     imagePaths: {
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
       starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
