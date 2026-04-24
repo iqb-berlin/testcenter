@@ -163,7 +163,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
     cy.get('[data-cy="booklet-CY-BKLT_TC-3"]')
       .contains('gesperrt');
     logout();
-    cy.get('[data-cy="login-admin"]')
+    cy.get('[data-cy="login-admin-form"]')
       .should('be.visible');
     });
   });
@@ -250,7 +250,7 @@ describe('check hot-return test-controller functionalities', { testIsolation: fa
       cy.get('[data-cy="endTest"]')
         .click();
       logout();
-      cy.get('[data-cy="login-admin"]')
+      cy.get('[data-cy="login-admin-form"]')
         .should('be.visible');
     });
   });
