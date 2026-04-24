@@ -11,7 +11,7 @@ import {
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
-  twoStepLogin
+  twoStepLogin, clickCardButton
 } from '../utils';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -32,9 +32,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   });
 
   it('start a review-test from booklet selection', () => {
-    cy.get('[data-cy^="booklet-"]')
-      .first()
-      .click();
+    clickCardButton('booklet-CY-BKLT_TC-2');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.url()
