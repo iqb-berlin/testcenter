@@ -49,12 +49,36 @@
       <Booklet codes="xxx yyy">BOOKLET.SAMPLE-1</Booklet>
       <Booklet codes="xxx yyy">BOOKLET.SAMPLE-3</Booklet>
       <Booklet>BOOKLET.SAMPLE-2</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>text-field</type>
+          <length>3</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+
+    <Login mode="run-hot-return" name="test2" pw="user123">
+      <Booklet codes="xxx yyy 11111">BOOKLET.SAMPLE-1</Booklet>
+      <Booklet codes="xxx yyy 222">BOOKLET.SAMPLE-3</Booklet>
+      <Booklet>BOOKLET.SAMPLE-2</Booklet>
+      <ViewSettings>
+        <theme>Sekundar</theme>
+        <codeInput>
+          <type>keypad-numbers</type>
+          <length>3</length>
+        </codeInput>
+      </ViewSettings>
     </Login>
 
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
     <Login mode="monitor-group" name="test-group-monitor-2" pw="user123">
       <Profile id="all" />
       <Profile id="small" />
+      <ViewSettings>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
     </Login>
     <Login mode="sys-check-login" name="sys-check" />
   </Group>

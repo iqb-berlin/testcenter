@@ -16,6 +16,7 @@ import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.component';
 import { FooterService } from '@shared/services/footer.service';
+import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -56,7 +57,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private backendService: BackendService,
     private router: Router,
     private route: ActivatedRoute,
-    private footerService: FooterService
+    private footerService: FooterService,
+    private themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
@@ -98,9 +100,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.problemCode = 0;
     this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
       next: authData => {
-        const authDataTyped = authData as AuthData;
-        this.mainDataService.setAuthData(authDataTyped);
-        this.navigateAfterLogin(authDataTyped);
+        this.mainDataService.setAuthData(authData);
+        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.navigateAfterLogin(authData);
       },
       error: error => {
         this.problemCode = error.code;

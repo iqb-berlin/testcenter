@@ -17,6 +17,7 @@ class AccessSet extends DataCollectionTypeSafe {
   protected array $flags;
   protected object $claims;
   protected ?string $groupToken;
+  protected array $viewSettings;
 
   public function __construct(
     string $token,
@@ -27,7 +28,8 @@ class AccessSet extends DataCollectionTypeSafe {
     stdClass $customTexts = null,
     ?string $groupToken = null,
     ?int $id = null,
-    ?bool $pwSetByAdmin = null
+    ?bool $pwSetByAdmin = null,
+    ?array $viewSettings = [],
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
@@ -41,6 +43,7 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->groupToken = $groupToken;
     $this->id = $id ?? null;
     $this->pwSetByAdmin = $pwSetByAdmin;
+    $this->viewSettings = $viewSettings;
   }
 
   static function createFromPersonSession(
@@ -64,7 +67,11 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginName,
       $groupLabel,
       [],
-      $login->getCustomTexts() ?? new stdClass()
+      $login->getCustomTexts() ?? new stdClass(),
+      null,
+      null,
+      null,
+      $login->getViewSettings()
     );
 
     $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
@@ -141,7 +148,10 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginSession->getLogin()->getGroupLabel(),
       $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
       $loginSession->getLogin()->getCustomTexts(),
-      $loginSession->getGroupToken()
+      $loginSession->getGroupToken(),
+      null,
+      null,
+      $loginSession->getLogin()->getViewSettings(),
     );
   }
 
@@ -208,7 +218,6 @@ class AccessSet extends DataCollectionTypeSafe {
       } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
         $flags['scheduled'] = $group->_expired->timestamp * 1000;
       }
-      $flags['monitorBookletVisibility'] = $login->getViewSettings()['monitorBookletVisibility'] ?? 'visible';
       if (count($profiles)) {
         foreach ($profiles as $profile) {
           $profileFlags = $flags;

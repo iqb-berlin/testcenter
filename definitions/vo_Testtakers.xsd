@@ -46,7 +46,34 @@
                     </xs:choice>
                     <xs:element name="ViewSettings" minOccurs="0">
                       <xs:complexType>
-                        <xs:attribute name="monitorBookletVisibility" type="GroupMonitorBookletVisibilityType" />
+                        <xs:all>
+                          <xs:element name="theme" type="xs:string" minOccurs="0"/>
+                          <xs:element name="codeInput" minOccurs="0">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="type" minOccurs="1">
+                                  <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                      <xs:enumeration value="text-field"/>
+                                      <xs:enumeration value="keypad-symbols"/>
+                                      <xs:enumeration value="keypad-numbers"/>
+                                    </xs:restriction>
+                                  </xs:simpleType>
+                                </xs:element>
+                                <xs:element name="length" minOccurs="0">
+                                  <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                      <xs:minInclusive value="3"/>
+                                    </xs:restriction>
+                                  </xs:simpleType>
+                                </xs:element>
+                              </xs:all>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="monitorBookletVisibility"
+                                      type="GroupMonitorBookletVisibilityType"
+                                      minOccurs="0"/>
+                        </xs:all>
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
