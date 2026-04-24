@@ -1,26 +1,42 @@
-# [next]
+# 18.0.0-alpha
+Änderungsnotizen sind noch im Entwurfsstatus und werden vor dem echten Release überarbeitet.
 ## Änderungen
-* Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
-* Neue booklet parameter:
-  *   navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
-  *   navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
-  *   navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
-  *   navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
-* entfernte Bookletparameter:
-  * unit_navibuttons ersetzt durch "navbar_unit_label"
-  * page_navibuttons ersetzt durch "navbar_page_label"
-  * controller_design
+* Oberfläche komplett überarbeitet
+  * Details folgen...
+* Geänderte booklet parameter:
+  * unit_navibuttons ersetzt durch navbar_unit_label
+    * navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
+    * navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+  * page_navibuttons ersetzt durch navbar_page_label
+    * navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
+    * navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   * unit_screenheader ersetzt durch "header_content"
-  * unit_title ersetzt durch "toolbar_show_unit_title"
-  * unit_menu ersetzt durch "toolbar_show_unit_list"
-  * unit_show_time_left -> "toolbar_show_time_left"
-  * ui_mode -> silent_mode
+    * header_content: "NONE", "BOOKLET_LABEL", "BLOCK_LABEL", "UNIT_LABEL" = NONE"
+  * unit_title ersetzt durch toolbar_show_unit_title
+  * unit_menu ersetzt durch toolbar_show_unit_list
   * show_fullscreen_button -> toolbar_show_fullscreen_button
   * show_reload_button -> toolbar_show_reload_button
+  * unit_show_time_left -> toolbar_show_time_left
+  * ui_mode -> silent_mode
+* entfernte Bookletparameter:
+  * controller_design
+* Oberflächeneinstellungen von testtakern werden nun über Block "Viewsettings" gesteuert. Alle Werte sind optional. Bei Abwesenheit greifen die Standardeinstellungen via superadmin.
+  * "theme" gibt den Namen eines eingerichteten Themes an
+  * valide code-input types sind: "text-field", "keypad-symbols", "keypad-numbers"
+  * valide Werte für monitorBookletVisibility sind: "visible", "collapsed", "hidden"
+  * Beispiel: `<ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>text-field</type>
+          <length>3</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>`
 
 ##Technisches
 ### Änderungen
 * Der API-Endpunkt `/session/login` liefert zusätzlich die Parameter `loginName` und `groupLabel`. Der Parameter `displayName` ist als deprecated ausgezeichnet und wird in zukünftigen Versionen nicht mehr verfügbar sein. Der Wert kann aber weiterhin aus den beiden neuen Feldern erstellt werden.
+* Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
 
 # 17.6.0
 ## Neue Funktionen
