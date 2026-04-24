@@ -126,6 +126,8 @@ export const oneStepLogin = (username: string, password = '') => {
       .clear()
       .type(password);
   }
+  cy.get('[data-cy="login-admin"]')
+    .click();
 };
 
 export const twoStepLogin = (username: string, password = '') => {
@@ -241,11 +243,9 @@ export const openWorkspace = (workspaceName: string, workspaceNumber: number) =>
 export const loginSuperAdmin = () => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
   cy.wait(1); // seems to be unreliable without
-  oneStepLogin('super', 'user123');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
-  cy.get('[data-cy="login-admin"]')
-    .click();
+  oneStepLogin('super', 'user123');
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
   checkUserName('super');
@@ -256,8 +256,6 @@ export const loginWorkspaceAdmin = (username: string, password: string) => {
   cy.intercept({ url: `${Cypress.env('urls').backend}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('urls').backend}/session` }).as('waitForGetSession');
   oneStepLogin(username, password);
-  cy.get('[data-cy="login-admin"]')
-    .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
 };

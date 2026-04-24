@@ -76,7 +76,7 @@ describe('Check Login Possibilities', () => {
     cy.get('iframe.unitHost');
     cy.get('[data-cy="logo"]')
       .click();
-    checkUserName('as_code01');
+    checkUserName('SM-5');
     cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
@@ -90,7 +90,7 @@ describe('Check Login Possibilities', () => {
     cy.get('iframe.unitHost');
     cy.get('[data-cy="logo"]')
       .click();
-    checkUserName('as_code02');
+    checkUserName('SM-6');
     cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
   });
 
