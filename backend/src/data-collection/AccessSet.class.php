@@ -67,7 +67,11 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginName,
       $groupLabel,
       [],
-      $login->getCustomTexts() ?? new stdClass()
+      $login->getCustomTexts() ?? new stdClass(),
+      null,
+      null,
+      null,
+      $login->getViewSettings()
     );
 
     $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
