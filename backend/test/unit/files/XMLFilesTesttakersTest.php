@@ -102,7 +102,56 @@ END;
         0,
         1583053200,
         0,
-        (object) ['somestr' => 'string']
+        (object) ['somestr' => 'string'],
+        [],
+        [
+          'theme' => 'Primar',
+          'codeInput' => [
+            'type' => 'text-field',
+            'length' => 3
+          ],
+          'monitorBookletVisibility' => 'hidden'
+        ]
+      ),
+      new Login(
+        'test2',
+        'user123',
+        'run-hot-return',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          "xxx" => [
+            "BOOKLET.SAMPLE-1",
+            "BOOKLET.SAMPLE-3",
+            "BOOKLET.SAMPLE-2"
+          ],
+          "yyy" => [
+            "BOOKLET.SAMPLE-1",
+            "BOOKLET.SAMPLE-3",
+            "BOOKLET.SAMPLE-2"
+          ],
+          "11111" => [
+            "BOOKLET.SAMPLE-1",
+            "BOOKLET.SAMPLE-2"
+          ],
+          "222" => [
+            "BOOKLET.SAMPLE-3",
+            "BOOKLET.SAMPLE-2"
+          ]
+        ],
+        13,
+        0,
+        1583053200,
+        0,
+        (object) ['somestr' => 'string'],
+        [],
+        [
+          'theme' => 'Sekundar',
+          'codeInput' => [
+            'type' => 'keypad-numbers',
+            'length' => 3
+          ]
+        ]
       )
     );
     $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);

@@ -76,6 +76,9 @@
     <Login mode="monitor-group" name="test-group-monitor-2" pw="user123">
       <Profile id="all" />
       <Profile id="small" />
+      <ViewSettings>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
     </Login>
     <Login mode="sys-check-login" name="sys-check" />
   </Group>
