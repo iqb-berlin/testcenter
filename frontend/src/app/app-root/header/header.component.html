@@ -38,7 +38,7 @@
   </div>
   <div class="side logo">
     @if (headerService.showLogo) {
-      <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
+      <a [routerLink]="logoLink" aria-label="Gehe zur Startseite">
         <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
              matTooltip="Zur Startseite"/>
       </a>

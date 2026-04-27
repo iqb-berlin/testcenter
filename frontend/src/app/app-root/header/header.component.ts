@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -9,6 +9,7 @@ import { MatDivider } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { HeaderService } from '@shared/services/header.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'tc-header',
@@ -28,9 +29,19 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
   styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
+  logoLink: string[] = ['/r'];
   userRights: string[] = [];
 
-  constructor(public headerService: HeaderService, public mainDataService: MainDataService) {
+  constructor(public headerService: HeaderService, public mainDataService: MainDataService, private router: Router) {
+
+    router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const isLoginRoute = router.url.includes('code-input') ||
+                                   router.url.includes('login');
+      this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
+    });
+
     this.mainDataService.authData$.subscribe(authData => {
       if (!authData) return;
       this.userRights = [];
