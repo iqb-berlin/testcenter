@@ -145,7 +145,6 @@ data-pull:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 		cp backend:/var/www/testcenter/data .
-	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) re-init-backend
 
 # Copies the local data folder into the Backend Container, while keeping the same user-, group- and file permissions
 # from https://blog.nashcom.de/nashcomblog.nsf/dx/docker-cp-with-permissions-and-owner-change.htm
@@ -161,7 +160,8 @@ data-push:
 					--env-file .env.dev\
 					--file docker-compose.yml\
 					--file docker-compose.dev.yml\
-				cp - backend:/var/www/testcenter
+				cp - backend:/var/www/testcenter &&\
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) re-init-backend
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
