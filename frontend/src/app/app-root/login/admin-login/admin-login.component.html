@@ -28,7 +28,7 @@
         </mat-card-content>
       }
       <mat-card-actions [style.justify-content]="'space-between'">
-        <button mat-raised-button type="submit" color="primary" id="admin" data-cy="login-admin"
+        <button matButton="filled" type="submit" color="primary" id="admin" data-cy="login-admin"
                 [disabled]="loginForm.invalid">
           Weiter
         </button>
@@ -38,11 +38,11 @@
 
   <div class="button-box">
     @if (this.mainDataService.sysCheckAvailableForAll) {
-      <a [routerLink]="['/r/check-starter']" mat-raised-button color="primary" data-cy="general-sys-check">
+      <a [routerLink]="['/r/check-starter']" matButton="tonal" color="primary" data-cy="general-sys-check">
         Systemcheck
       </a>
     }
-    <a [routerLink]="['/r/login']" mat-raised-button color="primary" data-cy="login-testtaker-form">
+    <a [routerLink]="['/r/login']" matButton="tonal" color="primary" data-cy="login-testtaker-form">
       Testtakerbereich
     </a>
   </div>

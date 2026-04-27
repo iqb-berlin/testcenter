@@ -72,8 +72,6 @@
 
 .login-section > form > button {
   width: 15%;
-  background-color: var(--mat-sys-primary);
-  color: white;
 }
 
 .help-box {
