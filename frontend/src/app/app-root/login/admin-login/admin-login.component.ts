@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { FooterService } from '@shared/services/footer.service';
 
 @Component({
   templateUrl: './admin-login.component.html',
@@ -27,7 +28,7 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './admin-login.component.css'
 })
 
-export class AdminLoginComponent implements OnInit {
+export class AdminLoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
   problemText = '';
   problemLevel: 'error' | 'warning' = 'error';
@@ -41,11 +42,16 @@ export class AdminLoginComponent implements OnInit {
   });
 
   constructor(public mainDataService: MainDataService, private headerService: HeaderService,
-              private backendService: BackendService, private router: Router) { }
+              private backendService: BackendService, private router: Router, private footerService: FooterService) { }
 
   ngOnInit(): void {
     this.headerService.title = 'Anmelden';
     this.checkBrowser();
+    this.footerService.showFooter.set(true);
+  }
+
+  ngOnDestroy(): void {
+    this.footerService.showFooter.set(false);
   }
 
   adminLogin(): void {
