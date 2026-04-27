@@ -1,3 +1,10 @@
+# next
+## Änderungen zu 18.0.0-alpha
+- Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
+- Footer zur Admin-Loginseite hinzugefügt
+- Fix direct login via URL
+- Code-Eingabe: Benutzung der ENTER-Taste repariert 
+
 # 18.0.0-alpha
 Änderungsnotizen sind noch im Entwurfsstatus und werden vor dem echten Release überarbeitet.
 ## Änderungen
