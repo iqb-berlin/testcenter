@@ -63,7 +63,7 @@ export class DirectLoginActivateGuard {
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const name = state.url.substr(1);
     if (name.length > 0 && name.indexOf('/') < 0) {
-      return this.bs.login('login', name)
+      return this.bs.login(name)
         .pipe(
           map((authDataResponse: AuthData) => {
             this.mds.setAuthData(authDataResponse as AuthData);
