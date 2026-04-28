@@ -2,5 +2,7 @@ export const environment = {
   production: false,
   fileServerUrl: '/fs/',
   broadcasterUrl: '/bs/public/',
-  backendUrl: '/api/'
+  backendUrl: '/api/',
+  passwordMinLength: 7,
+  passwordRegexCheck: "/.*/"
 };

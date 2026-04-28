@@ -63,6 +63,12 @@
               "extractLicenses": true
             },
             "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
             },
             "e2e": {
               "fileReplacements": [
