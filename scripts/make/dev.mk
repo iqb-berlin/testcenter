@@ -88,7 +88,7 @@ logs:
 connect-db:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
-			--env-file .env.prod\
+			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.prod.yml\
 		exec db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
