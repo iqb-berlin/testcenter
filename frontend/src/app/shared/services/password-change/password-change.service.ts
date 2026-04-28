@@ -14,7 +14,9 @@ export class PasswordChangeService {
     const dialogRef =
       this.newpasswordDialog.open(NewPasswordComponent, {
         width: '600px',
-        data: user.name
+        data: {
+          username: user.name
+        }
       });
 
     return dialogRef.afterClosed().pipe(

@@ -108,35 +108,36 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               this.mds.logOut();
               return;
             }
-
-            this.pcs.showPasswordChangeDialog(
-              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! }
-            ).subscribe((pwChangeResult: boolean) => {
-              let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
-              if (pwChangeResult) {
-                resultDialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Passwort erfolgreich geändert',
-                    content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-                    type: 'info'
-                  }
-                });
-              } else {
-                resultDialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Sie müssen Ihr Passwort einmalig ändern',
-                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                    type: 'error'
-                  }
-                });
-              }
-              setTimeout(() => {
-                resultDialog.close();
-                this.mds.logOut();
-              }, 1500);
-            });
+            const userID = this.mds.getAuthData()?.id;
+            const username = this.mds.getAuthData()?.displayName;
+            if (userID === undefined || username === undefined) throw new Error('Error getting user ID');
+            this.pcs.showPasswordChangeDialog({ id: userID, name: username })
+              .subscribe((pwChangeResult: boolean) => {
+                let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
+                if (pwChangeResult) {
+                  resultDialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Passwort erfolgreich geändert',
+                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
+                      type: 'info'
+                    }
+                  });
+                } else {
+                  resultDialog = this.dialog.open(MessageDialogComponent, {
+                    width: '400px',
+                    data: <MessageDialogData>{
+                      title: 'Sie müssen Ihr Passwort einmalig ändern',
+                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                      type: 'error'
+                    }
+                  });
+                }
+                setTimeout(() => {
+                  resultDialog.close();
+                  this.mds.logOut();
+                }, 1500);
+              });
           });
         }
       } else if ('test' in this.claims) {
@@ -180,7 +181,10 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changePassword(): void {
-    this.pcs.showPasswordChangeDialog({ id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! })
+    const userID = this.mds.getAuthData()?.id;
+    const username = this.mds.getAuthData()?.displayName;
+    if (userID === undefined || username === undefined) throw new Error('Error getting user ID');
+    this.pcs.showPasswordChangeDialog({ id: userID, name: username })
       .subscribe(result => {
         if (result) {
           const dialog = this.dialog.open(MessageDialogComponent, {

@@ -32,5 +32,5 @@ export class NewPasswordComponent {
   }, { validators: samePasswordValidator }
   );
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: string) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { username: string }) { }
 }
