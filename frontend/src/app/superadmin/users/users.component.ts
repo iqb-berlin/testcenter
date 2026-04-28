@@ -1,9 +1,9 @@
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MessageService } from '@shared/services/message.service';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, PasswordChangeService
@@ -16,9 +16,9 @@ import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 
 @Component({
-    templateUrl: './users.component.html',
-    styleUrls: ['./users.component.css'],
-    standalone: false
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css'],
+  standalone: false
 })
 export class UsersComponent implements OnInit {
   objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();
@@ -39,7 +39,7 @@ export class UsersComponent implements OnInit {
     private confirmDialog: MatDialog,
     private superadminPasswordDialog: MatDialog,
     private messsageDialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private messageService: MessageService,
     private newpasswordService: PasswordChangeService
   ) {
     this.tableSelectionRow.changed.subscribe(
@@ -106,7 +106,7 @@ export class UsersComponent implements OnInit {
         afterClosedResult.get('pw').value
       )
         .subscribe(() => {
-          this.snackBar.open('Status geändert', '', { duration: 1000 });
+          this.messageService.showInfo('Status geändert');
           this.updateObjectList();
         });
     });
@@ -127,7 +127,7 @@ export class UsersComponent implements OnInit {
       this.newpasswordService.showPasswordChangeDialog(selectedRows[0])
         .subscribe(result => {
           if (result) {
-            this.snackBar.open('Kennwort geändert', '', { duration: 3000 });
+            this.messageService.showInfo('Kennwort geändert');
           }
         });
     }
@@ -168,7 +168,7 @@ export class UsersComponent implements OnInit {
           selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
           this.bs.deleteUsers(usersToDelete).subscribe(
             () => {
-              this.snackBar.open('Administrator:in gelöscht', '', { duration: 1000 });
+              this.messageService.showInfo('Administrator:in gelöscht');
               this.updateObjectList();
             }
           );
@@ -202,7 +202,7 @@ export class UsersComponent implements OnInit {
     if (this.selectedUser > -1) {
       this.bs.setWorkspacesByUser(this.selectedUser, this.workspacelistDatasource.data)
         .subscribe(() => {
-          this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
+          this.messageService.showInfo('Zugriffsrechte geändert');
         });
     } else {
       this.workspacelistDatasource = new MatTableDataSource<IdRoleData>();

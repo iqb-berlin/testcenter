@@ -12,7 +12,7 @@ import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 import { BackendService } from '../backend.service';
 import { AppConfig } from '../../shared/classes/app.config';
@@ -83,7 +83,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
               public themeService: ThemeService,
-              private snackBar: MatSnackBar, private mainDataService: MainDataService) {
+              private messageService: MessageService, private mainDataService: MainDataService) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       introHtml: this.formBuilder.control(''),
@@ -138,7 +138,7 @@ export class SettingsComponent implements OnInit {
     };
     this.backendService.setAppConfig(appConfig)
       .subscribe(() => {
-        this.snackBar.open('Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 });
+        this.messageService.showInfo('Konfigurationsdaten der Anwendung gespeichert');
         this.configForm.markAsPristine();
         this.configForm.markAsUntouched();
         if (!this.mainDataService.appConfig) {

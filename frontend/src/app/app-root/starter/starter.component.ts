@@ -98,8 +98,8 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         if (authData.pwSetByAdmin && !this.isSuperAdmin) {
           this.dialog.open(ConfirmDialogComponent, {
             data: <MessageDialogData>{
-              title: 'Ihr Passwort wurde vom Administrator zurückgesetzt',
-              content: 'Sie müssen im nächsten Schritt ein neues Passwort vergeben.',
+              title: 'Ihr Kennwort wurde vom Administrator zurückgesetzt',
+              content: 'Sie müssen im nächsten Schritt ein neues Kennwort vergeben.',
               type: 'info'
             },
             disableClose: true
@@ -113,30 +113,12 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
             if (userID === undefined || username === undefined) throw new Error('Error getting user ID');
             this.pcs.showPasswordChangeDialog({ id: userID, name: username })
               .subscribe((pwChangeResult: boolean) => {
-                let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
-                if (pwChangeResult) {
-                  resultDialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Passwort erfolgreich geändert',
-                      content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-                      type: 'info'
-                    }
-                  });
-                } else {
-                  resultDialog = this.dialog.open(MessageDialogComponent, {
-                    width: '400px',
-                    data: <MessageDialogData>{
-                      title: 'Sie müssen Ihr Passwort einmalig ändern',
-                      content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                      type: 'error'
-                    }
-                  });
-                }
-                setTimeout(() => {
-                  resultDialog.close();
-                  this.mds.logOut();
-                }, 1500);
+                const messageText = pwChangeResult ?
+                  'Kennwort erfolgreich geändert. Sie werden abgemeldet.' :
+                  'Fehler beim Ändern des Kennworts. Sie werden abgemeldet.';
+                this.ms.showInfo(messageText)
+                  .afterDismissed()
+                  .subscribe(() => this.mds.logOut());
               });
           });
         }
@@ -187,18 +169,9 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pcs.showPasswordChangeDialog({ id: userID, name: username })
       .subscribe(result => {
         if (result) {
-          const dialog = this.dialog.open(MessageDialogComponent, {
-            width: '400px',
-            data: <MessageDialogData>{
-              title: 'Passwort erfolgreich geändert',
-              content: 'Passwort erfolgreich geändert. Sie werden ausgeloggt.',
-              type: 'info'
-            }
-          });
-          setTimeout(() => {
-            dialog.close();
-            this.mds.logOut();
-          }, 1500);
+          this.ms.showInfo('Kennwort erfolgreich geändert. Sie werden abgemeldet.')
+            .afterDismissed()
+            .subscribe(() => this.mds.logOut());
         }
       });
   }
@@ -235,7 +208,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bs.downloadReviews()
       .subscribe(response => {
         if (response.status === 204 || !response.body) {
-          this.ms.show('Keine Kommentare verfügbar.');
+          this.ms.showInfo('Keine Kommentare verfügbar.');
         } else {
           FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
         }

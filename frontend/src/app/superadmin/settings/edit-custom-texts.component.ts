@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CustomtextService, MainDataService, customTextDefaults } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
@@ -14,6 +13,7 @@ import {
 } from '@angular/material/expansion';
 import { MatButton } from '@angular/material/button';
 import { KeyValuePipe } from '@angular/common';
+import { MessageService } from '@shared/services/message.service';
 
 export interface CustomTextData {
   key: string,
@@ -96,10 +96,10 @@ export class EditCustomTextsComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private snackBar: MatSnackBar,
     private mainDataService: MainDataService,
     private backendService: BackendService,
-    private customtextService: CustomtextService
+    private customtextService: CustomtextService,
+    private messageService: MessageService
   ) {
     this.customTextsForm = new FormGroup({});
 
@@ -146,9 +146,7 @@ export class EditCustomTextsComponent {
             type: 'script'
           });
         }
-        this.snackBar.open(
-          'Textersetzungen gespeichert', 'Info', { duration: 3000 }
-        );
+        this.messageService.showInfo('Textersetzungen gespeichert');
         this.dataChanged = false;
         Object.keys(this.changedData).forEach(ctKey => {
           (this.mainDataService.appConfig as AppConfig).customTexts[ctKey] = this.changedData[ctKey];

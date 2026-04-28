@@ -587,7 +587,7 @@ export class TestControllerService {
             if (!navOk && !targetIsCurrent) {
               // happens when a goto goes to a unit which does exist, but is not accessible
               if (this.shouldShowConfirmationUI()) {
-                this.ms.show(`Navigation zu ${navString} nicht erlaubt.`);
+                this.ms.showInfo(`Navigation zu ${navString} nicht erlaubt.`);
               }
             }
             return navOk;
@@ -878,7 +878,7 @@ export class TestControllerService {
     const skipIfNoTimeRestrictionEnforcement = (text: string) => {
       if (!this.testMode.forceTimeRestrictions) {
         this.interruptTimer();
-        this.ms.show(text);
+        this.ms.showInfo(text);
         return true;
       }
     };
@@ -886,7 +886,7 @@ export class TestControllerService {
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
 
-      this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
+      this.ms.showInfo('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
     }
 
@@ -934,7 +934,7 @@ export class TestControllerService {
         presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
         responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
       };
-      this.ms.show(
+      this.ms.showInfo(
         `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
       );
@@ -973,7 +973,7 @@ export class TestControllerService {
           this.activateUnitLeaveLock(currentUnit.sequenceId);
         }
       } else {
-        this.ms.show(`${lockScope} würde im Testmodus nun gesperrt werden.`);
+        this.ms.showInfo(`${lockScope} würde im Testmodus nun gesperrt werden.`);
       }
     };
 
