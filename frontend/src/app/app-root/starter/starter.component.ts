@@ -12,7 +12,7 @@ import {
 } from '@shared/shared.module';
 import { BackendService } from '@app/backend.service';
 import { AccessObject, AuthAccessType } from '@app/app.interfaces';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FileService } from '@shared/services/file.service';
 import { MessageService } from '@shared/services/message.service';
 import { HeaderService } from '@shared/services/header.service';
@@ -108,29 +108,13 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               this.mds.logOut();
             }
 
-            // TODO is this subscription ever unsubscribed?
             this.pcs.showPasswordChangeDialog(
               { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
               { disableClose: true }
-            ).subscribe(error => {
-              if (error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Sie müssen Ihr Passwort einmalig ändern',
-                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                    type: 'error'
-                  }
-                });
-
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
-              }
-
-              if (!error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
+            ).subscribe((result: boolean) => {
+              let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
+              if (result) {
+                resultDialog = this.dialog.open(MessageDialogComponent, {
                   width: '400px',
                   data: <MessageDialogData>{
                     title: 'Passwort erfolgreich geändert',
@@ -138,12 +122,20 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
                     type: 'info'
                   }
                 });
-
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
+              } else {
+                resultDialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Sie müssen Ihr Passwort einmalig ändern',
+                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                    type: 'error'
+                  }
+                });
               }
+              setTimeout(() => {
+                resultDialog.close();
+                this.mds.logOut();
+              }, 1500);
             });
           });
         }
