@@ -103,17 +103,17 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               type: 'info'
             },
             disableClose: true
-          }).afterClosed().subscribe(errorCode => {
-            if (!errorCode) {
+          }).afterClosed().subscribe(result => {
+            if (!result) {
               this.mds.logOut();
+              return;
             }
 
             this.pcs.showPasswordChangeDialog(
-              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
-              { disableClose: true }
-            ).subscribe((result: boolean) => {
+              { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! }
+            ).subscribe((pwChangeResult: boolean) => {
               let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
-              if (result) {
+              if (pwChangeResult) {
                 resultDialog = this.dialog.open(MessageDialogComponent, {
                   width: '400px',
                   data: <MessageDialogData>{
@@ -180,10 +180,9 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changePassword(): void {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.pcs.showPasswordChangeDialog({ id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! })
-      .subscribe(errorCode => {
-        if (!errorCode) {
+      .subscribe(result => {
+        if (result) {
           const dialog = this.dialog.open(MessageDialogComponent, {
             width: '400px',
             data: <MessageDialogData>{
@@ -192,7 +191,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               type: 'info'
             }
           });
-
           setTimeout(() => {
             dialog.close();
             this.mds.logOut();

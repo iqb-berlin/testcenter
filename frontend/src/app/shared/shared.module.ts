@@ -14,16 +14,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BackendService } from './services/backend.service';
 import { AutofocusDirective } from './directives/autofocus.directive';
-import { NewPasswordComponent } from './components/newpassword/new-password.component';
 
 @NgModule({
   declarations: [
-    AutofocusDirective,
-    NewPasswordComponent
+    AutofocusDirective
   ],
   exports: [
-    AutofocusDirective,
-    NewPasswordComponent
+    AutofocusDirective
   ],
   imports: [
     CommonModule,
