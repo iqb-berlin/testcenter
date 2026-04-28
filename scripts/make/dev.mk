@@ -1,6 +1,6 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
-include $(TC_BASE_DIR)/.env.dev
+-include $(TC_BASE_DIR)/.env.dev
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
