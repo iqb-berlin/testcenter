@@ -2,7 +2,7 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, forkJoin, from, interval,
+  BehaviorSubject, forkJoin, from,
   lastValueFrom, merge, Observable, of, Subject,
   Subscription, timer
 } from 'rxjs';
@@ -55,6 +55,7 @@ import { AppError } from '../../app.interfaces';
 import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
+import { createTicker } from '../util/worker.util';
 
 @Injectable({
   providedIn: 'root'
@@ -460,7 +461,7 @@ export class TestControllerService {
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
 
-    const timeTicker$ = this.createTicker();
+    const timeTicker$ = createTicker();
     this.timerIntervalSubscription = timeTicker$
       .pipe(
         takeUntil(
@@ -501,45 +502,6 @@ export class TestControllerService {
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.INTERRUPTED));
     }
     this.finishTimer();
-  }
-
-  // TODO import the webworker from a seperate file. At time of implementing, some SCP problems occured
-  private createTicker(): Observable<number> {
-    if (typeof Worker !== 'undefined') {
-      const workerCode = `
-        let timer;
-        let secondsPassed = 0;
-        self.onmessage = function(message) {
-          switch (message.data) {
-            case 'on':
-              postMessage(secondsPassed++);
-              timer = setInterval(() => postMessage(secondsPassed++), 1000);
-              console.log('timeTicker from webworker used');
-              break;
-            case 'off':
-              clearInterval(timer);
-          }
-        };  
-      `;
-      const blob = new Blob([workerCode], { type: 'application/javascript' });
-      const workerTimer = new Worker(URL.createObjectURL(blob));
-      return new Observable(subscriber => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const eventHandler = event => {
-          subscriber.next(event.data);
-        };
-
-        workerTimer.addEventListener('message', eventHandler);
-        workerTimer.postMessage('on');
-
-        return function unsubscribe() {
-          workerTimer.postMessage('off');
-          workerTimer.removeEventListener('message', eventHandler);
-        };
-      });
-    }
-    return interval(1000);
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
