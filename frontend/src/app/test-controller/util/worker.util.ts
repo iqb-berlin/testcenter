@@ -6,18 +6,20 @@ export function createTicker(): Observable<number> {
   }
   // Stringified via .toString() and run inside a Blob worker. Must be self-contained:
   // no closures, no imports, no references to outer-scope identifiers.
-  const tickerWorker = (): void => {
-    let timer: ReturnType<typeof setInterval>;
-    let secondsPassed = 0;
+  const workerFunction = (): void => {
+    let tickerTimer: ReturnType<typeof setInterval>;
+    let startTime = 0;
     onmessage = (message: MessageEvent<'on' | 'off'>) => {
-      console.log('webworker');
       switch (message.data) {
       case 'on':
-        postMessage(secondsPassed++);
-        timer = setInterval(() => postMessage(secondsPassed++), 1000);
+        startTime = Date.now();
+        postMessage(0);
+        tickerTimer = setInterval(() => {
+          postMessage(Math.floor((Date.now() - startTime) / 1000));
+        }, 1000);
         break;
       case 'off':
-        clearInterval(timer);
+        clearInterval(tickerTimer);
         break;
       default:
       }
@@ -25,12 +27,13 @@ export function createTicker(): Observable<number> {
   };
   const blob = new Blob(
   // Take the function, convert it to text, wrap it as an expression, and generate code that calls it inside the worker.
-  // [tickerWorker()] would not work, as it would execute the function and send its return value to the worker, instead of the source code of the function
-    [`(${tickerWorker.toString()})();`],
+  // [workerFunction()] would not work, as it would execute the function and send its return value to the worker, instead of the source code of the function
+    [`(${workerFunction.toString()})();`],
     { type: 'application/javascript' }
   );
   const blobUrl = URL.createObjectURL(blob);
   const workerTimer = new Worker(blobUrl);
+
   return new Observable(subscriber => {
     const eventHandler = (event: MessageEvent<number>) => {
       subscriber.next(event.data);
