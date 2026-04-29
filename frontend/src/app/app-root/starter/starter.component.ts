@@ -5,14 +5,14 @@ import { groupBy, Subscription } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import {
   AlertComponent,
-  ConfirmDialogComponent, CustomtextPipe,
+  CustomtextPipe,
   CustomtextService,
-  MainDataService, MessageDialogComponent, MessageDialogData,
+  MainDataService,
   PasswordChangeService
 } from '@shared/shared.module';
 import { BackendService } from '@app/backend.service';
 import { AccessObject, AuthAccessType } from '@app/app.interfaces';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { FileService } from '@shared/services/file.service';
 import { MessageService } from '@shared/services/message.service';
 import { HeaderService } from '@shared/services/header.service';
@@ -96,14 +96,10 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
         if (authData.pwSetByAdmin && !this.isSuperAdmin) {
-          this.dialog.open(ConfirmDialogComponent, {
-            data: <MessageDialogData>{
-              title: 'Ihr Kennwort wurde vom Administrator zurückgesetzt',
-              content: 'Sie müssen im nächsten Schritt ein neues Kennwort vergeben.',
-              type: 'info'
-            },
-            disableClose: true
-          }).afterClosed().subscribe(result => {
+          this.ms.showDialog({
+            title: 'Ihr Kennwort wurde vom Administrator zurückgesetzt',
+            content: 'Sie müssen im nächsten Schritt ein neues Kennwort vergeben.'
+          }).subscribe((result: boolean) => {
             if (!result) {
               this.mds.logOut();
               return;

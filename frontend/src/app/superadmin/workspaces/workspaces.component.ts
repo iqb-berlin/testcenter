@@ -4,10 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import {
-  ConfirmDialogComponent, ConfirmDialogData,
-  MessageDialogComponent, MessageDialogData
-} from '../../shared/shared.module';
+import { MessageService } from '@shared/services/message.service';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
@@ -34,7 +31,7 @@ export class WorkspacesComponent implements OnInit {
     private backendService: BackendService,
     private newWorkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
-    private deleteConfirmDialog: MatDialog,
+    private messageService: MessageService,
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -89,85 +86,62 @@ export class WorkspacesComponent implements OnInit {
       .includes(newName);
   }
 
-  changeObject(): void {
+  renameWorkspace(): void {
     const selectedRows = this.tableSelectionRow.selected;
-    if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Arbeitsbereich ändern',
-          content: 'Bitte markieren Sie erst einen Arbeitsbereich!',
-          type: 'error'
-        }
-      });
-    } else {
-      const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
-        width: '600px',
-        data: selectedRows[0].name
-      });
+    if (selectedRows.length === 0) return;
+    const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
+      width: '600px',
+      data: selectedRows[0].name
+    });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (!result) {
-          return;
-        }
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
 
-        const newName = result.get('name').value;
-        if (this.workspaceNameExists(newName)) {
-          this.snackBar.open('Arbeitsbereich mit diesem namen bereits vorhanden!', 'Fehler', { duration: 1000 });
-          return;
-        }
+      const newName = result.get('name').value;
+      if (this.workspaceNameExists(newName)) {
+        this.snackBar.open('Arbeitsbereich mit diesem namen bereits vorhanden!', 'Fehler', { duration: 1000 });
+        return;
+      }
 
-        this.backendService.renameWorkspace(selectedRows[0].id, newName)
-          .subscribe(
-            () => {
-              this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
-              this.updateWorkspaceList();
-            }
-          );
-      });
-    }
+      this.backendService.renameWorkspace(selectedRows[0].id, newName)
+        .subscribe(
+          () => {
+            this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
+            this.updateWorkspaceList();
+          }
+        );
+    });
   }
 
   deleteObject(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Löschen von Arbeitsbereichen',
-          content: 'Bitte markieren Sie erst Arbeitsbereich/e!',
-          type: 'error'
-        }
-      });
-    } else {
-      let prompt;
-      if (selectedRows.length > 1) {
-        prompt = `Sollen ${selectedRows.length} Arbeitsbereiche gelöscht werden?`;
-      } else {
-        prompt = `Arbeitsbereich "${selectedRows[0].name}" gelöscht werden?`;
-      }
-      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Arbeitsbereichen',
-          content: prompt,
-          confirmbuttonlabel: 'Arbeitsbereich/e löschen',
-          showcancel: true
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
-          const workspacesToDelete: number[] = [];
-          selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
-          this.backendService.deleteWorkspaces(workspacesToDelete)
-            .subscribe(() => {
-              this.snackBar.open('Arbeitsbereich/e gelöscht', 'Fehler', { duration: 1000 });
-              this.updateWorkspaceList();
-            });
-        }
-      });
+      return; // this should be reachable because the button is disabled
     }
+    let prompt;
+    if (selectedRows.length > 1) {
+      prompt = `Sollen ${selectedRows.length} Arbeitsbereiche gelöscht werden?`;
+    } else {
+      prompt = `Arbeitsbereich "${selectedRows[0].name}" löschen?`;
+    }
+    this.messageService.showDialog({
+      title: 'Löschen von Arbeitsbereichen',
+      content: prompt,
+      confirmText: 'Arbeitsbereich(e) löschen',
+      focusCancel: true
+    }).subscribe(result => {
+      if (result) {
+        const workspacesToDelete: number[] = [];
+        selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
+        this.backendService.deleteWorkspaces(workspacesToDelete)
+          .subscribe(() => {
+            this.snackBar.open('Arbeitsbereich(e) gelöscht', 'Fehler', { duration: 1000 });
+            this.updateWorkspaceList();
+          });
+      }
+    });
   }
 
   updateUserList(): void {

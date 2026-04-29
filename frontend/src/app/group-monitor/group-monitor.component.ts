@@ -13,7 +13,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { catchError, switchMap } from 'rxjs/operators';
 import { KeyValue } from '@angular/common';
 import {
-  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,
+  CustomtextService, ConnectionStatus,
   MainDataService
 } from '../shared/shared.module';
 import { BackendService } from './backend.service';
@@ -39,6 +39,7 @@ import {
 } from './time-restriction-dialog/time-restriction-dialog.component';
 import { ComponentUtilService } from '../shared/services/component-util.service';
 import { HeaderService } from '@shared/services/header.service';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-group-monitor',
@@ -93,7 +94,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     private addFilterDialog: MatDialog,
     private componentUtilService: ComponentUtilService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -243,17 +245,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   finishEverythingCommand(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: 'auto',
-      data: <ConfirmDialogData>{
-        title: 'Testdurchführung Beenden',
-        content: 'Achtung! Diese Aktion sperrt und beendet sämtliche Tests dieser Sitzung.',
-        confirmbuttonlabel: 'Ja, ich möchte die Testdurchführung Beenden',
-        showcancel: true
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+    this.messageService.showDialog({
+      title: 'Testdurchführung Beenden',
+      content: 'Achtung! Diese Aktion sperrt und beendet sämtliche Tests dieser Sitzung.',
+      confirmText: 'Ja, ich möchte die Testdurchführung beenden',
+      focusCancel: true
+    }).subscribe((confirmed: boolean) => {
       if (confirmed) {
         this.isClosing = true;
         this.tsm.commandFinishEverything()

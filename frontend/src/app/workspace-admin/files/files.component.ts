@@ -10,17 +10,12 @@ import {
   MatTableDataSource
 } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { MessageService } from '@shared/services/message.service';
 import {
-  AlertComponent,
-  ConfirmDialogComponent,
-  ConfirmDialogData,
   MainDataService,
-  MessageDialogComponent,
-  MessageDialogData
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
@@ -49,6 +44,7 @@ interface FileStats {
 })
 export class FilesComponent implements OnInit, OnDestroy {
   files: { [type in IQBFileType]: MatTableDataSource<IQBFile> };
+  selectedFiles: string[] = [];
   fileTypes = IQBFileTypes;
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
   fileNameAlias = 'fileforvo';
@@ -91,9 +87,8 @@ export class FilesComponent implements OnInit, OnDestroy {
   constructor(
     private bs: BackendService,
     public wds: WorkspaceDataService,
-    public confirmDialog: MatDialog,
-    public messageDialog: MatDialog,
     private mds: MainDataService,
+    private messageService: MessageService,
     public snackBar: MatSnackBar
   ) {
     this.files = IQBFileTypes.reduce((acc, str) => {
@@ -127,60 +122,36 @@ export class FilesComponent implements OnInit, OnDestroy {
     if (this.wds.wsRole !== 'RW') {
       return;
     }
+    const filesToDelete: string[] = this.selectedFiles;
+    if (filesToDelete.length < 1) return;
 
-    const filesToDelete: string[] = [];
-    IQBFileTypes.forEach(type => {
-      this.files[type].data.forEach(file => {
-        if (file.isChecked) {
-          filesToDelete.push(`${file.type}/${file.name}`);
-        }
-      });
+    const p = filesToDelete.length > 1;
+    this.messageService.showDialog({
+      title: 'Löschen von Dateien',
+      content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}
+          ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
+      confirmText: 'Löschen',
+      focusCancel: true
+    }).subscribe(result => {
+      if (result) {
+        this.bs.deleteFiles(this.wds.workspaceId, filesToDelete)
+          .subscribe((fileDeletionReport: FileDeletionReport) => {
+            const message = [];
+            if (fileDeletionReport.deleted.length > 0) {
+              message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
+            }
+            if (fileDeletionReport.not_allowed.length > 0) {
+              message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
+            }
+            if (fileDeletionReport.was_used.length > 0) {
+              message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
+              und wurden nicht gelöscht.`);
+            }
+            this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+            this.updateFileList();
+          });
+      }
     });
-
-    if (filesToDelete.length > 0) {
-      const p = filesToDelete.length > 1;
-      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Dateien',
-          content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\`
-            ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
-          confirmbuttonlabel: 'Löschen',
-          showcancel: true
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === true) {
-          this.bs.deleteFiles(this.wds.workspaceId, filesToDelete)
-            .subscribe((fileDeletionReport: FileDeletionReport) => {
-              const message = [];
-              if (fileDeletionReport.deleted.length > 0) {
-                message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
-              }
-              if (fileDeletionReport.not_allowed.length > 0) {
-                message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
-              }
-              if (fileDeletionReport.was_used.length > 0) {
-                message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
-                und wurden nicht gelöscht.`);
-              }
-              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-              this.updateFileList();
-            });
-        }
-      });
-    } else {
-      // TODO disable this button if nothing is selected instead of this
-      this.messageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Löschen von Dateien',
-          content: 'Bitte markieren Sie erst Dateien!',
-          type: 'error'
-        }
-      });
-    }
   }
 
   updateFileList(shouldEmpty = false): void {
@@ -373,5 +344,16 @@ export class FilesComponent implements OnInit, OnDestroy {
     });
 
     return fileList;
+  }
+
+  protected updateSelectedFiles() {
+    this.selectedFiles = [];
+    IQBFileTypes.forEach(type => {
+      this.files[type].data.forEach(file => {
+        if (file.isChecked) {
+          this.selectedFiles.push(`${file.type}/${file.name}`);
+        }
+      });
+    });
   }
 }

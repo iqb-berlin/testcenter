@@ -5,12 +5,11 @@ import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { MessageService } from '@shared/services/message.service';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { SaveReportComponent } from './save-report/save-report.component';
 import { ReportEntry, ResponsesForSysCheck } from '../sys-check.interfaces';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { ConfirmDialogData } from '../../shared/interfaces/confirm-dialog.interfaces';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
 @Component({
@@ -31,22 +30,10 @@ export class ReportComponent implements OnInit {
   questionnaireDataWarnings: ReportEntry[] = [];
 
   constructor(private backendService: BackendService, public dataService: SysCheckDataService,
-              private dialog: MatDialog, private mds: MainDataService, private router: Router) { }
+              private dialog: MatDialog, private mds: MainDataService, private messageService: MessageService,
+              private router: Router) { }
 
   saveReport(): void {
-    const confirmDialogRef = () => this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: <ConfirmDialogData>{
-        title: 'Bericht gespeichert',
-        content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.',
-        confirmbuttonlabel: 'Verstanden'
-      }
-    }).afterClosed().subscribe(() => {
-      setTimeout(() => {
-        this.router.navigate(['/r']);
-      }, 500);
-    });
-
     const responses: ResponsesForSysCheck[] = Object.keys(this.dataService.dataParts).map(key => ({
       id: key,
       content: this.dataService.dataParts[key],
@@ -66,7 +53,14 @@ export class ReportComponent implements OnInit {
           responses: responses
         }
       ).subscribe(() => {
-        confirmDialogRef();
+        this.messageService.showDialog({
+          title: 'Bericht gespeichert',
+          content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.'
+        }).subscribe(() => {
+          setTimeout(() => {
+            this.router.navigate(['/r']);
+          }, 500);
+        });
       });
     } else {
       const dialogRef = this.dialog.open(SaveReportComponent, {
@@ -91,7 +85,14 @@ export class ReportComponent implements OnInit {
                 responses: responses
               }
             ).subscribe(() => {
-              confirmDialogRef();
+              this.messageService.showDialog({
+                title: 'Bericht gespeichert',
+                content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.'
+              }).subscribe(() => {
+                setTimeout(() => {
+                  this.router.navigate(['/r']);
+                }, 500);
+              });
             });
           }
         }

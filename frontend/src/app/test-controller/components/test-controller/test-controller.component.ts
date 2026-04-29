@@ -10,7 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HeaderService } from '@shared/services/header.service';
 import {
-  ConfirmDialogComponent, ConfirmDialogData,
   CustomtextService, MainDataService, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
 import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
@@ -27,6 +26,7 @@ import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -82,6 +82,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               private headerService: HeaderService,
               public pageService: PageService,
               private apiService: VeronaAPIService,
+              private messageService: MessageService,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
 
   ngOnInit(): void {
@@ -133,7 +134,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
           this.updateLogoVisibility();
-          await this.requestFullScreen();
+          if (this.tcs.booklet?.config.ask_for_fullscreen !== 'OFF') {
+            await this.requestFullScreen();
+          }
         });
 
       this.subscriptions.maxTimer = this.tcs.timers$
@@ -399,29 +402,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   async requestFullScreen(): Promise<void> {
-    if (this.tcs.booklet?.config.ask_for_fullscreen === 'OFF') {
-      return;
-    }
     if (this.mainDataService.isFullScreen) {
       return;
     }
 
-    // todo dont use ignore_ui booklet parameter, as fullscreen without asking leads to errors in the browser
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: 'auto',
-      data: <ConfirmDialogData>{
-        title: 'Vollbild',
-        content: this.cts.getCustomText('booklet_requestFullscreen'),
-        confirmbuttonlabel: 'Ja',
-        showcancel: true,
-        cancelbuttonlabel: 'Nein'
-      }
-    });
-    dialogRef.afterClosed().subscribe(async (confirmed: boolean) => {
-      if (!confirmed) {
-        return;
-      }
-      await this.setFullScreen();
+    this.messageService.showDialog({
+      title: 'Vollbild',
+      content: this.cts.getCustomText('booklet_requestFullscreen'),
+      confirmText: 'Ja',
+      cancelText: 'Nein'
+    }).subscribe(async (confirmed: boolean) => {
+      if (confirmed) await this.setFullScreen();
     });
   }
 

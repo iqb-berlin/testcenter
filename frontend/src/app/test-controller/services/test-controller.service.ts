@@ -38,8 +38,6 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
   CustomtextService,
   MainDataService,
   TestMode
@@ -132,6 +130,7 @@ export class TestControllerService {
     private ms: MessageService,
     private mds: MainDataService,
     private cts: CustomtextService,
+    private messageService: MessageService,
     public confirmDialog: MatDialog
   ) {
     this.setupUnitDataPartsBuffer();
@@ -897,27 +896,20 @@ export class TestControllerService {
 
     if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
 
-    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      data: <ConfirmDialogData>{
-        title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-        content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-        confirmbuttonlabel: 'Hier bleiben',
-        confirmbuttonreturn: true,
-        cancelbuttonlabel: 'Trotzdem weiter',
-        showcancel: true
-      }
-    });
-    return dialogCDRef.afterClosed()
-      .pipe(
-        map(cdresult => {
-          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
-            return false;
-          }
-          this.cancelTimer(); // does locking the block
+    return this.messageService.showDialog({
+      title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+      content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+      confirmText: 'Hier bleiben',
+      cancelText: 'Trotzdem weiter'
+    }).pipe(
+      map(cdresult => {
+        if (!cdresult) {
+          this.cancelTimer(); // does lock the block
           return true;
-        })
-      );
+        }
+        return false;
+      })
+    );
   }
 
   private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
@@ -942,19 +934,13 @@ export class TestControllerService {
     }
 
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
-    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      data: <ConfirmDialogData>{
-        title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
-        content: reasons
-          .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
-          .join(' '),
-        confirmbuttonlabel: 'OK',
-        confirmbuttonreturn: false,
-        showcancel: false
-      }
-    });
-    return dialogCDRef.afterClosed().pipe(map(() => false));
+
+    return this.messageService.showDialog({
+      title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+      content: reasons
+        .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+        .join(' ')
+    }).pipe(map(() => false));
   }
 
   private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
@@ -983,27 +969,20 @@ export class TestControllerService {
     }
 
     if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
-      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        data: <ConfirmDialogData>{
-          title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
-          content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
-          confirmbuttonlabel: 'Hier bleiben',
-          confirmbuttonreturn: true,
-          cancelbuttonlabel: 'Trotzdem weiter',
-          showcancel: true
-        }
-      });
-      return dialogCDRef.afterClosed()
-        .pipe(
-          map(cdresult => {
-            if ((typeof cdresult === 'undefined') || (cdresult === true)) {
-              return false;
-            }
-            leaveLock();
-            return true;
-          })
-        );
+      return this.messageService.showDialog({
+        title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
+        content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
+        confirmText: 'Hier bleiben',
+        cancelText: 'Trotzdem weiter'
+      }).pipe(
+        map(cdresult => {
+          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
+            return false;
+          }
+          leaveLock();
+          return true;
+        })
+      );
     }
 
     leaveLock();

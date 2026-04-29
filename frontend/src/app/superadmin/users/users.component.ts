@@ -4,10 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '@shared/services/message.service';
-import {
-  ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, PasswordChangeService
-} from '../../shared/shared.module';
+import { PasswordChangeService } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
   SuperadminPasswordRequestComponent
@@ -79,14 +76,6 @@ export class UsersComponent implements OnInit {
   changeSuperadminStatus(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Superadmin-Status ändern',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
-        }
-      });
       return;
     }
 
@@ -115,66 +104,41 @@ export class UsersComponent implements OnInit {
   changePassword(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Kennwort ändern',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
+      return;
+    }
+    this.newpasswordService.showPasswordChangeDialog(selectedRows[0])
+      .subscribe(result => {
+        if (result) {
+          this.messageService.showInfo('Kennwort geändert');
         }
       });
-    } else {
-      this.newpasswordService.showPasswordChangeDialog(selectedRows[0])
-        .subscribe(result => {
-          if (result) {
-            this.messageService.showInfo('Kennwort geändert');
-          }
-        });
-    }
   }
 
-  deleteObject(): void {
+  deleteAdminUser(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Löschen von Administrator:innen',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
-        }
-      });
-    } else {
-      let prompt;
-      if (selectedRows.length > 1) {
-        prompt = `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?`;
-      } else {
-        prompt = `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
-      }
-      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Administrator:innen',
-          content: prompt,
-          confirmbuttonlabel: 'Administrator:in löschen',
-          showcancel: true
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
-          const usersToDelete: string[] = [];
-          selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
-          this.bs.deleteUsers(usersToDelete).subscribe(
-            () => {
-              this.messageService.showInfo('Administrator:in gelöscht');
-              this.updateObjectList();
-            }
-          );
-        }
-      });
+      return; // this should be reachable because the button is disabled
     }
+    const prompt = selectedRows.length > 1 ?
+      `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?` :
+      `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
+    this.messageService.showDialog({
+      title: 'Löschen von Administrator:innen',
+      content: prompt,
+      confirmText: 'Administrator:in löschen',
+      focusCancel: true
+    }).subscribe(result => {
+      if (result) {
+        const usersToDelete: string[] = [];
+        selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
+        this.bs.deleteUsers(usersToDelete).subscribe(
+          () => {
+            this.messageService.showInfo('Administrator:in gelöscht');
+            this.updateObjectList();
+          }
+        );
+      }
+    });
   }
 
   updateWorkspaceList(): void {

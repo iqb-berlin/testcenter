@@ -7,10 +7,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, ResultData } from '../workspace.interfaces';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
     templateUrl: './results.component.html',
@@ -33,6 +33,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private backendService: BackendService,
     private deleteConfirmDialog: MatDialog,
     public workspaceDataService: WorkspaceDataService,
+    private messageService: MessageService,
     public snackBar: MatSnackBar
   ) { }
 
@@ -116,27 +117,21 @@ export class ResultsComponent implements OnInit, OnDestroy {
         prompt += `Gruppe "${selectedGroups[0]}" `;
       }
 
-      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Gruppendaten',
-          content: `${prompt}gelöscht. Fortsetzen?`,
-          confirmbuttonlabel: 'Gruppendaten löschen',
-          showcancel: true
+      this.messageService.showDialog({
+        title: 'Löschen von Gruppendaten',
+        content: `${prompt}gelöscht. Fortsetzen?`,
+        confirmText: 'Gruppendaten löschen',
+        focusCancel: true
+      }).subscribe(result => {
+        if (result) {
+          this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
+            .subscribe(() => {
+              this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
+              this.tableSelectionCheckbox.clear();
+              this.updateTable();
+            });
         }
       });
-
-      dialogRef.afterClosed()
-        .subscribe(result => {
-          if (result === true) {
-            this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
-              .subscribe(() => {
-                this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
-                this.tableSelectionCheckbox.clear();
-                this.updateTable();
-              });
-          }
-        });
     }
   }
 }

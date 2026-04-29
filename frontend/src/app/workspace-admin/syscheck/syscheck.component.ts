@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
+import { MessageService } from '@shared/services/message.service';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
@@ -30,6 +30,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
     public wds: WorkspaceDataService,
+    private messageService: MessageService,
     public snackBar: MatSnackBar
   ) {
   }
@@ -97,33 +98,27 @@ export class SyscheckComponent implements OnInit, OnDestroy {
         prompt = `${prompt}n System-Check "${selectedReports[0]}" `;
       }
 
-      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Berichten',
-          content: `${prompt}gelöscht. Fortsetzen?`,
-          confirmbuttonlabel: 'Berichtsdaten löschen',
-          showcancel: true
+      this.messageService.showDialog({
+        title: 'Löschen von Berichten',
+        content: `${prompt}gelöscht. Fortsetzen?`,
+        confirmText: 'Berichtsdaten löschen',
+        focusCancel: true
+      }).subscribe(result => {
+        if (result) {
+          this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)
+            .subscribe(fileDeletionReport => {
+              const message = [];
+              if (fileDeletionReport.deleted.length > 0) {
+                message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
+              }
+              if (fileDeletionReport.not_allowed.length > 0) {
+                message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
+              }
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+              this.updateTable();
+            });
         }
       });
-
-      dialogRef.afterClosed()
-        .subscribe(result => {
-          if (result === true) {
-            this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)
-              .subscribe(fileDeletionReport => {
-                const message = [];
-                if (fileDeletionReport.deleted.length > 0) {
-                  message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
-                }
-                if (fileDeletionReport.not_allowed.length > 0) {
-                  message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
-                }
-                this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-                this.updateTable();
-              });
-          }
-        });
     }
   }
 }

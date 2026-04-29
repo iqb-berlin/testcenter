@@ -46,9 +46,7 @@ export class SharedModule {}
 export { BackendService } from './services/backend.service';
 export { CustomtextService } from './services/customtext/customtext.service';
 export { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
-export { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 export { MessageDialogData } from './interfaces/message-dialog.interfaces';
-export { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 export { ConfirmDialogData } from './interfaces/confirm-dialog.interfaces';
 export { AlertComponent } from './components/alert/alert.component';
 export { CustomtextPipe } from './pipes/customtext/customtext.pipe';

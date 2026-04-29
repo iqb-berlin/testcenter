@@ -7,13 +7,12 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
   MainDataService
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { BackendService } from '../backend.service';
 import { TestSession, TestSessionRequest, TestSessionsResponse } from '../workspace.interfaces';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
     selector: 'tc-tests',
@@ -37,6 +36,7 @@ export class TestsComponent implements OnInit, OnDestroy {
     public workspaceDataService: WorkspaceDataService,
     private backendService: BackendService,
     private snackBar: MatSnackBar,
+    private messageService: MessageService,
     private confirmDialog: MatDialog
   ) { }
 
@@ -181,19 +181,14 @@ export class TestsComponent implements OnInit, OnDestroy {
     }
 
     const p = selectedSessions.length > 1;
-    const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: <ConfirmDialogData>{
-        title: 'Löschen von Test-Sessions',
-        content: `Sie haben ${p ? selectedSessions.length : 'eine'} Test-Session${p ? 's' : ''} ` +
-          `ausgewählt. Soll${p ? 'en' : ''} diese gelöscht werden?`,
-        confirmbuttonlabel: 'Löschen',
-        showcancel: true
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
+    this.messageService.showDialog({
+      title: 'Löschen von Test-Sessions',
+      content: `Sie haben ${p ? selectedSessions.length : 'eine'} Test-Session${p ? 's' : ''} ` +
+        `ausgewählt. Soll${p ? 'en' : ''} diese gelöscht werden?`,
+      confirmText: 'Löschen',
+      focusCancel: true
+    }).subscribe(result => {
+      if (result) {
         this.backendService.deleteTestSessionResponses(workspaceId, selectedSessions).subscribe({
           next: () => {
             this.snackBar.open(
