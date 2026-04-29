@@ -146,7 +146,7 @@ export class EditCustomTextsComponent {
             type: 'script'
           });
         }
-        this.messageService.showInfo('Textersetzungen gespeichert');
+        this.messageService.showSnackbar('Textersetzungen gespeichert');
         this.dataChanged = false;
         Object.keys(this.changedData).forEach(ctKey => {
           (this.mainDataService.appConfig as AppConfig).customTexts[ctKey] = this.changedData[ctKey];

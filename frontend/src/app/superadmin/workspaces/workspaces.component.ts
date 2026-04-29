@@ -126,7 +126,7 @@ export class WorkspacesComponent implements OnInit {
     } else {
       prompt = `Arbeitsbereich "${selectedRows[0].name}" löschen?`;
     }
-    this.messageService.showDialog({
+    this.messageService.showConfirmDialog({
       title: 'Löschen von Arbeitsbereichen',
       content: prompt,
       confirmText: 'Arbeitsbereich(e) löschen',

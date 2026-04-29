@@ -586,7 +586,7 @@ export class TestControllerService {
             if (!navOk && !targetIsCurrent) {
               // happens when a goto goes to a unit which does exist, but is not accessible
               if (this.shouldShowConfirmationUI()) {
-                this.ms.showInfo(`Navigation zu ${navString} nicht erlaubt.`);
+                this.ms.showSnackbar(`Navigation zu ${navString} nicht erlaubt.`);
               }
             }
             return navOk;
@@ -877,7 +877,7 @@ export class TestControllerService {
     const skipIfNoTimeRestrictionEnforcement = (text: string) => {
       if (!this.testMode.forceTimeRestrictions) {
         this.interruptTimer();
-        this.ms.showInfo(text);
+        this.ms.showSnackbar(text);
         return true;
       }
     };
@@ -885,7 +885,7 @@ export class TestControllerService {
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
 
-      this.ms.showInfo('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
+      this.ms.showSnackbar('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
     }
 
@@ -896,7 +896,7 @@ export class TestControllerService {
 
     if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
 
-    return this.messageService.showDialog({
+    return this.messageService.showConfirmDialog({
       title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
       content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
       confirmText: 'Hier bleiben',
@@ -926,7 +926,7 @@ export class TestControllerService {
         presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
         responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
       };
-      this.ms.showInfo(
+      this.ms.showSnackbar(
         `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
       );
@@ -935,7 +935,7 @@ export class TestControllerService {
 
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
-    return this.messageService.showDialog({
+    return this.messageService.showConfirmDialog({
       title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
       content: reasons
         .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
@@ -959,7 +959,7 @@ export class TestControllerService {
           this.activateUnitLeaveLock(currentUnit.sequenceId);
         }
       } else {
-        this.ms.showInfo(`${lockScope} würde im Testmodus nun gesperrt werden.`);
+        this.ms.showSnackbar(`${lockScope} würde im Testmodus nun gesperrt werden.`);
       }
     };
 
@@ -969,7 +969,7 @@ export class TestControllerService {
     }
 
     if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
-      return this.messageService.showDialog({
+      return this.messageService.showConfirmDialog({
         title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
         content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
         confirmText: 'Hier bleiben',

@@ -98,7 +98,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
         prompt = `${prompt}n System-Check "${selectedReports[0]}" `;
       }
 
-      this.messageService.showDialog({
+      this.messageService.showConfirmDialog({
         title: 'Löschen von Berichten',
         content: `${prompt}gelöscht. Fortsetzen?`,
         confirmText: 'Berichtsdaten löschen',

@@ -96,7 +96,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
 
         if (authData.pwSetByAdmin && !this.isSuperAdmin) {
-          this.ms.showDialog({
+          this.ms.showConfirmDialog({
             title: 'Ihr Kennwort wurde vom Administrator zurückgesetzt',
             content: 'Sie müssen im nächsten Schritt ein neues Kennwort vergeben.'
           }).subscribe((result: boolean) => {
@@ -112,7 +112,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
                 const messageText = pwChangeResult ?
                   'Kennwort erfolgreich geändert. Sie werden abgemeldet.' :
                   'Fehler beim Ändern des Kennworts. Sie werden abgemeldet.';
-                this.ms.showInfo(messageText)
+                this.ms.showSnackbar(messageText)
                   .afterDismissed()
                   .subscribe(() => this.mds.logOut());
               });
@@ -165,7 +165,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pcs.showPasswordChangeDialog({ id: userID, name: username })
       .subscribe(result => {
         if (result) {
-          this.ms.showInfo('Kennwort erfolgreich geändert. Sie werden abgemeldet.')
+          this.ms.showSnackbar('Kennwort erfolgreich geändert. Sie werden abgemeldet.')
             .afterDismissed()
             .subscribe(() => this.mds.logOut());
         }
@@ -204,7 +204,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bs.downloadReviews()
       .subscribe(response => {
         if (response.status === 204 || !response.body) {
-          this.ms.showInfo('Keine Kommentare verfügbar.');
+          this.ms.showSnackbar('Keine Kommentare verfügbar.');
         } else {
           FileService.saveBlobToFile(response.body, 'testcenter-reviews.csv');
         }

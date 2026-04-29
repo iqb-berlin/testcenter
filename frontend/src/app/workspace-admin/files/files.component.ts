@@ -126,7 +126,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     if (filesToDelete.length < 1) return;
 
     const p = filesToDelete.length > 1;
-    this.messageService.showDialog({
+    this.messageService.showConfirmDialog({
       title: 'Löschen von Dateien',
       content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}
           ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,

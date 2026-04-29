@@ -53,7 +53,7 @@ export class ReportComponent implements OnInit {
           responses: responses
         }
       ).subscribe(() => {
-        this.messageService.showDialog({
+        this.messageService.showConfirmDialog({
           title: 'Bericht gespeichert',
           content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.'
         }).subscribe(() => {
@@ -85,7 +85,7 @@ export class ReportComponent implements OnInit {
                 responses: responses
               }
             ).subscribe(() => {
-              this.messageService.showDialog({
+              this.messageService.showConfirmDialog({
                 title: 'Bericht gespeichert',
                 content: 'Der Bericht wurde erfolgreich gespeichert. Sie werden nach der Bestätigung weitergeleitet.'
               }).subscribe(() => {

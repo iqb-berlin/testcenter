@@ -245,7 +245,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   finishEverythingCommand(): void {
-    this.messageService.showDialog({
+    this.messageService.showConfirmDialog({
       title: 'Testdurchführung Beenden',
       content: 'Achtung! Diese Aktion sperrt und beendet sämtliche Tests dieser Sitzung.',
       confirmText: 'Ja, ich möchte die Testdurchführung beenden',

@@ -406,7 +406,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.messageService.showDialog({
+    this.messageService.showConfirmDialog({
       title: 'Vollbild',
       content: this.cts.getCustomText('booklet_requestFullscreen'),
       confirmText: 'Ja',

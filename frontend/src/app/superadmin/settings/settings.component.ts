@@ -138,7 +138,7 @@ export class SettingsComponent implements OnInit {
     };
     this.backendService.setAppConfig(appConfig)
       .subscribe(() => {
-        this.messageService.showInfo('Konfigurationsdaten der Anwendung gespeichert');
+        this.messageService.showSnackbar('Konfigurationsdaten der Anwendung gespeichert');
         this.configForm.markAsPristine();
         this.configForm.markAsUntouched();
         if (!this.mainDataService.appConfig) {

@@ -95,7 +95,7 @@ export class UsersComponent implements OnInit {
         afterClosedResult.get('pw').value
       )
         .subscribe(() => {
-          this.messageService.showInfo('Status geändert');
+          this.messageService.showSnackbar('Status geändert');
           this.updateObjectList();
         });
     });
@@ -109,7 +109,7 @@ export class UsersComponent implements OnInit {
     this.newpasswordService.showPasswordChangeDialog(selectedRows[0])
       .subscribe(result => {
         if (result) {
-          this.messageService.showInfo('Kennwort geändert');
+          this.messageService.showSnackbar('Kennwort geändert');
         }
       });
   }
@@ -122,7 +122,7 @@ export class UsersComponent implements OnInit {
     const prompt = selectedRows.length > 1 ?
       `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?` :
       `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
-    this.messageService.showDialog({
+    this.messageService.showConfirmDialog({
       title: 'Löschen von Administrator:innen',
       content: prompt,
       confirmText: 'Administrator:in löschen',
@@ -133,7 +133,7 @@ export class UsersComponent implements OnInit {
         selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
         this.bs.deleteUsers(usersToDelete).subscribe(
           () => {
-            this.messageService.showInfo('Administrator:in gelöscht');
+            this.messageService.showSnackbar('Administrator:in gelöscht');
             this.updateObjectList();
           }
         );
@@ -166,7 +166,7 @@ export class UsersComponent implements OnInit {
     if (this.selectedUser > -1) {
       this.bs.setWorkspacesByUser(this.selectedUser, this.workspacelistDatasource.data)
         .subscribe(() => {
-          this.messageService.showInfo('Zugriffsrechte geändert');
+          this.messageService.showSnackbar('Zugriffsrechte geändert');
         });
     } else {
       this.workspacelistDatasource = new MatTableDataSource<IdRoleData>();

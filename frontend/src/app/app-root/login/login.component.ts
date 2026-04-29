@@ -8,15 +8,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { FooterService } from '@shared/services/footer.service';
+import { ThemeService } from '@shared/services/theme.service';
+import { MessageService } from '@shared/services/message.service';
 import {
   MainDataService,
   UserAgentService, SharedModule, AlertComponent
 } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
-import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.component';
-import { FooterService } from '@shared/services/footer.service';
-import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -58,7 +58,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private footerService: FooterService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -128,8 +129,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   openDialog() {
-    this.dialog.open(LoginHelpDialogComponent, {
-      autoFocus: 'dialog'
+    this.messageService.showInfoDialog({
+      title: 'Anleitung',
+      content: [
+        'Geben Sie in Schritt 1 Ihren Anmeldenamen in das Eingabefeld ein. Klicken Sie dann auf den Button "Weiter".',
+        'Sie gelangen nun in den nächsten Schritt.',
+        'Geben Sie in Schritt 2 Ihr Kennwort in das Eingabefeld ein. Klicken Sie dann auf den Button "Anmelden".',
+        'Die Startseite des Testcenters wird sich im Anschluss der erfolgreichen Anmeldung öffnen.'
+      ]
     });
   }
 

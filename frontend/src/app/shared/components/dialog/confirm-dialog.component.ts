@@ -7,7 +7,7 @@ import {
   MatDialogTitle
 } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
-import { DialogData } from '@shared/services/message.service';
+import { ConfirmDialogData } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-dialog',
@@ -22,7 +22,15 @@ import { DialogData } from '@shared/services/message.service';
     <h2 mat-dialog-title data-cy="dialog-title">{{ data.title }}</h2>
 
     <mat-dialog-content data-cy="dialog-content">
-      <p>{{ data.content }}</p>
+      @if (typeof data.content === 'object') {
+        <ul>
+          @for (line of data.content; track line) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+      } @else {
+        <p>{{ data.content }}</p>
+      }
     </mat-dialog-content>
 
     <mat-dialog-actions>
@@ -36,6 +44,6 @@ import { DialogData } from '@shared/services/message.service';
   `,
   styles: ``,
 })
-export class DialogComponent {
-  data = inject<DialogData>(MAT_DIALOG_DATA);
+export class ConfirmDialogComponent {
+  data = inject<ConfirmDialogData>(MAT_DIALOG_DATA);
 }

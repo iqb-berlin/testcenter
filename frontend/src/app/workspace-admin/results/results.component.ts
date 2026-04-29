@@ -117,7 +117,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         prompt += `Gruppe "${selectedGroups[0]}" `;
       }
 
-      this.messageService.showDialog({
+      this.messageService.showConfirmDialog({
         title: 'Löschen von Gruppendaten',
         content: `${prompt}gelöscht. Fortsetzen?`,
         confirmText: 'Gruppendaten löschen',
