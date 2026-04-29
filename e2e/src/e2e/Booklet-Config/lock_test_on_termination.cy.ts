@@ -1,9 +1,10 @@
 import {
   disableSimplePlayersInternalDebounce, getFromIframe,
   loginTestTaker,
-  probeBackendApi, reload,
+  probeBackendApi,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage,
+  clickCardButton
 } from '../utils';
 
 describe('check parameter: lock_test_on_termination', { testIsolation: true }, () => {
@@ -25,9 +26,7 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-1"]')
-      .contains('Fortsetzen')
-      .click();
+    clickCardButton('booklet', 'Bklt-config-1', 'Fortsetzen');
   });
 
   it('ON', () => {
@@ -41,11 +40,9 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-2"]')
-      .contains('gesperrt');
+    clickCardButton('booklet', 'Bklt-config-2', 'gesperrt');
   });
 });
-
 
 
 

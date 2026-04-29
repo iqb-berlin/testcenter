@@ -10,7 +10,7 @@ describe('ConfirmDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         ConfirmDialogComponent
       ],
       providers: [
@@ -38,7 +38,7 @@ describe('ConfirmDialogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should take default properties for those which are omitted on #ngOnInit()', async () => {
+  it('should take default properties for those which are omitted on #ngOnInit()', () => {
     component.ngOnInit();
     expect(component.confirmdata.title).toEqual('Bitte bestätigen!');
     expect(component.confirmdata.confirmbuttonlabel).toEqual('Bestätigen');

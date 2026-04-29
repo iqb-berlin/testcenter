@@ -25,4 +25,6 @@
   </div>
 }
 
-<tc-footer></tc-footer>
+@if (footerService.showFooter()) {
+  <tc-footer></tc-footer>
+}

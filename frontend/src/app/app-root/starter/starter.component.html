@@ -9,7 +9,9 @@
 <div class="cards">
   @if (claims.workspaceAdmin) {
     @for (workspace of workspaces; track workspace.id; let i = $index) {
-      <tc-test-card [name]="workspace.label" [index]="i"
+      <tc-test-card [name]="workspace.label"
+                    [index]="i"
+                    [attr.data-cy]="'workspace-card-' + workspace.label"
                     (select)="buttonGotoWorkspaceAdmin(workspace)"></tc-test-card>
     }
     @if (!workspaces.length) {
@@ -19,27 +21,32 @@
 
   @if (claims.studyMonitor) {
     <h3>Gesamte Studie überwachen</h3>
-    @for (accessObject of claims.studyMonitor; track accessObject.id) {
-      <tc-test-card [name]="accessObject.label" [buttonLabel]="'Studien-Monitor Starten'"
-                    (select)="buttonGotoStudyMonitor(accessObject)">
+    @for (studyMonitor of claims.studyMonitor; track studyMonitor.id) {
+      <tc-test-card [name]="studyMonitor.label" [buttonLabel]="'Studien-Monitor Starten'"
+                    (select)="buttonGotoStudyMonitor(studyMonitor)">
       </tc-test-card>
     }
   }
 
   <ng-template #testCardList>
     @for (booklet of availableBooklets; track booklet.name; let i = $index) {
-      <tc-test-card [name]="booklet.name" [index]="i" [mode]="booklet.mode"
+      <tc-test-card [name]="booklet.name"
+                    [index]="i"
+                    [mode]="booklet.mode"
+                    [attr.data-cy]="'booklet-'+ booklet.id"
                     (select)="startTest(booklet.claim)"></tc-test-card>
     }
   </ng-template>
 
   @if (claims.testGroupMonitor) {
     <h3>Testgruppen-Überwachung</h3>
-    @for (accessObject of claims.testGroupMonitor; track accessObject.id; let i = $index) {
-      <tc-test-card [name]="accessObject.label"
+    @for (groupMonitor of claims.testGroupMonitor; track groupMonitor.id; let i = $index) {
+      <tc-test-card [name]="groupMonitor.label"
+                    [subLabel]="groupMonitor.flags.subLabel"
                     [buttonLabel]="'Gruppen-Monitor Starten'"
-                    [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
-                    (select)="buttonGotoMonitor(accessObject)">
+                    [disabled]="(!!groupMonitor.flags.scheduled) || (!!groupMonitor.flags.expired)"
+                    (select)="buttonGotoMonitor(groupMonitor)"
+                    [attr.data-cy]="'gm-card-' + i">
       </tc-test-card>
     }
     <tc-alert *ngIf="claims.testGroupMonitor.length === 0"
@@ -99,20 +106,19 @@
 }
 
 <div class="button-box">
-    @if (isSuperAdmin) {
-      <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
-        Systemverwaltung
-      </button>
-    }
-    @if (claims.workspaceAdmin) {
-      <button matButton="tonal" data-cy="change-password" (click)="changePassword()">
-        Passwort ändern
-      </button>
-    }
-    <button matButton="tonal" data-cy="logout" (click)="mds.logOut()">Neu anmelden</button>
-    @if (claims.review) {
-      <button matButton="tonal" (click)="downloadReview()">
-        Reviews downloaden
-      </button>
-    }
+  @if (isSuperAdmin) {
+    <button matButton="tonal" [routerLink]="['/superadmin']" data-cy='goto-superadmin-settings'>
+      Systemverwaltung
+    </button>
+  }
+  @if (claims.workspaceAdmin) {
+    <button matButton="tonal" data-cy="change-password" (click)="changePassword()">
+      Passwort ändern
+    </button>
+  }
+  @if (claims.review) {
+    <button matButton="tonal" (click)="downloadReview()">
+      Reviews downloaden
+    </button>
+  }
 </div>

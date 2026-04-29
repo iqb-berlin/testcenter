@@ -8,6 +8,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
 import {
@@ -22,6 +23,8 @@ import {
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
 import { TimerData } from '../../classes/test-controller.classes';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { NavigationComponent } from '../navigation/navigation.component';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
@@ -34,9 +37,9 @@ const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
 
 @Component({
-    template: '',
-    selector: 'tc-unit-menu',
-    standalone: false
+  template: '',
+  selector: 'tc-unit-menu',
+  standalone: false
 })
 class MockUnitMenuComponent {
   // @Input() menu: Array<UnitNaviButtonData | string> = [];
@@ -82,17 +85,22 @@ describe('TestControllerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    declarations: [
+      declarations: [
         TestControllerComponent,
         MockUnitMenuComponent
-    ],
-    imports: [CommonModule,
+      ],
+      imports: [CommonModule,
         MatIconModule,
         MatDialogModule,
+        MatMenu,
+        MatMenuTrigger,
         MatSidenavModule,
         RouterTestingModule.withRoutes([{ path: 'yourpath', redirectTo: '' }]),
-        NoopAnimationsModule],
-    providers: [
+        NoopAnimationsModule,
+        MatIconTestingModule,
+        NavigationComponent
+      ],
+      providers: [
         CustomtextService,
         MatSnackBar,
         { provide: TestControllerService, useValue: MockTestControllerService },
@@ -103,8 +111,8 @@ describe('TestControllerComponent', () => {
         { provide: SharedBackendService, useValue: MockSharedBackendService },
         { provide: 'IS_PRODUCTION_MODE', useValue: false },
         provideHttpClient(withInterceptorsFromDi())
-    ]
-})
+      ]
+    })
       .compileComponents();
   }));
 

@@ -8,6 +8,7 @@ import {
 } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HeaderService } from '@shared/services/header.service';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
   CustomtextService, MainDataService, BackendService as SharedBackendService
@@ -24,7 +25,6 @@ import { TestLoaderService } from '../../services/test-loader.service';
 import { TimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 import { ReviewPanelComponent } from '../review-panel/review-panel.component';
-import { HeaderService } from '../../../core/header.service';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
 
@@ -55,14 +55,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   currentUnit: Unit | null = null;
 
   unitNavContext: NavControlContext = {
-    labelMode: 'index',
+    labelMode: 'INDEX',
     label: '',
     currentIndex: 0,
     maxIndex: 0
   };
 
   pageNavContext: NavControlContext = {
-    labelMode: 'index',
+    labelMode: 'INDEX',
     label: '',
     currentIndex: 0,
     maxIndex: 0
@@ -146,12 +146,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.tcs.currentUnitSequenceId$.subscribe(() => {
         this.currentUnit = this.tcs.currentUnit;
         this.unitNavContext = {
-          labelMode: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'index' : 'label',
-          label: (this.tcs.booklet?.config.unit_navibuttons === 'INDEX') ? 'Aufgabe' : this.currentUnit?.label || '',
+          labelMode: (this.tcs.booklet?.config.navbar_unit_label === 'INDEX') ? 'INDEX' : 'LABEL',
+          readonly: (this.tcs.booklet?.config.navbar_unit_controls_hidden === 'TRUE'),
+          label: (this.tcs.booklet?.config.navbar_unit_label === 'INDEX') ? 'Aufgabe' : this.currentUnit?.label || '',
           currentIndex: this.tcs.currentUnitSequenceId - 1,
           maxIndex: Object.keys(this.tcs.units).length
         };
-        this.headerService.title = this.tcs.booklet?.metadata.label;
+
+        switch (this.tcs.booklet?.config.header_content) {
+          case 'BLOCK_LABEL': this.headerService.title = this.currentUnit?.parent.label; break;
+          case 'BOOKLET_LABEL': this.headerService.title = this.tcs.booklet?.metadata.label; break;
+          case 'UNIT_LABEL': this.headerService.title = this.currentUnit?.label; break;
+          // no default
+        }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
         this.unitNavContext.isBackwardAllowed = !!nav.targets.previous;
@@ -159,8 +166,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
       this.pageService.pagesUpdated.subscribe(() => {
         this.pageNavContext = {
-          labelMode: (this.tcs.booklet?.config.page_navibuttons === 'INDEX') ? 'index' : 'full',
-          label: 'Teilaufgabe',
+          labelMode: this.tcs.booklet?.config.navbar_page_label || 'INDEX',
+          readonly: (this.tcs.booklet?.config.navbar_page_controls_hidden === 'TRUE'),
+          label: (this.tcs.booklet?.config.navbar_page_label === 'LABEL') ?
+            this.pageService.getCurrentPage()?.label || '' :
+            'Teilaufgabe',
           currentIndex: this.pageService.currentPageIndex,
           maxIndex: this.pageService.pages.length,
           isForwardAllowed: !this.pageService.isLastPage(),
@@ -424,9 +434,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   gotoPage(targetPageIndex: number): void {
-    this.pageService.currentPageIndex = targetPageIndex;
+    this.pageService.setCurrentPage(targetPageIndex);
     this.apiService.sendPageNav(this.tcs.currentUnit?.alias,
-      Object.keys(this.pageService.pages)[this.pageService.currentPageIndex]);
+      this.pageService.pages[this.pageService.currentPageIndex].id);
   }
 
   protected readonly unitNavigationTarget = UnitNavigationTarget;

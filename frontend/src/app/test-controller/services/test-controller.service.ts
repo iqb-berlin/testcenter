@@ -1092,7 +1092,7 @@ export class TestControllerService {
   }
 
   shouldShowConfirmationUI(): boolean {
-    return !(this.booklet?.config.ui_mode === 'NONE' &&
+    return !(this.booklet?.config.silent_mode === 'TRUE' &&
            (this.testMode.forceTimeRestrictions || this.testMode.forceNaviRestrictions));
   }
 }

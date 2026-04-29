@@ -1,5 +1,5 @@
 import { Observable, of, timeoutWith } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SysStatus } from '../interfaces/service-status.interfaces';
@@ -15,7 +15,13 @@ export class BackendService {
   }
 
   changePassword(userId: number, password: string): Observable<boolean> {
-    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
+    return this.http.patch<void>(
+      `${this.serverUrl}user/${userId}/password`,
+      { p: password }
+    ).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 
   deleteSession(): Observable<void> {

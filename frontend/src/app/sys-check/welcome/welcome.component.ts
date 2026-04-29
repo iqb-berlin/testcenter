@@ -5,11 +5,20 @@ import UAParser from 'ua-parser-js';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
+import { MatCardModule } from '@angular/material/card';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 
 @Component({
-    styleUrls: ['welcome.component.css', '../sys-check.component.css'],
-    templateUrl: './welcome.component.html',
-    standalone: false
+  styleUrls: ['welcome.component.css', '../sys-check.component.css'],
+  imports: [
+    MatCardModule,
+    CustomtextPipe,
+    AsyncPipe,
+    NgIf,
+    NgForOf
+  ],
+  templateUrl: './welcome.component.html'
 })
 export class WelcomeComponent implements OnInit {
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();

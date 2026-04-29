@@ -9,13 +9,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MainDataService, SharedModule } from '../../shared/shared.module';
+import { AlertComponent, MainDataService, SharedModule } from '../../shared/shared.module';
 import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { IqbFilesUploadInputForDirective } from './iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { MatProgressSpinner, MatSpinner } from '@angular/material/progress-spinner';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -42,16 +44,20 @@ describe('FilesComponent', () => {
         FilesComponent,
         IqbFilesUploadQueueComponent,
         IqbFilesUploadInputForDirective
-    ],
-    imports: [MatExpansionModule,
+      ],
+      imports: [MatExpansionModule,
         MatDialogModule,
         MatSnackBarModule,
         MatTableModule,
         MatIconModule,
         MatCheckboxModule,
+        MatProgressSpinner,
         SharedModule,
-        NoopAnimationsModule],
-    providers: [
+        NoopAnimationsModule,
+        MatIconTestingModule,
+        AlertComponent
+      ],
+      providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
@@ -62,8 +68,8 @@ describe('FilesComponent', () => {
         },
         WorkspaceDataService,
         provideHttpClient(withInterceptorsFromDi())
-    ]
-})
+      ]
+    })
       .compileComponents();
   }));
 

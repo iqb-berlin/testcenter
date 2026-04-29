@@ -1,14 +1,42 @@
-<div class="flex-row-wrap" [style.justify-content]="'center'" style="gap: 10px; margin-top: 60px;">
-  <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
-    <mat-card appearance="raised">
-      <mat-card-header>
-        <mat-card-title>Anmelden</mat-card-title>
-      </mat-card-header>
-      <mat-card-content *ngIf="mainDataService.appConfig">
+<div class="login-page">
+  <div class ="welcome-section">
+    <img src="assets/login-illustration.png" alt="illustration image">
+    <div>
+      <p class="heading">Willkommen im IQB-Testcenter</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+        ut aliquip ex ea commodo consequat.</p>
+    </div>
+  </div>
+  <div class="login-section">
+    @if (!username) {
+      <form [formGroup]="loginForm" (ngSubmit)="nameInput()">
+        <h2>
+          Anmeldenamen eingeben
+        </h2>
         <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
           <input matInput formControlName="name" autocapitalize="off">
         </mat-form-field>
+        @if (problemText) {
+          <tc-alert [attr.data-cy]="'login-problem:' + problemCode"
+                    [level]="problemLevel" [text]="problemText"></tc-alert>
+        }
+        <button matButton="filled" type="submit" data-cy="login-user"
+                [disabled]="!loginForm.get('name')?.valid">
+          <mat-icon svgIcon="chevron_right"></mat-icon>
+          Weiter
+        </button>
+      </form>
+    }
+    @else {
+      <form [formGroup]="loginForm" (ngSubmit)="passwordInput()">
+        <div class="password-headline">
+          <button matButton="outlined" type="reset" (click)="username = null;"><</button>
+          <h2>
+            Kennwort eingeben (Benutzer: {{ username }} )
+          </h2>
+        </div>
         <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
           <input matInput #pw formControlName="pw"
@@ -17,20 +45,37 @@
           <button mat-icon-button matSuffix type="button"
                   [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
                   (click)="showPassword = !showPassword">
-            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+            <mat-icon svgIcon="visibility"></mat-icon>
           </button>
         </mat-form-field>
-        <tc-alert *ngIf="problemText" [attr.data-cy]="'login-problem:' + problemCode"
-                  [level]="problemLevel" [text]="problemText"></tc-alert>
-      </mat-card-content>
-
-      <mat-card-actions [style.justify-content]="'space-between'">
+        @if (problemText) {
+          <tc-alert [attr.data-cy]="'login-problem:' + problemCode"
+                    [level]="problemLevel" [text]="problemText"></tc-alert>
+        }
         <button matButton="filled" type="submit" data-cy="login-user"
                 [disabled]="!loginForm.get('name')?.valid">
-          <mat-icon>chevron_right</mat-icon>
-          Weiter
+          <mat-icon svgIcon="chevron_right"></mat-icon>
+          Anmelden
         </button>
-      </mat-card-actions>
+      </form>
+    }
+
+    <mat-card class="help-box" (click)="openDialog()">
+      <div class="question-mark">
+        <svg width="36" height="65" viewBox="0 0 36 65" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25.623 17.1281C25.623 14.7094 24.8214 12.7688 23.2183 11.3063C21.6152 9.84375 19.4918 9.1125 16.848 9.1125C15.2168 9.1125 13.7402 9.46406 12.4183 10.1672C11.0964 10.8703 9.95738 11.8969 9.00113 13.2469C8.10113 14.5406 6.87769 15.2859 5.33081 15.4828C3.78394 15.6797 2.448 15.2719 1.323 14.2594C0.5355 13.5281 0.0995625 12.6281 0.0151875 11.5594C-0.0691875 10.4906 0.198 9.47813 0.81675 8.52188C2.61675 5.82188 4.90894 3.72656 7.69331 2.23594C10.4777 0.745313 13.5293 0 16.848 0C22.3043 0 26.7339 1.54687 30.1371 4.64062C33.5402 7.73438 35.2418 11.7844 35.2418 16.7906C35.2418 19.3219 34.7074 21.6 33.6386 23.625C32.5699 25.65 30.6011 28.0406 27.7324 30.7969C25.6511 32.7656 24.2449 34.2984 23.5136 35.3953C22.7824 36.4922 22.3043 37.7438 22.0793 39.15C21.8543 40.5 21.2777 41.625 20.3496 42.525C19.4214 43.425 18.3105 43.875 17.0168 43.875C15.723 43.875 14.6121 43.4391 13.6839 42.5672C12.7558 41.6953 12.2918 40.6125 12.2918 39.3188C12.2918 37.125 12.7699 35.1141 13.7261 33.2859C14.6824 31.4578 16.2855 29.5313 18.5355 27.5063C21.4043 24.975 23.3027 23.0203 24.2308 21.6422C25.1589 20.2641 25.623 18.7594 25.623 17.1281ZM16.848 64.125C14.9918 64.125 13.4027 63.4641 12.0808 62.1422C10.7589 60.8203 10.098 59.2313 10.098 57.375C10.098 55.5187 10.7589 53.9297 12.0808 52.6078C13.4027 51.2859 14.9918 50.625 16.848 50.625C18.7043 50.625 20.2933 51.2859 21.6152 52.6078C22.9371 53.9297 23.598 55.5187 23.598 57.375C23.598 59.2313 22.9371 60.8203 21.6152 62.1422C20.2933 63.4641 18.7043 64.125 16.848 64.125Z"/>
+        </svg>
+      </div>
+      <div class="description">
+        <mat-card-header>Sie benötigen Hilfe?</mat-card-header>
+        <mat-card-content>Hier gelangen Sie zur Schritt-für-Schritt-Anleitung</mat-card-content>
+      </div>
     </mat-card>
-  </form>
+
+    <div class="button-section">
+      <button matButton="tonal" [routerLink]="['/r/admin-login']" data-cy="login-admin-form">
+        Adminbereich
+      </button>
+    </div>
+  </div>
 </div>

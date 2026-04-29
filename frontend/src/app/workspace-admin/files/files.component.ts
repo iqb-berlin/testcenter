@@ -1,13 +1,21 @@
 import {
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import {
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef, MatHeaderRow, MatRow,
+  MatTable,
+  MatTableDataSource
+} from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { Sort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {
+  AlertComponent,
   ConfirmDialogComponent,
   ConfirmDialogData,
   MainDataService,
@@ -35,9 +43,9 @@ interface FileStats {
 }
 
 @Component({
-    templateUrl: './files.component.html',
-    styleUrls: ['./files.component.css'],
-    standalone: false
+  templateUrl: './files.component.html',
+  styleUrls: ['./files.component.css'],
+  standalone: false
 })
 export class FilesComponent implements OnInit, OnDestroy {
   files: { [type in IQBFileType]: MatTableDataSource<IQBFile> };

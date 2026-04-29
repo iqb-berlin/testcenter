@@ -1,6 +1,6 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
-include $(TC_BASE_DIR)/.env.dev
+-include $(TC_BASE_DIR)/.env.dev
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
@@ -84,6 +84,15 @@ logs:
 			--file docker-compose.dev.yml\
 		logs --follow $(service)
 
+## Open DB console
+connect-db:
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.prod.yml\
+		exec db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
+
 composer-install:
 	docker run --rm --interactive --tty\
 			--volume $(TC_BASE_DIR)/backend/composer.json:/usr/src/testcenter/backend/composer.json\
@@ -151,7 +160,8 @@ data-push:
 					--env-file .env.dev\
 					--file docker-compose.yml\
 					--file docker-compose.dev.yml\
-				cp - backend:/var/www/testcenter
+				cp - backend:/var/www/testcenter &&\
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) re-init-backend
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2026-04-16T12:17:39.242Z">
+    <Id>testcenter-sample3</Id>
+    <Label>testcenter-sample3</Label>
+    <Reference>testcenter-sample3.vomd</Reference>
+  </Metadata>
+  <DefinitionRef player="iqb-player-aspect@2.12" editor="iqb-editor-aspect@2.12" lastChange="2026-04-16T12:17:58.239Z">testcenter-sample3.voud</DefinitionRef>
+  <BaseVariables>
+    <Variable id="text_1771929975171_1" alias="text_1" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="text_1771929984026_1" alias="text_2" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="text_1771929991062_1" alias="text_3" type="no-value" format="" nullable="false" multiple="false" page=""/>
+  </BaseVariables>
+</Unit>

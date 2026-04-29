@@ -10,11 +10,7 @@ export class PageService {
   pages: Array<Verona6ValidPage> = [];
   currentPageIndex: number = -1;
 
-  getCurrentPage(): Verona6ValidPage | undefined {
-    return this.pages[this.currentPageIndex];
-  }
-
-  update(validPages: Verona5ValidPages | Verona6ValidPages, currentPageID?: string): void {
+  updateValidPages(validPages: Verona5ValidPages | Verona6ValidPages, currentPageID?: string): void {
     if (!Array.isArray(validPages)) {
       this.pages = Object.entries(validPages)
         .map(([id, label]) => ({ id, label }));
@@ -25,6 +21,15 @@ export class PageService {
       .map(page => page.id)
       .indexOf(currentPageID) : -1;
     this.pagesUpdated.next();
+  }
+
+  setCurrentPage(newIndex: number): void {
+    this.currentPageIndex = newIndex;
+    this.pagesUpdated.next();
+  }
+
+  getCurrentPage(): Verona6ValidPage | undefined {
+    return this.pages[this.currentPageIndex];
   }
 
   isFirstPage() {

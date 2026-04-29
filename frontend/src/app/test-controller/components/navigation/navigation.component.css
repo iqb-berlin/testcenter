@@ -9,6 +9,7 @@
 
 .nav-button:disabled {
   background: var(--mat-sys-state-on-surface-opacity-10, rgba(39, 26, 43, 0.10));
+  color: var(--mat-sys-state-on-surface-opacity-10);
 }
 
 .previous-button {
@@ -18,29 +19,39 @@
   border-radius: 0 6px 6px 0;
 }
 
-.label {
+.label-container {
   display: flex;
   align-items: center;
   box-sizing: border-box;
   height: 40px;
-  padding: 0 8px;
   border: 1px solid var(--theme-gray-80);
 }
 
-:host ::ng-deep .label .mdc-tab {
-  border-top: 1px solid var(--mat-sys-primary);
-  border-right: 1px solid var(--mat-sys-primary);
-  border-bottom: 1px solid var(--mat-sys-primary);
+.label-container .label {
+  padding: 0 8px;
 }
 
-:host ::ng-deep .label .mdc-tab .mdc-tab-indicator {
-  display: none;
+.label-container.readonly {
+  border-radius: 100px;
 }
 
-:host ::ng-deep .label .mdc-tab.mdc-tab--active {
-  background-color: var(--mat-sys-primary);
+.label-container.list {
+  border-radius: 0;
 }
 
-:host ::ng-deep .label .mat-mdc-tab {
+.label-container.list.readonly {
+  border-radius: 8px;
+}
+
+.list-item {
+  border-left: 1px solid var(--mat-sys-primary);
+  width: 37px;
   height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.list-item.selected {
+  background-color: var(--mat-sys-primary);
 }

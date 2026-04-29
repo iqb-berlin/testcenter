@@ -24,7 +24,7 @@ export class PasswordChangeService {
     return dialogRef.afterClosed().pipe(
       switchMap(result => {
         if (!result) {
-          return of(true); // true in sense of "errorCode other than 0"
+          return of(false);
         }
         return this.bs.changePassword(
           user.id,

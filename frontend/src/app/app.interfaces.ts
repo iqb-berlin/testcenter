@@ -24,7 +24,6 @@ export interface AccessObject {
     profile?: string;
     mode?: 'RW' | 'RO';
     subLabel?: string;
-    monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
   };
   workspaceId: string;
   description: string;
@@ -33,12 +32,22 @@ export interface AccessObject {
 export interface AuthData {
   token: string;
   displayName: string;
+  loginName: string;
+  groupLabel: string;
   id?: number;
   pwSetByAdmin?: boolean;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
   claims: { [key in AuthAccessType]: AccessObject[] };
   groupToken: string | null;
+  viewSettings: {
+    theme?: string;
+    codeInput?: {
+      type: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
+      length: number;
+    },
+    monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
+  }
 }
 
 export interface KeyValuePairs {

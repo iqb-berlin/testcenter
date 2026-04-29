@@ -4,7 +4,7 @@ html, body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 /* has to be global because dynamic created element is not in the scope of the component */
@@ -36,4 +36,45 @@ iframe.unitHost {
 .flex-column {
   display: flex;
   flex-direction: column;
+}
+
+.mdc-button.mat-tonal-button {
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+/*Styling for account panel. It is an overlay and therefore out of the component's scope*/
+.account-menu {
+  width: 330px;
+  padding: 12px;
+}
+
+.account-menu .heading {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+}
+
+.account-menu .heading button {
+  margin-left: auto;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.account-menu .heading button .mat-mdc-button-persistent-ripple {
+  border-radius: inherit;
+}
+
+.account-menu dt {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+.account-menu dd {
+  margin-top: 4px;
+  margin-inline-start: 0;
+}
+
+.account-menu .logout-button {
+  margin-top: 12px;
+  border: 1px solid var(--mat-sys-primary);
 }

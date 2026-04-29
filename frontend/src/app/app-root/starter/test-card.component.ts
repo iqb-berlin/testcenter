@@ -4,7 +4,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { ThemeService } from '../../shared/services/theme.service';
+import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
   selector: 'tc-test-card',
@@ -22,7 +22,7 @@ import { ThemeService } from '../../shared/services/theme.service';
       }
       <div class="flex-column">
         <mat-card-header>
-          <p>{{ name }}</p>
+          <p>{{ name + (subLabel ? ' ('+subLabel+')' : '')}}</p>
         </mat-card-header>
         <mat-card-actions>
           <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
@@ -47,8 +47,6 @@ import { ThemeService } from '../../shared/services/theme.service';
       flex-direction: row;
       align-items: center;
       gap: 24px;
-      /*this might be a glogal setting, but since there are so many usages of cards change it only here, for now.*/
-      background-color: #FFF;
     }
     .number {
       font-size: 57px;
@@ -68,6 +66,7 @@ import { ThemeService } from '../../shared/services/theme.service';
 })
 export class TestCardComponent {
   @Input() name!: string;
+  @Input() subLabel?: string;
   @Input() index?: number;
   @Input() buttonLabel?: string;
   @Input() mode?: 'start' | 'continue' | 'view' | 'locked';

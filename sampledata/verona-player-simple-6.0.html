@@ -15,7 +15,7 @@
           "lang": "en"
         }
       ],
-      "version": "6.0.4",
+      "version": "6.0.5",
       "specVersion": "6.0",
       "description": [
         {
@@ -819,7 +819,7 @@
         // TODO get first visible page in a better way, ids are not numeric, use find
         const currentPage = Math.min(...Object.keys(this.visiblePages).filter(i => this.visiblePages[i]));
         if (currentPage === Infinity) {
-          return 0;
+          return 1;
         } else {
           this._currentPage = currentPage;
         }

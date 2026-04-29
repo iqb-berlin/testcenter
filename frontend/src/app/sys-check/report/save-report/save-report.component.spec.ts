@@ -17,8 +17,8 @@ describe('SaveReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [SaveReportComponent],
       imports: [
+        SaveReportComponent,
         MatDialogModule,
         ReactiveFormsModule,
         MatInputModule,

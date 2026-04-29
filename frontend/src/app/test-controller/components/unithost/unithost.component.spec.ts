@@ -46,10 +46,8 @@ describe('UnithostComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        UnithostComponent
-      ],
       imports: [
+        UnithostComponent,
         CommonModule,
         MatSnackBarModule,
         MatDividerModule

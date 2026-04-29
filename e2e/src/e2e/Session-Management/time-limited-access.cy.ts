@@ -1,7 +1,7 @@
 import {
-  insertCredentials,
+  twoStepLogin,
   loginTestTaker,
-  logoutTestTakerHot,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData,
   useTestDBSetDate,
@@ -18,9 +18,7 @@ describe('Check "valid from" restrictions', () => {
   it('login before time must be impossible', () => {
     // UnixTimestamp: 01.06.2023 09:00
     useTestDBSetDate('1685602800');
-    insertCredentials('SM-10', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-10', '123');
     cy.get('[data-cy="login-problem:401"]');
   });
 
@@ -33,9 +31,7 @@ describe('Check "valid from" restrictions', () => {
   it('login before date must be impossible', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
-    insertCredentials('SM-10', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-10', '123');
     cy.get('[data-cy="login-problem:401"]');
   });
 
@@ -56,9 +52,7 @@ describe('check "valid to" restrictions', () => {
   it('login after time must be impossible', () => {
     // UnixTimestamp: 01.06.2023 11:00
     useTestDBSetDate('1685610000');
-    insertCredentials('SM-11', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-11', '123');
     cy.get('[data-cy="login-problem:410"]');
   });
 
@@ -71,9 +65,7 @@ describe('check "valid to" restrictions', () => {
   it('login after date must be impossible', () => {
     // UnixTimestamp: 02.06.2023 09:30
     useTestDBSetDate('1685691000');
-    insertCredentials('SM-11', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-11', '123');
     cy.get('[data-cy="login-problem:410"]');
   });
 
@@ -95,22 +87,20 @@ describe('check "valid for" restrictions', () => {
     // UnixTimestamp: 31.05.2023 10:30
     useTestDBSetDate('1685521800');
     loginTestTaker('SM-12', '123');
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   it('a second login must be possible if the time has not expired', () => {
     // UnixTimestamp: 31.05.2023 10:30 + 9 Minuten
     useTestDBSetDate('1685522340');
     loginTestTaker('SM-12', '123');
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
   });
 
   it('login after time is not possible', () => {
     // UnixTimestamp: 31.05.2023 10:30 + 11 Minuten
     useTestDBSetDate('1685522460');
-    insertCredentials('SM-12', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('SM-12', '123');
     cy.get('[data-cy="login-problem:410"]');
   });
 });

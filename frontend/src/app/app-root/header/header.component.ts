@@ -1,15 +1,15 @@
 import { Component, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle
-} from '@angular/material/card';
 import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatDivider } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { HeaderService } from '../../core/header.service';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { HeaderService } from '@shared/services/header.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'tc-header',
@@ -20,106 +20,62 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
     MatIconButton,
     MatIcon,
     OverlayModule,
-    MatCard,
-    MatCardHeader,
-    MatCardTitle,
-    MatCardContent,
-    MatCardActions,
-    MatButton
+    MatButton,
+    MatMenu,
+    MatMenuTrigger,
+    MatDivider
   ],
-  template: `
-    <mat-toolbar>
-      <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div class="side">
-        @if (headerService.showAccountPanel) {
-          <button matIconButton cdkOverlayOrigin #trigger="cdkOverlayOrigin"
-                  (click)="isOpen = !isOpen">
-            <mat-icon svgIcon="person"></mat-icon>
-          </button>
-          <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger"
-                       [cdkConnectedOverlayOpen]="isOpen" (detach)="isOpen = false">
-            <div class="overlay">
-              <mat-card class="example-card" appearance="outlined">
-                <mat-card-header>
-                  <div mat-card-avatar class="example-header-image"></div>
-                  <mat-card-title>Nutzerinformationen</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <dl>
-                    <dt>Anmeldename:</dt>
-                    <dd>{{ headerService.accountName }}</dd>
-                    <dt>Gruppe:</dt>
-                    <dd>TODO</dd>
-                    <dt>Berechtigung:</dt>
-                    <dd>TODO</dd>
-                  </dl>
-                </mat-card-content>
-                <mat-card-actions>
-                  <button matButton>LIKE</button>
-                  <button matButton>SHARE</button>
-                </mat-card-actions>
-              </mat-card>
-            </div>
-          </ng-template>
-        }
-      </div>
-      <div class="center">
-        @if (headerService.title) {
-          <h1>{{ headerService.title }}</h1>
-        }
-      </div>
-      <div class="side logo">
-        @if (headerService.showLogo) {
-          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
-                 matTooltip="Zur Startseite"/>
-          </a>
-        }
-      </div>
-    </mat-toolbar>
-  `,
-  styles: `
-    mat-toolbar {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .side {
-      width: 15%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-    }
-    .center {
-      width: 85%;
-      display: flex;
-      justify-content: center;
-    }
-    .logo {
-      justify-content: end;
-    }
-    .logo a {
-      height: 100%;
-    }
-    .logo img {
-      height: 100%;
-    }
-    .overlay {
-      background-color: lightgray;
-    }
-    .overlay dt {
-      font-weight: bold;
-    }
-    h1 {
-      color: var(--mat-sys-on-primary);
-    }
-  `
+  templateUrl: 'header.component.html',
+  styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
-  protected isOpen: boolean = false;
-  constructor(public headerService: HeaderService, public mainDataService: MainDataService) { }
+  logoLink: string[] = ['/r'];
+  userRights: string[] = [];
+
+  constructor(public headerService: HeaderService, public mainDataService: MainDataService, private router: Router) {
+
+    router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const isLoginRoute = router.url.includes('code-input') ||
+                                   router.url.includes('login');
+      this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
+    });
+
+    this.mainDataService.authData$.subscribe(authData => {
+      if (!authData) return;
+      this.userRights = [];
+      if (authData.claims.workspaceAdmin) {
+        this.userRights.push('Verwaltung von Testinhalten');
+      }
+      if (authData.claims.superAdmin) {
+        this.userRights.push('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen');
+      }
+      if (authData.claims.test) {
+        if (authData.claims.test.length > 1) {
+          this.userRights.push('Ausführung/Ansicht von Befragungen oder Testheften');
+        } else {
+          this.userRights.push('Ausführung/Ansicht einer Befragung oder eines Testheftes');
+        }
+      }
+      if (authData.claims.workspaceMonitor) {
+        if (authData.claims.workspaceMonitor.length > 1) {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung von Befragungen oder Kompetenztests');
+        } else {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung einer Befragung oder eines Kompetenztests');
+        }
+      }
+      if (authData.claims.testGroupMonitor) {
+        this.userRights.push('Beobachtung/Prüfung einer Testgruppe');
+      }
+      if (authData.flags.indexOf('codeRequired') >= 0) {
+        this.userRights.push('Code-Eingabe erforderlich');
+      }
+    });
+  }
 
   ngOnDestroy(): void {
+    this.userRights = [];
     this.headerService.reset();
   }
 }

@@ -1,10 +1,10 @@
 import {
-  Component, computed, EventEmitter, Input, Output, Signal, signal
+  Component, computed, EventEmitter, Input, OnInit, Output, Signal, signal, WritableSignal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MainDataService } from '../../../shared/services/maindata/maindata.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 
 @Component({
   selector: 'tc-code-keypad-form',
@@ -12,8 +12,9 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
   templateUrl: './fab-form.component.html',
   styleUrl: './fab-form.component.scss'
 })
-export class FabFormComponent {
+export class FabFormComponent implements OnInit {
   @Input() visualMode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'keypad-symbols';
+  @Input() length: number | undefined = 5;
   @Output() submitCode = new EventEmitter<string | null>();
   @Output() clearInput = new EventEmitter<void>();
 
@@ -29,10 +30,14 @@ export class FabFormComponent {
     9: 'change_history'
   };
 
-  selectedValues = signal<(number | null)[]>(Array(5).fill(null));
+  selectedValues: WritableSignal<(number | null)[]> = signal<(number | null)[]>(Array(5).fill(null));
   activeValueIndex: Signal<number> = computed(() => this.selectedValues().indexOf(null));
 
   constructor(private mds: MainDataService) {}
+
+  ngOnInit(): void {
+    this.selectedValues = signal<(number | null)[]>(Array(this.length).fill(null));
+  }
 
   onSelect(selectedValue: string): void {
     this.selectedValues.update(selectedValues => {

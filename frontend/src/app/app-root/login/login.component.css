@@ -1,0 +1,113 @@
+.mat-mdc-form-field {
+  display: block
+}
+
+:host {
+  flex: 1;
+}
+
+.login-page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  gap: 64px;
+}
+
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 25%;
+  background-color: var(--mat-sys-secondary);
+  gap: 48px;
+  box-sizing: border-box;
+  padding: 64px 24px;
+}
+
+.welcome-section img {
+  width: 100%;
+}
+
+.welcome-section .heading {
+  text-align: center;
+  font-size: 30px;
+}
+
+.login-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 60px;
+  width: 75%;
+}
+
+.login-section form {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 80%;
+  gap: 24px;
+}
+
+.password-headline {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  gap: 24px;
+}
+
+.password-headline > h2 {
+}
+
+.password-headline > button {
+  font-size: 20px;
+}
+
+.login-section mat-form-field {
+}
+
+.login-section > form > button {
+  width: 15%;
+}
+
+.help-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 10px 10px 24px;
+  border: 1px solid var(--mat-sys-primary);
+  border-radius: 10px;
+  width: 80%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.help-box mat-card-header {
+  color: var(--mat-sys-primary);
+  font-weight: bold;
+}
+
+.question-mark svg {
+  fill: var(--mat-sys-primary);
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button-section {
+  align-self: end;
+  display: flex;
+  gap: 9px;
+  margin-top: auto;
+  padding-bottom: 12px;
+  margin-right: 24px;
+}

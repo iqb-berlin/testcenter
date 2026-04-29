@@ -1,18 +1,38 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { MainDataService, UserAgentService } from '../../shared/shared.module';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import {
+  MainDataService,
+  UserAgentService, SharedModule, AlertComponent
+} from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { LoginHelpDialogComponent } from './help-dialog/login-help-dialog.component';
+import { FooterService } from '@shared/services/footer.service';
+import { ThemeService } from '@shared/services/theme.service';
 
 @Component({
-  templateUrl: './login.component.html',
-  styles: [
-    '.mat-mdc-form-field {display: block}',
-    '.mat-mdc-card {width: 400px;}'
-  ],
-  standalone: false
+  templateUrl: 'login.component.html',
+  styleUrl: 'login.component.css',
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatDialogModule,
+    RouterLink,
+    MatButtonModule,
+    MatCardModule,
+    SharedModule,
+    AlertComponent
+  ]
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
@@ -24,6 +44,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemCode = 0;
   showPassword = false;
   unsupportedBrowser: [string, string] | [] = [];
+  username: string | null = null;
+  readonly dialog = inject(MatDialog);
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -34,56 +56,53 @@ export class LoginComponent implements OnInit, OnDestroy {
     public mainDataService: MainDataService,
     private backendService: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private footerService: FooterService,
+    private themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
-    this.mainDataService.appSubTitle$.next('Bitte anmelden');
+    this.mainDataService.appSubTitle$.next('Anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
     this.checkBrowser();
+    this.footerService.showFooter.set(true);
   }
 
-  login(loginType: 'admin' | 'login' = 'login'): void {
+  nameInput(): void {
     const loginData = this.loginForm.value;
     if (!loginData.name) {
       return;
     }
     LoginComponent.oldLoginName = loginData.name;
-    this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginType, loginData.name, loginData.pw ?? '').subscribe({
+    // try if login without password (= with empty password) is possible; otherwise, ask for password input
+    this.backendService.login(loginData.name, '').subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
-        if (this.returnTo) {
-          this.router.navigateByUrl(this.returnTo).then(navOk => {
-            if (!navOk) {
-              this.router.navigate(['/r']);
-            }
-          });
-        } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
-          // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
-          // so a shortcut jump would not hurt a specific workflow
-          if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.backendService.startTest(authData.claims.test[0].id).subscribe({
-              next: testId => {
-                this.router.navigate(['/t', testId]);
-              },
-              error: () => {
-                this.router.navigate(['/r/starter']);
-              }
-            });
-            // only jump into test, when there is only 1 test, and there are no other claims -> no other possible features or responsibilities in the starter page
-            // so a shortcut jump would not hurt a specific workflow
-          } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
-          } else {
-            this.router.navigate(['/r/starter']);
-          }
-        } else {
-          this.router.navigate(['/r']);
-        }
+        this.navigateAfterLogin(authDataTyped);
+      },
+      error: error => {
+        this.problemCode = error.code;
+        this.username = loginData.name ?? '';
+      }
+    });
+  }
+
+  passwordInput(): void {
+    const loginData = this.loginForm.value;
+    if (!this.username) {
+      return;
+    }
+    loginData.name = this.username;
+    this.problemText = '';
+    this.problemCode = 0;
+    this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
+      next: authData => {
+        this.mainDataService.setAuthData(authData);
+        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.navigateAfterLogin(authData);
       },
       error: error => {
         this.problemCode = error.code;
@@ -102,8 +121,15 @@ export class LoginComponent implements OnInit, OnDestroy {
           throw error;
         }
         this.problemLevel = 'error';
+        this.username = null;
         this.loginForm.reset();
       }
+    });
+  }
+
+  openDialog() {
+    this.dialog.open(LoginHelpDialogComponent, {
+      autoFocus: 'dialog'
     });
   }
 
@@ -130,7 +156,42 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  private navigateAfterLogin(authData: AuthData): void {
+    if (this.returnTo) {
+      this.router.navigateByUrl(this.returnTo).then(navOk => {
+        if (!navOk) {
+          this.router.navigate(['/r']);
+        }
+      });
+    } else if (!authData.flags.includes('codeRequired')) {
+      // only jump into test, when there is only 1 test, and there are no other claims
+      // -> no other possible features or responsibilities in the starter page
+      // so a shortcut jump would not hurt a specific workflow
+      if (authData.claims.test && authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
+        this.backendService.startTest(authData.claims.test[0].id).subscribe({
+          next: testId => {
+            this.router.navigate(['/t', testId]);
+          },
+          error: () => {
+            this.router.navigate(['/r/starter']);
+          }
+        });
+        // only jump into test, when there is only 1 test, and there are no other claims ->
+        // no other possible features or responsibilities in the starter page
+        // so a shortcut jump would not hurt a specific workflow
+      } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 &&
+        Object.keys(authData.claims).length === 1) {
+        this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);
+      } else {
+        this.router.navigate(['/r/starter']);
+      }
+    } else {
+      this.router.navigate(['/r']);
+    }
+  }
+
   ngOnDestroy(): void {
+    this.footerService.showFooter.set(false);
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }

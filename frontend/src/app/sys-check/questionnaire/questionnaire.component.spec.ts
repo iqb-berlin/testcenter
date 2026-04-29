@@ -10,8 +10,7 @@ describe('QuestionnaireComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [QuestionnaireComponent],
-      imports: [SharedModule, MatCardModule, ReactiveFormsModule]
+      imports: [QuestionnaireComponent, SharedModule, MatCardModule, ReactiveFormsModule]
     })
       .compileComponents();
   }));

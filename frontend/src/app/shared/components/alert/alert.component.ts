@@ -1,4 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 import {
   Observable, ReplaySubject, Subject, Subscription
 } from 'rxjs';
@@ -8,10 +10,13 @@ import { CustomtextService } from '../../services/customtext/customtext.service'
 import { AlertLevel } from '../../interfaces/alert.interfaces';
 
 @Component({
-    selector: 'tc-alert',
-    templateUrl: 'alert.component.html',
-    styleUrls: ['alert.component.css'],
-    standalone: false
+  selector: 'tc-alert',
+  templateUrl: 'alert.component.html',
+  imports: [
+    MatIcon,
+    AsyncPipe
+  ],
+  styleUrls: ['alert.component.css']
 })
 export class AlertComponent implements OnChanges {
   @Input() text: string = '';

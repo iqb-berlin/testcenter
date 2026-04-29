@@ -7,25 +7,6 @@
   </div>
 </div>
 
-<form [formGroup]="customImageForm" class="form-grid">
-  <h3>
-    Bild-Ersetzungen
-  </h3>
-  <div>
-    <mat-form-field appearance="fill">
-      <mat-label>loginIntro</mat-label>
-      <textarea matInput formControlName="loginIntro"></textarea>
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-      <mat-label>starterIntro</mat-label>
-      <textarea matInput formControlName="starterIntro"></textarea>
-    </mat-form-field>
-    <button mat-raised-button (click)="saveCustomImages()">
-      Bild-Ersetzungen speichern
-    </button>
-  </div>
-</form>
-
 <form [formGroup]="configForm" class="form-grid">
   <h3>
     Warnung auf der Startseite

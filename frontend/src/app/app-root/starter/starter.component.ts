@@ -1,27 +1,54 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 import {
-  ConfirmDialogComponent,
+  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
+import { groupBy, Subscription } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
+import {
+  AlertComponent,
+  ConfirmDialogComponent, CustomtextPipe,
   CustomtextService,
   MainDataService, MessageDialogComponent, MessageDialogData,
   PasswordChangeService
-} from '../../shared/shared.module';
-import { BackendService } from '../../backend.service';
-import { AccessObject } from '../../app.interfaces';
-import { SysCheckDataService } from '../../sys-check/sys-check-data.service';
-import { MatDialog } from '@angular/material/dialog';
-import { FileService } from '../../shared/services/file.service';
-import { MessageService } from '../../shared/services/message.service';
-import { AuthAccessType } from '../../app.interfaces';
-import { HeaderService } from '../../core/header.service';
-import { ThemeService } from '../../shared/services/theme.service';
+} from '@shared/shared.module';
+import { BackendService } from '@app/backend.service';
+import { AccessObject, AuthAccessType } from '@app/app.interfaces';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FileService } from '@shared/services/file.service';
+import { MessageService } from '@shared/services/message.service';
+import { HeaderService } from '@shared/services/header.service';
+import { ThemeService } from '@shared/services/theme.service';
+import { SysCheckDataService } from '@app/sys-check/sys-check-data.service';
+import { TestCardComponent } from '@app/app-root/starter/test-card.component';
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from '@angular/material/expansion';
+import { AsyncPipe, KeyValuePipe, NgForOf, NgTemplateOutlet } from '@angular/common';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'tc-starter',
   templateUrl: './starter.component.html',
-  styleUrls: ['./starter.component.scss'],
-  standalone: false
+  imports: [
+    TestCardComponent,
+    AlertComponent,
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    CustomtextPipe,
+    AsyncPipe,
+    NgTemplateOutlet,
+    NgForOf,
+    MatButton,
+    RouterLink,
+    MatIcon,
+    KeyValuePipe
+  ],
+  styleUrls: ['./starter.component.scss']
 })
 export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bottomSentinel') sentinel!: ElementRef;
@@ -33,7 +60,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string = '';
   isSuperAdmin = false;
-  availableBooklets?: { name: string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
+  availableBooklets?: { name: string; id:string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
   showScrollButton = false;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
@@ -59,7 +86,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       ) {
         this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
         this.monitorBookletVisibility =
-          this.claims.testGroupMonitor?.[0]?.flags?.monitorBookletVisibility || 'visible';
+          authData.viewSettings.monitorBookletVisibility || 'visible';
       } else if ('workspaceAdmin' in this.claims || 'superAdmin' in this.claims) {
         this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
         if (this.getWorkspaceDataSubscription !== null) {
@@ -81,29 +108,13 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               this.mds.logOut();
             }
 
-            // TODO is this subscription ever unsubscribed?
             this.pcs.showPasswordChangeDialog(
               { id: this.mds.getAuthData()?.id!, name: this.mds.getAuthData()?.displayName! },
               { disableClose: true }
-            ).subscribe(error => {
-              if (error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
-                  width: '400px',
-                  data: <MessageDialogData>{
-                    title: 'Sie müssen Ihr Passwort einmalig ändern',
-                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
-                    type: 'error'
-                  }
-                });
-
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
-              }
-
-              if (!error) {
-                const dialog = this.dialog.open(MessageDialogComponent, {
+            ).subscribe((result: boolean) => {
+              let resultDialog: MatDialogRef<MessageDialogComponent, boolean>;
+              if (result) {
+                resultDialog = this.dialog.open(MessageDialogComponent, {
                   width: '400px',
                   data: <MessageDialogData>{
                     title: 'Passwort erfolgreich geändert',
@@ -111,12 +122,20 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
                     type: 'info'
                   }
                 });
-
-                setTimeout(() => {
-                  dialog.close();
-                  this.mds.logOut();
-                }, 1500);
+              } else {
+                resultDialog = this.dialog.open(MessageDialogComponent, {
+                  width: '400px',
+                  data: <MessageDialogData>{
+                    title: 'Sie müssen Ihr Passwort einmalig ändern',
+                    content: 'Fehler beim Ändern des Passworts. Sie werden ausgeloggt.',
+                    type: 'error'
+                  }
+                });
               }
+              setTimeout(() => {
+                resultDialog.close();
+                this.mds.logOut();
+              }, 1500);
             });
           });
         }
@@ -125,6 +144,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.availableBooklets = this.claims.test?.map((test: AccessObject) => ({
         name: test.label,
+        id: test.id,
         mode: (test.flags.locked ? 'locked' :
           (test.flags.running ? 'continue' : (this.claims.testGroupMonitor ? 'view' : 'start'))),
         claim: test
@@ -223,9 +243,11 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // static not possible because it is used in the template
   // eslint-disable-next-line class-methods-use-this
-  scrollDown() {
-    window.scrollBy({
-      top: window.innerHeight,
+  scrollDown(): void {
+    const scrollableContainer = document.querySelector('tc-starter')?.parentElement;
+    if (!scrollableContainer) return;
+    scrollableContainer.scrollBy({
+      top: 300,
       behavior: 'smooth'
     });
   }
@@ -244,4 +266,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getWorkspaceDataSubscription.unsubscribe();
     }
   }
+
+  protected readonly groupBy = groupBy;
 }
