@@ -14,26 +14,39 @@ class WorkspaceTest extends TestCase {
   private vfsStreamDirectory $vfs;
   private WorkspaceDAO|MockInterface $workspaceDaoMock;
 
-  const validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
+  const validFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">'
+    . '<Metadata><Id>id</Id><Label>l</Label></Metadata>'
+    . '<Definition player="p">1st valid file</Definition>'
+    . '</Unit>';
   const invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
-  const validFile2 = '<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
-
-  const validUnit =
-    '<Unit ><Metadata><Id>x_unit</Id><Label>l</Label></Metadata><Definition player="p">valid extracted unit</Definition></Unit>';
-  const validBooklet =
-    '<Booklet><Metadata><Id>x_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>';
+  const validFile2 = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">'
+    . '<Metadata><Id>id</Id><Label>l</Label></Metadata>'
+    . '<Definition player="p">2nd valid file</Definition>'
+    . '</Unit>';
+  const validUnit = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">'
+    . '<Metadata><Id>x_unit</Id><Label>l</Label></Metadata>'
+    . '<Definition player="p">valid extracted unit</Definition>'
+    . '</Unit>';
+  const validBooklet = '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4">'
+    . '<Metadata><Id>x_booklet</Id><Label>l</Label></Metadata>'
+    . '<Units><Unit label="l" id="x_unit" /></Units>'
+    . '</Booklet>';
   const validTesttakers =
-    '<Testtakers>
-        <Metadata><Description>d</Description></Metadata>
-        <Group id="new_group" label="">
-            <Login name="new_user" mode="run-review">
-                <Booklet>x_booklet</Booklet>
-            </Login>
-        </Group>
+    '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">
+      <Metadata><Description>d</Description></Metadata>
+      <Group id="new_group" label="">
+          <Login name="new_user" mode="run-review">
+              <Booklet>x_booklet</Booklet>
+          </Login>
+      </Group>
     </Testtakers>';
 
   const dangerousTesttakers =
-    '<Testtakers>
+    '<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">
       <Metadata><Description>d</Description></Metadata>
       <Group id="group1" label="">
         <Login name="monitor_1" mode="monitor-group">

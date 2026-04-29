@@ -45,7 +45,8 @@ class XMLFilesBookletTest extends TestCase {
 
   private function prepareBookletWithStates(string $states, string $restrictions): XMLFileBooklet {
     $xml = <<<EOT
-<Booklet>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4">
   <Metadata>
     <Id>i</Id>
     <Label>l</Label>

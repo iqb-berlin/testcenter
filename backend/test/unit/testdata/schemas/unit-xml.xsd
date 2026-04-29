@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="vo_Unit" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:complexType name="Variable">
+        <xs:sequence>
+            <xs:element name="Values" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Value" maxOccurs="unbounded" type="VariableValue" />
+                    </xs:sequence>
+                    <xs:attribute name="complete" type="xs:boolean" />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ValuePositionLabels" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ValuePositionLabel" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                    <xs:minLength value="1" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="alias" type="xs:string" />
+        <xs:attribute name="type" type="VariableTypeValue" use="required" />
+        <xs:attribute name="format" type="VariableFormatValue" />
+        <xs:attribute name="multiple" type="xs:boolean" />
+        <xs:attribute name="nullable" type="xs:boolean" />
+        <xs:attribute name="page" type="PageId" />
+    </xs:complexType>
+
+    <xs:complexType name="VariableValue">
+        <xs:sequence>
+            <xs:element name="label" />
+            <xs:element name="value" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="VariableTypeValue">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="string" />
+            <xs:enumeration value="integer" />
+            <xs:enumeration value="number" />
+            <xs:enumeration value="boolean" />
+            <xs:enumeration value="attachment" />
+            <xs:enumeration value="json" />
+            <xs:enumeration value="no-value" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="VariableFormatValueExplicit">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="text-selection" />
+            <xs:enumeration value="image" />
+            <xs:enumeration value="capture-image" />
+            <xs:enumeration value="audio" />
+            <xs:enumeration value="ggb-file" />
+            <xs:enumeration value="non-negative" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="VariableFormatValueOther">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-z\d-]*" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="PageId">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-zA-Z_]*" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="VariableFormatValue">
+        <xs:union memberTypes="VariableFormatValueOther VariableFormatValueExplicit" />
+    </xs:simpleType>
+
+    <xs:simpleType name="DependencyTarget">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="player" />
+            <xs:enumeration value="editor" />
+            <xs:enumeration value="schemer" />
+            <xs:enumeration value="coder" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Dependency">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="for" type="DependencyTarget" default="player" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:element name="DefinitionElement" abstract="true" />
+
+    <xs:element name="Definition" substitutionGroup="DefinitionElement">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="player" type="xs:string" use="required" />
+                    <xs:attribute name="editor" type="xs:string" />
+                    <xs:attribute name="type" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="lastChange" type="xs:dateTime" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DefinitionRef" substitutionGroup="DefinitionElement">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="player" type="xs:string" use="required" />
+                    <xs:attribute name="editor" type="xs:string" />
+                    <xs:attribute name="type" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="lastChange" type="xs:dateTime" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Unit">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="Metadata">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Id" type="xs:ID" />
+                            <xs:element name="Label" type="xs:string" />
+                            <xs:element name="Description" type="xs:string" minOccurs="0" />
+                            <xs:element name="Transcript" type="xs:string" minOccurs="0" />
+                            <xs:element name="Reference" type="xs:string" minOccurs="0" />
+                            <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>Deprecated. Use @lastChange</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="lastChange" type="xs:dateTime" />
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element ref="DefinitionElement" />
+
+                <xs:element name="CodingSchemeRef" minOccurs="0">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="schemer" type="xs:string" use="required" />
+                                <xs:attribute name="schemeType" type="xs:string" />
+                                <xs:attribute name="lastChange" type="xs:dateTime" />
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="Dependencies" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="File" type="Dependency" />
+                                <xs:element name="file" type="Dependency">
+                                    <xs:annotation>
+                                        <xs:documentation>Deprecated. Use "File".</xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="Service" type="Dependency" />
+                            </xs:choice>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="VariablesRef" minOccurs="0">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="lastChange" type="xs:dateTime" />
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="BaseVariables" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Variable" maxOccurs="unbounded" minOccurs="0"
+                                type="Variable" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="DerivedVariables" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Variable" maxOccurs="unbounded" minOccurs="0"
+                                type="Variable" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+
+        <xs:key name="basicKey">
+            <xs:selector xpath="BaseVariables/Variable|DerivedVariables/Variable" />
+            <xs:field xpath="@id" />
+        </xs:key>
+
+    </xs:element>
+</xs:schema>

@@ -79,7 +79,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => '',
         'verona_version' => '',
         'verona_module_id' => '',
-        'is_valid' => 1,
+        'is_valid' => 0,
         'validation_report' => 'ignore',
         'modification_ts' => '1970-01-01 01:00:01',
         'size' => 0,

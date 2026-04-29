@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/18.0.0-alpha/definitions/vo_Testtakers.xsd">
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/17.6">
 
   <Metadata>
     <Description>Logins für Cypress Test: Groupmonitor</Description>
@@ -45,7 +45,7 @@
       <Booklet>Cy-Bklt_GM-1</Booklet>
     </Login>
 
-    <Login mode="monitor-group" name="GM-1" pw="">
+    <Login mode="monitor-group" name="GM-1" pw="123">
       <Profile id="all" />
       <Profile id="small" />
     </Login>

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="vo_Testtakers" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="vo_Testtakers" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="Testtakers" >
+  <xs:element name="Testtakers">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata">
@@ -42,7 +43,7 @@
                           </xs:simpleContent>
                         </xs:complexType>
                       </xs:element>
-                      <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType" />
+                      <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType"/>
                     </xs:choice>
                     <xs:element name="ViewSettings" minOccurs="0">
                       <xs:complexType>
@@ -292,7 +293,7 @@
     </xs:simpleContent>
   </xs:complexType>
 
-  <xs:simpleType name="FilterTypeType" final="restriction" >
+  <xs:simpleType name="FilterTypeType" final="restriction">
     <xs:restriction base="xs:string">
       <xs:enumeration value="equal" />
       <xs:enumeration value="substring" />

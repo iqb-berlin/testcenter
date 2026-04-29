@@ -42,16 +42,12 @@ class WorkspaceCacheTest extends TestCase {
       $allReports["{$file->getType()}/{$file->getName()}"] = $file->getValidationReport();
     }
 
-    $version = SystemConfig::$system_version;
-
     $expected = [
       'Testtakers/testtakers-duplicate-login-name.xml' => [
         'error' => ["Error [1877] in line 2: Element 'Login': Duplicate key-sequence ['duplicate_login'] in unique identity-constraint 'TesttakerLogin'."],
-        'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Testtakers/testtakers-missing-booklet.xml' => [
         'error' => ['Booklet `BOOKLET.MISSING` not found for login `a_login`'],
-        'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Testtakers/trash.xml' => [
         'error' => ['Invalid root-tag: `Trash`'],
@@ -74,31 +70,26 @@ class WorkspaceCacheTest extends TestCase {
         ],
       ],
       'Booklet/booklet-duplicate-id-1.xml' => [
-        'error' => ['Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (booklet-duplicate-id-2.xml)'],
-        'warning' => [
-          "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
-          'Booklet is never used'
+        'error' => [
+          'File has no link to XSD-schema.',
+          'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (booklet-duplicate-id-2.xml)'
         ],
+        'warning' => ['Booklet is never used'],
       ],
       'Booklet/booklet-duplicate-id-2.xml' => [
-        'warning' => [
-          "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
-          'Booklet is never used'
-        ],
+        'error' => ['File has no link to XSD-schema.'],
+        'warning' => ['Booklet is never used'],
       ],
       'Unit/unit-unused-and-missing-player.xml' => [
-        'warning' => [
-          "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
-          'Unit is never used'
-        ],
         'error' => ['Player not found `MISSING-P-0.0`.'],
+        'warning' => ['Unit is never used'],
       ],
       'Unit/unit-unused-and-missing-ref.xml' => [
-        'warning' => [
-          "File has no link to XSD-Schema. Current version (`$version`) will be used instead.",
-          'Unit is never used'
+        'error' => [
+          'File has no link to XSD-schema.',
+          'Resource `not-existing.voud` not found'
         ],
-        'error' => ['Resource `not-existing.voud` not found']
+        'warning' => ['Unit is never used'],
       ],
       'Unit/SAMPLE_UNIT.XML' => [
         'info' => ["`1` attachment(s) requested."]
@@ -111,22 +102,19 @@ class WorkspaceCacheTest extends TestCase {
       ],
       'Testtakers/testtakers-duplicate-login-name-cross-file-1.xml' => [
         'error' => ["Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`"],
-        'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Testtakers/testtakers-duplicate-login-name-cross-file-2.xml' => [
         'error' => ["Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`"],
-        'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
         'error' => [
           "Duplicate login: `another_login` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`",
           "Duplicate group: `another_group` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`"
         ],
-        'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],
       'Resource/verona-player-simple-6.0.html' => [
         'info' => ['Verona-Version: 6.0'],
-        'warning' => ['Resource is never used'] // TODO this is bug, which should be fixed later
+        'warning' => ['Resource is never used']
       ],
       'Resource/sample_resource_package.itcr.zip' => [
         'info' => ['Contains 0 files.']
