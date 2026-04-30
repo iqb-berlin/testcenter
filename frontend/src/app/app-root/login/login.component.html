@@ -32,7 +32,9 @@
     @else {
       <form [formGroup]="loginForm" (ngSubmit)="passwordInput()">
         <div class="password-headline">
-          <button matButton="outlined" type="reset" (click)="username = null;"><</button>
+          <button matIconButton type="reset" (click)="username = null;">
+            <mat-icon svgIcon="chevron_left"></mat-icon>
+          </button>
           <h2>
             Kennwort eingeben (Benutzer: {{ username }} )
           </h2>

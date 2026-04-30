@@ -60,11 +60,19 @@
   gap: 24px;
 }
 
-.password-headline > h2 {
+.password-headline > button {
+  color: var(--mat-sys-primary);
+  border: 1px solid var(--mat-sys-primary);
+  border-radius: 12px;
 }
 
-.password-headline > button {
-  font-size: 20px;
+:host ::ng-deep .password-headline .mdc-icon-button .mat-mdc-button-persistent-ripple {
+  border-radius: inherit;
+}
+
+h2 {
+  font-weight: 400;
+  font-size: 30px;
 }
 
 .login-section mat-form-field {
