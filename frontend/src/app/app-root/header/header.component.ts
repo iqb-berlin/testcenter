@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
@@ -10,6 +10,7 @@ import { MatIcon } from '@angular/material/icon';
 import { HeaderService } from '@shared/services/header.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { filter } from 'rxjs/operators';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-header',
@@ -29,11 +30,14 @@ import { filter } from 'rxjs/operators';
   styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
+  @ViewChild('logoutDialogTemplate') logoutDialogTemplate!: TemplateRef<unknown>;
   logoLink: string[] = ['/r'];
   userRights: string[] = [];
 
-  constructor(public headerService: HeaderService, public mainDataService: MainDataService, private router: Router) {
-
+  constructor(public headerService: HeaderService,
+              public mainDataService: MainDataService,
+              private messageService: MessageService,
+              private router: Router) {
     router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
@@ -71,6 +75,17 @@ export class HeaderComponent implements OnDestroy {
       if (authData.flags.indexOf('codeRequired') >= 0) {
         this.userRights.push('Code-Eingabe erforderlich');
       }
+    });
+  }
+
+  protected logout() {
+    this.messageService.showConfirmDialog({
+      title: 'Sicher, dass du dich abmelden möchtest?',
+      contentTemplate: this.logoutDialogTemplate,
+      confirmText: 'Hier bleiben',
+      cancelText: 'Abmelden'
+    }).subscribe((result: boolean) => {
+      if (result) this.mainDataService.logOut();
     });
   }
 
