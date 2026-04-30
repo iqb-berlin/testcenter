@@ -259,7 +259,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             throw err;
           }))
           .subscribe(() => {
-            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 2000);
+            setTimeout(() => { this.router.navigateByUrl('/r/starter'); }, 2000);
           });
       }
     });
