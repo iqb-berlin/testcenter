@@ -82,8 +82,9 @@ export class HeaderComponent implements OnDestroy {
     this.messageService.showConfirmDialog({
       title: 'Sicher, dass du dich abmelden möchtest?',
       contentTemplate: this.logoutDialogTemplate,
-      confirmText: 'Hier bleiben',
-      cancelText: 'Abmelden'
+      cancelText: 'Hier bleiben',
+      confirmText: 'Abmelden',
+      focusCancel: true
     }).subscribe((result: boolean) => {
       if (result) this.mainDataService.logOut();
     });
