@@ -119,3 +119,7 @@ h2 {
   padding-bottom: 12px;
   margin-right: 24px;
 }
+
+ul.dialog-list {
+  padding-left: 15px;
+}

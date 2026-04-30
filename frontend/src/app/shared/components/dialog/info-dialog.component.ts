@@ -53,9 +53,6 @@ import { NgTemplateOutlet } from '@angular/common';
     mat-dialog-content.mat-mdc-dialog-content {
       padding-top: 10px;
     }
-    mat-dialog-content.mat-mdc-dialog-content ul {
-      padding-left: 15px;
-    }
     .mdc-dialog__title::before {
       height: auto;
     }
