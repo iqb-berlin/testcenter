@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,13 +32,17 @@ export class MessageService {
   }
 }
 
-export interface DialogData {
+interface BaseDialogData {
   title: string;
-  content: string | string[]; // array with be displayed as html list
 }
 
-export interface ConfirmDialogData extends DialogData {
+// Dialog content can be either a string or a template. Template can be used for formatted content.
+export type DialogData =
+  (BaseDialogData & { content: string; contentTemplate?: never }) |
+  (BaseDialogData & { content?: never; contentTemplate: TemplateRef<unknown> });
+
+export type ConfirmDialogData = DialogData & {
   confirmText? : string;
   cancelText? : string;
   focusCancel?: boolean;
-}
+};

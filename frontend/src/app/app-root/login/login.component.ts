@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -36,6 +36,7 @@ import { BackendService } from '../../backend.service';
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild('helpDialogTemplate') helpDialogTemplate!: TemplateRef<unknown>;
   static oldLoginName = '';
   private routingSubscription: Subscription | null = null;
   returnTo = '';
@@ -131,12 +132,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   openDialog() {
     this.messageService.showInfoDialog({
       title: 'Anleitung',
-      content: [
-        'Geben Sie in Schritt 1 Ihren Anmeldenamen in das Eingabefeld ein. Klicken Sie dann auf den Button "Weiter".',
-        'Sie gelangen nun in den nächsten Schritt.',
-        'Geben Sie in Schritt 2 Ihr Kennwort in das Eingabefeld ein. Klicken Sie dann auf den Button "Anmelden".',
-        'Die Startseite des Testcenters wird sich im Anschluss der erfolgreichen Anmeldung öffnen.'
-      ]
+      contentTemplate: this.helpDialogTemplate
     });
   }
 

@@ -8,6 +8,7 @@ import {
 } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogData } from '@shared/services/message.service';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'tc-dialog',
@@ -16,18 +17,15 @@ import { ConfirmDialogData } from '@shared/services/message.service';
     MatDialogActions,
     MatDialogContent,
     MatDialogTitle,
-    MatDialogClose
+    MatDialogClose,
+    NgTemplateOutlet
   ],
   template: `
     <h2 mat-dialog-title data-cy="dialog-title">{{ data.title }}</h2>
 
     <mat-dialog-content data-cy="dialog-content">
-      @if (typeof data.content === 'object') {
-        <ul>
-          @for (line of data.content; track line) {
-            <li>{{ line }}</li>
-          }
-        </ul>
+      @if (data.contentTemplate) {
+        <ng-container *ngTemplateOutlet="data.contentTemplate"></ng-container>
       } @else {
         <p>{{ data.content }}</p>
       }

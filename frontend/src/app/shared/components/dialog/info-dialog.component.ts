@@ -5,6 +5,7 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { DialogData } from '@shared/services/message.service';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-info-dialog',
@@ -13,7 +14,8 @@ import { DialogData } from '@shared/services/message.service';
     MatDialogContent,
     MatDialogTitle,
     MatIcon,
-    MatIconButton
+    MatIconButton,
+    NgTemplateOutlet
   ],
   template: `
     <div class="header-line">
@@ -23,12 +25,8 @@ import { DialogData } from '@shared/services/message.service';
       </button>
     </div>
     <mat-dialog-content>
-      @if (typeof data.content === 'object') {
-        <ul>
-          @for (line of data.content; track line) {
-            <li>{{ line }}</li>
-          }
-        </ul>
+      @if (data.contentTemplate) {
+        <ng-container *ngTemplateOutlet="data.contentTemplate"></ng-container>
       } @else {
         <p>{{ data.content }}</p>
       }
