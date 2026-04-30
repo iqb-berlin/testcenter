@@ -31,13 +31,24 @@ import { NgTemplateOutlet } from '@angular/common';
       }
     </mat-dialog-content>
 
-    <mat-dialog-actions>
-      <button matButton [mat-dialog-close]="true" data-cy="dialog-confirm">
-        {{ data.confirmText || 'Bestätigen' }}
-      </button>
-      <button mat-raised-button class="cancel-button" [mat-dialog-close]="false" data-cy="dialog-cancel">
-        {{ data.cancelText || 'Abbrechen' }}
-      </button>
+    <mat-dialog-actions [align]="'start'">
+      <!-- Style buttons differently depending on what the proposed action is.
+           Logout should be discouraged, for example. -->
+      @if (!data.focusCancel){
+        <button matButton="filled" [mat-dialog-close]="true" data-cy="dialog-confirm">
+          {{ data.confirmText || 'Bestätigen' }}
+        </button>
+        <button matButton="outlined" class="cancel-button" [mat-dialog-close]="false" data-cy="dialog-cancel">
+          {{ data.cancelText || 'Abbrechen' }}
+        </button>
+      } @else {
+        <button matButton="outlined" [mat-dialog-close]="true" data-cy="dialog-confirm">
+          {{ data.confirmText || 'Bestätigen' }}
+        </button>
+        <button matButton="filled" class="cancel-button" [mat-dialog-close]="false" data-cy="dialog-cancel">
+          {{ data.cancelText || 'Abbrechen' }}
+        </button>
+      }
     </mat-dialog-actions>
   `,
   styles: ``,
