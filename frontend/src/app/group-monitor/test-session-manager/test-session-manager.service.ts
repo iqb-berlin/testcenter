@@ -4,7 +4,7 @@ import {
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
-  delay, filter, flatMap, map, startWith, switchMap, tap
+  delay, filter, mergeMap, map, startWith, switchMap, tap
 } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { BookletService } from '../booklet/booklet.service';
@@ -350,10 +350,10 @@ export class TestSessionManager {
 
     this.filters$.next([]);
 
-    return this.bs.command('terminate', ['lock'], getUnlockedConnectedTestIds())
+    return this.bs.lock(this.groupName, getUnlockedTestIds())
       .pipe(
         delay(1500),
-        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
+        mergeMap(() => this.bs.command('terminate', ['lock'], getUnlockedConnectedTestIds()))
       );
   }
 
