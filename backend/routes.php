@@ -267,3 +267,7 @@ $app->get('/file/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'g
 
 $app->get('/reviews/export', [ReviewController::class, 'getAllReviewsFromPersonExport'])
   ->add(new RequireToken('person'));
+
+$app->get('/assets', [AssetController::class, 'list']);
+$app->post('/assets', [AssetController::class, 'upload']);
+$app->delete('/assets/{id}', [AssetController::class, 'delete']);

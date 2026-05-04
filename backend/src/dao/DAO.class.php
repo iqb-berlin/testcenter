@@ -160,4 +160,10 @@ class DAO {
   public function rollBack(): void {
     $this->pdoDBhandle->rollBack();
   }
+
+  public function insert(string $sql, array $params = []): int
+  {
+    $this->_($sql, $params);
+    return (int)$this->pdoDBhandle->lastInsertId();
+  }
 }

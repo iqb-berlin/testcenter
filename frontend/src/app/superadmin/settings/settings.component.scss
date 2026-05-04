@@ -49,3 +49,41 @@
   background-color: var(--mat-sys-secondary);
   border-top: 1px solid rgba(0,0,0,.12);
 }
+
+
+.container {
+  padding: 16px;
+}
+
+.asset-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.asset-card img {
+  height: 110px;
+  object-fit: cover;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.meta {
+  font-size: 10px;
+  color: gray;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.empty {
+  padding: 16px;
+  color: gray;
+}
