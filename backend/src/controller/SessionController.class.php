@@ -10,83 +10,87 @@ use Slim\Exception\HttpException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
+use AltchaOrg\Altcha\Altcha;
+use AltchaOrg\Altcha\BaseChallengeOptions;
+use AltchaOrg\Altcha\ChallengeOptions;
+use AltchaOrg\Altcha\Hasher\Algorithm;
+
 
 class SessionController extends Controller {
   protected static array $_workspaces = [];
+  private const SALT_LENGTH = 12;
+
+    /**
+   * @codeCoverageIgnore
+   */
+  public static function putSession(Request $request, Response $response): Response {
+
+    $body = RequestHelper::getFields($request, [
+      'algorithm' => 'REQUIRED',
+      'challenge' => 'REQUIRED',
+      'salt' => 'REQUIRED',
+      'signature' => 'REQUIRED',
+      'number' => 'REQUIRED'
+    ]);
+
+    $altcha = new Altcha(SystemConfig::$server_key);
+    if (!$altcha -> verifySolution($body)) {
+      throw new HttpError("Wrong challenge response", 400);
+    }
+
+    parse_str(substr($body['salt'], (SessionController::SALT_LENGTH << 1) + 1), $params);
+    switch ($params['loginType']) {
+      case 'admin':
+        return $response->withJson(self::createAdminSession($request, $params['name'], $params['password']));
+      case 'login':
+        return $response->withJson(self::createLoginSession($request, $params['name'], $params['password']));
+    }
+
+    if (!$request->hasHeader('AuthToken')) {
+      throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: missing');
+    }
+
+    $authToken = $request->getHeaderLine('AuthToken');
+    if (!$authToken) {
+      throw new HttpUnauthorizedException($request, "Auth Header not sufficient: empty");
+    }
+
+    return $response->withJson(
+      self::createPersonSession(self::sessionDAO()->getToken($authToken, ['login'])->getToken(), $params['code'])
+    );
+  }
+
 
   /**
    * @codeCoverageIgnore
    */
   public static function putSessionAdmin(Request $request, Response $response): Response {
-    usleep(500000); // 0.5s delay to slow down brute force attack
 
-    $body = RequestHelper::getFields($request, [
-      "name" => 'REQUIRED',
-      "password" => 'REQUIRED'
-    ]);
-
-    $attempts = CacheService::getFailedLogins($body['name']);
-    if ($attempts >= 5) {
-      throw new HttpError("Too many login attempts", 429);
-    }
-
-    $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
-
-    if (is_a($token, FailedLogin::class)) {
-      CacheService::addFailedLogin($body['name']);
-      throw new HttpError("No login with this password.", 400);
-    }
-
-    $admin = self::adminDAO()->getAdmin($token);
-    $workspaces = self::adminDAO()->getWorkspaces($token);
-    $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
-
-    if (!$accessSet->hasAccessType(AccessObjectType::WORKSPACE_ADMIN) and !$accessSet->hasAccessType(AccessObjectType::SUPER_ADMIN)) {
-      throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
-    }
-
-    return $response->withJson($accessSet);
-  }
-
-  public static function putSessionLogin(Request $request, Response $response): Response {
     $body = RequestHelper::getFields($request, [
       "name" => 'REQUIRED',
       "password" => ''
     ]);
 
-    $attempts = CacheService::getFailedLogins($body['name']);
-    if ($attempts >= 5) {
-      throw new HttpError("Too many login attempts", 429);
+    $password = $body['password'];
+    $bruteForceProtectionSessions = implode(", ", SystemConfig::$bruteForceProtection_sessions);
+    if ($password && in_array('admin', SystemConfig::$bruteForceProtection_sessions)) {
+      throw new HttpError("Brute Force protection active. Challenge for this password(`$password`) must be solved to create a session(`$bruteForceProtectionSessions`)", 400);
     }
 
-    $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
+    return $response->withJson(self::createAdminSession($request, $body['name'], $body['password'] ));
+  }
 
-    if (!is_a($loginSession, LoginSession::class)) {
-      if ($loginSession === FailedLogin::wrongPasswordProtectedLogin) {
-        CacheService::addFailedLogin($body['name']);
-      }
-      $userName = htmlspecialchars($body['name']);
-      throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
+  public static function putSessionLogin(Request $request, Response $response): Response {
+
+    $body = RequestHelper::getFields($request, [
+      "name" => 'REQUIRED',
+      "password" => ''
+    ]);
+    if ($body['password'] && in_array('login', SystemConfig::$bruteForceProtection_sessions)) {
+      throw new HttpError("Brute Force protection active. Challenge for this password must be solved to create a session", 400);
     }
 
-    if (!$loginSession->getLogin()->isCodeRequired()) {
-      $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
-
-      CacheService::removeAuthentication($personSession);
-
-      $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
-      $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
-
-      self::registerDependantSessions($loginSession);
-      CacheService::storeAuthentication($personSession);
-
-    } else {
-      $accessSet = AccessSet::createFromLoginSession($loginSession);
-    }
-
-    return $response->withJson($accessSet);
+    return $response->withJson(self::createLoginSession($request, $body['name'], $body['password']));
   }
 
   /**
@@ -96,14 +100,11 @@ class SessionController extends Controller {
     $body = RequestHelper::getFields($request, [
       'code' => ''
     ]);
+    if ($body['code'] && in_array('person', SystemConfig::$bruteForceProtection_sessions)) {
+      throw new HttpError("Brute Force protection active. Challenge for this code must be solved to create a session", 400);
+    }
+    return $response->withJson(self::createPersonSession(self::authToken($request)->getToken(), $body['code']));
 
-    $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-
-    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, (string)$body['code']);
-    CacheService::removeAuthentication($personSession);
-    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-    CacheService::storeAuthentication($personSession);
-    return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
   }
 
   private static function registerDependantSessions(LoginSession $login): void {
@@ -230,4 +231,77 @@ class SessionController extends Controller {
     return $response->withStatus(205);
   }
 
+  public static function createSessionChallenge(Request $request, Response $response): Response {
+
+    $body = RequestHelper::getFields($request, [
+      'loginType' => 'REQUIRED',
+      'name' => 'REQUIRED',
+      'password' => 'REQUIRED'
+    ]);
+
+    return $response->withJson((new Altcha(SystemConfig::$server_key))->createChallenge(new ChallengeOptions(
+      algorithm: Algorithm::SHA256,
+      maxNumber: BaseChallengeOptions::DEFAULT_MAX_NUMBER,
+      params: [ 'loginType' => $body['loginType'], 'name' => $body['name'], 'password' => $body['password'] ],
+      saltLength: SessionController::SALT_LENGTH
+    )));
+  }
+
+  public static function createPersonSessionChallenge(Request $request, Response $response): Response {
+    $body = RequestHelper::getFields($request, [
+      'code' => 'REQUIRED'
+    ]);
+    return $response->withJson((new Altcha(SystemConfig::$server_key))->createChallenge(new ChallengeOptions(
+      algorithm: Algorithm::SHA256,
+      maxNumber: BaseChallengeOptions::DEFAULT_MAX_NUMBER,
+      params: [ 'code' => $body['code'] ],
+      saltLength: SessionController::SALT_LENGTH
+    )));
+  }
+
+  private static function createAdminSession(Request $request, string $name, string $password): AccessSet {
+
+    $token = self::adminDAO()->createAdminToken($name, $password);
+    if (is_a($token, FailedLogin::class)) {
+      throw new HttpError("No login with this password.", 400);
+    }
+
+    $admin = self::adminDAO()->getAdmin($token);
+    $workspaces = self::adminDAO()->getWorkspaces($token);
+    $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
+    if (!$accessSet->hasAccessType(AccessObjectType::WORKSPACE_ADMIN)
+        && !$accessSet->hasAccessType(AccessObjectType::SUPER_ADMIN))
+    {
+      throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
+    }
+    return $accessSet;
+  }
+
+  private static function createLoginSession(Request $request, string $name, string $password): AccessSet {
+
+    $loginSession = self::sessionDAO()->getOrCreateLoginSession($name, $password);
+    if (!is_a($loginSession, LoginSession::class)) {
+      $userName = htmlspecialchars($name);
+      throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
+    }
+
+    if ($loginSession->getLogin()->isCodeRequired()) {
+      return AccessSet::createFromLoginSession($loginSession);
+    }
+
+    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
+    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
+    $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
+    self::registerDependantSessions($loginSession);
+    return AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
+  }
+
+  public static function createPersonSession(string $token, string $code): AccessSet {
+
+    $loginSession = self::sessionDAO()->getLoginSessionByToken($token);
+    $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $code);
+    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    return AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+  }
 }

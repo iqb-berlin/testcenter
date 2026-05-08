@@ -17,6 +17,8 @@ import {
 } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { solveChallengeWorkers } from 'altcha-lib';
+import { NgClass } from '@angular/common';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -31,7 +33,8 @@ import { BackendService } from '../../backend.service';
     MatButtonModule,
     MatCardModule,
     SharedModule,
-    AlertComponent
+    AlertComponent,
+    NgClass
   ]
 })
 
@@ -44,6 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  user = 'school';
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
@@ -76,12 +80,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!loginData.name) {
       return;
     }
+    const name = loginData.name;
     LoginComponent.oldLoginName = loginData.name;
     this.problemCode = 0;
     // try if login without password (= with empty password) is possible; otherwise, ask for password input
     this.backendService.login(loginData.name, '').subscribe({
       next: authData => {
-        const authDataTyped = authData as AuthData;
+        const authDataTyped = authData;
         this.mainDataService.setAuthData(authDataTyped);
         this.navigateAfterLogin(authDataTyped);
       },
@@ -100,32 +105,94 @@ export class LoginComponent implements OnInit, OnDestroy {
     loginData.name = this.username;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
-      next: authData => {
-        this.mainDataService.setAuthData(authData);
-        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
-        this.navigateAfterLogin(authData);
-      },
-      error: error => {
-        this.problemCode = error.code;
-        if (error.code === 400) {
-          this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-        } else if (error.code === 401) {
-          this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-        } else if (error.code === 204) {
-          this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-        } else if (error.code === 410) {
-          this.problemText = 'Anmeldedaten sind abgelaufen';
-        } else if (error.code === 429) {
-          this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
-        } else {
+
+    const name = this.username;
+    const password = loginData.pw ?? '';
+
+    // Check if bruteforce protection is enabled for login
+    if (this.mainDataService.appConfig?.bruteForceProtection.includes('login')) {
+      this.user = 'sync';
+
+      this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
+        next: challenge => {
+          const promise = solveChallengeWorkers(
+            window.document.baseURI + '/altcha-lib/dist/worker.js',
+            8, // no. of workers
+            challenge.challenge,
+            challenge.salt,
+            challenge.algorithm,
+            challenge.maxNumber
+          );
+
+          promise.then(solvedChallenge => {
+            this.backendService.createSession(
+              challenge.algorithm,
+              challenge.challenge,
+              challenge.salt,
+              challenge.signature,
+              solvedChallenge!.number
+            ).subscribe({
+              next: authData => {
+                this.mainDataService.setAuthData(authData);
+                if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+                this.navigateAfterLogin(authData);
+              },
+              error: error => this.handleLoginError(error)
+            });
+          }, error => {
+            this.problemText = 'Problem bei der Anmeldung.';
+            this.user = 'school';
+            throw error;
+          }).finally(() => {
+            this.user = 'school';
+          });
+        },
+        error: error => {
           this.problemText = 'Problem bei der Anmeldung.';
+          this.user = 'school';
           throw error;
         }
-        this.problemLevel = 'error';
-        this.username = null;
-        this.loginForm.reset();
-      }
+      });
+    } else {
+      // Standard login without bruteforce protection
+      this.backendService.login(name, password).subscribe({
+        next: authData => {
+          this.mainDataService.setAuthData(authData);
+          if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+          this.navigateAfterLogin(authData);
+        },
+        error: error => this.handleLoginError(error)
+      });
+    }
+  }
+
+  private handleLoginError(error: any): void {
+    this.user = 'school';
+    this.problemCode = error.code;
+
+    if (error.code === 400) {
+      this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
+    } else if (error.code === 401) {
+      this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
+    } else if (error.code === 204) {
+      this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
+    } else if (error.code === 410) {
+      this.problemText = 'Anmeldedaten sind abgelaufen';
+    } else if (error.code === 429) {
+      this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
+    } else {
+      this.problemText = 'Problem bei der Anmeldung.';
+      throw error;
+    }
+    this.problemLevel = 'error';
+    this.username = null;
+    this.loginForm.reset();
+  }
+
+  openDialog() {
+    this.messageService.showInfoDialog({
+      title: 'Anleitung',
+      contentTemplate: this.helpDialogTemplate
     });
   }
 

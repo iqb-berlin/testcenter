@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AltchaOrg\Altcha\Altcha;
+use AltchaOrg\Altcha\Hasher\Algorithm;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpUnauthorizedException;
@@ -114,8 +116,36 @@ final class SessionControllerTest extends TestCase {
       )
     ]);
 
-    $response = SessionController::putSessionLogin(
-      RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"user123"}'),
+
+    $response_with_challenge = SessionController::createSessionChallenge(
+      RequestCreator::create('POST', '/session/login', '{"loginType": "login", "name":"test", "password":"user123"}'),
+      ResponseCreator::createEmpty()
+    );
+    $response_with_challenge->getBody()->rewind();
+    $response_body = $response_with_challenge->getBody()->getContents();
+    $challenge = json_decode($response_body);
+
+    $solved_challenge = (new Altcha(SystemConfig::$server_key))->solveChallenge(
+      challenge: $challenge->challenge,
+      salt: $challenge->salt,
+      algorithm: Algorithm::from($challenge->algorithm),
+      max: $challenge->maxNumber
+    );
+
+
+
+    $response = SessionController::putSession(
+      RequestCreator::create(
+        'PUT',
+        '/session/login',
+        json_encode([
+          "algorithm" => $challenge->algorithm,
+          "challenge" => $challenge->challenge,
+          "salt" => $challenge->salt,
+          "signature" => $challenge->signature,
+          "number" => $solved_challenge->number
+        ])
+      ),
       ResponseCreator::createEmpty()
     );
 
@@ -194,8 +224,35 @@ final class SessionControllerTest extends TestCase {
       ]
     ]);
 
-    $response = SessionController::putSessionLogin(
-      RequestCreator::create('PUT', '/session/login', '{"name":"sample_user", "password":"foo"}'),
+    $response_with_challenge = SessionController::createSessionChallenge(
+      RequestCreator::create('POST', '/session/login', '{"loginType": "login", "name":"sample_user", "password":"foo"}'),
+      ResponseCreator::createEmpty()
+    );
+    $response_with_challenge->getBody()->rewind();
+    $response_body = $response_with_challenge->getBody()->getContents();
+    $challenge = json_decode($response_body);
+
+    $solved_challenge = (new Altcha(SystemConfig::$server_key))->solveChallenge(
+      challenge: $challenge->challenge,
+      salt: $challenge->salt,
+      algorithm: Algorithm::from($challenge->algorithm),
+      max: $challenge->maxNumber
+    );
+
+
+
+    $response = SessionController::putSession(
+      RequestCreator::create(
+        'PUT',
+        '/session/login',
+        json_encode([
+          "algorithm" => $challenge->algorithm,
+          "challenge" => $challenge->challenge,
+          "salt" => $challenge->salt,
+          "signature" => $challenge->signature,
+          "number" => $solved_challenge->number
+        ])
+      ),
       ResponseCreator::createEmpty()
     );
 
@@ -316,8 +373,35 @@ final class SessionControllerTest extends TestCase {
       ]
     );
 
-    $response = SessionController::putSessionLogin(
-      RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
+    $response_with_challenge = SessionController::createSessionChallenge(
+      RequestCreator::create('POST', '/session/login', '{"loginType": "login", "name":"test", "password":"foo"}'),
+      ResponseCreator::createEmpty()
+    );
+    $response_with_challenge->getBody()->rewind();
+    $response_body = $response_with_challenge->getBody()->getContents();
+    $challenge = json_decode($response_body);
+
+    $solved_challenge = (new Altcha(SystemConfig::$server_key))->solveChallenge(
+      challenge: $challenge->challenge,
+      salt: $challenge->salt,
+      algorithm: Algorithm::from($challenge->algorithm),
+      max: $challenge->maxNumber
+    );
+
+
+
+    $response = SessionController::putSession(
+      RequestCreator::create(
+        'PUT',
+        '/session/login',
+        json_encode([
+          "algorithm" => $challenge->algorithm,
+          "challenge" => $challenge->challenge,
+          "salt" => $challenge->salt,
+          "signature" => $challenge->signature,
+          "number" => $solved_challenge->number
+        ])
+      ),
       ResponseCreator::createEmpty()
     );
 
@@ -337,8 +421,33 @@ final class SessionControllerTest extends TestCase {
       'getWorkspaces' => [new WorkspaceData(1, 'ws1', 'Workspace 1')]
     ]);
 
-    $response = SessionController::putSessionAdmin(
-      RequestCreator::create('PUT', '/session/admin', '{"name":"super", "password":"user123"}'),
+    $response_with_challenge = SessionController::createSessionChallenge(
+      RequestCreator::create('POST', '/session/login', '{"loginType": "admin", "name":"super", "password":"user123"}'),
+      ResponseCreator::createEmpty()
+    );
+    $response_with_challenge->getBody()->rewind();
+    $response_body = $response_with_challenge->getBody()->getContents();
+    $challenge = json_decode($response_body);
+
+    $solved_challenge = (new Altcha(SystemConfig::$server_key))->solveChallenge(
+      challenge: $challenge->challenge,
+      salt: $challenge->salt,
+      algorithm: Algorithm::from($challenge->algorithm),
+      max: $challenge->maxNumber
+    );
+
+    $response = SessionController::putSession(
+      RequestCreator::create(
+        'PUT',
+        '/session/login',
+        json_encode([
+          "algorithm" => $challenge->algorithm,
+          "challenge" => $challenge->challenge,
+          "salt" => $challenge->salt,
+          "signature" => $challenge->signature,
+          "number" => $solved_challenge->number
+        ])
+      ),
       ResponseCreator::createEmpty()
     );
 

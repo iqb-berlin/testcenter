@@ -37,6 +37,7 @@ export class AppConfig {
   globalWarningExpiredHour = '';
   bugReportAuth: string = '';
   bugReportTarget: string = '';
+  bruteForceProtection: string[] = [];
   broadcastingServiceUri: string = '';
   fileServiceUri: string = '';
   themeName: string = '';
@@ -53,6 +54,7 @@ export class AppConfig {
     this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
     this.iqbStandardResponseTypeMin = sysConfig.iqbStandardResponseTypeMin;
     this.iqbStandardResponseTypeMax = sysConfig.iqbStandardResponseTypeMax;
+    this.bruteForceProtection = sysConfig.bruteForceProtection;
     this.broadcastingServiceUri = sysConfig.broadcastingServiceUri;
     this.fileServiceUri = sysConfig.fileServiceUri;
   }

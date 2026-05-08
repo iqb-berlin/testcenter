@@ -24,6 +24,7 @@ export interface SysConfig {
   veronaPlayerApiVersionMax: number;
   iqbStandardResponseTypeMin: number;
   iqbStandardResponseTypeMax: number;
+  bruteForceProtection: string[];
   broadcastingServiceUri: string;
   fileServiceUri: string;
 }

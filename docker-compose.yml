@@ -51,6 +51,7 @@ services:
     networks:
       testcenter:
 
+
   file-server:
     image: iqbberlin/testcenter-file-server:current
     <<: *restart-policy
@@ -74,6 +75,7 @@ services:
     environment:
       BROADCASTER_ENABLED: ${BROADCASTER_ENABLED}
       FILE_SERVER_ENABLED: ${FILE_SERVER_ENABLED}
+      BRUTE_FORCE_PROTECTION: ${BRUTE_FORCE_PROTECTION}
       <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: db
       MYSQL_PORT: 3306

@@ -13,6 +13,7 @@ class SystemConfig {
   public static int $cacheServer_port;
   public static string $cacheServer_password = "";
   public static string $cacheServer_includeFiles = "";
+  public static array $bruteForceProtection_sessions;
   public static string $password_salt = "t";
   public static string $system_version;
   public static int $system_veronaMax;
@@ -26,6 +27,7 @@ class SystemConfig {
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
+  public static string $server_key = 'Secret';
   // TODO server URL
 
   public static function read(): void {
@@ -41,7 +43,16 @@ class SystemConfig {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
         if (property_exists(self::class, $propertyKey)) {
-          self::$$propertyKey = $value;
+
+          $ref = new \ReflectionProperty(static::class, $propertyKey);
+          $propertyType = $ref->getType();
+          // need to check type otherwise php will error with: cannot assign string to array.
+          if ($propertyType == "array") {
+            self::$$propertyKey = explode(" ", $value);
+          }
+          else {
+            self::$$propertyKey = $value;
+          }
         }
       }
     }
@@ -87,6 +98,10 @@ class SystemConfig {
     $config['cacheServer']['port'] = self::stringEnv('REDIS_PORT');
     $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
     $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
+
+
+    $sessions = self::stringEnv('BRUTE_FORCE_PROTECTION');
+    $config['bruteForceProtection']['sessions'] = $sessions;
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {
@@ -136,6 +151,10 @@ class SystemConfig {
       foreach ($section as $key => $value) {
         if (($key == 'version') and (getEnv('VERSION') !== self::$system_version)) {
           continue;
+        }
+
+        if ($sectionName == 'bruteForceProtection' && $key == "sessions") {
+          $value = implode(" ", $value);
         }
         $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
         $output .= "$key=$value\n";

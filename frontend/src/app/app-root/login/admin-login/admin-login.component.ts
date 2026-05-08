@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observer, Subscription } from 'rxjs';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { BackendService } from '@app/backend.service';
 import { HeaderService } from '@shared/services/header.service';
@@ -10,6 +11,9 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FooterService } from '@shared/services/footer.service';
+import { AuthData } from '@app/app.interfaces';
+import { solveChallengeWorkers } from 'altcha-lib';
+import { NgClass } from '@angular/common';
 
 @Component({
   templateUrl: './admin-login.component.html',
@@ -23,17 +27,21 @@ import { FooterService } from '@shared/services/footer.service';
     MatIcon,
     RouterLink,
     MatButton,
-    AlertComponent
+    AlertComponent,
+    NgClass
   ],
   styleUrl: './admin-login.component.css'
 })
 
 export class AdminLoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
+  private routingSubscription: Subscription | null = null;
+  returnTo = '';
   problemText = '';
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
+  admin = 'person';
   unsupportedBrowser: [string, string] | [] = [];
 
   loginForm = new FormGroup({
@@ -41,17 +49,28 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('', [Validators.required])
   });
 
-  constructor(public mainDataService: MainDataService, private headerService: HeaderService,
-              private backendService: BackendService, private router: Router, private footerService: FooterService) { }
+  constructor(
+    public mainDataService: MainDataService,
+    private headerService: HeaderService,
+    private backendService: BackendService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private footerService: FooterService
+  ) { }
 
   ngOnInit(): void {
     this.headerService.title = 'Anmelden';
+    this.routingSubscription = this.route.params
+      .subscribe(params => { this.returnTo = params.returnTo; });
     this.checkBrowser();
     this.footerService.showFooter.set(true);
   }
 
   ngOnDestroy(): void {
     this.footerService.showFooter.set(false);
+    if (this.routingSubscription !== null) {
+      this.routingSubscription.unsubscribe();
+    }
   }
 
   adminLogin(): void {
@@ -59,34 +78,102 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     if (!loginData.name || !loginData.pw) {
       return;
     }
+
+    const name = loginData.name
     AdminLoginComponent.oldLoginName = loginData.name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.adminLogin(loginData.name, loginData.pw).subscribe({
+
+    if (loginData.pw) {
+      const password = loginData.pw;
+      if (this.mainDataService.appConfig?.bruteForceProtection.includes("admin")) {
+
+        this.admin = 'sync';
+
+        this.backendService.createChallenge({ loginType: "admin", name, password }).subscribe({
+          next: challenge => {
+            const promise = solveChallengeWorkers(
+              window.document.baseURI + '/altcha-lib/dist/worker.js',
+              8, // no. of workers
+              challenge.challenge,
+              challenge.salt,
+              challenge.algorithm,
+              challenge.maxNumber
+            );
+
+            promise.then(solvedChallenge => {
+              this.backendService.createSession(
+                challenge.algorithm,
+                challenge.challenge,
+                challenge.salt,
+                challenge.signature,
+                solvedChallenge!.number
+              ).subscribe(this.getAdminLoginSubscription());
+            }, error => {
+              this.problemText = 'Problem bei der Anmeldung.';
+              throw error;
+            }).finally( () => {
+              this.admin='person'
+            })
+          },
+          error: error => {
+            this.problemText = 'Problem bei der Anmeldung.';
+            this.admin='person'
+            throw error;
+          }
+        });
+      }
+      else {
+        this.backendService.adminLogin(name, password).subscribe(this.getAdminLoginSubscription());
+      }
+    }
+    else {
+      this.backendService.adminLogin(name).subscribe(this.getAdminLoginSubscription());
+    }
+  }
+
+  getAdminLoginSubscription(): Partial<Observer<AuthData>> {
+    return {
       next: authData => {
         this.mainDataService.setAuthData(authData);
-        this.router.navigate(['/r/starter']);
+        if (this.returnTo) {
+          this.router.navigateByUrl(this.returnTo).then(navOk => {
+            if (!navOk) {
+              this.router.navigate(['/r/starter']);
+            }
+          });
+        }
+        else {
+          this.router.navigate(['/r/starter']);
+        }
       },
       error: error => {
+        this.admin = 'person'
         this.problemCode = error.code;
+
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-        } else if (error.code === 401) {
+        }
+        else if (error.code === 401) {
           this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-        } else if (error.code === 204) {
+        }
+        else if (error.code === 204) {
           this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-        } else if (error.code === 410) {
+        }
+        else if (error.code === 410) {
           this.problemText = 'Anmeldedaten sind abgelaufen';
-        } else if (error.code === 429) {
+        }
+        else if (error.code === 429) {
           this.problemText = 'Zu viele Fehlversuche! Probieren Sie es zu einem späteren Zeitpunkt noch einmal.';
-        } else {
+        }
+        else {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
         this.problemLevel = 'error';
         this.loginForm.reset();
       }
-    });
+    }
   }
 
   checkCapsLock(event: KeyboardEvent): void {
