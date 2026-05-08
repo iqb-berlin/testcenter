@@ -196,6 +196,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
+  openDialog() {
+    this.messageService.showInfoDialog({
+      title: 'Anleitung',
+      contentTemplate: this.helpDialogTemplate
+    });
+  }
+
   checkCapsLock(event: KeyboardEvent): void {
     // some newer edge versions does fire a keyup event when clicking into the textfield, which does not
     // have getModifierState TODO find the route cause of this instead of workaround
@@ -239,6 +246,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/r/starter']);
           }
         });
+        // only jump into test, when there is only 1 test, and there are no other claims ->
+        // no other possible features or responsibilities in the starter page
+        // so a shortcut jump would not hurt a specific workflow
       } else if (authData.claims.sysCheck && authData.claims.sysCheck.length === 1 &&
         Object.keys(authData.claims).length === 1) {
         this.router.navigate(['/check', authData.claims.sysCheck[0].workspaceId, authData.claims.sysCheck[0].id]);

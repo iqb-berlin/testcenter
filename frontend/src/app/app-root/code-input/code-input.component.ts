@@ -16,7 +16,7 @@ import { solveChallengeWorkers } from "altcha-lib";
     FabFormComponent
   ]
 })
-export class CodeInputComponent implements OnInit {
+export class CodeInputComponent {
   mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
