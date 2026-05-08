@@ -1,6 +1,6 @@
 {
   "name": "iqb-testcenter",
-  "version": "17.6.0",
+  "version": "18.0.0-alpha",
   "iqb": {
     "release-channels": {
       "lts": "16.3",
@@ -61,9 +61,9 @@
             "error",
             2,
             {
-              "CallExpression": {
-                "arguments": "first"
-              }
+              "CallExpression": { "arguments": "first" },
+              "FunctionDeclaration": { "parameters": "first" },
+              "FunctionExpression": { "parameters": "first" }
             }
           ]
         }

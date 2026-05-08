@@ -19,7 +19,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, SharedModule } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { BackendService as RootBackendService } from '../backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -34,6 +34,7 @@ import { IqbFilesUploadQueueComponent } from './files/iqb-files-upload-queue/iqb
 import {
   IqbFilesUploadInputForDirective
 } from './files/iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
+import { BytesPipe } from '@shared/pipes/bytes/bytes.pipe';
 
 @NgModule({
   imports: [
@@ -60,7 +61,9 @@ import {
     MatCardModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    AlertComponent,
+    BytesPipe
   ],
   exports: [
     WorkspaceComponent

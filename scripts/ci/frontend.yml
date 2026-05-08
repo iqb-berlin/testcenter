@@ -1,0 +1,66 @@
+build-frontend:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  variables:
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}"
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  script:
+    - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${IMAGE_NAME}:dev
+      --target dev --file frontend/Dockerfile
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push --all-tags ${IMAGE_NAME}
+  after_script:
+    - !reference [ .gitlab_login, after_script ]
+
+build-frontend-prod:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "pre-release"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "release"'
+      when: on_success
+    - when: never
+  variables:
+    TAG: "${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}"
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+  script:
+    - docker build --progress plain --pull
+      --file frontend/Dockerfile
+      --tag ${TAG} .
+    - docker push --quiet ${TAG}
+  after_script:
+    - docker logout $CI_DEPENDENCY_PROXY_SERVER
+    - docker logout $REGISTRY
+
+test-frontend-unit:
+  stage: test
+  rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  image: node:22
+  cache:
+    key: frontend-node
+    paths:
+      - frontend/node_modules/
+  before_script:
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - apt-get update && apt-get install -y --no-install-recommends chromium
+  script:
+    - cd frontend
+    - npm ci
+    - npm run test

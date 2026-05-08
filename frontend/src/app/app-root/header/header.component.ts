@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -7,8 +7,10 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { HeaderService } from '../../core/header.service';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { HeaderService } from '@shared/services/header.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { filter } from 'rxjs/operators';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-header',
@@ -24,57 +26,72 @@ import { MainDataService } from '../../shared/services/maindata/maindata.service
     MatMenuTrigger,
     MatDivider
   ],
-  template: `
-    <mat-toolbar>
-      <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
-      <div class="side">
-        @if (headerService.showAccountPanel) {
-          <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu">
-            <mat-icon svgIcon="person"></mat-icon>
-          </button>
-          <mat-menu #accountMenu="matMenu" class="account-menu">
-            <div class="heading">
-              <div>Nutzerinformationen</div>
-              <button matIconButton>
-                <mat-icon svgIcon="close"></mat-icon>
-              </button>
-            </div>
-            <dl>
-              <dt>Anmeldename:</dt>
-              <dd>{{ mainDataService.getAuthData()?.loginName }}</dd>
-              <dt>Gruppe:</dt>
-              <dd>{{ mainDataService.getAuthData()?.groupLabel }}</dd>
-              <dt>Version:</dt>
-              <dd>{{ mainDataService.appConfig?.version }}</dd>
-            </dl>
-            <mat-divider></mat-divider>
-            <button matButton="tonal" class="logout-button" (click)="mainDataService.logOut()">
-              Abmelden
-            </button>
-          </mat-menu>
-        }
-      </div>
-      <div class="center">
-        @if (headerService.title) {
-          <h1>{{ headerService.title }}</h1>
-        }
-      </div>
-      <div class="side logo">
-        @if (headerService.showLogo) {
-          <a [routerLink]="['/r']" aria-label="Gehe zur Startseite">
-            <img [src]="mainDataService.appConfig?.mainLogo" data-cy="logo" alt="Logo der Anwendung"
-                 matTooltip="Zur Startseite"/>
-          </a>
-        }
-      </div>
-    </mat-toolbar>
-  `,
+  templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'
 })
 export class HeaderComponent implements OnDestroy {
-  constructor(public headerService: HeaderService, public mainDataService: MainDataService) { }
+  @ViewChild('logoutDialogTemplate') logoutDialogTemplate!: TemplateRef<unknown>;
+  logoLink: string[] = ['/r'];
+  userRights: string[] = [];
+
+  constructor(public headerService: HeaderService,
+              public mainDataService: MainDataService,
+              private messageService: MessageService,
+              private router: Router) {
+    router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const isLoginRoute = router.url.includes('code-input') ||
+                                   router.url.includes('login');
+      this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
+    });
+
+    this.mainDataService.authData$.subscribe(authData => {
+      if (!authData) return;
+      this.userRights = [];
+      if (authData.claims.workspaceAdmin) {
+        this.userRights.push('Verwaltung von Testinhalten');
+      }
+      if (authData.claims.superAdmin) {
+        this.userRights.push('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen');
+      }
+      if (authData.claims.test) {
+        if (authData.claims.test.length > 1) {
+          this.userRights.push('Ausführung/Ansicht von Befragungen oder Testheften');
+        } else {
+          this.userRights.push('Ausführung/Ansicht einer Befragung oder eines Testheftes');
+        }
+      }
+      if (authData.claims.workspaceMonitor) {
+        if (authData.claims.workspaceMonitor.length > 1) {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung von Befragungen oder Kompetenztests');
+        } else {
+          this.userRights.push('Beobachtung/Prüfung der Durchführung einer Befragung oder eines Kompetenztests');
+        }
+      }
+      if (authData.claims.testGroupMonitor) {
+        this.userRights.push('Beobachtung/Prüfung einer Testgruppe');
+      }
+      if (authData.flags.indexOf('codeRequired') >= 0) {
+        this.userRights.push('Code-Eingabe erforderlich');
+      }
+    });
+  }
+
+  protected logout() {
+    this.messageService.showConfirmDialog({
+      title: 'Sicher, dass du dich abmelden möchtest?',
+      contentTemplate: this.logoutDialogTemplate,
+      cancelText: 'Hier bleiben',
+      confirmText: 'Abmelden',
+      focusCancel: true
+    }).subscribe((result: boolean) => {
+      if (result) this.mainDataService.logOut();
+    });
+  }
 
   ngOnDestroy(): void {
+    this.userRights = [];
     this.headerService.reset();
   }
 }

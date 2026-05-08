@@ -15,8 +15,8 @@ describe('TestViewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [TestSessionComponent, TemplateContextDirective, PositionPipe],
-      imports: [MatIconModule, MatTooltipModule, MatCheckboxModule, MatIconTestingModule]
+      declarations: [TestSessionComponent, PositionPipe],
+      imports: [MatIconModule, MatTooltipModule, MatCheckboxModule, MatIconTestingModule, TemplateContextDirective]
     })
       .compileComponents();
   }));

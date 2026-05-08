@@ -23,6 +23,8 @@ import {
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
 import { TimerData } from '../../classes/test-controller.classes';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { NavigationComponent } from '../navigation/navigation.component';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
@@ -90,10 +92,13 @@ describe('TestControllerComponent', () => {
       imports: [CommonModule,
         MatIconModule,
         MatDialogModule,
+        MatMenu,
+        MatMenuTrigger,
         MatSidenavModule,
         RouterTestingModule.withRoutes([{ path: 'yourpath', redirectTo: '' }]),
         NoopAnimationsModule,
-        MatIconTestingModule
+        MatIconTestingModule,
+        NavigationComponent
       ],
       providers: [
         CustomtextService,

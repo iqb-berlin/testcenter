@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { matIconRegistryMock } from '@app/test-controller/test/icon-registry-mock';
 import { AlertComponent } from './alert.component';
 
 describe('AlertComponent', () => {
@@ -39,10 +40,9 @@ describe('AlertComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        MatIconModule
-      ]
-    })
-      .compileComponents();
+        AlertComponent, MatIconModule
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

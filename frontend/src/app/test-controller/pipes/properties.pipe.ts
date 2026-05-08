@@ -2,8 +2,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'properties',
-    standalone: false
+  name: 'properties'
 })
 export class PropertiesPipe implements PipeTransform {
   // eslint-disable-next-line class-methods-use-this

@@ -85,8 +85,4 @@ export class BackendService {
   setCustomTexts(newCustomTexts: KeyValuePairs): Observable<void> {
     return this.http.patch<void>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts);
   }
-
-  setCustomImages(images: Record<string, string>): Observable<void> {
-    return this.http.patch<void>(`${this.serverUrl}system/config/custom-images`, images);
-  }
 }

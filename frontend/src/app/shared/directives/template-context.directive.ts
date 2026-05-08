@@ -1,8 +1,7 @@
 import { Directive, Input } from '@angular/core';
 
 @Directive({
-    selector: '[appTemplateContext]',
-    standalone: false
+  selector: '[appTemplateContext]'
 })
 export class TemplateContextDirective<T> {
   @Input() appTemplateContext?: T | undefined;

@@ -4,8 +4,21 @@
   @include mat.toolbar-overrides((
     container-background-color: var(--mat-sys-primary)
   ));
+
   @include mat.button-overrides((
     filled-container-shape: 10px,
-    tonal-container-shape: 10px
+    tonal-container-shape: 10px,
+    outlined-container-shape: 10px
+  ));
+
+  @include mat.card-overrides((
+    elevated-container-color: var(--mat-sys-surface)
+  ));
+
+  @include mat.dialog-overrides((
+    container-max-width: 720px,
+    subhead-size: 30px,
+    supporting-text-size: 16px,
+    supporting-text-line-height: 24px
   ));
 }

@@ -122,7 +122,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"some_token","displayName":"Sample Group\/sample_user","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
+      '{"token":"some_token","displayName":"Sample Group\/sample_user","loginName":"sample_user","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","viewSettings":[],"access":{}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -202,7 +202,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"new_token","displayName":"Sample Group\/sample_user","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
+      '{"token":"new_token","displayName":"Sample Group\/sample_user","loginName":"sample_user","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","viewSettings":[],"access":{"test":["THE_BOOKLET"]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -324,7 +324,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"new_token","displayName":"Sample Group\/test-monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":{"monitorBookletVisibility":"visible"}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"new_token","displayName":"Sample Group\/test-monitor","loginName":"test-monitor","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"label of THE_BOOKLET","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","viewSettings":[],"access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -345,7 +345,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"admin_token","displayName":"Admin1","id":1,"pwSetByAdmin":false,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"ws1","flags":{"mode":"Workspace 1"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
+      '{"token":"admin_token","displayName":"Admin1","loginName":"Admin1","groupLabel":null,"id":1,"pwSetByAdmin":false,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"ws1","flags":{"mode":"Workspace 1"}}],"superAdmin":[]},"groupToken":null,"viewSettings":[],"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
       $response->getBody()->getContents()
     );
     $this->assertEquals(200, $response->getStatusCode());
@@ -381,7 +381,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"login_token","displayName":"Sample Group\/sample_user","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","access":{}}',
+      '{"token":"login_token","displayName":"Sample Group\/sample_user","loginName":"sample_user","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":["codeRequired"],"claims":{},"groupToken":"group-token","viewSettings":[],"access":{}}',
       $response->getBody()->getContents()
     );
   }
@@ -441,7 +441,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"]}}',
+      '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","loginName":"sample_user","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}]},"groupToken":"group-token","viewSettings":[],"access":{"test":["THE_BOOKLET"]}}',
       $response->getBody()->getContents()
     );
   }
@@ -503,7 +503,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":{"monitorBookletVisibility":"visible"}}]},"groupToken":"group-token","access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
+      '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","loginName":"sample_monitor","groupLabel":"Sample Group","id":null,"pwSetByAdmin":null,"customTexts":{},"flags":[],"claims":{"test":[{"id":"THE_BOOKLET","type":"test","label":"Label of THE_BOOKLET","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"id":"sample_group","type":"testGroupMonitor","label":"Sample Group","flags":[]}]},"groupToken":"group-token","viewSettings":[],"access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
       $response->getBody()->getContents()
     );
   }
@@ -526,7 +526,7 @@ final class SessionControllerTest extends TestCase {
     $response->getBody()->rewind();
 
     $this->assertEquals(
-      '{"token":"admin_token","displayName":"super","id":1,"pwSetByAdmin":false,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"workspace","flags":{"mode":"RW"}}],"superAdmin":[]},"groupToken":null,"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
+      '{"token":"admin_token","displayName":"super","loginName":"super","groupLabel":null,"id":1,"pwSetByAdmin":false,"customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"id":"1","type":"workspaceAdmin","label":"workspace","flags":{"mode":"RW"}}],"superAdmin":[]},"groupToken":null,"viewSettings":[],"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
       $response->getBody()->getContents()
     );
   }

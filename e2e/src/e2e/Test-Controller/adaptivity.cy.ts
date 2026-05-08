@@ -3,8 +3,8 @@ import {
   disableSimplePlayersInternalDebounce,
   expectUnitMenuToBe,
   forwardTo,
-  getFromIframe, insertCredentials,
-  logoutTestTakerHot,
+  getFromIframe, twoStepLogin,
+  logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   resetBackendData, visitLoginPage
 } from '../utils';
@@ -19,9 +19,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
 
   it('start adaptive booklet with predefined states', () => {
     disableSimplePlayersInternalDebounce();
-    insertCredentials('test', 'user123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('test', 'user123');
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
@@ -63,12 +61,10 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
   });
 
   it('start adaptive booklet with predefined states', () => {
-    logoutTestTakerHot();
+    logoutFromRunningTestWithConfirmation();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    insertCredentials('test-review', 'user123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('test-review', 'user123');
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
       .click();
     expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);

@@ -303,7 +303,8 @@ export interface BufferFlushEvent {
 }
 
 export interface NavControlContext {
-  labelMode: 'index' | 'label' | 'full';
+  labelMode: 'INDEX' | 'LABEL' | 'LIST' | 'HIDDEN';
+  readonly?: boolean;
   label: string;
   currentIndex: number;
   maxIndex: number;

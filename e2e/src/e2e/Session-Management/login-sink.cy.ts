@@ -1,8 +1,9 @@
 import {
-  insertCredentials,
+  oneStepLogin,
   probeBackendApi,
-  resetBackendData,
-  visitLoginPage }
+  resetBackendData, twoStepLogin,
+  visitLoginPage
+}
   from '../utils';
 
 describe('The login-sink', () => {
@@ -16,9 +17,14 @@ describe('The login-sink', () => {
   });
 
   const loginAttempt = (type: 'admin' | 'user', user: string, expectedCode: number, pw: string = 'wrongpassword') => {
-    insertCredentials(user, pw);
-    cy.get(`[data-cy="login-${type}`)
-      .click();
+    if (type === 'user') {
+      twoStepLogin(user, pw);
+    }
+    if (type === 'admin') {
+      cy.visit(`${Cypress.config().baseUrl}/#/r/admin-login`);
+      cy.wait(1); // seems to be unreliable without
+      oneStepLogin(user, pw)
+    }
     cy.get(`[data-cy="login-problem:${expectedCode}"]`)
       .should('exist');
   };

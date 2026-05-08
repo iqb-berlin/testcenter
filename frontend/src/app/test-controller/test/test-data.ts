@@ -249,8 +249,7 @@ export const getTestData = () => {
       loadingProgress: {
         definition: of<LoadingProgress>({ progress: 0 })
       },
-      lockedAfterLeaving: false,
-      pageLabels: {}
+      lockedAfterLeaving: false
     },
     u2: {
       id: 'u2',
@@ -276,8 +275,7 @@ export const getTestData = () => {
       loadingProgress: {
         definition: of({ progress: 100 })
       },
-      lockedAfterLeaving: false,
-      pageLabels: {}
+      lockedAfterLeaving: false
     },
     u3: {
       id: 'u3',
@@ -301,8 +299,7 @@ export const getTestData = () => {
       loadingProgress: {
         definition: of<LoadingProgress>({ progress: 0 })
       },
-      lockedAfterLeaving: false,
-      pageLabels: {}
+      lockedAfterLeaving: false
     },
     u4: {
       id: 'u4',
@@ -326,8 +323,7 @@ export const getTestData = () => {
       loadingProgress: {
         definition: of<LoadingProgress>({ progress: 0 })
       },
-      lockedAfterLeaving: false,
-      pageLabels: {}
+      lockedAfterLeaving: false
     },
     u5: {
       id: 'u5',
@@ -349,8 +345,7 @@ export const getTestData = () => {
       loadingProgress: {
         definition: of<LoadingProgress>({ progress: 0 })
       },
-      lockedAfterLeaving: false,
-      pageLabels: {}
+      lockedAfterLeaving: false
     }
   };
 
@@ -372,7 +367,7 @@ export const getTestBookletConfig = () => {
   TestBookletConfig.unit_state_buffer_time = '3000';
   TestBookletConfig.test_state_buffer_time = '700';
   return TestBookletConfig;
-}
+};
 
 export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVariants]: WatcherLogEntry[] } = {
   withLoadingModeLazy: [
@@ -588,4 +583,3 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 90 } // unit 5 player (already loaded)
   ]
 };
-

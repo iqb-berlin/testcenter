@@ -2,7 +2,7 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, forkJoin, from, interval,
+  BehaviorSubject, forkJoin, from,
   lastValueFrom, merge, Observable, of, Subject,
   Subscription, timer
 } from 'rxjs';
@@ -38,8 +38,6 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
   CustomtextService,
   MainDataService,
   TestMode
@@ -55,6 +53,7 @@ import { AppError } from '../../app.interfaces';
 import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
+import { createTicker } from '../util/worker.util';
 
 @Injectable({
   providedIn: 'root'
@@ -131,6 +130,7 @@ export class TestControllerService {
     private ms: MessageService,
     private mds: MainDataService,
     private cts: CustomtextService,
+    private messageService: MessageService,
     public confirmDialog: MatDialog
   ) {
     this.setupUnitDataPartsBuffer();
@@ -460,7 +460,7 @@ export class TestControllerService {
     this.timers$.next(new TimerData(timeLeftMinutes, testlet.id, MaxTimerEvent.STARTED));
     this.currentTimerId = testlet.id;
 
-    const timeTicker$ = this.createTicker();
+    const timeTicker$ = createTicker();
     this.timerIntervalSubscription = timeTicker$
       .pipe(
         takeUntil(
@@ -501,45 +501,6 @@ export class TestControllerService {
       this.timers$.next(new TimerData(0, this.currentTimerId, MaxTimerEvent.INTERRUPTED));
     }
     this.finishTimer();
-  }
-
-  // TODO import the webworker from a seperate file. At time of implementing, some SCP problems occured
-  private createTicker(): Observable<number> {
-    if (typeof Worker !== 'undefined') {
-      const workerCode = `
-        let timer;
-        let secondsPassed = 0;
-        self.onmessage = function(message) {
-          switch (message.data) {
-            case 'on':
-              postMessage(secondsPassed++);
-              timer = setInterval(() => postMessage(secondsPassed++), 1000);
-              console.log('timeTicker from webworker used');
-              break;
-            case 'off':
-              clearInterval(timer);
-          }
-        };  
-      `;
-      const blob = new Blob([workerCode], { type: 'application/javascript' });
-      const workerTimer = new Worker(URL.createObjectURL(blob));
-      return new Observable(subscriber => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const eventHandler = event => {
-          subscriber.next(event.data);
-        };
-
-        workerTimer.addEventListener('message', eventHandler);
-        workerTimer.postMessage('on');
-
-        return function unsubscribe() {
-          workerTimer.postMessage('off');
-          workerTimer.removeEventListener('message', eventHandler);
-        };
-      });
-    }
-    return interval(1000);
   }
 
   async terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): Promise<boolean> {
@@ -625,7 +586,7 @@ export class TestControllerService {
             if (!navOk && !targetIsCurrent) {
               // happens when a goto goes to a unit which does exist, but is not accessible
               if (this.shouldShowConfirmationUI()) {
-                this.ms.show(`Navigation zu ${navString} nicht erlaubt.`);
+                this.ms.showSnackbar(`Navigation zu ${navString} nicht erlaubt.`);
               }
             }
             return navOk;
@@ -916,7 +877,7 @@ export class TestControllerService {
     const skipIfNoTimeRestrictionEnforcement = (text: string) => {
       if (!this.testMode.forceTimeRestrictions) {
         this.interruptTimer();
-        this.ms.show(text);
+        this.ms.showSnackbar(text);
         return true;
       }
     };
@@ -924,7 +885,7 @@ export class TestControllerService {
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
       if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
 
-      this.ms.show('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
+      this.ms.showSnackbar('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
       return of(false);
     }
 
@@ -935,27 +896,20 @@ export class TestControllerService {
 
     if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
 
-    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      data: <ConfirmDialogData>{
-        title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-        content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-        confirmbuttonlabel: 'Hier bleiben',
-        confirmbuttonreturn: true,
-        cancelbuttonlabel: 'Trotzdem weiter',
-        showcancel: true
-      }
-    });
-    return dialogCDRef.afterClosed()
-      .pipe(
-        map(cdresult => {
-          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
-            return false;
-          }
-          this.cancelTimer(); // does locking the block
+    return this.messageService.showConfirmDialog({
+      title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+      content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+      confirmText: 'Hier bleiben',
+      cancelText: 'Trotzdem weiter'
+    }).pipe(
+      map(cdresult => {
+        if (!cdresult) {
+          this.cancelTimer(); // does lock the block
           return true;
-        })
-      );
+        }
+        return false;
+      })
+    );
   }
 
   private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
@@ -972,7 +926,7 @@ export class TestControllerService {
         presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
         responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
       };
-      this.ms.show(
+      this.ms.showSnackbar(
         `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
       );
@@ -980,19 +934,13 @@ export class TestControllerService {
     }
 
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
-    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      data: <ConfirmDialogData>{
-        title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
-        content: reasons
-          .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
-          .join(' '),
-        confirmbuttonlabel: 'OK',
-        confirmbuttonreturn: false,
-        showcancel: false
-      }
-    });
-    return dialogCDRef.afterClosed().pipe(map(() => false));
+
+    return this.messageService.showConfirmDialog({
+      title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+      content: reasons
+        .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+        .join(' ')
+    }).pipe(map(() => false));
   }
 
   private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
@@ -1011,7 +959,7 @@ export class TestControllerService {
           this.activateUnitLeaveLock(currentUnit.sequenceId);
         }
       } else {
-        this.ms.show(`${lockScope} würde im Testmodus nun gesperrt werden.`);
+        this.ms.showSnackbar(`${lockScope} würde im Testmodus nun gesperrt werden.`);
       }
     };
 
@@ -1021,27 +969,20 @@ export class TestControllerService {
     }
 
     if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
-      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        data: <ConfirmDialogData>{
-          title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
-          content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
-          confirmbuttonlabel: 'Hier bleiben',
-          confirmbuttonreturn: true,
-          cancelbuttonlabel: 'Trotzdem weiter',
-          showcancel: true
-        }
-      });
-      return dialogCDRef.afterClosed()
-        .pipe(
-          map(cdresult => {
-            if ((typeof cdresult === 'undefined') || (cdresult === true)) {
-              return false;
-            }
-            leaveLock();
-            return true;
-          })
-        );
+      return this.messageService.showConfirmDialog({
+        title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
+        content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
+        confirmText: 'Hier bleiben',
+        cancelText: 'Trotzdem weiter'
+      }).pipe(
+        map(cdresult => {
+          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
+            return false;
+          }
+          leaveLock();
+          return true;
+        })
+      );
     }
 
     leaveLock();
@@ -1092,7 +1033,7 @@ export class TestControllerService {
   }
 
   shouldShowConfirmationUI(): boolean {
-    return !(this.booklet?.config.ui_mode === 'NONE' &&
+    return !(this.booklet?.config.silent_mode === 'TRUE' &&
            (this.testMode.forceTimeRestrictions || this.testMode.forceNaviRestrictions));
   }
 }

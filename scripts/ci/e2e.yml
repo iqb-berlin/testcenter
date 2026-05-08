@@ -1,0 +1,122 @@
+build-e2e:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  variables:
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}"
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+  script:
+    - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${IMAGE_NAME}:dev
+      --file e2e/Dockerfile
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push --quiet --all-tags ${IMAGE_NAME}
+  after_script:
+    - !reference [ .gitlab_login, after_script ]
+  artifacts:
+    when: always
+    paths:
+      - e2e/cypress-headless
+
+.e2e-test-template:
+  stage: test-e2e
+  rules:
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - when: never
+  needs:
+    - build-backend
+    - build-frontend
+    - build-file-server
+    - build-e2e
+  script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file e2e/docker-compose.system-test-headless.yml
+      up --abort-on-container-exit --exit-code-from=e2e
+  after_script:
+    - !reference [ .gitlab_login, after_script ]
+
+.e2e-test:
+  before_script:
+    - cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+    - chmod 0755 scripts/database/000-create-test-db.sh
+    #-docker pull --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-backend:current
+    #- docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FRONTEND_IMAGE_NAME}:current
+    #  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
+    #- docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FILE_SERVER_IMAGE_NAME}:current
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev testcenter-e2e
+
+test-e2e-booklet-configuration:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Booklet-Config/**/*
+
+test-e2e-group-monitor:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Group-Monitor/**/*
+
+test-e2e-session-management:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Session-Management/**/*
+
+test-e2e-super-admin:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Super-Admin/**/*
+
+test-e2e-sys-check:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Sys-Check/**/*
+
+test-e2e-test-controller:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Test-Controller/**/*
+
+test-e2e-workspace-admin:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=Workspace-Admin/**/*
+
+test-e2e-misc:
+  extends: .e2e-test-template
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+    - !reference [ .e2e-test, before_script ]
+    - export SPEC=*

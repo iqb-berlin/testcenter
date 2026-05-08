@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { MainDataService } from '../../shared/shared.module';
-import { AppError, AuthData } from '../../app.interfaces';
-import { BackendService } from '../../backend.service';
-import { ThemeService } from '../../shared/services/theme.service';
+import { MainDataService } from '@shared/shared.module';
+import { AppError, AuthData } from '@app/app.interfaces';
+import { BackendService } from '@app/backend.service';
+import { ThemeService } from '@shared/services/theme.service';
 import { TextFieldFormComponent } from './text-field-form.component';
 import { FabFormComponent } from './fab-form/fab-form.component';
 
@@ -13,17 +13,20 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   imports: [
     TextFieldFormComponent,
     FabFormComponent
-  ],
-  standalone: true
+  ]
 })
 export class CodeInputComponent {
-  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
+  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'text-field';
+  length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
 
   constructor(private router: Router, public bs: BackendService, public mds: MainDataService,
               public themeService: ThemeService) {
-    this.mode = this.themeService.activeTheme.codeInputMode || 'text-field';
+    this.bs.getSessionData().subscribe((authData: AuthData) => {
+      this.mode = authData.viewSettings.codeInput?.type || 'text-field';
+      this.length = authData.viewSettings.codeInput?.length;
+    });
   }
 
   protected onSubmit(code: string | null) {

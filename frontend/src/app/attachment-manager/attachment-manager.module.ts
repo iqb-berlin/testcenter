@@ -13,7 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, CustomtextPipe, SharedModule } from '../shared/shared.module';
 import { AttachmentManagerRoutingModule } from './routing/attachment-manager-routing.module';
 import { AttachmentManagerComponent } from './components/attachment-manager/attachment-manager.component';
 import { CaptureImageComponent } from './components/capture-image/capture-image.component';
@@ -46,7 +46,9 @@ import { AttachmentTitlePipe } from './pipes/attachment-title.pipe';
     SharedModule,
     MatSortModule,
     FormsModule,
-    MatRadioModule
+    MatRadioModule,
+    CustomtextPipe,
+    AlertComponent
   ],
   providers: [
     BackendService

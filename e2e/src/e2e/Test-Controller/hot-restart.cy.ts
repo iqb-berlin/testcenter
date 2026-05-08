@@ -7,10 +7,10 @@ import {
   getResultFileRows,
   gotoPage,
   loginSuperAdmin,
-  loginTestTaker,
+  loginTestTaker, logout,
   logoutAdmin,
-  logoutTestTakerHot,
-  openSampleWorkspace,
+  logoutFromRunningTestWithConfirmation,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -163,9 +163,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="booklet-CY-BKLT_TC-4"]')
         .contains('gesperrt');
-      cy.get('[data-cy="logout"]')
-        .click();
-      cy.get('[data-cy="login-admin"]')
+      logout();
+      cy.get('[data-cy="login-admin-form"]')
         .should('be.visible');
     });
   });
@@ -251,9 +250,8 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
-      cy.get('[data-cy="logout"]')
-        .click();
-      cy.get('[data-cy="login-admin"]')
+      logout();
+      cy.get('[data-cy="login-admin-form"]')
         .should('be.visible');
     });
   });
@@ -267,7 +265,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {
@@ -350,7 +348,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     });
 
     after(() => {
-      logoutTestTakerHot();
+      logoutFromRunningTestWithConfirmation();
     });
 
     it('start a test without booklet selection', () => {
@@ -432,7 +430,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
 
     it('download a responses/log file with groupname: Hot-Restart', () => {
       loginSuperAdmin();
-      openSampleWorkspace(1);
+      openWorkspace('workspace-card-sample_workspace', 1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
       cy.contains('Hot-Restart');

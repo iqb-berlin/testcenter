@@ -4,7 +4,7 @@ html, body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 /* has to be global because dynamic created element is not in the scope of the component */
@@ -36,6 +36,10 @@ iframe.unitHost {
 .flex-column {
   display: flex;
   flex-direction: column;
+}
+
+.mdc-button.mat-tonal-button {
+  border: 1px solid var(--mat-sys-outline-variant);
 }
 
 /*Styling for account panel. It is an overlay and therefore out of the component's scope*/

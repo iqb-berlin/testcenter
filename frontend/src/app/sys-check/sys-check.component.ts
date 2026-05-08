@@ -1,10 +1,10 @@
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { CustomtextService, MainDataService } from '../shared/shared.module';
+import { CustomtextService, MainDataService } from '@shared/shared.module';
+import { AppError } from '@app/app.interfaces';
+import { HeaderService } from '@shared/services/header.service';
 import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
-import { AppError } from '../app.interfaces';
-import { HeaderService } from '../core/header.service';
 
 @Component({
     templateUrl: './sys-check.component.html',

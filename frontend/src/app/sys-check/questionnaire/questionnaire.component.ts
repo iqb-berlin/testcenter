@@ -1,12 +1,39 @@
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SysCheckDataService } from '../sys-check-data.service';
+import { MatCardModule } from '@angular/material/card';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { AsyncPipe, NgForOf, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 
 @Component({
-    templateUrl: './questionnaire.component.html',
-    styleUrls: ['./questionnaire.component.css', '../sys-check.component.css'],
-    standalone: false
+  templateUrl: './questionnaire.component.html',
+  imports: [
+    MatCardModule,
+    CustomtextPipe,
+    AsyncPipe,
+    NgIf,
+    ReactiveFormsModule,
+    NgForOf,
+    NgSwitch,
+    MatFormField,
+    NgSwitchCase,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    MatRadioGroup,
+    MatRadioButton,
+    MatInput,
+    CdkTextareaAutosize,
+    NgSwitchDefault
+  ],
+  styleUrls: ['./questionnaire.component.css', '../sys-check.component.css']
 })
 export class QuestionnaireComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup([]);

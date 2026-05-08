@@ -7,8 +7,7 @@ import {
 } from '../interfaces/booklet.interfaces';
 
 @Pipe({
-    name: 'blockcondition',
-    standalone: false
+  name: 'blockcondition'
 })
 export class BlockConditionPipe implements PipeTransform {
   static stringyfyCondition(condition: BlockCondition): string {
