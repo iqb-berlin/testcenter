@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
-import { AdminLoginComponent } from './app-root/admin-login/admin-login.component';
+import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import {

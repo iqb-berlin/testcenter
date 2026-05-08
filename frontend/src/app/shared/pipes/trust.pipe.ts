@@ -2,8 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Pipe({
-    name: 'trust',
-    standalone: false
+  name: 'trust'
 })
 export class TrustPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}

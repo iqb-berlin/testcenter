@@ -8,7 +8,7 @@ import {
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
+import { CustomtextPipe, SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'tc-code-text-field-form',
@@ -22,7 +22,8 @@ import { SharedModule } from '../../shared/shared.module';
     MatIcon,
     MatLabel,
     MatIconButton,
-    MatSuffix
+    MatSuffix,
+    CustomtextPipe
   ],
   template: `
     <h2>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</h2>
@@ -31,12 +32,12 @@ import { SharedModule } from '../../shared/shared.module';
         <mat-label>Code</mat-label>
         <input matInput formControlName="code">
         @if (codeinputform.get('code')?.value) {
-          <button matIconButton matSuffix (click)="clearInput()">
+          <button type="button" matIconButton matSuffix (click)="clearInput()">
             <mat-icon svgIcon="cancel"></mat-icon>
           </button>
         }
       </mat-form-field>
-      <button matButton="filled" [disabled]="codeinputform.invalid" data-cy="continue">
+      <button type="submit" matButton="filled" [disabled]="codeinputform.invalid" data-cy="continue">
         <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
         Anmelden
       </button>

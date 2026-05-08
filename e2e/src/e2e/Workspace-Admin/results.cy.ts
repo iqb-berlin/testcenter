@@ -2,7 +2,7 @@ import {
   deleteDownloadsFolder,
   loginSuperAdmin,
   logoutAdmin,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -18,7 +18,7 @@ describe('Workspace-Admin-results', () => {
   beforeEach(() => {
     visitLoginPage();
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
   });
 
   it('download the responses of a group', () => {

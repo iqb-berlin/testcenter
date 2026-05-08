@@ -16,14 +16,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { RouterModule } from '@angular/router';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, SharedModule } from '../shared/shared.module';
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
-import { SaveReportComponent } from './report/save-report/save-report.component';
-import { ReportComponent } from './report/report.component';
-import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
-import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
-import { WelcomeComponent } from './welcome/welcome.component';
 import { SysCheckComponent } from './sys-check.component';
 import { SysCheckChildCanActivateGuard, SysCheckRoutingModule } from './sys-check-routing.module';
 import { BackendService } from './backend.service';
@@ -49,16 +44,12 @@ import { SysCheckDataService } from './sys-check-data.service';
     SysCheckRoutingModule,
     SharedModule,
     RouterModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    AlertComponent
   ],
   declarations: [
     SysCheckComponent,
-    WelcomeComponent,
     NetworkCheckComponent,
-    UnitCheckComponent,
-    QuestionnaireComponent,
-    ReportComponent,
-    SaveReportComponent,
     TcSpeedChartComponent
   ],
   providers: [

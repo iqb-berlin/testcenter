@@ -2,17 +2,29 @@ import {
   Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MainDataService } from '../../shared/shared.module';
+import { AlertComponent, CustomtextPipe, MainDataService } from '../../shared/shared.module';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { Verona5ValidPages, Verona6ValidPages } from '../../test-controller/interfaces/verona.interfaces';
+import { MatDivider } from '@angular/material/list';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { MatCard, MatCardModule } from '@angular/material/card';
+import { PageNavBarComponent } from '@app/sys-check/page-nav-bar/page-nav-bar.component';
 
 // TODO merge this with the test-controller/unithost component. both could inherit from a parent class
 
 @Component({
-    selector: 'tc-unit-check',
-    templateUrl: './unit-check.component.html',
-    styleUrls: ['./unit-check.component.css'],
-    standalone: false
+  selector: 'tc-unit-check',
+  templateUrl: './unit-check.component.html',
+  imports: [
+    MatDivider,
+    CustomtextPipe,
+    AsyncPipe,
+    MatCardModule,
+    PageNavBarComponent,
+    AlertComponent,
+    NgIf
+  ],
+  styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   pages: { [id: string]: string } = {};

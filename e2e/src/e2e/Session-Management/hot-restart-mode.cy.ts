@@ -3,7 +3,7 @@ import {
   deleteDownloadsFolder, disableSimplePlayersInternalDebounce,
   loginSuperAdmin,
   loginTestTaker,
-  openSampleWorkspace,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
@@ -45,7 +45,7 @@ describe('check hot-restart-mode functions', { testIsolation: true }, () => {
 
   it('generated response file exist in workspace with different ID/Code for each session', () => {
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('Hote-Modes');

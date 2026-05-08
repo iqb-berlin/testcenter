@@ -28,6 +28,7 @@
     "ext-xmlreader": "*",
     "ext-zip": "*",
     "ext-zend-opcache" : "*",
+    "ext-ctype": "*",
     "altcha-org/altcha": "^1.3"
   },
   "require-dev": {

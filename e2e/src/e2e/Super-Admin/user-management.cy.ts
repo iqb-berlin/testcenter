@@ -1,5 +1,5 @@
 import {
-  addWorkspaceAdmin,
+  addWorkspaceAdmin, clickCardButton,
   clickSuperadminSettings,
   loginSuperAdmin,
   loginWorkspaceAdmin,
@@ -75,8 +75,7 @@ describe('Usermanagement (user-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.disabled');
@@ -95,8 +94,7 @@ describe('Usermanagement (user-tab)', () => {
     logoutAdmin();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
-    cy.contains('sample_workspace')
-      .click();
+    clickCardButton('workspace-card-sample_workspace');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled');

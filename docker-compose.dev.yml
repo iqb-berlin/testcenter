@@ -128,6 +128,7 @@ services:
       - "--tls-version=TLSv1.2,TLSv1.3"
       - "--max-connections=500"
       - "--log_error_verbosity=2"
+      - "--binlog-expire-logs-seconds=${MYSQL_BINLOG_EXPIRE_LOGS_SECONDS:-2592000}"
     volumes:
       - ./scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     networks:

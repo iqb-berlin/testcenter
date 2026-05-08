@@ -2,7 +2,8 @@
   @if (mode === 'text-field') {
     <tc-code-text-field-form (submitCode)="onSubmit($event)"></tc-code-text-field-form>
   } @else {
-    <tc-code-keypad-form [visualMode]="mode" (submitCode)="onSubmit($event)" (clearInput)="problemText = ''">
+    <tc-code-keypad-form [visualMode]="mode" [length]="length"
+                         (submitCode)="onSubmit($event)" (clearInput)="problemText = ''">
     </tc-code-keypad-form>
   }
 
@@ -13,7 +14,7 @@
       @if (!problemText) {
         <p class="bubble-title">Brauchst du Hilfe?</p>
       }
-      <p class="bubble-body">
+      <p class="bubble-body" [attr.data-cy]="'login-code-problem:'+problemCode">
         @if (problemText) {
           {{ problemText }}
         } @else {

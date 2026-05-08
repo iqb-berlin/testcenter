@@ -6,12 +6,12 @@ import {
   forwardTo,
   getFromIframe,
   loginSuperAdmin,
-  logoutTestTakerDemo,
-  openSampleWorkspace,
+  logoutFromTestNoConfirmation,
+  openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage,
-  insertCredentials
+  twoStepLogin
 } from '../utils';
 
 describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
@@ -22,9 +22,7 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    insertCredentials('Test_Ctrl-2', '123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('Test_Ctrl-2', '123');
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/r/starter`);
   });
 
@@ -147,13 +145,13 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('.snackbar-demo-mode')
       .contains('Schließen')
       .click();
-    logoutTestTakerDemo();
+    logoutFromTestNoConfirmation();
   });
 
   it('there are no responses in the response file', () => {
     visitLoginPage();
     loginSuperAdmin();
-    openSampleWorkspace(1);
+    openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
     cy.contains('Review');

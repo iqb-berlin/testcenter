@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Unit.xsd">
+  <Metadata lastChange="2026-04-16T12:16:39.509Z">
+    <Id>testcenter-sample2</Id>
+    <Label>testcenter-sample2</Label>
+    <Reference/>
+  </Metadata>
+  <DefinitionRef player="iqb-player-aspect@2.12" editor="iqb-editor-aspect@2.12" lastChange="2026-04-16T12:17:25.809Z">testcenter-sample2.voud</DefinitionRef>
+  <BaseVariables>
+    <Variable id="text_1771929975171_1" alias="text_1" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="image_1773665937955_1" alias="image_1" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="image_1773665944982_1" alias="image_2" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="image_1773665947269_1" alias="image_3" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="image_1773665950612_1" alias="image_4" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="text_1771929984026_1" alias="text_2" type="no-value" format="" nullable="false" multiple="false" page=""/>
+    <Variable id="text_1771929991062_1" alias="text_3" type="no-value" format="" nullable="false" multiple="false" page=""/>
+  </BaseVariables>
+</Unit>

@@ -1,7 +1,7 @@
 <!--<div class="adminbackground">-->
   <div class="adminbackground flex-column">
     <mat-progress-bar mode="indeterminate" *ngIf="!resultDataSource"></mat-progress-bar>
-    <mat-table [dataSource]="resultDataSource" matSort [attr.data-cy]="'SM-table'">
+    <mat-table [dataSource]="resultDataSource" matSort>
 
       <ng-container matColumnDef="groupName">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Login-Gruppe</mat-header-cell>

@@ -62,6 +62,15 @@ components:
           type: string
           description: name to be displayed
           example: super
+          deprecated: true
+        loginName:
+          type: string
+          description: name of login session
+          example: super
+        groupLabel:
+          type: string
+          description: group name of login session
+          example: sample_group
         id:
           type: integer
           description: id of the (admin) user

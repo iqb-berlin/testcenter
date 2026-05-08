@@ -4,6 +4,12 @@
   flex-direction: column;
 }
 
+.nav-header {
+  background-color: var(--mat-sys-secondary);
+  padding: 8px 24px;
+  gap: 12px;
+}
+
 .toolbar-header .toolbar-right {
   margin-left: auto;
   display: flex;
@@ -18,6 +24,7 @@
 .mat-drawer-container {
   flex: 1;
 }
+
 
 mat-sidenav {
   width: 700px;

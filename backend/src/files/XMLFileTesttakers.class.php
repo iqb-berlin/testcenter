@@ -201,7 +201,32 @@ class XMLFileTesttakers extends XMLFile {
   private function parseViewSettings(SimpleXMLElement $loginElem): array {
     $el = $loginElem->ViewSettings;
     if (!$el) return [];
-    return ['monitorBookletVisibility' => ((string) $el['monitorBookletVisibility']) ?: 'visible'];
+
+    return $this->parseXmlNode($el);
+  }
+
+  private function parseXmlNode(SimpleXMLElement $node): string|array|int {
+    // Leaf node
+    if ($node->count() === 0) {
+      return $this->normalizeValue((string) $node);
+    }
+    $result = [];
+    foreach ($node->children() as $key => $child) {
+      $result[$key] = $this->parseXmlNode($child);
+    }
+    return $result;
+  }
+
+  private function normalizeValue(string $value): string|int|bool {
+    $trimmed = trim($value);
+    // bools
+    if ($trimmed === 'true') return true;
+    if ($trimmed === 'false') return false;
+    // ints
+    if (ctype_digit($trimmed)) {
+      return (int) $trimmed;
+    }
+    return $trimmed;
   }
 
   // TODO write unit test

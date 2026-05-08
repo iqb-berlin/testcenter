@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../shared/shared.module';
-import { HeaderService } from '../core/header.service';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
     templateUrl: './superadmin.component.html',

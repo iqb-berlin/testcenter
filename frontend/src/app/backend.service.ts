@@ -31,11 +31,11 @@ export class BackendService {
 
 
   adminLogin(name: string, password: string | undefined = undefined): Observable<AuthData> {
-    return this.login('admin', name, password);
+    return this.login(name, password);
   }
 
-  login(loginType: 'admin' | 'login', name: string, password: string | undefined = undefined): Observable<AuthData> {
-    return this.http.put<AuthData>(`${this.serverUrl}session/${loginType}`, { name, password });
+  login(name: string, password?: string): Observable<AuthData> {
+    return this.http.put<AuthData>(`${this.serverUrl}session/login`, { name, password });
   }
 
   codeLogin(code: string): Observable<AuthData> {

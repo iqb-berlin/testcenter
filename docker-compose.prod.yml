@@ -46,5 +46,6 @@ services:
       - "--explicit-defaults-for-timestamp=TRUE"
       - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
       - "--tls-version=TLSv1.2,TLSv1.3"
+      - "--binlog-expire-logs-seconds=${MYSQL_BINLOG_EXPIRE_LOGS_SECONDS:-2592000}"
       - "--max-connections=500"
       - "--log_error_verbosity=1"

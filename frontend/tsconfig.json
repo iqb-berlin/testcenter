@@ -34,7 +34,9 @@
       ],
       "testcenter-common/*": [
         "../common/src/*"
-      ]
+      ],
+      "@app/*": ["src/app/*"],
+      "@shared/*": ["src/app/shared/*"]
     },
     "useDefineForClassFields": false
   },

@@ -3,7 +3,8 @@ import {
   loginMonitor,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage,
+  clickCardButton
 } from './utils';
 
 describe('Study-Monitor User', () => {
@@ -19,10 +20,7 @@ describe('Study-Monitor User', () => {
   it('start a study monitor', () => {
     loginMonitor('test-study-monitor', 'user123');
 
-    cy.get('[data-cy="SM-1"]')
-      .should('exist')
-      .click();
-    cy.get('[data-cy="SM-table"]')
-      .should('exist');
+    clickCardButton('gm-card-0');
+    cy.contains('Test-Steuerung');
   });
 });

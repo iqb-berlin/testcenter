@@ -1,11 +1,11 @@
 import {
   cleanUp,
   forwardTo,
-  getFromIframe, insertCredentials,
+  getFromIframe, twoStepLogin,
   modifyPlayer,
   probeBackendApi,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage, clickCardButton
 } from '../utils';
 
 describe('Test Controller', { testIsolation: true }, () => {
@@ -31,16 +31,13 @@ describe('Test Controller', { testIsolation: true }, () => {
 
   it('should not confuse response data if a last package was sent with window:unload', () => {
     visitLoginPage();
-    insertCredentials('test', 'user123');
-    cy.get('[data-cy="login-user"]')
-      .click();
+    twoStepLogin('test', 'user123');
     cy.get('[formcontrolname="code"]')
       .type('xxx');
     cy.get('[data-cy="continue"]')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2"]')
-      .click();
+    clickCardButton('booklet-BOOKLET.SAMPLE-2');
     getFromIframe('iframe.unitHost')
       .find('#var1')
       .type('unit 1 - input');

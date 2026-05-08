@@ -1,13 +1,10 @@
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import {
-  ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, PasswordChangeService
-} from '../../shared/shared.module';
+import { MessageService } from '@shared/services/message.service';
+import { PasswordChangeService } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
   SuperadminPasswordRequestComponent
@@ -16,9 +13,9 @@ import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 
 @Component({
-    templateUrl: './users.component.html',
-    styleUrls: ['./users.component.css'],
-    standalone: false
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css'],
+  standalone: false
 })
 export class UsersComponent implements OnInit {
   objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>();
@@ -39,7 +36,7 @@ export class UsersComponent implements OnInit {
     private confirmDialog: MatDialog,
     private superadminPasswordDialog: MatDialog,
     private messsageDialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private messageService: MessageService,
     private newpasswordService: PasswordChangeService
   ) {
     this.tableSelectionRow.changed.subscribe(
@@ -79,14 +76,6 @@ export class UsersComponent implements OnInit {
   changeSuperadminStatus(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Superadmin-Status ändern',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
-        }
-      });
       return;
     }
 
@@ -106,7 +95,7 @@ export class UsersComponent implements OnInit {
         afterClosedResult.get('pw').value
       )
         .subscribe(() => {
-          this.snackBar.open('Status geändert', '', { duration: 1000 });
+          this.messageService.showSnackbar('Status geändert');
           this.updateObjectList();
         });
     });
@@ -115,65 +104,41 @@ export class UsersComponent implements OnInit {
   changePassword(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Kennwort ändern',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
-        }
-      });
-    } else {
-      this.newpasswordService.showPasswordChangeDialog(selectedRows[0]).subscribe(errorCode => {
-        if (!errorCode) {
-          this.snackBar.open('Kennwort geändert', '', { duration: 3000 });
-        }
-      });
+      return;
     }
+    this.newpasswordService.showPasswordChangeDialog(selectedRows[0])
+      .subscribe(result => {
+        if (result) {
+          this.messageService.showSnackbar('Kennwort geändert');
+        }
+      });
   }
 
-  deleteObject(): void {
+  deleteAdminUser(): void {
     const selectedRows = this.tableSelectionRow.selected;
     if (selectedRows.length === 0) {
-      this.messsageDialog.open(MessageDialogComponent, {
-
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Löschen von Administrator:innen',
-          content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: 'error'
-        }
-      });
-    } else {
-      let prompt;
-      if (selectedRows.length > 1) {
-        prompt = `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?`;
-      } else {
-        prompt = `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
-      }
-      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Administrator:innen',
-          content: prompt,
-          confirmbuttonlabel: 'Administrator:in löschen',
-          showcancel: true
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
-          const usersToDelete: string[] = [];
-          selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
-          this.bs.deleteUsers(usersToDelete).subscribe(
-            () => {
-              this.snackBar.open('Administrator:in gelöscht', '', { duration: 1000 });
-              this.updateObjectList();
-            }
-          );
-        }
-      });
+      return; // this should be reachable because the button is disabled
     }
+    const prompt = selectedRows.length > 1 ?
+      `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?` :
+      `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
+    this.messageService.showConfirmDialog({
+      title: 'Löschen von Administrator:innen',
+      content: prompt,
+      confirmText: 'Administrator:in löschen',
+      focusCancel: true
+    }).subscribe(result => {
+      if (result) {
+        const usersToDelete: string[] = [];
+        selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
+        this.bs.deleteUsers(usersToDelete).subscribe(
+          () => {
+            this.messageService.showSnackbar('Administrator:in gelöscht');
+            this.updateObjectList();
+          }
+        );
+      }
+    });
   }
 
   updateWorkspaceList(): void {
@@ -201,7 +166,7 @@ export class UsersComponent implements OnInit {
     if (this.selectedUser > -1) {
       this.bs.setWorkspacesByUser(this.selectedUser, this.workspacelistDatasource.data)
         .subscribe(() => {
-          this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
+          this.messageService.showSnackbar('Zugriffsrechte geändert');
         });
     } else {
       this.workspacelistDatasource = new MatTableDataSource<IdRoleData>();

@@ -9,24 +9,32 @@ class AccessSet extends DataCollectionTypeSafe {
 
   protected string $token;
   protected string $displayName;
+  protected string $loginName;
+  protected ?string $groupLabel;
   protected ?int $id;
   protected ?bool $pwSetByAdmin;
   protected object $customTexts;
   protected array $flags;
   protected object $claims;
   protected ?string $groupToken;
+  protected array $viewSettings;
 
   public function __construct(
     string $token,
     string $displayName,
+    string $loginName,
+    ?string $groupLabel,
     array $flags = [],
     stdClass $customTexts = null,
     ?string $groupToken = null,
     ?int $id = null,
-    ?bool $pwSetByAdmin = null
+    ?bool $pwSetByAdmin = null,
+    ?array $viewSettings = [],
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
+    $this->loginName = $loginName;
+    $this->groupLabel = $groupLabel;
     $this->flags = array_map(function ($flag) {
       return (string) $flag;
     }, $flags);
@@ -35,6 +43,7 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->groupToken = $groupToken;
     $this->id = $id ?? null;
     $this->pwSetByAdmin = $pwSetByAdmin;
+    $this->viewSettings = $viewSettings;
   }
 
   static function createFromPersonSession(
@@ -49,11 +58,20 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginWithPerson->getPerson()->getNameSuffix()
     );
 
+    $groupLabel = $login->getGroupLabel();
+    $loginName = $login->getName();
+
     $accessSet = new AccessSet(
       $loginWithPerson->getPerson()->getToken(),
       $displayName,
+      $loginName,
+      $groupLabel,
       [],
-      $login->getCustomTexts() ?? new stdClass()
+      $login->getCustomTexts() ?? new stdClass(),
+      null,
+      null,
+      null,
+      $login->getViewSettings()
     );
 
     $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
@@ -95,6 +113,8 @@ class AccessSet extends DataCollectionTypeSafe {
     $accessSet = new AccessSet(
       token: $admin->getToken(),
       displayName: $admin->getName(),
+      loginName: $admin->getName(),
+      groupLabel: null,
       id: $admin->getId(),
       pwSetByAdmin: $admin->isPwSetByAdmin(),
     );
@@ -124,9 +144,14 @@ class AccessSet extends DataCollectionTypeSafe {
     return new AccessSet(
       $loginSession->getToken(),
       "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
+      $loginSession->getLogin()->getName(),
+      $loginSession->getLogin()->getGroupLabel(),
       $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
       $loginSession->getLogin()->getCustomTexts(),
-      $loginSession->getGroupToken()
+      $loginSession->getGroupToken(),
+      null,
+      null,
+      $loginSession->getLogin()->getViewSettings(),
     );
   }
 
@@ -193,7 +218,6 @@ class AccessSet extends DataCollectionTypeSafe {
       } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
         $flags['scheduled'] = $group->_expired->timestamp * 1000;
       }
-      $flags['monitorBookletVisibility'] = $login->getViewSettings()['monitorBookletVisibility'] ?? 'visible';
       if (count($profiles)) {
         foreach ($profiles as $profile) {
           $profileFlags = $flags;

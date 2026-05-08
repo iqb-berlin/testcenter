@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../shared/shared.module';
 import { WorkspaceDataService } from './workspacedata.service';
-import { HeaderService } from '../core/header.service';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
     templateUrl: './workspace.component.html',

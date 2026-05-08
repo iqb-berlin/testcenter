@@ -3,7 +3,7 @@
     *ngIf="prevButtonVisible && deprecatedDesign"
     mat-fab
     matTooltip="Zurück"
-    data-cy="unit-navigation-backward"
+    data-cy="unit-navigation-backward-ui-old"
     [disabled]="!prevButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
     [class.marked]="backwardAllowed === 'markedNo'"
@@ -14,7 +14,7 @@
     *ngIf="prevButtonVisible && !deprecatedDesign"
     mat-flat-button
     matTooltip="Zurück"
-    data-cy="unit-navigation-backward"
+    data-cy="unit-navigation-backward-ui-old"
     [style.border-radius]="0"
     [disabled]="!prevButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
@@ -56,7 +56,7 @@
     *ngIf="nextButtonVisible && deprecatedDesign"
     mat-fab
     matTooltip="Weiter"
-    data-cy="unit-navigation-forward"
+    data-cy="unit-navigation-forward-ui-old"
     [disabled]="!nextButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
     [class.marked]="forwardAllowed === 'markedNo'"
@@ -67,7 +67,7 @@
     *ngIf="nextButtonVisible && !deprecatedDesign"
     mat-flat-button
     matTooltip="Weiter"
-    data-cy="unit-navigation-forward"
+    data-cy="unit-navigation-forward-ui-old"
     [style.border-radius]="0"
     [disabled]="!nextButtonEnabled"
     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"

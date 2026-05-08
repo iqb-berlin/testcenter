@@ -1,22 +1,67 @@
 import {
   ChangeDetectorRef, Component, Inject, OnInit
 } from '@angular/core';
+import {
+  AsyncPipe,
+  DecimalPipe,
+  JsonPipe,
+  KeyValuePipe,
+  NgForOf,
+  NgIf,
+  NgTemplateOutlet,
+  SlicePipe
+} from '@angular/common';
+import { CdkDrag } from '@angular/cdk/drag-drop';
+import { MatInput } from '@angular/material/input';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
+import { MatIcon } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 import { ResponseValueType as IQBVariableValueType } from '@iqb/responses/coding-interfaces';
-import { TestControllerService } from '../../services/test-controller.service';
+import { AuthData } from '@app/app.interfaces';
+import { TestControllerService } from '@app/test-controller';
+import { CustomtextService } from '@shared/services/customtext/customtext.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { SchemeAsTextPipe } from '@app/test-controller/pipes/scheme-as-text.pipe';
+import { PropertiesPipe } from '@app/test-controller/pipes/properties.pipe';
+import { BlockConditionPipe } from '@shared/pipes/block-condition.pipe';
+import { TemplateContextDirective } from '@shared/directives/template-context.directive';
+import { TrustPipe } from '@shared/pipes/trust.pipe';
 import { CommandService } from '../../services/command.service';
-import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 import { isTestlet, Testlet, Unit } from '../../interfaces/test-controller.interfaces';
-import { MainDataService } from '../../../shared/services/maindata/maindata.service';
-import { AuthData } from '../../../app.interfaces';
 import { IqbVariableUtil } from '../../util/iqb-variable.util';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { ConditionUtil } from '../../util/condition.util';
 
 @Component({
-    templateUrl: './debug-pane.component.html',
-    styleUrls: ['./debug-pane.component.css'],
-    selector: 'tc-debug-pane',
-    standalone: false
+  templateUrl: './debug-pane.component.html',
+  styleUrls: ['./debug-pane.component.css'],
+  selector: 'tc-debug-pane',
+  imports: [
+    CdkDrag,
+    NgForOf,
+    NgIf,
+    MatIcon,
+    AsyncPipe,
+    KeyValuePipe,
+    DecimalPipe,
+    NgTemplateOutlet,
+    FormsModule,
+    CustomtextPipe,
+    MatAutocomplete,
+    MatOption,
+    SchemeAsTextPipe,
+    SlicePipe,
+    PropertiesPipe,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatTooltip,
+    BlockConditionPipe,
+    TemplateContextDirective,
+    JsonPipe,
+    TrustPipe
+  ]
 })
 export class DebugPaneComponent implements OnInit {
   constructor(
