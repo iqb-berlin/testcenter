@@ -1,4 +1,6 @@
 <div [ngSwitch]="(tcs.state$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
+  <!-- This case should be dead code as the confirm dialog appears on route deactivation, so the
+       test-status route may never be reached.-->
   <mat-card appearance="raised" class="mat-card-box" *ngSwitchDefault>
     <mat-card-header>
       <mat-card-title>{{ tcs.booklet?.metadata?.label }}</mat-card-title>
