@@ -132,3 +132,61 @@
     </button>
   </div>
 </form>
+
+
+<div class="form-grid">
+  <h3>Bildersetzungen</h3>
+  <div>
+    <button mat-raised-button color="accent" (click)="assetFileInput.click()">
+      Upload
+    </button>
+    <input #assetFileInput type="file" (change)="assetService.uploadAsset($event)" [hidden]="true" />
+    <div class="asset-container">
+      @if (assetService.allAssets.length) {
+        <mat-grid-list cols="5" rowHeight="280px" gutterSize="12px">
+          @for (asset of assetService.allAssets; track asset.id) {
+            <mat-grid-tile>
+              <mat-card class="asset-card">
+                <mat-card-header>
+                  <mat-card-title>{{ asset.originalName }}</mat-card-title>
+                </mat-card-header>
+                <img mat-card-image [src]="fileServerUrl + 'public' + asset.url" [alt]="asset.originalName"/>
+                <mat-card-actions>
+                  <button matButton (click)="assetService.deleteAsset(asset.id)">Loeschen</button>
+                </mat-card-actions>
+              </mat-card>
+            </mat-grid-tile>
+          }
+        </mat-grid-list>
+      } @else {
+        <p class="empty">No assets found</p>
+      }
+    </div>
+
+    <h4>Slots</h4>
+    <div class="flex-column" [style.gap.px]="10">
+      @if (assetService.assetSlots$ | async; as slots) {
+        @for (slot of assetService.availableAssetSlots; track slot) {
+          <div class="flex-row" [style.align-items]="'center'" [style.gap.px]="20">
+            <p [style.width.px]="150">{{ slot.slotLabel }}</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Asset auswählen </mat-label>
+              <mat-select [value]="$any(slots)[slot.slotName]?.assetID"
+                          (valueChange)="assetService.updateSlot(slot.slotName, $event)">
+                <mat-option [value]="undefined">Keines</mat-option>
+                @for (asset of assetService.allAssets; track asset.id) {
+                  <mat-option [value]="asset.id">
+                    {{ asset.originalName }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+      }
+      <button mat-raised-button color="primary" (click)="assetService.saveAssetSlots()">
+        Slots speichern
+      </button>
+    </div>
+  </div>
+</div>

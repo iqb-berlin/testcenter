@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormsModule, ReactiveFormsModule
 } from '@angular/forms';
-import { KeyValuePipe } from '@angular/common';
+import { AsyncPipe, KeyValuePipe, NgForOf } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
+import { MatButton, MatFabButton, MatMiniFabButton } from '@angular/material/button';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
@@ -20,6 +20,17 @@ import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.in
 import { ThemeService } from '../../shared/services/theme.service';
 import { AlertComponent, SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
+import { Asset, AssetService } from '@shared/services/asset.service';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardImage,
+  MatCardTitle
+} from '@angular/material/card';
 
 @Component({
   imports: [
@@ -43,10 +54,19 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     SharedModule,
     EditCustomTextsComponent,
     MatFabButton,
-    AlertComponent
+    AlertComponent,
+    MatButton,
+    MatGridList,
+    MatGridTile,
+    MatCard,
+    MatCardImage,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardActions,
+    AsyncPipe
   ],
   templateUrl: 'settings.component.html',
-  styleUrls: ['settings.component.css']
+  styleUrls: ['settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
   private configDataChangedSubscription: Subscription | null = null;
@@ -82,8 +102,9 @@ export class SettingsComponent implements OnInit {
   };
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
-              public themeService: ThemeService,
-              private messageService: MessageService, private mainDataService: MainDataService) {
+              public themeService: ThemeService, public assetService: AssetService,
+              private messageService: MessageService, private mainDataService: MainDataService,
+              @Inject('FILE_SERVER_URL') public readonly fileServerUrl: string) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       privacy: this.formBuilder.control(''),
@@ -96,6 +117,7 @@ export class SettingsComponent implements OnInit {
       bugReportTarget: this.formBuilder.control(''),
       themeName: this.formBuilder.control('')
     });
+
   }
 
   async ngOnInit(): Promise<void> {
