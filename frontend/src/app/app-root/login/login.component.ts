@@ -17,6 +17,7 @@ import {
 } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import { HeaderService } from '@shared/services/header.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -58,6 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private backendService: BackendService,
     private router: Router,
     private route: ActivatedRoute,
+    private headerService: HeaderService,
     private footerService: FooterService,
     private themeService: ThemeService,
     private messageService: MessageService
@@ -68,6 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
     this.checkBrowser();
+    this.headerService.title = 'Anmelden';
     this.footerService.showFooter.set(true);
   }
 
