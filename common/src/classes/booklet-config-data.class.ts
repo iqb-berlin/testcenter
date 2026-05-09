@@ -15,7 +15,7 @@ export class BookletConfigData {
   unit_responses_buffer_time: string = '5000';
   unit_state_buffer_time: string = '6000';
   test_state_buffer_time: string = '1000';
-  header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' = 'NONE';
+  header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' = 'BOOKLET_LABEL';
   navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
   navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';

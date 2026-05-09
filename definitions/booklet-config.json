@@ -121,7 +121,7 @@
       "BLOCK_LABEL": "Titel des Aufgabenblocks",
       "UNIT_LABEL": "Titel der Unit"
     },
-    "defaultvalue": "NONE"
+    "defaultvalue": "BOOKLET_LABEL"
   },
   "navbar_unit_label": {
     "label": "Darstellung der aktiven Aufgabe/Unit auf der Navigationsleiste.",
