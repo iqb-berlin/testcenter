@@ -268,6 +268,18 @@ $app->get('/file/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'g
 $app->get('/reviews/export', [ReviewController::class, 'getAllReviewsFromPersonExport'])
   ->add(new RequireToken('person'));
 
+//TODO auth
 $app->get('/assets', [AssetController::class, 'list']);
-$app->post('/assets', [AssetController::class, 'upload']);
-$app->delete('/assets/{id}', [AssetController::class, 'delete']);
+$app->post('/assets', [AssetController::class, 'upload'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
+$app->delete('/assets/{id}', [AssetController::class, 'delete'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
+
+$app->post('/asset-assignments', [AssetAssignmentController::class, 'set'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
+$app->get('/asset-assignments', [AssetAssignmentController::class, 'get'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));

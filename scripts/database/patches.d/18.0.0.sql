@@ -5,3 +5,13 @@ CREATE TABLE assets (
   url TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE asset_assignment (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  slot_name VARCHAR(100) NOT NULL,
+  asset_id INT NOT NULL,
+  scope VARCHAR(20) NOT NULL,   -- 'global' | 'group' | 'user'
+  scope_id VARCHAR(100) NOT NULL DEFAULT 'global', -- group/login ID
+  UNIQUE KEY unique_assignment (slot_name, scope, scope_id),
+  FOREIGN KEY (asset_id) REFERENCES assets(id)
+);
