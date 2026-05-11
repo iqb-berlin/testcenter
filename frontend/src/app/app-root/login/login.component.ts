@@ -196,12 +196,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDialog() {
-    this.messageService.showInfoDialog({
-      title: 'Anleitung',
-      contentTemplate: this.helpDialogTemplate
-    });
-  }
 
   checkCapsLock(event: KeyboardEvent): void {
     // some newer edge versions does fire a keyup event when clicking into the textfield, which does not
