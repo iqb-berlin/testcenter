@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
+// TODO hier kann der asset name mitgeliefert werden, sodass das frontend sich den
+// extra lookup sparen könnte.
 class AssetAssignmentController extends Controller {
   public function get(Request $request, Response $response): Response {
     $dao = new DAO();
@@ -65,11 +67,12 @@ class AssetAssignmentController extends Controller {
 
     $assignments = $requestData['assignments'] ?? [];
 
+    // TODO n+1 das kann zusammengefasst werden, sodass nur 1 DB-Call gemacht wird
     foreach ($assignments as $assignment) {
       $slotName = $assignment['slotName'];
       $assetID = $assignment['assetID'];
       $scope = $assignment['scope'] ?? 'global';
-      $scopeID   = $assignment['scopeID'] ?? 'global';
+      $scopeID = $assignment['scopeID'] ?? 'global';
 
       $dao->_("
           INSERT INTO asset_assignment (slot_name, asset_id, scope, scope_id)
