@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MainDataService } from '@shared/shared.module';
-import { AppError, AuthData } from '@app/app.interfaces';
+import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { ThemeService } from '@shared/services/theme.service';
 import { TextFieldFormComponent } from './text-field-form.component';
@@ -13,10 +13,13 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   imports: [
     TextFieldFormComponent,
     FabFormComponent
-  ]
+  ],
+  host: {
+    '[class.alt-styling]': 'mode === "keypad-symbols-alt"'
+  }
 })
 export class CodeInputComponent {
-  mode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'text-field';
+  mode: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;

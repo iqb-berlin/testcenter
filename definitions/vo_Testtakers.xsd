@@ -56,6 +56,7 @@
                                     <xs:restriction base="xs:string">
                                       <xs:enumeration value="text-field"/>
                                       <xs:enumeration value="keypad-symbols"/>
+                                      <xs:enumeration value="keypad-symbols-alt"/>
                                       <xs:enumeration value="keypad-numbers"/>
                                     </xs:restriction>
                                   </xs:simpleType>

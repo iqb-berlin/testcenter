@@ -22,18 +22,22 @@
     border-radius: 4px;
 
     button.mat-mdc-fab {
-      width: 57px;
-      height: 57px;
+      width: 80px;
+      height: 80px;
       background-color: var(--mat-sys-secondary);
 
       &.filled {
         background-color: var(--mat-sys-primary);
       }
+
+      &.active {
+        border: 5px solid var(--mat-sys-primary);
+      }
     }
 
     mat-icon {
-      width: 38px;
-      height: 38px;
+      width: 58px;
+      height: 58px;
     }
   }
 
@@ -48,8 +52,8 @@
   gap: 24px;
 
   mat-icon {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -57,17 +61,56 @@ button.mat-mdc-fab {
   box-shadow: none;
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   font-size: 42px;
   font-weight: 700;
 
   &.delete-button {
-    width: 48px;
-    height: 48px;
-    margin-top: 15px;
+    width: 58px;
+    height: 58px;
     background-color: var(--mat-sys-error);
     font-size: unset;
+  }
+}
+
+.alt-design {
+  &.selected-values {
+    margin-top: 40px;
+
+    img {
+      width: 68px;
+      height: 68px;
+    }
+
+    fieldset {
+      border: none;
+
+      legend {
+        display: none;
+      }
+
+      button.mat-mdc-fab {
+        background-color: white;
+        width: 90px;
+        height: 90px;
+      }
+    }
+  }
+
+  &.button-grid {
+    button.mat-mdc-fab {
+      border-radius: 40px;
+      background-color: white;
+      box-shadow: 10px 5px 5px gray;
+      width: 90px;
+      height: 90px;
+
+      img {
+        width: 68px;
+        height: 68px;
+      }
+    }
   }
 }
 

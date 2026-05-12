@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { CodeInputType } from '@app/app.interfaces';
 
 @Component({
   selector: 'tc-code-keypad-form',
@@ -13,7 +14,7 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
   styleUrl: './fab-form.component.scss'
 })
 export class FabFormComponent implements OnInit {
-  @Input() visualMode: 'text-field' | 'keypad-symbols' | 'keypad-numbers' = 'keypad-symbols';
+  @Input() visualMode: CodeInputType = 'keypad-symbols-alt';
   @Input() length: number | undefined = 5;
   @Output() submitCode = new EventEmitter<string | null>();
   @Output() clearInput = new EventEmitter<void>();
@@ -30,12 +31,24 @@ export class FabFormComponent implements OnInit {
     9: 'change_history'
   };
 
+  readonly altButtonIcons: { [key: number]: string } = {
+    1: 'assets/icons/code_input_alt/apple.png',
+    2: 'assets/icons/code_input_alt/house.png',
+    3: 'assets/icons/code_input_alt/cup.png',
+    4: 'assets/icons/code_input_alt/sun.png',
+    5: 'assets/icons/code_input_alt/book.png',
+    6: 'assets/icons/code_input_alt/eye.png'
+  };
+
+  activeIconSet: { [key: number]: string } = this.buttonIcons;
+
   selectedValues: WritableSignal<(number | null)[]> = signal<(number | null)[]>(Array(5).fill(null));
   activeValueIndex: Signal<number> = computed(() => this.selectedValues().indexOf(null));
 
   constructor(private mds: MainDataService) {}
 
   ngOnInit(): void {
+    this.activeIconSet = this.visualMode === 'keypad-symbols-alt' ? this.altButtonIcons : this.buttonIcons;
     this.selectedValues = signal<(number | null)[]>(Array(this.length).fill(null));
   }
 
@@ -51,8 +64,17 @@ export class FabFormComponent implements OnInit {
     }
   }
 
-  clearSelection(): void {
-    this.selectedValues.set(Array(5).fill(null));
+  removeLastInput(): void {
+    this.selectedValues.update(selectedValues => {
+      const copy = [...selectedValues];
+      const lastIndex = copy.indexOf(null);
+      if (lastIndex === -1) {
+        copy[copy.length - 1] = null;
+      } else if (lastIndex > 0) {
+        copy[lastIndex - 1] = null;
+      }
+      return copy;
+    });
     this.clearInput.emit();
   }
 }

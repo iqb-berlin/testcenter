@@ -43,12 +43,14 @@ export interface AuthData {
   viewSettings: {
     theme?: string;
     codeInput?: {
-      type: 'text-field' | 'keypad-symbols' | 'keypad-numbers';
+      type: CodeInputType;
       length: number;
     },
     monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
   }
 }
+
+export type CodeInputType = 'text-field' | 'keypad-symbols' | 'keypad-numbers' | 'keypad-symbols-alt';
 
 export interface KeyValuePairs {
   [K: string]: string;

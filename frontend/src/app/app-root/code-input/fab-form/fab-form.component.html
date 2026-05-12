@@ -1,35 +1,41 @@
-<div class="header-section">
-  <h2>Wähle aus</h2>
-  <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
-</div>
+@if (visualMode !== 'keypad-symbols-alt') {
+  <div class="header-section">
+    <h2>Wähle aus</h2>
+    <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
+  </div>
+}
 
-<div class="selected-values">
+<div class="selected-values" [class.alt-design]="visualMode === 'keypad-symbols-alt'">
   <!-- only used for proper centering of the fieldset -->
   <div class="spacer"></div>
   <fieldset>
     <legend>Code</legend>
     @for (item of selectedValues(); track $index) {
-      <button mat-fab [class.filled]="item">
+      <button mat-fab [class.filled]="item" [class.active]="activeValueIndex() === $index">
         @if (visualMode == 'keypad-numbers') {
           {{ item }}
-        } @else {
+        } @else if (visualMode == 'keypad-symbols') {
           <mat-icon [svgIcon]="item !== null ? buttonIcons[item] : ''"></mat-icon>
+        } @else if (item) {
+          <img [src]="activeIconSet[item]" />
         }
       </button>
     }
   </fieldset>
-  <button mat-fab class="delete-button" (click)="clearSelection()">
-    <mat-icon svgIcon="delete_forever"></mat-icon>
+  <button mat-fab class="delete-button" (click)="removeLastInput()">
+    <mat-icon svgIcon="backspace"></mat-icon>
   </button>
 </div>
 
-<div class="button-grid">
-  @for (item of buttonIcons | keyvalue; track item.key) {
+<div class="button-grid" [class.alt-design]="visualMode === 'keypad-symbols-alt'">
+  @for (item of activeIconSet | keyvalue; track item.key) {
     <button mat-fab (click)="onSelect(item.key)">
       @if (visualMode == 'keypad-numbers') {
         {{ item.key }}
-      } @else {
+      } @else if (visualMode == 'keypad-symbols') {
         <mat-icon [svgIcon]="item.value"></mat-icon>
+      } @else {
+        <img [src]="item.value" [alt]="item.key" />
       }
     </button>
   }
