@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
@@ -19,6 +19,8 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   }
 })
 export class CodeInputComponent {
+  @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
+
   mode: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
@@ -51,6 +53,9 @@ export class CodeInputComponent {
       },
       error: (error: AppError) => {
         this.problemCode = error.code || 777;
+        if (this.mode !== 'text-field') {
+          this.fabForm?.clear();
+        }
         if (error.code === 400) {
           this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
         } else if (error.code === 429) {

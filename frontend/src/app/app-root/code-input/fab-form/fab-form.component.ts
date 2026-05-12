@@ -42,7 +42,7 @@ export class FabFormComponent implements OnInit {
 
   activeIconSet: { [key: number]: string } = this.buttonIcons;
 
-  selectedValues: WritableSignal<(number | null)[]> = signal<(number | null)[]>(Array(5).fill(null));
+  selectedValues: WritableSignal<(number | null)[]> = signal<(number | null)[]>([]);
   activeValueIndex: Signal<number> = computed(() => this.selectedValues().indexOf(null));
 
   constructor(private mds: MainDataService) {}
@@ -53,12 +53,15 @@ export class FabFormComponent implements OnInit {
   }
 
   onSelect(selectedValue: string): void {
+    if (this.selectedValues().every(val => val === null)) {
+      this.clearInput.emit();
+    }
     this.selectedValues.update(selectedValues => {
       const copy = [...selectedValues];
       copy[this.activeValueIndex()] = parseInt(selectedValue, 10);
       return copy;
     });
-    // Auto-submit when 5th value is selected
+    // Auto-submit when all values are selected
     if (this.selectedValues().every(icon => icon !== null)) {
       this.submitCode.emit(this.selectedValues().join(''));
     }
@@ -75,6 +78,9 @@ export class FabFormComponent implements OnInit {
       }
       return copy;
     });
-    this.clearInput.emit();
+  }
+
+  clear(): void {
+    this.selectedValues.set(Array(this.length).fill(null));
   }
 }
