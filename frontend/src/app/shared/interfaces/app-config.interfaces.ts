@@ -3,7 +3,8 @@ import { KeyValuePairs } from '../../app.interfaces';
 export interface AppSettingsObject {
   appTitle: string,
   mainLogo: string,
-  introHtml: string,
+  privacyNotice: string,
+  accessibilityNotice: string,
   legalNoticeHtml: string,
   globalWarningText: string,
   globalWarningExpiredDay: string,

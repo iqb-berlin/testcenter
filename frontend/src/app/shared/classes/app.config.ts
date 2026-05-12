@@ -28,8 +28,10 @@ export class AppConfig {
   iqbStandardResponseTypeMax: number = 0;
   mainLogo = DEFAULT_LOGO;
   appTitle = 'IQB-Testcenter';
-  introHtml = '';
-  trustedIntroHtml: SafeUrl | null = null;
+  privacyNotice = '';
+  trustedPrivacyNotice: SafeUrl | null = null;
+  accessibilityNotice = '';
+  trustedAccessibilityNotice: SafeUrl | null = null;
   legalNoticeHtml = '';
   trustedLegalNoticeHtml: SafeUrl | null = null;
   globalWarningText = '';
@@ -72,13 +74,15 @@ export class AppConfig {
 
   setAppConfig(appConfig?: AppSettings): void {
     this.appTitle = 'IQB-Testcenter';
-    this.introHtml = 'Einführungstext nicht definiert';
+    this.privacyNotice = 'privacyNotice text nicht definiert';
+    this.trustedPrivacyNotice = null;
+    this.accessibilityNotice = 'accessibilityNotice text nicht definiert';
+    this.trustedAccessibilityNotice = null;
     this.legalNoticeHtml = '<p>Anbieter:<br>Max Mustermann<br>Musterstraße 1<br>13088 Berlin<br>' +
       '<br>Kontakt:<br>Telefon: 030/1234567-8<br>Telefax: 030/1234567-9<br>E-Mail: mail@mustermann.de' +
       '<br>Website: www.mustermann.de</p>';
-    this.mainLogo = DEFAULT_LOGO;
-    this.trustedIntroHtml = null;
     this.trustedLegalNoticeHtml = null;
+    this.mainLogo = DEFAULT_LOGO;
     this.globalWarningText = '';
     this.globalWarningExpiredDay = '';
     this.globalWarningExpiredHour = '';
@@ -88,8 +92,9 @@ export class AppConfig {
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
       if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
-      if (appConfig.introHtml) this.introHtml = appConfig.introHtml;
       if (appConfig.legalNoticeHtml) this.legalNoticeHtml = appConfig.legalNoticeHtml;
+      if (appConfig.privacyNotice) this.privacyNotice = appConfig.privacyNotice;
+      if (appConfig.accessibilityNotice) this.accessibilityNotice = appConfig.accessibilityNotice;
       if (appConfig.globalWarningText) this.globalWarningText = appConfig.globalWarningText;
       if (appConfig.globalWarningExpiredDay) this.globalWarningExpiredDay = appConfig.globalWarningExpiredDay;
       if (appConfig.globalWarningExpiredHour) {
@@ -99,8 +104,9 @@ export class AppConfig {
       if (appConfig.bugReportTarget) this.bugReportTarget = appConfig.bugReportTarget;
       if (appConfig.themeName) this.themeName = appConfig.themeName;
     }
-    this.trustedIntroHtml = this.sanitizer?.bypassSecurityTrustHtml(this.introHtml) ?? '';
     this.trustedLegalNoticeHtml = this.sanitizer?.bypassSecurityTrustHtml(this.legalNoticeHtml) ?? '';
+    this.trustedPrivacyNotice = this.sanitizer?.bypassSecurityTrustHtml(this.privacyNotice) ?? '';
+    this.trustedAccessibilityNotice = this.sanitizer?.bypassSecurityTrustHtml(this.accessibilityNotice) ?? '';
   }
 
   getWarningMessage(): string {
@@ -121,8 +127,9 @@ export class AppConfig {
     return {
       appTitle: this.appTitle,
       mainLogo: this.mainLogo,
-      introHtml: this.introHtml,
       legalNoticeHtml: this.legalNoticeHtml,
+      privacyNotice: this.privacyNotice,
+      accessibilityNotice: this.accessibilityNotice,
       globalWarningText: this.globalWarningText,
       globalWarningExpiredDay: this.globalWarningExpiredDay,
       globalWarningExpiredHour: this.globalWarningExpiredHour,

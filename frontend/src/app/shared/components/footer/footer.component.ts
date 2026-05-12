@@ -18,8 +18,9 @@ import { RouterLink } from '@angular/router';
         Version {{mainDataService.appConfig?.version}}
       </div>
       <div class="all-buttons">
-        <button matButton [routerLink]="['/legal-notice']">Barrierefreiheit</button>
-        <button matButton [routerLink]="['/legal-notice']">Impressum/Datenschutz</button>
+        <a matButton [routerLink]="['/accessibility']">Barrierefreiheit</a>
+        <a matButton [routerLink]="['/privacy']">Datenschutz</a>
+        <a matButton [routerLink]="['/legal-notice']">Impressum</a>
       </div>
     </footer>
   `,
@@ -36,6 +37,7 @@ import { RouterLink } from '@angular/router';
       display: flex;
       flex-direction: row;
       justify-content: space-around;
+      align-items: center;
     }
     footer button {
       max-height: 100%;

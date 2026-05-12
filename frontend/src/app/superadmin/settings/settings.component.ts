@@ -86,7 +86,8 @@ export class SettingsComponent implements OnInit {
               private messageService: MessageService, private mainDataService: MainDataService) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
-      introHtml: this.formBuilder.control(''),
+      privacy: this.formBuilder.control(''),
+      accessibility: this.formBuilder.control(''),
       legalNoticeHtml: this.formBuilder.control(''),
       globalWarningText: this.formBuilder.control(''),
       globalWarningExpiredDay: this.formBuilder.control(''),
@@ -101,8 +102,9 @@ export class SettingsComponent implements OnInit {
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.setValue({
       appTitle: appConfig.appTitle,
-      introHtml: appConfig.introHtml,
       legalNoticeHtml: appConfig.legalNoticeHtml,
+      privacy: appConfig.privacyNotice,
+      accessibility: appConfig.accessibilityNotice,
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
@@ -126,8 +128,9 @@ export class SettingsComponent implements OnInit {
   saveAppConfig(): void {
     const appConfig: AppSettings = {
       appTitle: this.configForm.get('appTitle')?.value,
-      introHtml: this.configForm.get('introHtml')?.value,
       legalNoticeHtml: this.configForm.get('legalNoticeHtml')?.value,
+      privacyNotice: this.configForm.get('privacy')?.value,
+      accessibilityNotice: this.configForm.get('accessibility')?.value,
       globalWarningText: this.configForm.get('globalWarningText')?.value,
       globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
@@ -155,8 +158,9 @@ export class SettingsComponent implements OnInit {
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.reset({
       appTitle: appConfig.appTitle,
-      introHtml: appConfig.introHtml,
       legalNoticeHtml: appConfig.legalNoticeHtml,
+      privacy: appConfig.privacyNotice,
+      accessibility: appConfig.accessibilityNotice,
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,

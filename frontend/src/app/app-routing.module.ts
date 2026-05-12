@@ -18,10 +18,9 @@ import {
   TestComponentActivateGuard
 } from './app-route-guards';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
+import { GenericInfoPageComponent } from './app-root/generic-info-page/generic-info-page.component';
 import { AppModuleSettings } from './app.interfaces';
 import { StarterComponent } from './app-root/starter/starter.component';
-import { FabFormComponent } from './app-root/code-input/fab-form/fab-form.component';
 
 const routes: Routes = [
   {
@@ -75,7 +74,27 @@ const routes: Routes = [
   },
   {
     path: 'legal-notice',
-    component: LegalNoticeComponent
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Rechtliches',
+      contentKey: 'trustedLegalNoticeHtml'
+    }
+  },
+  {
+    path: 'privacy',
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Datenschutz',
+      contentKey: 'trustedPrivacyNotice'
+    }
+  },
+  {
+    path: 'accessibility',
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Barrierefreiheit',
+      contentKey: 'trustedAccessibilityNotice'
+    }
   },
   {
     path: 'check',
