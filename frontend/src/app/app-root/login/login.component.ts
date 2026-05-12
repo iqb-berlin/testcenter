@@ -10,7 +10,6 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { FooterService } from '@shared/services/footer.service';
 import { ThemeService } from '@shared/services/theme.service';
-import { MessageService } from '@shared/services/message.service';
 import {
   MainDataService,
   UserAgentService, SharedModule, AlertComponent
@@ -21,7 +20,7 @@ import { HeaderService } from '@shared/services/header.service';
 
 @Component({
   templateUrl: 'login.component.html',
-  styleUrl: 'login.component.css',
+  styleUrl: 'login.component.scss',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -37,7 +36,6 @@ import { HeaderService } from '@shared/services/header.service';
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
-  @ViewChild('helpDialogTemplate') helpDialogTemplate!: TemplateRef<unknown>;
   static oldLoginName = '';
   private routingSubscription: Subscription | null = null;
   returnTo = '';
@@ -61,8 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private headerService: HeaderService,
     private footerService: FooterService,
-    private themeService: ThemeService,
-    private messageService: MessageService
+    private themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
@@ -129,13 +126,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.username = null;
         this.loginForm.reset();
       }
-    });
-  }
-
-  openDialog() {
-    this.messageService.showInfoDialog({
-      title: 'Anleitung',
-      contentTemplate: this.helpDialogTemplate
     });
   }
 

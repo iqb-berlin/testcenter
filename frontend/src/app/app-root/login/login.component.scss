@@ -88,28 +88,16 @@ h2 {
   flex-direction: row;
   justify-content: start;
   align-items: center;
-  gap: 24px;
   padding: 10px 10px 10px 24px;
   border: 1px solid var(--mat-sys-primary);
   border-radius: 10px;
   width: 80%;
-  box-sizing: border-box;
-  cursor: pointer;
-}
 
-.help-box mat-card-header {
-  color: var(--mat-sys-primary);
-  font-weight: bold;
-}
-
-.question-mark svg {
-  fill: var(--mat-sys-primary);
-}
-
-.description {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  mat-icon {
+    height: 100%;
+    width: unset;
+    color: var(--mat-sys-primary);
+  }
 }
 
 .button-section {
@@ -119,8 +107,4 @@ h2 {
   margin-top: auto;
   padding-bottom: 12px;
   margin-right: 24px;
-}
-
-ul.dialog-list {
-  padding-left: 15px;
 }
