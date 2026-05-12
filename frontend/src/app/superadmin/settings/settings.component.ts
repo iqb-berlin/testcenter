@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormsModule, ReactiveFormsModule
 } from '@angular/forms';
@@ -13,13 +13,6 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MessageService } from '@shared/services/message.service';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
-import { BackendService } from '../backend.service';
-import { AppConfig } from '../../shared/classes/app.config';
-import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
-import { ThemeService } from '../../shared/services/theme.service';
-import { AlertComponent, SharedModule } from '../../shared/shared.module';
-import { EditCustomTextsComponent } from './edit-custom-texts.component';
 import { Asset, AssetService } from '@shared/services/asset.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
@@ -31,6 +24,13 @@ import {
   MatCardImage,
   MatCardTitle
 } from '@angular/material/card';
+import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { BackendService } from '../backend.service';
+import { AppConfig } from '../../shared/classes/app.config';
+import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
+import { ThemeService } from '../../shared/services/theme.service';
+import { AlertComponent, SharedModule } from '../../shared/shared.module';
+import { EditCustomTextsComponent } from './edit-custom-texts.component';
 
 @Component({
   imports: [
@@ -103,8 +103,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
               public themeService: ThemeService, public assetService: AssetService,
-              private messageService: MessageService, private mainDataService: MainDataService,
-              @Inject('FILE_SERVER_URL') public readonly fileServerUrl: string) {
+              private messageService: MessageService, private mainDataService: MainDataService) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       privacy: this.formBuilder.control(''),
@@ -117,7 +116,6 @@ export class SettingsComponent implements OnInit {
       bugReportTarget: this.formBuilder.control(''),
       themeName: this.formBuilder.control('')
     });
-
   }
 
   async ngOnInit(): Promise<void> {

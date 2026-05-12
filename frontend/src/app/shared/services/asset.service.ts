@@ -79,7 +79,12 @@ export class AssetService {
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
-    return `${this.fileServerUrl}public/${this.assetSlotsSubject.getValue()[slotName]?.url}`;
+    const url = this.assetSlotsSubject.getValue()[slotName]?.url;
+    return url ? this.toAbsolute(url) : '';
+  }
+
+  toAbsolute(url: string): string {
+    return `${this.fileServerUrl}${url.replace(/^\//, '')}`;
   }
 }
 

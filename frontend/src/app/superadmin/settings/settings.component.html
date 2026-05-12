@@ -150,7 +150,7 @@
                 <mat-card-header>
                   <mat-card-title>{{ asset.originalName }}</mat-card-title>
                 </mat-card-header>
-                <img mat-card-image [src]="fileServerUrl + 'public' + asset.url" [alt]="asset.originalName"/>
+                <img mat-card-image [src]="assetService.toAbsolute(asset.url)" [alt]="asset.originalName"/>
                 <mat-card-actions>
                   <button matButton (click)="assetService.deleteAsset(asset.id)">Loeschen</button>
                 </mat-card-actions>
