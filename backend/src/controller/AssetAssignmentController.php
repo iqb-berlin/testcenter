@@ -16,22 +16,23 @@ class AssetAssignmentController extends Controller {
     $user  = $params['user'] ?? null;
 
     $rows = $dao->_("
-        SELECT ui.slot_name, ui.scope, ui.scope_id, ui.asset_id, a.url
-        FROM asset_assignment ui
-        JOIN assets a ON a.id = ui.asset_id
+        SELECT a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
+        FROM asset_assignment a_a
+        JOIN assets a ON a.id = a_a.asset_id
     ", [], true);
 
     $result = [];
     foreach ($rows as $row) {
       $key = $row['slot_name'];
+      $entry = [
+        'assetID' => $row['asset_id'],
+        'url' => FileService::urlFor($row['stored_name']),
+      ];
 
       // GLOBAL (lowest priority)
       if ($row['scope'] === 'global') {
         if (!isset($result[$key])) {
-          $result[$key] = [
-            'assetID' => $row['asset_id'],
-            'url' => $row['url'],
-          ];
+          $result[$key] = $entry;
         }
       }
 
@@ -39,22 +40,15 @@ class AssetAssignmentController extends Controller {
       if ($group !== null &&
         $row['scope'] === 'group' &&
         $row['scope_id'] == $group) {
-
-        $result[$key] = [
-          'assetID' => $row['asset_id'],
-          'url' => $row['url'],
-        ];
+        $result[$key] = $entry;
       }
 
       // USER override (highest priority)
       if ($user !== null &&
         $row['scope'] === 'user' &&
         $row['scope_id'] == $user) {
-        $result[$key] = [
-          'assetID' => $row['asset_id'],
-          'url' => $row['url'],
-        ];
-        }
+        $result[$key] = $entry;
+      }
     }
 
     $response->getBody()->write(json_encode($result));

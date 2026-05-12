@@ -51,4 +51,8 @@ class FileService {
     }
     return SystemConfig::$fileServer_url;
   }
+
+  public static function urlFor(string $storedName): string {
+    return PUBLIC_ASSET_URL_PREFIX . $storedName;
+  }
 }

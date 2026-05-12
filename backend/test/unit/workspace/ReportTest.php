@@ -36,6 +36,8 @@ final class ReportTest extends TestCase {
     if (!defined('DATA_DIR')) {
       vfsStream::setup('root', 0777);
       define('DATA_DIR', vfsStream::url('root/data'));
+      define('PUBLIC_ASSET_URL_PREFIX', '/public/uploaded_assets/');
+      define('PUBLIC_ASSET_DIR',        DATA_DIR . rtrim(PUBLIC_ASSET_URL_PREFIX, '/'));
     }
   }
 

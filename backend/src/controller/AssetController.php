@@ -6,6 +6,7 @@ use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
 class AssetController extends Controller {
+
   public function upload(Request $request, Response $response) {
     $uploadedFiles = $request->getUploadedFiles();
 
@@ -28,24 +29,18 @@ class AssetController extends Controller {
     // Generate safe filename
     $filename = uniqid('asset_', true) . '.' . $extension;
 
-    // Save to local folder
-    $uploadDir = __DIR__ . '/../../../data/public/uploaded_assets';
-    if (!is_dir($uploadDir)) {
-      mkdir($uploadDir, 0777, true);
+    if (!is_dir(PUBLIC_ASSET_DIR)) {
+      mkdir(PUBLIC_ASSET_DIR, 0755, true);
     }
-    $file->moveTo($uploadDir . DIRECTORY_SEPARATOR . $filename);
+    $file->moveTo(PUBLIC_ASSET_DIR . DIRECTORY_SEPARATOR . $filename);
 
-    $url = "uploaded_assets/" . $filename;
-
-    // Insert into DB
     $dao = new DAO();
     $id = $dao->insert("
-        INSERT INTO assets (original_name, stored_name, url)
-        VALUES (:original_name, :stored_name, :url)",
+        INSERT INTO assets (original_name, stored_name)
+        VALUES (:original_name, :stored_name)",
       [
         ':original_name' => $originalName,
-        ':stored_name' => $filename,
-        ':url' => $url
+        ':stored_name' => $filename
       ]
     );
 
@@ -53,7 +48,7 @@ class AssetController extends Controller {
       "id" => $id,
       "originalName" => $originalName,
       "storedName" => $filename,
-      "url" => $url
+      "url" => FileService::urlFor($filename)
     ];
     $response->getBody()->write(json_encode($responseData));
     return $response->withHeader('Content-Type', 'application/json');
@@ -104,13 +99,18 @@ class AssetController extends Controller {
 
   public function list(Request $request, Response $response): Response {
     $dao = new DAO();
-    $assets = $dao->_(
-      "SELECT id, original_name AS originalName, url, created_at AS createdAt
+    $rows = $dao->_(
+      "SELECT id, original_name AS originalName, stored_name AS storedName, created_at AS createdAt
            FROM assets
            ORDER BY created_at DESC",
       [],
       true
     );
+
+    $assets = array_map(static function (array $row): array {
+      $row['url'] = FileService::urlFor($row['storedName']);
+      return $row;
+    }, $rows);
 
     $response->getBody()->write(json_encode($assets));
     return $response
@@ -135,8 +135,7 @@ class AssetController extends Controller {
         ->withHeader('Content-Type', 'application/json');
     }
 
-    // Delete file from disk
-    $filePath = __DIR__ . '/../../../data/public/uploaded_assets/' . $asset['stored_name'];
+    $filePath = PUBLIC_ASSET_DIR . DIRECTORY_SEPARATOR . $asset['stored_name'];
     if (file_exists($filePath)) {
       unlink($filePath);
     }

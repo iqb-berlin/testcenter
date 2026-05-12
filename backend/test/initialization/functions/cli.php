@@ -10,6 +10,8 @@ function runCli(callable $callback): void {
 
   define('ROOT_DIR', realpath(dirname(__FILE__) . '/../../../..'));
   define('DATA_DIR', ROOT_DIR . '/data');
+  define('PUBLIC_ASSET_URL_PREFIX', '/public/uploaded_assets/');
+  define('PUBLIC_ASSET_DIR',        DATA_DIR . rtrim(PUBLIC_ASSET_URL_PREFIX, '/'));
 
   require_once ROOT_DIR . "/backend/vendor/autoload.php";
   SystemConfig::read();

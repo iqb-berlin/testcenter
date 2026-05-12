@@ -75,6 +75,8 @@ class TestEnvironment {
     vfsStream::newDirectory('data/ws_1', 0777)->at($vfs);
 
     define('DATA_DIR', vfsStream::url('root/data'));
+    define('PUBLIC_ASSET_URL_PREFIX', '/public/uploaded_assets/');
+    define('PUBLIC_ASSET_DIR',        DATA_DIR . rtrim(PUBLIC_ASSET_URL_PREFIX, '/'));
   }
 
   private static function createTestFiles(bool $includeSystemTestFiles): void {
@@ -178,6 +180,8 @@ class TestEnvironment {
 
   private static function defineTestDataDir(bool $shouldReset): void {
     define('DATA_DIR', ROOT_DIR . '/data-TEST');
+    define('PUBLIC_ASSET_URL_PREFIX', '/public/uploaded_assets/');
+    define('PUBLIC_ASSET_DIR',        DATA_DIR . rtrim(PUBLIC_ASSET_URL_PREFIX, '/'));
     if (!$shouldReset) {
       return;
     }
