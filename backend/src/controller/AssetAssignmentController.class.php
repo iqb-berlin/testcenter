@@ -46,17 +46,14 @@ class AssetAssignmentController extends Controller {
 
   public static function set(Request $request, Response $response): Response {
     $requestData = json_decode($request->getBody()->getContents(), true);
-    $assignments = $requestData['assignments'] ?? [];
+    $assignments = array_map(static fn(array $a): array => [
+      'slotName' => $a['slotName'],
+      'assetId' => (int) $a['assetID'],
+      'scope' => $a['scope'] ?? 'global',
+      'scopeId' => (string) ($a['scopeID'] ?? 'global')
+    ], $requestData['assignments'] ?? []);
 
-    // TODO n+1 das kann zusammengefasst werden, sodass nur 1 DB-Call gemacht wird
-    foreach ($assignments as $assignment) {
-      self::assetDAO()->upsertAssignment(
-        $assignment['slotName'],
-        (int) $assignment['assetID'],
-        $assignment['scope'] ?? 'global',
-        (string) ($assignment['scopeID'] ?? 'global')
-      );
-    }
+    self::assetDAO()->upsertAssignments($assignments);
 
     return $response->withJson(['status' => 'ok']);
   }

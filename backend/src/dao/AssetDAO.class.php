@@ -8,9 +8,9 @@ class AssetDAO extends DAO {
    */
   public function getAllAssets(): array {
     return $this->_(
-      "SELECT id, original_name, stored_name, created_at
-         FROM assets
-         ORDER BY created_at DESC",
+      'select id, original_name, stored_name, created_at
+         from assets
+         order by created_at desc',
       [],
       true
     );
@@ -20,17 +20,15 @@ class AssetDAO extends DAO {
    * @return array{id: int, original_name: string, stored_name: string, created_at: string}|null
    */
   public function getAsset(int $id): ?array {
-    $row = $this->_(
-      "SELECT id, original_name, stored_name, created_at FROM assets WHERE id = :id",
+    return $this->_(
+      'select id, original_name, stored_name, created_at from assets where id = :id',
       [':id' => $id]
     );
-    return $row ?: null;
   }
 
   public function createAsset(string $originalName, string $storedName): int {
     return $this->insert(
-      "INSERT INTO assets (original_name, stored_name)
-         VALUES (:original_name, :stored_name)",
+      'insert into assets (original_name, stored_name) values (:original_name, :stored_name)',
       [
         ':original_name' => $originalName,
         ':stored_name' => $storedName
@@ -39,7 +37,7 @@ class AssetDAO extends DAO {
   }
 
   public function deleteAsset(int $id): void {
-    $this->_("DELETE FROM assets WHERE id = :id", [':id' => $id]);
+    $this->_('delete from assets where id = :id', [':id' => $id]);
   }
 
   /**
@@ -47,25 +45,38 @@ class AssetDAO extends DAO {
    */
   public function getAssignments(): array {
     return $this->_(
-      "SELECT a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
-         FROM asset_assignment a_a
-         JOIN assets a ON a.id = a_a.asset_id",
+      'select a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
+         from asset_assignment a_a
+         join assets a on a.id = a_a.asset_id',
       [],
       true
     );
   }
 
-  public function upsertAssignment(string $slotName, int $assetId, string $scope, string $scopeId): void {
-    $this->_(
-      "INSERT INTO asset_assignment (slot_name, asset_id, scope, scope_id)
-         VALUES (:slot, :asset, :scope, :scope_id)
-         ON DUPLICATE KEY UPDATE asset_id = :asset",
-      [
-        ':slot' => $slotName,
-        ':asset' => $assetId,
-        ':scope' => $scope,
-        ':scope_id' => $scopeId
-      ]
-    );
+  /**
+   * @param array<int, array{slotName: string, assetId: int, scope: string, scopeId: string}> $assignments
+   */
+  public function upsertAssignments(array $assignments): void {
+    if (empty($assignments)) {
+      return;
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    foreach ($assignments as $index => $assignment) {
+      $placeholders[] = "(:slot{$index}, :asset{$index}, :scope{$index}, :scopeId{$index})";
+
+      $params[":slot{$index}"] = $assignment['slotName'];
+      $params[":asset{$index}"] = $assignment['assetId'];
+      $params[":scope{$index}"] = $assignment['scope'];
+      $params[":scopeId{$index}"] = $assignment['scopeId'];
+    }
+
+    $sql = 'insert into asset_assignment (slot_name, asset_id, scope, scope_id) values '
+      . implode(', ', $placeholders)
+      . ' on duplicate key update asset_id = values(asset_id)';
+
+    $this->_($sql, $params);
   }
 }
