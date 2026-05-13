@@ -58,10 +58,6 @@ try {
     DB::connect();
   }
 
-  // Public asset storage. The URL prefix must match the nginx alias in file-server/nginx.conf (location /public/).
-  define('PUBLIC_ASSET_URL_PREFIX', '/public/uploaded_assets/');
-  define('PUBLIC_ASSET_DIR',        DATA_DIR . rtrim(PUBLIC_ASSET_URL_PREFIX, '/'));
-
   $container = new Container();
   AppFactory::setContainer($container);
   $app = AppFactory::create();

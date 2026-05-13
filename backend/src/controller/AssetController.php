@@ -29,10 +29,10 @@ class AssetController extends Controller {
     // Generate safe filename, to be able to save the same file (name + content) multiple times
     $filename = 'asset_' . Random::generateRandomId() . '.' . $extension;
 
-    if (!is_dir(PUBLIC_ASSET_DIR)) {
-      mkdir(PUBLIC_ASSET_DIR, 0755, true);
+    if (!is_dir(AssetStorage::dir())) {
+      mkdir(AssetStorage::dir(), 0755, true);
     }
-    $file->moveTo(PUBLIC_ASSET_DIR . DIRECTORY_SEPARATOR . $filename);
+    $file->moveTo(AssetStorage::dir() . DIRECTORY_SEPARATOR . $filename);
 
     $dao = new DAO();
     $id = $dao->insert("
@@ -48,7 +48,7 @@ class AssetController extends Controller {
       "id" => $id,
       "originalName" => $originalName,
       "storedName" => $filename,
-      "url" => FileService::urlFor($filename)
+      "url" => AssetStorage::urlFor($filename)
     ];
     $response->getBody()->write(json_encode($responseData));
     return $response->withHeader('Content-Type', 'application/json');
@@ -108,7 +108,7 @@ class AssetController extends Controller {
     );
 
     $assets = array_map(static function (array $row): array {
-      $row['url'] = FileService::urlFor($row['storedName']);
+      $row['url'] = AssetStorage::urlFor($row['storedName']);
       return $row;
     }, $rows);
 
@@ -135,7 +135,7 @@ class AssetController extends Controller {
         ->withHeader('Content-Type', 'application/json');
     }
 
-    $filePath = PUBLIC_ASSET_DIR . DIRECTORY_SEPARATOR . $asset['stored_name'];
+    $filePath = AssetStorage::dir() . DIRECTORY_SEPARATOR . $asset['stored_name'];
     if (file_exists($filePath)) {
       unlink($filePath);
     }

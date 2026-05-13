@@ -26,7 +26,7 @@ class AssetAssignmentController extends Controller {
       $key = $row['slot_name'];
       $entry = [
         'assetID' => $row['asset_id'],
-        'url' => FileService::urlFor($row['stored_name']),
+        'url' => AssetStorage::urlFor($row['stored_name']),
       ];
 
       // GLOBAL (lowest priority)
