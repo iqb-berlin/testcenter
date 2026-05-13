@@ -80,15 +80,29 @@ class AssetDAO extends DAO {
     $this->_($sql, $params);
   }
 
-  public function deleteAssignment(string $slotName, string $scope, string $scopeId): void {
-    $this->_(
-      'delete from asset_assignment
-         where slot_name = :slot and scope = :scope and scope_id = :scopeId',
-      [
-        ':slot' => $slotName,
-        ':scope' => $scope,
-        ':scopeId' => $scopeId
-      ]
-    );
+  /**
+   * @param array<int, array{slotName: string, scope: string, scopeId: string}> $assignments
+   */
+  public function deleteAssignments(array $assignments): void {
+    if (empty($assignments)) {
+      return;
+    }
+
+    $placeholders = [];
+    $params = [];
+
+    foreach ($assignments as $index => $assignment) {
+      $placeholders[] = "(:slot{$index}, :scope{$index}, :scopeId{$index})";
+
+      $params[":slot{$index}"] = $assignment['slotName'];
+      $params[":scope{$index}"] = $assignment['scope'];
+      $params[":scopeId{$index}"] = $assignment['scopeId'];
+    }
+
+    $sql = 'delete from asset_assignment where (slot_name, scope, scope_id) in ('
+      . implode(', ', $placeholders)
+      . ')';
+
+    $this->_($sql, $params);
   }
 }
