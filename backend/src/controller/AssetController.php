@@ -26,7 +26,7 @@ class AssetController extends Controller {
     $originalName = $validationResult['originalName'];
     $extension = $validationResult['extension'];
 
-    // Generate safe filename
+    // Generate safe filename, to be able to save the same file (name + content) multiple times
     $filename = uniqid('asset_', true) . '.' . $extension;
 
     if (!is_dir(PUBLIC_ASSET_DIR)) {
