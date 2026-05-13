@@ -1,32 +1,35 @@
-import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { MainDataService } from '@shared/shared.module';
+import { Component } from '@angular/core';
+import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
+import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ThemeService } from '@shared/services/theme.service';
-import { TextFieldFormComponent } from './text-field-form.component';
-import { FabFormComponent } from './fab-form/fab-form.component';
 
 @Component({
-  templateUrl: './code-input.component.html',
-  styleUrl: './code-input.component.scss',
   imports: [
-    TextFieldFormComponent,
-    FabFormComponent
+    CodeInputComponent
   ],
+  template: `
+    <tc-code-input [mode]="mode" [length]="length" [problemText]="problemText"
+                   (submitCode)="onSubmit($event)">
+    </tc-code-input>
+    <div class="illustration">
+      <img [src]="themeService.activeTheme.imagePaths?.codeInputIllustration" alt="Code input illustration">
+    </div>
+  `,
+  styleUrl: 'code-login.component.scss',
   host: {
     '[class.alt-styling]': 'mode === "keypad-symbols-alt"'
   }
 })
-export class CodeInputComponent {
-  @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
-
+export class CodeLoginComponent {
   mode: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
 
-  constructor(private router: Router, public bs: BackendService, public mds: MainDataService,
+  constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
               public themeService: ThemeService) {
     this.bs.getSessionData().subscribe((authData: AuthData) => {
       this.mode = authData.viewSettings.codeInput?.type || 'text-field';
@@ -34,7 +37,7 @@ export class CodeInputComponent {
     });
   }
 
-  protected onSubmit(code: string | null) {
+  protected onSubmit(code: string) {
     if (!code) return;
     this.problemText = '';
     this.problemCode = 0;
@@ -53,9 +56,6 @@ export class CodeInputComponent {
       },
       error: (error: AppError) => {
         this.problemCode = error.code || 777;
-        if (this.mode !== 'text-field') {
-          this.fabForm?.clear();
-        }
         if (error.code === 400) {
           this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
         } else if (error.code === 429) {

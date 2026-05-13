@@ -16,7 +16,7 @@ import { CodeInputType } from '@app/app.interfaces';
 export class FabFormComponent implements OnInit {
   @Input() visualMode: CodeInputType = 'keypad-symbols-alt';
   @Input() length: number | undefined = 5;
-  @Output() submitCode = new EventEmitter<string | null>();
+  @Output() submitCode = new EventEmitter<string>();
   @Output() clearInput = new EventEmitter<void>();
 
   readonly buttonIcons: { [key: number]: string } = {

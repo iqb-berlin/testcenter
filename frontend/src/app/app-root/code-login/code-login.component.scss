@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  height: 100%;
+
+  > * {
+    width: 50%;
+    padding: 24px;
+  }
+
+  &.alt-styling {
+    background-color: var(--mat-sys-secondary);
+  }
+}
+
+.illustration {
+  display: flex;
+  justify-content: center;
+
+  img {
+    max-height: 70%;
+  }
+}

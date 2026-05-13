@@ -56,10 +56,13 @@ import { CustomtextPipe, SharedModule } from '@shared/shared.module';
   `
 })
 export class TextFieldFormComponent {
-  @Output() submitCode = new EventEmitter<string | null>();
+  @Output() submitCode = new EventEmitter<string>();
 
   codeinputform = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(2)])
+    code: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(2)]
+    })
   });
 
   protected clearInput() {

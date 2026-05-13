@@ -4,7 +4,7 @@ import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { CodeInputComponent } from './app-root/code-input/code-input.component';
+import { CodeLoginComponent } from './app-root/code-login/code-login.component';
 import {
   AdminComponentActivateGuard,
   AdminOrSuperAdminComponentActivateGuard,
@@ -62,7 +62,7 @@ const routes: Routes = [
       },
       {
         path: 'code-input',
-        component: CodeInputComponent,
+        component: CodeLoginComponent,
         canActivate: [CodeInputComponentActivateGuard]
       },
       {

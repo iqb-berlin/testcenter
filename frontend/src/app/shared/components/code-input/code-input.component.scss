@@ -1,18 +1,5 @@
 :host {
   display: flex;
-  height: 100%;
-
-  &.alt-styling {
-    background-color: var(--mat-sys-secondary);
-  }
-
-  > * {
-    width: 50%;
-    padding: 24px;
-  }
-}
-.left-side {
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
 
@@ -69,14 +56,5 @@
         color: var(--mat-sys-error);
         font-size: 14px;
       }
-  }
-}
-
-.right-side {
-  display: flex;
-  justify-content: center;
-
-  img {
-    max-height: 70%;
   }
 }
