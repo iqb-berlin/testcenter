@@ -79,4 +79,16 @@ class AssetDAO extends DAO {
 
     $this->_($sql, $params);
   }
+
+  public function deleteAssignment(string $slotName, string $scope, string $scopeId): void {
+    $this->_(
+      'delete from asset_assignment
+         where slot_name = :slot and scope = :scope and scope_id = :scopeId',
+      [
+        ':slot' => $slotName,
+        ':scope' => $scope,
+        ':scopeId' => $scopeId
+      ]
+    );
+  }
 }

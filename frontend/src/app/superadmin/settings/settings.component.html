@@ -171,7 +171,7 @@
             <p [style.width.px]="150">{{ slot.slotLabel }}</p>
             <mat-form-field appearance="fill">
               <mat-label>Asset auswählen </mat-label>
-              <mat-select [value]="$any(slots)[slot.slotName]?.assetID"
+              <mat-select [value]="$any(slots)[slot.slotName]?.assetID ?? undefined"
                           (valueChange)="assetService.updateSlot(slot.slotName, $event)">
                 <mat-option [value]="undefined">Keines</mat-option>
                 @for (asset of assetService.allAssets; track asset.id) {

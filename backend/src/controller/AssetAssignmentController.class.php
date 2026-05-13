@@ -46,14 +46,28 @@ class AssetAssignmentController extends Controller {
 
   public static function set(Request $request, Response $response): Response {
     $requestData = json_decode($request->getBody()->getContents(), true);
-    $assignments = array_map(static fn(array $a): array => [
-      'slotName' => $a['slotName'],
-      'assetId' => (int) $a['assetID'],
-      'scope' => $a['scope'] ?? 'global',
-      'scopeId' => (string) ($a['scopeID'] ?? 'global')
-    ], $requestData['assignments'] ?? []);
+    $payload = $requestData['assignments'] ?? [];
 
-    self::assetDAO()->upsertAssignments($assignments);
+    $toUpsert = [];
+    $dao = self::assetDAO();
+    foreach ($payload as $a) {
+      $slotName = $a['slotName'];
+      $scope = $a['scope'] ?? 'global';
+      $scopeId = (string) ($a['scopeID'] ?? 'global');
+
+      if ($a['assetID'] === null) {
+        $dao->deleteAssignment($slotName, $scope, $scopeId);
+        continue;
+      }
+
+      $toUpsert[] = [
+        'slotName' => $slotName,
+        'assetId' => (int) $a['assetID'],
+        'scope' => $scope,
+        'scopeId' => $scopeId
+      ];
+    }
+    $dao->upsertAssignments($toUpsert);
 
     return $response->withJson(['status' => 'ok']);
   }

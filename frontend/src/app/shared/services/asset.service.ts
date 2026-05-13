@@ -56,11 +56,11 @@ export class AssetService {
   updateSlot(slotName: AssetSlotName, assetID: number | undefined): void {
     const currentSlots = { ...this.assetSlotsSubject.getValue() };
     if (assetID === undefined) {
-      delete currentSlots[slotName as AssetSlotName];
+      currentSlots[slotName] = { assetID: null, url: null };
     } else {
       const asset = this.allAssets.find(a => a.id === assetID);
       if (asset) {
-        currentSlots[slotName as AssetSlotName] = { assetID, url: asset.url };
+        currentSlots[slotName] = { assetID, url: asset.url };
       }
     }
     this.assetSlotsSubject.next(currentSlots);
@@ -75,7 +75,11 @@ export class AssetService {
         scope: 'global' as const,
         scopeID: 'global' as const
       }));
-    this.backendService.setAssetAssignments({ assignments }).subscribe();
+    this.backendService.setAssetAssignments({ assignments }).subscribe(() => {
+      this.backendService.getAssetAssignments().subscribe(refreshed => {
+        this.assetSlotsSubject.next(refreshed);
+      });
+    });
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
@@ -95,8 +99,8 @@ export interface Asset {
 }
 
 export interface AssetAssignment {
-  assetID: number;
-  url: string;
+  assetID: number | null;
+  url: string | null;
 }
 
 export type AssetAssignments = Partial<Record<AssetSlotName, AssetAssignment>>;
@@ -106,7 +110,7 @@ export type AssetSlotName = 'logo' | 'loginIllustration' | 'loginCompanion';
 export interface AssignmentPostData {
   assignments: {
     slotName: AssetSlotName;
-    assetID: number;
+    assetID: number | null;
     scope: 'global';
     scopeID: 'global';
   }[]
