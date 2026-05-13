@@ -73,7 +73,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.mainDataService.appConfig$ = new AppConfig(sysConfig, this.customtextService,
                                                         this.themeService.availableThemes[0].name,
                                                         this.sanitizer);
-        this.themeService.setTheme(sysConfig.appConfig.themeName);
+        this.themeService.setTheme(
+          this.mainDataService.getAuthData()?.viewSettings.theme || sysConfig.appConfig.themeName);
       });
 
     // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.

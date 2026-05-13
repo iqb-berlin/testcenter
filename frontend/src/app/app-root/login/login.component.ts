@@ -83,6 +83,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
+        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
         this.navigateAfterLogin(authDataTyped);
       },
       error: error => {
