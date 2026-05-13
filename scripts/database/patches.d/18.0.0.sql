@@ -12,5 +12,6 @@ CREATE TABLE asset_assignment (
   scope ENUM('global', 'group', 'user') NOT NULL,
   scope_id VARCHAR(100) NOT NULL DEFAULT 'global', -- group/login ID
   UNIQUE KEY unique_assignment (slot_name, scope, scope_id),
+  KEY idx_scope (scope, scope_id),
   FOREIGN KEY (asset_id) REFERENCES assets(id)
 );
