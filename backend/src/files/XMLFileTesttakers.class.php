@@ -20,6 +20,7 @@ class XMLFileTesttakers extends XMLFile {
       $this->checkIfBookletsArePresent($login, $workspaceCache);
     }
 
+    $this->checkAssetAssignments($workspaceCache);
     $this->checkIfIdsAreUsedInOtherFiles($workspaceCache);
   }
 
@@ -145,6 +146,82 @@ class XMLFileTesttakers extends XMLFile {
     }
 
     return $groups;
+  }
+
+  /**
+   * @return array<int, array{slotName: string, assetName: string, scope: string, scopeId: string}>
+   */
+  public function getAssetAssignments(): array {
+    if (!$this->isValid()) {
+      return [];
+    }
+
+    return $this->collectAssetAssignments();
+  }
+
+  /**
+   * @return array<int, array{slotName: string, assetName: string, scope: string, scopeId: string}>
+   */
+  private function collectAssetAssignments(): array {
+    $assignments = [];
+
+    foreach ($this->getXml()->xpath('Group') as $groupElement) {
+      $this->appendAssetAssignments(
+        $assignments,
+        $groupElement,
+        'group',
+        (string) $groupElement['id']
+      );
+
+      foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
+        $this->appendAssetAssignments(
+          $assignments,
+          $loginElement,
+          'user',
+          (string) $loginElement['name']
+        );
+      }
+    }
+
+    return $assignments;
+  }
+
+  private function checkAssetAssignments(WorkspaceCache $workspaceCache): void {
+    foreach ($this->collectAssetAssignments() as $assignment) {
+      if ($assignment['assetName'] === '') {
+        $this->report(
+          'error',
+          "Missing asset name for {$assignment['scope']} `{$assignment['scopeId']}` slot `{$assignment['slotName']}`"
+        );
+        continue;
+      }
+
+      if (!$workspaceCache->hasAsset($assignment['assetName'])) {
+        $this->report(
+          'error',
+          "Asset `{$assignment['assetName']}` not found for {$assignment['scope']} `{$assignment['scopeId']}` slot `{$assignment['slotName']}`"
+        );
+      }
+    }
+  }
+
+  /**
+   * @param array<int, array{slotName: string, assetName: string, scope: string, scopeId: string}> $assignments
+   */
+  private function appendAssetAssignments(
+    array &$assignments,
+    SimpleXMLElement $element,
+    string $scope,
+    string $scopeId
+  ): void {
+    foreach ($element->xpath('AssetAssignments/Asset') as $assetElement) {
+      $assignments[] = [
+        'slotName' => (string) $assetElement['slot'],
+        'assetName' => trim((string) $assetElement),
+        'scope' => $scope,
+        'scopeId' => $scopeId
+      ];
+    }
   }
 
   public function getLoginsInSameGroup(string $loginName, int $workspaceId): ?LoginArray {

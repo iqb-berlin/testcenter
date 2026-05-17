@@ -144,6 +144,18 @@ class WorkspaceDAO extends DAO {
     return $this->lastAffectedRows;
   }
 
+  /**
+   * @param array<int, array{slotName: string, assetName: string, scope: string, scopeId: string}> $assignments
+   * @return array{deleted: int, added: int}
+   */
+  public function updateAssetAssignmentSource(string $source, array $assignments): array {
+    return (new AssetDAO())->updateXmlAssignments($this->workspaceId, $source, $assignments);
+  }
+
+  public function deleteAssetAssignmentSource(string $source): int {
+    return (new AssetDAO())->deleteXmlAssignments($this->workspaceId, $source);
+  }
+
   public function storeFile(File $file): void {
     $this->_("replace into files (
                     workspace_id,

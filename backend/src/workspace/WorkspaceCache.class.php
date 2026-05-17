@@ -9,6 +9,7 @@ class WorkspaceCache {
   protected array $used = [];
   protected Workspace $workspace;
   protected array $globalIds = []; // type => [id => fileName]
+  protected ?array $assetOriginalNames = null;
 
   function __construct(Workspace $workspace) {
     $this->workspace = $workspace;
@@ -150,5 +151,16 @@ class WorkspaceCache {
 
   public function addGlobalIdSource(string $fileName, string $type, array $idList): void {
     $this->globalIds[$this->getId()][$fileName][$type] = $idList;
+  }
+
+  public function hasAsset(string $originalName): bool {
+    if ($this->assetOriginalNames === null) {
+      $this->assetOriginalNames = [];
+      foreach ((new AssetDAO())->getAllAssets() as $asset) {
+        $this->assetOriginalNames[$asset['original_name']] = true;
+      }
+    }
+
+    return isset($this->assetOriginalNames[$originalName]);
   }
 }
