@@ -47,10 +47,19 @@ class AssetController extends Controller {
     }
     $file->moveTo($uploadDir . DIRECTORY_SEPARATOR . $storedName);
 
-    $id = self::assetDAO()->createAsset($originalName, $storedName);
+    try {
+      $replacement = self::assetDAO()->replaceAssetByOriginalName($originalName, $storedName);
+    } catch (Throwable $exception) {
+      self::deleteStoredFile($storedName);
+      throw $exception;
+    }
+
+    if ($replacement['previousStoredName']) {
+      self::deleteStoredFile($replacement['previousStoredName']);
+    }
 
     return $response->withJson([
-      'id' => $id,
+      'id' => $replacement['id'],
       'originalName' => $originalName,
       'storedName' => $storedName,
       'url' => AssetStorage::urlFor($storedName)
@@ -64,10 +73,7 @@ class AssetController extends Controller {
       return $response->withJson(['error' => 'Asset not found'])->withStatus(404);
     }
 
-    $filePath = AssetStorage::dir() . DIRECTORY_SEPARATOR . $asset['stored_name'];
-    if (file_exists($filePath)) {
-      unlink($filePath);
-    }
+    self::deleteStoredFile($asset['stored_name']);
 
     self::assetDAO()->deleteAsset((int) $args['id']);
 
@@ -107,5 +113,12 @@ class AssetController extends Controller {
       'extension' => $extension,
       'mimeType' => $mimeType
     ];
+  }
+
+  private static function deleteStoredFile(string $storedName): void {
+    $filePath = AssetStorage::dir() . DIRECTORY_SEPARATOR . $storedName;
+    if (file_exists($filePath)) {
+      unlink($filePath);
+    }
   }
 }

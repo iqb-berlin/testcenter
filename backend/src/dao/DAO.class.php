@@ -23,7 +23,9 @@ class DAO {
     'unit_data',
     'files',
     'unit_defs_attachments',
-    'file_relations'
+    'file_relations',
+    'assets',
+    'asset_assignment'
   ];
 
   protected ?PDO $pdoDBhandle = null;

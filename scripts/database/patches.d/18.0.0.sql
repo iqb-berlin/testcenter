@@ -3,6 +3,7 @@ CREATE TABLE assets (
   original_name VARCHAR(255) NOT NULL,
   stored_name VARCHAR(255) NOT NULL UNIQUE,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  UNIQUE KEY unique_original_name (original_name)
 );
 
 CREATE TABLE asset_assignment (
