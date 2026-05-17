@@ -111,6 +111,47 @@ class AssetDAO extends DAO {
   }
 
   /**
+   * @return array<int, array{workspace_id: int, source: string|null, slot_name: string, scope: string, scope_id: string, asset_id: int, stored_name: string}>
+   */
+  public function getAssignmentResolutionRows(
+    ?int $workspaceId = null,
+    ?string $groupName = null,
+    ?string $loginName = null
+  ): array {
+    $conditions = [
+      "(a_a.workspace_id = 0 and a_a.source is null and a_a.scope = 'global')"
+    ];
+    $params = [];
+
+    if ($workspaceId !== null && $groupName !== null) {
+      $conditions[] = "(a_a.workspace_id = :group_workspace_id and a_a.scope = 'group' and a_a.scope_id = :group_name)";
+      $params[':group_workspace_id'] = $workspaceId;
+      $params[':group_name'] = $groupName;
+    }
+
+    if ($workspaceId !== null && $loginName !== null) {
+      $conditions[] = "(a_a.workspace_id = :login_workspace_id and a_a.scope = 'user' and a_a.scope_id = :login_name)";
+      $params[':login_workspace_id'] = $workspaceId;
+      $params[':login_name'] = $loginName;
+    }
+
+    return $this->_(
+      'select a_a.workspace_id, a_a.source, a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
+         from asset_assignment a_a
+         join assets a on a.id = a_a.asset_id
+        where ' . implode(' or ', $conditions) . '
+        order by case a_a.scope
+                   when \'global\' then 1
+                   when \'group\' then 2
+                   when \'user\' then 3
+                 end,
+                 a_a.slot_name',
+      $params,
+      true
+    );
+  }
+
+  /**
    * @param array<int, array{slotName: string, assetId: int, scope: string, scopeId: string, workspaceId?: int, source?: string|null}> $assignments
    */
   public function upsertAssignments(array $assignments): void {

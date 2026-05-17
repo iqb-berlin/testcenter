@@ -8,37 +8,36 @@ use Slim\Http\ServerRequest as Request;
 // TODO hier kann der asset name mitgeliefert werden, sodass das frontend sich den
 // extra lookup sparen könnte.
 class AssetAssignmentController extends Controller {
+  private const DEFAULT_ASSIGNMENTS = [
+    'logo' => [
+      'assetID' => null,
+      'url' => 'assets/IQB-Logo-2025.png'
+    ],
+    'loginIllustration' => [
+      'assetID' => null,
+      'url' => 'assets/login-illustration.png'
+    ],
+    'loginCompanion' => [
+      'assetID' => null,
+      'url' => 'assets/images/bird-character.png'
+    ]
+  ];
+
   public static function get(Request $request, Response $response): Response {
-    $params = $request->getQueryParams();
-    $group = $params['group'] ?? null;
-    $user = $params['user'] ?? null;
+    $context = self::resolveContext($request);
 
-    $rows = self::assetDAO()->getAssignments();
+    $rows = self::assetDAO()->getAssignmentResolutionRows(
+      $context['workspaceId'],
+      $context['groupName'],
+      $context['loginName']
+    );
 
-    $result = [];
+    $result = self::DEFAULT_ASSIGNMENTS;
     foreach ($rows as $row) {
-      $key = $row['slot_name'];
-      $entry = [
-        'assetID' => $row['asset_id'],
+      $result[$row['slot_name']] = [
+        'assetID' => (int) $row['asset_id'],
         'url' => AssetStorage::urlFor($row['stored_name']),
       ];
-
-      // GLOBAL (lowest priority)
-      if ($row['scope'] === 'global') {
-        if (!isset($result[$key])) {
-          $result[$key] = $entry;
-        }
-      }
-
-      // GROUP override
-      if ($group !== null && $row['scope'] === 'group' && $row['scope_id'] == $group) {
-        $result[$key] = $entry;
-      }
-
-      // USER override (highest priority)
-      if ($user !== null && $row['scope'] === 'user' && $row['scope_id'] == $user) {
-        $result[$key] = $entry;
-      }
     }
 
     return $response->withJson($result);
@@ -53,8 +52,9 @@ class AssetAssignmentController extends Controller {
     foreach ($payload as $a) {
       $key = [
         'slotName' => $a['slotName'],
-        'scope' => $a['scope'] ?? 'global',
-        'scopeId' => (string) ($a['scopeID'] ?? 'global')
+        'scope' => 'global',
+        'scopeId' => 'global',
+        'workspaceId' => 0
       ];
 
       if ($a['assetID'] === null) {
@@ -69,5 +69,38 @@ class AssetAssignmentController extends Controller {
     self::assetDAO()->upsertAssignments($toUpsert);
 
     return $response->withJson(['status' => 'ok']);
+  }
+
+  /**
+   * @return array{workspaceId: int|null, groupName: string|null, loginName: string|null}
+   */
+  private static function resolveContext(Request $request): array {
+    $authToken = $request->getAttribute('AuthToken');
+
+    if (!$authToken instanceof AuthToken || $authToken->getType() === 'admin') {
+      return [
+        'workspaceId' => null,
+        'groupName' => null,
+        'loginName' => null
+      ];
+    }
+
+    if ($authToken->getType() === 'login') {
+      $loginSession = self::sessionDAO()->getLoginSessionByToken($authToken->getToken());
+      return [
+        'workspaceId' => $loginSession->getLogin()->getWorkspaceId(),
+        'groupName' => $loginSession->getLogin()->getGroupName(),
+        'loginName' => $loginSession->getLogin()->getName()
+      ];
+    }
+
+    $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+    $login = $personSession->getLoginSession()->getLogin();
+
+    return [
+      'workspaceId' => $login->getWorkspaceId(),
+      'groupName' => $login->getGroupName(),
+      'loginName' => $login->getName()
+    ];
   }
 }

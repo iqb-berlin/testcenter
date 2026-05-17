@@ -17,6 +17,7 @@ import {
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 import { HeaderService } from '@shared/services/header.service';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -59,7 +60,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private headerService: HeaderService,
     private footerService: FooterService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    protected assetService: AssetService
   ) { }
 
   ngOnInit(): void {

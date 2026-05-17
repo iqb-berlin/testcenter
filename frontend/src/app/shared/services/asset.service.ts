@@ -1,13 +1,21 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+
+const DEFAULT_ASSET_ASSIGNMENTS: AssetAssignments = {
+  logo: { assetID: null, url: 'assets/IQB-Logo-2025.png' },
+  loginIllustration: { assetID: null, url: 'assets/login-illustration.png' },
+  loginCompanion: { assetID: null, url: 'assets/images/bird-character.png' }
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class AssetService {
-  private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
+  private assetSlotsSubject = new BehaviorSubject<AssetAssignments>(DEFAULT_ASSET_ASSIGNMENTS);
   assetSlots$ = this.assetSlotsSubject.asObservable();
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = [
@@ -17,10 +25,11 @@ export class AssetService {
   ];
 
   constructor(private backendService: BackendService, private messageService: MessageService,
+              private mainDataService: MainDataService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) {
-    this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
-      this.assetSlotsSubject.next(assignments);
-    });
+    this.mainDataService.authData$
+      .pipe(distinctUntilChanged((previous, current) => previous?.token === current?.token))
+      .subscribe(() => this.refreshAssetSlots());
     backendService.getAllAssets().subscribe(assets => {
       this.allAssets = assets;
     });
@@ -76,19 +85,26 @@ export class AssetService {
         scopeID: 'global' as const
       }));
     this.backendService.setAssetAssignments({ assignments }).subscribe(() => {
-      this.backendService.getAssetAssignments().subscribe(refreshed => {
-        this.assetSlotsSubject.next(refreshed);
-      });
+      this.refreshAssetSlots();
     });
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
-    const url = this.assetSlotsSubject.getValue()[slotName]?.url;
+    const url = this.assetSlotsSubject.getValue()[slotName]?.url ?? DEFAULT_ASSET_ASSIGNMENTS[slotName]?.url;
     return url ? this.toAbsolute(url) : '';
   }
 
   toAbsolute(url: string): string {
+    if (/^(assets\/|data:|https?:\/\/)/.test(url)) {
+      return url;
+    }
     return `${this.fileServerUrl}${url.replace(/^\//, '')}`;
+  }
+
+  private refreshAssetSlots(): void {
+    this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
+      this.assetSlotsSubject.next({ ...DEFAULT_ASSET_ASSIGNMENTS, ...assignments });
+    });
   }
 }
 

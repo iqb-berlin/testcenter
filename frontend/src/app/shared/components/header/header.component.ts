@@ -50,6 +50,10 @@ export class HeaderComponent implements OnDestroy {
       this.logoURL = assetService.getAssetSrc('logo');
     });
 
+    assetService.assetSlots$.subscribe(() => {
+      this.logoURL = assetService.getAssetSrc('logo');
+    });
+
     this.mainDataService.authData$.subscribe(authData => {
       if (!authData) return;
       this.userRights = [];

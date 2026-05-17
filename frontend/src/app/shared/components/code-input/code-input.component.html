@@ -11,7 +11,7 @@
 
 <div class="companion" [class.error]="problemText">
   @if (inputType !== 'keypad-symbols-alt') {
-    <img src="assets/images/bird-character.png" alt="Helper character" class="companion-image">
+    <img [src]="assetService.getAssetSrc('loginCompanion')" alt="Helper character" class="companion-image">
   } @else {
     <img [src]="problemText ? 'assets/images/companion_stars_error.png' : 'assets/images/companion_stars.png'"
          alt="Helper character" class="companion-image">

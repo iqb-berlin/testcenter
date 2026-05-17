@@ -280,4 +280,5 @@ $app->delete('/assets/{id}', [AssetController::class, 'delete'])
 $app->post('/asset-assignments', [AssetAssignmentController::class, 'set'])
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
-$app->get('/asset-assignments', [AssetAssignmentController::class, 'get']);
+$app->get('/asset-assignments', [AssetAssignmentController::class, 'get'])
+  ->add(new HandleOptionalToken('login', 'person', 'admin'));

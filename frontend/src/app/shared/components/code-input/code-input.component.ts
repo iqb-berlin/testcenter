@@ -4,6 +4,7 @@ import {
 import { AsyncPipe } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { CodeInputType } from '@app/app.interfaces';
+import { AssetService } from '@shared/services/asset.service';
 import { TextFieldFormComponent } from './text-field-form.component';
 import { FabFormComponent } from './fab-form/fab-form.component';
 
@@ -29,6 +30,8 @@ export class CodeInputComponent implements OnChanges {
 
   @Output() submitCode = new EventEmitter<string>();
   @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
+
+  constructor(protected assetService: AssetService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputType !== 'text-field' && changes.problemText) {
