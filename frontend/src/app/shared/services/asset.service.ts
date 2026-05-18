@@ -25,6 +25,7 @@ const ASSET_SLOT_NAMES = [
 })
 export class AssetService {
   private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
+  private assetSlotsRefreshId = 0;
   assetSlots$ = this.assetSlotsSubject.asObservable();
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
@@ -118,7 +119,16 @@ export class AssetService {
   }
 
   private refreshAssetSlots(): void {
+    // refreshID is used to prevent race conditions; in case refreshAssetSlots() gets called in close sucession of
+    // not logged in -> logged in. We want the later called instances to always beat out prior ones, even if the results
+    // come in later
+    this.assetSlotsRefreshId += 1;
+    const refreshId = this.assetSlotsRefreshId;
     this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
+      if (refreshId !== this.assetSlotsRefreshId) {
+        return;
+      }
+
       this.assetSlotsSubject.next(assignments);
     });
   }

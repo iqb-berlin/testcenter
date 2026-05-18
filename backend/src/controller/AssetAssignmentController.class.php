@@ -33,7 +33,21 @@ class AssetAssignmentController extends Controller {
     );
 
     $result = self::DEFAULT_ASSIGNMENTS;
+    $priorities = [
+      'global' => 1,
+      'group' => 2,
+      'user' => 3
+    ];
+    $slotPriorities = [];
+
     foreach ($rows as $row) {
+      $slotName = $row['slot_name'];
+      $priority = $priorities[$row['scope']] ?? 0;
+      if (($slotPriorities[$slotName] ?? 0) > $priority) {
+        continue;
+      }
+
+      $slotPriorities[$slotName] = $priority;
       $result[$row['slot_name']] = [
         'assetID' => (int) $row['asset_id'],
         'url' => AssetStorage::urlFor($row['stored_name']),
