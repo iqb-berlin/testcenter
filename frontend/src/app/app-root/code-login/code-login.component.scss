@@ -12,6 +12,15 @@
   }
 }
 
+.form {
+  display: flex;
+  flex-direction: column;
+
+  tc-code-input {
+    flex: 1;
+  }
+}
+
 .illustration {
   display: flex;
   justify-content: center;

@@ -16,6 +16,14 @@ iframe {
   bottom: 0;
   margin: auto;
   max-width: 50%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.lock-overlay tc-code-input {
+  flex: 1;
+  max-height: 100%;
 }
 
 .progress-container {

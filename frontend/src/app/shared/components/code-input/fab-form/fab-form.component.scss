@@ -7,7 +7,7 @@
 }
 
 .header-section {
-  align-self: start;
+  display: flex;
 }
 
 .selected-values {
@@ -39,10 +39,6 @@
       width: 58px;
       height: 58px;
     }
-  }
-
-  .spacer {
-    width: 48px;
   }
 }
 
@@ -77,6 +73,7 @@ button.mat-mdc-fab {
 .alt-design {
   &.selected-values {
     margin-top: 40px;
+    justify-content: center;
 
     img {
       width: 68px;
@@ -92,8 +89,8 @@ button.mat-mdc-fab {
 
       button.mat-mdc-fab {
         background-color: white;
-        width: 90px;
-        height: 90px;
+        width: 110px;
+        height: 110px;
       }
     }
   }
@@ -112,6 +109,10 @@ button.mat-mdc-fab {
       }
     }
   }
+}
+
+.spacer {
+  width: 58px;
 }
 
 //Fix icon alignment on buttons

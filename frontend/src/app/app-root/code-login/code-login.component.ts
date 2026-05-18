@@ -5,36 +5,47 @@ import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ThemeService } from '@shared/services/theme.service';
+import { AsyncPipe } from '@angular/common';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 
 @Component({
   imports: [
-    CodeInputComponent
+    CodeInputComponent,
+    AsyncPipe,
+    CustomtextPipe
   ],
   template: `
-    <tc-code-input [mode]="mode" [length]="length" [problemText]="problemText"
-                   (submitCode)="onSubmit($event)">
-    </tc-code-input>
+    <div class="form">
+      <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
+                     (submitCode)="onSubmit($event)">
+        @if (inputType !== 'keypad-symbols-alt') {
+          <div>
+            <h2>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</h2>
+            <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
+          </div>
+        }
+      </tc-code-input>
+    </div>
     <div class="illustration">
       <img [src]="themeService.activeTheme.imagePaths?.codeInputIllustration" alt="Code input illustration">
     </div>
   `,
   styleUrl: 'code-login.component.scss',
   host: {
-    '[class.alt-styling]': 'mode === "keypad-symbols-alt"'
+    '[class.alt-styling]': 'inputType === "keypad-symbols-alt"'
   }
 })
 export class CodeLoginComponent {
-  mode: CodeInputType = 'text-field';
+  inputType: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
               public themeService: ThemeService) {
-    this.bs.getSessionData().subscribe((authData: AuthData) => {
-      this.mode = authData.viewSettings.codeInput?.type || 'text-field';
-      this.length = authData.viewSettings.codeInput?.length;
-    });
+    const authData = this.mds.getAuthData();
+    this.inputType = authData?.viewSettings.codeInput?.type || 'text-field';
+    this.length = authData?.viewSettings.codeInput?.length;
   }
 
   protected onSubmit(code: string) {

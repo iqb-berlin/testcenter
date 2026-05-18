@@ -4,12 +4,17 @@ import {
 import {
   Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject
 } from '@angular/core';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { AlertComponent, CustomtextPipe, MainDataService } from '@shared/shared.module';
-import { AppError } from '@app/app.interfaces';
+import { CustomtextPipe, MainDataService } from '@shared/shared.module';
+import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
+import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import {
@@ -27,12 +32,6 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatInput } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -40,13 +39,10 @@ import { MatButton } from '@angular/material/button';
     AsyncPipe,
     MatProgressBar,
     MatCardModule,
-    MatFormField,
     CustomtextPipe,
-    MatInput,
-    AlertComponent,
     FormsModule,
-    MatButton,
-    NgIf
+    NgIf,
+    CodeInputComponent
   ],
   styleUrls: ['./unithost.component.css']
 })
@@ -59,11 +55,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
   resourcesToLoadLabels: string[] = [];
   clearCode: string = '';
 
+  codeInputMode: CodeInputType = 'text-field';
+  codeInputLength: number | undefined; // only used for keypad input
+  codeInputErrorText: string = '';
+
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
-              public themeService: ThemeService,
-              private bs: BackendService, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
+              public themeService: ThemeService, private bs: BackendService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;
@@ -77,6 +76,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.subscriptions.conditionsEvaluated = this.tcs.navigation$
         .pipe(distinctUntilChanged(isEqualNavigation))
         .subscribe(navigationState => this.updatePlayerConfig(navigationState));
+    });
+    this.mds.authData$.subscribe((authData: AuthData | null) => {
+      this.codeInputMode = authData?.viewSettings.codeInput?.type || 'text-field';
+      this.codeInputLength = authData?.viewSettings.codeInput?.length;
     });
   }
 
@@ -434,45 +437,33 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }, '*');
   }
 
-  verifyCodes(): void {
-    if (!this.tcs.currentUnit || (!this.tcs.currentUnit.parent.locked)) {
-      throw new Error('Unit not loaded');
-    }
-
-    const requiredCode =
-      (this.tcs.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
-    const givenCode = this.clearCode.toUpperCase().trim();
-
-    if (requiredCode === givenCode) {
-      this.tcs.clearCodeLock(this.tcs.currentUnit.parent.locked.through.id);
-      this.clearCode = '';
-      this.runUnit();
-    } else {
-      if (this.tcs.shouldShowConfirmationUI()) {
-        this.snackBar.open(
-          `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
-          'OK',
-          {
-            duration: 3000,
-            panelClass: ['snackbar-wrong-block-code']
-          }
-        );
-      }
-      this.clearCode = '';
-    }
-  }
-
-  onKeydownInClearCodeInput($event: KeyboardEvent): void {
-    if ($event.key === 'Enter') {
-      this.verifyCodes();
-    }
-  }
-
   private updatePlayerConfig(navigationState: NavigationState): void {
     this.apiService.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.tcs.currentUnit?.alias,
       playerConfig: this.getPlayerConfig(navigationState)
     }, '*');
+  }
+
+  protected onSubmitCode(code: string) {
+    if (!this.tcs.currentUnit?.parent.locked?.through.restrictions?.codeToEnter?.code) {
+      throw new Error('Freigabe-Code nicht gefunden.');
+    }
+    if (this.isValidCode(code)) {
+      this.tcs.clearCodeLock(this.tcs.currentUnit.parent.locked.through.id);
+      this.runUnit();
+    } else {
+      this.codeInputErrorText =
+        `Freigabewort '${code}' für '${this.tcs.currentUnit?.parent.locked?.through.label}' stimmt nicht.`;
+    }
+  }
+
+  private isValidCode(code: string): boolean {
+    if (!this.tcs.currentUnit?.parent.locked?.through.restrictions?.codeToEnter?.code) {
+      throw new Error('Freigabe-Code nicht gefunden.');
+    }
+    const requiredCode =
+      (this.tcs.currentUnit.parent.locked.through.restrictions.codeToEnter.code);
+    return requiredCode === code;
   }
 }

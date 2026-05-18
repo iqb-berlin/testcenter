@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {
+  Component, EventEmitter, Input, Output
+} from '@angular/core';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import {
@@ -8,25 +9,23 @@ import {
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
-import { CustomtextPipe, SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'tc-code-text-field-form',
   imports: [
-    AsyncPipe,
     MatButton,
     MatFormField,
     MatInput,
     ReactiveFormsModule,
-    SharedModule,
     MatIcon,
     MatLabel,
     MatIconButton,
-    MatSuffix,
-    CustomtextPipe
+    MatSuffix
   ],
   template: `
-    <h2>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</h2>
+    <div class="header-section">
+      <ng-content></ng-content>
+    </div>
     <form [formGroup]="codeinputform" (ngSubmit)="submitCode.emit(codeinputform.value.code)">
       <mat-form-field appearance="outline">
         <mat-label>Code</mat-label>
@@ -39,15 +38,15 @@ import { CustomtextPipe, SharedModule } from '@shared/shared.module';
       </mat-form-field>
       <button type="submit" matButton="filled" [disabled]="codeinputform.invalid" data-cy="continue">
         <mat-icon svgIcon="keyboard_arrow_right"></mat-icon>
-        Anmelden
+        {{ buttonLabel }}
       </button>
     </form>
-
   `,
   styles: `
     form {
       display: flex;
       flex-direction: column;
+      gap: 24px;
     }
 
     form button {
@@ -56,6 +55,7 @@ import { CustomtextPipe, SharedModule } from '@shared/shared.module';
   `
 })
 export class TextFieldFormComponent {
+  @Input() buttonLabel: string = 'Anmelden';
   @Output() submitCode = new EventEmitter<string>();
 
   codeinputform = new FormGroup({

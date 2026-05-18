@@ -1,30 +1,33 @@
-@if (visualMode !== 'keypad-symbols-alt') {
-  <div class="header-section">
-    <h2>Wähle aus</h2>
-    <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
-  </div>
-}
+<div>
 
-<div class="selected-values" [class.alt-design]="visualMode === 'keypad-symbols-alt'">
-  <!-- only used for proper centering of the fieldset -->
-  <div class="spacer"></div>
-  <fieldset>
-    <legend>Code</legend>
-    @for (item of selectedValues(); track $index) {
-      <button mat-fab [class.filled]="item" [class.active]="activeValueIndex() === $index">
-        @if (visualMode === 'keypad-numbers') {
-          {{ item }}
-        } @else if (visualMode == 'keypad-symbols') {
-          <mat-icon [svgIcon]="item !== null ? buttonIcons[item] : ''"></mat-icon>
-        } @else if (item) {
-          <img [src]="activeIconSet[item]" />
-        }
-      </button>
-    }
-  </fieldset>
-  <button mat-fab class="delete-button" (click)="removeLastInput()">
-    <mat-icon svgIcon="backspace"></mat-icon>
-  </button>
+
+  <div class="header-section">
+    <!-- only used for proper centering of the fieldset -->
+    <div class="spacer"></div>
+    <ng-content></ng-content>
+  </div>
+
+  <div class="selected-values" [class.alt-design]="visualMode === 'keypad-symbols-alt'">
+    <!-- only used for proper centering of the fieldset -->
+    <div class="spacer"></div>
+    <fieldset>
+      <legend>Code</legend>
+      @for (item of selectedValues(); track $index) {
+        <button mat-fab [class.filled]="item" [class.active]="activeValueIndex() === $index">
+          @if (visualMode === 'keypad-numbers') {
+            {{ item }}
+          } @else if (visualMode == 'keypad-symbols') {
+            <mat-icon [svgIcon]="item !== null ? buttonIcons[item] : ''"></mat-icon>
+          } @else if (item) {
+            <img [src]="activeIconSet[item]" />
+          }
+        </button>
+      }
+    </fieldset>
+    <button mat-fab class="delete-button" (click)="removeLastInput()">
+      <mat-icon svgIcon="backspace"></mat-icon>
+    </button>
+  </div>
 </div>
 
 <div class="button-grid" [class.alt-design]="visualMode === 'keypad-symbols-alt'">

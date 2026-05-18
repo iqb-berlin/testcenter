@@ -1,6 +1,8 @@
 import {
   Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { CodeInputType } from '@app/app.interfaces';
 import { TextFieldFormComponent } from './text-field-form.component';
 import { FabFormComponent } from './fab-form/fab-form.component';
@@ -16,13 +18,20 @@ import { FabFormComponent } from './fab-form/fab-form.component';
 })
 export class CodeInputComponent implements OnChanges {
   @Input() problemText = '';
-  @Input() mode: CodeInputType = 'text-field';
+  @Input() inputType: CodeInputType = 'text-field';
   @Input() length: number | undefined; // only used for keypad input
+  @Input() buttonLabel: string = 'Anmelden';
+  @Input() speechBubbleText: { heading?: string, body?: string } = {
+    heading: 'Brauchst du Hilfe?',
+    body: 'Deine Lehrerin oder dein Lehrer hilft dir weiter.\n' +
+          'Melde dich bei ihm/ihr oder klicke auf mich drauf!'
+  };
+
   @Output() submitCode = new EventEmitter<string>();
   @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.mode !== 'text-field' && changes.problemText) {
+    if (this.inputType !== 'text-field' && changes.problemText) {
       this.fabForm?.clear();
     }
   }
