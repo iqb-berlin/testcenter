@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CustomImages } from '../interfaces/custom-images.interface';
 import { AppError } from '../../app.interfaces';
+import type { AssetSlotName } from './asset.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export interface Theme {
   cssClassName: string;
   previewColor?: string;
   description?: string;
-  imagePaths?: Partial<Record<keyof CustomImages, string>>
+  imagePaths?: Partial<Record<AssetSlotName, string>>;
 }
 
 export const THEMES: Theme[] = [
@@ -43,11 +43,15 @@ export const THEMES: Theme[] = [
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
     imagePaths: {
+      logo: 'assets/IQB-Logo-2025.png',
+      loginIllustration: 'assets/login-illustration.png',
+      loginCompanion: 'assets/images/bird-character.png',
+      codeInputIllustration: 'assets/theme-images/theme-primar/code-input-illu.png',
+      codeInputCompanion: 'assets/theme-images/theme-primar/code-input-companion.png',
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
       starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
-      codeInputIllustration: 'assets/theme-images/theme-primar/code-input-illu.png',
-      codeInputCompanion: 'assets/theme-images/theme-primar/code-input-companion',
-      loadingProgress: 'assets/theme-images/theme-primar/loading.png'
+      loadingProgress: 'assets/theme-images/theme-primar/loading.png',
+      confirmDialog: 'assets/theme-images/theme-primar/loading.png'
     }
   },
   {

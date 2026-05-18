@@ -5,6 +5,7 @@ import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { ThemeService } from '@shared/services/theme.service';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   selector: 'tc-test-card',
@@ -34,7 +35,7 @@ import { ThemeService } from '@shared/services/theme.service';
         </mat-card-actions>
       </div>
       @if (mode === 'locked') {
-        <img class="done-image" [src]="themeService.activeTheme.imagePaths?.starterCardDone"
+        <img class="done-image" [src]="assetService.getAssetSrc('starterCardDone')"
              alt="companion-test-done"/>
       }
     </mat-card>
@@ -87,5 +88,5 @@ export class TestCardComponent {
     locked: 'gesperrt'
   };
 
-  constructor(public themeService: ThemeService) { }
+  constructor(public assetService: AssetService) { }
 }

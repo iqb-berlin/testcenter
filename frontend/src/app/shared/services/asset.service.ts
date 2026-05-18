@@ -4,28 +4,35 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { ThemeService } from './theme.service';
 
-const DEFAULT_ASSET_ASSIGNMENTS: AssetAssignments = {
-  logo: { assetID: null, url: 'assets/IQB-Logo-2025.png' },
-  loginIllustration: { assetID: null, url: 'assets/login-illustration.png' },
-  loginCompanion: { assetID: null, url: 'assets/images/bird-character.png' }
-};
+const DEFAULT_ASSET_SRC = 'assets/android-chrome-512x512.png';
+
+const ASSET_SLOT_NAMES = [
+  'logo',
+  'loginIllustration',
+  'loginCompanion',
+  'codeInputIllustration',
+  'codeInputCompanion',
+  'starterCompanion',
+  'starterCardDone',
+  'loadingProgress',
+  'confirmDialog'
+] as const;
 
 @Injectable({
   providedIn: 'root'
 })
 export class AssetService {
-  private assetSlotsSubject = new BehaviorSubject<AssetAssignments>(DEFAULT_ASSET_ASSIGNMENTS);
+  private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
   assetSlots$ = this.assetSlotsSubject.asObservable();
   allAssets: Asset[] = [];
-  availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = [
-    { slotName: 'logo', slotLabel: 'Logo' },
-    { slotName: 'loginIllustration', slotLabel: 'loginIllustration' },
-    { slotName: 'loginCompanion', slotLabel: 'loginCompanion' }
-  ];
+  availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
+    .map(slotName => ({ slotName, slotLabel: slotName }));
 
   constructor(private backendService: BackendService, private messageService: MessageService,
               private mainDataService: MainDataService,
+              private themeService: ThemeService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) {
     this.mainDataService.authData$
       .pipe(distinctUntilChanged((previous, current) => previous?.token === current?.token))
@@ -79,10 +86,10 @@ export class AssetService {
 
   saveAssetSlots(): void {
     const currentSlots = this.assetSlotsSubject.getValue();
-    const assignments = (Object.entries(currentSlots) as [AssetSlotName, AssetAssignment][])
-      .map(([slotName, assignment]) => ({
+    const assignments = ASSET_SLOT_NAMES
+      .map(slotName => ({
         slotName,
-        assetID: assignment.assetID,
+        assetID: currentSlots[slotName]?.assetID ?? null,
         scope: 'global' as const,
         scopeID: 'global' as const
       }));
@@ -92,8 +99,10 @@ export class AssetService {
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
-    const url = this.assetSlotsSubject.getValue()[slotName]?.url ?? DEFAULT_ASSET_ASSIGNMENTS[slotName]?.url;
-    return url ? this.toAbsolute(url) : '';
+    const url = this.assetSlotsSubject.getValue()[slotName]?.url ||
+      this.themeService.activeTheme.imagePaths?.[slotName] ||
+      DEFAULT_ASSET_SRC;
+    return this.toAbsolute(url);
   }
 
   toAbsolute(url: string): string {
@@ -110,7 +119,7 @@ export class AssetService {
 
   private refreshAssetSlots(): void {
     this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
-      this.assetSlotsSubject.next({ ...DEFAULT_ASSET_ASSIGNMENTS, ...assignments });
+      this.assetSlotsSubject.next(assignments);
     });
   }
 }
@@ -128,7 +137,7 @@ export interface AssetAssignment {
 
 export type AssetAssignments = Partial<Record<AssetSlotName, AssetAssignment>>;
 
-export type AssetSlotName = 'logo' | 'loginIllustration' | 'loginCompanion';
+export type AssetSlotName = typeof ASSET_SLOT_NAMES[number];
 
 export interface AssignmentPostData {
   assignments: {

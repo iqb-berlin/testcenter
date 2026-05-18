@@ -32,6 +32,7 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -62,7 +63,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
-              public themeService: ThemeService, private bs: BackendService, private route: ActivatedRoute) { }
+              public themeService: ThemeService, public assetService: AssetService,
+              private bs: BackendService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.iFrameItemplayer = null;

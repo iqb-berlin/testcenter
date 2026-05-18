@@ -28,6 +28,7 @@ import {
 import { AsyncPipe, KeyValuePipe, NgForOf, NgTemplateOutlet } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   selector: 'tc-starter',
@@ -67,6 +68,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               public mds: MainDataService, public ds: SysCheckDataService,
               public pcs: PasswordChangeService, private dialog: MatDialog,
               public themeService: ThemeService,
+              public assetService: AssetService,
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
