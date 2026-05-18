@@ -14,7 +14,13 @@
   </BookletConfig>
   <Units>
     <Unit id="testcenter-sample1" label="Beispiel-Unit 1" labelshort="1"/>
-    <Unit id="testcenter-sample2" label="Beispiel-Unit 2" labelshort="2"/>
+    <Testlet id="a_testlet_with_restrictions" label="First Block">
+      <Restrictions>
+        <CodeToEnter code="sample">Please insert the word `sample`.</CodeToEnter>
+        <TimeMax minutes="1" />
+      </Restrictions>
+      <Unit id="testcenter-sample2" label="Beispiel-Unit 2" labelshort="2"/>
+    </Testlet>
     <Unit id="testcenter-sample3" label="Beispiel-Unit 3" labelshort="3"/>
   </Units>
 </Booklet>

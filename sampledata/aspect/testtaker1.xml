@@ -6,10 +6,27 @@
   </CustomTexts>
   <Group id="TestTakerGroup_d4v9z" label="Login-Gruppe A">
     <Login mode="run-hot-return" name="testuser1">
-      <Booklet>booklet1</Booklet>
+      <Booklet codes="xxx yyy 11111">booklet1</Booklet>
     </Login>
-    <Login mode="run-hot-return" name="testuser2" pw="user123">
-      <Booklet>booklet1</Booklet>
+    <Login mode="run-hot-return" name="testuser2">
+      <Booklet codes="xxx yyy 111">booklet1</Booklet>
+      <ViewSettings>
+        <theme>Sekundar</theme>
+        <codeInput>
+          <type>keypad-symbols-alt</type>
+          <length>3</length>
+        </codeInput>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-hot-return" name="testuser3">
+      <Booklet codes="xxx yyy 11111">booklet1</Booklet>
+      <ViewSettings>
+        <theme>Sekundar</theme>
+        <codeInput>
+          <type>keypad-symbols</type>
+          <length>5</length>
+        </codeInput>
+      </ViewSettings>
     </Login>
     <Login mode="run-review" name="testuser-review" pw="user123">
       <Booklet>booklet1</Booklet>
