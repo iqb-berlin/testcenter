@@ -59,6 +59,7 @@ export class AssetService {
       if (result) {
         this.messageService.showSnackbar('Asset gelöscht');
         this.allAssets = this.allAssets.filter(asset => asset.id !== id);
+        this.refreshAssetSlots();
       }
     });
   }

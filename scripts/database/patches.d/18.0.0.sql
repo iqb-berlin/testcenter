@@ -17,5 +17,5 @@ CREATE TABLE asset_assignment (
   UNIQUE KEY unique_assignment (workspace_id, slot_name, scope, scope_id),
   KEY idx_scope (scope, scope_id),
   KEY idx_asset_assignment_source (workspace_id, source),
-  FOREIGN KEY (asset_id) REFERENCES assets(id)
+  FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
 );
