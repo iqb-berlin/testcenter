@@ -95,6 +95,11 @@ export class AssetService {
   }
 
   toAbsolute(url: string): string {
+    // valid examples that don't need further mangling
+    // "assets/logo.png" -> local in Angular application
+    // "data:image/png;base64,abc123" -> inline data
+    // "http://example.com/logo.png" -> URL
+    // "https://example.com/logo.png" -> URL
     if (/^(assets\/|data:|https?:\/\/)/.test(url)) {
       return url;
     }
