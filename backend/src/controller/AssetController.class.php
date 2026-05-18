@@ -41,7 +41,7 @@ class AssetController extends Controller {
     $extension = $validationResult['extension'];
     $storedName = 'asset_' . Random::generateRandomId() . '.' . $extension;
 
-    $uploadDir = AssetStorage::dir();
+    $uploadDir = AssetStorage::getDir();
     if (!is_dir($uploadDir)) {
       mkdir($uploadDir, 0755, true);
     }
@@ -116,7 +116,7 @@ class AssetController extends Controller {
   }
 
   private static function deleteStoredFile(string $storedName): void {
-    $filePath = AssetStorage::dir() . DIRECTORY_SEPARATOR . $storedName;
+    $filePath = AssetStorage::getDir() . DIRECTORY_SEPARATOR . $storedName;
     if (file_exists($filePath)) {
       unlink($filePath);
     }
