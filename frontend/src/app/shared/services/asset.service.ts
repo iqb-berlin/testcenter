@@ -30,7 +30,10 @@ export class AssetService {
     this.mainDataService.authData$
       .pipe(distinctUntilChanged((previous, current) => previous?.token === current?.token))
       .subscribe(() => this.refreshAssetSlots());
-    backendService.getAllAssets().subscribe(assets => {
+  }
+
+  loadAssets(): void {
+    this.backendService.getAllAssets().subscribe(assets => {
       this.allAssets = assets;
     });
   }
@@ -45,9 +48,7 @@ export class AssetService {
       this.backendService.uploadAsset(formData).subscribe(result => {
         if (result) {
           this.messageService.showSnackbar('Asset hochgeladen');
-          this.backendService.getAllAssets().subscribe(assets => {
-            this.allAssets = assets;
-          });
+          this.loadAssets();
         }
       });
     }

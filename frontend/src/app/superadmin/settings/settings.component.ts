@@ -143,6 +143,7 @@ export class SettingsComponent implements OnInit {
         this.configForm.get('globalWarningExpiredHour')?.value
       );
     });
+    this.assetService.loadAssets();
   }
 
   saveAppConfig(): void {

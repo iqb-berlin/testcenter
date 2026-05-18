@@ -97,7 +97,7 @@ $app->group('/test', function (RouteCollectorProxy $group) {
 
 
   $group->delete('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'deleteUnitReview'])
-     ->add(new IsTestWritable());
+    ->add(new IsTestWritable());
 
   $group->delete('/{test_id}/review/{review_id}', [TestController::class, 'deleteReview'])
     ->add(new IsTestWritable());
@@ -252,7 +252,7 @@ $app->group('/workspace/{ws_id}/sys-check', function (RouteCollectorProxy $group
 
   $group->put('/{sys-check_name}/report', [WorkspaceController::class, 'putSysCheckReport']);
 })
-->add(new HandleOptionalToken('person'));
+  ->add(new HandleOptionalToken('person'));
 
 $app->get('/workspaces', [SystemController::class, 'getWorkspaces'])
   ->add(new IsSuperAdmin())
@@ -269,7 +269,9 @@ $app->get('/reviews/export', [ReviewController::class, 'getAllReviewsFromPersonE
   ->add(new RequireToken('person'));
 
 //TODO auth
-$app->get('/assets', [AssetController::class, 'list']);
+$app->get('/assets', [AssetController::class, 'list'])
+  ->add(new IsSuperAdmin())
+  ->add(new RequireToken('admin'));
 $app->post('/assets', [AssetController::class, 'upload'])
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
