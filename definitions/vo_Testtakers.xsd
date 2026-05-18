@@ -275,18 +275,10 @@
   <xs:complexType name="AssetAssignmentType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute name="slot" type="AssetSlotType" use="required"/>
+        <xs:attribute name="slot" type="xs:string" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-
-  <xs:simpleType name="AssetSlotType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="logo"/>
-      <xs:enumeration value="loginIllustration"/>
-      <xs:enumeration value="loginCompanion"/>
-    </xs:restriction>
-  </xs:simpleType>
 
   <xs:simpleType name="StateListType">
     <xs:restriction base="xs:string">
