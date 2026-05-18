@@ -3,7 +3,8 @@
 - Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
 - Footer zur Admin-Loginseite hinzugefügt
 - Fix direct login via URL
-- Code-Eingabe: Benutzung der ENTER-Taste repariert 
+- Code-Eingabe: Benutzung der ENTER-Taste repariert
+- neue booklet parameter: navbar_show_backward_button, navbar_show_forward_button
 
 # 18.0.0-alpha
 Änderungsnotizen sind noch im Entwurfsstatus und werden vor dem echten Release überarbeitet.

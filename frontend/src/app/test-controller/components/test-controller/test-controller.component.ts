@@ -431,4 +431,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   protected readonly unitNavigationTarget = UnitNavigationTarget;
+
+  protected onNavBack() {
+    const mode = this.tcs.booklet?.config?.navbar_backward_button;
+    if (mode === 'UNITS' || (mode === 'DYNAMIC' && this.pageService.isFirstPage())) {
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PREVIOUS);
+    } else {
+      this.gotoPreviousPage();
+    }
+  }
+
+  protected onNavForward() {
+    const mode = this.tcs.booklet?.config?.navbar_forward_button;
+    if (mode === 'UNITS' || (mode === 'DYNAMIC' && this.pageService.isLastPage())) {
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+    } else {
+      this.gotoNextPage();
+    }
+  }
 }

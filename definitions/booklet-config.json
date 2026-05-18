@@ -158,6 +158,26 @@
     },
     "defaultvalue": "FALSE"
   },
+  "navbar_backward_button": {
+    "label": "Zeigt einen Knopf zur Rückwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur vorherigen Seite oder der vorherigen Unit zu navigieren, falls die erste Seite der Unit aktiv ist.",
+    "options": {
+      "HIDDEN": "Navigationselement ist ausgeblendet",
+      "DYNAMIC": "Navigationselement navigiert automatisch zur vorherigen Seite oder Unit",
+      "UNITS": "Navigationselement navigiert zur vorherigen Unit",
+      "PAGES": "Navigationselement navigiert zur vorherigen Seite"
+    },
+    "defaultvalue": "HIDDEN"
+  },
+  "navbar_forward_button": {
+    "label": "Zeigt einen Knopf zur Vorwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur nächsten Seite oder der nächsten Unit zu navigieren, falls die letzte Seite der Unit aktiv ist.",
+    "options": {
+      "HIDDEN": "Navigationselement ist ausgeblendet",
+      "DYNAMIC": "Navigationselement navigiert automatisch zur nächsten Seite oder Unit",
+      "UNITS": "Navigationselement navigiert zur nächsten Unit",
+      "PAGES": "Navigationselement navigiert zur nächsten Seite"
+    },
+    "defaultvalue": "HIDDEN"
+  },
   "toolbar_show_unit_title": {
     "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",
     "options": {
