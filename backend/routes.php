@@ -268,7 +268,6 @@ $app->get('/file/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'g
 $app->get('/reviews/export', [ReviewController::class, 'getAllReviewsFromPersonExport'])
   ->add(new RequireToken('person'));
 
-//TODO auth
 $app->get('/assets', [AssetController::class, 'list'])
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));

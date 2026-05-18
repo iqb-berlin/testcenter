@@ -5,24 +5,7 @@ declare(strict_types=1);
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 
-// TODO hier kann der asset name mitgeliefert werden, sodass das frontend sich den
-// extra lookup sparen könnte.
 class AssetAssignmentController extends Controller {
-  private const DEFAULT_ASSIGNMENTS = [
-    'logo' => [
-      'assetID' => null,
-      'url' => 'assets/IQB-Logo-2025.png'
-    ],
-    'loginIllustration' => [
-      'assetID' => null,
-      'url' => 'assets/login-illustration.png'
-    ],
-    'loginCompanion' => [
-      'assetID' => null,
-      'url' => 'assets/images/bird-character.png'
-    ]
-  ];
-
   public static function get(Request $request, Response $response): Response {
     $context = self::resolveContext($request);
 
@@ -32,7 +15,6 @@ class AssetAssignmentController extends Controller {
       $context['loginName']
     );
 
-    $result = self::DEFAULT_ASSIGNMENTS;
     $priorities = [
       'global' => 1,
       'group' => 2,
@@ -63,20 +45,20 @@ class AssetAssignmentController extends Controller {
 
     $toUpsert = [];
     $toDelete = [];
-    foreach ($payload as $a) {
+    foreach ($payload as $assignment) {
       $key = [
-        'slotName' => $a['slotName'],
+        'slotName' => $assignment['slotName'],
         'scope' => 'global',
         'scopeId' => 'global',
         'workspaceId' => 0
       ];
 
-      if ($a['assetID'] === null) {
+      if ($assignment['assetID'] === null) {
         $toDelete[] = $key;
         continue;
       }
 
-      $toUpsert[] = $key + ['assetId' => (int) $a['assetID']];
+      $toUpsert[] = $key + ['assetId' => (int) $assignment['assetID']];
     }
 
     self::assetDAO()->deleteAssignments($toDelete);

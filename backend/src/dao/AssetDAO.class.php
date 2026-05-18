@@ -111,6 +111,8 @@ class AssetDAO extends DAO {
   }
 
   /**
+   * Returns the assignments, already resolved according to who is calling the assignments. Pre Login only returns global
+   * assignments; logged in users/groups their respective assignments as well
    * @return array<int, array{workspace_id: int, source: string|null, slot_name: string, scope: string, scope_id: string, asset_id: int, stored_name: string}>
    */
   public function getAssignmentResolutionRows(
@@ -118,17 +120,20 @@ class AssetDAO extends DAO {
     ?string $groupName = null,
     ?string $loginName = null
   ): array {
+    // 1) get all global assignments first for everyone
     $conditions = [
       "(a_a.workspace_id = 0 and a_a.source is null and a_a.scope = 'global')"
     ];
     $params = [];
 
+    // 2) get group assignments if caller is matching group
     if ($workspaceId !== null && $groupName !== null) {
       $conditions[] = "(a_a.workspace_id = :group_workspace_id and a_a.scope = 'group' and a_a.scope_id = :group_name)";
       $params[':group_workspace_id'] = $workspaceId;
       $params[':group_name'] = $groupName;
     }
 
+    // 3) get user assignment if caller is matching user
     if ($workspaceId !== null && $loginName !== null) {
       $conditions[] = "(a_a.workspace_id = :login_workspace_id and a_a.scope = 'user' and a_a.scope_id = :login_name)";
       $params[':login_workspace_id'] = $workspaceId;
