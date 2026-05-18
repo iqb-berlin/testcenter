@@ -28,7 +28,12 @@
         <xs:element name="Group" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="AssetAssignments" type="AssetAssignmentsType" minOccurs="0">
+              <xs:element name="AssetAssignments" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Asset" type="AssetAssignmentType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
                 <xs:unique name="GroupAssetAssignmentSlot">
                   <xs:selector xpath="Asset"/>
                   <xs:field xpath="@slot"/>
@@ -50,7 +55,12 @@
                       </xs:element>
                       <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType" />
                     </xs:choice>
-                    <xs:element name="AssetAssignments" type="AssetAssignmentsType" minOccurs="0">
+                    <xs:element name="AssetAssignments" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Asset" type="AssetAssignmentType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
                       <xs:unique name="LoginAssetAssignmentSlot">
                         <xs:selector xpath="Asset"/>
                         <xs:field xpath="@slot"/>
@@ -260,12 +270,6 @@
         <xs:attribute name="key" type="xs:string" use="required"/>
       </xs:extension>
     </xs:simpleContent>
-  </xs:complexType>
-
-  <xs:complexType name="AssetAssignmentsType">
-    <xs:sequence>
-      <xs:element name="Asset" type="AssetAssignmentType" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="AssetAssignmentType">
