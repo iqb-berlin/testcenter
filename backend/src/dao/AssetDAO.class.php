@@ -54,32 +54,23 @@ class AssetDAO extends DAO {
    * @return array{id: int, previousStoredName: string|null}
    */
   public function replaceAssetByOriginalName(string $originalName, string $storedName): array {
-    $previousAsset = null;
-
     $this->beginTransaction();
 
     try {
       $previousAsset = $this->getAssetByOriginalName($originalName, true);
-      $newId = $this->createAsset(self::temporaryOriginalName(), $storedName);
 
       if ($previousAsset) {
+        $assetId = (int) $previousAsset['id'];
         $this->_(
-          'update asset_assignment set asset_id = :new_id where asset_id = :previous_id',
+          'UPDATE assets SET stored_name = :stored_name WHERE id = :id',
           [
-            ':new_id' => $newId,
-            ':previous_id' => $previousAsset['id']
+            ':stored_name' => $storedName,
+            ':id' => $assetId
           ]
         );
-        $this->deleteAsset((int) $previousAsset['id']);
+      } else {
+        $assetId = $this->createAsset($originalName, $storedName);
       }
-
-      $this->_(
-        'update assets set original_name = :original_name where id = :id',
-        [
-          ':original_name' => $originalName,
-          ':id' => $newId
-        ]
-      );
 
       $this->commitTransaction();
     } catch (Throwable $exception) {
@@ -88,7 +79,7 @@ class AssetDAO extends DAO {
     }
 
     return [
-      'id' => $newId,
+      'id' => $assetId,
       'previousStoredName' => $previousAsset['stored_name'] ?? null
     ];
   }
@@ -300,7 +291,4 @@ class AssetDAO extends DAO {
     return $assetIds;
   }
 
-  private static function temporaryOriginalName(): string {
-    return sprintf('__pending_asset_%s', bin2hex(random_bytes(16)));
-  }
 }
