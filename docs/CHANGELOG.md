@@ -1,4 +1,35 @@
 # next
+
+## Änderungen zu 18.0.0-beta
+- custom assets können jetzt im super admin bereich und in den Testtaker xml angelegt werden. 
+  - admin bereich kann bilder hochladen und diese Bilder den einzelnen slots (Bilder im UI) zuweisen. die slots heißen
+    - 'logo',
+      'loginIllustration',
+      'loginCompanion',
+      'codeInputIllustration',
+      'codeInputCompanion',
+      'starterCompanion',
+      'starterCardDone',
+      'loadingProgress',
+      'confirmDialog'
+- wenn man die custom assets in xml festlegen will, kann man dies auf Gruppen und Login Ebene machen. Es gibt eine Hierarchie was am Ende angezeigt wird: 
+  - Login > Group > Admin
+    - Syntax in der Testtakers.xml: Slot ist attribute slot="" und der Name der Datei, wie er im Adminbereich hochgeladen ist im Body
+      - Gruppe: <AssetAssignments> muss vor <Login> stehen
+        - <Group id="sample_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
+            <AssetAssignments>
+              <Asset slot="logo">Screenshot from 2026-05-17 22-28-57.png</Asset>
+            </AssetAssignments>
+      - Login: <AssetAssignments> muss nach <Booklet>/<Profile> aber vor <ViewSettings> stehen
+        - <Login mode="run-hot-return" name="test" pw="user123">
+            <Booklet codes="xxx yyy">BOOKLET.SAMPLE-1</Booklet>
+            <Booklet codes="xxx yyy">BOOKLET.SAMPLE-3</Booklet>
+            <Booklet>BOOKLET.SAMPLE-2</Booklet>
+            <AssetAssignments>
+              <Asset slot="logo">cc.png</Asset>
+            </AssetAssignments> 
+
+
 ## Änderungen zu 18.0.0-alpha
 - Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
 - Footer zur Admin-Loginseite hinzugefügt

@@ -49,3 +49,27 @@
   background-color: var(--mat-sys-secondary);
   border-top: 1px solid rgba(0,0,0,.12);
 }
+
+
+.asset-container {
+  padding: 16px;
+
+  .asset-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--mat-sys-secondary);
+  }
+
+  .asset-card img {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .empty {
+    padding: 16px;
+    color: gray;
+  }
+}

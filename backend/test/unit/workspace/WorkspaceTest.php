@@ -61,6 +61,12 @@ class WorkspaceTest extends TestCase {
     $this->workspaceDaoMock
       ->allows('getGlobalIds')
       ->andReturn(VfsForTest::globalIds);
+    $this->workspaceDaoMock
+      ->allows('deleteAssetAssignmentSource')
+      ->andReturn(0);
+    $this->workspaceDaoMock
+      ->allows('updateAssetAssignmentSource')
+      ->andReturn(['deleted' => 0, 'added' => 0]);
   }
 
   function tearDown(): void {

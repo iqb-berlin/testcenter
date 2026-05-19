@@ -1,10 +1,13 @@
-import { Injectable, Inject, SkipSelf } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IdAndName, IdRoleData, UserData } from './superadmin.interfaces';
 import { AppError, KeyValuePairs } from '../app.interfaces';
 import { AppSettings } from '../shared/shared.module';
+import {
+  Asset, AssetAssignments, AssignmentPostData
+} from '@shared/services/asset.service';
 
 @Injectable({
   providedIn: 'root'
@@ -84,5 +87,25 @@ export class BackendService {
 
   setCustomTexts(newCustomTexts: KeyValuePairs): Observable<void> {
     return this.http.patch<void>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts);
+  }
+
+  getAllAssets(): Observable<Asset[]> {
+    return this.http.get<Asset[]>(`${this.serverUrl}assets`);
+  }
+
+  uploadAsset(formData: FormData): Observable<Asset> {
+    return this.http.post<Asset>(`${this.serverUrl}assets`, formData);
+  }
+
+  deleteAsset(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.serverUrl}assets/${id}`);
+  }
+
+  getAssetAssignments(): Observable<AssetAssignments> {
+    return this.http.get<AssetAssignments>(`${this.serverUrl}asset-assignments`);
+  }
+
+  setAssetAssignments(assignments: AssignmentPostData): Observable<void> {
+    return this.http.post<void>(`${this.serverUrl}asset-assignments`, assignments);
   }
 }

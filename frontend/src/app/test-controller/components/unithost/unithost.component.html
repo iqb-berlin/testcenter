@@ -6,7 +6,7 @@
 @if (loadingResources && loadingResources.length > 1) {
   <div class="lock-overlay progress-container">
     <h2>Gleich geht's los!</h2>
-    <img [src]="themeService.activeTheme.imagePaths?.loadingProgress" class="progress-image"
+    <img [src]="assetService.getAssetSrc('loadingProgress')" class="progress-image"
          [style.left.%]="tcs.totalLoadingProgress"/>
     <mat-progress-bar [value]="tcs.totalLoadingProgress">
     </mat-progress-bar>

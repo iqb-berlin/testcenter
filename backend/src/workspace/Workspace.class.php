@@ -153,6 +153,7 @@ class Workspace {
     try {
       if (is_a($file, XMLFileTesttakers::class)) {
         $this->workspaceDAO->deleteLoginSource($file->getName());
+        $this->workspaceDAO->deleteAssetAssignmentSource($file->getName());
       }
 
       if (is_a($file, ResourceFile::class) and $file->isPackage()) {
@@ -461,7 +462,10 @@ class Workspace {
 
         if (!isset($filesInFolder[$file->getPath()])) {
           $this->workspaceDAO->deleteFile($file);
-          $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
+          if (is_a($file, XMLFileTesttakers::class)) {
+            $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
+            $this->workspaceDAO->deleteAssetAssignmentSource($file->getName());
+          }
         }
       }
     }
@@ -478,7 +482,9 @@ class Workspace {
       'attachments_noted' => 0,
       'resolved_relations' => 0,
       'relations_resolved' => 0,
-      'relations_unresolved' => 0
+      'relations_unresolved' => 0,
+      'asset_assignments_deleted' => 0,
+      'asset_assignments_added' => 0
     ];
 
     if (!$file->isValid()) {
@@ -495,6 +501,13 @@ class Workspace {
       list($deleted, $added) = $this->workspaceDAO->updateLoginSource($file->getName(), $file->getAllLogins());
       $stats['logins_deleted'] = $deleted;
       $stats['logins_added'] = $added;
+
+      $assetAssignmentStats = $this->workspaceDAO->updateAssetAssignmentSource(
+        $file->getName(),
+        $file->getAssetAssignments()
+      );
+      $stats['asset_assignments_deleted'] = $assetAssignmentStats['deleted'];
+      $stats['asset_assignments_added'] = $assetAssignmentStats['added'];
     }
 
     if (is_a($file, ResourceFile::class) and $file->isPackage()) {

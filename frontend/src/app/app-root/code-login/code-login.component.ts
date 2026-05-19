@@ -7,6 +7,7 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ThemeService } from '@shared/services/theme.service';
 import { AsyncPipe } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   imports: [
@@ -27,7 +28,7 @@ import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
       </tc-code-input>
     </div>
     <div class="illustration">
-      <img [src]="themeService.activeTheme.imagePaths?.codeInputIllustration" alt="Code input illustration">
+      <img [src]="assetService.getAssetSrc('codeInputIllustration')" alt="Code input illustration">
     </div>
   `,
   styleUrl: 'code-login.component.scss',
@@ -42,7 +43,7 @@ export class CodeLoginComponent {
   problemCode = 0;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
-              public themeService: ThemeService) {
+              public assetService: AssetService) {
     const authData = this.mds.getAuthData();
     this.inputType = authData?.viewSettings.codeInput?.type || 'text-field';
     this.length = authData?.viewSettings.codeInput?.length;

@@ -269,6 +269,44 @@ END;
     $this->assertEquals($expected, $result);
   }
 
+  function test_getAssetAssignments() {
+    $xml = <<<END
+<Testtakers>
+  <Metadata><Description>example</Description></Metadata>
+  <Group id="sample_group" label="Sample Group">
+    <AssetAssignments>
+      <Asset slot="logo"> school-logo.png </Asset>
+    </AssetAssignments>
+    <Login mode="run-hot-return" name="sample_user" pw="pw">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+      <AssetAssignments>
+        <Asset slot="loginCompanion">companion.png</Asset>
+      </AssetAssignments>
+    </Login>
+  </Group>
+</Testtakers>
+END;
+
+    $xmlFile = XMLFileTesttakers::fromString($xml);
+
+    $expected = [
+      [
+        'slotName' => 'logo',
+        'assetName' => 'school-logo.png',
+        'scope' => 'group',
+        'scopeId' => 'sample_group'
+      ],
+      [
+        'slotName' => 'loginCompanion',
+        'assetName' => 'companion.png',
+        'scope' => 'user',
+        'scopeId' => 'sample_user'
+      ]
+    ];
+
+    $this->assertEquals($expected, $xmlFile->getAssetAssignments());
+  }
+
   function test_getAllLogins() {
     TestEnvironment::makeRandomStatic();
     $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');

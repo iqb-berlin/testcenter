@@ -11,6 +11,7 @@ import { HeaderService } from '@shared/services/header.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { filter } from 'rxjs/operators';
 import { MessageService } from '@shared/services/message.service';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   selector: 'tc-header',
@@ -33,9 +34,11 @@ export class HeaderComponent implements OnDestroy {
   @ViewChild('logoutDialogTemplate') logoutDialogTemplate!: TemplateRef<unknown>;
   logoLink: string[] = ['/r'];
   userRights: string[] = [];
+  protected logoURL?: string;
 
   constructor(public headerService: HeaderService,
               public mainDataService: MainDataService,
+              public assetService: AssetService,
               private messageService: MessageService,
               private router: Router) {
     router.events.pipe(
@@ -44,6 +47,11 @@ export class HeaderComponent implements OnDestroy {
       const isLoginRoute = router.url.includes('code-input') ||
                                    router.url.includes('login');
       this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
+      this.logoURL = assetService.getAssetSrc('logo');
+    });
+
+    assetService.assetSlots$.subscribe(() => {
+      this.logoURL = assetService.getAssetSrc('logo');
     });
 
     this.mainDataService.authData$.subscribe(authData => {

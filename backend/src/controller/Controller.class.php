@@ -9,6 +9,7 @@ abstract class Controller {
   protected static $_sessionDAO;
   protected static $_testDAO;
   protected static $_workspaceDAO;
+  protected static $_assetDAO;
 
   protected static function sessionDAO(): SessionDAO {
     if (!self::$_sessionDAO) {
@@ -56,6 +57,14 @@ abstract class Controller {
     }
 
     return self::$_workspaceDAO;
+  }
+
+  protected static function assetDAO(): AssetDAO {
+    if (!self::$_assetDAO) {
+      self::$_assetDAO = new AssetDAO();
+    }
+
+    return self::$_assetDAO;
   }
 
   protected static function authToken(Request $request): AuthToken {

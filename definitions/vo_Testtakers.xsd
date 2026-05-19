@@ -28,6 +28,17 @@
         <xs:element name="Group" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
+              <xs:element name="AssetAssignments" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Asset" type="AssetAssignmentType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="GroupAssetAssignmentSlot">
+                  <xs:selector xpath="Asset"/>
+                  <xs:field xpath="@slot"/>
+                </xs:unique>
+              </xs:element>
               <xs:element name="Login" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
@@ -44,6 +55,17 @@
                       </xs:element>
                       <xs:element name="Profile" minOccurs="0" maxOccurs="unbounded" type="ProfileReferenceType" />
                     </xs:choice>
+                    <xs:element name="AssetAssignments" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Asset" type="AssetAssignmentType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                      <xs:unique name="LoginAssetAssignmentSlot">
+                        <xs:selector xpath="Asset"/>
+                        <xs:field xpath="@slot"/>
+                      </xs:unique>
+                    </xs:element>
                     <xs:element name="ViewSettings" minOccurs="0">
                       <xs:complexType>
                         <xs:all>
@@ -246,6 +268,14 @@
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="key" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="AssetAssignmentType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="slot" type="xs:string" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
