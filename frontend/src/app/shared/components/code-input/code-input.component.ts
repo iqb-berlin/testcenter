@@ -1,7 +1,7 @@
 import {
   Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { CodeInputType } from '@app/app.interfaces';
 import { TextFieldFormComponent } from './text-field-form.component';
@@ -13,7 +13,8 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   styleUrl: './code-input.component.scss',
   imports: [
     TextFieldFormComponent,
-    FabFormComponent
+    FabFormComponent,
+    NgTemplateOutlet
   ]
 })
 export class CodeInputComponent implements OnChanges {

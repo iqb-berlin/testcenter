@@ -1,11 +1,15 @@
+<ng-template #projectedContent>
+  <ng-content></ng-content>
+</ng-template>
+
 @if (inputType === 'text-field') {
   <tc-code-text-field-form [buttonLabel]="buttonLabel" (submitCode)="onSubmit($event)">
-    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="projectedContent"></ng-container>
   </tc-code-text-field-form>
 } @else {
   <tc-code-keypad-form [visualMode]="inputType" [length]="length"
                        (submitCode)="onSubmit($event)" (clearInput)="problemText = ''">
-    <ng-content></ng-content>
+    <ng-container *ngTemplateOutlet="projectedContent"></ng-container>
   </tc-code-keypad-form>
 }
 
