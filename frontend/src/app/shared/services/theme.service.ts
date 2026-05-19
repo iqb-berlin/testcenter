@@ -33,6 +33,7 @@ export interface Theme {
   cssClassName: string;
   previewColor?: string;
   description?: string;
+  targetAudience: 'children' | 'teenager' | 'adults';
   imagePaths?: Partial<Record<keyof CustomImages, string>>
 }
 
@@ -42,6 +43,7 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
+    targetAudience: 'children',
     imagePaths: {
       starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
       starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
@@ -54,12 +56,14 @@ export const THEMES: Theme[] = [
     name: 'Sekundar',
     cssClassName: 'theme-sekundar',
     previewColor: '#0B2D84',
-    description: 'Zielgruppe Schüler*innen der Sekundarstufe I'
+    description: 'Zielgruppe Schüler*innen der Sekundarstufe I',
+    targetAudience: 'teenager'
   },
   {
     name: 'Erwachsene',
     cssClassName: 'theme-adult',
     previewColor: '#6B369A',
-    description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)'
+    description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)',
+    targetAudience: 'adults'
   }
 ];
