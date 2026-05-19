@@ -129,8 +129,7 @@ export class WorkspacesComponent implements OnInit {
     this.messageService.showConfirmDialog({
       title: 'Löschen von Arbeitsbereichen',
       content: prompt,
-      confirmText: 'Arbeitsbereich(e) löschen',
-      focusCancel: true
+      confirmText: 'Arbeitsbereich(e) löschen'
     }).subscribe(result => {
       if (result) {
         const workspacesToDelete: number[] = [];

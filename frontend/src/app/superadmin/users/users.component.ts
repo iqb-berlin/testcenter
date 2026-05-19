@@ -125,8 +125,7 @@ export class UsersComponent implements OnInit {
     this.messageService.showConfirmDialog({
       title: 'Löschen von Administrator:innen',
       content: prompt,
-      confirmText: 'Administrator:in löschen',
-      focusCancel: true
+      confirmText: 'Administrator:in löschen'
     }).subscribe(result => {
       if (result) {
         const usersToDelete: string[] = [];

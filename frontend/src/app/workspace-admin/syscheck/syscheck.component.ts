@@ -101,8 +101,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
       this.messageService.showConfirmDialog({
         title: 'Löschen von Berichten',
         content: `${prompt}gelöscht. Fortsetzen?`,
-        confirmText: 'Berichtsdaten löschen',
-        focusCancel: true
+        confirmText: 'Berichtsdaten löschen'
       }).subscribe(result => {
         if (result) {
           this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)

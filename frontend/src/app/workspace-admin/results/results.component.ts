@@ -120,8 +120,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.messageService.showConfirmDialog({
         title: 'Löschen von Gruppendaten',
         content: `${prompt}gelöscht. Fortsetzen?`,
-        confirmText: 'Gruppendaten löschen',
-        focusCancel: true
+        confirmText: 'Gruppendaten löschen'
       }).subscribe(result => {
         if (result) {
           this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
