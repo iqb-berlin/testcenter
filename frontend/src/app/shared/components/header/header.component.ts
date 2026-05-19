@@ -1,4 +1,4 @@
-import { Component, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbar } from '@angular/material/toolbar';
@@ -30,11 +30,12 @@ import { AssetService } from '@shared/services/asset.service';
   templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('logoutDialogTemplate') logoutDialogTemplate!: TemplateRef<unknown>;
   logoLink: string[] = ['/r'];
   userRights: string[] = [];
   protected logoURL?: string;
+  protected confirmDialogImgSrc?: string;
 
   constructor(public headerService: HeaderService,
               public mainDataService: MainDataService,
@@ -47,7 +48,6 @@ export class HeaderComponent implements OnDestroy {
       const isLoginRoute = router.url.includes('code-input') ||
                                    router.url.includes('login');
       this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
-      this.logoURL = assetService.getAssetSrc('logo');
     });
 
     assetService.assetSlots$.subscribe(() => {
@@ -84,6 +84,10 @@ export class HeaderComponent implements OnDestroy {
         this.userRights.push('Code-Eingabe erforderlich');
       }
     });
+  }
+
+  ngOnInit() {
+    this.confirmDialogImgSrc = this.assetService.getAssetSrc('confirmDialog');
   }
 
   protected logout() {

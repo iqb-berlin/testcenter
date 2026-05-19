@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
+  protected illustrationImageSrc?: string;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -67,10 +68,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.mainDataService.appSubTitle$.next('Anmelden');
     this.routingSubscription = this.route.params
-      .subscribe(params => { this.returnTo = params.returnTo; });
+      .subscribe(params => {
+        this.returnTo = params.returnTo;
+      });
     this.checkBrowser();
     this.headerService.title = 'Anmelden';
     this.footerService.showFooter.set(true);
+    this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
   }
 
   nameInput(): void {

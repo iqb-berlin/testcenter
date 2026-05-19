@@ -36,7 +36,7 @@ class AssetAssignmentController extends Controller {
       ];
     }
 
-    return $response->withJson($result);
+    return $response->withJson($result ?? []);
   }
 
   public static function set(Request $request, Response $response): Response {

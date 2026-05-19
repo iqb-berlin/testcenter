@@ -63,6 +63,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   isSuperAdmin = false;
   availableBooklets?: { name: string; id:string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
   showScrollButton = false;
+  protected companionImageSrc?: string;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
@@ -72,6 +73,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
+    this.companionImageSrc = this.assetService.getAssetSrc('starterCompanion');
     this.ds.networkReports = [];
     this.bs.getSessionData().subscribe(authData => {
       if (!authData || !authData.token) {

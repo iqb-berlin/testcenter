@@ -59,6 +59,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   codeInputMode: CodeInputType = 'text-field';
   codeInputLength: number | undefined; // only used for keypad input
   codeInputErrorText: string = '';
+  protected loadingProgressImgSrc?: string;
 
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
@@ -67,6 +68,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               private bs: BackendService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.loadingProgressImgSrc = this.assetService.getAssetSrc('loadingProgress');
     this.iFrameItemplayer = null;
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$

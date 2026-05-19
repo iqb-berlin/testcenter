@@ -26,6 +26,7 @@ const ASSET_SLOT_NAMES = [
 export class AssetService {
   private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
   private assetSlotsRefreshId = 0;
+  // todo logo asset gets called twice because of this line?
   assetSlots$ = this.assetSlotsSubject.asObservable();
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
@@ -100,6 +101,7 @@ export class AssetService {
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
+    console.log('here', slotName)
     const url = this.assetSlotsSubject.getValue()[slotName]?.url ||
       this.themeService.activeTheme.imagePaths?.[slotName] ||
       DEFAULT_ASSET_SRC;

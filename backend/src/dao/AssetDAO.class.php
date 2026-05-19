@@ -113,7 +113,7 @@ class AssetDAO extends DAO {
   ): array {
     // 1) get all global assignments first for everyone
     $conditions = [
-      "(a_a.workspace_id = 0 and a_a.source is null and a_a.scope = 'global')"
+      "(a_a.scope = 'global')"
     ];
     $params = [];
 

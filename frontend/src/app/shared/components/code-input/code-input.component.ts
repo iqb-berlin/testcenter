@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild
+  Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
@@ -18,7 +18,7 @@ import { FabFormComponent } from './fab-form/fab-form.component';
     NgTemplateOutlet
   ]
 })
-export class CodeInputComponent implements OnChanges {
+export class CodeInputComponent implements OnInit, OnChanges {
   @Input() problemText = '';
   @Input() inputType: CodeInputType = 'text-field';
   @Input() length: number | undefined; // only used for keypad input
@@ -31,8 +31,13 @@ export class CodeInputComponent implements OnChanges {
 
   @Output() submitCode = new EventEmitter<string>();
   @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
+  protected companionImageSrc?: string;
 
   constructor(protected assetService: AssetService) { }
+
+  ngOnInit() {
+    this.companionImageSrc = this.assetService.getAssetSrc('loginCompanion');
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputType !== 'text-field' && changes.problemText) {
