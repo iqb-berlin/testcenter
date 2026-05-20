@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   userRights: string[] = [];
   protected logoURL?: string;
   protected confirmDialogImgSrc?: string;
+  protected isLoginRoute: boolean = false;
 
   constructor(public headerService: HeaderService,
               public mainDataService: MainDataService,
@@ -45,9 +46,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      const isLoginRoute = router.url.includes('code-input') ||
+      this.isLoginRoute = router.url.includes('code-input') ||
                                    router.url.includes('login');
-      this.logoLink = isLoginRoute ? ['/r/login'] : ['/r'];
+      this.logoLink = this.isLoginRoute ? ['/r/login'] : ['/r'];
     });
 
     assetService.assetSlots$.subscribe(() => {
@@ -91,14 +92,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   protected logout() {
-    this.messageService.showConfirmDialog({
-      title: 'Sicher, dass du dich abmelden möchtest?',
-      contentTemplate: this.logoutDialogTemplate,
-      confirmText: 'Abmelden',
-      cancelText: 'Hier bleiben'
-    }).subscribe((result: boolean | undefined) => {
-      if (result) this.mainDataService.logOut();
-    });
+    if (this.isLoginRoute) {
+      this.mainDataService.logOut();
+    } else {
+      this.messageService.showConfirmDialog({
+        title: 'Sicher, dass du dich abmelden möchtest?',
+        contentTemplate: this.logoutDialogTemplate,
+        confirmText: 'Abmelden',
+        cancelText: 'Hier bleiben'
+      }).subscribe((result: boolean | undefined) => {
+        if (result) this.mainDataService.logOut();
+      });
+    }
   }
 
   ngOnDestroy(): void {
