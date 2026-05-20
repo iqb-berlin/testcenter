@@ -147,7 +147,7 @@ class SuperAdminDAOTest extends TestCase {
 
   public function test_renameWorkspace() {
     $this->dbc->setWorkspaceName(1, 'new_name');
-    $result = $this->dbc->_('select name from workspaces where id = 1')['name'];
+    $result = $this->dbc->_('SELECT name FROM workspaces WHERE id = 1')['name'];
     $expectation = 'new_name';
     $this->assertEquals($expectation, $result);
 

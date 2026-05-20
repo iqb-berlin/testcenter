@@ -55,6 +55,3 @@ Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)
 * **Always throw exceptions in case of error.** They will be globally caught by ErrorHandler.
   When you are in the situation of catching an exception anywhere else it's 99% better not to throw the exception
   (since it's not an exception case most likely) but return false or null or the like.
-
-### SQL
-* Don't use allcaps.

@@ -17,63 +17,63 @@ class ReviewDAO extends DAO
     $testFilter = '';
 
     if (!is_null($testId)) {
-      $unitFilter = 'and unit_reviews.test_id = :testId';
-      $testFilter = 'and test_reviews.booklet_id = :testId';
+      $unitFilter = 'AND unit_reviews.test_id = :testId';
+      $testFilter = 'AND test_reviews.booklet_id = :testId';
       $params[':testId'] = $testId;
     }
 
     return $this->_(
       "
-        select
-          login_sessions.group_name as groupname,
-          login_sessions.name as loginname,
+        SELECT
+          login_sessions.group_name AS groupname,
+          login_sessions.name AS loginname,
           person_sessions.code,
-          tests.name as bookletname,
-          unit_reviews.unit_name as unitname,
+          tests.name AS bookletname,
+          unit_reviews.unit_name AS unitname,
           unit_reviews.priority,
           unit_reviews.categories,
           unit_reviews.reviewtime,
           unit_reviews.page,
           unit_reviews.pagelabel,
-          units.original_unit_id as originalUnitId,
-          unit_reviews.user_agent as userAgent,
+          units.original_unit_id AS originalUnitId,
+          unit_reviews.user_agent AS userAgent,
           unit_reviews.reviewer,
           unit_reviews.entry
-        from unit_reviews
-          left join units on units.test_id = unit_reviews.test_id and units.name = unit_reviews.unit_name
-          left join tests on tests.id = unit_reviews.test_id
-          left join person_sessions on person_sessions.id = unit_reviews.person_id
-          left join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-        where
+        FROM unit_reviews
+          LEFT JOIN units ON units.test_id = unit_reviews.test_id AND units.name = unit_reviews.unit_name
+          LEFT JOIN tests ON tests.id = unit_reviews.test_id
+          LEFT JOIN person_sessions ON person_sessions.id = unit_reviews.person_id
+          LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+        WHERE
           unit_reviews.person_id = :person_id
           $unitFilter
 
-        union all
+        UNION ALL
 
-        select
-          login_sessions.group_name as groupname,
-          login_sessions.name as loginname,
+        SELECT
+          login_sessions.group_name AS groupname,
+          login_sessions.name AS loginname,
           person_sessions.code,
-          tests.name as bookletname,
-          '' as unitname,
+          tests.name AS bookletname,
+          '' AS unitname,
           test_reviews.priority,
           test_reviews.categories,
           test_reviews.reviewtime,
-          null as page,
-          null as pagelabel,
-          '' as originalUnitId,
-          test_reviews.user_agent as userAgent,
+          NULL AS page,
+          NULL AS pagelabel,
+          '' AS originalUnitId,
+          test_reviews.user_agent AS userAgent,
           test_reviews.reviewer,
           test_reviews.entry
-        from test_reviews
-          left join tests on test_reviews.booklet_id = tests.id
-          left join person_sessions on person_sessions.id = test_reviews.person_id
-          left join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-        where
+        FROM test_reviews
+          LEFT JOIN tests ON test_reviews.booklet_id = tests.id
+          LEFT JOIN person_sessions ON person_sessions.id = test_reviews.person_id
+          LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+        WHERE
           test_reviews.person_id = :person_id
           $testFilter
 
-        order by reviewtime asc;
+        ORDER BY reviewtime ASC;
       ",
       $params,
       true

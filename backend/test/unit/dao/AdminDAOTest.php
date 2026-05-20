@@ -224,7 +224,7 @@ final class AdminDAOTest extends TestCase {
       'timestamp' => '2020-08-20 08:30:00',
       'executed' => '0'
     ];
-    $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
+    $result = $this->dbc->_("SELECT * FROM test_commands WHERE keyword='a_keyword'");
     $this->assertEquals($expectation, $result);
   }
 
@@ -291,8 +291,8 @@ final class AdminDAOTest extends TestCase {
     $this->assertSame($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
-    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
-    $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
+    $this->dbc->_("INSERT INTO tests (name, file_id, person_id, locked, running, timestamp_server, laststate) VALUES ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
+    $this->dbc->_("INSERT INTO units (name, test_id) VALUES ('UNIT_1', 4)");
 
     $expectation = [
       [
@@ -319,17 +319,17 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
 
-    $this->dbc->_('delete from test_reviews');
+    $this->dbc->_('DELETE FROM test_reviews');
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
 
-    $this->dbc->_('delete from unit_reviews');
+    $this->dbc->_('DELETE FROM unit_reviews');
     $result = $this->dbc->getResultStats(1);
     $this->assertSame([$expectation[0]], $result);
 
     $this->dbc->_(
-      "insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
+      "INSERT INTO test_reviews (booklet_id, reviewtime, priority, categories, entry)
+      VALUES (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
     );
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
@@ -413,6 +413,6 @@ final class AdminDAOTest extends TestCase {
   }
 
   private function countTableRows(string $tableName): int {
-    return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
+    return (int) $this->dbc->_("SELECT COUNT(*) AS c FROM $tableName")["c"];
   }
 }

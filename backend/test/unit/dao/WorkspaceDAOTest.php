@@ -43,7 +43,7 @@ class WorkspaceDAOTest extends TestCase {
     $file = XMLFileBooklet::fromString('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', 'Booklet.xml');
 
     $this->dbc->storeFile($file);
-    $files = $this->dbc->_("select *, 'ignore' as validation_report from files where type = 'Booklet'", [], true);
+    $files = $this->dbc->_("SELECT *, 'ignore' AS validation_report FROM files WHERE type = 'Booklet'", [], true);
     $expectation = [
       [
         'workspace_id' => 1,
@@ -94,10 +94,10 @@ class WorkspaceDAOTest extends TestCase {
       new Login('first', 'some', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some' => 'thing']),
       new Login('second', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 0, 0, (object) ['some' => 'thing']),
       new Login('else', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 0, 200000, 10),
-      new Login('evil\'; select * from users; characters"  ', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some \' evil' => 'thing'])
+      new Login('evil\'; SELECT * FROM users; characters"  ', 'thing', 'run-hot-return', 'grp', 'Grp', [], 1, 1000000, 200000, 0, (object) ['some \' evil' => 'thing'])
     );
     $this->dbc->addLoginSource('unit-test', $logins);
-    $insertedLogins = $this->dbc->_("select count(*) as count from logins where source='unit-test'")['count'];
+    $insertedLogins = $this->dbc->_("SELECT COUNT(*) AS count FROM logins WHERE source='unit-test'")['count'];
     $this->assertEquals(4, $insertedLogins);
   }
 }

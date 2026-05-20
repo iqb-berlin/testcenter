@@ -5,46 +5,46 @@ declare(strict_types=1);
 class SessionDAO extends DAO {
   public function getToken(string $tokenString, array $requiredTypes): AuthToken {
     $tokenInfo = $this->_(
-      'select
+      'SELECT
                     admin_sessions.token,
                     users.id,
-                    \'admin\' as "type",
-                    -1 as "workspaceId",
-                    case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
-                    valid_until as "validTo",
-                    \'[admins]\' as "group"
-                from admin_sessions
-                     left join users on (users.id = admin_sessions.user_id)
-                where
+                    \'admin\' AS "type",
+                    -1 AS "workspaceId",
+                    CASE WHEN (users.is_superadmin) THEN \'super-admin\' ELSE \'admin\' END AS "mode",
+                    valid_until AS "validTo",
+                    \'[admins]\' AS "group"
+                FROM admin_sessions
+                     LEFT JOIN users ON (users.id = admin_sessions.user_id)
+                WHERE
                     admin_sessions.token = :token
-            union
-                select
+            UNION
+                SELECT
                     person_sessions.token,
-                    person_sessions.id as "id",
-                    \'person\' as "type",
-                    logins.workspace_id as "workspaceId",
+                    person_sessions.id AS "id",
+                    \'person\' AS "type",
+                    logins.workspace_id AS "workspaceId",
                     logins.mode,
-                    person_sessions.valid_until as "validTo",
-                    logins.group_name as "group"
-                from person_sessions
-                     left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-                     left join logins on (logins.name = login_sessions.name)
-                where
+                    person_sessions.valid_until AS "validTo",
+                    logins.group_name AS "group"
+                FROM person_sessions
+                     LEFT JOIN login_sessions ON (person_sessions.login_sessions_id = login_sessions.id)
+                     LEFT JOIN logins ON (logins.name = login_sessions.name)
+                WHERE
                     person_sessions.token = :token
-            union
-                select
+            UNION
+                SELECT
                     token,
-                    login_sessions.id as "id",
-                    \'login\' as "type",
-                    logins.workspace_id as "workspaceId",
+                    login_sessions.id AS "id",
+                    \'login\' AS "type",
+                    logins.workspace_id AS "workspaceId",
                     logins.mode,
-                    logins.valid_to as "validTo",
-                    logins.group_name as "group"
-                from login_sessions
-                     left join logins on (logins.name = login_sessions.name)
-                where
+                    logins.valid_to AS "validTo",
+                    logins.group_name AS "group"
+                FROM login_sessions
+                     LEFT JOIN logins ON (logins.name = login_sessions.name)
+                WHERE
                     login_sessions.token = :token
-            limit 1',
+            LIMIT 1',
       [':token' => $tokenString]
     );
 
@@ -89,7 +89,7 @@ class SessionDAO extends DAO {
 
   public function getLogin(string $name, string $password): Login | FailedLogin {
     $result = $this->_(
-      'select
+      'SELECT
               logins.name,
               logins.mode,
               logins.group_name,
@@ -103,9 +103,9 @@ class SessionDAO extends DAO {
               logins.password,
               logins.monitors,
               logins.view_settings
-            from
+            FROM
               logins
-            where
+            WHERE
               logins.name = :name',
       [
         ':name' => $name
@@ -162,9 +162,9 @@ class SessionDAO extends DAO {
     // login was requested two times at the same moment it could happen that it was created twice.
 
     $this->_(
-      'insert ignore into login_sessions (token, name, workspace_id, group_name)
-            values(:token, :name, :ws, :group_name)
-            on duplicate key update group_name = :group_name',
+      'INSERT IGNORE INTO login_sessions (token, name, workspace_id, group_name)
+            VALUES(:token, :name, :ws, :group_name)
+            ON DUPLICATE KEY UPDATE group_name = :group_name',
       [
         ':token' => $loginToken,
         ':name' => $login->getName(),
@@ -180,7 +180,7 @@ class SessionDAO extends DAO {
 
     // there is no way in MySQL to combine insert & select into one query, so have to retrieve it to get the id
     $session = $this->_(
-      'select id, token from login_sessions where name = :name and workspace_id = :ws_id',
+      'SELECT id, token FROM login_sessions WHERE name = :name AND workspace_id = :ws_id',
       [
         ':name' => $login->getName(),
         ':ws_id' => $login->getWorkspaceId()
@@ -197,14 +197,14 @@ class SessionDAO extends DAO {
 
   public function getLoginSessionByToken(string $loginToken): LoginSession {
     $loginSession = $this->_(
-      'select 
+      'SELECT 
                     login_sessions.id, 
                     logins.name,
                     login_sessions.token,
                     logins.mode,
                     logins.group_name,
                     logins.group_label,
-                    login_session_groups.token as group_token,
+                    login_session_groups.token AS group_token,
                     logins.codes_to_booklets,
                     login_sessions.workspace_id,
                     logins.custom_texts,
@@ -214,11 +214,11 @@ class SessionDAO extends DAO {
                     logins.valid_from,
                     logins.monitors,
                     logins.view_settings
-                from
+                FROM
                     logins
-                    left join login_sessions on (logins.name = login_sessions.name)
-                    left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
-                where
+                    LEFT JOIN login_sessions ON (logins.name = login_sessions.name)
+                    LEFT JOIN login_session_groups ON (login_sessions.group_name = login_session_groups.group_name AND login_sessions.workspace_id = login_session_groups.workspace_id)
+                WHERE
                     login_sessions.token=:token',
       [':token' => $loginToken]
     );
@@ -283,7 +283,7 @@ class SessionDAO extends DAO {
 
     if (!Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
       $personSession = $this->_('
-        select id, valid_until, token from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
+        SELECT id, valid_until, token FROM person_sessions WHERE login_sessions_id = :lsi AND name_suffix = :suffix',
         [
           ':lsi' => $loginSession->getId(),
           ':suffix' => $suffix
@@ -298,7 +298,7 @@ class SessionDAO extends DAO {
         if (!$token or $forceUpdateToken) {
           $token = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
           $this->_(
-            'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
+            'UPDATE person_sessions SET token=:token WHERE login_sessions_id = :lsi AND name_suffix = :suffix',
             [
               ':lsi' => $loginSession->getId(),
               ':suffix' => $suffix,
@@ -324,8 +324,8 @@ class SessionDAO extends DAO {
 
     try {
       $this->_(
-        "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
-            values (:token, :code, :login_id, :valid_until, :suffix)",
+        "INSERT INTO person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+            VALUES (:token, :code, :login_id, :valid_until, :suffix)",
         [
           ':token' => $token,
           ':code' => $code,
@@ -365,7 +365,7 @@ class SessionDAO extends DAO {
 
   public function getPersonSessionByToken(string $personToken): PersonSession {
     $personSession = $this->_(
-      'select 
+      'SELECT 
                 login_sessions.id,
                 logins.codes_to_booklets,
                 login_sessions.workspace_id,
@@ -373,7 +373,7 @@ class SessionDAO extends DAO {
                 logins.password,
                 logins.group_name,
                 login_session_groups.group_label,
-                login_session_groups.token as group_token,
+                login_session_groups.token AS group_token,
                 login_sessions.token,
                 login_sessions.name,
                 logins.custom_texts,
@@ -382,15 +382,15 @@ class SessionDAO extends DAO {
                 logins.valid_for,
                 logins.monitors,
                 logins.view_settings,
-                person_sessions.id as "person_id",
+                person_sessions.id AS "person_id",
                 person_sessions.code,
                 person_sessions.valid_until,
                 person_sessions.name_suffix
-            from person_sessions
-                inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-                inner join logins on logins.name = login_sessions.name
-                left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
-            where person_sessions.token = :token',
+            FROM person_sessions
+                INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+                INNER JOIN logins ON logins.name = login_sessions.name
+                LEFT JOIN login_session_groups ON (login_sessions.group_name = login_session_groups.group_name AND login_sessions.workspace_id = login_session_groups.workspace_id)
+            WHERE person_sessions.token = :token',
       [':token' => $personToken]
     );
 
@@ -438,7 +438,7 @@ class SessionDAO extends DAO {
   public function getOrCreateGroupToken(int $workspaceId, string $groupName, string $groupLabel): string {
     $newGroupToken = Token::generate('group', $groupName);
     $this->_(
-      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token, last_modified) values (?, ?, ?, ?, ?)',
+      'INSERT IGNORE INTO login_session_groups (group_name, workspace_id, group_label, token, last_modified) VALUES (?, ?, ?, ?, ?)',
       [
         $groupName,
         $workspaceId,
@@ -453,7 +453,7 @@ class SessionDAO extends DAO {
     }
 
     $res = $this->_(
-      'select token from login_session_groups where group_name = ? and workspace_id = ?',
+      'SELECT token FROM login_session_groups WHERE group_name = ? AND workspace_id = ?',
       [
         $groupName,
         $workspaceId
@@ -470,13 +470,13 @@ class SessionDAO extends DAO {
 
   public function groupTokenExists(int $workspaceId, string $groupTokenString): bool {
     $res = $this->_(
-      'select
-            count(token) as count
-          from
+      'SELECT
+            COUNT(token) AS count
+          FROM
             login_session_groups
-            left join logins on login_session_groups.group_name = logins.group_name
-          where
-            token = ? and login_session_groups.workspace_id = ?',
+            LEFT JOIN logins ON login_session_groups.group_name = logins.group_name
+          WHERE
+            token = ? AND login_session_groups.workspace_id = ?',
       [
         $groupTokenString,
         $workspaceId
@@ -487,18 +487,18 @@ class SessionDAO extends DAO {
 
   public function getTestStatus(string $personToken, string $bookletName): array {
     $testStatus = $this->_(
-      'select
+      'SELECT
              tests.locked,
              tests.running,
              files.label
-            from
+            FROM
               person_sessions
-              left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-              left join logins on (logins.name = login_sessions.name)
-              left join files on (files.workspace_id = logins.workspace_id)
-              left join tests on (person_sessions.id = tests.person_id and tests.name = files.id)
-            where person_sessions.token = :token
-              and files.id = :bookletname',
+              LEFT JOIN login_sessions ON (person_sessions.login_sessions_id = login_sessions.id)
+              LEFT JOIN logins ON (logins.name = login_sessions.name)
+              LEFT JOIN files ON (files.workspace_id = logins.workspace_id)
+              LEFT JOIN tests ON (person_sessions.id = tests.person_id AND tests.name = files.id)
+            WHERE person_sessions.token = :token
+              AND files.id = :bookletname',
       [
         ':token' => $personToken,
         ':bookletname' => $bookletName
@@ -517,14 +517,14 @@ class SessionDAO extends DAO {
 
   public function personHasBooklet(string $personToken, string $bookletName): bool {
     $bookletDef = $this->_('
-            select
+            SELECT
               logins.codes_to_booklets,
               login_sessions.id,
               person_sessions.code
-            from logins
-              left join login_sessions on logins.name = login_sessions.name
-              left join person_sessions on login_sessions.id = person_sessions.login_sessions_id
-            where
+            FROM logins
+              LEFT JOIN login_sessions ON logins.name = login_sessions.name
+              LEFT JOIN person_sessions ON login_sessions.id = person_sessions.login_sessions_id
+            WHERE
               person_sessions.token = :token',
       [
         ':token' => $personToken
@@ -539,9 +539,9 @@ class SessionDAO extends DAO {
 
   public function ownsTest(string $personToken, string $testId): bool {
     $test = $this->_(
-      'select tests.locked from tests
-              inner join person_sessions on person_sessions.id = tests.person_id
-              where person_sessions.token=:token and tests.id=:testId',
+      'SELECT tests.locked FROM tests
+              INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+              WHERE person_sessions.token=:token AND tests.id=:testId',
       [
         ':token' => $personToken,
         ':testId' => $testId
@@ -566,29 +566,29 @@ class SessionDAO extends DAO {
     $orderField = implode(', ', array_fill(0, count($testNames), '?'));
 
     $sql = "
-      with ba (test_name, booklet_file_id) as (
-        values 
+      WITH ba (test_name, booklet_file_id) AS (
+        VALUES 
           $virtualTable
       )
-      select
+      SELECT
         ba.test_name,
         tests.person_id,
         tests.id,
         tests.locked,
         tests.running,
         files.name,
-        files.id as bookletId,
-        files.label as testLabel,
+        files.id AS bookletId,
+        files.label AS testLabel,
         files.description
-      from ba
-        left outer join tests
-          on ba.test_name = tests.name
-            and tests.person_id = ?
-        left outer join files
-          on ba.booklet_file_id = files.id
-            and files.workspace_id = ?
-            and files.type = 'Booklet'
-      order by
+      FROM ba
+        LEFT OUTER JOIN tests
+          ON ba.test_name = tests.name
+            AND tests.person_id = ?
+        LEFT OUTER JOIN files
+          ON ba.booklet_file_id = files.id
+            AND files.workspace_id = ?
+            AND files.type = 'Booklet'
+      ORDER BY
         field(ba.test_name, $orderField)
     ";
     $tests = $this->_(
@@ -620,7 +620,7 @@ class SessionDAO extends DAO {
 
   public function deletePersonToken(AuthToken $authToken): void {
     // we can not delete the session entirely, because this would delete the whole response data.
-    $this->_("update person_sessions set token=null where token = :token", [':token' => $authToken->getToken()]);
+    $this->_("UPDATE person_sessions SET token=NULL WHERE token = :token", [':token' => $authToken->getToken()]);
   }
 
   /**
@@ -647,18 +647,18 @@ class SessionDAO extends DAO {
   public function getGroups(int $workspaceId): array {
     $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability('monitorable')) . "')";
     $sql =
-      "select
+      "SELECT
         group_name,
         group_label,
         valid_from,
         valid_to
-      from
+      FROM
         logins
-      where
+      WHERE
         workspace_id = :ws_id
-        and $modeSelector
-      group by group_name, group_label, valid_from, valid_to
-      order by group_label";
+        AND $modeSelector
+      GROUP BY group_name, group_label, valid_from, valid_to
+      ORDER BY group_label";
 
     return array_reduce(
       $this->_($sql, [':ws_id' => $workspaceId], true),
@@ -698,10 +698,10 @@ class SessionDAO extends DAO {
       $replacements[$filterName] = $filterValue;
       $filterSQL[] = "$filter = $filterName";
     }
-    $filterSQL = implode(' and ', $filterSQL);
+    $filterSQL = implode(' AND ', $filterSQL);
     $filterSQL = $filterSQL !== '' ? $filterSQL : ' 1 = 1';
 
-    $sql = "select
+    $sql = "SELECT
       logins.name,
       logins.mode,
       logins.group_name,
@@ -715,14 +715,14 @@ class SessionDAO extends DAO {
       logins.workspace_id,
       login_sessions.id,
       login_sessions.token,
-      login_session_groups.token as group_token 
-    from
+      login_session_groups.token AS group_token 
+    FROM
       logins
-      left join login_sessions on (logins.name = login_sessions.name)
-      left join login_session_groups on (login_sessions.group_name = login_session_groups.group_name and login_sessions.workspace_id = login_session_groups.workspace_id)
-    where
+      LEFT JOIN login_sessions ON (logins.name = login_sessions.name)
+      LEFT JOIN login_session_groups ON (login_sessions.group_name = login_session_groups.group_name AND login_sessions.workspace_id = login_session_groups.workspace_id)
+    WHERE
       $filterSQL
-    order by id";
+    ORDER BY id";
 
     $result = $this->_($sql, $replacements, true);
 
@@ -758,13 +758,13 @@ class SessionDAO extends DAO {
     $sessionName = $personSession->getLoginSession()->getLogin()->getName();
 
     $syschecks = $this->_("
-      select * 
-      from files 
-      left join logins on files.workspace_id = logins.workspace_id
-      where 
-        files.type = 'SysCheck' and
-        logins.name = :session_name and
-        logins.workspace_id = :ws_id and
+      SELECT * 
+      FROM files 
+      LEFT JOIN logins ON files.workspace_id = logins.workspace_id
+      WHERE 
+        files.type = 'SysCheck' AND
+        logins.name = :session_name AND
+        logins.workspace_id = :ws_id AND
         logins.mode = 'sys-check-login'
       ",
       [

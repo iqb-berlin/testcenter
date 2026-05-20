@@ -11,9 +11,9 @@ class AdminDAO extends DAO {
    */
   public function refreshAdminToken(string $token): void {
     $this->_(
-      'update admin_sessions
-            set valid_until =:value
-            where token =:token',
+      'UPDATE admin_sessions
+            SET valid_until =:value
+            WHERE token =:token',
       [
         ':value' => TimeStamp::toSQLFormat(TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes)),
         ':token' => $token
@@ -39,7 +39,7 @@ class AdminDAO extends DAO {
 
   private function getUserByNameAndPassword(string $userName, string $password): array | FailedLogin {
     $usersOfThisName = $this->_(
-      'select * from users where users.name = :name',
+      'SELECT * FROM users WHERE users.name = :name',
       [':name' => $userName],
       true
     );
@@ -62,7 +62,7 @@ class AdminDAO extends DAO {
 
   private function deleteTokensByUser(int $userId): void {
     $this->_(
-      'delete from admin_sessions where admin_sessions.user_id = :id',
+      'DELETE FROM admin_sessions WHERE admin_sessions.user_id = :id',
       [':id' => $userId]
     );
   }
@@ -71,8 +71,8 @@ class AdminDAO extends DAO {
     $validTo = $validTo ?? TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes);
 
     $this->_(
-      'insert into admin_sessions (token, user_id, valid_until)
-			values(:token, :user_id, :valid_until)',
+      'INSERT INTO admin_sessions (token, user_id, valid_until)
+			VALUES(:token, :user_id, :valid_until)',
       [
         ':token' => $token,
         ':user_id' => $userId,
@@ -83,16 +83,16 @@ class AdminDAO extends DAO {
 
   public function getAdmin(string $token): Admin {
     $admin = $this->_(
-      'select
+      'SELECT
         users.id,
         users.name,
         users.email,
         users.is_superadmin,
         users.pw_set_by_admin,
         admin_sessions.valid_until
-      from users
-			inner join admin_sessions on users.id = admin_sessions.user_id
-			where admin_sessions.token=:token',
+      FROM users
+			INNER JOIN admin_sessions ON users.id = admin_sessions.user_id
+			WHERE admin_sessions.token=:token',
       [':token' => $token]
     );
 
@@ -114,7 +114,7 @@ class AdminDAO extends DAO {
 
   public function deleteResultData(int $workspaceId, string $groupName): void {
     $this->_(
-      "delete from login_session_groups where group_name = :group_name and workspace_id = :workspace_id",
+      "DELETE FROM login_session_groups WHERE group_name = :group_name AND workspace_id = :workspace_id",
       [
         ':workspace_id' => $workspaceId,
         ':group_name' => $groupName
@@ -135,33 +135,33 @@ class AdminDAO extends DAO {
 
     $affectedGroups = $this->_(
       "
-      select distinct login_sessions.group_name
-       from tests
-       inner join person_sessions on tests.person_id = person_sessions.id
-       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-       where login_sessions.workspace_id = :workspace_id
-          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")",
+      SELECT DISTINCT login_sessions.group_name
+       FROM tests
+       INNER JOIN person_sessions ON tests.person_id = person_sessions.id
+       INNER JOIN login_sessions ON person_sessions.login_sessions_id = login_sessions.id
+       WHERE login_sessions.workspace_id = :workspace_id
+          AND (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) IN (" . implode(',', $placeholders) . ")",
       $params,
       true
     );
 
     $this->_(
       "
-      delete tests 
-       from tests
-       inner join person_sessions on tests.person_id = person_sessions.id
-       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-       where login_sessions.workspace_id = :workspace_id
-          and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
+      DELETE tests 
+       FROM tests
+       INNER JOIN person_sessions ON tests.person_id = person_sessions.id
+       INNER JOIN login_sessions ON person_sessions.login_sessions_id = login_sessions.id
+       WHERE login_sessions.workspace_id = :workspace_id
+          AND (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) IN (" . implode(',', $placeholders) . ")" ,
       $params
     );
 
     foreach ($affectedGroups as $row) {
       $this->_('
-        update login_session_groups 
-        set last_modified = :now
-        where workspace_id = :workspace_id 
-          and group_name = :group_name',
+        UPDATE login_session_groups 
+        SET last_modified = :now
+        WHERE workspace_id = :workspace_id 
+          AND group_name = :group_name',
         [
           ':now' => TimeStamp::toSQLFormat(TimeStamp::now()),
           ':workspace_id' => $workspaceId,
@@ -174,15 +174,15 @@ class AdminDAO extends DAO {
   /** @return WorkspaceData[] */
   public function getWorkspaces(string $token): array {
     $workspaces = $this->_(
-      'select
+      'SELECT
         workspaces.id,
         workspaces.name,
         workspace_users.role
-      from workspaces
-        inner join workspace_users on workspaces.id = workspace_users.workspace_id
-        inner join users on workspace_users.user_id = users.id
-        inner join admin_sessions on  users.id = admin_sessions.user_id
-      where
+      FROM workspaces
+        INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+        INNER JOIN users ON workspace_users.user_id = users.id
+        INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
+      WHERE
         admin_sessions.token =:token',
       [':token' => $token],
       true
@@ -197,11 +197,11 @@ class AdminDAO extends DAO {
 
   public function hasAdminAccessToWorkspace(string $token, int $workspaceId): bool {
     $data = $this->_(
-      'select workspaces.id from workspaces
-				inner join workspace_users on workspaces.id = workspace_users.workspace_id
-				inner join users on workspace_users.user_id = users.id
-				inner join admin_sessions on  users.id = admin_sessions.user_id
-				where admin_sessions.token =:token and workspaces.id = :wsId',
+      'SELECT workspaces.id FROM workspaces
+				INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+				INNER JOIN users ON workspace_users.user_id = users.id
+				INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
+				WHERE admin_sessions.token =:token AND workspaces.id = :wsId',
       [
         ':token' => $token,
         ':wsId' => $workspaceId
@@ -213,10 +213,10 @@ class AdminDAO extends DAO {
 
   public function hasMonitorAccessToWorkspace(string $token, int $workspaceId): bool {
     $data = $this->_(
-      'select workspaces.id from workspaces
-				inner join login_sessions on workspaces.id = login_sessions.workspace_id
-				inner join person_sessions on person_sessions.login_sessions_id = login_sessions.id
-				where person_sessions.token =:token and workspaces.id = :wsId',
+      'SELECT workspaces.id FROM workspaces
+				INNER JOIN login_sessions ON workspaces.id = login_sessions.workspace_id
+				INNER JOIN person_sessions ON person_sessions.login_sessions_id = login_sessions.id
+				WHERE person_sessions.token =:token AND workspaces.id = :wsId',
       [
         ':token' => $token,
         ':wsId' => $workspaceId
@@ -228,11 +228,11 @@ class AdminDAO extends DAO {
 
   public function getWorkspaceRole(string $token, int $workspaceId): string {
     $user = $this->_(
-      'select workspace_users.role from workspaces
-				inner join workspace_users on workspaces.id = workspace_users.workspace_id
-				inner join users on workspace_users.user_id = users.id
-				inner join admin_sessions on  users.id = admin_sessions.user_id
-				where admin_sessions.token =:token and workspaces.id = :wsId',
+      'SELECT workspace_users.role FROM workspaces
+				INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+				INNER JOIN users ON workspace_users.user_id = users.id
+				INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
+				WHERE admin_sessions.token =:token AND workspaces.id = :wsId',
       [
         ':token' => $token,
         ':wsId' => $workspaceId
@@ -244,9 +244,9 @@ class AdminDAO extends DAO {
 
   public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray {
     $sql = 'SELECT
-               person_sessions.id as "person_id",
-               login_sessions.name as "loginName",
-               login_sessions.id as "login_sessions_id",
+               person_sessions.id AS "person_id",
+               login_sessions.name AS "loginName",
+               login_sessions.id AS "login_sessions_id",
                logins.name,
                logins.mode,
                logins.group_name,
@@ -254,19 +254,19 @@ class AdminDAO extends DAO {
                logins.workspace_id,
                person_sessions.code,
                person_sessions.name_suffix,
-               tests.id as "test_id",
-               tests.name as "booklet_name",
+               tests.id AS "test_id",
+               tests.name AS "booklet_name",
                tests.locked,
                tests.running,
-               tests.laststate as "testState",
-               tests.timestamp_server as "test_timestamp_server"
+               tests.laststate AS "testState",
+               tests.timestamp_server AS "test_timestamp_server"
           FROM person_sessions
                LEFT JOIN tests ON person_sessions.id = tests.person_id
                LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-               LEFt JOIN logins on logins.name = login_sessions.name
+               LEFT JOIN logins ON logins.name = login_sessions.name
           WHERE
               login_sessions.workspace_id = :workspaceId
-              AND tests.id is not null';
+              AND tests.id IS NOT NULL';
 
     $params = [':workspaceId' => $workspaceId];
 
@@ -351,24 +351,24 @@ class AdminDAO extends DAO {
    */
   public function getTestSessionsWithState(int $workspaceId): array {
 
-    $sql = 'select
+    $sql = 'SELECT
                  login_sessions.name,
                  login_session_groups.group_name,
                  login_session_groups.group_label,
                  person_sessions.code,
                  person_sessions.name_suffix,
-                 tests.name as "booklet_name",
-                 tests.label as "booklet_label"
-            from person_sessions
-                 left join tests on person_sessions.id = tests.person_id
-                 left join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-                 left join login_session_groups on login_session_groups.group_name = login_sessions.group_name
-            where
+                 tests.name AS "booklet_name",
+                 tests.label AS "booklet_label"
+            FROM person_sessions
+                 LEFT JOIN tests ON person_sessions.id = tests.person_id
+                 LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+                 LEFT JOIN login_session_groups ON login_session_groups.group_name = login_sessions.group_name
+            WHERE
                 login_sessions.workspace_id = :workspaceId
-                and tests.id is not null
+                AND tests.id IS NOT NULL
                 AND tests.laststate != \'{}\'
-                AND tests.laststate is not null
-            order by login_sessions.group_name, tests.id';
+                AND tests.laststate IS NOT NULL
+            ORDER BY login_sessions.group_name, tests.id';
 
     $testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId], true);
 
@@ -394,13 +394,13 @@ class AdminDAO extends DAO {
 
   private function getUnitState(int $testId, string $unitName): array {
     $unitData = $this->_("
-      select
+      SELECT
         laststate
-      from
+      FROM
         units
-      where
+      WHERE
         units.test_id = :testId
-        and units.name = :unitName",
+        AND units.name = :unitName",
       [
         ':testId' => $testId,
         ':unitName' => $unitName
@@ -422,24 +422,24 @@ class AdminDAO extends DAO {
 
     // TODO: use data class
     $data = $this->_(<<<EOT
-      select
-        login_sessions.group_name as groupname,
-        login_sessions.name as loginname,
-        person_sessions.name_suffix as code,
-        tests.name as bookletname,
-        tests.id as testId,
-        units.name as unitname,
+      SELECT
+        login_sessions.group_name AS groupname,
+        login_sessions.name AS loginname,
+        person_sessions.name_suffix AS code,
+        tests.name AS bookletname,
+        tests.id AS testId,
+        units.name AS unitname,
         units.laststate,
-        units.original_unit_id as originalUnitId
-      from
+        units.original_unit_id AS originalUnitId
+      FROM
         login_sessions
-          inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
-          inner join tests on person_sessions.id = tests.person_id
-          inner join units on tests.id = units.test_id
-      where
+          INNER JOIN person_sessions ON login_sessions.id = person_sessions.login_sessions_id
+          INNER JOIN tests ON person_sessions.id = tests.person_id
+          INNER JOIN units ON tests.id = units.test_id
+      WHERE
         login_sessions.workspace_id = ?
-          and login_sessions.group_name in ($groupsPlaceholders)
-      order by
+          AND login_sessions.group_name IN ($groupsPlaceholders)
+      ORDER BY
         login_sessions.group_name,
         login_sessions.name,
         person_sessions.name_suffix,
@@ -461,16 +461,16 @@ class AdminDAO extends DAO {
 
   public function getResponseDataParts(string $unitName, int $testId): array {
     $data = $this->_(
-      'select
-          part_id as id,
+      'SELECT
+          part_id AS id,
           content,
           ts,
-          response_type as responseType
-        from
+          response_type AS responseType
+        FROM
           unit_data
-        where
+        WHERE
           unit_name = :unit_name
-          and test_id = :test_id',
+          AND test_id = :test_id',
         [
           ':unit_name' => $unitName,
           ':test_id' => $testId
@@ -492,12 +492,12 @@ class AdminDAO extends DAO {
     // TODO: use data class
     return $this->_("
         SELECT
-			      login_sessions.group_name as groupname,
-            login_sessions.name as loginname,
-            person_sessions.name_suffix as code,
-            tests.name as bookletname,
-            units.name as unitname,
-            units.original_unit_id as originalUnitId,
+			      login_sessions.group_name AS groupname,
+            login_sessions.name AS loginname,
+            person_sessions.name_suffix AS code,
+            tests.name AS bookletname,
+            units.name AS unitname,
+            units.original_unit_id AS originalUnitId,
 				    unit_logs.timestamp,
             unit_logs.logentry
 			  FROM
@@ -512,18 +512,18 @@ class AdminDAO extends DAO {
             login_sessions.id = person_sessions.login_sessions_id AND
             person_sessions.id = tests.person_id AND
             tests.id = units.test_id AND
-            units.test_id = unit_logs.test_id and 
+            units.test_id = unit_logs.test_id AND 
             units.name = unit_logs.unit_name
         
         UNION ALL
         
         SELECT
-				    login_sessions.group_name as groupname,
-            login_sessions.name as loginname,
-            person_sessions.name_suffix as code,
-            tests.name as bookletname,
-            '' as unitname,
-            '' as originalUnitId,
+				    login_sessions.group_name AS groupname,
+            login_sessions.name AS loginname,
+            person_sessions.name_suffix AS code,
+            tests.name AS bookletname,
+            '' AS unitname,
+            '' AS originalUnitId,
             test_logs.timestamp,
             test_logs.logentry
 			  FROM
@@ -550,55 +550,55 @@ class AdminDAO extends DAO {
     // TODO: use data class
     return $this->_(
       "
-      select
-        login_sessions.group_name as groupname,
-        login_sessions.name as loginname,
-        person_sessions.name_suffix as code,
-        tests.name as bookletname,
-        units.name as unitname,
+      SELECT
+        login_sessions.group_name AS groupname,
+        login_sessions.name AS loginname,
+        person_sessions.name_suffix AS code,
+        tests.name AS bookletname,
+        units.name AS unitname,
         unit_reviews.priority,
         unit_reviews.categories,
         unit_reviews.reviewtime,
         unit_reviews.entry,
         unit_reviews.page,
         unit_reviews.pagelabel,
-        units.original_unit_id as originalUnitId,
-        unit_reviews.user_agent as userAgent,
+        units.original_unit_id AS originalUnitId,
+        unit_reviews.user_agent AS userAgent,
         unit_reviews.reviewer
-			from
+			FROM
         unit_reviews
-        left join units on units.test_id = unit_reviews.test_id and units.name = unit_reviews.unit_name
-        left join tests on tests.id = units.test_id
-        left join person_sessions on person_sessions.id = tests.person_id
-        left join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-			where
-        login_sessions.workspace_id = ? and
+        LEFT JOIN units ON units.test_id = unit_reviews.test_id AND units.name = unit_reviews.unit_name
+        LEFT JOIN tests ON tests.id = units.test_id
+        LEFT JOIN person_sessions ON person_sessions.id = tests.person_id
+        LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+			WHERE
+        login_sessions.workspace_id = ? AND
         login_sessions.group_name IN ($groupsPlaceholders)
 			
-			union all
+			UNION ALL
         
-      select
-        login_sessions.group_name as groupname,
-        login_sessions.name as loginname,
-        person_sessions.name_suffix as code,
-        tests.name as bookletname,
-        '' as unitname,
+      SELECT
+        login_sessions.group_name AS groupname,
+        login_sessions.name AS loginname,
+        person_sessions.name_suffix AS code,
+        tests.name AS bookletname,
+        '' AS unitname,
         test_reviews.priority,
         test_reviews.categories,
         test_reviews.reviewtime,
         test_reviews.entry,
-        null as page,
-        null as pagelabel,
-        '' as originalUnitId,
-        test_reviews.user_agent as userAgent,
+        NULL AS page,
+        NULL AS pagelabel,
+        '' AS originalUnitId,
+        test_reviews.user_agent AS userAgent,
         test_reviews.reviewer
-			from
+			FROM
         test_reviews
-        left join tests on test_reviews.booklet_id = tests.id
-        left join person_sessions on tests.person_id = person_sessions.id
-        left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-			where
-        login_sessions.workspace_id = ? and
+        LEFT JOIN tests ON test_reviews.booklet_id = tests.id
+        LEFT JOIN person_sessions ON tests.person_id = person_sessions.id
+        LEFT JOIN login_sessions ON person_sessions.login_sessions_id = login_sessions.id
+			WHERE
+        login_sessions.workspace_id = ? AND
         login_sessions.group_name IN ($groupsPlaceholders)
 			",
       $bindParams,
@@ -617,56 +617,56 @@ class AdminDAO extends DAO {
         $placeholders[] = $key;
         $params[$key] = $group;
       }
-      $groupFilter = 'and login_sessions.group_name in (' . implode(',', $placeholders) . ')';
+      $groupFilter = 'AND login_sessions.group_name IN (' . implode(',', $placeholders) . ')';
     }
 
     $resultStats = $this->_("
-      select
+      SELECT
         group_name,
         group_label,
-        count(*) as bookletsStarted,
-        min(num_units) as num_units_min,
-        max(num_units) as num_units_max,
-        sum(num_units) as num_units_total,
-        avg(num_units) as num_units_mean,
+        COUNT(*) AS bookletsStarted,
+        MIN(num_units) AS num_units_min,
+        MAX(num_units) AS num_units_max,
+        SUM(num_units) AS num_units_total,
+        AVG(num_units) AS num_units_mean,
         GREATEST(
-          max(timestamp_server),
-          max(group_last_modified)
-        ) as lastchange
-      from (
-        select
+          MAX(timestamp_server),
+          MAX(group_last_modified)
+        ) AS lastchange
+      FROM (
+        SELECT
           login_sessions.group_name,
           group_label,
-          count(distinct units.name, units.test_id) as num_units,
-          max(tests.timestamp_server) as timestamp_server,
-          login_session_groups.last_modified as group_last_modified
-        from
+          COUNT(DISTINCT units.name, units.test_id) AS num_units,
+          MAX(tests.timestamp_server) AS timestamp_server,
+          login_session_groups.last_modified AS group_last_modified
+        FROM
           tests
-          left join person_sessions
-            on person_sessions.id = tests.person_id
-          inner join login_sessions
-            on login_sessions.id = person_sessions.login_sessions_id
-          left join units
-            on units.test_id = tests.id
-          left join unit_reviews
-            on units.name = unit_reviews.unit_name and unit_reviews.test_id = units.test_id
-          left join test_reviews
-            on tests.id = test_reviews.booklet_id
-          left join login_session_groups on
+          LEFT JOIN person_sessions
+            ON person_sessions.id = tests.person_id
+          INNER JOIN login_sessions
+            ON login_sessions.id = person_sessions.login_sessions_id
+          LEFT JOIN units
+            ON units.test_id = tests.id
+          LEFT JOIN unit_reviews
+            ON units.name = unit_reviews.unit_name AND unit_reviews.test_id = units.test_id
+          LEFT JOIN test_reviews
+            ON tests.id = test_reviews.booklet_id
+          LEFT JOIN login_session_groups ON
             login_sessions.group_name = login_session_groups.group_name
-              and login_sessions.workspace_id = login_session_groups.workspace_id
-        where
+              AND login_sessions.workspace_id = login_session_groups.workspace_id
+        WHERE
           login_sessions.workspace_id = :workspaceId
           $groupFilter
-          and (
-            tests.laststate is not null
-              or unit_reviews.entry is not null
-              or test_reviews.entry is not null
+          AND (
+            tests.laststate IS NOT NULL
+              OR unit_reviews.entry IS NOT NULL
+              OR test_reviews.entry IS NOT NULL
           )
-          and tests.running = 1
-          group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
+          AND tests.running = 1
+          GROUP BY tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
-      group by group_name",
+      GROUP BY group_name",
       $params,
       true
     );
@@ -687,14 +687,14 @@ class AdminDAO extends DAO {
 
   public function storeCommand(int $commanderId, int $testId, Command $command): int {
     if ($command->getId() === -1) {
-      $maxId = $this->_("select max(id) as max from test_commands");
+      $maxId = $this->_("SELECT MAX(id) AS max FROM test_commands");
       $commandId = isset($maxId['max']) ? (int) $maxId['max'] + 1 : 1;
     } else {
       $commandId = $command->getId();
     }
 
-    $this->_("insert into test_commands (id, test_id, keyword, parameter, commander_id, timestamp)
-                values (:id, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
+    $this->_("INSERT INTO test_commands (id, test_id, keyword, parameter, commander_id, timestamp)
+                VALUES (:id, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
       [
         ':id' => $commandId,
         ':test_id' => $testId,
@@ -711,17 +711,17 @@ class AdminDAO extends DAO {
   // TODO use typed class instead of array
   public function getTest(int $testId): ?array {
     return $this->_(
-      'select tests.locked, tests.id, tests.laststate, tests.label from tests where tests.id=:id',
+      'SELECT tests.locked, tests.id, tests.laststate, tests.label FROM tests WHERE tests.id=:id',
       [':id' => $testId]
     );
   }
 
   public function getGroup(string $groupName): ?Group {
     $group = $this->_(
-      'select group_name, group_label
-                from logins
-                where group_name=:group_name
-                group by group_name, group_label',
+      'SELECT group_name, group_label
+                FROM logins
+                WHERE group_name=:group_name
+                GROUP BY group_name, group_label',
       [
         ":group_name" => $groupName
       ]
@@ -746,7 +746,7 @@ class AdminDAO extends DAO {
     $replacements = [];
 
     if (count($groups)) {
-      $selectors[] = "logins.group_name in (" . implode(',', array_fill(0, count($groups), '? ')) . ")";
+      $selectors[] = "logins.group_name IN (" . implode(',', array_fill(0, count($groups), '? ')) . ")";
       $replacements = $groups;
     }
 
@@ -765,29 +765,29 @@ class AdminDAO extends DAO {
       $replacements[] = $variableId;
     }
 
-    $sql = "select
-                group_label as groupLabel,
-                logins.group_name as groupName,
-                logins.name as loginName,
-                name_suffix as nameSuffix,
-                tests.label as testLabel,
-                tests.id as testId,
-                tests.name as bookletName,
-                unit_defs_attachments.unit_name as unitName,
-                unit_defs_attachments.unit_name as unitLabel, -- TODO get real unitLabel
-                variable_id as variableId,
-                attachment_type as attachmentType,
-                unit_data.content as dataPartContent,
-                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) as attachmentId,
-                unit_data.ts as lastModified
-            from
+    $sql = "SELECT
+                group_label AS groupLabel,
+                logins.group_name AS groupName,
+                logins.name AS loginName,
+                name_suffix AS nameSuffix,
+                tests.label AS testLabel,
+                tests.id AS testId,
+                tests.name AS bookletName,
+                unit_defs_attachments.unit_name AS unitName,
+                unit_defs_attachments.unit_name AS unitLabel, -- TODO get real unitLabel
+                variable_id AS variableId,
+                attachment_type AS attachmentType,
+                unit_data.content AS dataPartContent,
+                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) AS attachmentId,
+                unit_data.ts AS lastModified
+            FROM
                 unit_defs_attachments
-                left join tests on booklet_name = tests.name
-                left join person_sessions on tests.person_id = person_sessions.id
-                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                left join logins on logins.name = login_sessions.name
-                left join unit_data on part_id = (tests.id || ':' || unit_defs_attachments.unit_name || ':' || variable_id)
-            where " . implode(' and ', $selectors);
+                LEFT JOIN tests ON booklet_name = tests.name
+                LEFT JOIN person_sessions ON tests.person_id = person_sessions.id
+                LEFT JOIN login_sessions ON person_sessions.login_sessions_id = login_sessions.id
+                LEFT JOIN logins ON logins.name = login_sessions.name
+                LEFT JOIN unit_data ON part_id = (tests.id || ':' || unit_defs_attachments.unit_name || ':' || variable_id)
+            WHERE " . implode(' AND ', $selectors);
 
     $attachments = $this->_($sql, $replacements, true);
 
@@ -815,10 +815,10 @@ class AdminDAO extends DAO {
   }
 
   public function deleteAdminSession(AuthToken $authToken): void {
-    $this->_('delete from admin_sessions where token =:token', [':token' => $authToken->getToken()]);
+    $this->_('DELETE FROM admin_sessions WHERE token =:token', [':token' => $authToken->getToken()]);
   }
 
   public function doesWSwitTypeSyscheckExist(): bool {
-    return $this->_("select count(*) as count from workspaces where content_type = 'sysCheck'")['count'] > 0;
+    return $this->_("SELECT COUNT(*) AS count FROM workspaces WHERE content_type = 'sysCheck'")['count'] > 0;
   }
 }

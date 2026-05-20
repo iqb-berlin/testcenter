@@ -228,7 +228,7 @@ class InitDAO extends SessionDAO {
     foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
       if ($this->getTableStatus($table) !== 'missing') {
         $droppedTables[] = $table;
-        $this->_("drop table $table");
+        $this->_("DROP TABLE $table");
       }
     }
 
@@ -241,9 +241,9 @@ class InitDAO extends SessionDAO {
     $this->clearDB();
 
     foreach ($this::tables as $table) {
-      $creationString = $this->_("show create table $prodDBName.$table")['Create Table'];
+      $creationString = $this->_("SHOW CREATE TABLE $prodDBName.$table")['Create Table'];
       $this->_($creationString);
-      $this->_("truncate $table"); // to reset auto-increment
+      $this->_("TRUNCATE $table"); // to reset auto-increment
     }
   }
 
@@ -279,7 +279,7 @@ class InitDAO extends SessionDAO {
 
   protected function getTableStatus(string $table): string {
     try {
-      $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+      $entries = $this->_("SELECT * FROM $table LIMIT 10", [], true);
       return count($entries) ? 'used' : 'empty';
 
     } catch (Exception) {
@@ -301,13 +301,13 @@ class InitDAO extends SessionDAO {
   }
 
   public function adminExists(): bool {
-    $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
+    $admins = $this->_("SELECT COUNT(*) AS count FROM users WHERE is_superadmin = 1");
     return (int) $admins['count'] > 0;
   }
 
   public function createWorkspaceIfMissing(Workspace $workspace): array {
     $workspaceFromDb = $this->_(
-      "select workspaces.id, workspaces.name from workspaces where `id` = :ws_id",
+      "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `id` = :ws_id",
       [':ws_id' => $workspace->getId()]
     );
 
@@ -318,7 +318,7 @@ class InitDAO extends SessionDAO {
     $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
 
     $this->_(
-      'insert into workspaces (name, id) values (:ws_name, :ws_id)',
+      'INSERT INTO workspaces (name, id) VALUES (:ws_name, :ws_id)',
       [':ws_name' => $name, ':ws_id' => $workspace->getId()]
     );
 
@@ -389,12 +389,12 @@ class InitDAO extends SessionDAO {
 
     if ($currentDBSchemaVersion == '0.0.0-no-entry') {
       $this->_(
-        "insert into meta (metaKey, value) values ('dbSchemaVersion', :new_version)",
+        "INSERT INTO meta (metaKey, value) VALUES ('dbSchemaVersion', :new_version)",
         [':new_version' => $newVersion]
       );
     } else {
       $this->_(
-        "update meta set value = :new_version where metaKey = 'dbSchemaVersion'",
+        "UPDATE meta SET value = :new_version WHERE metaKey = 'dbSchemaVersion'",
         [':new_version' => $newVersion]
       );
     }
@@ -422,7 +422,7 @@ class InitDAO extends SessionDAO {
   }
 
   public function checkSQLMode(): bool {
-    $d = $this->_("select 'a' || 'b' as merged")['merged'];
+    $d = $this->_("SELECT 'a' || 'b' AS merged")['merged'];
     return $d === 'ab';
   }
 }

@@ -19,9 +19,9 @@ class WorkspaceDAO extends DAO {
 
   public function getWorkspaceName(): string {
     $workspace = $this->_(
-      'select workspaces.name 
-            from workspaces
-            where workspaces.id=:workspace_id',
+      'SELECT workspaces.name 
+            FROM workspaces
+            WHERE workspaces.id=:workspace_id',
       [':workspace_id' => $this->workspaceId]
     );
 
@@ -34,18 +34,18 @@ class WorkspaceDAO extends DAO {
 
   public function getGlobalIds(): array {
     $globalIds = $this->_("
-      select
-        globalIds.id as id,
+      SELECT
+        globalIds.id AS id,
         source,
         workspace_id,
-        workspaces.name as workspace_name,
-        globalIds.type as type
-      from (
-        select name as id, source, workspace_id, 'login' as type from logins
-        union
-        select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source, workspace_id
-      ) as globalIds
-      left join workspaces on globalIds.workspace_id = workspaces.id
+        workspaces.name AS workspace_name,
+        globalIds.type AS type
+      FROM (
+        SELECT name AS id, source, workspace_id, 'login' AS type FROM logins
+        UNION
+        SELECT group_name AS id, source, workspace_id, 'group' AS type FROM logins GROUP BY group_name, source, workspace_id
+      ) AS globalIds
+      LEFT JOIN workspaces ON globalIds.workspace_id = workspaces.id
       ",
       [],
       true
@@ -77,7 +77,7 @@ class WorkspaceDAO extends DAO {
     // one source could contain 10ks of logins. For the sake of performance we use one statement to insert them all
     // and plain foreach and string-concatenation to build the query.
 
-    $sql = 'insert into logins (
+    $sql = 'INSERT INTO logins (
       name,
       mode,
       workspace_id,
@@ -92,7 +92,7 @@ class WorkspaceDAO extends DAO {
       valid_for,
       monitors,
       view_settings
-    ) values';
+    ) VALUES';
 
     foreach ($logins as $login) {
       /* @var $login Login */
@@ -135,7 +135,7 @@ class WorkspaceDAO extends DAO {
    */
   public function deleteLoginSource(string $source): int {
     $this->_(
-      'delete from logins where source = :source and workspace_id = :ws_id',
+      'DELETE FROM logins WHERE source = :source AND workspace_id = :ws_id',
       [
         ':source' => $source,
         ':ws_id' => $this->workspaceId
@@ -157,7 +157,7 @@ class WorkspaceDAO extends DAO {
   }
 
   public function storeFile(File $file): void {
-    $this->_("replace into files (
+    $this->_("REPLACE INTO files (
                     workspace_id,
                     name,
                     id,
@@ -176,7 +176,7 @@ class WorkspaceDAO extends DAO {
                     size,
                     modification_ts,
                     context_data
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
       [
         $this->workspaceId,
         $file->getName(),
@@ -204,12 +204,12 @@ class WorkspaceDAO extends DAO {
    * @codeCoverageIgnore
    */
   public function deleteFile(File $file): void {
-    $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$this->workspaceId, $file->getName(), $file->getType()]);
+    $this->_("DELETE FROM files WHERE workspace_id = ? AND name = ? AND type = ?", [$this->workspaceId, $file->getName(), $file->getType()]);
   }
 
   public function getFileById(string $fileId, string $type): ?File {
     $fileData = $this->_(
-      "select
+      "SELECT
                     name,
                     id,
                     label,
@@ -227,10 +227,10 @@ class WorkspaceDAO extends DAO {
                     verona_module_type,
                     verona_version,
                     context_data
-                from
+                FROM
                     files
-                where
-                    workspace_id = ? and id = ? and type = ?",
+                WHERE
+                    workspace_id = ? AND id = ? AND type = ?",
       [
         $this->workspaceId,
         $fileId,
@@ -243,7 +243,7 @@ class WorkspaceDAO extends DAO {
 
   public function updateUnitDefsAttachments(string $bookletName, array $attachments): void {
     $this->_(
-      'delete from unit_defs_attachments where workspace_id = :workspace_id and booklet_name = :booklet_name;',
+      'DELETE FROM unit_defs_attachments WHERE workspace_id = :workspace_id AND booklet_name = :booklet_name;',
       [
         ':workspace_id' => $this->workspaceId,
         ':booklet_name' => $bookletName
@@ -254,8 +254,8 @@ class WorkspaceDAO extends DAO {
       /* @var RequestedAttachment $requestedAttachment */
 
       $this->_(
-        'replace into unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
-                    values(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)',
+        'REPLACE INTO unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
+                    VALUES(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)',
         [
           ':workspace_id' => $this->workspaceId,
           ':booklet_name' => $bookletName,
@@ -268,7 +268,7 @@ class WorkspaceDAO extends DAO {
 
   public function getAllFiles(): array {
     $sql = "
-            select
+            SELECT
                 name,
                 type,
                 id,
@@ -286,8 +286,8 @@ class WorkspaceDAO extends DAO {
                 verona_module_type,
                 verona_version,
                 context_data
-            from files
-                where workspace_id = ?";
+            FROM files
+                WHERE workspace_id = ?";
     $replacements = [$this->workspaceId];
 
     return $this->fetchFiles($sql, $replacements);
@@ -295,7 +295,7 @@ class WorkspaceDAO extends DAO {
 
   public function getFilesByNames(array $names): array {
     $sql = "
-            select
+            SELECT
                 name,
                 type,
                 id,
@@ -313,9 +313,9 @@ class WorkspaceDAO extends DAO {
                 verona_module_type,
                 verona_version,
                 context_data
-            from files
-                where workspace_id = ? and
-                name in (" . implode(',', array_map(fn ($name) => '?', $names)) . ')';
+            FROM files
+                WHERE workspace_id = ? AND
+                name IN (" . implode(',', array_map(fn ($name) => '?', $names)) . ')';
 
     $replacements = [
       $this->workspaceId,
@@ -329,7 +329,7 @@ class WorkspaceDAO extends DAO {
    * @return array ['filetype' => File[]]*/
   public function getAllFilesWhere(array $conditions): array {
     $sql = "
-            select
+            SELECT
                 name,
                 type,
                 id,
@@ -347,12 +347,12 @@ class WorkspaceDAO extends DAO {
                 verona_module_type,
                 verona_version,
                 context_data
-            from files
-                where workspace_id = ?";
+            FROM files
+                WHERE workspace_id = ?";
     $replacements = [$this->workspaceId];
 
     foreach ($conditions as $condition => $value) {
-      $sql .= " and $condition = ?";
+      $sql .= " AND $condition = ?";
       $replacements[] = $value;
     }
 
@@ -361,21 +361,21 @@ class WorkspaceDAO extends DAO {
 
   public function getFileRelations(string $name, string $type): array {
     $relations = $this->_("
-            select
+            SELECT
                 object_type,
                 object_name,
                 relationship_type,
-                id as object_id
-            from
+                id AS object_id
+            FROM
                 file_relations
-                left join files
-                    on file_relations.workspace_id = files.workspace_id
-                       and file_relations.object_name = files.name
-                       and file_relations.object_type = files.type
-            where
+                LEFT JOIN files
+                    ON file_relations.workspace_id = files.workspace_id
+                       AND file_relations.object_name = files.name
+                       AND file_relations.object_type = files.type
+            WHERE
                 files.workspace_id = ?
-                    and subject_name = ?
-                    and subject_type = ?",
+                    AND subject_name = ?
+                    AND subject_type = ?",
       [$this->workspaceId, $name, $type],
       true
     );
@@ -406,12 +406,12 @@ class WorkspaceDAO extends DAO {
       }
     }
 
-    $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
-    $filePathCondition = $filePathCondition ? "and ($filePathCondition)" : '';
+    $filePathCondition = implode(' OR ', array_fill(0, $validFilePaths, '(type = ? AND name = ?)'));
+    $filePathCondition = $filePathCondition ? "AND ($filePathCondition)" : '';
 
-    $andIsValid = $includeInvalid ? '' : ' and files.is_valid';
+    $andIsValid = $includeInvalid ? '' : ' AND files.is_valid';
 
-    $sql = "select distinct
+    $sql = "SELECT DISTINCT
                     name,
                     type,
                     id,
@@ -429,8 +429,8 @@ class WorkspaceDAO extends DAO {
                     verona_module_type,
                     verona_version,
                     context_data
-                from files
-                where
+                FROM files
+                WHERE
                     files.workspace_id = ?
                     $andIsValid
                     $filePathCondition";
@@ -491,40 +491,40 @@ class WorkspaceDAO extends DAO {
       $i++;
       $replacements[":type_$i"] = $file->getType();
       $replacements[":name_$i"] = $file->getName();
-      $conditions[] = "(object_type = :type_$i and object_name = :name_$i)";
+      $conditions[] = "(object_type = :type_$i AND object_name = :name_$i)";
     }
 
-    $selectedFilesConditions = implode(' or ', $conditions);
+    $selectedFilesConditions = implode(' OR ', $conditions);
 
-    $sql = "with recursive affected_files as (
+    $sql = "WITH RECURSIVE affected_files AS (
                     -- base/first case that initializes the recursion
-                    select
-                        subject_type as object_type,
-                        subject_name as object_name,
-                        object_type || '/' || object_name as ancestor
-                    from file_relations
-                    where
-                        workspace_id = :ws_id and ($selectedFilesConditions)
+                    SELECT
+                        subject_type AS object_type,
+                        subject_name AS object_name,
+                        object_type || '/' || object_name AS ancestor
+                    FROM file_relations
+                    WHERE
+                        workspace_id = :ws_id AND ($selectedFilesConditions)
                 
-                    union all
+                    UNION ALL
                 
                     -- recursive case
-                    select
-                        file_relations.subject_type as object_type,
-                        file_relations.subject_name as object_name,
+                    SELECT
+                        file_relations.subject_type AS object_type,
+                        file_relations.subject_name AS object_name,
                         affected_files.ancestor
-                    from affected_files
-                        join file_relations
-                            on affected_files.object_name = file_relations.object_name
-                                and affected_files.object_type = file_relations.object_type
-                                and file_relations.workspace_id = :ws_id
+                    FROM affected_files
+                        JOIN file_relations
+                            ON affected_files.object_name = file_relations.object_name
+                                AND affected_files.object_type = file_relations.object_type
+                                AND file_relations.workspace_id = :ws_id
                 )
-                select distinct
-                    affected_files.ancestor as file_local_path,
-                    object_type || '/' || object_name as blocked_by
-                from affected_files
-                where
-                    not ($selectedFilesConditions)";
+                SELECT DISTINCT
+                    affected_files.ancestor AS file_local_path,
+                    object_type || '/' || object_name AS blocked_by
+                FROM affected_files
+                WHERE
+                    NOT ($selectedFilesConditions)";
 
     $result = $this->_($sql, $replacements, true);
 
@@ -552,8 +552,8 @@ class WorkspaceDAO extends DAO {
       }
 
       $this->_(
-        "replace into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
-                values (?, ?, ?, ?, ?, ?);",
+        "REPLACE INTO file_relations (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
+                VALUES (?, ?, ?, ?, ?, ?);",
         [
           $this->workspaceId,
           $file->getName(),
@@ -575,31 +575,31 @@ class WorkspaceDAO extends DAO {
   public function getBookletResourcePaths(string $bookletFileName): array {
       return
         $this->_(
-          "select distinct
+          "SELECT DISTINCT
             unitFiles.id,
             resourceFiles.type,
             resourceFiles.name,
             unitNeedsResource.relationship_type
-          from file_relations as bookletContainsUnit
-            left join file_relations as unitNeedsResource
-              on bookletContainsUnit.workspace_id = unitNeedsResource.workspace_id
-                and bookletContainsUnit.object_name = unitNeedsResource.subject_name
-                and bookletContainsUnit.object_type = unitNeedsResource.subject_type
+          FROM file_relations AS bookletContainsUnit
+            LEFT JOIN file_relations AS unitNeedsResource
+              ON bookletContainsUnit.workspace_id = unitNeedsResource.workspace_id
+                AND bookletContainsUnit.object_name = unitNeedsResource.subject_name
+                AND bookletContainsUnit.object_type = unitNeedsResource.subject_type
 --                and unitNeedsResource.relationship_type in('isDefinedBy', 'usesPlayer')
-                and unitNeedsResource.object_type = 'Resource'
-                and bookletContainsUnit.relationship_type = 'containsUnit'
-            left join files as resourceFiles
-              on resourceFiles.type = unitNeedsResource.object_type
-                and resourceFiles.name = unitNeedsResource.object_name
-                and resourceFiles.workspace_id = unitNeedsResource.workspace_id
-            left join files as unitFiles
-              on unitFiles.type = unitNeedsResource.subject_type
-                and unitFiles.name = unitNeedsResource.subject_name
-                and unitFiles.workspace_id = unitNeedsResource.workspace_id
-            where
+                AND unitNeedsResource.object_type = 'Resource'
+                AND bookletContainsUnit.relationship_type = 'containsUnit'
+            LEFT JOIN files AS resourceFiles
+              ON resourceFiles.type = unitNeedsResource.object_type
+                AND resourceFiles.name = unitNeedsResource.object_name
+                AND resourceFiles.workspace_id = unitNeedsResource.workspace_id
+            LEFT JOIN files AS unitFiles
+              ON unitFiles.type = unitNeedsResource.subject_type
+                AND unitFiles.name = unitNeedsResource.subject_name
+                AND unitFiles.workspace_id = unitNeedsResource.workspace_id
+            WHERE
               bookletContainsUnit.subject_name = :booklet_file_name
-              and resourceFiles.workspace_id = :ws_id
-              and resourceFiles.is_valid = 1",
+              AND resourceFiles.workspace_id = :ws_id
+              AND resourceFiles.is_valid = 1",
             [
               ':ws_id' => $this->workspaceId,
               ':booklet_file_name' => $bookletFileName
@@ -611,7 +611,7 @@ class WorkspaceDAO extends DAO {
   public function getWorkspaceHash(): string
   {
     return $this->_(
-      "select workspace_hash from workspaces where id = :ws_id",
+      "SELECT workspace_hash FROM workspaces WHERE id = :ws_id",
       [':ws_id' => $this->workspaceId]
     )['workspace_hash'];
   }
@@ -619,7 +619,7 @@ class WorkspaceDAO extends DAO {
   public function setWorkspaceHash(string $hash): void
   {
     $this->_(
-      "update workspaces set workspace_hash = :hash where id = :ws_id",
+      "UPDATE workspaces SET workspace_hash = :hash WHERE id = :ws_id",
       [':hash' => $hash, ':ws_id' => $this->workspaceId]
     );
   }
@@ -634,7 +634,7 @@ class WorkspaceDAO extends DAO {
       }
     }
     $this->_(
-      "update workspaces set content_type = '$enableSysCheckMode->value' where id = :ws_id",
+      "UPDATE workspaces SET content_type = '$enableSysCheckMode->value' WHERE id = :ws_id",
       [':ws_id' => $this->workspaceId],
       true
     );
@@ -642,7 +642,7 @@ class WorkspaceDAO extends DAO {
 
   public function setSysCheckMode(string $mode): void {
     $this->_(
-      "update workspaces set content_type = :mode where id = :ws_id",
+      "UPDATE workspaces SET content_type = :mode WHERE id = :ws_id",
       [
         ':mode' => $mode,
         ':ws_id' => $this->workspaceId
@@ -656,7 +656,7 @@ class WorkspaceDAO extends DAO {
     
     // Get all remaining testtakers files in this workspace
     $testtakersFiles = $this->_(
-      "select name from files where workspace_id = :ws_id and type = 'Testtakers' and is_valid = 1",
+      "SELECT name FROM files WHERE workspace_id = :ws_id AND type = 'Testtakers' AND is_valid = 1",
       [':ws_id' => $this->workspaceId],
       true
     );
@@ -688,21 +688,21 @@ class WorkspaceDAO extends DAO {
     return $this->_(
       "
         -- base case that starts the recursion
-          with recursive dependencies as (
-            select subject_name, object_name, relationship_type
-            from file_relations
-            where subject_name = :name
+          WITH RECURSIVE dependencies AS (
+            SELECT subject_name, object_name, relationship_type
+            FROM file_relations
+            WHERE subject_name = :name
               
-            union all 
+            UNION ALL 
             
             -- recursive case
-            select fr.subject_name, fr.object_name, fr.relationship_type
-            from file_relations fr
-            inner join dependencies dep
-              on fr.subject_name = dep.object_name 
+            SELECT fr.subject_name, fr.object_name, fr.relationship_type
+            FROM file_relations fr
+            INNER JOIN dependencies dep
+              ON fr.subject_name = dep.object_name 
           )
-          select distinct object_name, relationship_type
-          from dependencies;",
+          SELECT DISTINCT object_name, relationship_type
+          FROM dependencies;",
       [
         ':name' => $name,
       ],
@@ -711,7 +711,7 @@ class WorkspaceDAO extends DAO {
   }
 
   public function getDependentFilesByTypes(File $file, array $types = []): array {
-    $sql = "select
+    $sql = "SELECT
       files.name,
       files.type,
       files.id,
@@ -729,14 +729,14 @@ class WorkspaceDAO extends DAO {
       files.verona_module_type,
       files.verona_version,
       files.context_data
-    from file_relations
-      left join files
-        on file_relations.workspace_id = files.workspace_id
-          and file_relations.subject_name = files.name
-          and file_relations.subject_type = files.type
-    where
+    FROM file_relations
+      LEFT JOIN files
+        ON file_relations.workspace_id = files.workspace_id
+          AND file_relations.subject_name = files.name
+          AND file_relations.subject_type = files.type
+    WHERE
           files.workspace_id = :ws_id
-          and object_type = :file_type and object_name= :file_name";
+          AND object_type = :file_type AND object_name= :file_name";
 
     $replacements = [
       ':ws_id' => $this->workspaceId,
@@ -751,7 +751,7 @@ class WorkspaceDAO extends DAO {
         $conditions[] = "files.type = :type$index";
         $replacements[":type$index"] = $type;
       }
-      $addCondition = ' and (' . implode(' or ', $conditions) . ')';
+      $addCondition = ' AND (' . implode(' OR ', $conditions) . ')';
       $sql .= $addCondition;
     }
 
@@ -761,10 +761,10 @@ class WorkspaceDAO extends DAO {
   private function updateValidUntilInPersonSession() {
     $this->_(
       "
-      update person_sessions ps 
-      join login_sessions ls on ps.login_sessions_id = ls.id
-      join logins l on ls.name = l.name
-      set ps.valid_until = l.valid_to
+      UPDATE person_sessions ps 
+      JOIN login_sessions ls ON ps.login_sessions_id = ls.id
+      JOIN logins l ON ls.name = l.name
+      SET ps.valid_until = l.valid_to
       ",
       [],
       true

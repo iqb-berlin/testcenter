@@ -90,7 +90,7 @@ class DAO {
 
   public function getDBSchemaVersion(): string {
     try {
-      $result = $this->_("select `value` from meta where metaKey = 'dbSchemaVersion'");
+      $result = $this->_("SELECT `value` FROM meta WHERE metaKey = 'dbSchemaVersion'");
       return $result['value'] ?? '0.0.0-no-entry';
 
     } catch (Exception) {
@@ -100,7 +100,7 @@ class DAO {
 
   public function getMeta(array $categories): array {
     $categoriesString = implode(',', array_map([$this->pdoDBhandle, "quote"], $categories));
-    $result = $this->_("SELECT * FROM meta where category in ($categoriesString)", [], true);
+    $result = $this->_("SELECT * FROM meta WHERE category IN ($categoriesString)", [], true);
     $returner = [];
     foreach ($categories as $category) {
       $returner[$category] = [];
@@ -112,11 +112,11 @@ class DAO {
   }
 
   public function setMeta(string $category, string $key, ?string $value): void {
-    $currentValue = $this->_("select `value` from meta where metaKey = :key", [':key' => $key]);
+    $currentValue = $this->_("SELECT `value` FROM meta WHERE metaKey = :key", [':key' => $key]);
 
     if (!$currentValue) {
       $this->_(
-        "insert into meta (category, metaKey, value) values (:category, :key, :value)",
+        "INSERT INTO meta (category, metaKey, value) VALUES (:category, :key, :value)",
         [
           ':key' => $key,
           ':category' => $category,
@@ -125,7 +125,7 @@ class DAO {
       );
     } else {
       $this->_(
-        "update meta set value=:value, category=:category where metaKey = :key",
+        "UPDATE meta SET value=:value, category=:category WHERE metaKey = :key",
         [
           ':key' => $key,
           ':category' => $category,

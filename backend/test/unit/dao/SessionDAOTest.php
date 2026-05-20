@@ -496,10 +496,10 @@ class SessionDAOTest extends TestCase {
       )
     );
 
-    $this->dbc->_("delete from logins;");
+    $this->dbc->_("DELETE FROM logins;");
     $this->dbc->_(
       '
-      insert into logins (
+      INSERT INTO logins (
         name,
         password,
         mode,
@@ -511,16 +511,16 @@ class SessionDAOTest extends TestCase {
         valid_for,
         group_name,
         group_label
-      ) values (
+      ) VALUES (
         \'test\',
         \'pw_hash\',
         \'run-hot-return\',
         1,
         \'{"xxx":["BOOKLET.SAMPLE-1"]}\',
         \'unit test\',
-        null,
+        NULL,
         \'2030-01-02 10:00:00\',
-        null,
+        NULL,
         \'new_id\', -- this can happen as result of a re-upload of a TT.xml with changed group-id
         \'Sample Group\'
       );'
@@ -639,6 +639,6 @@ class SessionDAOTest extends TestCase {
   }
 
   private function countTableRows(string $tableName): int {
-    return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
+    return (int) $this->dbc->_("SELECT COUNT(*) AS c FROM $tableName")["c"];
   }
 }

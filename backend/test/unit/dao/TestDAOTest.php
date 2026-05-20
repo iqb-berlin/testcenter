@@ -62,7 +62,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLog = $this->dbc->_(
-      'select logentry, timestamp from test_logs where booklet_id = :id',
+      'SELECT logentry, timestamp FROM test_logs WHERE booklet_id = :id',
       [':id' => $testId],
       true
     );
@@ -80,7 +80,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLogEmptyContent = $this->dbc->_(
-      'select logentry, timestamp from test_logs where booklet_id = :id and logentry = :logentry',
+      'SELECT logentry, timestamp FROM test_logs WHERE booklet_id = :id AND logentry = :logentry',
       [':id' => $testId, ':logentry' => $logKey]
     );
 
@@ -398,7 +398,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLog = $this->dbc->_(
-      'select logentry, timestamp from unit_logs where unit_name = :unitName and test_id = :testId',
+      'SELECT logentry, timestamp FROM unit_logs WHERE unit_name = :unitName AND test_id = :testId',
       [':unitName' => $unitName, ':testId' => $testId]
     );
 
@@ -415,7 +415,7 @@ class TestDAOTest extends TestCase {
     ];
 
     $actualLogEmptyContent = $this->dbc->_(
-      'select logentry, timestamp from unit_logs where unit_name = :unitName and test_id = :testId and logentry = :logkey',
+      'SELECT logentry, timestamp FROM unit_logs WHERE unit_name = :unitName AND test_id = :testId AND logentry = :logkey',
       [':unitName' => $unitName, ':testId' => $testId, ':logkey' => $logKey]
     );
 

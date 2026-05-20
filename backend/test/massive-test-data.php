@@ -176,7 +176,7 @@ try {
           $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, (string) $code);
           $personSessions[] = $personSession;
           if ($reLoginIndex > DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) {
-            $sessionDAO->_("update person_sessions set name_suffix='1' where id=" . $personSession->getPerson()->getId());
+            $sessionDAO->_("UPDATE person_sessions SET name_suffix='1' WHERE id=" . $personSession->getPerson()->getId());
           }
         } else if (method_exists($sessionDAO, 'createPersonSession')) {
           $personNumber = ($reLoginIndex >= DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) ? 1 : $reLoginIndex;
@@ -235,6 +235,3 @@ try {
 
 echo "\n";
 exit(0);
-
-
-

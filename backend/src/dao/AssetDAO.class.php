@@ -8,9 +8,9 @@ class AssetDAO extends DAO {
    */
   public function getAllAssets(): array {
     return $this->_(
-      'select id, original_name, stored_name, created_at
-         from assets
-         order by created_at desc',
+      'SELECT id, original_name, stored_name, created_at
+         FROM assets
+         ORDER BY created_at DESC',
       [],
       true
     );
@@ -21,7 +21,7 @@ class AssetDAO extends DAO {
    */
   public function getAsset(int $id): ?array {
     return $this->_(
-      'select id, original_name, stored_name, created_at from assets where id = :id',
+      'SELECT id, original_name, stored_name, created_at FROM assets WHERE id = :id',
       [':id' => $id]
     );
   }
@@ -31,18 +31,18 @@ class AssetDAO extends DAO {
    */
   public function getAssetByOriginalName(string $originalName, bool $forUpdate = false): ?array {
     return $this->_(
-      'select id, original_name, stored_name, created_at
-         from assets
-        where original_name = :original_name
-        order by id desc
-        limit 1' . ($forUpdate ? ' for update' : ''),
+      'SELECT id, original_name, stored_name, created_at
+         FROM assets
+        WHERE original_name = :original_name
+        ORDER BY id DESC
+        LIMIT 1' . ($forUpdate ? ' FOR UPDATE' : ''),
       [':original_name' => $originalName]
     );
   }
 
   public function createAsset(string $originalName, string $storedName): int {
     return $this->insert(
-      'insert into assets (original_name, stored_name) values (:original_name, :stored_name)',
+      'INSERT INTO assets (original_name, stored_name) VALUES (:original_name, :stored_name)',
       [
         ':original_name' => $originalName,
         ':stored_name' => $storedName
@@ -85,7 +85,7 @@ class AssetDAO extends DAO {
   }
 
   public function deleteAsset(int $id): void {
-    $this->_('delete from assets where id = :id', [':id' => $id]);
+    $this->_('DELETE FROM assets WHERE id = :id', [':id' => $id]);
   }
 
   /**
@@ -93,9 +93,9 @@ class AssetDAO extends DAO {
    */
   public function getAssignments(): array {
     return $this->_(
-      'select a_a.workspace_id, a_a.source, a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
-         from asset_assignment a_a
-         join assets a on a.id = a_a.asset_id',
+      'SELECT a_a.workspace_id, a_a.source, a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
+         FROM asset_assignment a_a
+         JOIN assets a ON a.id = a_a.asset_id',
       [],
       true
     );
@@ -119,28 +119,28 @@ class AssetDAO extends DAO {
 
     // 2) get group assignments if caller is matching group
     if ($workspaceId !== null && $groupName !== null) {
-      $conditions[] = "(a_a.workspace_id = :group_workspace_id and a_a.scope = 'group' and a_a.scope_id = :group_name)";
+      $conditions[] = "(a_a.workspace_id = :group_workspace_id AND a_a.scope = 'group' AND a_a.scope_id = :group_name)";
       $params[':group_workspace_id'] = $workspaceId;
       $params[':group_name'] = $groupName;
     }
 
     // 3) get user assignment if caller is matching user
     if ($workspaceId !== null && $loginName !== null) {
-      $conditions[] = "(a_a.workspace_id = :login_workspace_id and a_a.scope = 'user' and a_a.scope_id = :login_name)";
+      $conditions[] = "(a_a.workspace_id = :login_workspace_id AND a_a.scope = 'user' AND a_a.scope_id = :login_name)";
       $params[':login_workspace_id'] = $workspaceId;
       $params[':login_name'] = $loginName;
     }
 
     return $this->_(
-      'select a_a.workspace_id, a_a.source, a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
-         from asset_assignment a_a
-         join assets a on a.id = a_a.asset_id
-        where ' . implode(' or ', $conditions) . '
-        order by case a_a.scope
-                   when \'global\' then 1
-                   when \'group\' then 2
-                   when \'user\' then 3
-                 end,
+      'SELECT a_a.workspace_id, a_a.source, a_a.slot_name, a_a.scope, a_a.scope_id, a_a.asset_id, a.stored_name
+         FROM asset_assignment a_a
+         JOIN assets a ON a.id = a_a.asset_id
+        WHERE ' . implode(' OR ', $conditions) . '
+        ORDER BY CASE a_a.scope
+                   WHEN \'global\' THEN 1
+                   WHEN \'group\' THEN 2
+                   WHEN \'user\' THEN 3
+                 END,
                  a_a.slot_name',
       $params,
       true
@@ -169,9 +169,9 @@ class AssetDAO extends DAO {
       $params[":scopeId{$index}"] = $assignment['scopeId'];
     }
 
-    $sql = 'insert into asset_assignment (workspace_id, source, slot_name, asset_id, scope, scope_id) values '
+    $sql = 'INSERT INTO asset_assignment (workspace_id, source, slot_name, asset_id, scope, scope_id) VALUES '
       . implode(', ', $placeholders)
-      . ' on duplicate key update asset_id = values(asset_id), source = values(source)';
+      . ' ON DUPLICATE KEY UPDATE asset_id = VALUES(asset_id), source = VALUES(source)';
 
     $this->_($sql, $params);
   }
@@ -196,7 +196,7 @@ class AssetDAO extends DAO {
       $params[":scopeId{$index}"] = $assignment['scopeId'];
     }
 
-    $sql = 'delete from asset_assignment where (workspace_id, slot_name, scope, scope_id) in ('
+    $sql = 'DELETE FROM asset_assignment WHERE (workspace_id, slot_name, scope, scope_id) IN ('
       . implode(', ', $placeholders)
       . ')';
 
@@ -250,7 +250,7 @@ class AssetDAO extends DAO {
 
   public function deleteXmlAssignments(int $workspaceId, string $source): int {
     $this->_(
-      'delete from asset_assignment where workspace_id = :workspace_id and source = :source',
+      'DELETE FROM asset_assignment WHERE workspace_id = :workspace_id AND source = :source',
       [
         ':workspace_id' => $workspaceId,
         ':source' => $source
@@ -278,7 +278,7 @@ class AssetDAO extends DAO {
     }
 
     $rows = $this->_(
-      'select id, original_name from assets where original_name in (' . implode(', ', $placeholders) . ')',
+      'SELECT id, original_name FROM assets WHERE original_name IN (' . implode(', ', $placeholders) . ')',
       $params,
       true
     );
