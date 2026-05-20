@@ -6,7 +6,7 @@ import {
   getFromIframe, twoStepLogin,
   logoutFromRunningTestWithConfirmation,
   probeBackendApi,
-  resetBackendData, visitLoginPage
+  resetBackendData, visitLoginPage, clickCardButton
 } from '../utils';
 
 describe('check adaptive functionality', { testIsolation: false }, () => {
@@ -25,8 +25,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     cy.get('[data-cy="continue"]')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2"]')
-      .click();
+    clickCardButton('booklet-BOOKLET.SAMPLE-2');
     expectUnitMenuToBe(['decision-unit', 'beginner-unit']);
   });
 
@@ -65,8 +64,7 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
     twoStepLogin('test-review', 'user123');
-    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-2#bonus:yes"]')
-      .click();
+    clickCardButton('booklet-BOOKLET.SAMPLE-2#bonus:yes');
     expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);
   });
 
