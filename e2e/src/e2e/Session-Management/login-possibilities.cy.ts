@@ -52,6 +52,7 @@ describe('Check Login Possibilities', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/SM-4`);
     cy.wait(1000);
     cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
+      .find('button')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -63,7 +64,7 @@ describe('Check Login Possibilities', () => {
       .type('123');
     cy.get('[data-cy="continue"]')
       .click();
-    cy.get('[data-cy="login-code-problem:400"]')
+    cy.get('[data-cy="login-code-problem"]')
       .contains('Der Code ist leider nicht gültig.');
   });
 
@@ -77,7 +78,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="logo"]')
       .click();
     checkUserName('SM-5');
-    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]');
   });
 
   it('login with code on login page', () => {
@@ -91,7 +92,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="logo"]')
       .click();
     checkUserName('SM-6');
-    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]');
   });
 
   it('login with code via link', () => {
@@ -104,7 +105,7 @@ describe('Check Login Possibilities', () => {
     cy.get('iframe.unitHost');
     cy.get('[data-cy="logo"]')
       .click();
-    checkUserName('as_code02');
-    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]')
+    checkUserName('SM-6');
+    cy.get('[data-cy="booklet-CY-BKLT_SM-1"]');
   });
 });
