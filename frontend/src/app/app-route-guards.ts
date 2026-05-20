@@ -1,6 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import {
+  ActivatedRouteSnapshot, RedirectCommand, Router, RouterStateSnapshot, UrlTree
+} from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MainDataService } from './shared/shared.module';
@@ -14,16 +16,14 @@ export class RouteDispatcherActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService,
               private backendService: BackendService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (!authData) {
-      this.router.navigate(['/r/login', '']);
-      return false;
+      return this.router.createUrlTree(['/r/login', '']);
     }
 
     if (authData.flags.indexOf('codeRequired') >= 0) {
-      this.router.navigate(['/r/code-input']);
-      return false;
+      return this.router.createUrlTree(['/r/code-input']);
     }
 
     if (
@@ -33,11 +33,8 @@ export class RouteDispatcherActivateGuard {
       authData.claims.test.length === 1 &&
       this.router.getCurrentNavigation()?.previousNavigation === null
     ) {
-      this.backendService.startTest(authData.claims.test[0].id)
-        .subscribe(testId => {
-          this.router.navigate(['/t', testId]);
-        });
-      return false;
+      return this.backendService.startTest(authData.claims.test[0].id)
+        .pipe(map(testId => this.router.createUrlTree(['/t', testId])));
     }
 
     if (
@@ -47,12 +44,19 @@ export class RouteDispatcherActivateGuard {
       authData.claims.sysCheck.length === 1 &&
       this.router.getCurrentNavigation()?.previousNavigation === null
     ) {
-      this.router.navigate([`/check/${authData.claims.sysCheck[0].workspaceId}/${authData.claims.sysCheck[0].id}`]);
-      return false;
+      return this.router.createUrlTree([
+        '/check',
+        authData.claims.sysCheck[0].workspaceId,
+        authData.claims.sysCheck[0].id
+      ]);
     }
 
-    this.router.navigate(['/r/starter'], this.router.getCurrentNavigation()?.extras);
-    return false;
+    // RedirectCommand is necessary as we want to maintain context of type NavigationBehaviorOptions, which createURLTree()
+    // does not take in; it only uses UrlCreationOptions
+    return new RedirectCommand(
+      this.router.createUrlTree(['/r/starter']),
+      this.router.getCurrentNavigation()?.extras
+    );
   }
 }
 
@@ -60,15 +64,14 @@ export class RouteDispatcherActivateGuard {
 export class DirectLoginActivateGuard {
   constructor(private mds: MainDataService, private bs: BackendService, private router: Router) { }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const name = state.url.substr(1);
     if (name.length > 0 && name.indexOf('/') < 0) {
       return this.bs.login(name)
         .pipe(
           map((authDataResponse: AuthData) => {
             this.mds.setAuthData(authDataResponse as AuthData);
-            this.router.navigate(['/r']);
-            return false;
+            return this.router.createUrlTree(['/r']);
           })
         );
     }
@@ -82,21 +85,18 @@ export class DirectLoginActivateGuard {
 export class CodeInputComponentActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.flags) {
         if (authData.flags.indexOf('codeRequired') >= 0) {
           return true;
         }
-        this.router.navigate(['/r']);
-        return false;
+        return this.router.createUrlTree(['/r']);
       }
-      this.router.navigate(['/r']);
-      return false;
+      return this.router.createUrlTree(['/r']);
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -106,21 +106,18 @@ export class CodeInputComponentActivateGuard {
 export class AdminComponentActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.claims) {
         if (authData.claims.workspaceAdmin) {
           return true;
         }
-        this.router.navigate(['/r']);
-        return false;
+        return this.router.createUrlTree(['/r']);
       }
-      this.router.navigate(['/r']);
-      return false;
+      return this.router.createUrlTree(['/r']);
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -130,21 +127,18 @@ export class AdminComponentActivateGuard {
 export class AdminOrSuperAdminComponentActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.claims) {
         if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           return true;
         }
-        this.router.navigate(['/r']);
-        return false;
+        return this.router.createUrlTree(['/r']);
       }
-      this.router.navigate(['/r']);
-      return false;
+      return this.router.createUrlTree(['/r']);
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -154,21 +148,18 @@ export class AdminOrSuperAdminComponentActivateGuard {
 export class SuperAdminComponentActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.claims) {
         if (authData.claims.superAdmin) {
           return true;
         }
-        this.router.navigate(['/r']);
-        return false;
+        return this.router.createUrlTree(['/r']);
       }
-      this.router.navigate(['/r']);
-      return false;
+      return this.router.createUrlTree(['/r']);
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -178,21 +169,18 @@ export class SuperAdminComponentActivateGuard {
 export class TestComponentActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.claims) {
         if (authData.claims.test) {
           return true;
         }
-        this.router.navigate(['/r']);
-        return false;
+        return this.router.createUrlTree(['/r']);
       }
-      this.router.navigate(['/r']);
-      return false;
+      return this.router.createUrlTree(['/r']);
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -202,14 +190,13 @@ export class TestComponentActivateGuard {
 export class GroupMonitorActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
 
     if (authData && authData.claims && authData.claims.testGroupMonitor) {
       return true;
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -219,14 +206,13 @@ export class GroupMonitorActivateGuard {
 export class StarterActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
 
     if (authData) {
       return true;
     }
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }
 
@@ -236,14 +222,13 @@ export class StarterActivateGuard {
 export class StudyMonitorActivateGuard {
   constructor(private router: Router, private mainDataService: MainDataService) { }
 
-  canActivate(): boolean {
+  canActivate() {
     const authData = this.mainDataService.getAuthData();
 
     if (authData && authData.claims && authData.claims.studyMonitor) {
       return true;
     }
 
-    this.router.navigate(['/r']);
-    return false;
+    return this.router.createUrlTree(['/r']);
   }
 }

@@ -4,8 +4,7 @@ import {
   Routes,
   RouterModule,
   Router,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot
+  UrlTree
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SysCheckComponent } from './sys-check.component';
@@ -24,15 +23,11 @@ export class SysCheckChildCanActivateGuard {
   ) {
   }
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate() {
     if (this.ds.checkConfig && this.ds.loadConfigComplete) {
       return true;
     }
-    this.router.navigate(['/']); // TODO not ideal for not-logged in users (see commitmsg for more)
-    return false;
+    return this.router.createUrlTree(['/']); // TODO not ideal for not-logged in users (see commitmsg for more)
   }
 }
 
