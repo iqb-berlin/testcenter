@@ -21,10 +21,13 @@ export class MessageService {
   }
 
   showConfirmDialog(dialogData: ConfirmDialogData): Observable<boolean> {
-    // Any kind of admin is assumed to be adult and gets the unsafe mode, regardless of the theme.
+    // Any kind of admin or group-monitor is assumed to be adult and gets
+    // the unsafe mode, regardless of the theme.
     const userClaims = this.mds.getAuthData()?.claims;
     const isAdmin: boolean =
-      typeof userClaims?.superAdmin !== 'undefined' || userClaims?.workspaceAdmin !== undefined;
+      typeof userClaims?.superAdmin !== 'undefined' ||
+      userClaims?.workspaceAdmin !== undefined ||
+      userClaims?.testGroupMonitor !== undefined;
     const safeMode: boolean = !isAdmin && this.themeService.activeTheme.targetAudience === 'children';
     return this.dialog.open(ConfirmDialogComponent, {
       data: { ...dialogData, safeMode },
