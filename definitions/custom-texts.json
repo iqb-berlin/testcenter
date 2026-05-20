@@ -175,6 +175,22 @@
     "label": "Label für den Button um bei gesperrten Units weiter zuklicken",
     "defaultvalue": "Weiter"
   },
+  "booklet_starterStartTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test zu starten",
+    "defaultvalue": "Starten"
+  },
+  "booklet_starterContinueTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test fortzusetzen",
+    "defaultvalue": "Weiter"
+  },
+  "booklet_starterViewTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test anzusehen",
+    "defaultvalue": "Ansehen"
+  },
+  "booklet_starterLockedTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf bei gesperrtem Test",
+    "defaultvalue": "Fertig"
+  },
   "syscheck_unitPrompt" : {
     "label" : "Titelzeile über der Aufgabe",
     "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"
