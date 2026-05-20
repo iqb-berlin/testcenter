@@ -444,6 +444,8 @@ export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*=
 export const logout = () => {
   cy.get('[data-cy="account-button"]').click();
   cy.get('[data-cy="logout-button"]').click();
+  cy.get('[data-cy="dialog-confirm"]').click();
+  cy.get('[data-cy="login-admin-form"]');
 };
 
 export const checkUserName = (name: string) => {
