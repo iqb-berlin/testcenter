@@ -43,7 +43,7 @@ import { NgTemplateOutlet } from '@angular/common';
         <button matButton="outlined" [mat-dialog-close]="true" data-cy="dialog-confirm">
           {{ data.confirmText || 'Bestätigen' }}
         </button>
-        <button matButton="outlined" [mat-dialog-close]="false" data-cy="dialog-confirm">
+        <button matButton="outlined" [mat-dialog-close]="false" data-cy="dialog-cancel">
           {{ data.cancelText || 'Abbrechen' }}
         </button>
       }
