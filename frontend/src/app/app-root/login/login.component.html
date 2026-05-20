@@ -69,6 +69,20 @@
       </mat-card>
     }
 
+    @if (unsupportedBrowser.length) {
+      <mat-card class="help-box">
+        <mat-icon svgIcon="warning"></mat-icon>
+        @let oldBrowserText = (
+          'Ihr Browser ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version.'
+            | customtext : 'login_unsupportedBrowserBanner'
+            : unsupportedBrowser[0]
+            : unsupportedBrowser[1]
+            | async
+        )?.trim();
+        <mat-card-content>{{ oldBrowserText }}</mat-card-content>
+      </mat-card>
+    }
+
     <div class="button-section">
       <button matButton="tonal" [routerLink]="['/r/admin-login']" data-cy="login-admin-form">
         Adminbereich

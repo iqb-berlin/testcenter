@@ -1,5 +1,10 @@
-import { Component, OnDestroy, OnInit, inject, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component, OnDestroy, OnInit, inject
+} from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import {
+  FormControl, FormGroup, ReactiveFormsModule, Validators
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
@@ -8,16 +13,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { AuthData } from '@app/app.interfaces';
+import { BackendService } from '@app/backend.service';
 import { FooterService } from '@shared/services/footer.service';
 import { ThemeService } from '@shared/services/theme.service';
-import {
-  MainDataService,
-  UserAgentService, SharedModule, AlertComponent
-} from '../../shared/shared.module';
-import { AuthData } from '../../app.interfaces';
-import { BackendService } from '../../backend.service';
 import { HeaderService } from '@shared/services/header.service';
 import { AssetService } from '@shared/services/asset.service';
+import {
+  MainDataService,
+  UserAgentService, SharedModule, AlertComponent, CustomtextPipe
+} from '../../shared/shared.module';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -32,7 +37,9 @@ import { AssetService } from '@shared/services/asset.service';
     MatButtonModule,
     MatCardModule,
     SharedModule,
-    AlertComponent
+    AlertComponent,
+    AsyncPipe,
+    CustomtextPipe
   ]
 })
 
