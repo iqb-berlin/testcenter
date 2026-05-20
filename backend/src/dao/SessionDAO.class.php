@@ -551,6 +551,9 @@ class SessionDAO extends DAO {
     return !!$test;
   }
 
+  /**
+   * @return TestData[]
+   */
   public function getTestsOfPerson(PersonSession $personSession): array {
     $testNames = $personSession->getLoginSession()->getLogin()->testNames()[$personSession->getPerson()->getCode() ?? ''];
     if (!count($testNames)) return [];
@@ -637,7 +640,7 @@ class SessionDAO extends DAO {
           )
         ];
       case 'monitor-study':
-        return $this->getGroups($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+        return array_values($this->getGroups($personSession->getLoginSession()->getLogin()->getWorkspaceId()));
     }
   }
 
