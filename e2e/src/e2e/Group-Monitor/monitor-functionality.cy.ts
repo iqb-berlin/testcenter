@@ -94,12 +94,10 @@ describe('Check monitor functions', { testIsolation: false }, () => {
       .find('[data-cy="dialog-confirm"]')
       .click();
     cy.wait('@terminateCommand');
-    cy.get('[data-cy="login-user"]')
-      .should('be.visible');
+    cy.contains('Testgruppen-Überwachung');
   });
 
   it('button: unlock', () => {
-    loginMonitor('GM-1', '');
     clickCardButton('gm-card-0');
     const testId = Cypress.env('savedTestId');
     cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, req => {

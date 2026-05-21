@@ -31,9 +31,8 @@ describe('Settings (setting-tab)', () => {
     cy.contains('Logo');
   });
 
-  // todo ui/ux - this feature does not exist anymore
   // todo check how to test this without polluting the real database -> this test can be observed in regular dev container db (make up)
-  it.skip('set a message for maintenance works', () => {
+  it('set a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click();
     cy.get('[formcontrolname="globalWarningText"]')
@@ -51,11 +50,9 @@ describe('Settings (setting-tab)', () => {
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     cy.contains('Maintenance works');
-    cy.contains('NewName');
   });
 
-  // todo ui/ux - this feature does not exist anymore
-  it.skip('clear a message for maintenance works', () => {
+  it('clear a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click();
     cy.get('[formcontrolname="globalWarningText"]')
@@ -63,7 +60,7 @@ describe('Settings (setting-tab)', () => {
     cy.get('[formcontrolname="globalWarningExpiredDay"]')
       .clear();
     cy.get('[formcontrolname="appTitle"]')
-      .clear()
+      .clear();
     cy.get('[data-cy="Settings:Submit-ApplicationConfiguration"]')
       .click();
     cy.get('[data-cy="logo"]')
