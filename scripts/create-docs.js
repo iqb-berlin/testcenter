@@ -26,8 +26,11 @@ const definitionsDir = `${rootPath}/definitions`;
 exports.testSessionSuperStates = done => {
   cliPrint.headline('SuperStates: Writing HTML documentation');
 
-  // eslint-disable-next-line global-require
-  const { superStates } = require('../frontend/src/app/group-monitor/test-session/super-states');
+  require('ts-node/register');
+
+  const { superStates } = require(
+    '../frontend/src/app/group-monitor/test-session/super-states.ts'
+  );
 
   let content = '';
   Object.keys(superStates).forEach(key => {
