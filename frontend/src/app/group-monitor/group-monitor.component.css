@@ -1,20 +1,12 @@
 :host {
-  height: 100%;
   flex: 1;
   display: flex;
 }
 
-.adminbackground {
-  box-shadow: 5px 10px 20px black;
-  background-color: white;
-  margin: 0 0 0 15px;
-  padding: 15px 15px 10px 15px;
-  scroll-behavior: smooth;
-  height: 100%;
-}
-
 .mat-drawer-content {
   overflow: unset;
+  display: flex;
+  flex-direction: column;
 }
 
 .mat-drawer-container {
@@ -22,8 +14,28 @@
 }
 
 .mat-drawer {
-  margin: 15px 0 0 0;
+  margin: 15px 0;
   padding: 1em;
+  border: 1px solid var(--mat-sys-primary);
+}
+
+.adminbackground {
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  margin: 15px;
+  padding: 15px 15px 10px 15px;
+  border-radius: var(--mat-sys-corner-large);
+  display: flex;
+  flex-direction: column;
+}
+
+.corner-menu {
+  display: flex;
+  align-self: end;
+}
+
+.corner-menu input[type="text"] {
+  margin: 1em;
 }
 
 .connection-status {
@@ -122,9 +134,10 @@
 
 .drawer-button-open {
   top: 50%;
-  left: 320px;
+  left: 318px;
   position: fixed;
   z-index: 1000;
+  background-color: var(--mat-sys-secondary);
 }
 
 .drawer-button-close {
@@ -133,6 +146,7 @@
   color: white;
   position: fixed;
   z-index: 1000;
+  background-color: var(--mat-sys-secondary);
 }
 
 .emph {
@@ -234,19 +248,6 @@
 
 }
 
-.corner-menu {
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 10000;
-  border-bottom-left-radius: 10px;
-  background: white;
-  display: flex;
-}
-
-.corner-menu input[type="text"] {
-  margin: 1em;
-}
 
 .toolbar {
   padding: 15px;

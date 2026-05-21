@@ -310,26 +310,21 @@
   </mat-drawer-content>
 </mat-drawer-container>
 
-<button
-  class="drawer-button-close"
-  mat-icon-button
-  (click)="sidenav.toggle()"
-  matTooltip=""
-  matTooltipPosition="right"
->
-  <mat-icon svgIcon="chevron_right"></mat-icon>
-</button>
+@if (!sidenav.opened) {
+  <button mat-icon-button class="drawer-button-close"
+          matTooltip="Test-Steuerung einblenden" matTooltipPosition="right"
+          (click)="sidenav.toggle()">
+    <mat-icon svgIcon="chevron_right"></mat-icon>
+  </button>
+}
 
-<button
-  *ngIf="sidenav.opened"
-  class="drawer-button-open"
-  mat-icon-button
-  (click)="sidenav.toggle()"
-  matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}"
-  matTooltipPosition="above"
->
-  <mat-icon svgIcon="chevron_left"></mat-icon>
-</button>
+@if (sidenav.opened) {
+  <button mat-icon-button class="drawer-button-open"
+          matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}" matTooltipPosition="above"
+          (click)="sidenav.toggle()" >
+    <mat-icon svgIcon="chevron_left"></mat-icon>
+  </button>
+}
 
 <div id="shield" *ngIf="isClosing"></div>
 <mat-card id="shield-child" appearance="raised" *ngIf="isClosing">
