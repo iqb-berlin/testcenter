@@ -96,6 +96,8 @@ describe('Usermanagement (user-tab)', () => {
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     clickCardButton('workspace-card-sample_workspace');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled');
     cy.get('[data-cy="delete-files"]')
