@@ -18,14 +18,18 @@ export class RouteDispatcherActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
+
+    // token lost
     if (!authData) {
       return this.router.createUrlTree(['/r/login', '']);
     }
 
+    // at least one booklet has a entry code
     if (authData.flags.indexOf('codeRequired') >= 0) {
       return this.router.createUrlTree(['/r/code-input']);
     }
 
+    // if the user logs in via DirectLoginActivateGuard, the test starts directly without /starter
     if (
       authData.claims &&
       Object.keys(authData.claims).length === 1 &&
@@ -37,6 +41,7 @@ export class RouteDispatcherActivateGuard {
         .pipe(map(testId => this.router.createUrlTree(['/t', testId])));
     }
 
+    // if the user logs in via DirectLoginActivateGuard, the sys-check starts directly without /starter
     if (
       authData.claims &&
       Object.keys(authData.claims).length === 1 &&
@@ -51,6 +56,7 @@ export class RouteDispatcherActivateGuard {
       ]);
     }
 
+    // default case: Login with name, password but no code
     // RedirectCommand is necessary as we want to maintain context of type NavigationBehaviorOptions, which createURLTree()
     // does not take in; it only uses UrlCreationOptions
     return new RedirectCommand(
@@ -66,6 +72,7 @@ export class DirectLoginActivateGuard {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const name = state.url.substr(1);
+    // entering url/#/<username> leads to direct login, if there is no pw set
     if (name.length > 0 && name.indexOf('/') < 0) {
       return this.bs.login(name)
         .pipe(
@@ -75,6 +82,9 @@ export class DirectLoginActivateGuard {
           })
         );
     }
+
+    // if entering anything else than url/#/<username>/... this featur does not work - you will be routed to the literal
+    // route, likely leading to a '404 not found'
     return true;
   }
 }

@@ -18,7 +18,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     _currentRoute: ActivatedRouteSnapshot,
     _currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot
-  ): Observable<boolean> {
+  ) {
     // 'popstate' for browser triggers, 'imperative' for angular router triggers - not in official documentation
     // https://angular.love/angular-router-everything-you-need-to-know-about
     const trigger = this.router.currentNavigation()?.trigger;
@@ -26,7 +26,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     const browserTriggered = trigger === 'popstate' || trigger === 'hashchange';
 
     if (browserTriggered && preventNav) {
-      return of(false);
+      return false;
     }
 
     return this.tcs.canDeactivateUnit(nextState.url);
