@@ -3,7 +3,6 @@ import { CustomtextService } from '../services/customtext/customtext.service';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
-  DEFAULT_LOGO,
   SysConfig
 } from '../interfaces/app-config.interfaces';
 // eslint-disable-next-line import/no-relative-packages
@@ -26,7 +25,6 @@ export class AppConfig {
   veronaPlayerApiVersionMax: number = 0;
   iqbStandardResponseTypeMin: number = 0;
   iqbStandardResponseTypeMax: number = 0;
-  mainLogo = DEFAULT_LOGO;
   appTitle = 'IQB-Testcenter';
   privacyNotice = '';
   trustedPrivacyNotice: SafeUrl | null = null;
@@ -82,7 +80,6 @@ export class AppConfig {
       '<br>Kontakt:<br>Telefon: 030/1234567-8<br>Telefax: 030/1234567-9<br>E-Mail: mail@mustermann.de' +
       '<br>Website: www.mustermann.de</p>';
     this.trustedLegalNoticeHtml = null;
-    this.mainLogo = DEFAULT_LOGO;
     this.globalWarningText = '';
     this.globalWarningExpiredDay = '';
     this.globalWarningExpiredHour = '';
@@ -91,7 +88,6 @@ export class AppConfig {
     this.themeName = this.defaultThemeName;
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
-      if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
       if (appConfig.legalNoticeHtml) this.legalNoticeHtml = appConfig.legalNoticeHtml;
       if (appConfig.privacyNotice) this.privacyNotice = appConfig.privacyNotice;
       if (appConfig.accessibilityNotice) this.accessibilityNotice = appConfig.accessibilityNotice;
@@ -126,7 +122,6 @@ export class AppConfig {
   getAppConfig(): AppSettings {
     return {
       appTitle: this.appTitle,
-      mainLogo: this.mainLogo,
       legalNoticeHtml: this.legalNoticeHtml,
       privacyNotice: this.privacyNotice,
       accessibilityNotice: this.accessibilityNotice,

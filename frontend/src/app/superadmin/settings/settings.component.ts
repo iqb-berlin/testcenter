@@ -74,8 +74,6 @@ export class SettingsComponent implements OnInit {
   private configDataChangedSubscription: Subscription | null = null;
   configForm: FormGroup;
   warningIsExpired = false;
-  imageError: string | null = '';
-  logoImageBase64 = '';
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -150,7 +148,6 @@ export class SettingsComponent implements OnInit {
       appConfig.globalWarningExpiredDay,
       appConfig.globalWarningExpiredHour
     );
-    this.logoImageBase64 = appConfig.mainLogo;
     this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
       this.warningIsExpired = AppConfig.isWarningExpired(
         this.configForm.get('globalWarningExpiredDay')?.value,
@@ -169,7 +166,6 @@ export class SettingsComponent implements OnInit {
       globalWarningText: this.configForm.get('globalWarningText')?.value,
       globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
-      mainLogo: this.logoImageBase64,
       bugReportTarget: this.configForm.get('bugReportTarget')?.value,
       bugReportAuth: this.configForm.get('bugReportAuth')?.value,
       themeName: this.configForm.get('themeName')?.value
@@ -203,63 +199,6 @@ export class SettingsComponent implements OnInit {
       bugReportTarget: appConfig.bugReportTarget,
       themeName: appConfig.themeName
     });
-  }
-
-  imgFileChange(fileInput: Event): void {
-    const target = fileInput.target as HTMLInputElement;
-    const files = target.files as FileList;
-    this.imageError = null;
-    if (files && files[0]) {
-      // todo check max values
-      const maxSize = 20971520;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
-      const maxHeight = 15200;
-      const maxWidth = 25600;
-
-      if (files[0].size > maxSize) {
-        this.imageError = `Datei zu groß ( > ${maxSize / 1000} Mb)`;
-        return;
-      }
-
-      if (allowedTypes.indexOf(files[0].type) < 0) {
-        const allowedImageTypesTruncated: string[] = [];
-        allowedTypes.forEach((imgType: string) => {
-          allowedImageTypesTruncated.push(imgType.substr(5));
-        });
-        this.imageError = `Zulässige Datei-Typen: (${allowedImageTypesTruncated.join(', ')})`;
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = e => {
-        if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
-          this.imageError = 'Konnte Bild nicht lesen';
-          return;
-        }
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = rs => {
-          const imgTargetElement = rs.currentTarget as HTMLImageElement;
-          const imgHeight = imgTargetElement.height;
-          const imgWidth = imgTargetElement.width;
-          if (imgHeight > maxHeight && imgWidth > maxWidth) {
-            this.imageError = `Unzulässige Größe (maximal erlaubt: ${maxHeight}*${maxWidth}px)`;
-            return false;
-          }
-          if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
-            this.imageError = 'Konnte Bild nicht lesen';
-            return false;
-          }
-          this.logoImageBase64 = e.target.result;
-          return true;
-        };
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  }
-
-  removeLogoImg(): void {
-    this.logoImageBase64 = DEFAULT_LOGO;
   }
 
   ngOnDestroy(): void {

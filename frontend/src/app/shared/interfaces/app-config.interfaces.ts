@@ -2,7 +2,6 @@ import { KeyValuePairs } from '../../app.interfaces';
 
 export interface AppSettingsObject {
   appTitle: string,
-  mainLogo: string,
   privacyNotice: string,
   accessibilityNotice: string,
   legalNoticeHtml: string,
@@ -28,5 +27,3 @@ export interface SysConfig {
   broadcastingServiceUri: string;
   fileServiceUri: string;
 }
-
-export const DEFAULT_LOGO = 'assets/IQB-Logo-2025.png';
