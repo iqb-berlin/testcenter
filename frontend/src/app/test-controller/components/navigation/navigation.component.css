@@ -54,4 +54,5 @@
 
 .list-item.selected {
   background-color: var(--mat-sys-primary);
+  color: white;
 }
