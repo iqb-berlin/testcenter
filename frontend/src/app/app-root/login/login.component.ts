@@ -97,6 +97,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authDataTyped);
       },
       error: error => {
@@ -118,6 +119,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: authData => {
         this.mainDataService.setAuthData(authData);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authData);
       },
       error: error => {

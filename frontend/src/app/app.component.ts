@@ -11,6 +11,7 @@ import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
 import { ThemeService } from './shared/services/theme.service';
 import { FooterService } from '@shared/services/footer.service';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   selector: 'tc-root',
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private customtextService: CustomtextService,
               private titleService: Title,
               private themeService: ThemeService,
+              private assetService: AssetService,
               private sanitizer: DomSanitizer,
               private route: ActivatedRoute,
               public footerService: FooterService) { }
@@ -75,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
                                                         this.sanitizer);
         this.themeService.setTheme(
           this.mainDataService.getAuthData()?.viewSettings.theme || sysConfig.appConfig.themeName);
+        this.assetService.refreshAssetSlots();
       });
 
     // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.

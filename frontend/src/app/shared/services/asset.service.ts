@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -25,7 +24,6 @@ const ASSET_SLOT_NAMES = [
 })
 export class AssetService {
   private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
-  private assetSlotsRefreshId = 0;
   assetSlots$ = this.assetSlotsSubject.asObservable();
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
@@ -34,11 +32,7 @@ export class AssetService {
   constructor(private backendService: BackendService, private messageService: MessageService,
               private mainDataService: MainDataService,
               private themeService: ThemeService,
-              @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) {
-    this.mainDataService.authData$
-      .pipe(distinctUntilChanged((previous, current) => previous?.token === current?.token))
-      .subscribe(() => this.refreshAssetSlots());
-  }
+              @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) { }
 
   loadAssets(): void {
     this.backendService.getAllAssets().subscribe(assets => {
@@ -118,17 +112,8 @@ export class AssetService {
     return `${this.fileServerUrl}${url.replace(/^\//, '')}`;
   }
 
-  private refreshAssetSlots(): void {
-    // refreshID is used to prevent race conditions; in case refreshAssetSlots() gets called in close sucession of
-    // not logged in -> logged in. We want the later called instances to always beat out prior ones, even if the results
-    // come in later
-    this.assetSlotsRefreshId += 1;
-    const refreshId = this.assetSlotsRefreshId;
+  refreshAssetSlots(): void {
     this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
-      if (refreshId !== this.assetSlotsRefreshId) {
-        return;
-      }
-
       this.assetSlotsSubject.next(assignments);
     });
   }
