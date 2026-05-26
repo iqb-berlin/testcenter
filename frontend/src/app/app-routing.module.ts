@@ -7,7 +7,6 @@ import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check
 import { CodeLoginComponent } from './app-root/code-login/code-login.component';
 import {
   AdminComponentActivateGuard,
-  AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
   DirectLoginActivateGuard,
   GroupMonitorActivateGuard,
@@ -143,12 +142,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
+  imports: [RouterModule.forRoot(routes, {
+    enableTracing: false,
+    canceledNavigationResolution: 'computed'
+  })],
   exports: [RouterModule],
   providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard,
     CodeInputComponentActivateGuard, AdminComponentActivateGuard,
-    SuperAdminComponentActivateGuard, TestComponentActivateGuard,
-    AdminOrSuperAdminComponentActivateGuard
+    SuperAdminComponentActivateGuard, TestComponentActivateGuard
   ]
 })
 export class AppRoutingModule { }
