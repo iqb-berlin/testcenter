@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot, RedirectCommand, Router, RouterStateSnapshot, UrlTree
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MainDataService } from './shared/shared.module';
 import { AuthData } from './app.interfaces';
@@ -97,15 +96,10 @@ export class CodeInputComponentActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.flags) {
-        if (authData.flags.indexOf('codeRequired') >= 0) {
-          return true;
-        }
-        return this.router.createUrlTree(['/r']);
-      }
-      return this.router.createUrlTree(['/r']);
+    if (authData?.flags.includes('codeRequired')) {
+      return true;
     }
+
     return this.router.createUrlTree(['/r']);
   }
 }
@@ -118,18 +112,9 @@ export class AdminComponentActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.claims) {
-        if (authData.claims.workspaceAdmin) {
-          return true;
-        }
-        return this.router.createUrlTree(['/r']);
-      }
-      return this.router.createUrlTree(['/r']);
+    if (authData?.claims.workspaceAdmin) {
+      return true;
     }
-    return this.router.createUrlTree(['/r']);
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -160,15 +145,10 @@ export class SuperAdminComponentActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.claims) {
-        if (authData.claims.superAdmin) {
-          return true;
-        }
-        return this.router.createUrlTree(['/r']);
-      }
-      return this.router.createUrlTree(['/r']);
+    if (authData?.claims.superAdmin) {
+      return true;
     }
+
     return this.router.createUrlTree(['/r']);
   }
 }
@@ -181,15 +161,10 @@ export class TestComponentActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.claims) {
-        if (authData.claims.test) {
-          return true;
-        }
-        return this.router.createUrlTree(['/r']);
-      }
-      return this.router.createUrlTree(['/r']);
+    if (authData?.claims.test) {
+      return true;
     }
+
     return this.router.createUrlTree(['/r']);
   }
 }
@@ -202,10 +177,10 @@ export class GroupMonitorActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-
-    if (authData && authData.claims && authData.claims.testGroupMonitor) {
+    if (authData?.claims.testGroupMonitor) {
       return true;
     }
+
     return this.router.createUrlTree(['/r']);
   }
 }
@@ -218,10 +193,10 @@ export class StarterActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-
     if (authData) {
       return true;
     }
+
     return this.router.createUrlTree(['/r']);
   }
 }
@@ -234,8 +209,7 @@ export class StudyMonitorActivateGuard {
 
   canActivate() {
     const authData = this.mainDataService.getAuthData();
-
-    if (authData && authData.claims && authData.claims.studyMonitor) {
+    if (authData?.claims.studyMonitor) {
       return true;
     }
 
