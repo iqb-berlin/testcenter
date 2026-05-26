@@ -117,23 +117,6 @@ export class AdminComponentActivateGuard {
       return true;
     }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AdminOrSuperAdminComponentActivateGuard {
-  constructor(private router: Router, private mainDataService: MainDataService) { }
-
-  canActivate() {
-    const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.claims) {
-        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
-          return true;
-        }
-        return this.router.createUrlTree(['/r']);
-      }
-      return this.router.createUrlTree(['/r']);
-    }
     return this.router.createUrlTree(['/r']);
   }
 }
