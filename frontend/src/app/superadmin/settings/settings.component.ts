@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormsModule, ReactiveFormsModule
 } from '@angular/forms';
-import { AsyncPipe, KeyValuePipe, NgForOf } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatButton, MatFabButton, MatMiniFabButton } from '@angular/material/button';
-import { MatTooltip } from '@angular/material/tooltip';
+import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MessageService } from '@shared/services/message.service';
@@ -23,12 +22,11 @@ import {
   MatCardImage,
   MatCardTitle
 } from '@angular/material/card';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { AppConfig } from '@shared/classes/app.config';
+import { AppSettings } from '@shared/interfaces/app-config.interfaces';
+import { ThemeService } from '@shared/services/theme.service';
 import { BackendService } from '../backend.service';
-import { AppConfig } from '../../shared/classes/app.config';
-import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
-import { ThemeService } from '../../shared/services/theme.service';
-import { AlertComponent, SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
 
 @Component({
@@ -44,16 +42,12 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     MatDatepicker,
     MatSelect,
     MatOption,
-    MatMiniFabButton,
-    MatTooltip,
     MatIcon,
     MatRadioGroup,
     MatRadioButton,
     FormsModule,
-    SharedModule,
     EditCustomTextsComponent,
     MatFabButton,
-    AlertComponent,
     MatButton,
     MatGridList,
     MatGridTile,
