@@ -70,7 +70,8 @@ export class DirectLoginActivateGuard {
   constructor(private mds: MainDataService, private bs: BackendService, private router: Router) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const name = state.url.substr(1);
+    const name = state.url.substring(1);
+
     // entering url/#/<username> leads to direct login, if there is no pw set
     if (name.length > 0 && name.indexOf('/') < 0) {
       return this.bs.login(name)
