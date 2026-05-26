@@ -2,9 +2,13 @@
   position: fixed;
   width: 100%;
   padding: 0;
-  top: 110px;
+  top: 191px;
   bottom: 0;
   background-color: white;
+}
+
+:host ::ng-deep .unitHost {
+  width: 100%;
 }
 
 .unit-title h2 {
