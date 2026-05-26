@@ -10,8 +10,8 @@ import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import { MainDataService, BookletConfig } from '../../../shared/shared.module';
-// eslint-disable-next-line import/extensions
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
+import { AssetService } from '@shared/services/asset.service';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -34,10 +34,14 @@ const MockTestControllerService = {
 };
 const MockBackendService = { };
 const MockMainDataService = {
-  postMessage$: new Subject()
+  postMessage$: new Subject(),
+  authData$: new Subject()
 };
 const MockActivatedRoute = {
   params: new Subject<Params>()
+};
+const MockAssetService = {
+  getAssetSrc: () => ''
 };
 
 describe('UnithostComponent', () => {
@@ -55,6 +59,7 @@ describe('UnithostComponent', () => {
       providers: [
         { provide: TestControllerService, useValue: MockTestControllerService },
         { provide: BackendService, useValue: MockBackendService },
+        { provide: AssetService, useValue: MockAssetService },
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute }
       ]

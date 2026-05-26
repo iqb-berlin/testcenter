@@ -11,6 +11,7 @@ import { ResultsComponent } from './results.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ResultData } from '../workspace.interfaces';
+import { MessageService } from '@shared/services/message.service';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -44,6 +45,10 @@ describe('ResultsComponent', () => {
       providers: [
         {
           provide: BackendService,
+          useValue: new MockBackendService()
+        },
+        {
+          provide: MessageService,
           useValue: new MockBackendService()
         },
         WorkspaceDataService,

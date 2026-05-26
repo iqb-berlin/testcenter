@@ -15,7 +15,6 @@ describe('NewpasswordComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [NewPasswordComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,
