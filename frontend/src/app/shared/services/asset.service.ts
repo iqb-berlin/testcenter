@@ -65,7 +65,7 @@ export class AssetService {
   deleteAsset(id: number): void {
     this.backendService.deleteAsset(id).subscribe(result => {
       if (result) {
-        this.messageService.showSnackbar('Asset gelöscht');
+        this.messageService.showSnackbar('Bild entfernt');
         this.allAssets = this.allAssets.filter(asset => asset.id !== id);
         this.refreshAssetSlots();
       }

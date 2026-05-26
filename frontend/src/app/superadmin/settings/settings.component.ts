@@ -13,13 +13,12 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MessageService } from '@shared/services/message.service';
-import { Asset, AssetService } from '@shared/services/asset.service';
-import { MatToolbar } from '@angular/material/toolbar';
+import { AssetService } from '@shared/services/asset.service';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
 import {
   MatCard,
   MatCardActions,
-  MatCardContent,
   MatCardHeader,
   MatCardImage,
   MatCardTitle
@@ -63,7 +62,10 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     MatCardHeader,
     MatCardTitle,
     MatCardActions,
-    AsyncPipe
+    AsyncPipe,
+    MatTabGroup,
+    MatTab,
+    MatTabLabel
   ],
   templateUrl: 'settings.component.html',
   styleUrls: ['settings.component.scss']
@@ -99,6 +101,18 @@ export class SettingsComponent implements OnInit {
     21: '21:00 Uhr',
     22: '22:00 Uhr',
     23: '23:00 Uhr'
+  };
+
+  protected ASSET_SLOT_LABELS: Record<string, string> = {
+    logo: 'Logo',
+    loginIllustration: 'Login-Illustration',
+    loginCompanion: 'Login-Begleiter',
+    codeInputIllustration: 'Code-Eingabe-Illustration',
+    codeInputCompanion: 'Code-Eingabe-Begleiter',
+    starterCompanion: 'Startmenü-Begleiter',
+    starterCardDone: 'Startmenü-Karte-Fertig',
+    loadingProgress: 'Ladeanimation',
+    confirmDialog: 'Bestätigungsdialog'
   };
 
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
