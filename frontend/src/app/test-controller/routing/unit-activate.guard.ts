@@ -47,8 +47,6 @@ export class UnitActivateGuard implements CanActivate {
         return this.router.parseUrl(`/t/${this.tcs.testId}/u/${currentNavigation.targets.previous}`);
       }
       // we stay anyway (undefined behaviour on what happens on that unit)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       return false;
     }
 

@@ -12,7 +12,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
   ) {
   }
 
-  async canDeactivate(): boolean {
+  async canDeactivate() {
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.state$.getValue();
       const ignorePause = this.tcs.shouldShowConfirmationUI(); // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation

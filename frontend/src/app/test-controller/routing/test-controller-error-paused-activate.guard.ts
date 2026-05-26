@@ -9,7 +9,7 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
   ) {
   }
 
-  canActivate(): boolean {
+  canActivate() {
     return !['ERROR', 'TERMINATED', 'PAUSED'].includes(this.tcs.state$.getValue());
   }
 }
