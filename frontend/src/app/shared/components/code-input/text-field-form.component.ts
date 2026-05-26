@@ -29,7 +29,7 @@ import {
     <form [formGroup]="codeinputform" (ngSubmit)="submitCode.emit(codeinputform.value.code)">
       <mat-form-field appearance="outline">
         <mat-label>Code</mat-label>
-        <input matInput formControlName="code">
+        <input matInput formControlName="code" autocapitalize="off">
         @if (codeinputform.get('code')?.value) {
           <button type="button" matIconButton matSuffix (click)="clearInput()">
             <mat-icon svgIcon="cancel"></mat-icon>
