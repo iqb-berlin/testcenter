@@ -5,12 +5,20 @@ import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { ThemeService } from './theme.service';
 
-const DEFAULT_ASSET_SRC = 'assets/android-chrome-512x512.png';
+const DEFAULT_ASSETS: Record<AssetSlotName, string> = {
+  logo: 'assets/images/IQB-Logo-2025.png',
+  loginIllustration: 'assets/images/login-illustration.png',
+  codeInputIllustration: 'assets/images/code-input-illustration.png',
+  codeInputCompanion: 'assets/images/bird-character.png',
+  starterCompanion: 'assets/images/bird-character-cool.png',
+  starterCardDone: 'assets/images/bird-character-done.png',
+  loadingProgress: 'assets/images/bird-character-cool.png',
+  confirmDialog: 'assets/images/bird-character-cool.png'
+};
 
 const ASSET_SLOT_NAMES = [
   'logo',
   'loginIllustration',
-  'loginCompanion',
   'codeInputIllustration',
   'codeInputCompanion',
   'starterCompanion',
@@ -96,7 +104,7 @@ export class AssetService {
   getAssetSrc(slotName: AssetSlotName): string {
     const url = this.assetSlotsSubject.getValue()[slotName]?.url ||
       this.themeService.activeTheme.imagePaths?.[slotName] ||
-      DEFAULT_ASSET_SRC;
+      DEFAULT_ASSETS[slotName];
     return this.toAbsolute(url);
   }
 

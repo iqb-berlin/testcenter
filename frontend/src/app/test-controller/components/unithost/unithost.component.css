@@ -52,6 +52,7 @@
   position: relative;
   transform: translateX(-50%);
   transition: left 0.2s linear;
+  object-fit: contain;
 }
 
 .progress-container .loading-progress-text {

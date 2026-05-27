@@ -98,7 +98,6 @@ export class SettingsComponent implements OnInit {
   protected ASSET_SLOT_LABELS: Record<string, string> = {
     logo: 'Logo',
     loginIllustration: 'Login-Illustration',
-    loginCompanion: 'Login-Begleiter',
     codeInputIllustration: 'Code-Eingabe-Illustration',
     codeInputCompanion: 'Code-Eingabe-Begleiter',
     starterCompanion: 'Startmenü-Begleiter',

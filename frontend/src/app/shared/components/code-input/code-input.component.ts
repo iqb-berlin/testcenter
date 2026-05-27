@@ -36,7 +36,7 @@ export class CodeInputComponent implements OnInit, OnChanges {
   constructor(protected assetService: AssetService) { }
 
   ngOnInit() {
-    this.companionImageSrc = this.assetService.getAssetSrc('loginCompanion');
+    this.companionImageSrc = this.assetService.getAssetSrc('codeInputCompanion');
   }
 
   ngOnChanges(changes: SimpleChanges): void {

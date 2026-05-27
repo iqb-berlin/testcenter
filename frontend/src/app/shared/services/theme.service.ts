@@ -43,18 +43,7 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
-    targetAudience: 'children',
-    imagePaths: {
-      logo: 'assets/IQB-Logo-2025.png',
-      loginIllustration: 'assets/login-illustration.png',
-      loginCompanion: 'assets/images/bird-character.png',
-      codeInputIllustration: 'assets/theme-images/theme-primar/code-input-illu.png',
-      codeInputCompanion: 'assets/theme-images/theme-primar/code-input-companion.png',
-      starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
-      starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
-      loadingProgress: 'assets/theme-images/theme-primar/loading.png',
-      confirmDialog: 'assets/theme-images/theme-primar/loading.png'
-    }
+    targetAudience: 'children'
   },
   {
     name: 'Sekundar',
