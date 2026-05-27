@@ -49,6 +49,10 @@ import {
       gap: 24px;
     }
 
+    form mat-form-field {
+      max-width: 500px;
+    }
+
     form button {
       align-self: start;
     }

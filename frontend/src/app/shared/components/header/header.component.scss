@@ -40,6 +40,10 @@ h1 {
   border-radius: 12px;
 }
 
+:host ::ng-deep span.mat-mdc-button-persistent-ripple {
+  border-radius: inherit;
+}
+
 .logout-dialog {
   display: flex;
   justify-content: space-between;
