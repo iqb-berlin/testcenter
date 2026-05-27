@@ -30,7 +30,7 @@ import { AssetService } from '@shared/services/asset.service';
   templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnDestroy {
   @ViewChild('logoutDialogTemplate') logoutDialogTemplate!: TemplateRef<unknown>;
   logoLink: string[] = ['/r'];
   userRights: string[] = [];
@@ -53,6 +53,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     assetService.assetSlots$.subscribe(() => {
       this.logoURL = assetService.getAssetSrc('logo');
+      this.confirmDialogImgSrc = this.assetService.getAssetSrc('confirmDialog');
     });
 
     this.mainDataService.authData$.subscribe(authData => {
@@ -85,10 +86,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.userRights.push('Code-Eingabe erforderlich');
       }
     });
-  }
-
-  ngOnInit() {
-    this.confirmDialogImgSrc = this.assetService.getAssetSrc('confirmDialog');
   }
 
   protected logout() {

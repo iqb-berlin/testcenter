@@ -73,7 +73,9 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
-    this.companionImageSrc = this.assetService.getAssetSrc('starterCompanion');
+    this.assetService.assetSlots$.subscribe(() => {
+      this.companionImageSrc = this.assetService.getAssetSrc('starterCompanion');
+    });
     this.ds.networkReports = [];
     this.bs.getSessionData().subscribe(authData => {
       if (!authData || !authData.token) {

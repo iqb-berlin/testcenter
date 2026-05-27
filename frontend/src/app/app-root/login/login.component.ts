@@ -81,7 +81,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.checkBrowser();
     this.headerService.title = 'Anmelden';
     this.footerService.showFooter.set(true);
-    this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
+    this.assetService.assetSlots$.subscribe(() => {
+      this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
+    });
   }
 
   nameInput(): void {
