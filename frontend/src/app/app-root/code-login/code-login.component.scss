@@ -2,8 +2,15 @@
   display: flex;
   height: 100%;
 
-  > * {
+  .form {
     width: 50%;
+
+    &.full-width {
+      width: 100%;
+    }
+  }
+
+  > * {
     padding: 24px;
   }
 
@@ -25,6 +32,10 @@
   display: flex;
   justify-content: center;
   background-color: var(--mat-sys-secondary);
+
+  &.hidden {
+    display: none;
+  }
 
   img {
     max-height: 70%;

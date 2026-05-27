@@ -16,7 +16,7 @@ import { AssetService } from '@shared/services/asset.service';
     CustomtextPipe
   ],
   template: `
-    <div class="form">
+    <div class="form" [class.full-width]="inputType === 'keypad-symbols-alt'">
       <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
                      (submitCode)="onSubmit($event)">
         @if (inputType !== 'keypad-symbols-alt') {
@@ -27,7 +27,7 @@ import { AssetService } from '@shared/services/asset.service';
         }
       </tc-code-input>
     </div>
-    <div class="illustration">
+    <div class="illustration" [class.hidden]="inputType === 'keypad-symbols-alt'">
       <img [src]="assetService.getAssetSrc('codeInputIllustration')" alt="Code input illustration">
     </div>
   `,

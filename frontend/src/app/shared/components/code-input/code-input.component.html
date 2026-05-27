@@ -13,12 +13,12 @@
   </tc-code-keypad-form>
 }
 
-<div class="companion" [class.error]="problemText">
+<div class="companion" [class.error]="problemText"
+     [class.hidden]="inputType === 'keypad-symbols-alt' && problemText === ''">
   @if (inputType !== 'keypad-symbols-alt') {
     <img [src]="companionImageSrc" alt="Helper character" class="companion-image">
-  } @else {
-    <img [src]="problemText ? 'assets/images/companion_stars_error.png' : 'assets/images/companion_stars.png'"
-         alt="Helper character" class="companion-image">
+  } @else if (problemText) {
+    <img [src]="'assets/images/companion_stars_error.png'" alt="Helper character" class="companion-image">
   }
   @if (inputType !== 'keypad-symbols-alt') {
     <img src="assets/images/speech-bubble.svg" alt="speech bubble" class="companion-speech-bubble">
