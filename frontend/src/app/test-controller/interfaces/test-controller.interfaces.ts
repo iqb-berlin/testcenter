@@ -8,7 +8,12 @@ import {
   UnitDef
 } from '../../shared/interfaces/booklet.interfaces';
 import { IQBVariable } from './iqb.interfaces';
-import { VeronaNavigationTarget, VeronaNavigationTargetValues, VeronaProgress } from './verona.interfaces';
+import {
+  SharedParameter,
+  VeronaNavigationTarget,
+  VeronaNavigationTargetValues,
+  VeronaProgress
+} from './verona.interfaces';
 
 export type LoadingQueueEntryTypeType = 'definition' | 'scheme';
 
@@ -87,6 +92,7 @@ export type TestState = {
   FOCUS: AppFocusState;
   CONTROLLER: UnitPlayerState;
   CONNECTION: TestStateConnectionValue;
+  SHARED_PARAMETERS: string;
 };
 
 export type UnitState = {

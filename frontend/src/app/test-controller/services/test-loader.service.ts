@@ -36,6 +36,7 @@ import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
 import { BookletParserService } from '../../shared/services/booklet-parser.service';
 import { IQBVariable } from '../interfaces/iqb.interfaces';
+import { SharedParameter } from '@app/test-controller/interfaces/verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -110,7 +111,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
     }
 
-    this.restoreRestrictions(lastState);
+    this.restoreLastState(lastState);
 
     const currentUnitId = lastState.CURRENT_UNIT_ID;
     const resumeTargetUnitSequenceId = currentUnitId ? this.tcs.unitAliasMap[currentUnitId] : 1;
@@ -126,7 +127,11 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     return this.tcs.setUnitNavigationRequest(resumeTargetUnitSequenceId.toString());
   }
 
-  private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
+  private restoreLastState(lastState: { [k in TestStateKey]?: string }): void {
+    this.tcs.sharedParameters = lastState.SHARED_PARAMETERS ?
+      JSON.parse(lastState.SHARED_PARAMETERS) as SharedParameter[] :
+      [];
+
     this.tcs.timers = lastState.TESTLETS_TIMELEFT ?
       JSON.parse(lastState.TESTLETS_TIMELEFT) :
       {};

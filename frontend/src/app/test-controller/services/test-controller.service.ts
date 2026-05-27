@@ -1053,6 +1053,7 @@ export class TestControllerService {
     });
 
     if (hasChanged) {
+      this.addToTestStateBuffer('SHARED_PARAMETERS', JSON.stringify(this.sharedParameters));
       this.configChanged$.next();
     }
   }
