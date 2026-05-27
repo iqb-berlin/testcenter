@@ -28,7 +28,11 @@ import { AssetService } from '@shared/services/asset.service';
       </tc-code-input>
     </div>
     <div class="illustration" [class.hidden]="inputType === 'keypad-symbols-alt'">
-      <img [src]="assetService.getAssetSrc('codeInputIllustration')" alt="Code input illustration">
+      @if (illustrationImageSrc){
+        <img [src]="illustrationImageSrc" alt="Code input illustration">
+      } @else {
+        <div class="form"></div>
+      }
     </div>
   `,
   styleUrl: 'code-login.component.scss',
@@ -41,12 +45,16 @@ export class CodeLoginComponent {
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
+  protected illustrationImageSrc?: string;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
               public assetService: AssetService) {
     const authData = this.mds.getAuthData();
     this.inputType = authData?.viewSettings.codeInput?.type || 'text-field';
     this.length = authData?.viewSettings.codeInput?.length;
+    this.assetService.assetSlots$.subscribe(() => {
+      this.illustrationImageSrc = this.assetService.getAssetSrc('codeInputIllustration');
+    });
   }
 
   protected onSubmit(code: string) {

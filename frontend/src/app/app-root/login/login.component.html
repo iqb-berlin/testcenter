@@ -1,6 +1,8 @@
 <div class="login-page">
   <div class ="welcome-section">
-    <img [src]="illustrationImageSrc" alt="illustration image">
+    @if (illustrationImageSrc) {
+      <img [src]="illustrationImageSrc" alt="illustration image">
+    }
     <div>
       <p class="heading">Willkommen im IQB&#8209;Testcenter</p>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et

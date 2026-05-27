@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -31,8 +31,9 @@ const ASSET_SLOT_NAMES = [
   providedIn: 'root'
 })
 export class AssetService {
-  private assetSlotsSubject = new BehaviorSubject<AssetAssignments>({});
+  private assetSlotsSubject = new ReplaySubject<AssetAssignments>(1);
   assetSlots$ = this.assetSlotsSubject.asObservable();
+  private assetSlots: AssetAssignments = {};
   allAssets: Asset[] = [];
   availableAssetSlots: { slotName: AssetSlotName, slotLabel: string }[] = ASSET_SLOT_NAMES
     .map(slotName => ({ slotName, slotLabel: slotName }));
@@ -75,7 +76,7 @@ export class AssetService {
   }
 
   updateSlot(slotName: AssetSlotName, assetID: number | undefined): void {
-    const currentSlots = { ...this.assetSlotsSubject.getValue() };
+    const currentSlots = { ...this.assetSlots };
     if (assetID === undefined) {
       currentSlots[slotName] = { assetID: null, url: null };
     } else {
@@ -88,7 +89,7 @@ export class AssetService {
   }
 
   saveAssetSlots(): void {
-    const currentSlots = this.assetSlotsSubject.getValue();
+    const currentSlots = this.assetSlots;
     const assignments = ASSET_SLOT_NAMES
       .map(slotName => ({
         slotName,
@@ -102,7 +103,7 @@ export class AssetService {
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
-    const assetSlotUrl = this.assetSlotsSubject.getValue()[slotName]?.url;
+    const assetSlotUrl = this.assetSlots[slotName]?.url;
     if (assetSlotUrl) {
       return this.toAbsolute(assetSlotUrl);
     }
@@ -119,6 +120,7 @@ export class AssetService {
 
   refreshAssetSlots(): void {
     this.backendService.getAssetAssignments().subscribe((assignments: AssetAssignments) => {
+      this.assetSlots = assignments;
       this.assetSlotsSubject.next(assignments);
     });
   }

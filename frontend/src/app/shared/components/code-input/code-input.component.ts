@@ -18,7 +18,7 @@ import { FabFormComponent } from './fab-form/fab-form.component';
     NgTemplateOutlet
   ]
 })
-export class CodeInputComponent implements OnInit, OnChanges {
+export class CodeInputComponent implements OnChanges {
   @Input() problemText = '';
   @Input() inputType: CodeInputType = 'text-field';
   @Input() length: number | undefined; // only used for keypad input
@@ -33,9 +33,7 @@ export class CodeInputComponent implements OnInit, OnChanges {
   @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
   protected companionImageSrc?: string;
 
-  constructor(protected assetService: AssetService) { }
-
-  ngOnInit() {
+  constructor(protected assetService: AssetService) {
     this.assetService.assetSlots$.subscribe(() => {
       this.companionImageSrc = this.assetService.getAssetSrc('codeInputCompanion');
     });
