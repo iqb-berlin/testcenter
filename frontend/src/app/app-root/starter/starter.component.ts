@@ -64,6 +64,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   availableBooklets?: { name: string; id:string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
   showScrollButton = false;
   protected companionImageSrc?: string;
+  isLoadingClaims = true;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
@@ -83,6 +84,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.claims = authData.claims;
+      this.isLoadingClaims = false;
       this.mds.setAuthData(authData);
 
       if (
