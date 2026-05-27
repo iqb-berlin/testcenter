@@ -50,7 +50,10 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-sekundar',
     previewColor: '#0B2D84',
     description: 'Zielgruppe Schüler*innen der Sekundarstufe I',
-    targetAudience: 'teenager'
+    targetAudience: 'teenager',
+    imagePaths: {
+      codeInputIllustration: 'assets/images/code-input-illustration-teens.png'
+    }
   },
   {
     name: 'Erwachsene',

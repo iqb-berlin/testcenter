@@ -7,7 +7,7 @@ class AssetStorage {
 
   // URL path nginx serves these under (see file-server/nginx.conf `location /public/`).
   // Kept in sync with SUBDIR by convention only; nginx's alias is the authoritative mapping.
-  private const URL_PREFIX = '/public/uploaded_assets/';
+  private const URL_PREFIX = 'public/uploaded_assets/';
 
   public static function getDir(): string {
     return DATA_DIR . DIRECTORY_SEPARATOR . self::SUBDIR;

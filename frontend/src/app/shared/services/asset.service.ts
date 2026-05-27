@@ -8,7 +8,7 @@ import { ThemeService } from './theme.service';
 const DEFAULT_ASSETS: Record<AssetSlotName, string> = {
   logo: 'assets/images/IQB-Logo-2025.png',
   loginIllustration: 'assets/images/login-illustration.png',
-  codeInputIllustration: 'assets/images/code-input-illustration.png',
+  codeInputIllustration: 'assets/images/code-input-illustration-kids.png',
   codeInputCompanion: 'assets/images/bird-character.png',
   starterCompanion: 'assets/images/bird-character-cool.png',
   starterCardDone: 'assets/images/bird-character-done.png',
@@ -102,22 +102,19 @@ export class AssetService {
   }
 
   getAssetSrc(slotName: AssetSlotName): string {
-    const url = this.assetSlotsSubject.getValue()[slotName]?.url ||
+    const assetSlotUrl = this.assetSlotsSubject.getValue()[slotName]?.url;
+    if (assetSlotUrl) {
+      return this.toAbsolute(assetSlotUrl);
+    }
+    // Fallback case. Checks the theme for an image and then uses the general fallback assets defined above.
+    return (
       this.themeService.activeTheme.imagePaths?.[slotName] ||
-      DEFAULT_ASSETS[slotName];
-    return this.toAbsolute(url);
+      DEFAULT_ASSETS[slotName]
+    );
   }
 
   toAbsolute(url: string): string {
-    // valid examples that don't need further mangling
-    // "assets/logo.png" -> local in Angular application
-    // "data:image/png;base64,abc123" -> inline data
-    // "http://example.com/logo.png" -> URL
-    // "https://example.com/logo.png" -> URL
-    if (/^(assets\/|data:|https?:\/\/)/.test(url)) {
-      return url;
-    }
-    return `${this.fileServerUrl}${url.replace(/^\//, '')}`;
+    return `${this.fileServerUrl}${url}`;
   }
 
   refreshAssetSlots(): void {
