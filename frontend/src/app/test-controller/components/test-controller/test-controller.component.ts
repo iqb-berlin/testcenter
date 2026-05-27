@@ -157,10 +157,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         };
 
         switch (this.tcs.booklet?.config.header_content) {
-          case 'BLOCK_LABEL': this.headerService.title = this.currentUnit?.parent.label; break;
-          case 'BOOKLET_LABEL': this.headerService.title = this.tcs.booklet?.metadata.label; break;
-          case 'UNIT_LABEL': this.headerService.title = this.currentUnit?.label; break;
-          // no default
+        case 'NONE':
+          this.headerService.title = '';
+          break;
+        case 'BLOCK_LABEL':
+          this.headerService.title = this.currentUnit?.parent.label;
+          break;
+        case 'BOOKLET_LABEL':
+          this.headerService.title = this.tcs.booklet?.metadata.label;
+          break;
+        case 'UNIT_LABEL':
+          this.headerService.title = this.currentUnit?.label;
+          break;
+        // no default
         }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
