@@ -76,24 +76,22 @@ export class AssetService {
   }
 
   updateSlot(slotName: AssetSlotName, assetID: number | undefined): void {
-    const currentSlots = { ...this.assetSlots };
     if (assetID === undefined) {
-      currentSlots[slotName] = { assetID: null, url: null };
+      this.assetSlots[slotName] = { assetID: null, url: null };
     } else {
       const asset = this.allAssets.find(a => a.id === assetID);
       if (asset) {
-        currentSlots[slotName] = { assetID, url: asset.url };
+        this.assetSlots[slotName] = { assetID, url: asset.url };
       }
     }
-    this.assetSlotsSubject.next(currentSlots);
+    this.assetSlotsSubject.next(this.assetSlots);
   }
 
   saveAssetSlots(): void {
-    const currentSlots = this.assetSlots;
     const assignments = ASSET_SLOT_NAMES
       .map(slotName => ({
         slotName,
-        assetID: currentSlots[slotName]?.assetID ?? null,
+        assetID: this.assetSlots[slotName]?.assetID ?? null,
         scope: 'global' as const,
         scopeID: 'global' as const
       }));
