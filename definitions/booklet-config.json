@@ -30,7 +30,8 @@
     "options": {
       "separate": "pages are separated",
       "concat-scroll": "concat-scroll",
-      "concat-scroll-snap": "concat-scroll-snap"
+      "concat-scroll-snap": "concat-scroll-snap",
+      "buttons": "buttons for the next page"
     },
     "defaultvalue": "separate"
   },
@@ -119,7 +120,7 @@
       "NONE": "Titel auf der Kopfzeile bleibt leer",
       "BOOKLET_LABEL": "Titel des Testhefts/Booklets",
       "BLOCK_LABEL": "Titel des Aufgabenblocks",
-      "UNIT_LABEL": "Titel der Unit"
+      "UNIT_LABEL": "Titel der Unit",
     },
     "defaultvalue": "BOOKLET_LABEL"
   },
