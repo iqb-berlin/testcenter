@@ -86,10 +86,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       )
         .subscribe(navigationState => this.updatePlayerConfig(navigationState));
     });
-    this.mds.authData$.subscribe((authData: AuthData | null) => {
-      this.codeInputMode = authData?.viewSettings.codeInput?.type || 'text-field';
-      this.codeInputLength = authData?.viewSettings.codeInput?.length;
-    });
+    const authData = this.mds.getAuthData();
+    this.codeInputMode = authData?.viewSettings.codeInput?.type || 'text-field';
+    this.codeInputLength = authData?.viewSettings.codeInput?.length;
   }
 
   ngOnDestroy(): void {
