@@ -54,6 +54,7 @@ import { Review } from '../../interfaces/test-controller.interfaces';
       display: flex;
       flex-direction: column;
       height: 100%;
+      min-width: 700px;
     }
     .mat-toolbar {
       flex-shrink: 0;

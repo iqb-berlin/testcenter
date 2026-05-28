@@ -41,7 +41,6 @@
   flex: 1;
 }
 
-
 mat-sidenav {
-  width: 700px;
+  width: unset;
 }
