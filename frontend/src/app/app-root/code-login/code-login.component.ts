@@ -20,7 +20,7 @@ import { AssetService } from '@shared/services/asset.service';
       <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
                      (submitCode)="onSubmit($event)">
         @if (inputType !== 'keypad-symbols-alt') {
-          <div>
+          <div class="intro-text">
             <h2>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</h2>
             <p>Welche Symbole stehen auf deinem Zettel?<br>Wähle sie hier aus:</p>
           </div>

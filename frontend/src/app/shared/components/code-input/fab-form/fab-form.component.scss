@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  --button-diameter: 60px;
 }
 
 .header-section {
@@ -12,6 +13,7 @@
 
 .selected-values {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
@@ -22,8 +24,8 @@
     border-radius: 4px;
 
     button.mat-mdc-fab {
-      width: 80px;
-      height: 80px;
+      width: var(--button-diameter);
+      height: var(--button-diameter);
       background-color: var(--mat-sys-secondary);
 
       &.filled {
@@ -36,8 +38,8 @@
     }
 
     mat-icon {
-      width: 58px;
-      height: 58px;
+      width: calc(var(--button-diameter) - 12px);
+      height: calc(var(--button-diameter) - 12px);
     }
   }
 }
@@ -45,11 +47,11 @@
 .button-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 15px;
 
   mat-icon {
-    width: 60px;
-    height: 60px;
+    width: calc(var(--button-diameter) - 12px);
+    height: calc(var(--button-diameter) - 12px);
   }
 }
 
@@ -57,22 +59,25 @@ button.mat-mdc-fab {
   box-shadow: none;
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
-  width: 80px;
-  height: 80px;
+  width: var(--button-diameter);
+  height: var(--button-diameter);
   font-size: 42px;
   font-weight: 700;
 
   &.delete-button {
-    width: 58px;
-    height: 58px;
+    width: calc(var(--button-diameter) - 10px);
+    height: calc(var(--button-diameter) - 10px);
     background-color: var(--mat-sys-error);
     font-size: unset;
   }
 }
 
+.selected-values:not(.alt-design) button.mat-mdc-fab.delete-button {
+   margin-top: 10px;
+}
+
 .alt-design {
   &.selected-values {
-    margin-top: 40px;
     justify-content: center;
 
     img {
@@ -112,7 +117,7 @@ button.mat-mdc-fab {
 }
 
 .spacer {
-  width: 58px;
+  width: calc(var(--button-diameter) - 10px);
 }
 
 //Fix icon alignment on buttons
