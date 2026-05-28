@@ -43,7 +43,7 @@ import {
   TestMode
 } from '../../shared/shared.module';
 import {
-  isVeronaProgress,
+  isVeronaProgress, SharedParameter,
   VeronaNavigationDeniedReason,
   VeronaProgressIncompleteValues
 } from '../interfaces/verona.interfaces';
@@ -73,6 +73,7 @@ export class TestControllerService {
 
   private _currentUnitSequenceId = -Infinity;
   readonly currentUnitSequenceId$ = new BehaviorSubject<number>(-Infinity);
+  configChanged$ = new Subject<void>(); // merely tracked that something changed, not interested in value
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
@@ -102,6 +103,8 @@ export class TestControllerService {
 
   private players: { [filename: string]: string } = {};
   private testState: { [key in TestStateKey]?: string } = {};
+
+  sharedParameters: SharedParameter[] = [];
 
   navigation$: Subject<NavigationState> = new BehaviorSubject<NavigationState>({
     targets: {
@@ -298,6 +301,7 @@ export class TestControllerService {
 
   reset(): void {
     this.players = {};
+    this.sharedParameters = [];
 
     this.currentUnitSequenceId = -Infinity;
 
@@ -1035,5 +1039,41 @@ export class TestControllerService {
   shouldShowConfirmationUI(): boolean {
     return !(this.booklet?.config.silent_mode === 'TRUE' &&
            (this.testMode.forceTimeRestrictions || this.testMode.forceNaviRestrictions));
+  }
+
+  addSharedParameters(parameters: SharedParameter[]) {
+    if (!Array.isArray(parameters) || !parameters.length) return;
+
+    let hasChanged = false;
+
+    parameters.forEach(param => {
+      if (param.key && param.value) {
+        hasChanged = this.addSharedParameter(param.key, param.value) || hasChanged;
+      }
+    });
+
+    if (hasChanged) {
+      this.addToTestStateBuffer('SHARED_PARAMETERS', JSON.stringify(this.sharedParameters));
+      this.configChanged$.next();
+    }
+  }
+
+  private addSharedParameter(key: string, value: string): boolean {
+    let hasChanged = false;
+    const existingParam = this.sharedParameters.find(p => p.key === key);
+
+    if (existingParam) {
+      existingParam.value = value;
+      hasChanged = existingParam.value !== value;
+    } else {
+      const newParameter: SharedParameter = {
+        key: key,
+        value: value
+      };
+      this.sharedParameters.push(newParameter);
+      hasChanged = true;
+    }
+
+    return hasChanged;
   }
 }

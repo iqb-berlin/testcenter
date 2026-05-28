@@ -10,18 +10,19 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
 import { CustomtextPipe, MainDataService } from '@shared/shared.module';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
+import { AssetService } from '@shared/services/asset.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import {
   Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
 } from '../../interfaces/test-controller.interfaces';
 import {
-  isVeronaNavigationTarget,
+  isVeronaNavigationTarget, SharedParameter,
   VeronaNavigationDeniedReason,
   VeronaPlayerConfig,
   VeronaPlayerRuntimeErrorCodes,
@@ -32,7 +33,6 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
-import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -77,8 +77,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-      this.subscriptions.conditionsEvaluated = this.tcs.navigation$
-        .pipe(distinctUntilChanged(isEqualNavigation))
+      this.subscriptions.conditionsEvaluated = merge(
+        this.tcs.navigation$.pipe(distinctUntilChanged(isEqualNavigation)),
+        this.tcs.configChanged$.pipe(
+          withLatestFrom(this.tcs.navigation$),
+          map(([, navigationState]) => navigationState)
+        )
+      )
         .subscribe(navigationState => this.updatePlayerConfig(navigationState));
     });
     this.mds.authData$.subscribe((authData: AuthData | null) => {
@@ -179,14 +184,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {
     const unit = this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]);
+    const playerState = msg.playerState;
 
-    if (msg.playerState) {
+    if (playerState) {
       if (unit.sequenceId === this.tcs.currentUnit?.sequenceId) {
-        this.pageService.updateValidPages(msg.playerState.validPages || [], msg.playerState.currentPage);
+        this.pageService.updateValidPages(playerState.validPages || [], playerState.currentPage);
+      }
+
+      if (playerState.sharedParameters) {
+        this.tcs.addSharedParameters(playerState.sharedParameters);
       }
 
       this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
-        { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(msg.playerState.currentPage) },
+        { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(playerState.currentPage) },
         { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
         { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
       ]);
@@ -416,7 +426,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitTitle: this.tcs.currentUnit.label,
       unitId: this.tcs.currentUnit.alias,
       stateReportPolicy: 'eager', // for pre-verona-4-players which does not report by default
-      directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
+      directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`,
+      sharedParameters: this.tcs.sharedParameters
     };
     if (
       this.tcs.currentUnit.state.CURRENT_PAGE_ID &&

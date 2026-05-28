@@ -28,6 +28,10 @@ interface Verona4PlayerConfig extends Verona3PlayerConfig {
   directDownloadUrl?: string;
 }
 
+interface Verona6PlayerConfig extends Verona4PlayerConfig {
+  sharedParameters?: SharedParameter[];
+}
+
 type Verona3NavigationDeniedReason = 'presentationIncomplete' | 'responsesIncomplete';
 
 // 'complete-and-valid' was removed in Verona3 but as long as we support verona2 it's still a valid state
@@ -42,7 +46,7 @@ export const isVeronaProgress =
 export { Verona2ProgressIncompleteValues as VeronaProgressIncompleteValues };
 export { Verona2ProgressCompleteValues as VeronaProgressCompleteValues };
 
-export type VeronaPlayerConfig = Verona4PlayerConfig;
+export type VeronaPlayerConfig = Verona6PlayerConfig;
 export type VeronaNavigationTarget = Verona2NavigationTarget;
 export type VeronaNavigationDeniedReason = Verona3NavigationDeniedReason;
 
@@ -84,7 +88,7 @@ export interface VopStartCommand {
   uniDefinition?: string;
   unitDefinitionType?: string;
   unitState: VeronaUnitState;
-  playerConfig: Verona4PlayerConfig;
+  playerConfig: VeronaPlayerConfig;
   [x: string]: unknown;
 }
 
@@ -94,6 +98,7 @@ export interface VopStateChangedNotification {
   playerState?: {
     validPages?: Verona5ValidPages | Verona6ValidPages;
     currentPage?: string;
+    sharedParameters?: SharedParameter[];
   },
   unitState?: VeronaUnitState;
   log?: {
@@ -108,4 +113,9 @@ export interface VopRuntimeErrorNotification {
   sessionId: string;
   message: string;
   code: string;
+}
+
+export interface SharedParameter {
+  key: string;
+  value?: string;
 }
