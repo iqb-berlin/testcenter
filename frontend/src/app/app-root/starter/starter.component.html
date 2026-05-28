@@ -56,10 +56,11 @@
                       [attr.data-cy]="'gm-card-' + i">
         </tc-test-card>
       }
-      <tc-alert *ngIf="claims.testGroupMonitor.length === 0"
-                level="info"
-                text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.">
-      </tc-alert>
+      @if (claims.testGroupMonitor.length === 0) {
+        <tc-alert level="info"
+                  text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.">
+        </tc-alert>
+      }
       @if (claims.test && monitorBookletVisibility !== 'hidden') {
         <mat-accordion>
           <mat-expansion-panel [expanded]="monitorBookletVisibility !== 'collapsed'">

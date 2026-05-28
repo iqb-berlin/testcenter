@@ -105,7 +105,8 @@
   </ng-template>
 </td>
 
-<ng-template #testletFull let-units let-recursionLevel="recursionLevel" [appTemplateContext]="testletContext">
+<ng-template #testletFull let-units let-recursionLevel="recursionLevel"
+             [appTemplateContext]="testletContext">
 
   <ng-container *ngTemplateOutlet="restrictions; context: { $implicit: units }"></ng-container>
 
