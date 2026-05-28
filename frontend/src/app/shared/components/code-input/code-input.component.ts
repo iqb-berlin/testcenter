@@ -22,6 +22,7 @@ export class CodeInputComponent implements OnChanges {
   @Input() problemText = '';
   @Input() inputType: CodeInputType = 'text-field';
   @Input() length: number | undefined; // only used for keypad input
+  @Input() disabled: boolean = false;
   @Input() buttonLabel: string = 'Anmelden';
   @Input() speechBubbleText: { heading?: string, body?: string } = {
     heading: 'Brauchst du Hilfe?',

@@ -18,6 +18,7 @@ import { AssetService } from '@shared/services/asset.service';
   template: `
     <div class="form" [class.full-width]="inputType === 'keypad-symbols-alt'">
       <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
+                     [disabled]="loading"
                      (submitCode)="onSubmit($event)">
         @if (inputType !== 'keypad-symbols-alt') {
           <div class="intro-text">
@@ -45,6 +46,7 @@ export class CodeLoginComponent {
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
+  loading = false;
   protected illustrationImageSrc?: string;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
@@ -59,6 +61,7 @@ export class CodeLoginComponent {
 
   protected onSubmit(code: string) {
     if (!code) return;
+    this.loading = true;
     this.problemText = '';
     this.problemCode = 0;
 
@@ -84,6 +87,7 @@ export class CodeLoginComponent {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }
+        this.loading = false;
       }
     });
   }
