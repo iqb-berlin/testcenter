@@ -135,15 +135,15 @@
       </button>
       <input #assetFileInput type="file" (change)="assetService.uploadAsset($event)" [hidden]="true" />
       <div class="asset-container">
-        @if (assetService.allAssets.length) {
+        @if (availableAssets.length) {
           <mat-grid-list cols="5" rowHeight="280px" gutterSize="12px">
-            @for (asset of assetService.allAssets; track asset.id) {
+            @for (asset of availableAssets; track asset.id) {
               <mat-grid-tile>
                 <mat-card class="asset-card">
                   <mat-card-header>
                     <mat-card-title>{{ asset.originalName }}</mat-card-title>
                   </mat-card-header>
-                  <img mat-card-image [src]="assetService.toAbsolute(asset.url)" [alt]="asset.originalName"/>
+                  <img mat-card-image [src]="asset.url" [alt]="asset.originalName"/>
                   <mat-card-actions>
                     <button matButton (click)="assetService.deleteAsset(asset.id)">Bild entfernen</button>
                   </mat-card-actions>

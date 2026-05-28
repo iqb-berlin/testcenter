@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BackendService } from '@app/superadmin/backend.service';
 import { MessageService } from '@shared/services/message.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -43,10 +44,16 @@ export class AssetService {
               private themeService: ThemeService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string) { }
 
-  loadAssets(): void {
+  private loadAssets(): void {
     this.backendService.getAllAssets().subscribe(assets => {
       this.allAssets = assets;
     });
+  }
+
+  getAvailableAssets(): Observable<Asset[]> {
+    return this.backendService.getAllAssets().pipe(
+      map(assets => assets.map(asset => ({ ...asset, url: this.toAbsolute(asset.url) })))
+    );
   }
 
   uploadAsset(fileInput: Event): void {

@@ -12,7 +12,7 @@ import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MessageService } from '@shared/services/message.service';
-import { AssetService } from '@shared/services/asset.service';
+import { Asset, AssetService } from '@shared/services/asset.service';
 import { MatGridList, MatGridTile } from '@angular/material/grid-list';
 import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
 import {
@@ -95,6 +95,8 @@ export class SettingsComponent implements OnInit {
     23: '23:00 Uhr'
   };
 
+  protected availableAssets: Asset[] = [];
+
   protected ASSET_SLOT_LABELS: Record<string, string> = {
     logo: 'Logo',
     loginIllustration: 'Login-Illustration',
@@ -147,7 +149,9 @@ export class SettingsComponent implements OnInit {
         this.configForm.get('globalWarningExpiredHour')?.value
       );
     });
-    this.assetService.loadAssets();
+    this.assetService.getAvailableAssets().subscribe(assets => {
+      this.availableAssets = assets;
+    });
   }
 
   saveAppConfig(): void {
