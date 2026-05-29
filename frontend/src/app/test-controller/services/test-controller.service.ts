@@ -8,7 +8,6 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 import { MatDialog } from '@angular/material/dialog';
 import { TimerData } from '../classes/test-controller.classes';
 import {
@@ -38,6 +37,7 @@ import {
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {
+  BookletConfig,
   CustomtextService,
   MainDataService,
   TestMode
@@ -189,7 +189,7 @@ export class TestControllerService {
   }
 
   private createClosingSignal(
-    configSetting: keyof BookletConfigData
+    configSetting: keyof BookletConfig
   ): { closingId$: Observable<string>, factory: () => Observable<string> } {
     const closingId$ = new Subject<string>();
 
@@ -554,47 +554,47 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-      case UnitNavigationTarget.PAUSE:
-      case UnitNavigationTarget.ERROR:
-        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
-        return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
-      case UnitNavigationTarget.NEXT:
-        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
-        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.next}`], { state: { force } });
-      case UnitNavigationTarget.PREVIOUS:
-        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} PREVIOUS`);
-        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.previous}`], { state: { force } });
-      case UnitNavigationTarget.FIRST:
-        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} FIRST`);
-        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.first}`], { state: { force } });
-      case UnitNavigationTarget.LAST:
-        navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} LAST`);
-        return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.last}`], { state: { force } });
-      case UnitNavigationTarget.END:
-        return this.terminateTest(
-          force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
-          force,
-          this.booklet?.config.lock_test_on_termination === 'ON'
-        );
-      default:
-        const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
-        return this.router.navigate(
-          [`/t/${this.testId}/u/${navString}`],
-          {
-            state: { force },
-            queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
-            //  unit shall be reloaded even if we are there already there
-          }
-        )
-          .then(navOk => {
-            if (!navOk && !targetIsCurrent) {
-              // happens when a goto goes to a unit which does exist, but is not accessible
-              if (this.shouldShowConfirmationUI()) {
-                this.ms.showSnackbar(`Navigation zu ${navString} nicht erlaubt.`);
-              }
+    case UnitNavigationTarget.PAUSE:
+    case UnitNavigationTarget.ERROR:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
+      return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
+    case UnitNavigationTarget.NEXT:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
+      return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.next}`], { state: { force } });
+    case UnitNavigationTarget.PREVIOUS:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} PREVIOUS`);
+      return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.previous}`], { state: { force } });
+    case UnitNavigationTarget.FIRST:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} FIRST`);
+      return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.first}`], { state: { force } });
+    case UnitNavigationTarget.LAST:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} LAST`);
+      return this.router.navigate([`/t/${this.testId}/u/${navigation.targets.last}`], { state: { force } });
+    case UnitNavigationTarget.END:
+      return this.terminateTest(
+        force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
+        force,
+        this.booklet?.config.lock_test_on_termination === 'ON'
+      );
+    default:
+      const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
+      return this.router.navigate(
+        [`/t/${this.testId}/u/${navString}`],
+        {
+          state: { force },
+          queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
+          //  unit shall be reloaded even if we are there already there
+        }
+      )
+        .then(navOk => {
+          if (!navOk && !targetIsCurrent) {
+            // happens when a goto goes to a unit which does exist, but is not accessible
+            if (this.shouldShowConfirmationUI()) {
+              this.ms.showSnackbar(`Navigation zu ${navString} nicht erlaubt.`);
             }
-            return navOk;
-          });
+          }
+          return navOk;
+        });
     }
   }
 
