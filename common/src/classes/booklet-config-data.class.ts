@@ -3,7 +3,7 @@ export class BookletConfigData {
   loading_mode: 'LAZY' | 'EAGER' = 'LAZY';
   logPolicy: 'disabled' | 'lean' | 'rich' | 'debug' = 'rich';
   browserBehaviour: 'standard' | 'preventNav' = 'standard';
-  pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap' = 'separate';
+  pagingMode: 'separate' | 'concat-scroll' | 'concat-scroll-snap' | 'buttons' = 'separate';
   force_presentation_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
   force_response_complete: 'OFF' | 'ALWAYS' | 'ON' = 'OFF';
   unit_time_left_warnings: string = '5,1';
@@ -28,4 +28,14 @@ export class BookletConfigData {
   toolbar_show_reload_button: 'TRUE' | 'FALSE' = 'FALSE';
   toolbar_show_time_left: 'TRUE' | 'FALSE' = 'FALSE';
   silent_mode: 'TRUE' | 'FALSE' = 'FALSE';
+  page_navibuttons: 'OFF' | 'INDEX' | 'FULL' = 'INDEX';
+  unit_navibuttons: 'OFF' | 'INDEX' | 'LABEL' = 'INDEX';
+  unit_menu: 'OFF' | 'FULL' = 'OFF';
+  controller_design: '2018' | '2022' = '2022';
+  unit_screenheader: 'OFF' | 'WITH_UNIT_TITLE' | 'WITH_BOOKLET_TITLE' | 'WITH_BLOCK_TITLE' | 'EMPTY' = 'EMPTY';
+  unit_title: 'OFF' | 'ON' = 'ON';
+  unit_show_time_left: 'OFF' | 'ON' = 'OFF';
+  show_fullscreen_button: 'ON' | 'OFF' = 'OFF';
+  show_reload_button: 'ON' | 'OFF' = 'OFF';
+  ui_mode: 'ALL' | 'NONE' = 'ALL';
 }

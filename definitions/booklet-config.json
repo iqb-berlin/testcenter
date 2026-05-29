@@ -228,5 +228,90 @@
       "FALSE": "Normales Anzeigeverhalten"
     },
     "defaultvalue": "FALSE"
+  },
+  "page_navibuttons": {
+    "label": "(DEPRECATED) Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
+    "options": {
+      "OFF": "Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)",
+      "INDEX": "Seitennavigation zeigt nur Pfeile und den aktuellen Index",
+      "FULL": "Seitennavigation zeigt horizontale Liste aller Seiten"
+    },
+    "defaultvalue": "INDEX"
+  },
+  "unit_navibuttons": {
+    "label": "(DEPRECATED) Navigationsbuttons für die Navigation zwischen den Aufgaben",
+    "options": {
+      "OFF": "Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)",
+      "INDEX": "Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben",
+      "LABEL": "Der Anzeigename der aktuellen Aufgabe wird angezeigt"
+    },
+    "defaultvalue": "INDEX"
+  },
+  "unit_menu": {
+    "label": "(DEPRECATED) Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden",
+    "options": {
+      "OFF": "Nein",
+      "FULL": "Ja"
+    },
+    "defaultvalue": "OFF"
+  },
+  "controller_design": {
+    "label": "(DEPRECATED) Über diesen Parameter können verschiedene Design-Einstellungen gemeinsam festgelegt werden",
+    "options": {
+      "2018": "Runde Schalter für die Unit-Navigation",
+      "2022": "Eckige Schalter für die Unit-Navigation"
+    },
+    "defaultvalue": "2022"
+  },
+  "unit_screenheader": {
+    "label": "(DEPRECATED) Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.",
+    "options": {
+      "OFF": "Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).",
+      "WITH_UNIT_TITLE": "Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)",
+      "WITH_BOOKLET_TITLE": "Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)",
+      "WITH_BLOCK_TITLE": "Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)",
+      "EMPTY": "Seitenkopf wird angezeigt (leer)"
+    },
+    "defaultvalue": "EMPTY"
+  },
+  "unit_title": {
+    "label": "(DEPRECATED) Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",
+    "options": {
+      "OFF": "Keine Titelzeile",
+      "ON": "Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML)."
+    },
+    "defaultvalue": "ON"
+  },
+  "unit_show_time_left": {
+    "label": "(DEPRECATED) Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.",
+    "options": {
+      "OFF": "Die verbleibende Zeit wird nicht angezeigt.",
+      "ON": "Die verbleibende Zeit wird angezeigt."
+    },
+    "defaultvalue": "OFF"
+  },
+  "show_fullscreen_button": {
+    "label": "(DEPRECATED) Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?",
+    "options": {
+      "ON": "Ja.",
+      "OFF": "Nein."
+    },
+    "defaultvalue": "OFF"
+  },
+  "show_reload_button": {
+    "label": "(DEPRECATED) Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?",
+    "options": {
+      "ON": "Ja.",
+      "OFF": "Nein."
+    },
+    "defaultvalue": "OFF"
+  },
+  "ui_mode": {
+    "label": "(DEPRECATED) Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+    "options": {
+      "ALL": "Alle UI-Elemente anzeigen (Standard-Verhalten)",
+      "NONE": "Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen"
+    },
+    "defaultvalue": "ALL"
   }
 }
