@@ -4,10 +4,14 @@
       <img [src]="illustrationImageSrc" alt="illustration image">
     }
     <div>
-      <p class="heading">Willkommen im IQB&#8209;Testcenter</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-        ut aliquip ex ea commodo consequat.</p>
+      <p class="heading">
+        {{ 'Willkommen im IQB‑Testcenter' | customtext : 'login_sidepanel_title' | async }}
+      </p>
+      <p>
+        {{ 'Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im ' +
+           'Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den ' +
+           'Zugangsdaten möglich, die Sie vorab erhalten haben.' | customtext : 'login_sidepanel_subtitle' | async }}
+      </p>
     </div>
   </div>
   <div class="login-section">

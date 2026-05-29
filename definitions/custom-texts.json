@@ -1,4 +1,12 @@
 {
+  "login_sidepanel_title": {
+    "label" : "Titel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Willkommen im IQB‑Testcenter"
+  },
+  "login_sidepanel_subtitle": {
+    "label" : "Untertitel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den Zugangsdaten möglich, die Sie vorab erhalten haben."
+  },
   "login_subtitle": {
     "label" : "Titel für Starter-Seite",
     "defaultvalue" : "Testauswahl"

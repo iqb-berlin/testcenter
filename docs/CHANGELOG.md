@@ -1,5 +1,10 @@
 # next
 
+## Custom Texts
+* neu
+  * login_sidepanel_title
+  * login_sidepanel_subtitle
+
 ## Änderungen zu 18.0.0-alpha
 - Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
 - Footer zur Admin-Loginseite hinzugefügt
