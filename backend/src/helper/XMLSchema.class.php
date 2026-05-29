@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 class XMLSchema {
   // TODO use defined class instead of plain array
+
   static function parseSchemaUrl(string $schemaUri): ?array {
-    $regex = '#^(http)?.*?((\d+).(\d+).(\d+)(-\S*)?)?/definitions/v?o?_?(\S*).xsd$#';
+    if (empty($schemaUri)) {
+      return null;
+    }
+
+    $regex = '#^https?://w3id\.org/iqb/spec/(testcenter-booklet|unit|testcenter-testtaker|testcenter-syscheck)-xml/([0-9]+\.[0-9]+)$#';
     preg_match_all($regex, $schemaUri, $matches, PREG_SET_ORDER);
 
     if (!count($matches)) {
@@ -13,76 +18,46 @@ class XMLSchema {
     }
 
     $urlParts = $matches[0];
+    $repo = $urlParts[1] . '-xml';
 
-    $schemaData = [
-      "isExternal" => ($urlParts[1] === 'http') && isset($urlParts[2]),
-      "version" => $urlParts[2] ?? '',
-      "mayor" => isset($urlParts[3]) ? (int) $urlParts[3] : 0,
-      "minor" => isset($urlParts[4]) ? (int) $urlParts[4] : 0,
-      "patch" => isset($urlParts[5]) ? (int) $urlParts[5] : 0,
-      "label" => isset($urlParts[6]) ? substr($urlParts[6], 1) : '',
-      "type" => $urlParts[7] ?? '',
-      "uri" => $schemaUri
+    $typeMap = [
+      'testcenter-booklet'    => 'Booklet',
+      'unit'                  => 'Unit',
+      'testcenter-testtaker'  => 'Testtakers',
+      'testcenter-syscheck'   => 'SysCheck'
     ];
 
-    if ($schemaData['version'] and $schemaData['type'] and ($schemaData['version'] === SystemConfig::$system_version)) {
-      return XMLSchema::getLocalSchema($schemaData['type']);
-    }
+    $type = $typeMap[$urlParts[1]];
 
-    return $schemaData;
+    return [
+      "isExternal" => true,
+      "repo"       => $repo,
+      "type"       => $type,
+      "version"    => $urlParts[2],
+      "uri"        => $schemaUri
+    ];
   }
 
-  static function getLocalSchema(string $type): array {
-    if (!file_exists(ROOT_DIR . "/definitions/vo_$type.xsd")) {
-      throw new Exception("Unknown XML type: `$type`");
-    }
-
-    $currentVersion = SystemConfig::$system_version;
-    $schemaData = Version::split($currentVersion);
-    $schemaData["version"] = $currentVersion;
-    $schemaData["isExternal"] = false;
-    $schemaData["type"] = $type;
-    $schemaData["uri"] = false;
-
-    return $schemaData;
-  }
-
-  static function getSchemaFilePath(?array $schemaData): string {
+ static function getSchemaFilePath(?array $schemaData): ?string {
     if (!$schemaData) {
-      return '';
+      return null;
     }
 
-    if (!SystemConfig::$debug_allowExternalXmlSchema or !$schemaData['isExternal']) {
-      return XMLSchema::accessDefinitionsDir($schemaData);
-    } else {
-      return XMLSchema::accessSchemaCache($schemaData);
-    }
+    return XMLSchema::accessSchemaCache($schemaData);
   }
 
-  private static function accessDefinitionsDir($schemaData): string {
-    $filePath = ROOT_DIR . "/definitions/vo_{$schemaData['type']}.xsd";
-
-    if (file_exists($filePath)) {
-      return $filePath;
-    }
-
-    return "";
-  }
-
-  private static function accessSchemaCache(array $schemaData): string {
-    if (!$schemaData['isExternal']) {
-      return '';
-    }
-
-    $folder = DATA_DIR . "/.schemas/{$schemaData['type']}/v{$schemaData['mayor']}/";
-    $fileName = "{$schemaData['type']}-{$schemaData['version']}.xsd";
+  private static function accessSchemaCache(array $schemaData): ?string {
+    $folder = DATA_DIR . "/.schemas/{$schemaData['repo']}/{$schemaData['version']}/";
+    $fileName = "{$schemaData['repo']}.xsd";
 
     if (file_exists("$folder$fileName")) {
-      if (!filesize("$folder$fileName")) {
-        return "";
-      }
-
       return "$folder$fileName";
+    }
+
+    $fileContent = ExternalFile::download($schemaData['uri']);
+
+    if (!$fileContent) {
+      return null;
     }
 
     Folder::createPath($folder);
@@ -91,10 +66,8 @@ class XMLSchema {
       throw new Exception("`$folder` is not writeable!");
     }
 
-    $fileContent = ExternalFile::download($schemaData['uri']);
-
     file_put_contents("$folder$fileName", $fileContent);
 
-    return $fileContent ? "$folder$fileName" : '';
+    return "$folder$fileName";
   }
 }
