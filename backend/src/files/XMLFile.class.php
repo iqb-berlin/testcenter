@@ -53,7 +53,9 @@ class XMLFile extends File {
     $this->readMetadata();
 
     $this->importLibXmlErrors();
-    $this->validateAgainstSchema();
+    if (SystemConfig::$enable_xmlschema_validation) {
+      $this->validateAgainstSchema();
+    }
     $this->warnOnDeprecatedElements();
     $this->validateConstraints();
 
