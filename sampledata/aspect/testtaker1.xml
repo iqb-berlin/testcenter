@@ -7,6 +7,7 @@
   <Group id="TestTakerGroup_d4v9z" label="Login-Gruppe A">
     <Login mode="run-hot-return" name="testuser1">
       <Booklet codes="xxx yyy 11111">booklet1</Booklet>
+      <Booklet codes="xxx yyy 11111">booklet2</Booklet>
     </Login>
     <Login mode="run-hot-return" name="testuser2">
       <Booklet codes="xxx yyy 111">booklet1</Booklet>
