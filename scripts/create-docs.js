@@ -79,15 +79,27 @@ exports.bookletConfig = done => {
 
   Object.keys(definition)
     .forEach(configParameter => {
-      output += `\n### ${configParameter}\n${definition[configParameter].label}\n`;
-      if (definition[configParameter].options && Object.keys(definition[configParameter].options).length) {
-        Object.keys(definition[configParameter].options)
+      const param = definition[configParameter];
+      const isDeprecated = param.deprecated === true;
+
+      const badge = isDeprecated ? ' ⚠️ *deprecated*' : '';
+      output += `\n### ${configParameter}${badge}\n`;
+
+      if (isDeprecated) {
+        const note = param.deprecationNote ?? 'Dieser Parameter sollte nicht mehr verwendet werden.';
+        output += `> **Veraltet:** ${note}\n\n`;
+      }
+
+      output += `${param.label}\n`;
+
+      if (param.options && Object.keys(param.options).length) {
+        Object.keys(param.options)
           .forEach(value => {
-            const isDefault = (value === definition[configParameter].defaultvalue) ? '**' : '';
-            output += ` * ${isDefault}"${value}" - ${definition[configParameter].options[value]}${isDefault}\n`;
+            const isDefault = (value === param.defaultvalue) ? '**' : '';
+            output += ` * ${isDefault}"${value}" - ${param.options[value]}${isDefault}\n`;
           });
       } else {
-        output += ` * **${definition[configParameter].defaultvalue}**\n`;
+        output += ` * **${param.defaultvalue}**\n`;
       }
     });
 
