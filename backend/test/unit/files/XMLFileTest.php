@@ -30,6 +30,7 @@ class XMLFileTest extends TestCase {
   }
 
   public function setUp(): void {
+    SystemConfig::$enable_xmlschema_validation = true;
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     VfsForTest::setUp(true);
   }

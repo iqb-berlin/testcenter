@@ -40,6 +40,7 @@ class WorkspaceDAOTest extends TestCase {
 
   // TODO make a test for adding
   public function test_storeFileMeta_overwrite(): void {
+    SystemConfig::$enable_xmlschema_validation = true;
     $file = XMLFileBooklet::fromString('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', 'Booklet.xml');
 
     $this->dbc->storeFile($file);
