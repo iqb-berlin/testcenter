@@ -68,6 +68,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     maxIndex: 0
   };
 
+  testLoaded = false;
+
   constructor(public mainDataService: MainDataService,
               public tcs: TestControllerService,
               private bs: BackendService,
@@ -122,6 +124,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.testId = params.t;
           try {
             await this.tls.loadTest();
+            this.testLoaded = true;
           } catch (err) {
             if (err instanceof MissingBookletError) { // this happens when loading was aborted.
               // eslint-disable-next-line no-console
