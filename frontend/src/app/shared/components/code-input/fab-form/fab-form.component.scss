@@ -74,6 +74,10 @@ button.mat-mdc-fab {
     background-color: var(--mat-sys-error);
     font-size: unset;
   }
+
+  mat-icon {
+    display: inline-flex;
+  }
 }
 
 .selected-values:not(.alt-design) button.mat-mdc-fab.delete-button {
