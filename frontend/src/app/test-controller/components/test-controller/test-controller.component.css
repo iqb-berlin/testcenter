@@ -10,6 +10,10 @@
   gap: 12px;
 }
 
+.nav-header .nav-button {
+  background-color: white;
+}
+
 .toolbar-header {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.30);
   margin-bottom: 5px;

@@ -2,7 +2,7 @@
 
 <div class="nav-header flex-row">
   @if (tcs.booklet?.config?.navbar_backward_button !== 'HIDDEN') {
-    <button matButton="tonal" (click)="onNavBack()">
+    <button matButton="tonal" class="nav-button" (click)="onNavBack()">
       <mat-icon svgIcon="chevron_left"></mat-icon>
       Zurück
     </button>
@@ -24,9 +24,9 @@
   }
 
   @if (tcs.booklet?.config?.navbar_forward_button !== 'HIDDEN') {
-    <button matButton="tonal" (click)="onNavForward()">
+    <button matButton="tonal" class="nav-button" (click)="onNavForward()">
       Weiter
-      <mat-icon svgIcon="chevron_right"></mat-icon>
+      <mat-icon svgIcon="chevron_right" iconPositionEnd></mat-icon>
     </button>
   }
 
