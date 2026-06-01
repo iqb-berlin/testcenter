@@ -1,6 +1,8 @@
 import { BookletConfigData } from 'testcenter-common/classes/booklet-config-data.class';
 
 export class BookletConfig extends BookletConfigData {
+  private readonly configuredKeys = new Set<string>();
+
   get loading_mode() { return this._loading_mode; }
   get logPolicy() { return this._logPolicy; }
   get browserBehaviour() { return this._browserBehaviour; }
@@ -16,19 +18,87 @@ export class BookletConfig extends BookletConfigData {
   get unit_responses_buffer_time() { return this._unit_responses_buffer_time; }
   get unit_state_buffer_time() { return this._unit_state_buffer_time; }
   get test_state_buffer_time() { return this._test_state_buffer_time; }
-  get header_content() { return this._header_content; }
-  get navbar_unit_label() { return this._navbar_unit_label; }
+  get header_content() {
+    return this.resolveLegacyValue(
+      'header_content', 'unit_screenheader', this._header_content, this._unit_screenheader, {
+        OFF: 'NONE',
+        WITH_UNIT_TITLE: 'UNIT_LABEL',
+        WITH_BOOKLET_TITLE: 'BOOKLET_LABEL',
+        WITH_BLOCK_TITLE: 'BLOCK_LABEL',
+        EMPTY: 'NONE'
+      }
+    );
+  }
+
+  get navbar_unit_label() {
+    return this.resolveLegacyValue(
+      'navbar_unit_label', 'unit_navibuttons', this._navbar_unit_label, this._unit_navibuttons, {
+        OFF: 'HIDDEN',
+        INDEX: 'INDEX',
+        LABEL: 'LABEL'
+      }
+    );
+  }
+
   get navbar_unit_controls_hidden() { return this._navbar_unit_controls_hidden; }
-  get navbar_page_label() { return this._navbar_page_label; }
+  get navbar_page_label() {
+    return this.resolveLegacyValue(
+      'navbar_page_label', 'page_navibuttons', this._navbar_page_label, this._page_navibuttons, {
+        OFF: 'HIDDEN',
+        INDEX: 'INDEX',
+        FULL: 'LIST'
+      }
+    );
+  }
+
   get navbar_page_controls_hidden() { return this._navbar_page_controls_hidden; }
   get navbar_backward_button() { return this._navbar_backward_button; }
   get navbar_forward_button() { return this._navbar_forward_button; }
-  get toolbar_show_unit_title() { return this._toolbar_show_unit_title; }
-  get toolbar_show_unit_list() { return this._toolbar_show_unit_list; }
-  get toolbar_show_fullscreen_button() { return this._toolbar_show_fullscreen_button; }
-  get toolbar_show_reload_button() { return this._toolbar_show_reload_button; }
-  get toolbar_show_time_left() { return this._toolbar_show_time_left; }
-  get silent_mode() { return this._silent_mode; }
+  get toolbar_show_unit_title() {
+    return this.resolveLegacyValue(
+      'toolbar_show_unit_title', 'unit_title', this._toolbar_show_unit_title, this._unit_title,
+      { OFF: 'FALSE', ON: 'TRUE' }
+    );
+  }
+
+  get toolbar_show_unit_list() {
+    return this.resolveLegacyValue(
+      'toolbar_show_unit_list', 'unit_menu', this._toolbar_show_unit_list, this._unit_menu,
+      { OFF: 'FALSE', FULL: 'TRUE' }
+    );
+  }
+
+  get toolbar_show_fullscreen_button() {
+    return this.resolveLegacyValue(
+      'toolbar_show_fullscreen_button', 'show_fullscreen_button',
+      this._toolbar_show_fullscreen_button, this._show_fullscreen_button, {
+        OFF: 'FALSE',
+        ON: 'TRUE'
+      }
+    );
+  }
+
+  get toolbar_show_reload_button() {
+    return this.resolveLegacyValue(
+      'toolbar_show_reload_button', 'show_reload_button',
+      this._toolbar_show_reload_button, this._show_reload_button, { OFF: 'FALSE', ON: 'TRUE' }
+    );
+  }
+
+  get toolbar_show_time_left() {
+    return this.resolveLegacyValue(
+      'toolbar_show_time_left', 'unit_show_time_left',
+      this._toolbar_show_time_left, this._unit_show_time_left, { OFF: 'FALSE', ON: 'TRUE' }
+    );
+  }
+
+  get silent_mode() {
+    return this.resolveLegacyValue('silent_mode', 'ui_mode', this._silent_mode, this._ui_mode, {
+      ALL: 'FALSE',
+      NONE: 'TRUE'
+    });
+  }
+
   get page_navibuttons() { return this._page_navibuttons; }
   get unit_navibuttons() { return this._unit_navibuttons; }
   get unit_menu() { return this._unit_menu; }
@@ -45,13 +115,15 @@ export class BookletConfig extends BookletConfigData {
       .forEach(key => {
         const field = `_${key}`;
         if (field in this) {
-          (this as any)[field] = config[key];
+          (this as unknown as { [field: string]: string })[field] = config[key];
+          this.configuredKeys.add(key);
         }
       });
   }
 
   toEntries(): Array<[string, string]> {
     return Object.entries(this)
+      .filter(([key, value]) => key.startsWith('_') && typeof value === 'string')
       .map(([key, value]) => [key.substring(1), value]);
   }
 
@@ -66,5 +138,21 @@ export class BookletConfig extends BookletConfigData {
         {}
       );
     this.setFromKeyValuePairs(bookletConfigs);
+  }
+
+  private resolveLegacyValue<
+    OldValue extends string,
+    NewValue extends string
+  >(
+    newKey: string,
+    oldKey: string,
+    newValue: NewValue,
+    oldValue: OldValue,
+    legacyValues: Record<OldValue, NewValue>
+  ): NewValue {
+    if (this.configuredKeys.has(newKey) || !this.configuredKeys.has(oldKey)) {
+      return newValue;
+    }
+    return legacyValues[oldValue];
   }
 }
