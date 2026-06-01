@@ -28,6 +28,7 @@ class WorkspaceCacheTest extends TestCase {
     $workspaceDaoMock->allows([
       'getGlobalIds' => VfsForTest::globalIds
     ]);
+    SystemConfig::$enable_xmlschema_validation = true;
     VfsForTest::setUp(true);
     $this->workspaceCache = new WorkspaceCache(new Workspace(1));
     $this->workspaceCache->loadFiles();
