@@ -12,9 +12,7 @@
     </mat-progress-bar>
     <p class="loading-progress-text">{{ tcs.totalLoadingProgress.toFixed(0) }}%</p>
   </div>
-}
-
-@if (unit?.parent?.locked) {
+} @else if (unit?.parent?.locked) {
   <div class="lock-overlay">
     @if (unit?.parent?.locked?.by == 'code') {
       <tc-code-input [inputType]="codeInputMode" [length]="codeInputLength" [problemText]="codeInputErrorText"
