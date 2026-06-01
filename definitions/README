@@ -19,7 +19,7 @@ organisation on GitHub and are accessible via stable permalinks.
 Reference the desired schema version in your XML files (example for booklet-xml):
 ```xml
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4">
+         xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 ```
 
 # JSON-Files
