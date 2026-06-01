@@ -11,6 +11,7 @@
 - Fix direct login via URL
 - Code-Eingabe: Benutzung der ENTER-Taste repariert
 - neue booklet parameter: navbar_show_backward_button, navbar_show_forward_button
+- deprecated booklet params: show_end_button_in_player, allow_player_to_terminate_test
 - custom assets können jetzt im super admin bereich und in den Testtaker xml angelegt werden.
   - admin bereich kann bilder hochladen und diese Bilder den einzelnen slots (Bilder im UI) zuweisen. die slots heißen
     - 'logo',
