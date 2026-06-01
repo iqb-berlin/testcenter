@@ -59,35 +59,33 @@ exports.testSessionSuperStates = done => {
 };
 
 /**
- * Creates documentation about booklet-configurations. Booklet-parameters are various configuration parameters for
- * adjusting the behaviour during a test execution.
+ * Creates markdown file documenting booklet configuration options for adjusting the behaviour during test execution.
  *
- * See the result and read more: https://iqb-berlin.github.io/testcenter/pages/booklet-config
- * Read more in user's manual (german):
- * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Booklet%E2%80%90Xml#Konfiguration
- *
- * Primary Source of booklet-parameters is `definitions/booklet-config.json`. This is used to generate an interface
- * and the docs (with the task below).
- * TODO make the primary source be `definitions/vo_booklet.xsd`.
+ * `definitions/booklet-config.json` is a;lso used to generate Typescript interfaces.
  */
 exports.bookletConfig = done => {
   cliPrint.headline('BookletConfig: Writing Markdown documentation');
 
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet-config.json`).toString());
-
   let output = fs.readFileSync(`${docsDir}/src/booklet-config.md`, 'utf8').toString();
 
   Object.keys(definition)
     .forEach(configParameter => {
       const param = definition[configParameter];
-      const isDeprecated = param.deprecated === true;
 
-      const badge = isDeprecated ? ' ⚠️ *deprecated*' : '';
-      output += `\n### ${configParameter}${badge}\n`;
+      output += `\n### ${configParameter}\n`;
 
-      if (isDeprecated) {
-        const note = param.deprecationNote ?? 'Dieser Parameter sollte nicht mehr verwendet werden.';
-        output += `> **Veraltet:** ${note}\n\n`;
+      if (param.deprecated === true) {
+        output += [
+          '> ⚠️ **Abgekündigt**',
+          '>',
+          '> Dieser Parameter sollte nicht mehr verwendet werden.',
+          '> Er wird in einer kommenden Version entfernt.',
+          '>',
+          `> ${param.deprecationNote ?? ''}`,
+          ''
+        ].join('\n');
+        output += '\n\n';
       }
 
       output += `${param.label}\n`;

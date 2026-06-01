@@ -60,7 +60,6 @@
   "show_end_button_in_player": {
     "label": "Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.",
     "deprecated": true,
-    "deprecationNote": "Dieser Parameter sollte nicht mehr verwendet werden.",
     "options": {
       "OFF": "Den Test-Beenden-Button im Player nie anzeigen.",
       "ALWAYS": "Den Test-Beenden-Button im Player immer anzeigen.",
@@ -79,7 +78,6 @@
   "allow_player_to_terminate_test": {
     "label": "Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen entsprechenden Navigationsknopf zeigt.",
     "deprecated": true,
-    "deprecationNote": "Dieser Parameter sollte nicht mehr verwendet werden.",
     "options": {
       "OFF": "Der Player darf den laufenden Test nicht beenden.",
       "LAST_UNIT": "Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.",
