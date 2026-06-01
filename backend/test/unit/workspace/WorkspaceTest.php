@@ -31,7 +31,7 @@ class WorkspaceTest extends TestCase {
     . '<Definition player="p">valid extracted unit</Definition>'
     . '</Unit>';
   const validBooklet = '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4">'
+    . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
     . '<Metadata><Id>x_booklet</Id><Label>l</Label></Metadata>'
     . '<Units><Unit label="l" id="x_unit" /></Units>'
     . '</Booklet>';

@@ -24,10 +24,10 @@ class XMLSchemaTest extends TestCase {
   }
 
   private $testUrls = [
-    'valid_booklet' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4',
+    'valid_booklet' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0',
     'valid_unit' => 'https://w3id.org/iqb/spec/unit-xml/17.4',
     'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtakers-xml/18.0',
-    'valid_syscheck' => 'https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4',
+    'valid_syscheck' => 'https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0',
     'valid_unknown_repo' => 'https://w3id.org/iqb/spec/testcenter-unknown-xml/17.4',
     'invalid_old_github' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.3/definitions/vo_Booklet.xsd',
     'invalid_no_version' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml',
@@ -41,7 +41,7 @@ class XMLSchemaTest extends TestCase {
       'isExternal' => true,
       'repo' => 'testcenter-booklet-xml',
       'type' => 'Booklet',
-      'version' => '17.4',
+      'version' => '18.0',
       'uri' => $this->testUrls['valid_booklet']
     ], $result);
 
@@ -80,7 +80,7 @@ class XMLSchemaTest extends TestCase {
       XMLSchema::parseSchemaUrl($this->testUrls['valid_booklet'])
     );
     $this->assertEquals(
-      "vfs://root/data/.schemas/testcenter-booklet-xml/17.4/testcenter-booklet-xml.xsd",
+      "vfs://root/data/.schemas/testcenter-booklet-xml/18.0/testcenter-booklet-xml.xsd",
       $result
     );
 

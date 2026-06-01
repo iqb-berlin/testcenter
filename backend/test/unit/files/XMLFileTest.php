@@ -122,7 +122,7 @@ class XMLFileTest extends TestCase {
     file_put_contents(
       DATA_DIR . "/ws_1/invalid.xml",
       '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-      . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4">'
+      . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
       . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
       . '<Invalid></Invalid>'
       . '</Booklet>'

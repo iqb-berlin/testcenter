@@ -55,7 +55,7 @@ class XMLFileSysCheckTest extends TestCase {
 
   function test_getCustomTexts() {
     $xml = "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
       . "<Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
       . "<CustomText key='some'>thing</CustomText>"
       . "<CustomText key='any'>way</CustomText>"
@@ -73,7 +73,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
       . "<Metadata><Id>x</Id><Label>l</Label></Metadata>"
       . "<Config skipnetwork='true'></Config>"
       . "</SysCheck>"
@@ -83,7 +83,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
       . "<Metadata><Id>x</Id><Label>l</Label></Metadata>"
       . "</SysCheck>"
     );
@@ -93,7 +93,7 @@ class XMLFileSysCheckTest extends TestCase {
 
   function test_getQuestions() {
     $xml = "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/17.4\">"
+      . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
       . "<Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
       . '<Q id="1" type="header" prompt="some_title" required="true"/>'
       . '<Q id="2" type="string" prompt="or_so">1#2#3</Q>'
