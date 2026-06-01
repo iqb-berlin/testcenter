@@ -31,7 +31,6 @@ export class BookletConfigData {
   protected _page_navibuttons: 'OFF' | 'INDEX' | 'FULL' = 'INDEX';
   protected _unit_navibuttons: 'OFF' | 'INDEX' | 'LABEL' = 'INDEX';
   protected _unit_menu: 'OFF' | 'FULL' = 'OFF';
-  protected _controller_design: '2018' | '2022' = '2022';
   protected _unit_screenheader: 'OFF' | 'WITH_UNIT_TITLE' | 'WITH_BOOKLET_TITLE' | 'WITH_BLOCK_TITLE' | 'EMPTY' = 'EMPTY';
   protected _unit_title: 'OFF' | 'ON' = 'ON';
   protected _unit_show_time_left: 'OFF' | 'ON' = 'OFF';

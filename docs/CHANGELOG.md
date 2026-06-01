@@ -1,9 +1,12 @@
 # next
 
-## Custom Texts
-* neu
+
+## Änderungen zu 18.0.0-beta
+* custom texts 
   * login_sidepanel_title
   * login_sidepanel_subtitle
+* Kompatibilität mit alten Booklet Configs trotz der neuen Configs sichergestellt, wo anwendbar. Einige Configs werden in der neuen UI/UX nicht fortgeführt
+
 
 ## Änderungen zu 18.0.0-alpha
 - Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
@@ -49,20 +52,27 @@
 * Geänderte booklet parameter:
   * unit_navibuttons ersetzt durch navbar_unit_label
     * navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
-    * navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+    * neuer Param: navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   * page_navibuttons ersetzt durch navbar_page_label
     * navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
-    * navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+    * neuer Param: navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   * unit_screenheader ersetzt durch "header_content"
     * header_content: "NONE", "BOOKLET_LABEL", "BLOCK_LABEL", "UNIT_LABEL" = NONE"
   * unit_title ersetzt durch toolbar_show_unit_title
+    * toolbar_show_unit_title: "TRUE" | "FALSE" = "TRUE"
   * unit_menu ersetzt durch toolbar_show_unit_list
-  * show_fullscreen_button -> toolbar_show_fullscreen_button
-  * show_reload_button -> toolbar_show_reload_button
-  * unit_show_time_left -> toolbar_show_time_left
-  * ui_mode -> silent_mode
+    * toolbar_show_unit_list: "TRUE" | "FALSE" = "FALSE"
+  * show_fullscreen_button ersetzt durch toolbar_show_fullscreen_button
+    * toolbar_show_fullscreen_button: "TRUE" | "FALSE" = "FALSE"
+  * show_reload_button ersetzt durch toolbar_show_reload_button
+    * toolbar_show_reload_button: "TRUE" | "FALSE" = "FALSE"
+  * unit_show_time_left ersetzt durch toolbar_show_time_left
+    * toolbar_show_time_left: "TRUE" | "FALSE" = "FALSE"
+  * ui_mode ersetzt durch silent_mode
+    * silent_mode: "TRUE" | "FALSE" = "FALSE"
 * entfernte Bookletparameter:
   * controller_design
+  * unit_screenheader: "OFF" wird nicht mehr unterstützt 
 * Oberflächeneinstellungen von testtakern werden nun über Block "Viewsettings" gesteuert. Alle Werte sind optional. Bei Abwesenheit greifen die Standardeinstellungen via superadmin.
   * "theme" gibt den Namen eines eingerichteten Themes an
   * valide code-input types sind: "text-field", "keypad-symbols", "keypad-numbers"
@@ -76,7 +86,6 @@
         <monitorBookletVisibility>hidden</monitorBookletVisibility>
       </ViewSettings>`
 
-##Technisches
 ### Änderungen
 * Der API-Endpunkt `/session/login` liefert zusätzlich die Parameter `loginName` und `groupLabel`. Der Parameter `displayName` ist als deprecated ausgezeichnet und wird in zukünftigen Versionen nicht mehr verfügbar sein. Der Wert kann aber weiterhin aus den beiden neuen Feldern erstellt werden.
 * Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.

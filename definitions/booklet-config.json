@@ -184,7 +184,7 @@
   "toolbar_show_unit_title": {
     "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",
     "options": {
-      "TRUE": "Titel der Unit wird aangezeigt",
+      "TRUE": "Titel der Unit wird angezeigt",
       "FALSE": "Titel wird ausgeblendet"
     },
     "defaultvalue": "TRUE"
@@ -230,7 +230,9 @@
     "defaultvalue": "FALSE"
   },
   "page_navibuttons": {
-    "label": "(DEPRECATED) Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
+    "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen navbar_page_label",
     "options": {
       "OFF": "Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)",
       "INDEX": "Seitennavigation zeigt nur Pfeile und den aktuellen Index",
@@ -239,7 +241,9 @@
     "defaultvalue": "INDEX"
   },
   "unit_navibuttons": {
-    "label": "(DEPRECATED) Navigationsbuttons für die Navigation zwischen den Aufgaben",
+    "label": "Navigationsbuttons für die Navigation zwischen den Aufgaben",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen navbar_page_label",
     "options": {
       "OFF": "Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)",
       "INDEX": "Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben",
@@ -248,23 +252,19 @@
     "defaultvalue": "INDEX"
   },
   "unit_menu": {
-    "label": "(DEPRECATED) Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden",
+    "label": "Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_unit_list",
     "options": {
       "OFF": "Nein",
       "FULL": "Ja"
     },
     "defaultvalue": "OFF"
   },
-  "controller_design": {
-    "label": "(DEPRECATED) Über diesen Parameter können verschiedene Design-Einstellungen gemeinsam festgelegt werden",
-    "options": {
-      "2018": "Runde Schalter für die Unit-Navigation",
-      "2022": "Eckige Schalter für die Unit-Navigation"
-    },
-    "defaultvalue": "2022"
-  },
   "unit_screenheader": {
-    "label": "(DEPRECATED) Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.",
+    "label": "Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen header_content",
     "options": {
       "OFF": "Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).",
       "WITH_UNIT_TITLE": "Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)",
@@ -275,7 +275,9 @@
     "defaultvalue": "EMPTY"
   },
   "unit_title": {
-    "label": "(DEPRECATED) Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",
+    "label": "Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_unit_title",
     "options": {
       "OFF": "Keine Titelzeile",
       "ON": "Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML)."
@@ -283,7 +285,9 @@
     "defaultvalue": "ON"
   },
   "unit_show_time_left": {
-    "label": "(DEPRECATED) Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.",
+    "label": "Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_time_left",
     "options": {
       "OFF": "Die verbleibende Zeit wird nicht angezeigt.",
       "ON": "Die verbleibende Zeit wird angezeigt."
@@ -291,7 +295,9 @@
     "defaultvalue": "OFF"
   },
   "show_fullscreen_button": {
-    "label": "(DEPRECATED) Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?",
+    "label": "Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_fullscreen_button",
     "options": {
       "ON": "Ja.",
       "OFF": "Nein."
@@ -299,7 +305,9 @@
     "defaultvalue": "OFF"
   },
   "show_reload_button": {
-    "label": "(DEPRECATED) Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?",
+    "label": "Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen toolbar_show_reload_button",
     "options": {
       "ON": "Ja.",
       "OFF": "Nein."
@@ -307,7 +315,9 @@
     "defaultvalue": "OFF"
   },
   "ui_mode": {
-    "label": "(DEPRECATED) Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+    "label": "Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)",
+    "deprecated": true,
+    "deprecationNote": "Nutzen Sie stattdessen silent_mode",
     "options": {
       "ALL": "Alle UI-Elemente anzeigen (Standard-Verhalten)",
       "NONE": "Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen"

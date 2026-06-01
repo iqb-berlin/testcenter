@@ -42,6 +42,16 @@ describe('BookletConfig migration layer', () => {
     expect(config.navbar_page_label).toBe('LABEL');
   });
 
+  it('prefers a configured old key over the default new key', () => {
+    const config = new BookletConfig();
+
+    config.setFromKeyValuePairs({
+      page_navibuttons: 'FULL'
+    });
+
+    expect(config.navbar_page_label).toBe('LIST');
+  });
+
   it('loads old and new keys from XML', () => {
     const config = new BookletConfig();
     const xml = new DOMParser().parseFromString(`

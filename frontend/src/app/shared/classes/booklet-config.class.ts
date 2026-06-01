@@ -21,7 +21,7 @@ export class BookletConfig extends BookletConfigData {
   get header_content() {
     return this.resolveLegacyValue(
       'header_content', 'unit_screenheader', this._header_content, this._unit_screenheader, {
-        OFF: 'NONE',
+        OFF: 'NONE', // this feature was canceled
         WITH_UNIT_TITLE: 'UNIT_LABEL',
         WITH_BOOKLET_TITLE: 'BOOKLET_LABEL',
         WITH_BLOCK_TITLE: 'BLOCK_LABEL',
@@ -102,7 +102,6 @@ export class BookletConfig extends BookletConfigData {
   get page_navibuttons() { return this._page_navibuttons; }
   get unit_navibuttons() { return this._unit_navibuttons; }
   get unit_menu() { return this._unit_menu; }
-  get controller_design() { return this._controller_design; }
   get unit_screenheader() { return this._unit_screenheader; }
   get unit_title() { return this._unit_title; }
   get unit_show_time_left() { return this._unit_show_time_left; }
@@ -150,9 +149,12 @@ export class BookletConfig extends BookletConfigData {
     oldValue: OldValue,
     legacyValues: Record<OldValue, NewValue>
   ): NewValue {
+    // if both are set explicitly, newKey always wins; when neither is set, newKey default also wins
     if (this.configuredKeys.has(newKey) || !this.configuredKeys.has(oldKey)) {
       return newValue;
     }
+
+    // only when newKey is not set AND oldKey is set, does the value of oldKey win
     return legacyValues[oldValue];
   }
 }
