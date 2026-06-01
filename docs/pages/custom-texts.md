@@ -156,6 +156,8 @@ Funktioniert auch nicht? Dann...
 |login_codeInputPrompt|Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)|Bitte Log-in eingeben, der auf dem Zettel steht!|
 |login_codeInputTitle|Titel des Eingabeformulares für den Code|Log-in eingeben|
 |login_pagesNaviPrompt|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
+|login_sidepanel_subtitle|Untertitel des seitlichen Infobereichs auf der Anmeldeseite|Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den Zugangsdaten möglich, die Sie vorab erhalten haben.|
+|login_sidepanel_title|Titel des seitlichen Infobereichs auf der Anmeldeseite|Willkommen im IQB‑Testcenter|
 |login_subtitle|Titel für Starter-Seite|Testauswahl|
 |login_testEndButtonLabel|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |login_testResumeButtonLabel|Schalterbeschriftung für 'Test fortsetzen'|Test fortsetzen|

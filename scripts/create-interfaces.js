@@ -6,9 +6,9 @@
 
 const fs = require('fs');
 const gulp = require('gulp');
+const browserslist = require('browserslist');
 const cliPrint = require('./helper/cli-print');
 const packageJSON = require('../frontend/package.json');
-const browserslist = require('browserslist');
 
 const commonDir = fs.realpathSync(`${__dirname}'/../common`);
 const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
@@ -34,7 +34,7 @@ exports.bookletConfigData = done => {
 
   Object.keys(definition)
     .forEach(configParameter => {
-      const line = `  ${configParameter}: ${
+      const line = `  protected _${configParameter}: ${
         (definition[configParameter].options && Object.keys(definition[configParameter].options).length)
           ? Object.keys(definition[configParameter].options)
             .map(option => `'${option}'`)

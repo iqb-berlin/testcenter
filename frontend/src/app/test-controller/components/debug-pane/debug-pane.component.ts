@@ -92,7 +92,7 @@ export class DebugPaneComponent implements OnInit {
   testingConditionResults: string[] = [];
 
   private getData(): void {
-    this.bookletConfig = Object.entries(this.tcs.booklet?.config || {});
+    this.bookletConfig = this.tcs.booklet?.config.toEntries() || [];
     this.testMode = Object.entries(this.tcs.testMode);
     this.customTextKeys = this.cts.getCustomTextKeys();
     this.auth = this.mds.getAuthData();
