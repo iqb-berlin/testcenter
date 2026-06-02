@@ -48,7 +48,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
           <input matInput #pw formControlName="pw"
-                 [type]="showPassword ? 'text' : 'password'"
+                 [type]="showPassword ? 'text' : 'password'" autofocus
                  (keyup)="clearWarning(); checkCapsLock($event)">
           <button mat-icon-button matSuffix type="button"
                   [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
