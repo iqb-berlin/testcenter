@@ -29,7 +29,8 @@ import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
           <p>{{ name + (subLabel ? ' ('+subLabel+')' : '')}}</p>
         </mat-card-header>
         <mat-card-actions>
-          <button matButton="filled" [disabled]="disabled" (click)="select.emit()">
+          <button matButton="filled" [disabled]="disabled || mode === 'locked'" [class.test-done]="mode === 'locked'"
+                  (click)="select.emit()">
             @if (mode) {
               <mat-icon [svgIcon]="icons[mode]"></mat-icon>
             }
@@ -74,6 +75,10 @@ import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
       right: 1px;
       bottom: 1px;
     }
+    button.test-done {
+      background-color: transparent;
+      color: var(--mat-sys-primary);
+    }
   `
 })
 export class TestCardComponent {
@@ -89,7 +94,7 @@ export class TestCardComponent {
     start: 'play_arrow',
     continue: 'play_pause',
     view: 'mystery',
-    locked: 'block'
+    locked: 'check'
   };
 
   labels: Record<string, { defaultLabel: string, customTextKey: string }> = {
