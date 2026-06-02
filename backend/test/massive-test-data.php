@@ -1,4 +1,72 @@
 <?php
+/**
+ * Create large testcenter datasets for performance and migration tests.
+ *
+ * The script creates workspaces, imports the sample files, replaces the sample
+ * Testtakers file with generated Testtakers files, stores them, and creates
+ * sessions and tests in the configured database. It changes database and data
+ * directory state. Use a disposable test installation.
+ *
+ * Run from the repository root after configuring the backend environment:
+ *
+ *   php backend/test/massive-test-data.php
+ *
+ * Options can be passed as `--name=value` or `--name value`:
+ *
+ *   php backend/test/massive-test-data.php \
+ *     --workspaces=10 \
+ *     --ttfiles_per_workspace=3 \
+ *     --codes_per_login=30 \
+ *     --start_test_probability=0 \
+ *     --lock_test_probability=0
+ *
+ * Options:
+ *
+ * - `--workspaces` (default: `2`): Number of workspaces to create.
+ * - `--ttfiles_per_workspace` (default: `2`): Generated Testtakers XML files
+ *   per workspace.
+ * - `--groups_per_ttfile` (default: `5`): Groups per generated Testtakers file.
+ * - `--logins_per_group` (default: `10`): `run-hot-return` logins per group.
+ * - `--codes_per_login` (default: `5`): Codes assigned to every
+ *   `run-hot-return` login. Each code creates one person session. Set to `0`
+ *   to create one person session per login without a code.
+ * - `--code_length` (default: `3`): Length of each generated code.
+ * - `--password_length` (default: `8`): Length of generated login passwords.
+ *   Set to `0` to omit passwords.
+ * - `--booklet_per_person` (default:
+ *   `BOOKLET.SAMPLE-1,BOOKLET.SAMPLE-2,BOOKLET.SAMPLE-3`): Comma-separated
+ *   booklet IDs assigned to every login. The sample files imported into each
+ *   workspace must contain these booklets.
+ * - `--start_test_probability` (default: `0.3`): Probability from `0` to `1`
+ *   that each generated test is started.
+ * - `--lock_test_probability` (default: `0.3`): Probability from `0` to `1`
+ *   that each generated test is locked.
+ * - `--restart_logins_per_group` (default: `0`): Additional
+ *   `run-hot-restart` logins per group. They have no codes.
+ * - `--session_per_restart_login` (default: `3`): Sessions created for every
+ *   `run-hot-restart` login.
+ * - `--duplicate_login_sessions_per_restart_login` (default: `0`): Create
+ *   duplicate login sessions for early restart iterations. Compatibility test
+ *   option for data affected by the pre-14.4.0 duplicate-session bug.
+ * - `--duplicate_person_sessions_per_restart_login` (default: `0`): Create
+ *   duplicate person sessions for early restart iterations. Compatibility test
+ *   option for data affected by the pre-14.4.0 duplicate-session bug.
+ *
+ * Generated counts:
+ *
+ * - groups = workspaces * Testtakers files per workspace * groups per file
+ * - return logins = groups * logins per group
+ * - restart logins = groups * restart logins per group
+ * - person sessions = return logins * max(codes per login, 1)
+ *   + restart logins * sessions per restart login
+ * - tests = person sessions * number of configured booklets
+ *
+ * Every group also receives one `monitor-group` login. Monitor logins do not
+ * receive person sessions or tests. Generated workspace names start with a
+ * random run code printed by the script, making one run easy to identify.
+ *
+ * See `backend/test/massive-test-data.md` for the standalone documentation.
+ */
 define('ROOT_DIR', realpath(__DIR__ . '/../..'));
 const DATA_DIR = ROOT_DIR . '/data';
 require_once(ROOT_DIR . '/backend/vendor/autoload.php');
@@ -235,6 +303,5 @@ try {
 
 echo "\n";
 exit(0);
-
 
 
