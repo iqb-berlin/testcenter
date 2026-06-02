@@ -47,7 +47,6 @@ replacements:
 
 | Key       | Used for     | Default     |
 | :------------- | :---------- | :----------- |
-|booketlet_continueButtonLockedUnit|Label für den Button um bei gesperrten Units weiter zuklicken|Weiter|
 |booklet_blockLockedByAfterLeave|Block kann nicht noch einmal betreten werden|Block kann nicht noch einmal betreten werden|
 |booklet_codeToEnterPrompt|Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Dialogbox für die Eingabe eines Freigabewortes|Aufgabenblock ist gesperrt, Freigabewort benötigt|
@@ -79,6 +78,10 @@ Funktioniert auch nicht? Dann...
 |booklet_msgTimerStarted|Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde|Die Bearbeitungszeit für diesen Abschnitt hat begonnen: |
 |booklet_pausedmessage|Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde|Der Test wurde kurz angehalten.|
 |booklet_requestFullscreen|Text für Dialogfeld 'Vollbild aktivieren?'|Soll das Vollbild aktiviert werden?|
+|booklet_starterContinueTestButtonLabel|Hauptmenü: Beschriftung für den Knopf um Test fortzusetzen|Weiter|
+|booklet_starterLockedTestButtonLabel|Hauptmenü: Beschriftung für den Knopf bei gesperrtem Test|Fertig|
+|booklet_starterStartTestButtonLabel|Hauptmenü: Beschriftung für den Knopf um Test zu starten|Starten|
+|booklet_starterViewTestButtonLabel|Hauptmenü: Beschriftung für den Knopf um Test anzusehen|Ansehen|
 |booklet_tasklisttitle|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|Geladen|
 |booklet_unitLoadingPending|Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist|In der Warteschleife|
@@ -153,6 +156,8 @@ Funktioniert auch nicht? Dann...
 |login_codeInputPrompt|Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)|Bitte Log-in eingeben, der auf dem Zettel steht!|
 |login_codeInputTitle|Titel des Eingabeformulares für den Code|Log-in eingeben|
 |login_pagesNaviPrompt|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
+|login_sidepanel_subtitle|Untertitel des seitlichen Infobereichs auf der Anmeldeseite|Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den Zugangsdaten möglich, die Sie vorab erhalten haben.|
+|login_sidepanel_title|Titel des seitlichen Infobereichs auf der Anmeldeseite|Willkommen im IQB‑Testcenter|
 |login_subtitle|Titel für Starter-Seite|Testauswahl|
 |login_testEndButtonLabel|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |login_testResumeButtonLabel|Schalterbeschriftung für 'Test fortsetzen'|Test fortsetzen|

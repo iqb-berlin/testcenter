@@ -61,9 +61,15 @@
             "error",
             2,
             {
-              "CallExpression": { "arguments": "first" },
-              "FunctionDeclaration": { "parameters": "first" },
-              "FunctionExpression": { "parameters": "first" }
+              "CallExpression": {
+                "arguments": "first"
+              },
+              "FunctionDeclaration": {
+                "parameters": "first"
+              },
+              "FunctionExpression": {
+                "parameters": "first"
+              }
             }
           ]
         }

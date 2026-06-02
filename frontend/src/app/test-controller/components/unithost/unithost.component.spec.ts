@@ -6,12 +6,12 @@ import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { AssetService } from '@shared/services/asset.service';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
-import { AssetService } from '@shared/services/asset.service';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -35,7 +35,8 @@ const MockTestControllerService = {
 const MockBackendService = { };
 const MockMainDataService = {
   postMessage$: new Subject(),
-  authData$: new Subject()
+  authData$: new Subject(),
+  getAuthData: () => null
 };
 const MockActivatedRoute = {
   params: new Subject<Params>()

@@ -163,7 +163,7 @@ Zeigt einen Knopf zur Vorwärtsnavigation auf der Navigationsleiste. Kann konfig
 
 ### toolbar_show_unit_title
 Anzeige des Titels der aktiven Unit auf der Werkzeugleiste
- * **"TRUE" - Titel der Unit wird aangezeigt**
+ * **"TRUE" - Titel der Unit wird angezeigt**
  * "FALSE" - Titel wird ausgeblendet
 
 ### toolbar_show_unit_list
@@ -190,3 +190,125 @@ Anzeige verbleibender Zeit (falls definiert) auf der Werkzeugleiste
 Unterdrückung von Einblendungen, z.B. Dialoge
  * "TRUE" - Einblendungen werden unterdrückt.
  * **"FALSE" - Normales Anzeigeverhalten**
+
+### page_navibuttons
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen navbar_page_label
+
+
+Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
+ * "OFF" - Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)
+ * **"INDEX" - Seitennavigation zeigt nur Pfeile und den aktuellen Index**
+ * "FULL" - Seitennavigation zeigt horizontale Liste aller Seiten
+
+### unit_navibuttons
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen navbar_page_label
+
+
+Navigationsbuttons für die Navigation zwischen den Aufgaben
+ * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
+ * **"INDEX" - Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben**
+ * "LABEL" - Der Anzeigename der aktuellen Aufgabe wird angezeigt
+
+### unit_menu
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen toolbar_show_unit_list
+
+
+Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
+ * **"OFF" - Nein**
+ * "FULL" - Ja
+
+### unit_screenheader
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen header_content
+
+
+Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
+ * "OFF" - Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).
+ * "WITH_UNIT_TITLE" - Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
+ * "WITH_BOOKLET_TITLE" - Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)
+ * "WITH_BLOCK_TITLE" - Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)
+ * **"EMPTY" - Seitenkopf wird angezeigt (leer)**
+
+### unit_title
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen toolbar_show_unit_title
+
+
+Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll
+ * "OFF" - Keine Titelzeile
+ * **"ON" - Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML).**
+
+### unit_show_time_left
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen toolbar_show_time_left
+
+
+Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.
+ * **"OFF" - Die verbleibende Zeit wird nicht angezeigt.**
+ * "ON" - Die verbleibende Zeit wird angezeigt.
+
+### show_fullscreen_button
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen toolbar_show_fullscreen_button
+
+
+Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
+ * "ON" - Ja.
+ * **"OFF" - Nein.**
+
+### show_reload_button
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen toolbar_show_reload_button
+
+
+Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?
+ * "ON" - Ja.
+ * **"OFF" - Nein.**
+
+### ui_mode
+> ⚠️ **Abgekündigt**
+>
+> Dieser Parameter sollte nicht mehr verwendet werden.
+> Er wird in einer kommenden Version entfernt.
+>
+> Nutzen Sie stattdessen silent_mode
+
+
+Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)
+ * **"ALL" - Alle UI-Elemente anzeigen (Standard-Verhalten)**
+ * "NONE" - Keine Dialog-Fenster, Snackbars oder Logo in hot Modi anzeigen

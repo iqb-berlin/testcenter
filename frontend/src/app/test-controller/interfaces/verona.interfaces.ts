@@ -8,11 +8,11 @@ type Verona2LogPolicy = 'disabled' | 'lean' | 'rich' | 'debug';
 
 type Verona2StateReportPolicy = 'none' | 'eager' | 'on-demand';
 
-type Verona3PagingMode = 'separate' | 'concat-scroll' | 'concat-scroll-snap';
+type Verona6PagingMode = 'separate' | 'concat-scroll' | 'concat-scroll-snap' | 'buttons';
 
 interface Verona2PlayerConfig {
   logPolicy: Verona2LogPolicy;
-  pagingMode: Verona3PagingMode;
+  pagingMode: Verona6PagingMode;
   unitNumber: number;
   unitTitle: string;
   unitId: string;

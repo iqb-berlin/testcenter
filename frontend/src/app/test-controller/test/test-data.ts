@@ -360,12 +360,14 @@ export const getTestData = () => {
 
 export const getTestBookletConfig = () => {
   const TestBookletConfig = new BookletConfig();
-  TestBookletConfig.force_presentation_complete = 'ON';
-  TestBookletConfig.force_response_complete = 'OFF';
-  TestBookletConfig.loading_mode = 'EAGER';
-  TestBookletConfig.unit_responses_buffer_time = '1000';
-  TestBookletConfig.unit_state_buffer_time = '3000';
-  TestBookletConfig.test_state_buffer_time = '700';
+  TestBookletConfig.setFromKeyValuePairs({
+    force_presentation_complete: 'ON',
+    force_response_complete: 'OFF',
+    loading_mode: 'EAGER',
+    unit_responses_buffer_time: '1000',
+    unit_state_buffer_time: '3000',
+    test_state_buffer_time: '700'
+  });
   return TestBookletConfig;
 };
 
