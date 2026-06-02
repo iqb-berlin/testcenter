@@ -15,7 +15,7 @@
                            (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
     </tc-navigation-control>
   }
-  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && testLoaded) {
+  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && (pageNavContext.maxIndex > 0) && testLoaded) {
     <tc-navigation-control [navContext]="pageNavContext"
                            dataCy="page-navigation"
                            (back)="gotoPreviousPage()"
