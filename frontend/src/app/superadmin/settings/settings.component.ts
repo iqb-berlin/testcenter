@@ -198,6 +198,20 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  protected async onUploadAsset($event: Event) {
+    await this.assetService.uploadAsset($event);
+    this.assetService.getAvailableAssets().subscribe(assets => {
+      this.availableAssets = assets;
+    });
+  }
+
+  protected async onDeleteAsset(assetID: number) {
+    await this.assetService.deleteAsset(assetID);
+    this.assetService.getAvailableAssets().subscribe(assets => {
+      this.availableAssets = assets;
+    });
+  }
+
   ngOnDestroy(): void {
     if (this.configDataChangedSubscription !== null) this.configDataChangedSubscription.unsubscribe();
   }

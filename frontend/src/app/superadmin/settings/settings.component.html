@@ -133,7 +133,7 @@
         <mat-icon svgIcon="upload"></mat-icon>
         Bild hochladen
       </button>
-      <input #assetFileInput type="file" (change)="assetService.uploadAsset($event)" [hidden]="true" />
+      <input #assetFileInput type="file" (change)="onUploadAsset($event)" [hidden]="true" />
       <div class="asset-container">
         @if (availableAssets.length) {
           <mat-grid-list cols="5" rowHeight="280px" gutterSize="12px">
@@ -145,7 +145,7 @@
                   </mat-card-header>
                   <img mat-card-image [src]="asset.url" [alt]="asset.originalName"/>
                   <mat-card-actions>
-                    <button matButton (click)="assetService.deleteAsset(asset.id)">Bild entfernen</button>
+                    <button matButton (click)="onDeleteAsset(asset.id)">Bild entfernen</button>
                   </mat-card-actions>
                 </mat-card>
               </mat-grid-tile>
@@ -168,7 +168,7 @@
               <mat-select [value]="$any(slots)[slot.slotName]?.assetID ?? undefined"
                           (valueChange)="assetService.updateSlot(slot.slotName, $event)">
                 <mat-option [value]="undefined">Keines</mat-option>
-                @for (asset of assetService.allAssets; track asset.id) {
+                @for (asset of availableAssets; track asset.id) {
                   <mat-option [value]="asset.id">
                     {{ asset.originalName }}
                   </mat-option>

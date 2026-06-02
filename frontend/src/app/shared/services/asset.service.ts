@@ -52,33 +52,48 @@ export class AssetService {
 
   getAvailableAssets(): Observable<Asset[]> {
     return this.backendService.getAllAssets().pipe(
-      map(assets => assets.map(asset => ({ ...asset, url: this.toAbsolute(asset.url) })))
+      map(assets => {
+        this.allAssets = assets;
+        return assets.map(asset => ({ ...asset, url: this.toAbsolute(asset.url) }));
+      })
     );
   }
 
-  uploadAsset(fileInput: Event): void {
-    const target = fileInput.target as HTMLInputElement;
-    const files = target.files as FileList;
-    if (files && files[0]) {
-      const formData = new FormData();
-      formData.append('file', files[0]);
+  uploadAsset(fileInput: Event): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const target = fileInput.target as HTMLInputElement;
+      const files = target.files as FileList;
+      if (files && files[0]) {
+        const formData = new FormData();
+        formData.append('file', files[0]);
 
-      this.backendService.uploadAsset(formData).subscribe(result => {
-        if (result) {
-          this.messageService.showSnackbar('Asset hochgeladen');
-          this.loadAssets();
-        }
-      });
-    }
+        this.backendService.uploadAsset(formData).subscribe({
+          next: result => {
+            if (result) {
+              this.messageService.showSnackbar('Asset hochgeladen');
+              this.loadAssets();
+            }
+            resolve();
+          },
+          error: err => reject(err)
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
-  deleteAsset(id: number): void {
-    this.backendService.deleteAsset(id).subscribe(result => {
-      if (result) {
-        this.messageService.showSnackbar('Bild entfernt');
-        this.allAssets = this.allAssets.filter(asset => asset.id !== id);
-        this.refreshAssetSlots();
-      }
+  deleteAsset(id: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.backendService.deleteAsset(id).subscribe({
+        next: result => {
+          this.messageService.showSnackbar('Bild entfernt');
+          this.allAssets = this.allAssets.filter(asset => asset.id !== id);
+          this.refreshAssetSlots();
+          resolve();
+        },
+        error: err => reject(err)
+      });
     });
   }
 
@@ -89,6 +104,8 @@ export class AssetService {
       const asset = this.allAssets.find(a => a.id === assetID);
       if (asset) {
         this.assetSlots[slotName] = { assetID, url: asset.url };
+      } else {
+        throw new Error('Asset ID not found');
       }
     }
     this.assetSlotsSubject.next(this.assetSlots);
@@ -104,6 +121,7 @@ export class AssetService {
       }));
     this.backendService.setAssetAssignments({ assignments }).subscribe(() => {
       this.refreshAssetSlots();
+      this.messageService.showSnackbar('Zuordnungen aktualisiert');
     });
   }
 
