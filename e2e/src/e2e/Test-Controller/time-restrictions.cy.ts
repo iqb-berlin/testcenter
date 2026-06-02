@@ -8,7 +8,7 @@ import {
   probeBackendApi,
   readBlockTime,
   resetBackendData,
-  visitLoginPage
+  visitLoginPage, clickCardButton
 } from '../utils';
 
 // Restriction Time: Declared in Sampledata/CY_Bklt_TC-1.xml
@@ -53,9 +53,7 @@ describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }
 
   it('review: time is expired, but the block will not be locked, there is only a warning message.', () => {
     twoStepLogin('Test_Ctrl-14', '123');
-    cy.get('[data-cy^="booklet-"]')
-      .first()
-      .click();
+    clickCardButton('booklet-CY-BKLT_TC-5');
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
     cy.get('[data-cy="unit-navigation-forward"]')

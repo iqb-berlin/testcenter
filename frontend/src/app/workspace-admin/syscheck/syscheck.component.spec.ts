@@ -11,6 +11,7 @@ import { SyscheckComponent } from './syscheck.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { SysCheckStatistics } from '../workspace.interfaces';
+import { MessageService } from '@shared/services/message.service';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -23,6 +24,8 @@ class MockBackendService {
     }]);
   }
 }
+
+class MockService { }
 
 describe('Workspace-Admin: SyscheckComponent', () => {
   let component: SyscheckComponent;
@@ -43,6 +46,7 @@ describe('Workspace-Admin: SyscheckComponent', () => {
           provide: BackendService,
           useValue: new MockBackendService()
         },
+        { provide: MessageService, useValue: new MockService() },
         WorkspaceDataService,
         provideHttpClient(withInterceptorsFromDi())
       ]

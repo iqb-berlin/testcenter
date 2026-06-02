@@ -29,6 +29,7 @@ class XMLFilesBookletTest extends TestCase {
     require_once "src/files/XMLFile.class.php";
     require_once "src/files/XMLFileBooklet.class.php";
     require_once "test/unit/mock-classes/ExternalFileMock.php";
+    SystemConfig::$enable_xmlschema_validation = true;
 
     VfsForTest::setUp();
   }
@@ -45,7 +46,8 @@ class XMLFilesBookletTest extends TestCase {
 
   private function prepareBookletWithStates(string $states, string $restrictions): XMLFileBooklet {
     $xml = <<<EOT
-<Booklet>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
   <Metadata>
     <Id>i</Id>
     <Label>l</Label>

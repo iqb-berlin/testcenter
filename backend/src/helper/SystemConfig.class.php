@@ -29,8 +29,7 @@ class SystemConfig {
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
-
-
+  public static bool $enable_xmlschema_validation = false; // todo this config is not exposed in .env file; xsd validation can be reactivated at a moments notice
   // TODO server URL
 
   public static function read(): void {

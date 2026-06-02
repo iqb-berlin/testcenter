@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 400px;
 }
 
 .sidebar-main {
@@ -13,6 +14,8 @@
 
 .sidebar-bottom {
   padding: 15px;
+  align-self: center;
+  min-width: 200px;
 }
 
 h3 {

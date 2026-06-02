@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CustomImages } from '../interfaces/custom-images.interface';
 import { AppError } from '../../app.interfaces';
+import type { AssetSlotName } from './asset.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,8 @@ export interface Theme {
   cssClassName: string;
   previewColor?: string;
   description?: string;
-  imagePaths?: Partial<Record<keyof CustomImages, string>>
+  targetAudience: 'children' | 'teenager' | 'adults';
+  imagePaths?: Partial<Record<AssetSlotName, string>>;
 }
 
 export const THEMES: Theme[] = [
@@ -42,24 +43,23 @@ export const THEMES: Theme[] = [
     cssClassName: 'theme-primar',
     previewColor: '#196175',
     description: 'Zielgruppe Schüler*innen der Primarstufe',
-    imagePaths: {
-      starterCompanion: 'assets/theme-images/theme-primar/starter-companion.svg',
-      starterCardDone: 'assets/theme-images/theme-primar/starter-card-done.png',
-      codeInputIllustration: 'assets/theme-images/theme-primar/code-input-illu.png',
-      codeInputCompanion: 'assets/theme-images/theme-primar/code-input-companion',
-      loadingProgress: 'assets/theme-images/theme-primar/loading.png'
-    }
+    targetAudience: 'children'
   },
   {
     name: 'Sekundar',
     cssClassName: 'theme-sekundar',
     previewColor: '#0B2D84',
-    description: 'Zielgruppe Schüler*innen der Sekundarstufe I'
+    description: 'Zielgruppe Schüler*innen der Sekundarstufe I',
+    targetAudience: 'teenager',
+    imagePaths: {
+      codeInputIllustration: 'assets/images/code-input-illustration-teens.png'
+    }
   },
   {
     name: 'Erwachsene',
     cssClassName: 'theme-adult',
     previewColor: '#6B369A',
-    description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)'
+    description: 'Zielgruppe Erwachsenen (z. B. Lehrkräfte)',
+    targetAudience: 'adults'
   }
 ];

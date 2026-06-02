@@ -11,6 +11,7 @@ import { BackendService } from '../backend.service';
 import { WorkspacesComponent } from './workspaces.component';
 import { MainDataService } from '../../shared/shared.module';
 import { IdAndName } from '../superadmin.interfaces';
+import { MessageService } from '@shared/services/message.service';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -18,6 +19,8 @@ class MockBackendService {
     return of([{ id: 1, name: 'a workspace' }]);
   }
 }
+
+class MockService { }
 
 describe('WorkspacesComponent', () => {
   let component: WorkspacesComponent;
@@ -38,6 +41,7 @@ describe('WorkspacesComponent', () => {
           provide: BackendService,
           useValue: new MockBackendService()
         },
+        { provide: MessageService, useValue: new MockService() },
         MainDataService,
         provideHttpClient(withInterceptorsFromDi())
       ]

@@ -4,10 +4,8 @@ import {
   Routes,
   RouterModule,
   Router,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot
+  UrlTree
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { SysCheckComponent } from './sys-check.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
@@ -20,19 +18,16 @@ import { UnitCheckComponent } from './unit-check/unit-check.component';
 export class SysCheckChildCanActivateGuard {
   constructor(
     private router: Router,
-    private ds: SysCheckDataService
+    private sysCheckDataService: SysCheckDataService
   ) {
   }
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.ds.checkConfig && this.ds.loadConfigComplete) {
+  canActivate() {
+    if (this.sysCheckDataService.checkConfig && this.sysCheckDataService.loadConfigComplete) {
       return true;
     }
-    this.router.navigate(['/']); // TODO not ideal for not-logged in users (see commitmsg for more)
-    return false;
+
+    return this.router.createUrlTree(['/']);
   }
 }
 

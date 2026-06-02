@@ -1,0 +1,135 @@
+:host {
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  --button-diameter: 60px;
+}
+
+.header-section {
+  display: flex;
+}
+
+.selected-values {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  fieldset {
+    display: flex;
+    gap: 12px;
+    border-radius: 4px;
+
+    button.mat-mdc-fab {
+      width: var(--button-diameter);
+      height: var(--button-diameter);
+      background-color: var(--mat-sys-secondary);
+
+      &.filled {
+        background-color: var(--mat-sys-primary);
+      }
+
+      &.active {
+        border: 5px solid var(--mat-sys-primary);
+      }
+    }
+
+    mat-icon {
+      width: calc(var(--button-diameter) - 12px);
+      height: calc(var(--button-diameter) - 12px);
+    }
+  }
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+
+  mat-icon {
+    width: calc(var(--button-diameter) - 12px);
+    height: calc(var(--button-diameter) - 12px);
+  }
+}
+
+button.mat-mdc-fab {
+  box-shadow: none;
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  width: var(--button-diameter);
+  height: var(--button-diameter);
+  font-size: 42px;
+  font-weight: 700;
+
+  &.mat-mdc-button-disabled {
+    background-color: lightgray;
+  }
+
+  &.delete-button {
+    width: calc(var(--button-diameter) - 10px);
+    height: calc(var(--button-diameter) - 10px);
+    background-color: var(--mat-sys-error);
+    font-size: unset;
+  }
+
+  mat-icon {
+    display: inline-flex;
+  }
+}
+
+.selected-values:not(.alt-design) button.mat-mdc-fab.delete-button {
+   margin-top: 10px;
+}
+
+.alt-design {
+  &.selected-values {
+    justify-content: center;
+
+    img {
+      width: 68px;
+      height: 68px;
+    }
+
+    fieldset {
+      border: none;
+
+      legend {
+        display: none;
+      }
+
+      button.mat-mdc-fab {
+        background-color: white;
+        width: 110px;
+        height: 110px;
+      }
+    }
+  }
+
+  &.button-grid {
+    button.mat-mdc-fab {
+      border-radius: 40px;
+      background-color: white;
+      box-shadow: 10px 5px 5px gray;
+      width: 90px;
+      height: 90px;
+
+      img {
+        width: 68px;
+        height: 68px;
+      }
+    }
+  }
+}
+
+.spacer {
+  width: calc(var(--button-diameter) - 10px);
+}
+
+//Fix icon alignment on buttons
+mat-icon svg {
+  width: inherit;
+  height: inherit;
+}

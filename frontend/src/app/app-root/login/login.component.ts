@@ -1,5 +1,10 @@
-import { Component, OnDestroy, OnInit, inject, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component, OnDestroy, OnInit, inject
+} from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import {
+  FormControl, FormGroup, ReactiveFormsModule, Validators
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
@@ -8,19 +13,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { AuthData } from '@app/app.interfaces';
+import { BackendService } from '@app/backend.service';
 import { FooterService } from '@shared/services/footer.service';
 import { ThemeService } from '@shared/services/theme.service';
-import { MessageService } from '@shared/services/message.service';
+import { HeaderService } from '@shared/services/header.service';
+import { AssetService } from '@shared/services/asset.service';
 import {
   MainDataService,
-  UserAgentService, SharedModule, AlertComponent
+  UserAgentService, SharedModule, AlertComponent, CustomtextPipe
 } from '../../shared/shared.module';
-import { AuthData } from '../../app.interfaces';
-import { BackendService } from '../../backend.service';
 
 @Component({
   templateUrl: 'login.component.html',
-  styleUrl: 'login.component.css',
+  styleUrl: 'login.component.scss',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -31,12 +37,13 @@ import { BackendService } from '../../backend.service';
     MatButtonModule,
     MatCardModule,
     SharedModule,
-    AlertComponent
+    AlertComponent,
+    AsyncPipe,
+    CustomtextPipe
   ]
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
-  @ViewChild('helpDialogTemplate') helpDialogTemplate!: TemplateRef<unknown>;
   static oldLoginName = '';
   private routingSubscription: Subscription | null = null;
   returnTo = '';
@@ -47,6 +54,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
+  protected illustrationImageSrc?: string;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -58,17 +66,24 @@ export class LoginComponent implements OnInit, OnDestroy {
     private backendService: BackendService,
     private router: Router,
     private route: ActivatedRoute,
+    private headerService: HeaderService,
     private footerService: FooterService,
     private themeService: ThemeService,
-    private messageService: MessageService
+    protected assetService: AssetService
   ) { }
 
   ngOnInit(): void {
     this.mainDataService.appSubTitle$.next('Anmelden');
     this.routingSubscription = this.route.params
-      .subscribe(params => { this.returnTo = params.returnTo; });
+      .subscribe(params => {
+        this.returnTo = params.returnTo;
+      });
     this.checkBrowser();
+    this.headerService.title = 'Anmelden';
     this.footerService.showFooter.set(true);
+    this.assetService.assetSlots$.subscribe(() => {
+      this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
+    });
   }
 
   nameInput(): void {
@@ -83,6 +98,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
+        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authDataTyped);
       },
       error: error => {
@@ -104,6 +121,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: authData => {
         this.mainDataService.setAuthData(authData);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authData);
       },
       error: error => {
@@ -126,13 +144,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.username = null;
         this.loginForm.reset();
       }
-    });
-  }
-
-  openDialog() {
-    this.messageService.showInfoDialog({
-      title: 'Anleitung',
-      contentTemplate: this.helpDialogTemplate
     });
   }
 

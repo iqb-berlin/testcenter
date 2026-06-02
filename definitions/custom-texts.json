@@ -1,4 +1,12 @@
 {
+  "login_sidepanel_title": {
+    "label" : "Titel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Willkommen im IQB‑Testcenter"
+  },
+  "login_sidepanel_subtitle": {
+    "label" : "Untertitel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den Zugangsdaten möglich, die Sie vorab erhalten haben."
+  },
   "login_subtitle": {
     "label" : "Titel für Starter-Seite",
     "defaultvalue" : "Testauswahl"
@@ -171,9 +179,21 @@
     "label" : "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
     "defaultvalue" : "Bitte prüfen Sie die Eingaben (unvollständig):"
   },
-  "booketlet_continueButtonLockedUnit" : {
-    "label": "Label für den Button um bei gesperrten Units weiter zuklicken",
+  "booklet_starterStartTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test zu starten",
+    "defaultvalue": "Starten"
+  },
+  "booklet_starterContinueTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test fortzusetzen",
     "defaultvalue": "Weiter"
+  },
+  "booklet_starterViewTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test anzusehen",
+    "defaultvalue": "Ansehen"
+  },
+  "booklet_starterLockedTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf bei gesperrtem Test",
+    "defaultvalue": "Fertig"
   },
   "syscheck_unitPrompt" : {
     "label" : "Titelzeile über der Aufgabe",

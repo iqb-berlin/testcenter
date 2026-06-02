@@ -1,0 +1,41 @@
+<ng-template #projectedContent>
+  <ng-content></ng-content>
+</ng-template>
+
+@if (inputType === 'text-field') {
+  <tc-code-text-field-form [buttonLabel]="buttonLabel" (submitCode)="onSubmit($event)">
+    <ng-container *ngTemplateOutlet="projectedContent"></ng-container>
+  </tc-code-text-field-form>
+} @else {
+  <tc-code-keypad-form [visualMode]="inputType" [length]="length" [disabled]="disabled"
+                       (submitCode)="onSubmit($event)" (clearInput)="problemText = ''">
+    <ng-container *ngTemplateOutlet="projectedContent"></ng-container>
+  </tc-code-keypad-form>
+}
+
+<div class="companion" [class.error]="problemText"
+     [class.hidden]="inputType === 'keypad-symbols-alt' && problemText === ''">
+  @if (inputType !== 'keypad-symbols-alt') {
+    @if (companionImageSrc) {
+      <img [src]="companionImageSrc" alt="Helper character" class="companion-image">
+    }
+  } @else if (problemText) {
+    <img [src]="'assets/images/companion_stars_error.png'" alt="Helper character" class="companion-image">
+  }
+
+  @if (inputType !== 'keypad-symbols-alt') {
+    <img src="assets/images/speech-bubble.svg" alt="speech bubble" class="companion-speech-bubble">
+    <div class="bubble-text">
+      @if (!problemText) {
+        <p class="bubble-title">{{ speechBubbleText.heading }}</p>
+      }
+      <p class="bubble-body" [attr.data-cy]="'login-code-problem'">
+        @if (problemText) {
+          {{ problemText }}
+        } @else {
+          {{ speechBubbleText.body }}
+        }
+      </p>
+    </div>
+  }
+</div>

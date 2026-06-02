@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  ActivatedRouteSnapshot, CanActivate, Router, UrlTree
+  ActivatedRouteSnapshot, CanActivate, RedirectCommand, Router, UrlTree
 } from '@angular/router';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
@@ -14,11 +14,10 @@ export class UnitActivateGuard implements CanActivate {
     private messageService: MessageService
   ) {}
 
-  async canActivate(route: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
-    const targetUnitSequenceId: number = Number(route.params.u);
+  async canActivate(route: ActivatedRouteSnapshot) {
+    // unit-route got called before test is loaded. This happens on page-reload (F5).
     const booklet = this.tcs.booklet;
     if (!booklet) {
-      // unit-route got called before test is loaded. This happens on page-reload (F5).
       const testId = Number(route.parent?.params.t);
       if (!testId) {
         return this.router.parseUrl('/');
@@ -28,6 +27,7 @@ export class UnitActivateGuard implements CanActivate {
     }
 
     let targetUnit: Unit | undefined;
+    const targetUnitSequenceId: number = Number(route.params.u);
 
     try {
       targetUnit = this.tcs.getUnit(targetUnitSequenceId);
@@ -37,16 +37,16 @@ export class UnitActivateGuard implements CanActivate {
         this.messageService.showSnackbar(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       }
       // looking for alternatives where to go
-      const navigation = await this.tcs.closeAllBuffers('canActivate');
+      const currentNavigation = await this.tcs.closeAllBuffers('canActivate');
       if (this.tcs.currentUnit && !TestControllerService.unitIsInaccessible(this.tcs.currentUnit)) {
         // current unit is accessible, so we just stay here
         return false;
       }
-      if (navigation.targets.previous) {
+      if (currentNavigation.targets.previous) {
         // a previous unit is accessible, so we can go there
-        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${navigation.targets.previous}`);
+        return this.router.parseUrl(`/t/${this.tcs.testId}/u/${currentNavigation.targets.previous}`);
       }
-      // we stay anyway
+      // we stay anyway (undefined behaviour on what happens on that unit)
       return false;
     }
 

@@ -12,6 +12,7 @@ import { UsersComponent } from './users.component';
 import { MainDataService, PasswordChangeService } from '../../shared/shared.module';
 import { UserData } from '../superadmin.interfaces';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { MessageService } from '@shared/services/message.service';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -30,6 +31,8 @@ class MockPasswordChangeService {
   // eslint-disable-next-line class-methods-use-this
   showPasswordChangeDialog(): void { }
 }
+
+class MockService { }
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -55,6 +58,7 @@ describe('UsersComponent', () => {
           provide: PasswordChangeService,
           useValue: new MockPasswordChangeService()
         },
+        { provide: MessageService, useValue: new MockService() },
         MainDataService,
         provideHttpClient(withInterceptorsFromDi())
       ]

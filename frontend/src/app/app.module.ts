@@ -35,8 +35,8 @@ import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
 import { TestModeInterceptor } from './test-mode.interceptor';
-import { HeaderComponent } from './app-root/header/header.component';
-import { FooterComponent } from './app-root/footer/footer.component';
+import { HeaderComponent } from './shared/components/header/header.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
 import { TestCardComponent } from './app-root/starter/test-card.component';
 import { ErrorComponent } from '@shared/components/error/error.component';
 

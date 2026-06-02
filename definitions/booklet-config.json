@@ -30,7 +30,8 @@
     "options": {
       "separate": "pages are separated",
       "concat-scroll": "concat-scroll",
-      "concat-scroll-snap": "concat-scroll-snap"
+      "concat-scroll-snap": "concat-scroll-snap",
+      "buttons": "buttons for the next page"
     },
     "defaultvalue": "separate"
   },
@@ -58,6 +59,7 @@
   },
   "show_end_button_in_player": {
     "label": "Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.",
+    "deprecated": true,
     "options": {
       "OFF": "Den Test-Beenden-Button im Player nie anzeigen.",
       "ALWAYS": "Den Test-Beenden-Button im Player immer anzeigen.",
@@ -75,6 +77,7 @@
   },
   "allow_player_to_terminate_test": {
     "label": "Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen entsprechenden Navigationsknopf zeigt.",
+    "deprecated": true,
     "options": {
       "OFF": "Der Player darf den laufenden Test nicht beenden.",
       "LAST_UNIT": "Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.",
@@ -121,7 +124,7 @@
       "BLOCK_LABEL": "Titel des Aufgabenblocks",
       "UNIT_LABEL": "Titel der Unit"
     },
-    "defaultvalue": "NONE"
+    "defaultvalue": "BOOKLET_LABEL"
   },
   "navbar_unit_label": {
     "label": "Darstellung der aktiven Aufgabe/Unit auf der Navigationsleiste.",
@@ -157,6 +160,26 @@
       "FALSE": "Navigationselemente sind benutzbar"
     },
     "defaultvalue": "FALSE"
+  },
+  "navbar_backward_button": {
+    "label": "Zeigt einen Knopf zur Rückwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur vorherigen Seite oder der vorherigen Unit zu navigieren, falls die erste Seite der Unit aktiv ist.",
+    "options": {
+      "HIDDEN": "Navigationselement ist ausgeblendet",
+      "DYNAMIC": "Navigationselement navigiert automatisch zur vorherigen Seite oder Unit",
+      "UNITS": "Navigationselement navigiert zur vorherigen Unit",
+      "PAGES": "Navigationselement navigiert zur vorherigen Seite"
+    },
+    "defaultvalue": "HIDDEN"
+  },
+  "navbar_forward_button": {
+    "label": "Zeigt einen Knopf zur Vorwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur nächsten Seite oder der nächsten Unit zu navigieren, falls die letzte Seite der Unit aktiv ist.",
+    "options": {
+      "HIDDEN": "Navigationselement ist ausgeblendet",
+      "DYNAMIC": "Navigationselement navigiert automatisch zur nächsten Seite oder Unit",
+      "UNITS": "Navigationselement navigiert zur nächsten Unit",
+      "PAGES": "Navigationselement navigiert zur nächsten Seite"
+    },
+    "defaultvalue": "HIDDEN"
   },
   "toolbar_show_unit_title": {
     "label": "Anzeige des Titels der aktiven Unit auf der Werkzeugleiste",

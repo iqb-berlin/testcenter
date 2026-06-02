@@ -28,6 +28,7 @@ import {
 import { AsyncPipe, KeyValuePipe, NgForOf, NgTemplateOutlet } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { AssetService } from '@shared/services/asset.service';
 
 @Component({
   selector: 'tc-starter',
@@ -62,14 +63,20 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
   isSuperAdmin = false;
   availableBooklets?: { name: string; id:string; mode: 'start' | 'continue' | 'view' | 'locked', claim: AccessObject }[] = [];
   showScrollButton = false;
+  protected companionImageSrc?: string;
+  isLoadingClaims = true;
 
   constructor(private router: Router, private bs: BackendService, public cts: CustomtextService,
               public mds: MainDataService, public ds: SysCheckDataService,
               public pcs: PasswordChangeService, private dialog: MatDialog,
               public themeService: ThemeService,
+              public assetService: AssetService,
               private headerService: HeaderService, private ms: MessageService) { }
 
   ngOnInit(): void {
+    this.assetService.assetSlots$.subscribe(() => {
+      this.companionImageSrc = this.assetService.getAssetSrc('starterCompanion');
+    });
     this.ds.networkReports = [];
     this.bs.getSessionData().subscribe(authData => {
       if (!authData || !authData.token) {
@@ -77,6 +84,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.claims = authData.claims;
+      this.isLoadingClaims = false;
       this.mds.setAuthData(authData);
 
       if (

@@ -23,7 +23,9 @@ class DAO {
     'unit_data',
     'files',
     'unit_defs_attachments',
-    'file_relations'
+    'file_relations',
+    'assets',
+    'asset_assignment'
   ];
 
   protected ?PDO $pdoDBhandle = null;
@@ -159,5 +161,11 @@ class DAO {
 
   public function rollBack(): void {
     $this->pdoDBhandle->rollBack();
+  }
+
+  public function insert(string $sql, array $params = []): int
+  {
+    $this->_($sql, $params);
+    return (int)$this->pdoDBhandle->lastInsertId();
   }
 }

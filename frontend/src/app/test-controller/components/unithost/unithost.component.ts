@@ -4,19 +4,25 @@ import {
 import {
   Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject
 } from '@angular/core';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { AlertComponent, CustomtextPipe, MainDataService } from '@shared/shared.module';
-import { AppError } from '@app/app.interfaces';
+import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
+import { CustomtextPipe, MainDataService } from '@shared/shared.module';
+import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { ThemeService } from '@shared/services/theme.service';
+import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
+import { AssetService } from '@shared/services/asset.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
 import {
   Testlet, LoadingProgress, isUnit, NavigationState, isEqualNavigation
 } from '../../interfaces/test-controller.interfaces';
 import {
-  isVeronaNavigationTarget,
+  isVeronaNavigationTarget, SharedParameter,
   VeronaNavigationDeniedReason,
   VeronaPlayerConfig,
   VeronaPlayerRuntimeErrorCodes,
@@ -27,12 +33,6 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormField, MatInput } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -40,13 +40,10 @@ import { MatButton } from '@angular/material/button';
     AsyncPipe,
     MatProgressBar,
     MatCardModule,
-    MatFormField,
     CustomtextPipe,
-    MatInput,
-    AlertComponent,
     FormsModule,
-    MatButton,
-    NgIf
+    NgIf,
+    CodeInputComponent
   ],
   styleUrls: ['./unithost.component.css']
 })
@@ -59,13 +56,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
   resourcesToLoadLabels: string[] = [];
   clearCode: string = '';
 
+  codeInputMode: CodeInputType = 'text-field';
+  codeInputLength: number | undefined; // only used for keypad input
+  codeInputErrorText: string = '';
+  protected loadingProgressImgSrc?: string;
+
   constructor(public tcs: TestControllerService, private mds: MainDataService, private pageService: PageService,
               private apiService: VeronaAPIService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
-              public themeService: ThemeService,
-              private bs: BackendService, private route: ActivatedRoute, private snackBar: MatSnackBar) { }
+              public themeService: ThemeService, public assetService: AssetService,
+              private bs: BackendService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.loadingProgressImgSrc = this.assetService.getAssetSrc('loadingProgress');
     this.iFrameItemplayer = null;
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$
@@ -74,10 +77,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial$
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-      this.subscriptions.conditionsEvaluated = this.tcs.navigation$
-        .pipe(distinctUntilChanged(isEqualNavigation))
+      this.subscriptions.conditionsEvaluated = merge(
+        this.tcs.navigation$.pipe(distinctUntilChanged(isEqualNavigation)),
+        this.tcs.configChanged$.pipe(
+          withLatestFrom(this.tcs.navigation$),
+          map(([, navigationState]) => navigationState)
+        )
+      )
         .subscribe(navigationState => this.updatePlayerConfig(navigationState));
     });
+    const authData = this.mds.getAuthData();
+    this.codeInputMode = authData?.viewSettings.codeInput?.type || 'text-field';
+    this.codeInputLength = authData?.viewSettings.codeInput?.length;
   }
 
   ngOnDestroy(): void {
@@ -172,14 +183,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private handleStateChangedNotification(msg: VopStateChangedNotification): void {
     const unit = this.tcs.getUnit(this.tcs.unitAliasMap[msg.sessionId]);
+    const playerState = msg.playerState;
 
-    if (msg.playerState) {
+    if (playerState) {
       if (unit.sequenceId === this.tcs.currentUnit?.sequenceId) {
-        this.pageService.updateValidPages(msg.playerState.validPages || [], msg.playerState.currentPage);
+        this.pageService.updateValidPages(playerState.validPages || [], playerState.currentPage);
+      }
+
+      if (playerState.sharedParameters) {
+        this.tcs.addSharedParameters(playerState.sharedParameters);
       }
 
       this.tcs.AddToUnitStateBuffer(unit.sequenceId, [
-        { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(msg.playerState.currentPage) },
+        { key: 'CURRENT_PAGE_NR', timeStamp: Date.now(), content: String(playerState.currentPage) },
         { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
         { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
       ]);
@@ -409,7 +425,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitTitle: this.tcs.currentUnit.label,
       unitId: this.tcs.currentUnit.alias,
       stateReportPolicy: 'eager', // for pre-verona-4-players which does not report by default
-      directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`
+      directDownloadUrl: `${resourceUri}file/${groupToken}/ws_${this.tcs.workspaceId}/Resource`,
+      sharedParameters: this.tcs.sharedParameters
     };
     if (
       this.tcs.currentUnit.state.CURRENT_PAGE_ID &&
@@ -434,45 +451,33 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }, '*');
   }
 
-  verifyCodes(): void {
-    if (!this.tcs.currentUnit || (!this.tcs.currentUnit.parent.locked)) {
-      throw new Error('Unit not loaded');
-    }
-
-    const requiredCode =
-      (this.tcs.currentUnit.parent.locked.through.restrictions?.codeToEnter?.code || '').toUpperCase().trim();
-    const givenCode = this.clearCode.toUpperCase().trim();
-
-    if (requiredCode === givenCode) {
-      this.tcs.clearCodeLock(this.tcs.currentUnit.parent.locked.through.id);
-      this.clearCode = '';
-      this.runUnit();
-    } else {
-      if (this.tcs.shouldShowConfirmationUI()) {
-        this.snackBar.open(
-          `Freigabewort '${givenCode}' für '${this.tcs.currentUnit.parent.locked.through.label}' stimmt nicht.`,
-          'OK',
-          {
-            duration: 3000,
-            panelClass: ['snackbar-wrong-block-code']
-          }
-        );
-      }
-      this.clearCode = '';
-    }
-  }
-
-  onKeydownInClearCodeInput($event: KeyboardEvent): void {
-    if ($event.key === 'Enter') {
-      this.verifyCodes();
-    }
-  }
-
   private updatePlayerConfig(navigationState: NavigationState): void {
     this.apiService.postMessageTarget.postMessage({
       type: 'vopPlayerConfigChangedNotification',
       sessionId: this.tcs.currentUnit?.alias,
       playerConfig: this.getPlayerConfig(navigationState)
     }, '*');
+  }
+
+  protected onSubmitCode(code: string) {
+    if (!this.tcs.currentUnit?.parent.locked?.through.restrictions?.codeToEnter?.code) {
+      throw new Error('Freigabe-Code nicht gefunden.');
+    }
+    if (this.isValidCode(code)) {
+      this.tcs.clearCodeLock(this.tcs.currentUnit.parent.locked.through.id);
+      this.runUnit();
+    } else {
+      this.codeInputErrorText =
+        `Freigabewort '${code}' für '${this.tcs.currentUnit?.parent.locked?.through.label}' stimmt nicht.`;
+    }
+  }
+
+  private isValidCode(code: string): boolean {
+    if (!this.tcs.currentUnit?.parent.locked?.through.restrictions?.codeToEnter?.code) {
+      throw new Error('Freigabe-Code nicht gefunden.');
+    }
+    const requiredCode =
+      (this.tcs.currentUnit.parent.locked.through.restrictions.codeToEnter.code);
+    return requiredCode === code;
   }
 }

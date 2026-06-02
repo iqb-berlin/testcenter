@@ -93,6 +93,7 @@ services:
       retries: 3
     volumes:
       - backend_vol:/var/www/testcenter/data
+      - /var/www/testcenter/data/.schemas
     networks:
       testcenter:
 

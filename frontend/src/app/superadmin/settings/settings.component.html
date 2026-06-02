@@ -1,128 +1,187 @@
-<div class="form-grid">
-  <h3>
-    Text-Ersetzungen
-  </h3>
-  <div>
-    <tc-custom-texts></tc-custom-texts>
-  </div>
-</div>
+<mat-tab-group>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <h3>Allgemein</h3>
+    </ng-template>
 
-<form [formGroup]="configForm" class="form-grid">
-  <h3>
-    Warnung auf der Startseite
-  </h3>
-  <div>
-    <mat-form-field appearance="fill">
-      <mat-label>Text</mat-label>
-      <textarea matInput formControlName="globalWarningText"
-                cdkTextareaAutosize
-                cdkAutosizeMinRows="1"></textarea>
-    </mat-form-field>
-    <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
-      <p>Zeige Warnung bis</p>
-      <mat-form-field>
-        <mat-label>Datum</mat-label>
-        <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-select placeholder="Uhrzeit" formControlName="globalWarningExpiredHour">
-          @for (m of expiredHours | keyvalue; track m.key) {
-            <mat-option [value]="m.key">
-              {{m.value}}
-            </mat-option>
+    <div class="form-grid">
+      <h4>
+        Text-Ersetzungen
+      </h4>
+      <div>
+        <tc-custom-texts></tc-custom-texts>
+      </div>
+    </div>
+
+    <form [formGroup]="configForm" class="form-grid">
+      <h4>
+        Warnung auf der Startseite
+      </h4>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Text</mat-label>
+          <textarea matInput formControlName="globalWarningText"
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="1"></textarea>
+        </mat-form-field>
+        <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
+          <p>Zeige Warnung bis</p>
+          <mat-form-field>
+            <mat-label>Datum</mat-label>
+            <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select placeholder="Uhrzeit" formControlName="globalWarningExpiredHour">
+              @for (m of expiredHours | keyvalue; track m.key) {
+                <mat-option [value]="m.key">
+                  {{m.value}}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (warningIsExpired) {
+            <p [style.color]="'darkgoldenrod'">Zeitpunkt ist in der Vergangenheit.</p>
           }
-        </mat-select>
+        </div>
+      </div>
+
+      <h4>
+        Name der Anwendung
+      </h4>
+      <mat-form-field appearance="fill">
+        <input matInput formControlName="appTitle" placeholder="Name">
       </mat-form-field>
-      @if (warningIsExpired) {
-        <p [style.color]="'darkgoldenrod'">Zeitpunkt ist in der Vergangenheit.</p>
-      }
-    </div>
-  </div>
 
-  <h3>
-    Name der Anwendung
-  </h3>
-  <mat-form-field appearance="fill">
-    <input matInput formControlName="appTitle" placeholder="Name">
-  </mat-form-field>
-
-  <h3>
-    Logo
-  </h3>
-  <div>
-    <div class="flex-row" [style.gap.px]="5">
-      <button mat-mini-fab matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above"
-              (click)="hiddenimgfileinput.click()">
-        <mat-icon svgIcon="upload"></mat-icon>
-      </button>
-      <button mat-mini-fab matTooltip="Logo auf Standard setzen" matTooltipPosition="above"
-              (click)="removeLogoImg()">
-        <mat-icon svgIcon="delete"></mat-icon>
-      </button>
-    </div>
-    <img class="logo-img" [src]="logoImageBase64" />
-    <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
-    @if (imageError){
-      <tc-alert level="error" [text]="imageError"></tc-alert>
-    }
-  </div>
-
-  <h3>
-    Startseite
-  </h3>
-  <mat-form-field appearance="fill">
-        <textarea matInput formControlName="introHtml"
+      <h4>
+        Datenschutz
+      </h4>
+      <mat-form-field appearance="fill">
+        <textarea matInput formControlName="privacy"
                   cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
-  </mat-form-field>
-
-  <h3>
-    Impressum
-  </h3>
-  <mat-form-field appearance="fill">
+      </mat-form-field>
+      <h4>
+        Barrierefreiheit
+      </h4>
+      <mat-form-field appearance="fill">
+        <textarea matInput formControlName="accessibility"
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
+      </mat-form-field>
+      <h4>
+        Impressum
+      </h4>
+      <mat-form-field appearance="fill">
         <textarea matInput formControlName="legalNoticeHtml"
                   cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
-  </mat-form-field>
+      </mat-form-field>
 
-  <h3>
-    Fehler-Report
-  </h3>
-  <div>
-    <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
-    <mat-form-field appearance="fill">
-      <mat-label>Ziel-Repository</mat-label>
-      <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-      <mat-label>GitHub-Token</mat-label>
-      <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
-    </mat-form-field>
-  </div>
+      <h4>
+        Fehler-Report
+      </h4>
+      <div>
+        <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
+        <mat-form-field appearance="fill">
+          <mat-label>Ziel-Repository</mat-label>
+          <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>GitHub-Token</mat-label>
+          <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
+        </mat-form-field>
+      </div>
 
-  <h3>
-    Theming
-  </h3>
-  <div>
-    <h4>Theme</h4>
-    <mat-radio-group class="theme-config" formControlName="themeName">
-      @for (theme of themeService.availableThemes; track theme.name) {
-        <mat-radio-button [value]="theme.name">
-          <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
-          <p class="theme-name">{{ theme.name }}</p>
-          <p class="theme-desc">{{ theme.description }}</p>
-        </mat-radio-button>
+      <h4>
+        Theming
+      </h4>
+      <div>
+        <h4>Theme</h4>
+        <mat-radio-group class="theme-config" formControlName="themeName">
+          @for (theme of themeService.availableThemes; track theme.name) {
+            <mat-radio-button [value]="theme.name">
+              <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
+              <p class="theme-name">{{ theme.name }}</p>
+              <p class="theme-desc">{{ theme.description }}</p>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+      </div>
+
+      <div class="actions" [class.sticky-actions]="configForm.dirty">
+        <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
+                [disabled]="!configForm.dirty" (click)="saveAppConfig()">
+          Speichern
+        </button>
+        <button matFab extended [disabled]="!configForm.dirty" (click)="resetAppConfigForm()">
+          Zurücksetzen
+        </button>
+      </div>
+    </form>
+  </mat-tab>
+
+  <mat-tab>
+    <div class="form-grid">
+    <ng-template mat-tab-label>
+      <h3>Bildersetzungen</h3>
+    </ng-template>
+
+    <h4>
+      Bilder verwalten
+    </h4>
+    <div class="image-gallery-panel">
+      <button mat-raised-button color="accent" (click)="assetFileInput.click()">
+        <mat-icon svgIcon="upload"></mat-icon>
+        Bild hochladen
+      </button>
+      <input #assetFileInput type="file" (change)="assetService.uploadAsset($event)" [hidden]="true" />
+      <div class="asset-container">
+        @if (availableAssets.length) {
+          <mat-grid-list cols="5" rowHeight="280px" gutterSize="12px">
+            @for (asset of availableAssets; track asset.id) {
+              <mat-grid-tile>
+                <mat-card class="asset-card">
+                  <mat-card-header>
+                    <mat-card-title>{{ asset.originalName }}</mat-card-title>
+                  </mat-card-header>
+                  <img mat-card-image [src]="asset.url" [alt]="asset.originalName"/>
+                  <mat-card-actions>
+                    <button matButton (click)="assetService.deleteAsset(asset.id)">Bild entfernen</button>
+                  </mat-card-actions>
+                </mat-card>
+              </mat-grid-tile>
+            }
+          </mat-grid-list>
+        } @else {
+          <p class="empty">Keine Bilder vorhanden</p>
+        }
+      </div>
+    </div>
+
+    <h4>Zuordnung</h4>
+    <div class="flex-column" [style.gap.px]="10">
+      @if (assetService.assetSlots$ | async; as slots) {
+        @for (slot of assetService.availableAssetSlots; track slot) {
+          <div class="flex-row" [style.align-items]="'center'" [style.gap.px]="20">
+            <p [style.width.px]="150">{{ ASSET_SLOT_LABELS[slot.slotLabel] }}</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Bild auswählen</mat-label>
+              <mat-select [value]="$any(slots)[slot.slotName]?.assetID ?? undefined"
+                          (valueChange)="assetService.updateSlot(slot.slotName, $event)">
+                <mat-option [value]="undefined">Keines</mat-option>
+                @for (asset of assetService.allAssets; track asset.id) {
+                  <mat-option [value]="asset.id">
+                    {{ asset.originalName }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
       }
-    </mat-radio-group>
+      <button matFab extended  (click)="assetService.saveAssetSlots()">
+        Zuordnung speichern
+      </button>
+    </div>
   </div>
-
-  <div class="actions" [class.sticky-actions]="configForm.dirty">
-    <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
-            [disabled]="!configForm.dirty" (click)="saveAppConfig()">
-      Speichern
-    </button>
-    <button matFab extended [disabled]="!configForm.dirty" (click)="resetAppConfigForm()">
-      Zurücksetzen
-    </button>
-  </div>
-</form>
+  </mat-tab>
+</mat-tab-group>

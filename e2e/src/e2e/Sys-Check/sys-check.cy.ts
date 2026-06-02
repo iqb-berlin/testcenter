@@ -96,7 +96,7 @@ describe('Sys-Check', () => {
     cy.get('#syscheck-next-step');
   });
 
-  // todo ui/ux - dont understand how this worked before - we cannot seem to get the getSysCheckMode from the testDb
+  // todo - Funktion des globalen Schalters ist mit UI/UX-Änderungen entfallen
   it.skip('a global system-check button must be visible, if there is no sc-login in TT', () => {
     loginSuperAdmin();
     openWorkspace('workspace-card-sample_workspace', 1);

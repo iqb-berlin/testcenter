@@ -2,23 +2,31 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormsModule, ReactiveFormsModule
 } from '@angular/forms';
-import { KeyValuePipe } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { MatFabButton, MatMiniFabButton } from '@angular/material/button';
-import { MatTooltip } from '@angular/material/tooltip';
+import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
 import { MessageService } from '@shared/services/message.service';
-import { MainDataService } from '../../shared/services/maindata/maindata.service';
+import { Asset, AssetService } from '@shared/services/asset.service';
+import { MatGridList, MatGridTile } from '@angular/material/grid-list';
+import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardHeader,
+  MatCardImage,
+  MatCardTitle
+} from '@angular/material/card';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { AppConfig } from '@shared/classes/app.config';
+import { AppSettings } from '@shared/interfaces/app-config.interfaces';
+import { ThemeService } from '@shared/services/theme.service';
 import { BackendService } from '../backend.service';
-import { AppConfig } from '../../shared/classes/app.config';
-import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
-import { ThemeService } from '../../shared/services/theme.service';
-import { AlertComponent, SharedModule } from '../../shared/shared.module';
 import { EditCustomTextsComponent } from './edit-custom-texts.component';
 
 @Component({
@@ -34,26 +42,32 @@ import { EditCustomTextsComponent } from './edit-custom-texts.component';
     MatDatepicker,
     MatSelect,
     MatOption,
-    MatMiniFabButton,
-    MatTooltip,
     MatIcon,
     MatRadioGroup,
     MatRadioButton,
     FormsModule,
-    SharedModule,
     EditCustomTextsComponent,
     MatFabButton,
-    AlertComponent
+    MatButton,
+    MatGridList,
+    MatGridTile,
+    MatCard,
+    MatCardImage,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardActions,
+    AsyncPipe,
+    MatTabGroup,
+    MatTab,
+    MatTabLabel
   ],
   templateUrl: 'settings.component.html',
-  styleUrls: ['settings.component.css']
+  styleUrls: ['settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
   private configDataChangedSubscription: Subscription | null = null;
   configForm: FormGroup;
   warningIsExpired = false;
-  imageError: string | null = '';
-  logoImageBase64 = '';
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -81,12 +95,26 @@ export class SettingsComponent implements OnInit {
     23: '23:00 Uhr'
   };
 
+  protected availableAssets: Asset[] = [];
+
+  protected ASSET_SLOT_LABELS: Record<string, string> = {
+    logo: 'Logo',
+    loginIllustration: 'Login-Illustration',
+    codeInputIllustration: 'Code-Eingabe-Illustration',
+    codeInputCompanion: 'Code-Eingabe-Begleiter',
+    starterCompanion: 'Startmenü-Begleiter',
+    starterCardDone: 'Startmenü-Karte-Fertig',
+    loadingProgress: 'Ladeanimation',
+    confirmDialog: 'Bestätigungsdialog'
+  };
+
   constructor(private formBuilder: FormBuilder, private backendService: BackendService,
-              public themeService: ThemeService,
+              public themeService: ThemeService, public assetService: AssetService,
               private messageService: MessageService, private mainDataService: MainDataService) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
-      introHtml: this.formBuilder.control(''),
+      privacy: this.formBuilder.control(''),
+      accessibility: this.formBuilder.control(''),
       legalNoticeHtml: this.formBuilder.control(''),
       globalWarningText: this.formBuilder.control(''),
       globalWarningExpiredDay: this.formBuilder.control(''),
@@ -101,8 +129,9 @@ export class SettingsComponent implements OnInit {
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.setValue({
       appTitle: appConfig.appTitle,
-      introHtml: appConfig.introHtml,
       legalNoticeHtml: appConfig.legalNoticeHtml,
+      privacy: appConfig.privacyNotice,
+      accessibility: appConfig.accessibilityNotice,
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
@@ -114,24 +143,26 @@ export class SettingsComponent implements OnInit {
       appConfig.globalWarningExpiredDay,
       appConfig.globalWarningExpiredHour
     );
-    this.logoImageBase64 = appConfig.mainLogo;
     this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
       this.warningIsExpired = AppConfig.isWarningExpired(
         this.configForm.get('globalWarningExpiredDay')?.value,
         this.configForm.get('globalWarningExpiredHour')?.value
       );
     });
+    this.assetService.getAvailableAssets().subscribe(assets => {
+      this.availableAssets = assets;
+    });
   }
 
   saveAppConfig(): void {
     const appConfig: AppSettings = {
       appTitle: this.configForm.get('appTitle')?.value,
-      introHtml: this.configForm.get('introHtml')?.value,
       legalNoticeHtml: this.configForm.get('legalNoticeHtml')?.value,
+      privacyNotice: this.configForm.get('privacy')?.value,
+      accessibilityNotice: this.configForm.get('accessibility')?.value,
       globalWarningText: this.configForm.get('globalWarningText')?.value,
       globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
-      mainLogo: this.logoImageBase64,
       bugReportTarget: this.configForm.get('bugReportTarget')?.value,
       bugReportAuth: this.configForm.get('bugReportAuth')?.value,
       themeName: this.configForm.get('themeName')?.value
@@ -155,8 +186,9 @@ export class SettingsComponent implements OnInit {
     const appConfig: AppConfig = await firstValueFrom(this.mainDataService.appConfig$);
     this.configForm.reset({
       appTitle: appConfig.appTitle,
-      introHtml: appConfig.introHtml,
       legalNoticeHtml: appConfig.legalNoticeHtml,
+      privacy: appConfig.privacyNotice,
+      accessibility: appConfig.accessibilityNotice,
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
@@ -164,63 +196,6 @@ export class SettingsComponent implements OnInit {
       bugReportTarget: appConfig.bugReportTarget,
       themeName: appConfig.themeName
     });
-  }
-
-  imgFileChange(fileInput: Event): void {
-    const target = fileInput.target as HTMLInputElement;
-    const files = target.files as FileList;
-    this.imageError = null;
-    if (files && files[0]) {
-      // todo check max values
-      const maxSize = 20971520;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
-      const maxHeight = 15200;
-      const maxWidth = 25600;
-
-      if (files[0].size > maxSize) {
-        this.imageError = `Datei zu groß ( > ${maxSize / 1000} Mb)`;
-        return;
-      }
-
-      if (allowedTypes.indexOf(files[0].type) < 0) {
-        const allowedImageTypesTruncated: string[] = [];
-        allowedTypes.forEach((imgType: string) => {
-          allowedImageTypesTruncated.push(imgType.substr(5));
-        });
-        this.imageError = `Zulässige Datei-Typen: (${allowedImageTypesTruncated.join(', ')})`;
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = e => {
-        if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
-          this.imageError = 'Konnte Bild nicht lesen';
-          return;
-        }
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = rs => {
-          const imgTargetElement = rs.currentTarget as HTMLImageElement;
-          const imgHeight = imgTargetElement.height;
-          const imgWidth = imgTargetElement.width;
-          if (imgHeight > maxHeight && imgWidth > maxWidth) {
-            this.imageError = `Unzulässige Größe (maximal erlaubt: ${maxHeight}*${maxWidth}px)`;
-            return false;
-          }
-          if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
-            this.imageError = 'Konnte Bild nicht lesen';
-            return false;
-          }
-          this.logoImageBase64 = e.target.result;
-          return true;
-        };
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  }
-
-  removeLogoImg(): void {
-    this.logoImageBase64 = DEFAULT_LOGO;
   }
 
   ngOnDestroy(): void {

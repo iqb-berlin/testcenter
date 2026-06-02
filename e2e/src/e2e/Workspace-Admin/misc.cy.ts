@@ -17,16 +17,16 @@ describe('Workspace-Admin Login', () => {
     cy.get('[data-cy="change-password"]')
       .click();
     cy.get('[formcontrolname="pw"]')
-      .type('ws_password_new')
+      .type('ws_password_new');
     cy.get('[formcontrolname="pw_confirm"]')
-      .type('ws_password_new')
+      .type('ws_password_new');
     cy.get('[type="submit"]')
       .click();
     cy.contains('Schließen')
       .click();
-    logoutAdmin();
+    cy.get('[data-cy="login-admin-form"]');
+    //Testmode geht verloren, also nochmal neu anwählen
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password_new');
   });
 });
-

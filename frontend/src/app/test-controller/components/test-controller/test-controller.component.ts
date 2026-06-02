@@ -68,6 +68,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     maxIndex: 0
   };
 
+  testLoaded = false;
+
   constructor(public mainDataService: MainDataService,
               public tcs: TestControllerService,
               private bs: BackendService,
@@ -122,6 +124,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.testId = params.t;
           try {
             await this.tls.loadTest();
+            this.testLoaded = true;
           } catch (err) {
             if (err instanceof MissingBookletError) { // this happens when loading was aborted.
               // eslint-disable-next-line no-console
@@ -157,10 +160,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         };
 
         switch (this.tcs.booklet?.config.header_content) {
-          case 'BLOCK_LABEL': this.headerService.title = this.currentUnit?.parent.label; break;
-          case 'BOOKLET_LABEL': this.headerService.title = this.tcs.booklet?.metadata.label; break;
-          case 'UNIT_LABEL': this.headerService.title = this.currentUnit?.label; break;
-          // no default
+        case 'NONE':
+          this.headerService.title = '';
+          break;
+        case 'BLOCK_LABEL':
+          this.headerService.title = this.currentUnit?.parent.label;
+          break;
+        case 'BOOKLET_LABEL':
+          this.headerService.title = this.tcs.booklet?.metadata.label;
+          break;
+        case 'UNIT_LABEL':
+          this.headerService.title = this.currentUnit?.label;
+          break;
+        // no default
         }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
@@ -431,4 +443,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   protected readonly unitNavigationTarget = UnitNavigationTarget;
+
+  protected onNavBack() {
+    const mode = this.tcs.booklet?.config?.navbar_backward_button;
+    if (mode === 'UNITS' || (mode === 'DYNAMIC' && this.pageService.isFirstPage())) {
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PREVIOUS);
+    } else {
+      this.gotoPreviousPage();
+    }
+  }
+
+  protected onNavForward() {
+    const mode = this.tcs.booklet?.config?.navbar_forward_button;
+    if (mode === 'UNITS' || (mode === 'DYNAMIC' && this.pageService.isLastPage())) {
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+    } else {
+      this.gotoNextPage();
+    }
+  }
 }

@@ -4,12 +4,15 @@ import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.comp
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { InfoDialogComponent } from '@shared/components/dialog/info-dialog.component';
+import { ThemeService } from '@shared/services/theme.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  constructor(private _snackBar: MatSnackBar, private dialog: MatDialog) {}
+  constructor(private _snackBar: MatSnackBar, private dialog: MatDialog,
+              private mds: MainDataService, private themeService: ThemeService) {}
 
   showSnackbar(text: string, actionText: string = 'Schließen'): MatSnackBarRef<TextOnlySnackBar> {
     return this._snackBar.open(text, actionText, {
@@ -18,9 +21,17 @@ export class MessageService {
   }
 
   showConfirmDialog(dialogData: ConfirmDialogData): Observable<boolean> {
+    // Any kind of admin or group-monitor is assumed to be adult and gets
+    // the unsafe mode, regardless of the theme.
+    const userClaims = this.mds.getAuthData()?.claims;
+    const isAdmin: boolean =
+      typeof userClaims?.superAdmin !== 'undefined' ||
+      userClaims?.workspaceAdmin !== undefined ||
+      userClaims?.testGroupMonitor !== undefined;
+    const safeMode: boolean = !isAdmin && this.themeService.activeTheme.targetAudience === 'children';
     return this.dialog.open(ConfirmDialogComponent, {
-      data: dialogData,
-      autoFocus: dialogData.focusCancel ? '.cancel-button' : 'first-tabbable'
+      data: { ...dialogData, safeMode },
+      autoFocus: 'dialog'
     }).afterClosed();
   }
 
@@ -44,5 +55,5 @@ export type DialogData =
 export type ConfirmDialogData = DialogData & {
   confirmText? : string;
   cancelText? : string;
-  focusCancel?: boolean;
+  safeMode?: boolean;
 };

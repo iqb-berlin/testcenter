@@ -1,19 +1,33 @@
 <tc-debug-pane *ngIf="debugPane" />
 
 <div class="nav-header flex-row">
-  @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN') {
+  @if (tcs.booklet?.config?.navbar_backward_button !== 'HIDDEN' && testLoaded) {
+    <button matButton="tonal" class="nav-button" (click)="onNavBack()">
+      <mat-icon svgIcon="chevron_left"></mat-icon>
+      Zurück
+    </button>
+  }
+
+  @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN' && testLoaded) {
     <tc-navigation-control [navContext]="unitNavContext"
                            dataCy="unit-navigation"
                            (back)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
                            (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
     </tc-navigation-control>
   }
-  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN') {
+  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && testLoaded) {
     <tc-navigation-control [navContext]="pageNavContext"
                            dataCy="page-navigation"
                            (back)="gotoPreviousPage()"
                            (forward)="gotoNextPage()">
     </tc-navigation-control>
+  }
+
+  @if (tcs.booklet?.config?.navbar_forward_button !== 'HIDDEN' && testLoaded) {
+    <button matButton="tonal" class="nav-button" (click)="onNavForward()">
+      Weiter
+      <mat-icon svgIcon="chevron_right" iconPositionEnd></mat-icon>
+    </button>
   }
 
   <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"

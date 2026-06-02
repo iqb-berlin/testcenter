@@ -156,7 +156,6 @@ export const logoutAdmin = () => cy.url()
       cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
       logout();
-      cy.get('[data-cy="login-admin-form"]');
     }
     cy.get('[data-cy="login-admin-form"]');
   });
@@ -175,15 +174,13 @@ export const logoutFromRunningTestWithConfirmation = (): Chainable => {
       cy.get('[data-cy="logo"]')
         .click();
     }
-
     cy.get('[data-cy="endTest-1"]').click();
     cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
     cy.contains('Übersicht').should('be.visible');
     logout();
     cy.wait('@waitForDeleteSession');
-
-    return cy.get('[data-cy="login-admin-form"]');
+    cy.get('[data-cy="login-admin-form"]');
   });
 };
 
@@ -204,8 +201,7 @@ export const logoutFromTestNoConfirmation = (): Chainable => {
     cy.contains('Übersicht').should('be.visible');
     logout();
     cy.wait('@waitForDeleteSession');
-
-    return cy.get('[data-cy="login-admin-form"]');
+    cy.get('[data-cy="login-admin-form"]');
   });
 };
 
@@ -444,6 +440,8 @@ export const expectUnitMenuToBe = (expectations: string[]) => cy.get('[data-cy*=
 export const logout = () => {
   cy.get('[data-cy="account-button"]').click();
   cy.get('[data-cy="logout-button"]').click();
+  cy.get('[data-cy="dialog-confirm"]').click();
+  cy.get('[data-cy="login-admin-form"]');
 };
 
 export const checkUserName = (name: string) => {

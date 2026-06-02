@@ -30,6 +30,7 @@ class XMLFileTest extends TestCase {
   }
 
   public function setUp(): void {
+    SystemConfig::$enable_xmlschema_validation = true;
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     VfsForTest::setUp(true);
   }
@@ -118,14 +119,21 @@ class XMLFileTest extends TestCase {
   }
 
   function test_loadFromInvalid() {
-    file_put_contents(DATA_DIR . "/ws_1/invalid.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata><Invalid></Invalid></Booklet>');
+    file_put_contents(
+      DATA_DIR . "/ws_1/invalid.xml",
+      '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+      . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
+      . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
+      . '<Invalid></Invalid>'
+      . '</Booklet>'
+    );
     $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml');
 
     $this->assertEquals('invalid.xml', $xf->getName());
     $this->assertEquals('C', $xf->getId());
     $this->assertEquals('vfs://root/data/ws_1/invalid.xml', $xf->getPath());
     $this->assertEquals('d', $xf->getLabel());
-    $this->assertEquals(85, $xf->getSize());
+    $this->assertEquals(225, $xf->getSize());
     $this->assertEquals('Booklet', $xf->getRootTagName());
     $this->assertEquals('', $xf->getDescription());
     $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Units ).", $this->getErrorString($xf));

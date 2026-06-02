@@ -1,7 +1,8 @@
 @use './material-overrides' as material-overrides;
 
 @mixin base-colors {
-  --mat-sys-on-primary: #FFFFFFFF;
+  --mat-sys-on-primary: #FFF;
+  --mat-sys-primary-container: #FFF;
   --mat-sys-on-secondary-container: var(--mat-sys-primary);
   --mat-sys-surface: #FFF;
   --mat-sys-surface-container: #FFF;

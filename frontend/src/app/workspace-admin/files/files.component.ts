@@ -130,8 +130,7 @@ export class FilesComponent implements OnInit, OnDestroy {
       title: 'Löschen von Dateien',
       content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}
           ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
-      confirmText: 'Löschen',
-      focusCancel: true
+      confirmText: 'Löschen'
     }).subscribe(result => {
       if (result) {
         this.bs.deleteFiles(this.wds.workspaceId, filesToDelete)

@@ -1,0 +1,50 @@
+import { Component } from '@angular/core';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { MatButton } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'tc-footer',
+  imports: [
+    MatButton,
+    RouterLink
+  ],
+  template: `
+    <footer>
+      <div class="version-label">
+        @if (mainDataService.isTestingMode) {
+          <span style="color:red">Testmode!</span>
+        }
+        Version {{mainDataService.appConfig?.version}}
+      </div>
+      <div class="all-buttons">
+        <a matButton [routerLink]="['/accessibility']">Barrierefreiheit</a>
+        <a matButton [routerLink]="['/privacy']">Datenschutz</a>
+        <a matButton [routerLink]="['/legal-notice']">Impressum</a>
+      </div>
+    </footer>
+  `,
+  styles: `
+    footer {
+      height: 24px;
+      padding: 16px;
+      background: var(--theme-gray-05, #F4F2F2);
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .all-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+    }
+    footer button {
+      max-height: 100%;
+    }
+  `
+})
+export class FooterComponent {
+  constructor(public mainDataService: MainDataService) {
+  }
+}

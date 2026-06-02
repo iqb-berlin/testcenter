@@ -80,9 +80,11 @@ describe('Management Workspaces (workspace-tab)', () => {
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');
     clickCardButton('workspace-card-sample_workspace');
-    cy.get('[data-cy="upload-files"]')
+    cy.get('[data-cy="upload-files"]');
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled');
+    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+      .click();
     cy.get('[data-cy="delete-files"]')
       .should('be.enabled');
   });
@@ -111,7 +113,7 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.get('[data-cy="dialog-title"]')
       .contains('Löschen von Arbeitsbereichen');
     cy.get('[data-cy="dialog-confirm"]')
-      .contains('Arbeitsbereich/e löschen')
+      .contains('Arbeitsbereich(e) löschen')
       .click();
     cy.contains('newName')
       .should('not.exist');

@@ -15,11 +15,13 @@ export class BookletConfigData {
   unit_responses_buffer_time: string = '5000';
   unit_state_buffer_time: string = '6000';
   test_state_buffer_time: string = '1000';
-  header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' = 'NONE';
+  header_content: 'NONE' | 'BOOKLET_LABEL' | 'BLOCK_LABEL' | 'UNIT_LABEL' = 'BOOKLET_LABEL';
   navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
   navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
   navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
   navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
+  navbar_backward_button: 'HIDDEN' | 'DYNAMIC' | 'UNITS' | 'PAGES' = 'HIDDEN';
+  navbar_forward_button: 'HIDDEN' | 'DYNAMIC' | 'UNITS' | 'PAGES' = 'HIDDEN';
   toolbar_show_unit_title: 'TRUE' | 'FALSE' = 'TRUE';
   toolbar_show_unit_list: 'TRUE' | 'FALSE' = 'FALSE';
   toolbar_show_fullscreen_button: 'TRUE' | 'FALSE' = 'FALSE';

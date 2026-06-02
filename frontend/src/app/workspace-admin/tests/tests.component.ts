@@ -185,8 +185,7 @@ export class TestsComponent implements OnInit, OnDestroy {
       title: 'Löschen von Test-Sessions',
       content: `Sie haben ${p ? selectedSessions.length : 'eine'} Test-Session${p ? 's' : ''} ` +
         `ausgewählt. Soll${p ? 'en' : ''} diese gelöscht werden?`,
-      confirmText: 'Löschen',
-      focusCancel: true
+      confirmText: 'Löschen'
     }).subscribe(result => {
       if (result) {
         this.backendService.deleteTestSessionResponses(workspaceId, selectedSessions).subscribe({

@@ -19,7 +19,8 @@ class XMLFileTesttakersExposed extends XMLFileTesttakers {
  */
 class XMLFilesTesttakersTest extends TestCase {
   private $exampleXML1 = <<<END
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
   <Metadata>
     <Description>example</Description>
   </Metadata>
@@ -44,7 +45,8 @@ class XMLFilesTesttakersTest extends TestCase {
 END;
 
   private $exampleXML2 = <<<END
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
   <Metadata>
     <Description>example</Description>
   </Metadata>
@@ -267,6 +269,44 @@ END;
     $result = $xmlFile->getGroups();
 
     $this->assertEquals($expected, $result);
+  }
+
+  function test_getAssetAssignments() {
+    $xml = <<<END
+<Testtakers>
+  <Metadata><Description>example</Description></Metadata>
+  <Group id="sample_group" label="Sample Group">
+    <AssetAssignments>
+      <Asset slot="logo"> school-logo.png </Asset>
+    </AssetAssignments>
+    <Login mode="run-hot-return" name="sample_user" pw="pw">
+      <Booklet>BOOKLET.SAMPLE-1</Booklet>
+      <AssetAssignments>
+        <Asset slot="loginCompanion">companion.png</Asset>
+      </AssetAssignments>
+    </Login>
+  </Group>
+</Testtakers>
+END;
+
+    $xmlFile = XMLFileTesttakers::fromString($xml);
+
+    $expected = [
+      [
+        'slotName' => 'logo',
+        'assetName' => 'school-logo.png',
+        'scope' => 'group',
+        'scopeId' => 'sample_group'
+      ],
+      [
+        'slotName' => 'loginCompanion',
+        'assetName' => 'companion.png',
+        'scope' => 'user',
+        'scopeId' => 'sample_user'
+      ]
+    ];
+
+    $this->assertEquals($expected, $xmlFile->getAssetAssignments());
   }
 
   function test_getAllLogins() {

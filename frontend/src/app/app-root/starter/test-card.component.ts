@@ -4,7 +4,9 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { ThemeService } from '@shared/services/theme.service';
+import { AssetService } from '@shared/services/asset.service';
+import { AsyncPipe } from '@angular/common';
+import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 
 @Component({
   selector: 'tc-test-card',
@@ -13,7 +15,9 @@ import { ThemeService } from '@shared/services/theme.service';
     MatCard,
     MatCardActions,
     MatCardHeader,
-    MatIcon
+    MatIcon,
+    AsyncPipe,
+    CustomtextPipe
   ],
   template: `
     <mat-card>
@@ -29,12 +33,20 @@ import { ThemeService } from '@shared/services/theme.service';
             @if (mode) {
               <mat-icon [svgIcon]="icons[mode]"></mat-icon>
             }
-            {{ buttonLabel ? buttonLabel : mode ? labels[mode] : 'Bearbeiten' }}
+            @if (buttonLabel) {
+              {{buttonLabel}}
+            } @else {
+              @if (mode) {
+                {{ labels[mode].defaultLabel | customtext : labels[mode].customTextKey | async }}
+              } @else {
+                Bearbeiten
+              }
+            }
           </button>
         </mat-card-actions>
       </div>
       @if (mode === 'locked') {
-        <img class="done-image" [src]="themeService.activeTheme.imagePaths?.starterCardDone"
+        <img class="done-image" [src]="assetService.getAssetSrc('starterCardDone')"
              alt="companion-test-done"/>
       }
     </mat-card>
@@ -80,12 +92,24 @@ export class TestCardComponent {
     locked: 'block'
   };
 
-  labels = {
-    start: 'Starten',
-    continue: 'Fortsetzen',
-    view: 'Ansehen',
-    locked: 'gesperrt'
+  labels: Record<string, { defaultLabel: string, customTextKey: string }> = {
+    start: {
+      defaultLabel: 'Starten',
+      customTextKey: 'booklet_starterStartTestButtonLabel'
+    },
+    continue: {
+      defaultLabel: 'Fortsetzen',
+      customTextKey: 'booklet_starterContinueTestButtonLabel'
+    },
+    view: {
+      defaultLabel: 'Ansehen',
+      customTextKey: 'booklet_starterViewTestButtonLabel'
+    },
+    locked: {
+      defaultLabel: 'Gesperrt',
+      customTextKey: 'booklet_starterLockedTestButtonLabel'
+    }
   };
 
-  constructor(public themeService: ThemeService) { }
+  constructor(public assetService: AssetService) { }
 }

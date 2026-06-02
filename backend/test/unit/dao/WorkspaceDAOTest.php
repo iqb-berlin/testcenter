@@ -40,6 +40,7 @@ class WorkspaceDAOTest extends TestCase {
 
   // TODO make a test for adding
   public function test_storeFileMeta_overwrite(): void {
+    SystemConfig::$enable_xmlschema_validation = true;
     $file = XMLFileBooklet::fromString('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', 'Booklet.xml');
 
     $this->dbc->storeFile($file);
@@ -79,7 +80,7 @@ class WorkspaceDAOTest extends TestCase {
         'verona_module_type' => '',
         'verona_version' => '',
         'verona_module_id' => '',
-        'is_valid' => 1,
+        'is_valid' => 0,
         'validation_report' => 'ignore',
         'modification_ts' => '1970-01-01 01:00:01',
         'size' => 0,

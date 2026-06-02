@@ -4,6 +4,15 @@
 
 .mat-mdc-card {
   width: 400px;
+  border: 3px solid var(--mat-sys-secondary);
+
+  mat-card-title {
+    padding-bottom: 20px;
+  }
+
+  mat-card-actions {
+    padding: 16px;
+  }
 }
 
 :host {

@@ -37,6 +37,7 @@ import { PositionPipe } from './test-session/position.pipe';
 import { BookletStatesPipe } from './test-session/bookletstates.pipe';
 import { TestletvisiblePipe } from './test-session/testletvisible.pipe';
 import { TimeRestrictionDialogComponent } from './time-restriction-dialog/time-restriction-dialog.component';
+import { TemplateContextDirective } from '@shared/directives/template-context.directive';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import { TimeRestrictionDialogComponent } from './time-restriction-dialog/time-r
     MatCardModule,
     MatInputModule,
     CustomtextPipe,
-    AlertComponent
+    AlertComponent,
+    TemplateContextDirective
   ],
   providers: [
     BackendService,

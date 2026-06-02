@@ -10,11 +10,36 @@
   gap: 12px;
 }
 
+.nav-header .nav-button {
+  background-color: white;
+}
+
+/*Fix icon alignment on iPads*/
+.nav-header .nav-button mat-icon {
+  display: inline-flex;
+}
+
+.toolbar-header {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.30);
+  margin-bottom: 5px;
+  font-size: 18px;
+  padding: 0 25px;
+}
+
+.toolbar-header p {
+  margin: 0;
+  align-self: center;
+}
+
 .toolbar-header .toolbar-right {
   margin-left: auto;
   display: flex;
   align-items: center;
   color: var(--mat-sys-primary);
+}
+
+.toolbar-header .toolbar-right button {
+  font-size: inherit;
 }
 
 .toolbar-header .toolbar-right p {
@@ -25,7 +50,6 @@
   flex: 1;
 }
 
-
 mat-sidenav {
-  width: 700px;
+  width: unset;
 }

@@ -4,10 +4,9 @@ import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { CodeInputComponent } from './app-root/code-input/code-input.component';
+import { CodeLoginComponent } from './app-root/code-login/code-login.component';
 import {
   AdminComponentActivateGuard,
-  AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
   DirectLoginActivateGuard,
   GroupMonitorActivateGuard,
@@ -18,10 +17,9 @@ import {
   TestComponentActivateGuard
 } from './app-route-guards';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
+import { GenericInfoPageComponent } from './app-root/generic-info-page/generic-info-page.component';
 import { AppModuleSettings } from './app.interfaces';
 import { StarterComponent } from './app-root/starter/starter.component';
-import { FabFormComponent } from './app-root/code-input/fab-form/fab-form.component';
 
 const routes: Routes = [
   {
@@ -63,7 +61,7 @@ const routes: Routes = [
       },
       {
         path: 'code-input',
-        component: CodeInputComponent,
+        component: CodeLoginComponent,
         canActivate: [CodeInputComponentActivateGuard]
       },
       {
@@ -75,7 +73,27 @@ const routes: Routes = [
   },
   {
     path: 'legal-notice',
-    component: LegalNoticeComponent
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Rechtliches',
+      contentKey: 'trustedLegalNoticeHtml'
+    }
+  },
+  {
+    path: 'privacy',
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Datenschutz',
+      contentKey: 'trustedPrivacyNotice'
+    }
+  },
+  {
+    path: 'accessibility',
+    component: GenericInfoPageComponent,
+    data: {
+      title: 'Barrierefreiheit',
+      contentKey: 'trustedAccessibilityNotice'
+    }
   },
   {
     path: 'check',
@@ -124,12 +142,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: false })],
+  imports: [RouterModule.forRoot(routes, {
+    enableTracing: false,
+    canceledNavigationResolution: 'computed'
+  })],
   exports: [RouterModule],
   providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard,
     CodeInputComponentActivateGuard, AdminComponentActivateGuard,
-    SuperAdminComponentActivateGuard, TestComponentActivateGuard,
-    AdminOrSuperAdminComponentActivateGuard
+    SuperAdminComponentActivateGuard, TestComponentActivateGuard
   ]
 })
 export class AppRoutingModule { }

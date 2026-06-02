@@ -200,7 +200,7 @@ class SessionController extends Controller {
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
       $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
 
-      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
+      $accessSet = AccessSet::createFromPersonSession($personSession, $workspaceData, ...$testsOfPerson, ...array_values($groupMonitors), ...$sysChecks);
       return $response->withJson($accessSet);
     }
 
