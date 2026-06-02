@@ -1,92 +1,128 @@
-# next
+TODO
+- navigationsbeschraenkung #preventNav
+- sharedParams
+- xds auslagerung ergaenzen mit link und evtl. erklaerung
 
+# 18.0.0
+Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, einen neuen Theming-Mechanismus und das Austauschen von Bildern.
 
-## Änderungen zu 18.0.0-beta
-* custom texts 
-  * login_sidepanel_title
-  * login_sidepanel_subtitle
-* Kompatibilität mit alten Booklet Configs trotz der neuen Configs sichergestellt, wo anwendbar. Einige Configs werden in der neuen UI/UX nicht fortgeführt
+## Neue Funktionen
+### Theming
+  - Das Theme kann von Super-Admins global, als auch via Testtaker-Definition individuell ausgewählt werden. Das Theme kann für einzelne Zugänge via *ViewSettings* angepasst werden.
+    - Aktuell gibt es 3 mitgelieferte Themes, die Farben und Bilder definieren:
+      - "Primar"
+      - "Sekundar"
+      - "Erwachsene"
+### ViewSettings
+  - In der testtaker.xml-Datei können für einzelne Zugänge Anpassungen vorgenommen werden, die das Aussehen und Verhalten über das Theme hinaus beeinflussen. Das betrifft im Moment die Auswahl und Anpassung der Codeeingabe.
+  - Anpassung auf Gruppenebene ist aktuell noch nicht möglich.
+  - Die Einstellung zur Sichtbarkeit der Booklets in Gruppenmonitor-Zugängen ist jetzt ebenfalls hier angesiedelt.
+  - Hier ist beispielhaft dargestellt wie eine Konfiguration aussehen kann:
+  ```
+  <ViewSettings>
+    <theme>Sekundar</theme>
+    <codeInput>
+      <type>keypad-symbols</type>
+      <length>3</length>
+    </codeInput>
+  </ViewSettings>
+  ```
+  - Details können auf der entsprechenden Doku-Seite eingesehen werden.
+### Codeingabe
+  - Die Codeeingabe gibt es nun in mehreren Geschmacksrichtungen. Die alte Variante der Texteingabe bleibt erhalten. Hinzu kommen  Varianten, die ein Tastenfeld darstellen. Das Tastenfeld kann Symbole oder Ziffern enthalten.
+  - Die gewählte Variante betrifft ggf. die Anmeldeseite und Blocksperren im Testablauf.
+  - Folgende Ausprägungen sind verfügbar:
+    - *text-field* - Eingabe via Eingabefeld, wie in vorherigen Versionen
+    - *keypad-numbers* - Tastenfeld mit Ziffern
+    - *keypad-symbols* - Tastenfeld mit Symbolen
+    - *keypad-symbols-alt* - Tastenfeld mit alternativen Symbolen
+      - Besonderheit dieser Variante ist die Beschränkung auf maximal 6 Felder.
+  - Die Länge des Codes kann über die ViewSettings angepasst werden. Standardwert: 5 
+  - Die Varianten mit Symbolen bilden ebenfalls Ziffernwerte ab. Beginnend mit 1, oben links.
+    - Es gilt zu beachten, dass bei der Verwendung von den Tastenfeld-Varianten keine Buchstaben im Freigabecode verwendet werden dürfen. Es gibt hier keinen Mechanismus, der das Benutzen von Buchstaben verhindert - es muss beim Anlegen der Testtaker-Dateien sichergestellt werden.
+- Bildersetzungen
+  - Analog zum Theming gibt es die Möglichkeit Bildersetzungen vorzunehmen. Dies kann ebenfalls global als auch auf Gruppen- und Loginebene geschehen. Die zur Verfügung stehenden Bilder müssen durch einen Super-Admin hochgeladen werden. Die Namen der hochgeladenen Dateien können dann in testtaker-Dateien verwendet werden.
+  - Für jeden Slot gibt es einen Standardwert, es muss nichts manuell definiert werden. Wenn für einen Slot mehrere Belegungen existieren, so greift die spezifischste: Global -> Gruppe -> Login. 
+  - Aktuell gibt es folgende Slots:
+    - logo - permanentes Logo oben rechts auf allen Seiten 
+    - loginIllustration - Illustration auf der Anmeldeseite
+    - codeInputIllustration - Illustration auf der Codeeingabe-Seite
+    - codeInputCompanion - Begleiter auf der Codeeingabe-Seite
+    - starterCompanion - Begleiter auf der Testauswahl-Seite
+    - starterCardDone - Begleiter auf Karte abgeschlossener Tests (erscheint nur, bei gesperrten Tests)
+    - loadingProgress - Begleiter während der Ladeanimation
+    - confirmDialog - Begleiter auf Dialogen
+  - Hier beispielhaft eine Konfiguration:
+    ```
+    <AssetAssignments>
+      <Asset slot="logo">logodatei-xy.png</Asset>
+      <Asset slot="codeInputIllustration">tebea-wink.jpg</Asset>
+    </AssetAssignments>
+    ```
+### Weiteres
+- Neue Links auf der Anmeldeseite. Die Inhalte können von Super-Admins festgelegt werden.
+  - Impressum
+  - Datenschutz
+  - Barrierefreiheit
+- Mechanismus zum Herstellen von Kompatibilität mit alten Booklet-Konfigurationen. Durch die Überarbeitung der Oberfläche sind einige Parameter geändert worden. Diese interne Funktion sorgt dafür dass alte Parameter weiter interpretiert werden können.
+  - Die veralteten Parameter sind in der Dokumentation mit "abgekündigt" markiert. Sie werden in nach der Karenzzeit in einer der nächsten Versionen entfernt.
 
-
-## Änderungen zu 18.0.0-alpha
-- Logo-Link ist nun dynamisch und leitet zur Loginsseite, wenn man sich auf der Codeeingabe-Seite befindet. Ansonsten bleibt bisheriges Verhalten bestehen, indem man zum Hauptmenu kommt.
-- Footer zur Admin-Loginseite hinzugefügt
-- Fix direct login via URL
-- Code-Eingabe: Benutzung der ENTER-Taste repariert
-- neue booklet parameter: navbar_show_backward_button, navbar_show_forward_button
-- deprecated booklet params: show_end_button_in_player, allow_player_to_terminate_test
-- custom assets können jetzt im super admin bereich und in den Testtaker xml angelegt werden.
-  - admin bereich kann bilder hochladen und diese Bilder den einzelnen slots (Bilder im UI) zuweisen. die slots heißen
-    - 'logo',
-      'loginIllustration',
-      'loginCompanion',
-      'codeInputIllustration',
-      'codeInputCompanion',
-      'starterCompanion',
-      'starterCardDone',
-      'loadingProgress',
-      'confirmDialog'
-- wenn man die custom assets in xml festlegen will, kann man dies auf Gruppen und Login Ebene machen. Es gibt eine Hierarchie was am Ende angezeigt wird:
-  - Login > Group > Admin
-    - Syntax in der Testtakers.xml: Slot ist attribute slot="" und der Name der Datei, wie er im Adminbereich hochgeladen ist im Body
-      - Gruppe: <AssetAssignments> muss vor <Login> stehen
-        - <Group id="sample_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
-            <AssetAssignments>
-              <Asset slot="logo">Screenshot from 2026-05-17 22-28-57.png</Asset>
-            </AssetAssignments>
-      - Login: <AssetAssignments> muss nach <Booklet>/<Profile> aber vor <ViewSettings> stehen
-        - <Login mode="run-hot-return" name="test" pw="user123">
-            <Booklet codes="xxx yyy">BOOKLET.SAMPLE-1</Booklet>
-            <Booklet codes="xxx yyy">BOOKLET.SAMPLE-3</Booklet>
-            <Booklet>BOOKLET.SAMPLE-2</Booklet>
-            <AssetAssignments>
-              <Asset slot="logo">cc.png</Asset>
-            </AssetAssignments> 
-
-
-# 18.0.0-alpha
-Änderungsnotizen sind noch im Entwurfsstatus und werden vor dem echten Release überarbeitet.
 ## Änderungen
-* Oberfläche komplett überarbeitet
-  * Details folgen...
-* Geänderte booklet parameter:
-  * unit_navibuttons ersetzt durch navbar_unit_label
-    * navbar_unit_label: 'HIDDEN' | 'INDEX' | 'LABEL' = 'INDEX';
-    * neuer Param: navbar_unit_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
-  * page_navibuttons ersetzt durch navbar_page_label
-    * navbar_page_label: 'HIDDEN' | 'INDEX' | 'LABEL' | 'LIST' = 'INDEX';
-    * neuer Param: navbar_page_controls_hidden: 'TRUE' | 'FALSE' = 'FALSE';
-  * unit_screenheader ersetzt durch "header_content"
-    * header_content: "NONE", "BOOKLET_LABEL", "BLOCK_LABEL", "UNIT_LABEL" = NONE"
-  * unit_title ersetzt durch toolbar_show_unit_title
-    * toolbar_show_unit_title: "TRUE" | "FALSE" = "TRUE"
-  * unit_menu ersetzt durch toolbar_show_unit_list
-    * toolbar_show_unit_list: "TRUE" | "FALSE" = "FALSE"
-  * show_fullscreen_button ersetzt durch toolbar_show_fullscreen_button
-    * toolbar_show_fullscreen_button: "TRUE" | "FALSE" = "FALSE"
-  * show_reload_button ersetzt durch toolbar_show_reload_button
-    * toolbar_show_reload_button: "TRUE" | "FALSE" = "FALSE"
-  * unit_show_time_left ersetzt durch toolbar_show_time_left
-    * toolbar_show_time_left: "TRUE" | "FALSE" = "FALSE"
-  * ui_mode ersetzt durch silent_mode
-    * silent_mode: "TRUE" | "FALSE" = "FALSE"
-* entfernte Bookletparameter:
-  * controller_design
-  * unit_screenheader: "OFF" wird nicht mehr unterstützt 
-* Oberflächeneinstellungen von testtakern werden nun über Block "Viewsettings" gesteuert. Alle Werte sind optional. Bei Abwesenheit greifen die Standardeinstellungen via superadmin.
-  * "theme" gibt den Namen eines eingerichteten Themes an
-  * valide code-input types sind: "text-field", "keypad-symbols", "keypad-numbers"
-  * valide Werte für monitorBookletVisibility sind: "visible", "collapsed", "hidden"
-  * Beispiel: `<ViewSettings>
-        <theme>Primar</theme>
-        <codeInput>
-          <type>text-field</type>
-          <length>3</length>
-        </codeInput>
-        <monitorBookletVisibility>hidden</monitorBookletVisibility>
-      </ViewSettings>`
+### Booklet-Parameter
+Durch die neue Oberfläche waren Änderungen an Booklet-Parametern nötig. Wir haben die Gelegenheit genutzt und die Benennung Von Parametern und Ausprägungen verbessert. Also Parameter können ggf. vorerst weiter benutzt werden.
 
+Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html) entnommen werden.
+
+- Neue Parameter:
+  - navbar_show_backward_button
+  - navbar_show_forward_button
+  - header_content
+    - Ersetzt in Teilen den alten Parameter *unit_screenheader*
+  - navbar_unit_label  
+    - Ersetzt z.T. *unit_navibuttons*
+  - navbar_unit_controls_hidden
+  - navbar_page_label
+    - Ersetzt z.T. *page_navibuttons*
+  - toolbar_show_unit_title
+    - Ersetzt z.T. *unit_title*
+  - toolbar_show_unit_list
+    - Ersetzt z.T. *unit_menu*
+  - toolbar_show_fullscreen_button
+    * Ersetzt z.T. *show_fullscreen_button*
+  - toolbar_show_reload_button
+    * Ersetzt z.T. *show_reload_button*
+  - toolbar_show_time_left
+    * Ersetzt z.T. *unit_show_time_left*
+  - silent_mode
+    * Ersetzt *ui_mode*
+- entfernte Bookletparameter:
+  - controller_design
+- Folgende Parameter wurden neben den genannten als veraltet markiert:
+  - show_end_button_in_player
+  - allow_player_to_terminate_test
+
+### Weitere Änderungen
+- Neue Schriftart: Nunito Sans
+- Neues Standardlogo und Favicon entsprechenden dem aktuellen IQB-Corporate Design
+- Neue anpassbare Textbausteine (custom texts)
+  - Details kann der entsprechenden [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html) entnommen werden.
+  - booklet_starterStartTestButtonLabel
+  - booklet_starterContinueTestButtonLabel
+  - booklet_starterViewTestButtonLabel
+  - booklet_starterLockedTestButtonLabel
+  - login_sidepanel_title
+  - login_sidepanel_subtitle
+- Entfernt:
+  - booketlet_continueButtonLockedUnit
+    - Dieser Parameter wird im Programmcode aktuell nicht verwendet
+
+## Technisches
 ### Änderungen
+* Schema-Dateien für Booklets werden in einen separaten Repo verwaltet.
+* Neue Umgebungsvariable: MYSQL_BINLOG_EXPIRE_LOGS_SECONDS
+  * Steuert die Vorhaltedauer der Änderungshistorie von Datenbankinhalten.
+* CSP erweitert: "${CSP} connect-src 'self' data: https://api.github.com"
+  * Erlaubt Player-Modulen das Nachladen von eingebetteten Inhalten vom Typ "data:application"
 * Der API-Endpunkt `/session/login` liefert zusätzlich die Parameter `loginName` und `groupLabel`. Der Parameter `displayName` ist als deprecated ausgezeichnet und wird in zukünftigen Versionen nicht mehr verfügbar sein. Der Wert kann aber weiterhin aus den beiden neuen Feldern erstellt werden.
 * Logs beim `make up` verbessert, indem tatsächlich angezeigt wird, wie viele Dateien gespeichert wurden.
 
