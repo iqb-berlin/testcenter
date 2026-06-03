@@ -174,13 +174,7 @@ re-init-backend:
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file test/docker-compose.api-test.yml\
-		run --name=task-runner --rm task-runner\
-			npx --yes update-browserslist-db@latest && npm run create-interfaces
+	cd $(TC_BASE_DIR) && make .run-task-runner task=create-interfaces
 
 update-docs:
 	cd $(TC_BASE_DIR) &&\
@@ -197,7 +191,7 @@ update-docs:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file test/docker-compose.api-test.yml\
-		run --rm --no-deps task-runner\
+		run --build --rm --no-deps task-runner\
 			npm run $(task)
 
 docs-frontend-compodoc:
