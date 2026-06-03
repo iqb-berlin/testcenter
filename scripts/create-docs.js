@@ -184,6 +184,5 @@ exports.createDocs = gulp.series(
   copyReadme,
   exports.testSessionSuperStates,
   exports.bookletConfig,
-  exports.testMode,
-  exports.customTexts
+  exports.testMode
 );
