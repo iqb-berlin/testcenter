@@ -84,10 +84,10 @@ build-doc:
       - docs/index.md
       - docs/pages/booklet-config.md
       - docs/pages/test-mode.md
+      - docs/pages/test-session-super-states.html
+      - docs/pages/custom-texts.md
       - docs/dist/api/index.html
       - docs/dist/api/specs.yml
-      - docs/dist/custom-texts.md # TODO falscher Pfad
-      - docs/dist/test-session-super-states.html
       - docs/dist/compodoc-frontend/*
       - docs/dist/compodoc-broadcaster/*
     expire_in: 30 minutes
