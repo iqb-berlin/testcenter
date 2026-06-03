@@ -36,6 +36,13 @@ class TestController extends Controller {
         break; // success
 
       } catch (Exception $exception) {
+        error_log(sprintf(
+          'Failed to get/create test session (attempt %d): %s in %s:%d',
+          $i + 1,
+          $exception->getMessage(),
+          $exception->getFile(),
+          $exception->getLine()
+        ));
         if ($i === 4) {
           throw new HttpInternalServerErrorException($request, 'Test Session could neither be found nor created.');
         }
