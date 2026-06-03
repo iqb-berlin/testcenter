@@ -165,12 +165,14 @@ const renderMetadata = (schema, current) => {
   return result;
 };
 
-const renderCustomTexts = (schema, current) => {
+const renderCustomTexts = (schema, current, withHeader = false) => {
   const properties = schema.properties.customTexts.properties;
   let result = current;
-  result += '\n## `customTexts`\n\n';
-  result += `${schema.properties.customTexts.description}\n`;
-  result += `\nInsgesamt ${Object.keys(properties).length} Schlüssel, gruppiert nach Kontext.\n`;
+  if (withHeader) {
+    result += '\n## `customTexts`\n\n';
+    result += `${schema.properties.customTexts.description}\n`;
+    result += `\nInsgesamt ${Object.keys(properties).length} Schlüssel, gruppiert nach Kontext.\n`;
+  }
 
   const grouped = {};
   CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
@@ -263,8 +265,7 @@ const writeFile = (filePath, content) => fs.writeFileSync(filePath, content, 'ut
 
 exports.testtakerHeader = done => {
   cliPrint.headline('Testtaker: Writing header');
-  const schema = readSchema();
-  writeFile(testtakerFile, `---\nlayout: default\n---\n\n# ${schema.title}\n\n${schema.description}\n`);
+  writeFile(testtakerFile, '---\nlayout: default\n---\n\n');
   done();
 };
 
@@ -300,16 +301,11 @@ exports.testtakerDefs = done => {
 // Individual exports – custom-texts.md (separate file)
 // ---------------------------------------------------------------------------
 
-exports.testtakerCustomTextsHeader = done => {
-  cliPrint.headline('Testtaker CustomTexts: Writing header');
-  writeFile(customTextsFile, '---\nlayout: default\n---\n\n');
-  done();
-};
-
 exports.testtakerCustomTexts = done => {
   cliPrint.headline('Testtaker CustomTexts: Writing customTexts section');
   const schema = readSchema();
-  writeFile(customTextsFile, renderCustomTexts(schema, readFile(customTextsFile)));
+  const header = '---\nlayout: default\n---\n\n';
+  writeFile(customTextsFile, renderCustomTexts(schema, header, false));
   done();
 };
 
@@ -326,6 +322,5 @@ exports.testtakerDocs = gulp.series(
 );
 
 exports.customTexts = gulp.series(
-  exports.testtakerCustomTextsHeader,
   exports.testtakerCustomTexts
 );
