@@ -3,8 +3,8 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
 
 ## Neue Funktionen
 ### Theming
-  - Das Theme kann von Super-Admins global, als auch via Testtaker-Definition individuell ausgewählt werden. Das Theme kann für einzelne Zugänge via *ViewSettings* angepasst werden.
-    - Aktuell gibt es 3 mitgelieferte Themes, die Farben und Bilder definieren:
+  - Das Theme kann von Super-Admins sowohl global als auch individuell über die Testtaker-Definition festgelegt werden. Das Theme kann für einzelne Zugänge über *ViewSettings* angepasst werden.
+    - Aktuell werden drei Themes mitgeliefert, die Farben und Bilder definieren:
       - "Primar"
       - "Sekundar"
       - "Erwachsene"
@@ -12,7 +12,7 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
   - In der testtaker.xml-Datei können für einzelne Zugänge Anpassungen vorgenommen werden, die das Aussehen und Verhalten über das Theme hinaus beeinflussen. Das betrifft im Moment die Auswahl und Anpassung der Codeeingabe.
   - Anpassung auf Gruppenebene ist aktuell noch nicht möglich.
   - Die Einstellung zur Sichtbarkeit der Booklets in Gruppenmonitor-Zugängen ist jetzt ebenfalls hier angesiedelt.
-  - Hier ist beispielhaft dargestellt wie eine Konfiguration aussehen kann:
+  - Beispiel einer möglichen Konfiguration:
   ```
   <ViewSettings>
     <theme>Sekundar</theme>
@@ -35,8 +35,8 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
   - Die Länge des Codes kann über die ViewSettings angepasst werden. Standardwert: 5 
   - Die Varianten mit Symbolen bilden ebenfalls Ziffernwerte ab. Beginnend mit 1, oben links.
     - Es gilt zu beachten, dass bei der Verwendung von den Tastenfeld-Varianten keine Buchstaben im Freigabecode verwendet werden dürfen. Es gibt hier keinen Mechanismus, der das Benutzen von Buchstaben verhindert - es muss beim Anlegen der Testtaker-Dateien sichergestellt werden.
-- Bildersetzungen
-  - Analog zum Theming gibt es die Möglichkeit Bildersetzungen vorzunehmen. Dies kann ebenfalls global als auch auf Gruppen- und Loginebene geschehen. Die zur Verfügung stehenden Bilder müssen durch einen Super-Admin hochgeladen werden. Die Namen der hochgeladenen Dateien können dann in testtaker-Dateien verwendet werden.
+### Bildersetzungen
+  - Analog zum Theming gibt es die Möglichkeit, Bildersetzungen vorzunehmen. Dies kann ebenfalls global sowie auf Gruppen- und Loginebene geschehen. Die zur Verfügung stehenden Bilder müssen durch einen Super-Admin hochgeladen werden. Die Namen der hochgeladenen Dateien können dann in Testtaker-Dateien verwendet werden.
   - Für jeden Slot gibt es einen Standardwert, es muss nichts manuell definiert werden. Wenn für einen Slot mehrere Belegungen existieren, so greift die spezifischste: Global -> Gruppe -> Login. 
   - Aktuell gibt es folgende Slots:
     - logo - permanentes Logo oben rechts auf allen Seiten 
@@ -55,21 +55,21 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
     </AssetAssignments>
     ```
 ### Weiteres
-- Neue Links auf der Anmeldeseite. Die Inhalte können von Super-Admins festgelegt werden.
-  - Impressum
-  - Datenschutz
-  - Barrierefreiheit
-- Mechanismus zum Herstellen von Kompatibilität mit alten Booklet-Konfigurationen. Durch die Überarbeitung der Oberfläche sind einige Parameter geändert worden. Diese interne Funktion sorgt dafür dass alte Parameter weiter interpretiert werden können.
-  - Die veralteten Parameter sind in der Dokumentation mit "abgekündigt" markiert. Sie werden in nach der Karenzzeit in einer der nächsten Versionen entfernt.
-- Neuer Booklet-Parameter: `browserBehaviour`
-  - Die neue Option `preventNav` unterdrückt alle browsereigenen Navigationsfunktionen während des Testverlaufs. Damit sind vor allem der 'zurück'-Button gemeint und assoziierte Gesten, wie links-nach-rechts wischen auf Ipads. Diese neue Funktion kann u.a. genutzt werden, um gewolltes und ungewolltes Zurückgehen in bereits gesehene Units zu verhindern.
-- Das Testcenter unterstützt nun auch SharedParameters - Zustände und Variablen, die über mehrere Units hinweg Informationen tragen können. SharedParameters wurden mit Verona-Player v.6.1.0 eingeführt.
+  - Neue Links auf der Anmeldeseite. Die Inhalte können von Super-Admins festgelegt werden.
+    - Impressum
+    - Datenschutz
+    - Barrierefreiheit
+  - Mechanismus zum Herstellen von Kompatibilität mit alten Booklet-Konfigurationen. Durch die Überarbeitung der Oberfläche sind einige Parameter geändert worden. Diese interne Funktion sorgt dafür dass alte Parameter weiter interpretiert werden können.
+    - Die veralteten Parameter sind in der Dokumentation mit "abgekündigt" markiert. Sie werden in nach der Karenzzeit in einer der nächsten Versionen entfernt.
+  - Neuer Booklet-Parameter: `browserBehaviour`
+    - Die neue Option `preventNav` unterdrückt alle browsereigenen Navigationsfunktionen während des Testverlaufs. Damit sind vor allem die „Zurück“-Schaltfläche gemeint und assoziierte Gesten, wie das Wischen auf Tablets. Diese neue Funktion kann u.a. genutzt werden, um gewollte und ungewollte Navigation zu verhindern.
+  - Das Testcenter unterstützt nun auch *SharedParameters* - Zustände und Variablen, die über mehrere Units hinweg Informationen tragen können. SharedParameters wurden mit Verona-Player v.6.1.0 eingeführt.
 
 ## Änderungen
 ### Booklet-Parameter
-Durch die neue Oberfläche waren Änderungen an Booklet-Parametern nötig. Wir haben die Gelegenheit genutzt und die Benennung Von Parametern und Ausprägungen verbessert. Also Parameter können ggf. vorerst weiter benutzt werden.
+Durch die neue Oberfläche waren Änderungen an Booklet-Parametern nötig. Wir haben die Gelegenheit genutzt, um die Benennung von Parametern und Ausprägungen zu verbessern. Alte Parameter können ggf. vorerst weiter benutzt werden.
 
-Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html) entnommen werden.
+Ausprägungen und ihre Bedeutung können der entsprechenden [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html) entnommen werden.
 
 - Neue Parameter:
   - navbar_show_backward_button
@@ -99,9 +99,9 @@ Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https:
   - show_end_button_in_player
   - allow_player_to_terminate_test
 
-### Validieren von XML Dateien deaktiviert + XSDs in neuer Repo
-- Bisher wurden alle hochgeladenen XML Dateien gegen das jeweils hinterlegte XSD Schema geprüft und jegliche Verstöße gegen das Schema hatten einen Upload gestoppt - selbst für Bereiche der XML, die das Testcenter an sich nicht bearbeitet. Diese strikte Validierung ist nun deaktiviert. Hochgeladene XMLs werden nun nur auf für das Testcenter inhaltlich relevante Informationen hin geprüft. Fehler in anderen Bereichen der XML werden vom Testcenter ignoriert.
-- Die XSDs Schemas für die verschiedenen XMLs können nun unter neuen Permalinks gefunden werden und sich nicht mehr Teil der Testcenter-Repository
+### Validieren von XML Dateien deaktiviert + Schemata (XSDs) in neuem Repo
+- Bisher wurden alle hochgeladenen XML-Dateien gegen das jeweils hinterlegte XSD-Schema geprüft und jegliche Verstöße gegen das Schema hatten einen Upload gestoppt - selbst für Bereiche der XML, die das Testcenter an sich nicht verarbeitet. Diese strikte Validierung ist nun deaktiviert. Hochgeladene XMLs werden nun nur noch auf für das Testcenter inhaltlich relevante Informationen hin geprüft. Fehler in anderen Bereichen der XML werden vom Testcenter ignoriert.
+- Die XSD-Schemata für die verschiedenen XMLs können nun unter neuen Permalinks gefunden werden und sind nicht mehr Teil des Testcenter-Repositorys:
   - Booklet - z.B. https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0
   - Testtakers - z.B. https://w3id.org/iqb/spec/testcenter-testtakers-xml/18.0
   - Unit - z.B. https://w3id.org/iqb/spec/testcenter-unit-xml/18.0
@@ -109,9 +109,9 @@ Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https:
 
 ### Weitere Änderungen
 - Neue Schriftart: Nunito Sans
-- Neues Standardlogo und Favicon entsprechenden dem aktuellen IQB-Corporate Design
+- Neues Standardlogo und Favicon entsprechend dem aktuellen IQB-Corporate-Design
 - Neue anpassbare Textbausteine (custom texts)
-  - Details kann der entsprechenden [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html) entnommen werden.
+  - Details können der entsprechenden [Dokumentation](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html) entnommen werden.
   - booklet_starterStartTestButtonLabel
   - booklet_starterContinueTestButtonLabel
   - booklet_starterViewTestButtonLabel
@@ -123,7 +123,7 @@ Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https:
     - Dieser Parameter wird im Programmcode aktuell nicht verwendet
 
 ## Technisches
-* Schema-Dateien für Booklets werden in einen separaten Repo verwaltet.
+* Schema-Dateien für Booklets werden in einem separaten Repo verwaltet.
 * Neue Umgebungsvariable: MYSQL_BINLOG_EXPIRE_LOGS_SECONDS
   * Steuert die Vorhaltedauer der Änderungshistorie von Datenbankinhalten.
 * CSP erweitert: "${CSP} connect-src 'self' data: https://api.github.com"
