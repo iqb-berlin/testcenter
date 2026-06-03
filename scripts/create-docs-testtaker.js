@@ -56,10 +56,10 @@ const anchor = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(
 // ---------------------------------------------------------------------------
 
 const CUSTOM_TEXT_GROUPS = [
-  { prefix: 'login_',    title: 'Anmeldeseite (`login_*`)',       description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
-  { prefix: 'booklet_',  title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
-  { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)',    description: 'Texte für den System-Check.' },
-  { prefix: 'gm_',       title: 'Gruppenmonitor (`gm_*`)',        description: 'Texte für den Gruppenmonitor.' }
+  { prefix: 'login_', title: 'Anmeldeseite (`login_*`)', description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
+  { prefix: 'booklet_', title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
+  { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)', description: 'Texte für den System-Check.' },
+  { prefix: 'gm_', title: 'Gruppenmonitor (`gm_*`)', description: 'Texte für den Gruppenmonitor.' }
 ];
 
 const renderDeprecation = prop => {
@@ -76,13 +76,13 @@ const renderType = prop => {
 
 const renderEnum = prop => {
   if (!prop.enum) return '';
-  let out = '\n**Mögliche Werte:**\n';
+  let result = '\n**Mögliche Werte:**\n';
   prop.enum.forEach(value => {
     const desc = prop.enumDescriptions?.[value] ? ` – ${prop.enumDescriptions[value]}` : '';
     const isDefault = value === prop.default ? ' *(Standard)*' : '';
-    out += ` * \`${value}\`${isDefault}${desc}\n`;
+    result += ` * \`${value}\`${isDefault}${desc}\n`;
   });
-  return out;
+  return result;
 };
 
 const renderDefault = prop => {
@@ -110,141 +110,146 @@ let renderProperties;
 const renderProperty = (key, prop, schema, headingLevel = 4) => {
   const resolved = resolve(prop, schema);
   const isDeprecated = resolved.deprecated === true;
-  const required = prop._required ? ' *(Pflichtfeld)*' : '';
+  const requiredLabel = prop.isRequired ? ' *(Pflichtfeld)*' : '';
   const badge = isDeprecated ? ' ⚠️ *deprecated*' : '';
   const heading = '#'.repeat(headingLevel);
 
-  let out = `\n${heading} \`${key}\`${badge}${required}\n\n`;
-  out += renderDeprecation(resolved);
+  let result = `\n${heading} \`${key}\`${badge}${requiredLabel}\n\n`;
+  result += renderDeprecation(resolved);
 
   const typeLine = renderType(resolved);
-  if (typeLine) out += `${typeLine}\n\n`;
+  if (typeLine) result += `${typeLine}\n\n`;
 
-  out += `${resolved.description ?? resolved.title ?? ''}\n`;
-  out += renderDefault(resolved);
-  out += renderExamples(resolved);
-  out += renderEnum(resolved);
+  result += `${resolved.description ?? resolved.title ?? ''}\n`;
+  result += renderDefault(resolved);
+  result += renderExamples(resolved);
+  result += renderEnum(resolved);
 
   if (resolved.properties) {
-    out += renderProperties(resolved.properties, resolved.required ?? [], schema, headingLevel + 1);
+    result += renderProperties(resolved.properties, schema, resolved.required ?? [], headingLevel + 1);
   }
 
   if (resolved.type === 'array' && resolved.items?.$ref) {
-    out += renderRef(resolved.items.$ref);
+    result += renderRef(resolved.items.$ref);
   }
 
   if (prop.$ref) {
-    out += renderRef(prop.$ref);
+    result += renderRef(prop.$ref);
   }
 
-  return out;
+  return result;
 };
 
-renderProperties = (properties, required = [], schema, headingLevel = 4) => {
-  let out = '';
+renderProperties = (properties, schema, required = [], headingLevel = 4) => {
+  let result = '';
   Object.keys(properties).forEach(key => {
-    const prop = { ...properties[key], _required: required.includes(key) };
-    out += renderProperty(key, prop, schema, headingLevel);
+    const prop = { ...properties[key], isRequired: required.includes(key) };
+    result += renderProperty(key, prop, schema, headingLevel);
   });
-  return out;
+  return result;
 };
 
 // ---------------------------------------------------------------------------
 // Section renderers
 // ---------------------------------------------------------------------------
 
-const renderMetadata = (schema, out) => {
-  out += '\n## `metadata`\n\n';
-  out += `${schema.properties.metadata.description}\n`;
-  out += renderProperties(
+const renderMetadata = (schema, current) => {
+  let result = current;
+  result += '\n## `metadata`\n\n';
+  result += `${schema.properties.metadata.description}\n`;
+  result += renderProperties(
     schema.properties.metadata.properties,
-    schema.properties.metadata.required ?? [],
-    schema
+    schema,
+    schema.properties.metadata.required ?? []
   );
-  return out;
+  return result;
 };
 
-const renderCustomTexts = (schema, out) => {
+const renderCustomTexts = (schema, current) => {
   const properties = schema.properties.customTexts.properties;
-  out += '\n## `customTexts`\n\n';
-  out += `${schema.properties.customTexts.description}\n`;
-  out += `\nInsgesamt ${Object.keys(properties).length} Schlüssel, gruppiert nach Kontext.\n`;
+  let result = current;
+  result += '\n## `customTexts`\n\n';
+  result += `${schema.properties.customTexts.description}\n`;
+  result += `\nInsgesamt ${Object.keys(properties).length} Schlüssel, gruppiert nach Kontext.\n`;
 
   const grouped = {};
   CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
-  grouped['_other'] = [];
+  grouped.other = [];
 
   Object.keys(properties).forEach(key => {
     const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
-    grouped[group ? group.prefix : '_other'].push(key);
+    grouped[group ? group.prefix : 'other'].push(key);
   });
 
   CUSTOM_TEXT_GROUPS.forEach(groupDef => {
     const keys = grouped[groupDef.prefix];
     if (!keys.length) return;
-    out += `\n### ${groupDef.title}\n\n${groupDef.description}\n`;
+    result += `\n### ${groupDef.title}\n\n${groupDef.description}\n`;
     keys.sort().forEach(key => {
-      out += renderProperty(key, properties[key], schema, 4);
+      result += renderProperty(key, properties[key], schema, 4);
     });
   });
 
-  if (grouped['_other'].length) {
-    out += '\n### Sonstige\n';
-    grouped['_other'].sort().forEach(key => {
-      out += renderProperty(key, properties[key], schema, 4);
+  if (grouped.other.length) {
+    result += '\n### Sonstige\n';
+    grouped.other.sort().forEach(key => {
+      result += renderProperty(key, properties[key], schema, 4);
     });
   }
 
-  return out;
+  return result;
 };
 
-const renderGroups = (schema, out) => {
-  out += '\n## `groups`\n\n';
-  out += `${schema.properties.groups.description}\n`;
-  out += renderRef(schema.properties.groups.items.$ref);
-  return out;
+const renderGroups = (schema, current) => {
+  let result = current;
+  result += '\n## `groups`\n\n';
+  result += `${schema.properties.groups.description}\n`;
+  result += renderRef(schema.properties.groups.items.$ref);
+  return result;
 };
 
-const renderProfiles = (schema, out) => {
-  out += '\n## `profiles`\n\n';
-  out += `${schema.properties.profiles.description}\n`;
+const renderProfiles = (schema, current) => {
+  let result = current;
+  result += '\n## `profiles`\n\n';
+  result += `${schema.properties.profiles.description}\n`;
   const gmProp = schema.properties.profiles.properties.groupMonitor;
-  out += `\n### \`groupMonitor\`\n\n${gmProp.description}\n`;
-  out += renderRef(gmProp.items.$ref);
-  return out;
+  result += `\n### \`groupMonitor\`\n\n${gmProp.description}\n`;
+  result += renderRef(gmProp.items.$ref);
+  return result;
 };
 
-const renderDefs = (schema, out) => {
-  out += '\n---\n\n## Typen (`$defs`)\n\n';
-  out += 'Wiederverwendbare Typen, die per `$ref` referenziert werden.\n';
+const renderDefs = (schema, current) => {
+  let result = current;
+  result += '\n---\n\n## Typen (`$defs`)\n\n';
+  result += 'Wiederverwendbare Typen, die per `$ref` referenziert werden.\n';
 
   Object.keys(schema.$defs).forEach(defName => {
     const def = schema.$defs[defName];
-    out += `\n### ${defName}\n\n`;
-    out += `${def.description ?? ''}\n`;
+    result += `\n### ${defName}\n\n`;
+    result += `${def.description ?? ''}\n`;
 
     const typeLine = renderType(def);
-    if (typeLine) out += `\n${typeLine}\n`;
+    if (typeLine) result += `\n${typeLine}\n`;
 
-    out += renderEnum(def);
+    result += renderEnum(def);
 
     if (def.properties) {
-      out += renderProperties(def.properties, def.required ?? [], schema, 4);
+      result += renderProperties(def.properties, schema, def.required ?? [], 4);
     }
 
     if (def.type === 'array' && def.items?.$ref) {
-      out += renderRef(def.items.$ref);
+      result += renderRef(def.items.$ref);
     }
   });
 
-  return out;
+  return result;
 };
 
 // ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
 
-exports.createDocs = done => {
+exports.testtakerDocs = done => {
   cliPrint.headline('Testtaker: Writing hierarchical Markdown documentation from JSON Schema');
 
   const schema = JSON.parse(fs.readFileSync(`${definitionsDir}/testtaker.schema.json`).toString());
@@ -264,3 +269,7 @@ exports.createDocs = done => {
   cliPrint.headline(`Testtaker: Done. CustomTexts: ${totalKeys} keys, $defs: ${totalDefs} types.`);
   done();
 };
+
+exports.createDocs = gulp.series(
+  exports.testtakerDocs
+);
