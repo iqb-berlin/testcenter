@@ -1,8 +1,3 @@
-TODO
-- navigationsbeschraenkung #preventNav
-- sharedParams
-- xds auslagerung ergaenzen mit link und evtl. erklaerung
-
 # 18.0.0
 Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, einen neuen Theming-Mechanismus und das Austauschen von Bildern.
 
@@ -66,6 +61,9 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
   - Barrierefreiheit
 - Mechanismus zum Herstellen von Kompatibilität mit alten Booklet-Konfigurationen. Durch die Überarbeitung der Oberfläche sind einige Parameter geändert worden. Diese interne Funktion sorgt dafür dass alte Parameter weiter interpretiert werden können.
   - Die veralteten Parameter sind in der Dokumentation mit "abgekündigt" markiert. Sie werden in nach der Karenzzeit in einer der nächsten Versionen entfernt.
+- Neuer Booklet-Parameter: `browserBehaviour`
+  - Die neue Option `preventNav` unterdrückt alle browsereigenen Navigationsfunktionen während des Testverlaufs. Damit sind vor allem der 'zurück'-Button gemeint und assoziierte Gesten, wie links-nach-rechts wischen auf Ipads. Diese neue Funktion kann u.a. genutzt werden, um gewolltes und ungewolltes Zurückgehen in bereits gesehene Units zu verhindern.
+- Das Testcenter unterstützt nun auch SharedParameters - Zustände und Variablen, die über mehrere Units hinweg Informationen tragen können. SharedParameters wurden mit Verona-Player v.6.1.0 eingeführt.
 
 ## Änderungen
 ### Booklet-Parameter
@@ -101,6 +99,14 @@ Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https:
   - show_end_button_in_player
   - allow_player_to_terminate_test
 
+### Validieren von XML Dateien deaktiviert + XSDs in neuer Repo
+- Bisher wurden alle hochgeladenen XML Dateien gegen das jeweils hinterlegte XSD Schema geprüft und jegliche Verstöße gegen das Schema hatten einen Upload gestoppt - selbst für Bereiche der XML, die das Testcenter an sich nicht bearbeitet. Diese strikte Validierung ist nun deaktiviert. Hochgeladene XMLs werden nun nur auf für das Testcenter inhaltlich relevante Informationen hin geprüft. Fehler in anderen Bereichen der XML werden vom Testcenter ignoriert.
+- Die XSDs Schemas für die verschiedenen XMLs können nun unter neuen Permalinks gefunden werden und sich nicht mehr Teil der Testcenter-Repository
+  - Booklet - z.B. https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0
+  - Testtakers - z.B. https://w3id.org/iqb/spec/testcenter-testtakers-xml/18.0
+  - Unit - z.B. https://w3id.org/iqb/spec/testcenter-unit-xml/18.0
+  - SysCheck - z.B. https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0
+
 ### Weitere Änderungen
 - Neue Schriftart: Nunito Sans
 - Neues Standardlogo und Favicon entsprechenden dem aktuellen IQB-Corporate Design
@@ -117,7 +123,6 @@ Ausprägungen und ihre Bedeutung können der entsprechend [Dokumentation](https:
     - Dieser Parameter wird im Programmcode aktuell nicht verwendet
 
 ## Technisches
-### Änderungen
 * Schema-Dateien für Booklets werden in einen separaten Repo verwaltet.
 * Neue Umgebungsvariable: MYSQL_BINLOG_EXPIRE_LOGS_SECONDS
   * Steuert die Vorhaltedauer der Änderungshistorie von Datenbankinhalten.
