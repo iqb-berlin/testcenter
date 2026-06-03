@@ -246,68 +246,86 @@ const renderDefs = (schema, current) => {
 };
 
 // ---------------------------------------------------------------------------
-// Shared helper: reads schema and current output file (or empty string)
+// Shared helpers
 // ---------------------------------------------------------------------------
 
 const readSchema = () => JSON.parse(fs.readFileSync(`${definitionsDir}/testtaker.schema.json`).toString());
 
-const outputFile = `${docsDir}/pages/testtaker.md`;
+const testtakerFile = `${docsDir}/pages/testtaker.md`;
+const customTextsFile = `${docsDir}/pages/custom-texts.md`;
 
-const readCurrent = () => (fs.existsSync(outputFile) ? fs.readFileSync(outputFile, 'utf8') : '');
-
-const writeCurrent = content => fs.writeFileSync(outputFile, content, 'utf8');
+const readFile = filePath => (fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '');
+const writeFile = (filePath, content) => fs.writeFileSync(filePath, content, 'utf8');
 
 // ---------------------------------------------------------------------------
-// Individual exports
+// Individual exports – testtaker.md
 // ---------------------------------------------------------------------------
 
 exports.testtakerHeader = done => {
   cliPrint.headline('Testtaker: Writing header');
   const schema = readSchema();
-  writeCurrent(`---\nlayout: default\n---\n\n# ${schema.title}\n\n${schema.description}\n`);
+  writeFile(testtakerFile, `---\nlayout: default\n---\n\n# ${schema.title}\n\n${schema.description}\n`);
   done();
 };
 
 exports.testtakerMetadata = done => {
   cliPrint.headline('Testtaker: Writing metadata section');
   const schema = readSchema();
-  writeCurrent(renderMetadata(schema, readCurrent()));
-  done();
-};
-
-exports.testtakerCustomTexts = done => {
-  cliPrint.headline('Testtaker: Writing customTexts section');
-  const schema = readSchema();
-  writeCurrent(renderCustomTexts(schema, readCurrent()));
+  writeFile(testtakerFile, renderMetadata(schema, readFile(testtakerFile)));
   done();
 };
 
 exports.testtakerGroups = done => {
   cliPrint.headline('Testtaker: Writing groups section');
   const schema = readSchema();
-  writeCurrent(renderGroups(schema, readCurrent()));
+  writeFile(testtakerFile, renderGroups(schema, readFile(testtakerFile)));
   done();
 };
 
 exports.testtakerProfiles = done => {
   cliPrint.headline('Testtaker: Writing profiles section');
   const schema = readSchema();
-  writeCurrent(renderProfiles(schema, readCurrent()));
+  writeFile(testtakerFile, renderProfiles(schema, readFile(testtakerFile)));
   done();
 };
 
 exports.testtakerDefs = done => {
   cliPrint.headline('Testtaker: Writing $defs section');
   const schema = readSchema();
-  writeCurrent(renderDefs(schema, readCurrent()));
+  writeFile(testtakerFile, renderDefs(schema, readFile(testtakerFile)));
   done();
 };
 
-exports.createDocs = gulp.series(
+// ---------------------------------------------------------------------------
+// Individual exports – custom-texts.md (separate file)
+// ---------------------------------------------------------------------------
+
+exports.testtakerCustomTextsHeader = done => {
+  cliPrint.headline('Testtaker CustomTexts: Writing header');
+  writeFile(customTextsFile, '---\nlayout: default\n---\n\n');
+  done();
+};
+
+exports.testtakerCustomTexts = done => {
+  cliPrint.headline('Testtaker CustomTexts: Writing customTexts section');
+  const schema = readSchema();
+  writeFile(customTextsFile, renderCustomTexts(schema, readFile(customTextsFile)));
+  done();
+};
+
+// ---------------------------------------------------------------------------
+// Combined tasks
+// ---------------------------------------------------------------------------
+
+exports.testtakerDocs = gulp.series(
   exports.testtakerHeader,
   exports.testtakerMetadata,
-  exports.testtakerCustomTexts,
   exports.testtakerGroups,
   exports.testtakerProfiles,
   exports.testtakerDefs
+);
+
+exports.customTexts = gulp.series(
+  exports.testtakerCustomTextsHeader,
+  exports.testtakerCustomTexts
 );
