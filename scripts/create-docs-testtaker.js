@@ -76,7 +76,7 @@ const renderType = prop => {
 
 const renderEnum = prop => {
   if (!prop.enum) return '';
-  let result = '\n**Mögliche Werte:**\n';
+  let result = '\nMögliche Werte:\n';
   prop.enum.forEach(value => {
     const desc = prop.enumDescriptions?.[value] ? ` – ${prop.enumDescriptions[value]}` : '';
     const isDefault = value === prop.default ? ' *(Standard)*' : '';
@@ -95,7 +95,7 @@ const renderDefault = prop => {
 const renderExamples = prop => {
   if (!prop.examples || prop.examples.length === 0) return '';
   const examples = prop.examples.map(e => `\`${e}\``).join(', ');
-  return `\n**Beispiele:** ${examples}\n`;
+  return `\nBeispiele: ${examples}\n`;
 };
 
 const renderRef = ref => {
@@ -107,7 +107,7 @@ const renderRef = ref => {
 // Forward declaration – renderProperty and renderProperties call each other
 let renderProperties;
 
-const renderProperty = (key, prop, schema, headingLevel = 4, withType = true) => {
+const renderProperty = (key, prop, schema, headingLevel = 4, withType = false) => {
   const resolved = resolve(prop, schema);
   const isDeprecated = resolved.deprecated === true;
   const requiredLabel = prop.isRequired ? ' *(Pflichtfeld)*' : '';
@@ -226,16 +226,11 @@ const renderProfiles = (schema, current) => {
 
 const renderDefs = (schema, current) => {
   let result = current;
-  result += '\n---\n\n## Typen (`$defs`)\n\n';
-  result += 'Wiederverwendbare Typen, die per `$ref` referenziert werden.\n';
 
   Object.keys(schema.$defs).forEach(defName => {
     const def = schema.$defs[defName];
     result += `\n### ${defName}\n\n`;
     result += `${def.description ?? ''}\n`;
-
-    const typeLine = renderType(def);
-    if (typeLine) result += `\n${typeLine}\n`;
 
     result += renderEnum(def);
 
