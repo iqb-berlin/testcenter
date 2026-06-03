@@ -107,7 +107,7 @@ const renderRef = ref => {
 // Forward declaration – renderProperty and renderProperties call each other
 let renderProperties;
 
-const renderProperty = (key, prop, schema, headingLevel = 4) => {
+const renderProperty = (key, prop, schema, headingLevel = 4, withType = true) => {
   const resolved = resolve(prop, schema);
   const isDeprecated = resolved.deprecated === true;
   const requiredLabel = prop.isRequired ? ' *(Pflichtfeld)*' : '';
@@ -117,8 +117,10 @@ const renderProperty = (key, prop, schema, headingLevel = 4) => {
   let result = `\n${heading} \`${key}\`${badge}${requiredLabel}\n\n`;
   result += renderDeprecation(resolved);
 
-  const typeLine = renderType(resolved);
-  if (typeLine) result += `${typeLine}\n\n`;
+  if (withType) {
+    const typeLine = renderType(resolved);
+    if (typeLine) result += `${typeLine}\n\n`;
+  }
 
   result += `${resolved.description ?? resolved.title ?? ''}\n`;
   result += renderDefault(resolved);
@@ -165,7 +167,7 @@ const renderMetadata = (schema, current) => {
   return result;
 };
 
-const renderCustomTexts = (schema, current, withHeader = false) => {
+const renderCustomTexts = (schema, current, withHeader = false, b) => {
   const properties = schema.properties.customTexts.properties;
   let result = current;
   if (withHeader) {
@@ -188,14 +190,14 @@ const renderCustomTexts = (schema, current, withHeader = false) => {
     if (!keys.length) return;
     result += `\n### ${groupDef.title}\n\n${groupDef.description}\n`;
     keys.sort().forEach(key => {
-      result += renderProperty(key, properties[key], schema, 4);
+      result += renderProperty(key, properties[key], schema, 4, false);
     });
   });
 
   if (grouped.other.length) {
     result += '\n### Sonstige\n';
     grouped.other.sort().forEach(key => {
-      result += renderProperty(key, properties[key], schema, 4);
+      result += renderProperty(key, properties[key], schema, 4, false);
     });
   }
 
@@ -265,7 +267,8 @@ const writeFile = (filePath, content) => fs.writeFileSync(filePath, content, 'ut
 
 exports.testtakerHeader = done => {
   cliPrint.headline('Testtaker: Writing header');
-  writeFile(testtakerFile, '---\nlayout: default\n---\n\n');
+  const base = fs.readFileSync(`${docsDir}/src/testtaker.md`, 'utf8');
+  writeFile(testtakerFile, base);
   done();
 };
 
@@ -304,8 +307,8 @@ exports.testtakerDefs = done => {
 exports.testtakerCustomTexts = done => {
   cliPrint.headline('Testtaker CustomTexts: Writing customTexts section');
   const schema = readSchema();
-  const header = '---\nlayout: default\n---\n\n';
-  writeFile(customTextsFile, renderCustomTexts(schema, header, false));
+  const base = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8');
+  writeFile(customTextsFile, renderCustomTexts(schema, base, false));
   done();
 };
 
