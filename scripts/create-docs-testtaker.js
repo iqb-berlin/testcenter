@@ -167,7 +167,7 @@ const renderMetadata = (schema, current) => {
   return result;
 };
 
-const renderCustomTexts = (schema, current, withHeader = false, b) => {
+const renderCustomTexts = (schema, current, withHeader = false) => {
   const properties = schema.properties.customTexts.properties;
   let result = current;
   if (withHeader) {
@@ -188,16 +188,18 @@ const renderCustomTexts = (schema, current, withHeader = false, b) => {
   CUSTOM_TEXT_GROUPS.forEach(groupDef => {
     const keys = grouped[groupDef.prefix];
     if (!keys.length) return;
-    result += `\n### ${groupDef.title}\n\n${groupDef.description}\n`;
-    keys.sort().forEach(key => {
-      result += renderProperty(key, properties[key], schema, 4, false);
+    result += `\n## ${groupDef.title}\n\n${groupDef.description}\n`;
+    keys.sort().forEach((key, index) => {
+      if (index > 0) result += '\n---\n';
+      result += renderProperty(key, properties[key], schema, 3, false);
     });
   });
 
   if (grouped.other.length) {
-    result += '\n### Sonstige\n';
-    grouped.other.sort().forEach(key => {
-      result += renderProperty(key, properties[key], schema, 4, false);
+    result += '\n## Sonstige\n';
+    grouped.other.sort().forEach((key, index) => {
+      if (index > 0) result += '\n---\n';
+      result += renderProperty(key, properties[key], schema, 3, false);
     });
   }
 
