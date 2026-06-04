@@ -33,6 +33,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
 * [Parameters of booklet-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html)
 * [Customizable Labels in the UI](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html)
+* [Testtaker Content](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/testtaker.html)
 
 ### Install & Run
 * **[Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)**

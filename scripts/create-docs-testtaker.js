@@ -189,7 +189,7 @@ const renderCustomTexts = (schema, current, withHeader = false) => {
     if (!keys.length) return;
     result += `\n## ${groupDef.title}\n\n${groupDef.description}\n`;
     keys.sort().forEach((key, index) => {
-      if (index > 0) result += '\n***\n\n';
+      if (index > 0) result += '\n\n';
       result += renderProperty(key, properties[key], schema, 3, false);
     });
   });
@@ -197,7 +197,7 @@ const renderCustomTexts = (schema, current, withHeader = false) => {
   if (grouped.other.length) {
     result += '\n## Sonstige\n';
     grouped.other.sort().forEach((key, index) => {
-      if (index > 0) result += '\n***\n\n';
+      if (index > 0) result += '\n\n';
       result += renderProperty(key, properties[key], schema, 3, false);
     });
   }
