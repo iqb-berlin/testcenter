@@ -74,6 +74,7 @@ import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
       position: absolute;
       right: 1px;
       bottom: 1px;
+      max-width: 20%;
     }
     button.test-done {
       background-color: transparent;
