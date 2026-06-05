@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-declare TARGET_VERSION="18.0.0"
+declare TARGET_VERSION="next"
 
 function migrate_env_file() {
-  if ! grep -q "^MYSQL_BINLOG_EXPIRE_LOGS_SECONDS=" .env.prod; then
-    sed -i.bak '/^MYSQL_PASSWORD=.*/a MYSQL_BINLOG_EXPIRE_LOGS_SECONDS=' .env.prod && rm .env.prod.bak
+  if ! grep -q "^PASSWORD_MIN_LENGTH=" .env.prod; then
+    sed -i.bak "/^PASSWORD_SALT=.*/a PASSWORD_MIN_LENGTH=7\nPASSWORD_REGEX_CHECK='/.*/'\nADMIN_INIT_PASSWORD=user123" .env.prod && rm .env.prod.bak
   fi
 }
 
