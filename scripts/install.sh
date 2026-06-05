@@ -147,6 +147,7 @@ prepare_installation_dir() {
 
   printf "\n"
 
+  mkdir -p "$TARGET_DIR"/backup
   mkdir -p "$TARGET_DIR"/backup/release
   mkdir -p "$TARGET_DIR"/backup/temp
   mkdir -p "$TARGET_DIR"/config/traefik

@@ -78,6 +78,9 @@ services:
       MYSQL_HOST: db
       MYSQL_PORT: 3306
       PASSWORD_SALT: ${PASSWORD_SALT}
+      PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH}
+      PASSWORD_REGEX_CHECK: ${PASSWORD_REGEX_CHECK}
+      ADMIN_INIT_PASSWORD: ${ADMIN_INIT_PASSWORD}
     logging:
       options:
         <<: *env-logging-conf

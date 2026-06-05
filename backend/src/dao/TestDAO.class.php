@@ -517,6 +517,16 @@ class TestDAO extends DAO {
     string $type,
     int $timestamp
   ): void {
+    if (empty($this->_(
+      'SELECT 1 FROM units WHERE test_id = :test_id AND name = :name;',
+      [':test_id' => $testId, ':name' => $unitName]
+    ))) {
+      throw new HttpError(
+        'Unit response could not be saved because the unit does not exist (yet). Please try again.',
+        404,
+        'Unit not found'
+      );
+    }
     foreach ($dataParts as $partId => $content) {
       $this->_(
       'insert into unit_data(unit_name, test_id, part_id, content, ts, response_type)
