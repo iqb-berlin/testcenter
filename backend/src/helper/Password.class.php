@@ -19,17 +19,25 @@ class Password {
 
   static function validate(string $password): void {
     // NIST SP 800-63 recommends longer passwords, at least 8 characters...
-    // to accept the test-account with user123, we take 7 as minimum
+    // to accept the test-account with user123, we take SystemConfig::$password_min_length as minimum
     // 60 is maximum to avoid DDOS attacks based on encryption time.
-
-    if ((strlen($password) < 7)) {
-      throw new HttpError("Password must have at least 7 characters.", 400);
+    $min_length = SystemConfig::$password_min_length;
+    if (strlen($password) < $min_length) {
+      throw new HttpError("Password must have at least `$min_length` characters.", 400);
     }
 
-    if ((strlen($password) > 60)) {
+    if (strlen($password) > 60) {
       // don't let attackers know the maximum too easy
       throw new HttpError("Password too long", 400);
     }
+
+    $regex = SystemConfig::$password_regex_check;
+    $check_result = preg_match($regex, $password);
+
+    if (!$check_result) {
+      throw new HttpError("Password `$password` should match `$regex`. (`$check_result`)", 400);
+    }
+
   }
 
   static function verify(string $password, string $hash, string $saltOrPepper): bool {
