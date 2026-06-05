@@ -234,11 +234,11 @@ try {
 
     $initial_admin_password = SystemConfig::$admin_init_password;
     $adminId = $initDAO->createAdmin('super', $initial_admin_password);
-    CLI::success("Sys-Admin created: `$initial_admin_password`.");
+    CLI::success("Sys-Admin created: super:`$initial_admin_password`.");
 
     $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
     foreach ($workspaceIds as $workspaceId) {
-      CLI::p("Workspace `ws_$workspaceId` added to `$initial_admin_password`.");
+      CLI::p("Workspace `ws_$workspaceId` added to 'super'");
     }
 
   } else {
