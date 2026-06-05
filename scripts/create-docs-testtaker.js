@@ -88,7 +88,7 @@ const renderEnum = prop => {
 const renderDefault = prop => {
   if (prop.default === undefined) return '';
   const val = String(prop.default);
-  return `\n**Standard:** ${val}\n`;
+  return `\nStandard: ${val}`;
 };
 
 const renderExamples = prop => {
@@ -166,19 +166,12 @@ const renderMetadata = (schema, current) => {
   return result;
 };
 
-const renderCustomTexts = (schema, current, withHeader = false) => {
+const renderCustomTexts = (schema, current) => {
   const properties = schema.properties.customTexts.properties;
   let result = current;
-  if (withHeader) {
-    result += '\n## `customTexts`\n\n';
-    result += `${schema.properties.customTexts.description}\n`;
-    result += `\nInsgesamt ${Object.keys(properties).length} Schlüssel, gruppiert nach Kontext.\n`;
-  }
-
   const grouped = {};
   CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
   grouped.other = [];
-
   Object.keys(properties).forEach(key => {
     const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
     grouped[group ? group.prefix : 'other'].push(key);
@@ -187,15 +180,15 @@ const renderCustomTexts = (schema, current, withHeader = false) => {
   CUSTOM_TEXT_GROUPS.forEach(groupDef => {
     const keys = grouped[groupDef.prefix];
     if (!keys.length) return;
-    result += `\n## ${groupDef.title}\n\n${groupDef.description}\n`;
+    result += `\n\n# ${groupDef.title}\n\n${groupDef.description}\n`;
     keys.sort().forEach((key, index) => {
-      if (index > 0) result += '\n\n';
-      result += renderProperty(key, properties[key], schema, 3, false);
+      if (index > 0) result += '\n';
+      result += renderProperty(key, properties[key], schema, 2, false);
     });
   });
 
   if (grouped.other.length) {
-    result += '\n## Sonstige\n';
+    result += '\n# Sonstige\n';
     grouped.other.sort().forEach((key, index) => {
       if (index > 0) result += '\n\n';
       result += renderProperty(key, properties[key], schema, 3, false);
@@ -304,7 +297,7 @@ exports.testtakerCustomTexts = done => {
   cliPrint.headline('Testtaker CustomTexts: Writing customTexts section');
   const schema = readSchema();
   const base = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8');
-  writeFile(customTextsFile, renderCustomTexts(schema, base, false));
+  writeFile(customTextsFile, renderCustomTexts(schema, base));
   done();
 };
 
