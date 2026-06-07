@@ -35,7 +35,7 @@ export class NewPasswordComponent {
   { validators: samePasswordValidator }
   );
 
-  passwordMinLength = environment.passwordMinLength
+  passwordMinLength = environment.passwordMinLength;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: string) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { username: string }) { }
 }

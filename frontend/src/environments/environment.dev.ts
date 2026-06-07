@@ -4,5 +4,5 @@ export const environment = {
   broadcasterUrl: '/bs/public/',
   backendUrl: '/api/',
   passwordMinLength: 7,
-  passwordRegexCheck: "/.*/"
+  passwordRegexCheck: '/.*/'
 };

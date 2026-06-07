@@ -4,5 +4,5 @@ export const environment = {
   fileServerUrl: '/fs/',
   backendUrl: '/api/',
   passwordMinLength: 7,
-  passwordRegexCheck: "/.*/"
+  passwordRegexCheck: '/.*/'
 };
