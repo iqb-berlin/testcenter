@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Booklet Configuration
+nav_order: 6
 ---
 
 # Booklet config

@@ -1,20 +1,25 @@
 ---
 layout: default
+title: Installation local
+nav_order: 2
 ---
+
+# Installation local
 
 For development, we sometimes want to run the testcenter locally without docker.
 
-
-# Requirements
+## Requirements
 Minimal requirements are: npm, node, php, apache2, MySQL.
 Have a look into the dockerfiles to get the exact versions.
  
-# Installation
+## Installation
 
-## Start
+### Start
+
 * clone this repo in a subfolder of your Apache, let's say to /var/www/testcenter
 
-## Install node-dependencies
+### Install node-dependencies
+
 ```
 npm install
 
@@ -31,7 +36,8 @@ npm install
 cd ..
 ```
 
-## Install php-dependencies
+### Install php-dependencies
+
 ```
 cd backend
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -41,12 +47,14 @@ php composer.phar install
 cd..
 ```
 
-## Create Database
+### Create Database
+
 * Create a MySQL Database
 * Create a second MySQL Database with the same name, but prefixed with `TEST_`.
 * use Configuration from `scripts/database/my.cnf`
 
-## Create Backend Config
+### Create Backend Config
+
 Create a file `backend/config/config.ini` with your credentials and settings.
 ```
 [database]
@@ -78,42 +86,48 @@ dateFormat=d/m/Y H:i
 ```
 Not that files-service and cache-server are currently not available in local installation.
 
-## Initialize Backend
+### Initialize Backend
+
 ```
 sudo --user=www-data php backend/initialize.php
 ```
 
 Tipp: If you don't want to use the broadcaster omit the last two lines.
 
-## Serve Backend
+### Serve Backend
 
 * use settings from `backend/config/local.php.ini`
 
-## Disable cors
+### Disable cors
+
 ```
 cp backend/config/no-cors.htaccess .htaccess
 ```
 
-## Prepare Frontend
+### Prepare Frontend
+
 ```
 echo "export const environment = { production: false, backendUrl: 'http://localhost/testcenter/backend/', fastLoadUrl: 'http://localhost/testcenter/backend/' };" \
  > frontend/src/environments/environment.ts
 ```
 
-# Run
+## Run
 
-## Frontend
+### Frontend
+
 ```
 cd frontend
 npm run start
 ```
 
-## Broadcaster
+### Broadcaster
+
 (optional)
 ```
 cd broadcaster
 npm run start
 ```
 
-## File-Server
+### File-Server
+
 Can not be run locally. It is not needed because files can be served by the regular backend as well.

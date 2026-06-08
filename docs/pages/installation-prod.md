@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Installation for production
+nav_order: 1
 ---
 
 # Installation for production
@@ -23,9 +25,11 @@ Make-scripts are used to control the app, i.e. starting, stopping. This can be d
 You can find the latest release [here](https://github.com/iqb-berlin/testcenter/releases/latest).
 
 - Run script
+
 ```
 bash install.sh
 ```
+
 
 ## Usage
 ### Start & Stop

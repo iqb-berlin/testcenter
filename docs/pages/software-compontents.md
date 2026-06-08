@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Softwarecomponents
+nav_order: 5
 ---
 
 # Softwarecomponents

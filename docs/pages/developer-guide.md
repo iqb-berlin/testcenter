@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Developer's Guide
+nav_order: 4
 ---
 
 # Developer's Guide

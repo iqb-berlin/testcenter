@@ -1,8 +1,12 @@
 ---
 layout: default
+title: Custom-Text
+nav_order: 9
 ---
 
-# CustomTexts
+# Custom Texts
+{: .no_toc }
+
 This application enables changes of texts during runtime. It's an implementation 
 of the CustomTextPipe/CustomTextService 
 of [iqb-components](https://github.com/iqb-berlin/iqb-components). The idea is, that 
@@ -15,7 +19,9 @@ This document
 describes the ways to bring the custom texts to the application and lists 
 all possible keys.
 
-### Configuration via login configuration
+## Configuration via login configuration
+{: .no_toc }
+
 For some tests, the test authority might like to change standard titles, prompts or explanations 
 furthermore depending on the testtaker. For example, the questionnaire for teachers 
 will use 'Please contact the administrator of the survey' and the booklet for students 
@@ -31,7 +37,9 @@ for every login of this file. Example:
 ...
 </CustomTexts>
 ```
-### Configuration of System check
+## Configuration of System check
+{: .no_toc }
+
 In the definition file for system checks, there is also one place to define text
 replacements:
 ```
@@ -43,3 +51,7 @@ replacements:
 ...
 </Config>
 ```
+## Inhalt
+{: .no_toc }
+1. TOC
+{:toc}

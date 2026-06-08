@@ -1,8 +1,8 @@
 ---
 layout: default
+title: Modes for test execution
+nav_order: 8
 ---
-
-# Modes for test execution
 
 For the test or the survey, all execution parameters are given by
 the XML definition files. But before the test starts in production (hot) mode, there is

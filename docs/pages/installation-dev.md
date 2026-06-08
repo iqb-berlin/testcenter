@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Installation for development
+nav_order: 3
 ---
 
 # Installation for development
@@ -30,6 +32,7 @@ We do not explain these applications, this is beyond the scope of this document.
 Although all steps below could be done in another operating system environment, we go for a unix/linux.
 
 ## 1. Install
+
 Clone this repository
 
 ## 2. Configure
@@ -56,25 +59,19 @@ There is one important setting to be made in the generated file `.env.dev`.
 On the first line, set the variable _HOSTNAME_ to either the IP, or the hostname of the machine
 under which it is reachable, in case `localhost` does not work.
 
-
 ## 3. Run
 ```
 make build
 make up
 ```
-
-
 ## 3. Update
 
 ```
 git pull
 make build
 ```
-
 # Login
 
 After installation two logins are prepared:
-
 - Username `super` and password `user123` as admin user
-
 - Username `test` and password `user123` and code `xxx` as test-taker
