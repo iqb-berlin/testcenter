@@ -19,8 +19,25 @@ include:
   - _icons
   - _js
 
+exclude:
+  - src
+
 kramdown:
  toc_levels: "1"
+
+sass:
+  sass_dir: _sass
+  style: :compressed
+
+callouts:
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
+  highlight:
+    color: yellow
 
 # Exclude from processing.
 # The following items will not be processed, by default.
