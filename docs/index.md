@@ -14,15 +14,12 @@ layout: default
 ## [Deutsch]
 
 Das IQB-Testcenter ist eine Webanwendung für die Durchführung von Kompetenztests oder Befragungen.
-Für Beschreibungen und Hinweise zur Benutzung konsultieren Sie bitte unser
-[Benutzerhandbuch](https://iqb-berlin.github.io/tba-info/Testcenter/).
+Detaillierte Informationen sind im [Benutzerhandbuch](https://iqb-berlin.github.io/tba-info/study-run/) zu finden.
 
 Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren und
 Entwickler gerichtet.
 
 Eine Versionshistorie und Änderungshinweise finden sie unter [Releases](https://github.com/iqb-berlin/testcenter/releases).
-
-
 
 ## [English]
 
@@ -39,6 +36,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
 * [Parameters of booklet-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html)
 * [Customizable Labels in the UI](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html)
+* [Testtaker Content](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/testtaker.html)
 
 ### Install & Run
 * **[Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)**
