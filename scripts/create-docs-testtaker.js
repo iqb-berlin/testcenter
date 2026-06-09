@@ -24,7 +24,7 @@ const cliPrint = require('./helper/cli-print');
 
 const rootPath = fs.realpathSync(`${__dirname}/..`);
 const docsDir = `${rootPath}/docs`;
-const definitionsDir = `${rootPath}/definitions`;
+const definitionsDir = `${rootPath}/definitions/testtaker`;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,13 +54,6 @@ const anchor = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(
 // ---------------------------------------------------------------------------
 // Rendering helpers
 // ---------------------------------------------------------------------------
-
-const CUSTOM_TEXT_GROUPS = [
-  { prefix: 'login_', title: 'Anmeldeseite (`login_*`)', description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
-  { prefix: 'booklet_', title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
-  { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)', description: 'Texte für den System-Check.' },
-  { prefix: 'gm_', title: 'Gruppenmonitor (`gm_*`)', description: 'Texte für den Gruppenmonitor.' }
-];
 
 const renderDeprecation = prop => {
   if (!prop.deprecated) return '';
@@ -166,38 +159,6 @@ const renderMetadata = (schema, current) => {
   return result;
 };
 
-const renderCustomTexts = (schema, current) => {
-  const properties = schema.properties.customTexts.properties;
-  let result = current;
-  const grouped = {};
-  CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
-  grouped.other = [];
-  Object.keys(properties).forEach(key => {
-    const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
-    grouped[group ? group.prefix : 'other'].push(key);
-  });
-
-  CUSTOM_TEXT_GROUPS.forEach(groupDef => {
-    const keys = grouped[groupDef.prefix];
-    if (!keys.length) return;
-    result += `\n\n# ${groupDef.title}\n\n${groupDef.description}\n`;
-    keys.sort().forEach((key, index) => {
-      if (index > 0) result += '\n';
-      result += renderProperty(key, properties[key], schema, 2, false);
-    });
-  });
-
-  if (grouped.other.length) {
-    result += '\n# Sonstige\n';
-    grouped.other.sort().forEach((key, index) => {
-      if (index > 0) result += '\n\n';
-      result += renderProperty(key, properties[key], schema, 3, false);
-    });
-  }
-
-  return result;
-};
-
 const renderGroups = (schema, current) => {
   let result = current;
   result += '\n## `groups`\n\n';
@@ -245,7 +206,6 @@ const renderDefs = (schema, current) => {
 const readSchema = () => JSON.parse(fs.readFileSync(`${definitionsDir}/testtaker.schema.json`).toString());
 
 const testtakerFile = `${docsDir}/pages/testtaker.md`;
-const customTextsFile = `${docsDir}/pages/custom-texts.md`;
 
 const readFile = filePath => (fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '');
 const writeFile = (filePath, content) => fs.writeFileSync(filePath, content, 'utf8');
@@ -290,18 +250,6 @@ exports.testtakerDefs = done => {
 };
 
 // ---------------------------------------------------------------------------
-// Individual exports – custom-texts.md (separate file)
-// ---------------------------------------------------------------------------
-
-exports.testtakerCustomTexts = done => {
-  cliPrint.headline('Testtaker CustomTexts: Writing customTexts section');
-  const schema = readSchema();
-  const base = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8');
-  writeFile(customTextsFile, renderCustomTexts(schema, base));
-  done();
-};
-
-// ---------------------------------------------------------------------------
 // Combined tasks
 // ---------------------------------------------------------------------------
 
@@ -311,8 +259,4 @@ exports.testtakerDocs = gulp.series(
   exports.testtakerGroups,
   exports.testtakerProfiles,
   exports.testtakerDefs
-);
-
-exports.customTexts = gulp.series(
-  exports.testtakerCustomTexts
 );
