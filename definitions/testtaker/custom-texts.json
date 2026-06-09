@@ -1,0 +1,451 @@
+{
+  "login_sidepanel_title": {
+    "label" : "Titel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Willkommen im IQB‑Testcenter"
+  },
+  "login_sidepanel_subtitle": {
+    "label" : "Untertitel des seitlichen Infobereichs auf der Anmeldeseite",
+    "defaultvalue" : "Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den Zugangsdaten möglich, die Sie vorab erhalten haben."
+  },
+  "login_subtitle": {
+    "label" : "Titel für Starter-Seite",
+    "defaultvalue" : "Testauswahl"
+  },
+  "login_testEndButtonLabel" : {
+    "label" : "Schalterbeschriftung für 'Test beenden'",
+    "defaultvalue" : "Test beenden"
+  },
+  "login_testResumeButtonLabel" : {
+    "label" : "Schalterbeschriftung für 'Test fortsetzen'",
+    "defaultvalue" : "Test fortsetzen"
+  },
+  "booklet_warningLeaveTimerBlockTextPrompt" : {
+    "label" : "Schalterbeschriftung für 'Zurück zum Test'",
+    "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
+  },
+  "booklet_warningLeaveTitle-testlet" : {
+    "label" : "Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Aufgabenbereich verlassen?"
+  },
+  "booklet_warningLeaveTitle-unit" : {
+    "label" : "Titel für Warnung (Dialogbox) einer nur einmal betretbaren Aufgabe.",
+    "defaultvalue" : "Aufgabe verlassen?"
+  },
+  "booklet_warningLeaveTextPrompt-testlet" : {
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_warningLeaveTextPrompt-unit" : {
+    "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
+    "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+  },
+  "booklet_blockLockedByAfterLeave" : {
+    "label": "Block kann nicht noch einmal betreten werden",
+    "defaultvalue": "Block kann nicht noch einmal betreten werden"
+  },
+  "booklet_lockedByAfterLeave" : {
+    "label": "Aufgabe kann nicht noch einmal betreten werden",
+    "defaultvalue": "Aufgabe kann nicht noch einmal betreten werden"
+  },
+  "login_bookletSelectPromptNull" : {
+    "label" : "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
+    "defaultvalue" : "Beendet. Es können keine weiteren Testhefte gestartet werden."
+  },
+  "login_pagesNaviPrompt" : {
+    "label" : "Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'",
+    "defaultvalue" : "Weitere Seiten:"
+  },
+  "login_bookletSelectPromptOne" : {
+    "label" : "Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)",
+    "defaultvalue" : "Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!"
+  },
+  "login_bookletSelectPromptMany" : {
+    "label" : "Aufforderung, aus der Liste der gefundenen Tests einen auszusuchen (auf Schalter klicken)",
+    "defaultvalue" : "Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!"
+  },
+  "login_codeInputPrompt" : {
+    "label" : "Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)",
+    "defaultvalue" : "Bitte Log-in eingeben, der auf dem Zettel steht!"
+  },
+  "login_codeInputTitle" : {
+    "label" : "Titel des Eingabeformulares für den Code",
+    "defaultvalue" : "Log-in eingeben"
+  },
+  "login_unsupportedBrowser" : {
+    "label": "Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
+    "defaultvalue" : "Ihr Browser <strong>%s %s</strong> wird von dieser Anwendung leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! <br> Bitte verwenden Sie eine aktuelle Version von Mozilla Firefox, Google Chrome, Microsoft Edge oder Apple Safari."
+  },
+  "login_unsupportedBrowserBanner" : {
+  "label": "Warnung-Banner, wenn ein nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
+  "defaultvalue" : "Ihr Browser %s %s ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version."
+},
+  "booklet_msgNavigationDeniedTitle" : {
+    "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",
+    "defaultvalue" : "Aufgabe darf nicht verlassen werden"
+  },
+  "booklet_msgNavigationDeniedText_presentationIncomplete" : {
+    "label" : "Text der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig gesehen worden ist.",
+    "defaultvalue" : "Es müssen erst alle Audio-Dateien vollständig abgespielt werden und auf allen Seiten bis ganz nach unten gescrollt werden."
+  },
+  "booklet_msgNavigationDeniedText_responsesIncomplete" : {
+    "label" : "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet worden ist.",
+    "defaultvalue" : "Es müssen erst alle Teilaufgaben bearbeitet werden."
+  },
+  "booklet_codeToEnterTitle" : {
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes",
+    "defaultvalue" : "Aufgabenblock ist gesperrt, Freigabewort benötigt"
+  },
+  "booklet_codeToEnterPrompt" : {
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes",
+    "defaultvalue" : "Bitte gib das Freigabewort ein, das angesagt wurde!"
+  },
+  "booklet_codeToEnterWarning": {
+    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung",
+    "defaultvalue" : "Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben."
+  },
+  "booklet_msgTimerStarted" : {
+    "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",
+    "defaultvalue" : "Die Bearbeitungszeit für diesen Abschnitt hat begonnen: "
+  },
+  "booklet_msgTimerCancelled" : {
+    "label" : "Nachricht, dass die Bearbeitung eines Abschnittes mit Timer abgebrochen wurde",
+    "defaultvalue" : "Die Bearbeitung des Abschnittes wurde abgebrochen."
+  },
+  "booklet_msgSoonTimeOver" : {
+    "label" : "Nachricht, dass für die Bearbeitung eines Abschnittes noch x min Zeit ist",
+    "defaultvalue" : "Du hast noch %s Minute(n) Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
+  },
+  "booklet_msgTimeOver" : {
+    "label" : "Nachricht, dass die Bearbeitungszeit für einen Abschnitt abgelaufen ist.",
+    "defaultvalue" : "Die Bearbeitung des Abschnittes ist beendet."
+  },
+  "booklet_warningLeaveTimerBlockTitle" : {
+    "label" : "Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer",
+    "defaultvalue" : "Aufgabenabschnitt verlassen?"
+  },
+  "booklet_tasklisttitle" : {
+    "label" : "Titel für die Auflistung der Aufgaben (Schalter)",
+    "defaultvalue" : "Aufgaben"
+  },
+  "syscheck_questionsintro" : {
+    "label" : "Aufforderung, die Fragen (Questionnaire) zu beantworten",
+    "defaultvalue" : "Bitte bearbeiten Sie die nachfolgenden Fragen."
+  },
+  "booklet_errormessage" : {
+    "label" : "Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist",
+    "defaultvalue" : "Leider gab es ein technisches Problem. Versuche Folgendes:\n\n1. Lade die Seite neu. Drücke dafür die Taste F5 oder am Tablet das Neu-Laden-Symbol oben rechts neben der Internetadresse.\n\nFunktioniert nicht? Dann...\n\n2. Melde dich mit deinen Zugangsdaten in einem anderen Browser neu an (Browser: Mozilla Firefox, Google Chrome, Apple Safari).\n\nFunktioniert auch nicht? Dann...\n\n3. Melde dich mit deinen Zugangsdaten an einem anderen Gerät neu an. Spreche das aber vorher mit der Lehrkraft bzw. Testleitung ab."
+  },
+  "booklet_console_warning": {
+    "label": "Warnung, die auf der Browserkonsole erscheinen soll",
+    "defaultvalue": "Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*\nGehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben."
+  },
+  "booklet_pausedmessage" : {
+    "label" : "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
+    "defaultvalue" : "Der Test wurde kurz angehalten."
+  },
+  "booklet_loadingBlock" : {
+    "label" : "Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde",
+    "defaultvalue" : "Aufgabenblock wird geladen"
+  },
+  "booklet_loadingUnit" : {
+    "label" : "Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde",
+    "defaultvalue" : "Aufgabe wird geladen"
+  },
+  "booklet_unitLoadingUnknownProgress" : {
+    "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt",
+    "defaultvalue" : "Wird geladen"
+  },
+  "booklet_unitLoadingPending" : {
+    "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist",
+    "defaultvalue" : "In der Warteschleife"
+  },
+  "booklet_unitLoading" : {
+    "label" : "Untertitel des Ladebalkens, xxx% geladen",
+    "defaultvalue" : "Geladen"
+  },
+  "booklet_loading" : {
+    "label" : "Test wird geladen",
+    "defaultvalue" : "Bitte warten"
+  },
+  "booklet_lockedBlock" : {
+    "label" : "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
+    "defaultvalue" : "Aufgabenzeit ist abgelaufen"
+  },
+  "booklet_requestFullscreen" : {
+    "label" : "Text für Dialogfeld 'Vollbild aktivieren?'",
+    "defaultvalue" : "Soll das Vollbild aktiviert werden?"
+  },
+  "syscheck_questionsRequiredMessage" : {
+    "label" : "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
+    "defaultvalue" : "Bitte prüfen Sie die Eingaben (unvollständig):"
+  },
+  "booklet_starterStartTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test zu starten",
+    "defaultvalue": "Starten"
+  },
+  "booklet_starterContinueTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test fortzusetzen",
+    "defaultvalue": "Weiter"
+  },
+  "booklet_starterViewTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf um Test anzusehen",
+    "defaultvalue": "Ansehen"
+  },
+  "booklet_starterLockedTestButtonLabel" : {
+    "label": "Hauptmenü: Beschriftung für den Knopf bei gesperrtem Test",
+    "defaultvalue": "Fertig"
+  },
+  "syscheck_unitPrompt" : {
+    "label" : "Titelzeile über der Aufgabe",
+    "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"
+  },
+  "syscheck_intro" : {
+    "label" : "Text auf der ersten Seite des System-Checks",
+    "defaultvalue" : "Dieser Systemcheck soll gewährleisten, dass das von Ihnen verwendete Endgerät für eine bestimmte Befragung oder Testung geeignet ist."
+  },
+  "syscheck_report_id" : {
+    "label" : "Dialog 'Bericht senden': Platzhalter für das ID-Eingabefeld vor dem Senden des Berichts",
+    "defaultvalue" : "Schul-ID"
+  },
+  "syscheck_report_aboutPassword": {
+    "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
+    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!"
+  },
+  "syscheck_report_aboutReportId": {
+    "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
+    "defaultvalue" : "Die ermittelten bzw. eingegebenen Informationen werden in der Datenbank so gespeichert, dass eine zusammenfassende Auswertung für eine bestimmte Studie möglich ist. Um den Bericht einem bestimmten Projekt oder einer Studie zuordnen zu können, geben Sie bitte einen kurzen Text ein, der dann als Titel für den Bericht verwendet wird!"
+  },
+  "gm_headline" : {
+    "label" : "Überschrift: Gruppenmonitor",
+    "defaultvalue" : "Gruppenüberwachung"
+  },
+  "gm_show_monitor" : {
+    "label" : "Titel für Monitorfunktion",
+    "defaultvalue" : "Testgruppen-Überwachung"
+  },
+  "gm_show_test" : {
+    "label" : "Titel für Testüberprüfung",
+    "defaultvalue" : "Testhefte anzeigen"
+  },
+  "gm_menu_filter" : {
+    "label" : "Menüeintrag: Sitzungen ausblenden",
+    "defaultvalue" : "Sitzungen ausblenden"
+  },
+  "gm_menu_cols" : {
+    "label" : "Menüeintrag: Spalten",
+    "defaultvalue" : "Spalten"
+  },
+  "gm_menu_cols_states" : {
+    "label" : "Spalte: Booklet-Zustände",
+    "defaultvalue" : "Zustände"
+  },
+  "gm_col_personLabel" : {
+    "label" : "Spalte: Teilnehmer",
+    "defaultvalue" : "Teilnehmer"
+  },
+  "gm_col_state" : {
+    "label" : "Spalte: Aktivität",
+    "defaultvalue" : "Aktivität"
+  },
+  "gm_col_groupName" : {
+    "label" : "Spalte: Gruppe",
+    "defaultvalue" : "Gruppe"
+  },
+  "gm_col_bookletLabel" : {
+    "label" : "Spalte: Testheft",
+    "defaultvalue" : "Testheft"
+  },
+  "gm_col_blockLabel" : {
+    "label" : "Spalte: Block",
+    "defaultvalue" : "Block"
+  },
+  "gm_col_unitLabel" : {
+    "label" : "Spalte: Aufgabe",
+    "defaultvalue" : "Aufgabe"
+  },
+  "gm_view_full" : {
+    "label" : "Ansicht: Vollständig",
+    "defaultvalue" : "Vollständig"
+  },
+  "gm_view_medium" : {
+    "label" : "Ansicht: Nur Blöcke",
+    "defaultvalue" : "Nur Blöcke"
+  },
+  "gm_view_small" : {
+    "label" : "Ansicht: Kurz",
+    "defaultvalue" : "Kurz"
+  },
+  "gm_controls" : {
+    "label" : "Überschrift: Test-Steuerung",
+    "defaultvalue" : "Test-Steuerung"
+  },
+  "gm_selection_info" : {
+    "label" : "Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)",
+    "defaultvalue" : "%s %s Test%s mit %s Testheft%s ausgewählt."
+  },
+  "gm_selection_info_none" : {
+    "label" : "Information gewählte Tests: Keiner",
+    "defaultvalue" : "Kein Test gewählt."
+  },
+  "gm_control_resume" : {
+    "label" : "Control: weiter",
+    "defaultvalue" : "Weiter"
+  },
+  "gm_control_pause" : {
+    "label" : "Control: pause",
+    "defaultvalue" : "Pause"
+  },
+  "gm_control_goto" : {
+    "label" : "Control: Springe zu Block",
+    "defaultvalue" : "Springe zu"
+  },
+  "gm_control_unlock" : {
+    "label" : "Control: Entsperren",
+    "defaultvalue" : "Test Entsperren"
+  },
+  "gm_control_goto_unlock_blocks_confirm_text" : {
+    "label" : "Control: Springe zu Block - soll Zeit wiederhergestellt werden?",
+    "defaultvalue" : "Zeit wiederherstellen bei Sprung in zeitgesteuerten Block?"
+  },
+  "gm_control_goto_unlock_blocks_confirm_headline" : {
+    "label" : "Control: Springe zu Block - soll Zeit wiederhergestellt werden? - Überschrift",
+    "defaultvalue" : "Sprung bestätigen"
+  },
+  "gm_control_unlock_success_warning" : {
+    "label" : "Wird angezeigt, wenn Tests entsperrt wurden",
+    "defaultvalue" : "ACHTUNG! Die betreffenden Browser und diese Testleiterkonsole müssen ggf. neu gestartet werden."
+  },
+  "gm_control_finish_everything" : {
+    "label" : "Control: Testung beenden",
+    "defaultvalue" : "Testung beenden"
+  },
+  "gm_settings_tooltip" : {
+    "label" : "Control: Ansicht",
+    "defaultvalue" : "Ansicht"
+  },
+  "gm_scroll_down" : {
+    "label" : "Control: Ganz nach unten",
+    "defaultvalue" : "Ganz nach unten"
+  },
+  "gm_hide_controls_tooltip" : {
+    "label" : "Tooltip: Test-Steuerung verbergen",
+    "defaultvalue" : "Test-Steuerung verbergen"
+  },
+  "gm_control_unlock_tooltip" : {
+    "label" : "Tooltip: Freigeben",
+    "defaultvalue" : "Test Freigeben"
+  },
+  "gm_filter_locked" : {
+    "label" : "Filter: gesperrte ausblenden",
+    "defaultvalue" : "gesperrte"
+  },
+  "gm_filter_pending" : {
+    "label" : "Filter: nicht gestartete ausblenden",
+    "defaultvalue" : "nicht gestartete"
+  },
+  "gm_filter_target_mode": {
+    "label": "Benutzerdefinierter Filter: Ziel - Modus",
+    "defaultvalue": "Durchführungsmodus"
+  },
+  "gm_filter_target_bookletId": {
+    "label": "Benutzerdefinierter Filter: Ziel - TestheftId",
+    "defaultvalue": "Booklet-Id"
+  },
+  "gm_filter_target_unitId": {
+    "label": "Benutzerdefinierter Filter: Ziel - Aufgaben-Id",
+    "defaultvalue": "Aufgaben-Id"
+  },
+  "gm_filter_target_blockId": {
+    "label": "Benutzerdefinierter Filter: Ziel - Block-Id",
+    "defaultvalue": "Block-Id"
+  },
+  "gm_filter_target_bookletSpecies": {
+    "label": "Benutzerdefinierter Filter: Ziel -Testhefttyp",
+    "defaultvalue": "Testhefttyp"
+  },
+  "gm_filter_target_groupName": {
+    "label": "Benutzerdefinierter Filter: Ziel - Gruppe",
+    "defaultvalue": "Gruppe"
+  },
+  "gm_filter_target_testState": {
+    "label": "Benutzerdefinierter Filter: Ziel - detaillierter Teststatus",
+    "defaultvalue": "Detaillierter Teststatus"
+  },
+  "gm_filter_target_bookletStates": {
+    "label": "Benutzerdefinierter Filter: Ziel - Testheft-Adaptivität-Zustand",
+    "defaultvalue": "Testheft-Zustand"
+  },
+  "gm_filter_type_equal": {
+    "label": "Benutzerdefinierter Filter: Typ - gleicht",
+    "defaultvalue": "gleicht"
+  },
+  "gm_filter_type_substring": {
+    "label": "Benutzerdefinierter Filter: Typ - enthält",
+    "defaultvalue": "enthält"
+  },
+  "gm_filter_type_regex": {
+    "label": "Benutzerdefinierter Filter: Typ - Regulärer Ausdruck",
+    "defaultvalue": "matched regulären Ausdruck"
+  },
+  "gm_filter_not": {
+    "label": "Benutzerdefinierter Filter: Nicht",
+    "defaultvalue": "nicht"
+  },
+  "gm_codetoenter_unlock_tooltip" : {
+    "label" : "Tooltip Passwort-geschützter Bereich geöffnet",
+    "defaultvalue" : "Block wurde geöffnet"
+  },
+  "gm_timeleft_tooltip" : {
+    "label" : "Tooltip zeitgesteuerter Block: verbleibende Zeit. Ersetzungen (%s): Verbleibende Minuten, Minuten gesamt",
+    "defaultvalue" : "Verbleibende Zeit: %s von %s Minute(n)"
+  },
+  "gm_timeup_tooltip" : {
+    "label" : "Tooltip zeitgesteuerter Block: Zeit abgelaufen",
+    "defaultvalue" : "Zeit abgelaufen"
+  },
+  "gm_timemax_tooltip" : {
+    "label" : "Tooltip zeitgesteuerter Block: Noch nicht gestartet. Ersetzung (%s): Minutenzahl, ",
+    "defaultvalue" : "Zeitgesteuerter Block: %s Minute(n)"
+  },
+
+  "gm_booklet_error_missing_id" : {
+    "label" : "Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet",
+    "defaultvalue" : "Kein Testheft zugeordnet!"
+  },
+  "gm_booklet_error_missing_file" : {
+    "label" : "Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!",
+    "defaultvalue" : "Kein Zugriff auf Testheft-Datei!"
+  },
+  "gm_booklet_error_xml" : {
+    "label" : "Fehleranzeige im Gruppen monitor: Invalides XML",
+    "defaultvalue" : "Konnte Testheft-Datei nicht lesen!"
+  },
+  "gm_booklet_error_general" : {
+    "label" : "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
+    "defaultvalue" : "Fehler beim Zugriff auf Testheft-Datei!"
+  },
+  "gm_control_goto_tooltip" : {
+    "label" : "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",
+    "defaultvalue" : "Bitte Block auswählen"
+  },
+  "gm_multiple_booklet_species_warning" : {
+    "label" : "Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist",
+    "defaultvalue" : " - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+  },
+  "gm_auto_checkall" : {
+    "label" : "Der 'Immer alle Auswählen'-Schalter",
+    "defaultvalue" : "Alle Tests gleichzeitig steuern"
+  },
+  "gm_selection_text": {
+    "label" : "Der Text im Button bei Auswahl der Testleitungskonsole",
+    "defaultvalue" : "Überwachung starten"
+  },
+  "gm_selection_text_expired": {
+    "label": "Der Text im Button bei Auswahl der Testleitungskonsole, wenn die Gruppe abgelaufen ist. $date wird gegen das Ablaufdatum ersetzt.",
+    "defaultvalue": "Gruppe abgelaufen seit %date."
+  },
+  "gm_selection_text_scheduled": {
+    "label": "Der Text im Button bei Auswahl der Testleitungskonsole, wenn die noch nicht freigegeben abgelaufen ist. $date wird gegen das Freigabedatum ersetzt.",
+    "defaultvalue": "Gruppe erst freigegeben ab %date."
+  }
+}

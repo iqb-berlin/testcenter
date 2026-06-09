@@ -1,0 +1,146 @@
+{
+  "RUN-DEMO": {
+    "label": "Nur Ansicht (Demo)",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": true
+    }
+  },
+  "MONITOR-GROUP": {
+    "label": "Testgruppen-Monitor (Demo)",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": true
+    }
+  },
+  "MONITOR-STUDY": {
+    "label": "Studien-Monitor (Demo)",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": true
+    }
+  },
+  "RUN-HOT-RETURN": {
+    "label": "Durchführung Test/Befragung",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": true,
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": true,
+      "canChangeStateOptions": false
+    }
+  },
+  "RUN-HOT-RESTART": {
+    "label": "Durchführung Test/Befragung",
+    "config": {
+      "alwaysNewSession": true,
+      "monitorable": true,
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": true,
+      "canChangeStateOptions": false
+    }
+  },
+  "RUN-REVIEW": {
+    "label": "Prüfdurchgang ohne Speichern",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": true,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": true
+    }
+  },
+  "RUN-TRIAL": {
+    "label": "Prüfdurchgang mit Speichern und Reviewfunktionalität",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": true,
+      "canReview": true,
+      "saveResponses": true,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": true
+    }
+  },
+  "RUN-SIMULATION": {
+    "label": "Prüfdurchgang ohne Speichern, ohne Reviewfunktionalität aber mit Beschränkungen",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false,
+      "canChangeStateOptions": false
+    }
+  },
+  "SYS-CHECK-LOGIN": {
+    "label": "Dieser Modus versteckt für alle anderen Logins den System Check. Der Check kann dann nur noch von Logins durchgeführt werden mit diesem Mode",
+    "config": {
+      "alwaysNewSession": false,
+      "monitorable": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  }
+}
+
