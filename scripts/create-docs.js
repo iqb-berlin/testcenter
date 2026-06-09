@@ -11,6 +11,7 @@ const cliPrint = require('./helper/cli-print');
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
 const docsDir = `${rootPath}/docs`;
 const definitionsDir = `${rootPath}/definitions`;
+const testtakerDefinitionsDir = `${rootPath}/definitions/testtaker`;
 
 /**
  * Creates documentation about super-states. To make the abundance of possible state-combinations of a running test
@@ -119,8 +120,8 @@ exports.bookletConfig = done => {
 exports.testMode = done => {
   cliPrint.headline('TestMode: Writing Markdown documentation');
 
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
-  const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/test-mode.json`).toString());
+  const modeOptions = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/mode-options.json`).toString());
 
   let output = fs.readFileSync(`${docsDir}/src/test-mode.md`, 'utf8').toString();
 
@@ -144,6 +145,13 @@ exports.testMode = done => {
   done();
 };
 
+const CUSTOM_TEXT_GROUPS = [
+  { prefix: 'login_', title: 'Anmeldeseite (`login_*`)', description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
+  { prefix: 'booklet_', title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
+  { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)', description: 'Texte für den System-Check.' },
+  { prefix: 'gm_', title: 'Gruppenmonitor (`gm_*`)', description: 'Texte für den Gruppenmonitor.' }
+];
+
 /**
  * Creates documentation about the available custom-texts. Custom-texts is an internal system to replace labels in the
  * UI in defined contexts.
@@ -151,23 +159,43 @@ exports.testMode = done => {
  * See result and read more: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html
  * Read more in user's manual (german): https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter
  *
- * Primary Source of test-modes is `custom-texts.json`. This is used to generate an interface
- * and the docs (with the task below).
- * TODO make the primary source be an XSD file.
+ * Primary Source of custom-texts is `definitions/testtaker/custom-texts.json`.
  */
 exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/custom-texts.json`).toString());
   let output = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8').toString();
-  output += '### List of possible replacements\n\n';
-  output += '| Key       | Used for     | Default     |\n';
-  output += '| :------------- | :---------- | :----------- |\n';
 
-  Object.keys(definition)
-    .sort()
-    .forEach(key => {
-      output += `|${key}|${definition[key].label}|${definition[key].defaultvalue}|\n`;
+  const grouped = {};
+  CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
+  grouped.other = [];
+
+  Object.keys(definition).forEach(key => {
+    const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
+    grouped[group ? group.prefix : 'other'].push(key);
+  });
+
+  CUSTOM_TEXT_GROUPS.forEach(groupDef => {
+    const keys = grouped[groupDef.prefix];
+    if (!keys.length) return;
+    output += `\n# ${groupDef.title}\n\n${groupDef.description}\n`;
+    keys.sort().forEach(key => {
+      const param = definition[key];
+      output += `\n## \`${key}\`\n\n`;
+      output += `${param.label}\n`;
+      output += `\nStandard: ${param.defaultvalue}\n`;
     });
+  });
+
+  if (grouped.other.length) {
+    output += '\n# Sonstige\n';
+    grouped.other.sort().forEach(key => {
+      const param = definition[key];
+      output += `\n## \`${key}\`\n\n`;
+      output += `${param.label}\n`;
+      output += `\nStandard: ${param.defaultvalue}\n`;
+    });
+  }
 
   fs.writeFileSync(`${docsDir}/pages/custom-texts.md`, output, 'utf8');
   done();
