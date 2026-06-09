@@ -57,15 +57,15 @@ exports.bookletConfigData = done => {
  * Read more in user's manual (german):
  * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Login:-Modi-der-Testdurchf%C3%BChrung
  *
- * Primary Source of test-modes are `definitions/test-mode.json` and `definitions/test-mode.json`.
+ * Primary Source of test-modes are `definitions/testtaker/test-mode.json` and `definitions/test-mode.json`.
  * This is also used to generate the docs.
  * TODO make the primary source be `definitions/vo_testtakers.xsd`.
  */
 exports.testModeData = done => {
   cliPrint.headline('TestMode: Writing interface');
 
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
-  const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/testtaker/test-mode.json`).toString());
+  const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/testtaker/mode-options.json`).toString());
 
   const output = [];
 

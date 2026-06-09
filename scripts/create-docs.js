@@ -11,6 +11,7 @@ const cliPrint = require('./helper/cli-print');
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
 const docsDir = `${rootPath}/docs`;
 const definitionsDir = `${rootPath}/definitions`;
+const testtakerDefinitionsDir = `${rootPath}/definitions/testtaker`;
 
 /**
  * Creates documentation about super-states. To make the abundance of possible state-combinations of a running test
@@ -119,8 +120,8 @@ exports.bookletConfig = done => {
 exports.testMode = done => {
   cliPrint.headline('TestMode: Writing Markdown documentation');
 
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
-  const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/test-mode.json`).toString());
+  const modeOptions = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/mode-options.json`).toString());
 
   let output = fs.readFileSync(`${docsDir}/src/test-mode.md`, 'utf8').toString();
 
@@ -158,13 +159,11 @@ const CUSTOM_TEXT_GROUPS = [
  * See result and read more: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html
  * Read more in user's manual (german): https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter
  *
- * Primary Source of test-modes is `custom-texts.json`. This is used to generate an interface
- * and the docs (with the task below).
- * TODO make the primary source be an XSD file.
+ * Primary Source of custom-texts is `definitions/testtaker/custom-texts.json`.
  */
 exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${testtakerDefinitionsDir}/custom-texts.json`).toString());
   let output = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8').toString();
 
   const grouped = {};
