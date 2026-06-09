@@ -125,23 +125,39 @@ exports.testMode = done => {
 
   let output = fs.readFileSync(`${docsDir}/src/test-mode.md`, 'utf8').toString();
 
-  let tableHeader1 = '|  | ';
-  let tableHeader2 = '| :------------- |';
+  // 1. Übersicht der Modi oben anfügen
+  output += '\n### Verfügbare Modi\n\n';
   Object.keys(definition).forEach(k => {
     output += `* \`${k}${k === 'RUN-DEMO' ? '` (default): ' : '`: '}${definition[k].label}\n`;
-    tableHeader1 += `\`${k}\` | `;
-    tableHeader2 += ' :-------------: |';
   });
-  output += `\n\n${tableHeader1}\n${tableHeader2}\n`;
-  Object.keys(modeOptions).forEach(mode => {
-    output += `|${modeOptions[mode]}|`;
-    Object.keys(definition).forEach(k => {
-      output += definition[k].config[mode] ? 'X |' : '  |';
-    });
-    output += '\n';
-  });
-  fs.writeFileSync(`${docsDir}/pages/test-mode.md`, output, 'utf8');
 
+  // 2. Legende für die Merkmale erstellen (um die Tabelle schmal zu halten)
+  output += '\n### Merkmale der Modi\n\n';
+  const optionsKeys = Object.keys(modeOptions);
+  optionsKeys.forEach((mode, index) => {
+    output += `${index + 1}. ${modeOptions[mode]}\n`;
+  });
+
+  output += '\n';
+
+  // 3. Rotierte Tabelle mit Emojis generieren
+  // Header: Modus | 1 | 2 | 3 ...
+  const tableHeader1 = `| Modus | ${optionsKeys.map((_, i) => ` ${i + 1} |`).join('')}`;
+  const tableHeader2 = `| :--- | ${optionsKeys.map(() => ' :---: |').join('')}`;
+
+  output += `${tableHeader1}\n${tableHeader2}\n`;
+
+  // Zeilen: Modi als Zeilen untereinander
+  Object.keys(definition).forEach(k => {
+    let row = `| \`${k}\` | `;
+    optionsKeys.forEach(mode => {
+      // Wenn aktiv: ✅, wenn inaktiv: leeres Feld (oder ❌, falls gewünscht)
+      row += definition[k].config[mode] ? ' ✅ |' : '  |';
+    });
+    output += `${row}\n`;
+  });
+
+  fs.writeFileSync(`${docsDir}/pages/test-mode.md`, output, 'utf8');
   done();
 };
 
