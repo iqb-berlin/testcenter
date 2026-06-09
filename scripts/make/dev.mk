@@ -11,6 +11,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 init:
 	cp $(TC_BASE_DIR)/.env.dev-template $(TC_BASE_DIR)/.env.dev
 	cp $(TC_BASE_DIR)/.env.prod-template $(TC_BASE_DIR)/.env.prod
+	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
 	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
 
