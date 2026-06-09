@@ -74,7 +74,7 @@ exports.bookletConfig = done => {
     .forEach(configParameter => {
       const param = definition[configParameter];
 
-      output += `\n### ${configParameter}\n`;
+      output += `\n### \`${configParameter}\`\n`;
 
       if (param.deprecated === true) {
         output += [
