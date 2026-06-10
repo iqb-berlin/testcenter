@@ -117,8 +117,13 @@ Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
 Speicherfrequenz für Test-Zustände in Ms.
  * **1000**
 
+### header_hidden
+Erlaubt das Ausblenden der Kopfzeile. Das Logo und die damit verbundene Navigation zum Verlassen des Tests bleibt sichtbar und überragt den Player-Bereich (Testinhalte).
+ * "TRUE" - Kopfzeile wird ausgeblendet.
+ * **"FALSE" - Kopfzeile wird angezeigt.**
+
 ### header_content
-Legt fest, was im Kopfbereich als Titel angezeigt wird
+Legt fest, was im Kopfbereich als Titel angezeigt wird. Bei via 'header_hidden' versteckten Header, greift diese Einstellung nicht.
  * "NONE" - Titel auf der Kopfzeile bleibt leer
  * **"BOOKLET_LABEL" - Titel des Testhefts/Booklets**
  * "BLOCK_LABEL" - Titel des Aufgabenblocks
