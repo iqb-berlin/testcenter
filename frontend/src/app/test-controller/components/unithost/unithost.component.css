@@ -32,6 +32,10 @@
   max-height: 100%;
 }
 
+:host ::ng-deep .lock-overlay tc-code-input tc-code-text-field-form {
+  margin: 0 auto;
+}
+
 /*The following rules are to try and fit everything vertically on the screen (assuming 744px).*/
 :host ::ng-deep .lock-overlay tc-code-input .header-section h2 {
   margin: 0;
