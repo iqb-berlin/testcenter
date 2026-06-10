@@ -7,6 +7,7 @@ export class HeaderService {
   title?: string;
   showLogo = true;
   showAccountPanel: boolean = false;
+  isHeaderHidden = false;
 
   reset() {
     this.title = '';

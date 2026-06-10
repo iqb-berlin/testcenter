@@ -159,20 +159,24 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           maxIndex: Object.keys(this.tcs.units).length
         };
 
-        switch (this.tcs.booklet?.config.header_content) {
-        case 'NONE':
-          this.headerService.title = '';
-          break;
-        case 'BLOCK_LABEL':
-          this.headerService.title = this.currentUnit?.parent.label;
-          break;
-        case 'BOOKLET_LABEL':
-          this.headerService.title = this.tcs.booklet?.metadata.label;
-          break;
-        case 'UNIT_LABEL':
-          this.headerService.title = this.currentUnit?.label;
-          break;
-        // no default
+        if (this.tcs.booklet?.config.header_hidden === 'TRUE') {
+          this.headerService.isHeaderHidden = true;
+        } else {
+          switch (this.tcs.booklet?.config.header_content) {
+          case 'NONE':
+            this.headerService.title = '';
+            break;
+          case 'BLOCK_LABEL':
+            this.headerService.title = this.currentUnit?.parent.label;
+            break;
+          case 'BOOKLET_LABEL':
+            this.headerService.title = this.tcs.booklet?.metadata.label;
+            break;
+          case 'UNIT_LABEL':
+            this.headerService.title = this.currentUnit?.label;
+            break;
+          // no default
+          }
         }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
@@ -370,6 +374,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       document.exitFullscreen();
     }
     this.uiVisibilityService.setShowConfirmationUI(true);
+    this.headerService.isHeaderHidden = false;
   }
 
   @HostListener('window:unload', ['$event'])

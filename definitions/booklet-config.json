@@ -116,8 +116,16 @@
     "options": {},
     "defaultvalue": "1000"
   },
+  "header_hidden": {
+    "label": "Erlaubt das Ausblenden der Kopfzeile. Das Logo und die damit verbundene Navigation zum Verlassen des Tests bleibt sichtbar und überragt den Player-Bereich (Testinhalte).",
+    "options": {
+      "TRUE": "Kopfzeile wird ausgeblendet.",
+      "FALSE": "Kopfzeile wird angezeigt."
+    },
+    "defaultvalue": "FALSE"
+  },
   "header_content": {
-    "label": "Legt fest, was im Kopfbereich als Titel angezeigt wird",
+    "label": "Legt fest, was im Kopfbereich als Titel angezeigt wird. Bei via 'header_hidden' versteckten Header, greift diese Einstellung nicht. ",
     "options": {
       "NONE": "Titel auf der Kopfzeile bleibt leer",
       "BOOKLET_LABEL": "Titel des Testhefts/Booklets",

@@ -1,3 +1,4 @@
+@if (!headerService.isHeaderHidden) {
 <mat-toolbar>
   <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
   <div class="side">
@@ -38,13 +39,22 @@
   </div>
   <div class="side logo">
     @if (headerService.showLogo && logoURL) {
-      <a [routerLink]="logoLink" aria-label="Gehe zur Startseite" (click)="isLoginRoute && logout()">
-        <img [src]="logoURL" data-cy="logo" alt="Logo der Anwendung"
-             matTooltip="Zur Startseite"/>
-      </a>
+      <ng-container *ngTemplateOutlet="logo"></ng-container>
     }
   </div>
 </mat-toolbar>
+} @else {
+  <div class="logo standalone-logo">
+    <ng-container *ngTemplateOutlet="logo"></ng-container>
+  </div>
+}
+
+<ng-template #logo>
+  <a [routerLink]="logoLink" aria-label="Gehe zur Startseite" (click)="isLoginRoute && logout()">
+    <img [src]="logoURL" data-cy="logo" alt="Logo der Anwendung"
+         matTooltip="Zur Startseite"/>
+  </a>
+</ng-template>
 
 <ng-template #logoutDialogTemplate>
   <div class="logout-dialog">

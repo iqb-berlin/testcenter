@@ -12,6 +12,7 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { filter } from 'rxjs/operators';
 import { MessageService } from '@shared/services/message.service';
 import { AssetService } from '@shared/services/asset.service';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'tc-header',
@@ -25,7 +26,8 @@ import { AssetService } from '@shared/services/asset.service';
     MatButton,
     MatMenu,
     MatMenuTrigger,
-    MatDivider
+    MatDivider,
+    NgTemplateOutlet
   ],
   templateUrl: 'header.component.html',
   styleUrl: 'header.component.scss'

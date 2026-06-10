@@ -1,3 +1,12 @@
+# next
+
+## Neue Funktionen
+- Der Header kann während des Testablaufs ausgeblendet werden. Das Logo bleibt sichtbar und kann weiterhin zur Navigation zum hauptmenü verwendet werden. Es ist zu beachten, dass das Logo den Bereicht der Testinhalte überragt und ggf. teilweise verdeckt.
+  - Hierzu wurde ein neuer Booklet-Parameter hinzugefügt: *header_hidden*. Details zur Benutzung kann, wie immer, in der entsprechenden Dokumentation eingesehen werden.
+
+## Fehlerbehebungen
+- Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.
+
 # 18.0.0
 Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, einen neuen Theming-Mechanismus und das Austauschen von Bildern.
 

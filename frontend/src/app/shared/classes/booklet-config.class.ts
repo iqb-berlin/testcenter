@@ -18,6 +18,7 @@ export class BookletConfig extends BookletConfigData {
   get unit_responses_buffer_time() { return this._unit_responses_buffer_time; }
   get unit_state_buffer_time() { return this._unit_state_buffer_time; }
   get test_state_buffer_time() { return this._test_state_buffer_time; }
+  get header_hidden() { return this._header_hidden; }
   get header_content() {
     return this.resolveLegacyValue(
       'header_content', 'unit_screenheader', this._header_content, this._unit_screenheader, {
