@@ -34,7 +34,6 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 import { DebugPaneComponent } from '@app/test-controller/components/debug-pane/debug-pane.component';
 import { UnitInaccessiblePipe } from '@app/test-controller/pipes/unit-inaccessible.pipe';
 import { TemplateContextDirective } from '@shared/directives/template-context.directive';
-import { UnitNavBarComponent } from '@app/test-controller/components/unit-nav-bar/unit-nav-bar.component';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -71,8 +70,7 @@ export { TestControllerService } from './services/test-controller.service';
     CustomtextPipe,
     DebugPaneComponent,
     UnitInaccessiblePipe,
-    TemplateContextDirective,
-    UnitNavBarComponent
+    TemplateContextDirective
   ],
   declarations: [
     TestControllerComponent,
