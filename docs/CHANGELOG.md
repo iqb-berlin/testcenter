@@ -4,6 +4,13 @@
 - Der Header kann während des Testablaufs ausgeblendet werden. Das Logo bleibt sichtbar und kann weiterhin zur Navigation zum hauptmenü verwendet werden. Es ist zu beachten, dass das Logo den Bereicht der Testinhalte überragt und ggf. teilweise verdeckt.
   - Hierzu wurde ein neuer Booklet-Parameter hinzugefügt: *header_hidden*. Details zur Benutzung kann, wie immer, in der entsprechenden Dokumentation eingesehen werden.
 
+## Änderungen
+- Der globale Warnhinweis bei veraltetem Browser, der auf allen Seiten erschien wurde abgeschafft. Es gibt nun nur noch
+  den Warnhinweis auf Anmeldeseite.
+  - Da es nun nur noch 1 Art der Warnung gibt, entfällt ein custom-text.
+    - *login_unsupportedBrowser* übernimmt den Inhalt von *login_unsupportedBrowserBanner*
+    - login_unsupportedBrowserBanner wurde entfernt
+
 ## Fehlerbehebungen
 - Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.
 

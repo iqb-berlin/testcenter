@@ -8,18 +8,6 @@
 
 <router-outlet></router-outlet>
 
-@if (unsupportedBrowser.length && showBrowserBanner) {
-  <div id="el" class="browser-banner"
-       (click)="closeBanner()">
-    <div class="browser-banner-inner">
-      <ng-container *ngIf="('Ihr Browser ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version.' | customtext: 'login_unsupportedBrowserBanner' : unsupportedBrowser[0] : unsupportedBrowser[1]  | async)?.trim() as oldBrowserText">
-        {{ oldBrowserText }}
-        <button>X</button>
-      </ng-container>
-    </div>
-  </div>
-}
-
 @if (mainDataService.isTestingMode) {
   <div style="background: red; position: fixed; bottom: 4px; right: 4px; height: 4px; width: 4px; border-radius: 2px">
   </div>

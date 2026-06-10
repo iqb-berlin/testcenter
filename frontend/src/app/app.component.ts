@@ -5,7 +5,7 @@ import { Subscription, combineLatest } from 'rxjs';
 import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import {
-  CustomtextService, MainDataService, SysConfig, UserAgentService
+  CustomtextService, MainDataService, SysConfig
 } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
@@ -23,8 +23,6 @@ import { AssetService } from '@shared/services/asset.service';
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription | null = null;
   private appTitleSubscription: Subscription | null = null;
-  unsupportedBrowser: [string, string] | [] = [];
-  showBrowserBanner : boolean = false;
   showError = false;
 
   constructor(public mainDataService: MainDataService,
@@ -85,8 +83,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(doesSysCheckModeExist => {
         this.mainDataService.sysCheckAvailableForAll = !doesSysCheckModeExist;
       });
-
-    this.checkBrowser();
   }
 
   private disableGlobalErrorDisplay(): boolean {
@@ -123,18 +119,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeErrorBox(): void {
     this.showError = false;
-  }
-
-  checkBrowser() {
-    const ua = UserAgentService.resolveUserAgent();
-    if (!UserAgentService.userAgentMatches(ua)) {
-      this.unsupportedBrowser = [ua.family, ua.version];
-      this.showBrowserBanner = true;
-    }
-  }
-
-  closeBanner() {
-    this.showBrowserBanner = false;
   }
 
   ngOnDestroy(): void {
