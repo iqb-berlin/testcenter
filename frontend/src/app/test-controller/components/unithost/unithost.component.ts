@@ -199,6 +199,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
         { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
         { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
       ]);
+    } else {
+      this.pageService.updateValidPages([]);
     }
 
     if (msg.unitState) {
