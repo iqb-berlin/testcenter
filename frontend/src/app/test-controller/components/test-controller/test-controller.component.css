@@ -10,6 +10,10 @@
   gap: 12px;
 }
 
+.nav-header:empty {
+  padding: 0;
+}
+
 .nav-header .nav-button {
   background-color: white;
 }
