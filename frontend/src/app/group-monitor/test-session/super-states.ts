@@ -54,7 +54,7 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   idle: {
     tooltip: 'Test ist 5 Minuten oder länger inaktiv!',
-    icon: 'hourglass',
+    icon: 'hourglass_full',
     description: 'The participant was idle for five minutes or longer. This state can only be displayed on polling ' +
       'mode and is intended to be a fallback for the case that the participant\'s browser or computer was shut down ' +
       'and not able to report the lost connection. It\' s not appropriate to measure testees behaviour.'
