@@ -153,20 +153,48 @@ exports.testMode = done => {
  * and the docs (with the task below).
  * TODO make the primary source be an XSD file.
  */
+
+const CUSTOM_TEXT_GROUPS = [
+  { prefix: 'login_', title: 'Anmeldeseite (`login_*`)', description: 'Texte für die Anmeldeseite und allgemeine UI-Elemente.' },
+  { prefix: 'booklet_', title: 'Testheft-Ansicht (`booklet_*`)', description: 'Texte für die Testheft-Ansicht, Navigation und Dialoge.' },
+  { prefix: 'syscheck_', title: 'System-Check (`syscheck_*`)', description: 'Texte für den System-Check.' },
+  { prefix: 'gm_', title: 'Gruppenmonitor (`gm_*`)', description: 'Texte für den Gruppenmonitor.' }
+];
+
 exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
   let output = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8').toString();
-  output += '### List of possible replacements\n\n';
-  output += '| Key       | Used for     | Default     |\n';
-  output += '| :------------- | :---------- | :----------- |\n';
+  const grouped = {};
+  CUSTOM_TEXT_GROUPS.forEach(g => { grouped[g.prefix] = []; });
+  grouped.other = [];
 
-  Object.keys(definition)
-    .sort()
-    .forEach(key => {
-      output += `|${key}|${definition[key].label}|${definition[key].defaultvalue}|\n`;
+  Object.keys(definition).forEach(key => {
+    const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
+    grouped[group ? group.prefix : 'other'].push(key);
+  });
+
+  CUSTOM_TEXT_GROUPS.forEach(groupDef => {
+    const keys = grouped[groupDef.prefix];
+    if (!keys.length) return;
+    output += `\n# ${groupDef.title}\n\n${groupDef.description}\n`;
+    keys.sort().forEach(key => {
+      const param = definition[key];
+      output += `\n## \`${key}\`\n\n`;
+      output += `${param.label}\n`;
+      output += `\nStandard: ${param.defaultvalue}\n`;
     });
+  });
 
+  if (grouped.other.length) {
+    output += '\n# Sonstige\n';
+    grouped.other.sort().forEach(key => {
+      const param = definition[key];
+      output += `\n## \`${key}\`\n\n`;
+      output += `${param.label}\n`;
+      output += `\nStandard: ${param.defaultvalue}\n`;
+    });
+  }
   fs.writeFileSync(`${docsDir}/pages/custom-texts.md`, output, 'utf8');
   done();
 };
