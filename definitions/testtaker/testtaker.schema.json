@@ -1,0 +1,535 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iqb-berlin.github.io/testcenter/testtaker.schema.json",
+  "title": "Testtaker",
+  "description": "Definiert Logins, Gruppen, Booklet-Zuweisungen und Gruppenmonitor-Profile für eine Testdurchführung.",
+  "type": "object",
+  "required": [
+    "metadata",
+    "groups"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "title": "Metadata",
+      "description": "Optionale Metadaten zur Beschreibung der Testtaker-Datei. Wird nicht in der Anwendung angezeigt.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Beschreibung",
+          "description": "Freitextbeschreibung der Datei, z. B. zur Dokumentation des Verwendungszwecks.",
+          "type": "string"
+        }
+      }
+    },
+    "customTexts": {
+      "title": "CustomTexts",
+      "description": "Optionale Textersetzungen für UI-Labels. Die verfügbaren Schlüssel sind in der Custom-Texts-Dokumentation aufgeführt.",
+      "type": "object"
+    },
+    "profiles": {
+      "title": "Profiles",
+      "description": "Optionale Definitionen von Gruppenmonitor-Profilen. Profile steuern Spalten, Filter und Ansichten im Gruppenmonitor und werden in Logins per ID referenziert.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "groupMonitor": {
+          "title": "GroupMonitor",
+          "description": "Liste von Profilen für den Gruppenmonitor.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GroupMonitorProfile"
+          }
+        }
+      }
+    },
+    "groups": {
+      "title": "Groups",
+      "description": "Mindestens eine Login-Gruppe. Alle Logins müssen einer Gruppe zugeordnet sein. Gruppen-IDs müssen installationsweit eindeutig sein.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Group"
+      }
+    }
+  },
+  "$defs": {
+    "Group": {
+      "title": "Group",
+      "description": "Eine Gruppe von Logins, z. B. eine Schulklasse. Die ID muss installationsweit eindeutig sein. Antwortdaten werden der Gruppe zugeordnet.",
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "logins"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "ID",
+          "description": "Eindeutige Kennung der Gruppe. Muss über alle Arbeitsbereiche der gesamten Testcenter-Installation hinweg eindeutig sein.",
+          "type": "string"
+        },
+        "label": {
+          "title": "Bezeichnung",
+          "description": "Anzeigename der Gruppe, z. B. im Gruppenmonitor oder in der Fortschrittsanzeige.",
+          "type": "string"
+        },
+        "validTo": {
+          "title": "Gültig bis",
+          "description": "Login- und Personen-Token dieser Gruppe sind nur bis zu diesem Zeitpunkt gültig. Format: dd/mm/yyyy hh:mm. Wird weggelassen, gilt die Gruppe zeitlich unbegrenzt (oder bis validFor abläuft).",
+          "type": "string",
+          "pattern": "^\\d{1,2}/\\d{1,2}/\\d{2,4}\\D\\d{1,2}:\\d{2}$",
+          "examples": [
+            "31/12/2025 18:00"
+          ]
+        },
+        "validFrom": {
+          "title": "Gültig ab",
+          "description": "Login- und Personen-Token dieser Gruppe können erst ab diesem Zeitpunkt erstellt werden. Format: dd/mm/yyyy hh:mm.",
+          "type": "string",
+          "pattern": "^\\d{1,2}/\\d{1,2}/\\d{2,4}\\D\\d{1,2}:\\d{2}$",
+          "examples": [
+            "01/09/2025 08:00"
+          ]
+        },
+        "validFor": {
+          "title": "Gültig für (Minuten)",
+          "description": "Login- und Personen-Token sind für die angegebene Anzahl Minuten nach ihrer Erstellung gültig. Sind sowohl validFor als auch validTo angegeben, gilt der früher eintretende Zeitpunkt.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "assetAssignment": {
+          "title": "Asset-Zuweisungen",
+          "description": "Optionale Zuweisung von externen Assets zu benannten Slots für alle Logins der Gruppe. Login-eigene Zuweisungen überschreiben Gruppen-Zuweisungen für denselben Slot.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetAssignments"
+          }
+        },
+        "logins": {
+          "title": "Logins",
+          "description": "Mindestens ein Login innerhalb der Gruppe. Loginnamen müssen installationsweit eindeutig sein.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Login"
+          }
+        }
+      }
+    },
+    "Login": {
+      "title": "Login",
+      "description": "Ein einzelner Login-Eintrag. Definiert Zugangsdaten, Modus und zugewiesene Booklets oder Profile.",
+      "type": "object",
+      "required": [
+        "name",
+        "mode"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Benutzername",
+          "description": "Anmeldename. Muss installationsweit eindeutig sein. Empfehlung: Mindestens 5 Zeichen, nur Kleinbuchstaben und Ziffern, keine Umlaute.",
+          "type": "string"
+        },
+        "pw": {
+          "title": "Kennwort",
+          "description": "Optionales Kennwort. Wird weggelassen, ist die Anmeldung nur per Name (z. B. über URL oder QR-Code) möglich.",
+          "type": "string"
+        },
+        "mode": {
+          "title": "Modus",
+          "description": "Legt die Rolle und das Verhalten des Logins fest.",
+          "type": "string",
+          "enum": [
+            "run-hot-return",
+            "run-hot-restart",
+            "run-trial",
+            "run-review",
+            "run-demo",
+            "run-simulation",
+            "monitor-group",
+            "monitor-study",
+            "sys-check-login"
+          ],
+          "enumDescriptions": {
+            "run-hot-return": "Reguläre Testdurchführung mit allen Booklet-Restriktionen. Bei erneuter Anmeldung werden Antworten wiederhergestellt und der Test fortgesetzt.",
+            "run-hot-restart": "Reguläre Testdurchführung mit allen Booklet-Restriktionen. Bei erneuter Anmeldung wird ein neuer Testdurchgang gestartet — vorherige Antworten werden ignoriert. Geeignet für Befragungen mit unbekanntem Personenkreis.",
+            "run-trial": "Testdurchführung mit den meisten Booklet-Restriktionen. Antworten werden gespeichert. Dient dem Testen der Antwortverarbeitung.",
+            "run-review": "Testdurchführung ohne Restriktionen. Antworten werden nicht dauerhaft gespeichert. Review-Kommentare sind möglich.",
+            "run-demo": "Testdurchführung ohne Restriktionen und ohne Speicherung. Kein Review möglich. Geeignet für Vorführungen.",
+            "run-simulation": "Testdurchführung mit allen Restriktionen, aber ohne Speicherung von Antwortdaten. Für automatische Qualitätsprüfungen.",
+            "monitor-group": "Gruppenmonitor für Testleitungen. Zeigt Fortschritt aller Logins der eigenen Gruppe und ermöglicht direkte Steuerung.",
+            "monitor-study": "Studienmonitor. Zeigt alle Gruppen des Arbeitsbereiches. Geeignet für Support-Rollen.",
+            "sys-check-login": "Versteckt den System-Check auf der Login-Seite. Zugriff nur nach Anmeldung in diesem Arbeitsbereich."
+          }
+        },
+        "booklets": {
+          "title": "Booklets",
+          "description": "Liste der zugewiesenen Booklets. Darf nicht zusammen mit 'profiles' angegeben werden.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Booklet"
+          }
+        },
+        "profiles": {
+          "title": "Profile",
+          "description": "Liste von Gruppenmonitor-Profil-Referenzen. Darf nicht zusammen mit 'booklets' angegeben werden.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Profile"
+          }
+        },
+        "assetAssignment": {
+          "title": "Asset-Zuweisungen",
+          "description": "Optionale Zuweisung von externen Assets zu benannten Slots, spezifisch für diesen Login.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AssetAssignments"
+          }
+        },
+        "viewSettings": {
+          "title": "ViewSettings",
+          "description": "Optionale Einstellungen zur Darstellung der Login-Oberfläche.",
+          "$ref": "#/$defs/ViewSetting"
+        }
+      }
+    },
+    "Booklet": {
+      "title": "Booklet",
+      "description": "Zuweisung eines Booklets zu einem Login. Das Booklet wird über seine ID referenziert und muss im Arbeitsbereich vorhanden sein.",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Booklet-ID",
+          "description": "Referenz auf die ID eines im Arbeitsbereich vorhandenen Booklets.",
+          "type": "string"
+        },
+        "codes": {
+          "title": "Personencodes",
+          "description": "Leerzeichen-getrennte Liste von Personencodes. Ermöglicht zweistufige Anmeldung: Alle Personen teilen denselben Login, werden aber über ihren Personencode individuell identifiziert.",
+          "type": "string",
+          "examples": [
+            "x4u t5a z9i"
+          ]
+        },
+        "state": {
+          "title": "Anfangszustand",
+          "description": "Kommagetrennte Liste von State-Zuweisungen im Format 'state-id:option-id'. Setzt den adaptiven Anfangszustand des Booklets für diesen Login.",
+          "type": "string",
+          "pattern": "^([a-z\\d-]+:[a-z\\d-]+,?\\s?)+$",
+          "examples": [
+            "difficulty:hard",
+            "difficulty:easy, language:de"
+          ]
+        }
+      }
+    },
+    "Profile": {
+      "title": "Profile-Referenz",
+      "description": "Verweis auf ein im 'profiles'-Abschnitt definiertes Gruppenmonitor-Profil.",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Profil-ID",
+          "description": "ID eines im profiles/groupMonitor-Abschnitt definierten Profils.",
+          "type": "string"
+        }
+      }
+    },
+    "AssetAssignments": {
+      "title": "Asset-Zuweisung",
+      "description": "Weist eine externe Ressource einem benannten Slot zu. Slot-Namen müssen pro Login oder Gruppe eindeutig sein.",
+      "type": "object",
+      "required": [
+        "slot",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "slot": {
+          "title": "Slot",
+          "description": "Name des Slots, dem das Asset zugewiesen wird. Jeder Slot steht für einen bestimmten Anzeigebereich oder eine Funktion in der Oberfläche.",
+          "type": "string",
+          "enum": [
+            "logo",
+            "loginIllustration",
+            "codeInputIllustration",
+            "codeInputCompanion",
+            "starterCompanion",
+            "starterCardDone",
+            "loadingProgress",
+            "confirmDialog"
+          ],
+          "enumDescriptions": {
+            "logo": "Logo, das in der Kopfzeile der Anwendung angezeigt wird.",
+            "loginIllustration": "Illustration im seitlichen Infobereich der Anmeldeseite.",
+            "codeInputIllustration": "Illustration auf der Seite zur Personencode-Eingabe (zweistufiger Login).",
+            "codeInputCompanion": "Begleitende Grafik oder Animation auf der Personencode-Eingabeseite.",
+            "starterCompanion": "Begleitende Grafik oder Animation auf der Starter-Seite (Testheftauswahl).",
+            "starterCardDone": "Grafik, die auf einer Testheft-Karte angezeigt wird, wenn der Test abgeschlossen ist.",
+            "loadingProgress": "Grafik oder Animation, die während des Ladevorgangs angezeigt wird.",
+            "confirmDialog": "Grafik, die in Bestätigungsdialogen angezeigt wird."
+          }
+        },
+        "value": {
+          "title": "Wert",
+          "description": "Referenz auf die Ressource, z. B. ein Dateiname oder eine ID.",
+          "type": "string"
+        }
+      }
+    },
+    "ViewSetting": {
+      "title": "ViewSetting",
+      "description": "Darstellungseinstellungen für die Login-Oberfläche.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "theme": {
+          "title": "Theme",
+          "description": "Name des zu verwendenden UI-Themes.",
+          "type": "string"
+        },
+        "codeInput": {
+          "$ref": "#/$defs/CodeInputSetting"
+        },
+        "monitorBookletVisibility": {
+          "title": "Testheft-Sichtbarkeit im Monitor",
+          "description": "Steuert, wie Testhefte der Gruppe in der Gruppenmonitor-Übersicht standardmäßig dargestellt werden.",
+          "type": "string",
+          "enum": [
+            "visible",
+            "collapsed",
+            "hidden"
+          ],
+          "enumDescriptions": {
+            "visible": "Testhefte sind sichtbar ausgeklappt.",
+            "collapsed": "Testhefte sind eingeklappt.",
+            "hidden": "Testhefte werden nicht angezeigt."
+          }
+        }
+      }
+    },
+    "CodeInputSetting": {
+      "title": "CodeInputSetting",
+      "description": "Konfiguration der Eingabemaske für den Personencode bei zweistufiger Anmeldung.",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "title": "Eingabetyp",
+          "description": "Art der Eingabemaske für den Personencode.",
+          "type": "string",
+          "enum": [
+            "text-field",
+            "keypad-symbols",
+            "keypad-symbols-alt",
+            "keypad-numbers"
+          ],
+          "enumDescriptions": {
+            "text-field": "Normales Texteingabefeld.",
+            "keypad-symbols": "Tastatur mit Symbolen.",
+            "keypad-symbols-alt": "Alternative Tastatur mit Symbolen.",
+            "keypad-numbers": "Zahlentastatur."
+          }
+        },
+        "length": {
+          "title": "Codelänge",
+          "description": "Erwartete Länge des Personencodes in Zeichen. Mindestens 3.",
+          "type": "integer",
+          "minimum": 3
+        }
+      }
+    },
+    "GroupMonitorProfile": {
+      "title": "GroupMonitor-Profil",
+      "description": "Ein Profil für den Gruppenmonitor. Steuert Spalten, Ansicht, Filter und Automatisierungen. Wird in Logins mit dem Modus monitor-group per ID referenziert.",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "ID",
+          "description": "Eindeutige Kennung des Profils innerhalb der Datei.",
+          "type": "string"
+        },
+        "label": {
+          "title": "Bezeichnung",
+          "description": "Anzeigename des Profils.",
+          "type": "string"
+        },
+        "blockColumn": {
+          "title": "Spalte: Block",
+          "description": "Sichtbarkeit der Block-Spalte im Gruppenmonitor.",
+          "$ref": "#/$defs/ColumnSetting"
+        },
+        "unitColumn": {
+          "title": "Spalte: Unit",
+          "description": "Sichtbarkeit der Unit-Spalte im Gruppenmonitor.",
+          "$ref": "#/$defs/ColumnSetting"
+        },
+        "groupColumn": {
+          "title": "Spalte: Gruppe",
+          "description": "Sichtbarkeit der Gruppen-Spalte im Gruppenmonitor.",
+          "$ref": "#/$defs/ColumnSetting"
+        },
+        "bookletColumn": {
+          "title": "Spalte: Testheft",
+          "description": "Sichtbarkeit der Testheft-Spalte im Gruppenmonitor.",
+          "$ref": "#/$defs/ColumnSetting"
+        },
+        "bookletStatesColumns": {
+          "title": "Spalten: Testheft-Zustände",
+          "description": "Kommagetren Liste von State-IDs, deren Werte als eigene Spalten im Gruppenmonitor angezeigt werden.",
+          "type": "string",
+          "examples": [
+            "difficulty,language"
+          ]
+        },
+        "view": {
+          "title": "Ansicht",
+          "description": "Detailgrad der Gruppenmonitor-Ansicht.",
+          "type": "string",
+          "enum": [
+            "full",
+            "medium",
+            "small"
+          ],
+          "enumDescriptions": {
+            "full": "Vollständige Ansicht mit allen Details.",
+            "medium": "Mittlere Detailstufe.",
+            "small": "Kompakte Ansicht."
+          }
+        },
+        "filterPending": {
+          "title": "Filter: Ausstehende",
+          "description": "Steuert, ob Testpersonen mit noch nicht gestarteten Tests standardmäßig gefiltert werden.",
+          "$ref": "#/$defs/FilterSetting"
+        },
+        "filterLocked": {
+          "title": "Filter: Gesperrte",
+          "description": "Steuert, ob gesperrte Testpersonen standardmäßig gefiltert werden.",
+          "$ref": "#/$defs/FilterSetting"
+        },
+        "autoselectNextBlock": {
+          "title": "Nächsten Block automatisch auswählen",
+          "description": "Steuert, ob der nächste Block automatisch ausgewählt wird, wenn alle Testpersonen den aktuellen Block abgeschlossen haben.",
+          "$ref": "#/$defs/FilterSetting"
+        },
+        "filters": {
+          "title": "Filter",
+          "description": "Liste vordefinierter Filter, die in diesem Profil aktiv sind.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MonitorFilter"
+          }
+        }
+      }
+    },
+    "ColumnSetting": {
+      "title": "Spalteneinstellung",
+      "description": "Steuert die Sichtbarkeit einer Spalte im Gruppenmonitor.",
+      "type": "string",
+      "enum": [
+        "show",
+        "hide"
+      ],
+      "enumDescriptions": {
+        "show": "Spalte wird angezeigt.",
+        "hide": "Spalte wird ausgeblendet."
+      }
+    },
+    "FilterSetting": {
+      "title": "Filter-Einstellung",
+      "description": "Aktiviert oder deaktiviert eine Filter-Option im Gruppenmonitor.",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "enumDescriptions": {
+        "yes": "Filter ist aktiv.",
+        "no": "Filter ist nicht aktiv."
+      }
+    },
+    "MonitorFilter": {
+      "title": "Filter",
+      "description": "Ein vordefinierter Filter für den Gruppenmonitor.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Bezeichnung",
+          "description": "Anzeigename des Filters.",
+          "type": "string"
+        },
+        "field": {
+          "title": "Feld",
+          "description": "Das Feld, nach dem gefiltert wird.",
+          "type": "string",
+          "enum": [
+            "bookletLabel",
+            "personLabel",
+            "state",
+            "blockLabel",
+            "groupName",
+            "bookletId",
+            "unitId",
+            "unitLabel",
+            "blockId",
+            "testState",
+            "mode",
+            "bookletSpecies",
+            "bookletStates"
+          ]
+        },
+        "type": {
+          "title": "Filtertyp",
+          "description": "Art des Vergleichs zwischen Feldwert und dem angegebenen Wert.",
+          "type": "string",
+          "enum": [
+            "equal",
+            "substring",
+            "regex"
+          ],
+          "enumDescriptions": {
+            "equal": "Exakter Vergleich.",
+            "substring": "Feldwert enthält den angegebenen Wert.",
+            "regex": "Feldwert entspricht dem regulären Ausdruck."
+          }
+        },
+        "value": {
+          "title": "Wert",
+          "description": "Der Vergleichswert für den Filter.",
+          "type": "string"
+        },
+        "subValue": {
+          "title": "Unterwert",
+          "description": "Optionaler Unterwert für zusammengesetzte Felder (z. B. bei bookletStates).",
+          "type": "string"
+        },
+        "not": {
+          "title": "Negieren",
+          "description": "Wenn true, wird der Filter negiert — es werden nur Einträge angezeigt, die die Bedingung nicht erfüllen.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}
