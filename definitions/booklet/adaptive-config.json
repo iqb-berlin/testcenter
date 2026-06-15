@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iqb-berlin.github.io/testcenter/adaptive-config.json",
+  "title": "Adaptive Configuration",
+  "description": "Schema für die Definition von adaptiven Variablen (Zuständen) und deren komplexen Bedingungen im Testheft.",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/StateDefinition"
+  },
+  "$defs": {
+    "StateDefinition": {
+      "type": "object",
+      "required": ["id", "options"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z\\d-]*$" },
+        "label": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OptionType" }
+        }
+      }
+    },
+    "OptionType": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z\\d-]*$" },
+        "label": { "type": "string" },
+        "if": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Condition" }
+        }
+      }
+    },
+    "Condition": {
+      "type": "object",
+      "required": ["is"],
+      "additionalProperties": false,
+      "properties": {
+        "Value": { "$ref": "#/$defs/VariableReference" },
+        "Status": { "$ref": "#/$defs/VariableReference" },
+        "Code": { "$ref": "#/$defs/VariableReference" },
+        "Score": { "$ref": "#/$defs/AggregationScore" },
+        "Sum": { "$ref": "#/$defs/VariableAggregation" },
+        "Median": { "$ref": "#/$defs/VariableAggregation" },
+        "Mean": { "$ref": "#/$defs/VariableAggregation" },
+        "Count": { "$ref": "#/$defs/CountDefinition" },
+        "Is": { "$ref": "#/$defs/Comparison(Is)" }
+      }
+    },
+    "VariableReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "of": { "type": "string" },
+        "from": { "type": "string" }
+      }
+    },
+    "VariableAggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": { "type": "array", "items": { "$ref": "#/$defs/VariableReference" }, "minItems": 2 },
+        "Code": { "type": "array", "items": { "$ref": "#/$defs/VariableReference" }, "minItems": 2 },
+        "Score": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AggregationScore" },
+          "minItems": 2
+        }
+      }
+    },
+    "Comparison(Is)": {
+      "title": "Comparison(Is)",
+      "description": "Vergleichsoperatoren für die Bedingung (is).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lowerThan": { "type": "number" },
+        "greaterThan": { "type": "number" },
+        "equal": { "type": "string" },
+        "notEqual": { "type": "string" }
+      }
+    },
+    "CountDefinition": {
+      "title": "Count",
+      "description": "Zählt, wie viele der untergeordneten Bedingungen zutreffen.",
+      "type": "object",
+      "required": ["if"],
+      "properties": {
+        "if": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Condition" },
+          "minItems": 2
+        }
+      }
+    },
+    "AggregationScore": {
+      "title": "AggregationScore",
+      "description": "Struktur für Score-Einträge innerhalb von Aggregationen.",
+      "type": "object",
+      "required": ["of", "from"],
+      "properties": {
+        "of": { "type": "string" },
+        "from": { "type": "string" },
+        "or": { "type": "number" }
+      }
+    }
+  }
+}

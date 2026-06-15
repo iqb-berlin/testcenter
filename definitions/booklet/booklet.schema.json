@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iqb-berlin.github.io/testcenter/booklet.schema.json",
+  "title": "Booklet",
+  "description": "Definiert die Abfolge von Units für einen Test sowie Konfiguration, Blöcke und Restriktionen.",
+  "type": "object",
+  "required": [
+    "metadata",
+    "units"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "title": "Metadata",
+      "description": "Pflichtangaben zur Identifikation des Booklets.",
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "config": {
+      "title": "BookletConfig",
+      "description": "Optionale Konfigurationsparameter zur Steuerung von Darstellung und Verhalten des Testhefts.",
+      "$ref": "#/$defs/BookletConfig"
+    },
+    "customTexts": {
+      "title": "CustomTexts",
+      "description": "Optionale Textersetzungen für UI-Labels, spezifisch für dieses Booklet.",
+      "type": "object"
+    },
+    "states": {
+      "title": "States",
+      "description": "Definition von adaptiven Variablen (Zuständen) für das Testheft. Ermöglicht die komplexe Steuerung von bedingten Blöcken.",
+      "$ref": "adaptive-config.json"
+    },
+    "units": {
+      "title": "Units",
+      "description": "Die Teststruktur (Wurzel-Testlet). Muss Restriktionen und Kind-Elemente enthalten.",
+      "$ref": "#/$defs/FirstTestlet"
+    }
+  },
+  "$defs": {
+    "BookletConfig": {
+      "type": "object"
+    },
+    "FirstTestlet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "restrictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "TimeMax": { "$ref": "#/$defs/TimeMax" },
+            "denyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/Unit" },
+              { "$ref": "#/$defs/Testlet" }
+            ]
+          }
+        }
+      }
+    },
+    "Testlet": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "restrictions": { "$ref": "#/$defs/Restrictions" },
+        "children": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/Unit" },
+              { "$ref": "#/$defs/Testlet" }
+            ]
+          }
+        }
+      }
+    },
+    "Unit": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "labelshort": { "type": "string" },
+        "alias": { "type": "string", "default": "alias" }
+      }
+    },
+    "Restrictions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CodeToEnter": { "$ref": "#/$defs/CodeToEnterRestriction" },
+        "TimeMax": { "$ref": "#/$defs/TimeMax" },
+        "show": {
+          "title": "Bedingte Anzeige (Show)",
+          "description": "Bedingungen für die adaptive Anzeige des Blocks basierend auf States.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Show" }
+        },
+        "denyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" },
+        "lockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
+      }
+    },
+    "CodeToEnterRestriction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string" }
+      }
+    },
+    "Show": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "if": { "type": "string" },
+        "is": { "type": "string" }
+      }
+    },
+    "TimeMax": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minutes": { "type": "number" },
+        "leave": { "type": "string", "enum": ["forbidden", "confirm", "allowed"], "default": "confirm" }
+      }
+    },
+    "DenyNavigationOnIncomplete": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "presentation": { "type": "string", "enum": ["ON", "OFF", "ALWAYS"] },
+        "response": { "type": "string", "enum": ["ON", "OFF", "ALWAYS"] }
+      }
+    },
+    "LockAfterLeaving": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "confirm": { "type": "boolean" },
+        "scope": { "type": "string", "enum": ["unit", "testlet"] }
+      }
+    }
+  }
+}

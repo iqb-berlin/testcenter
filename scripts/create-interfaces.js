@@ -25,7 +25,7 @@ const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
 exports.bookletConfigData = done => {
   cliPrint.headline('BookletConfig: Writing interface');
 
-  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet-config.json`).toString());
+  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet/booklet-config.json`).toString());
 
   const output = [];
 
