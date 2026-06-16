@@ -74,7 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
                                                         this.themeService.availableThemes[0].name,
                                                         this.sanitizer);
         this.themeService.setTheme(
-          this.mainDataService.getAuthData()?.viewSettings.theme || sysConfig.appConfig.themeName);
+          this.mainDataService.getAuthData()?.viewSettings?.theme || sysConfig.appConfig.themeName);
         this.assetService.refreshAssetSlots();
       });
 
