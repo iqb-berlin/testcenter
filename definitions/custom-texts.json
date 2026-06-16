@@ -71,6 +71,14 @@
     "label" : "Titel des Eingabeformulares für den Code",
     "defaultvalue" : "Log-in eingeben"
   },
+  "login_codeInputErrorTitle": {
+    "label" : "Titelzeile des Fehlertext bei falscher Codeinegabe",
+    "defaultvalue" : "Ups, falscher Code!"
+  },
+  "login_codeInputErrorBody": {
+    "label" : "Haupttext des Fehlertext bei falscher Codeinegabe",
+    "defaultvalue" : "Versuche es noch einmal."
+  },
   "login_unsupportedBrowser" : {
     "label": "Warnung-Banner, wenn ein nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.",
     "defaultvalue" : "Ihr Browser %s %s ist veraltet und könnte zu Fehlern führen. Bitte verwenden Sie eine aktuelle Version."

@@ -16,7 +16,7 @@
   <div class="lock-overlay">
     @if (unit?.parent?.locked?.by == 'code') {
       <tc-code-input [inputType]="codeInputMode" [length]="codeInputLength" [problemText]="codeInputErrorText"
-                     [buttonLabel]="'Weiter'" [speechBubbleText]="{heading: 'Drücke auf die Symbole'}"
+                     [buttonLabel]="'Weiter'"
                      (submitCode)="onSubmitCode($event)">
         <div>
           <h2>{{ 'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}</h2>

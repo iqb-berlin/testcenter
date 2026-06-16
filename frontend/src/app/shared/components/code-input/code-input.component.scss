@@ -6,58 +6,54 @@
     padding: 0 40px;
   }
 
-  .companion {
-    width: 116px;
-    height: 210px;
-    display: flex;
-    gap: 18px;
-    margin-top: auto;
-    position: relative;
+  tc-code-keypad-form {
+    max-width: 100%;
+  }
+}
 
-    &.hidden {
-      display: none;
+.companion {
+  width: 116px;
+  height: 210px;
+  display: flex;
+  gap: 18px;
+  margin-top: auto;
+  position: relative;
+
+  &.hidden {
+    display: none;
+  }
+
+  .companion-image {
+    align-self: end;
+    width: 165px;
+    height: 140px;
+    aspect-ratio: 87/83;
+    object-fit: contain;
+  }
+
+  .companion-speech-bubble {
+    position: absolute;
+    left: 166px;
+    min-width: 200px;
+    width: max-content;
+    max-width: 350px;
+    min-height: 90px;
+    border: 2px solid #A92319;
+    border-radius: 10px;
+    padding: 10px;
+
+    .bubble-title {
+      color: var(--mat-sys-error);
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 0;
     }
 
-    .companion-image {
-      align-self: end;
-      width: 165px;
-      height: 140px;
-      aspect-ratio: 87/83;
-      object-fit: contain;
-    }
-
-    .companion-speech-bubble {
-      width: 268px;
-      height: 137px;
-    }
-
-    &.error .companion-speech-bubble {
-        filter: brightness(0) saturate(100%) invert(92%) sepia(14%) saturate(300%) hue-rotate(300deg) brightness(102%) contrast(96%);
-    }
-
-    .bubble-text {
+    svg {
       position: absolute;
-      width: 250px;
-      left: 166px;
-      padding: 10px;
-
-      .bubble-title {
-        color: var(--mat-sys-primary);
-        font-size: 16px;
-        font-weight: 700;
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-
-      .bubble-body {
-        margin-top: 5px;
-        font-size: 14px;
-      }
+      left: 20px;
+      bottom: -15px;
     }
-
-    &.error .bubble-text .bubble-body {
-        color: var(--mat-sys-error);
-        font-size: 14px;
-      }
   }
 }

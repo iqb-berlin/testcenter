@@ -5,6 +5,10 @@
   - Hierzu wurde ein neuer Booklet-Parameter hinzugefügt: *header_hidden*. Details zur Benutzung kann, wie immer, in der entsprechenden Dokumentation eingesehen werden.
 
 ## Änderungen
+- Der Begleiter mit der Fehlermeldung erscheint nun in allen varianten der Codeingabe erst nach Falscheingabe.
+  - Der Text in der Sprechblase kann via custom-text angepasst werden. Die neuen Parameter heißen:
+    - login_codeInputErrorTitle
+    - login_codeInputErrorBody
 - Der globale Warnhinweis bei veraltetem Browser, der auf allen Seiten erschien wurde abgeschafft. Es gibt nun nur noch
   den Warnhinweis auf Anmeldeseite.
   - Da es nun nur noch 1 Art der Warnung gibt, entfällt ein custom-text.
