@@ -199,8 +199,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         { key: 'CURRENT_PAGE_ID', timeStamp: Date.now(), content: String(this.pageService.currentPageIndex) },
         { key: 'PAGE_COUNT', timeStamp: Date.now(), content: this.pageService.pages.length.toString() }
       ]);
-    } else {
-      this.pageService.updateValidPages([]);
     }
 
     if (msg.unitState) {
@@ -295,6 +293,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
 
+    this.pageService.updateValidPages([]);
     this.tcs.currentUnitSequenceId = unitSequenceId;
 
     if (!this.tcs.currentUnit) {
