@@ -54,7 +54,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   resourcesLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   resourcesToLoadLabels: string[] = [];
-  clearCode: string = '';
 
   codeInputMode: CodeInputType = 'text-field';
   codeInputLength: number | undefined; // only used for keypad input
@@ -362,9 +361,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private runUnit(): void {
     if (this.tcs.currentUnit && this.tcs.currentUnit.parent.locked) {
-      if (this.tcs.testMode.presetCode) {
-        this.clearCode = this.tcs.currentUnit.parent.locked?.through.restrictions.codeToEnter?.code || '';
-      }
       return;
     }
 
