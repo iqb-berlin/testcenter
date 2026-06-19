@@ -47,7 +47,7 @@
         "Median": { "$ref": "#/$defs/VariableAggregation" },
         "Mean": { "$ref": "#/$defs/VariableAggregation" },
         "Count": { "$ref": "#/$defs/CountDefinition" },
-        "Is": { "$ref": "#/$defs/Comparison(Is)" }
+        "Is": { "$ref": "#/$defs/Comparison" }
       }
     },
     "VariableReference": {
@@ -71,7 +71,7 @@
         }
       }
     },
-    "Comparison(Is)": {
+    "Comparison": {
       "title": "Comparison(Is)",
       "description": "Vergleichsoperatoren für die Bedingung (is).",
       "type": "object",

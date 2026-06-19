@@ -10,6 +10,10 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Verweis auf das JSON-Schema zur Validierung und Autovervollständigung."
+    },
     "metadata": {
       "title": "Metadata",
       "description": "Pflichtangaben zur Identifikation des Booklets.",
@@ -104,7 +108,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "CodeToEnter": { "$ref": "#/$defs/CodeToEnterRestriction" },
+        "CodeToEnter": { "$ref": "#/$defs/CodeToEnter" },
         "TimeMax": { "$ref": "#/$defs/TimeMax" },
         "show": {
           "title": "Bedingte Anzeige (Show)",
@@ -116,7 +120,7 @@
         "lockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
       }
     },
-    "CodeToEnterRestriction": {
+    "CodeToEnter": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
