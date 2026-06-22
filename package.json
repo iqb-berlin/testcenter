@@ -26,8 +26,6 @@
     "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest",
     "file-server:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
-    "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
-    "broadcaster:update-compodoc": "npx compodoc -p broadcaster/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcaster",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx --yes update-browserslist-db@latest && npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"
@@ -96,7 +94,6 @@
     ]
   },
   "devDependencies": {
-    "@compodoc/compodoc": "^1.1.11",
     "@iqb/eslint-config": "2.1.1",
     "@types/jest": "~27.4.1",
     "axios": "^1.8.4",

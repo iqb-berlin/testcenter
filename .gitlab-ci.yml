@@ -75,8 +75,6 @@ build-doc:
   script:
     - npm i
     - mkdir tmp
-    - npm run frontend:update-compodoc
-    - npm run broadcaster:update-compodoc
     - npm run backend:update-specs
     - npm run create-docs
   artifacts:
@@ -88,8 +86,6 @@ build-doc:
       - docs/pages/custom-texts.md
       - docs/dist/api/index.html
       - docs/dist/api/specs.yml
-      - docs/dist/compodoc-frontend/*
-      - docs/dist/compodoc-broadcaster/*
     expire_in: 30 minutes
 
 build-pages:
