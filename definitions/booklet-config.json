@@ -251,7 +251,7 @@
   "unit_navibuttons": {
     "label": "Navigationsbuttons für die Navigation zwischen den Aufgaben",
     "deprecated": true,
-    "deprecationNote": "Nutzen Sie stattdessen navbar_page_label",
+    "deprecationNote": "Nutzen Sie stattdessen navbar_unit_label",
     "options": {
       "OFF": "Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)",
       "INDEX": "Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben",
