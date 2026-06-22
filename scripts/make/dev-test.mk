@@ -23,7 +23,7 @@ test-backend-unit-coverage:
 			php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit\
 					--bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php\
 					--configuration /var/www/testcenter/backend/phpunit.xml\
-					--coverage-html /docs/dist/test-coverage-backend-unit\
+					--coverage-html ./coverage
 				/var/www/testcenter/backend/test/unit/${target} --testdox
 
 test-backend-api:
@@ -69,15 +69,6 @@ test-broadcaster-unit:
 		broadcaster\
 			npx jest
 
-test-broadcaster-unit-coverage:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml run\
-		broadcaster\
-			npx jest --coverage
-
 test-frontend-unit:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -85,14 +76,6 @@ test-frontend-unit:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml run\
 		frontend test --watch=false
-
-test-frontend-unit-coverage:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml run\
-		frontend test --watch=false --code-coverage
 
 # Performs some integration tests with CyPress against mocked backend with Prism
 test-frontend-integration:
