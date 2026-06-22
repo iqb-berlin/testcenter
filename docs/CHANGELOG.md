@@ -23,6 +23,10 @@
 ## Fehlerbehebungen
 - Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.
 
+## Technisches
+- Compodoc-Dokumentation und Testabdeckungsberichte werden nicht mehr automatisch generiert und auch nicht mehr in der ReadMe verlinkt.
+  - Diese Dokumente sind nur sehr selten nützlich und wenn dann eher als internes Echtwickungswerkzeug und nicht für Externe.
+
 # 18.0.0
 Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, einen neuen Theming-Mechanismus und das Austauschen von Bildern.
 
