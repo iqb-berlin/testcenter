@@ -939,7 +939,7 @@ export class TestControllerService {
 
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
-    return this.messageService.showConfirmDialog({
+    return this.messageService.showInfoDialog({
       title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
       content: reasons
         .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
