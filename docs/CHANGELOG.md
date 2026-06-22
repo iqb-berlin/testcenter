@@ -22,6 +22,8 @@
 
 ## Fehlerbehebungen
 - Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.
+- Hintergrundfarbe im Testablauf auf Weiß, entsprechend Design-Vorlage, korrigiert.
+  - Ausnahme bildet die Codeeingabemaske, wenn die alternative Variante (keypad-symbols-alt) gewählt ist. Dann erscheint die Sekundärfarbe.
 
 ## Technisches
 - Compodoc-Dokumentation und Testabdeckungsberichte werden nicht mehr automatisch generiert und auch nicht mehr in der ReadMe verlinkt.
