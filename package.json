@@ -72,7 +72,8 @@
               },
               "FunctionExpression": {
                 "parameters": "first"
-              }
+              },
+              "SwitchCase": 1
             }
           ]
         }
