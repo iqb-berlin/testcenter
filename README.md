@@ -53,6 +53,3 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * [Backend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-backend-unit/index.html)
 * [Frontend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-frontend-unit/report/index.html)
 * [Broadcaster by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-broadcaster-unit/lcov-report/index.html)
-
-### Misc
-* [Install and run without docker](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-local.html)
