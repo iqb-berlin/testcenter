@@ -14,6 +14,11 @@
   - Da es nun nur noch 1 Art der Warnung gibt, entfällt ein custom-text.
     - *login_unsupportedBrowser* übernimmt den Inhalt von *login_unsupportedBrowserBanner*
     - login_unsupportedBrowserBanner wurde entfernt
+- Folgende custom-texts wurden durch feste Textbausteine ersetzt und stehen nicht mehr zur Verfügung:
+  - gm_booklet_error_general
+  - gm_booklet_error_missing_file
+  - gm_booklet_error_missing_id
+  - gm_booklet_error_xml
 
 ## Fehlerbehebungen
 - Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.

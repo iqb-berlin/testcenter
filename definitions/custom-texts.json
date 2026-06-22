@@ -411,23 +411,6 @@
     "label" : "Tooltip zeitgesteuerter Block: Noch nicht gestartet. Ersetzung (%s): Minutenzahl, ",
     "defaultvalue" : "Zeitgesteuerter Block: %s Minute(n)"
   },
-
-  "gm_booklet_error_missing_id" : {
-    "label" : "Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet",
-    "defaultvalue" : "Kein Testheft zugeordnet!"
-  },
-  "gm_booklet_error_missing_file" : {
-    "label" : "Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!",
-    "defaultvalue" : "Kein Zugriff auf Testheft-Datei!"
-  },
-  "gm_booklet_error_xml" : {
-    "label" : "Fehleranzeige im Gruppen monitor: Invalides XML",
-    "defaultvalue" : "Konnte Testheft-Datei nicht lesen!"
-  },
-  "gm_booklet_error_general" : {
-    "label" : "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
-    "defaultvalue" : "Fehler beim Zugriff auf Testheft-Datei!"
-  },
   "gm_control_goto_tooltip" : {
     "label" : "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",
     "defaultvalue" : "Bitte Block auswählen"
