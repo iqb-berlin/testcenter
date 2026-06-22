@@ -12,7 +12,6 @@ import { HeaderService } from '@shared/services/header.service';
 import {
   CustomtextService, MainDataService, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
-import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
   Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
   UnitNavigationTarget, WindowFocusState
@@ -80,7 +79,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               public cmd: CommandService,
               private tls: TestLoaderService,
               public dialog: MatDialog,
-              private uiVisibilityService: UiVisibilityService,
               private headerService: HeaderService,
               public pageService: PageService,
               private apiService: VeronaAPIService,
@@ -90,7 +88,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mainDataService.clearErrorBuffer();
-      this.updateLogoVisibility();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
@@ -136,7 +133,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
-          this.updateLogoVisibility();
           if (this.tcs.booklet?.config.ask_for_fullscreen !== 'OFF') {
             await this.requestFullScreen();
           }
@@ -373,7 +369,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }
-    this.uiVisibilityService.setShowConfirmationUI(true);
     this.headerService.isHeaderHidden = false;
   }
 
@@ -412,10 +407,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       await this.setFullScreen();
     }
-  }
-
-  private updateLogoVisibility(): void {
-    this.uiVisibilityService.setShowConfirmationUI(this.tcs.shouldShowConfirmationUI());
   }
 
   async requestFullScreen(): Promise<void> {
