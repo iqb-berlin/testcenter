@@ -4,21 +4,15 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-4</Id>
 		<Label>Bklt-config-4</Label>
-		<Description>Testheft der vierten Wertemöglichkeit</Description>
+		<Description>BrowserBehavior value 2</Description>
 	</Metadata>
 
   <BookletConfig>
-    <!--its only important to navigated to the next page if page navibuttons are disabled -->
-    <Config key="pagingMode">buttons</Config>
-    <Config key="unit_navibuttons">LABEL</Config>
-    <Config key="unit_screenheader">WITH_BLOCK_TITLE</Config>
+    <Config key="browserBehaviour">preventNav</Config>
   </BookletConfig>
 
   <Units>
     <Testlet id="Tslt1" label="Aufgabenblock">
-      <Restrictions>
-        <TimeMax minutes="2" leave = "confirm"/>
-      </Restrictions>
       <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
       <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
     </Testlet>
