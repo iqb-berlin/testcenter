@@ -19,32 +19,25 @@ describe('check parameter: lock_test_on_termination', { testIsolation: true }, (
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('Bklt_Config-1', '123');
+    loginTestTaker('Bklt_Config-17', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('be.visible');
     cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    clickCardButton('booklet', 'Bklt-config-1', 'Fortsetzen');
+    clickCardButton('booklet', 'Bklt-config-17', 'Weiter');
   });
 
   it('ON', () => {
-    loginTestTaker('Bklt_Config-2', '123');
-    cy.contains('mat-dialog-container', 'Vollbild')
-      .find('[data-cy="dialog-cancel"]')
-      .click();
+    loginTestTaker('Bklt_Config-18', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('be.visible');
     cy.get('[data-cy="logo"]')
-      .click();
-    cy.get('[data-cy="dialog-cancel"]')
       .click();
     cy.get('[data-cy="endTest-1"]')
       .click();
-    clickCardButton('booklet', 'Bklt-config-2', 'gesperrt');
+    cy.get('[data-cy="booklet-CY-BKLT_BKLTCONFIG-18"]')
+      .contains('Fertig');
   });
 });
-
-
-
-
-
