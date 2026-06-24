@@ -30,9 +30,6 @@
     "create-interfaces": "npx --yes update-browserslist-db@latest && npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"
   },
-  "doc": {
-    "versionIndex": []
-  },
   "eslintConfig": {
     "overrides": [
       {

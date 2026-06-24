@@ -1,3 +1,5 @@
+/* eslint-disable no-console,import/no-extraneous-dependencies */
+
 /**
  * A lot of documentation is generated from the sources. The functions (gulp-taks) to do so are collected in this file.
  */
@@ -178,49 +180,10 @@ const copyReadme = done => {
   done();
 };
 
-exports.oldDocsIndex = done => {
-  cliPrint.headline('Creating old version index file...');
-
-  const pkg = JSON.parse(
-    fs.readFileSync('../package.json', 'utf8')
-  );
-
-  const versions = pkg.doc?.versionIndex ?? [];
-
-  if (versions.length < 1) {
-    cliPrint.headline('No old versions found.');
-    done();
-  }
-
-  const links = versions
-    .map(version => `<li><a href="../${version}/">${version}</a></li>`)
-    .join('\n');
-
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Documentation for older IQB-Testcenter versions</title>
-</head>
-<body>
-  <h1>Documentation for older IQB-Testcenter versions</h1>
-
-  <ul>
-    ${links}
-  </ul>
-</body>
-</html>
-`;
-
-  fs.writeFileSync(`${docsDir}/version-index.html`, html);
-  done();
-};
-
 exports.createDocs = gulp.series(
   copyReadme,
   exports.testSessionSuperStates,
   exports.bookletConfig,
   exports.testMode,
-  exports.customTexts,
-  exports.oldDocsIndex
+  exports.customTexts
 );

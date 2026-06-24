@@ -88,7 +88,7 @@ build-doc:
       - docs/dist/api/specs.yml
     expire_in: 30 minutes
 
-build-pages:
+pages:
   stage: deploy
   rules:
    - if: '$PIPELINE_TYPE == "release"'
@@ -97,6 +97,7 @@ build-pages:
   needs:
     - build-doc
   script:
+    - echo "$PIPELINE_TYPE"
     - docker build --progress plain --pull --target jekyll
       --file docs/Dockerfile
       --tag ${CI_REGISTRY_IMAGE}/jekyll .
@@ -105,42 +106,8 @@ build-pages:
   artifacts:
     paths:
       - public
-
-pages-version:
-  stage: deploy
-  rules:
-    - if: '$PIPELINE_TYPE == "release"'
-      when: on_success
-    - when: never
-  needs:
-    - job: build-pages
-      artifacts: true
-  script:
-    - echo "Publishing pages"
-  artifacts:
-    paths:
-      - public
-  pages:
-    path_prefix: "$CI_COMMIT_TAG"
-    expire_in: never
-
-pages-latest:
-  stage: deploy
-  rules:
-    - if: '$PIPELINE_TYPE == "release"'
-      when: on_success
-    - when: never
-  needs:
-    - job: build-pages
-      artifacts: true
-  script:
-    - echo "Publishing pages"
-  artifacts:
-    paths:
-      - public
-  pages:
-    path_prefix: "latest"
-    expire_in: never
+  pages:  # specifies that this is a Pages job and publishes the default public directory
+    path_prefix: "$CI_COMMIT_BRANCH"
 
 .push-prod-template:
   stage: deploy
@@ -173,6 +140,8 @@ push-pre-release:
 
 push-release:
   extends: .push-prod-template
+  needs:
+    - pages
   rules:
     - if: '$PIPELINE_TYPE == "release"'
       when: on_success
