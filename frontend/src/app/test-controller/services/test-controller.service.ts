@@ -673,8 +673,8 @@ export class TestControllerService {
       Infinity :
       null;
 
-    let forward: NavigationDirectionValue = 'yes';
-    let backward: NavigationDirectionValue = 'yes';
+    let forward: NavigationDirectionValue = next !== null ? 'yes' : 'no';
+    let backward: NavigationDirectionValue = previous !== null ? 'yes' : 'no';
     if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'forward').length) {
       forward = 'markedNo';
     }
