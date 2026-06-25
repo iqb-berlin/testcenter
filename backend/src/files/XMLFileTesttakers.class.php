@@ -282,7 +282,7 @@ class XMLFileTesttakers extends XMLFile {
     return $this->parseXmlNode($el);
   }
 
-  private function parseXmlNode(SimpleXMLElement $node): string|array|int {
+  private function parseXmlNode(SimpleXMLElement $node): string|array|int|bool {
     // Leaf node
     if ($node->count() === 0) {
       return $this->normalizeValue((string) $node);

@@ -3,6 +3,10 @@ mat-toolbar {
   flex-direction: row;
   justify-content: space-between;
   padding: 8px;
+
+  &.alt-design {
+    flex-direction: row-reverse;
+  }
 }
 
 .side {

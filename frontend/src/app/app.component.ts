@@ -12,6 +12,7 @@ import { AppConfig } from './shared/classes/app.config';
 import { ThemeService } from './shared/services/theme.service';
 import { FooterService } from '@shared/services/footer.service';
 import { AssetService } from '@shared/services/asset.service';
+import { ViewSettingsService } from '@shared/services/view-settings.service';
 
 @Component({
   selector: 'tc-root',
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private customtextService: CustomtextService,
               private titleService: Title,
               private themeService: ThemeService,
+              private viewSettingsService: ViewSettingsService,
               private assetService: AssetService,
               private sanitizer: DomSanitizer,
               private route: ActivatedRoute,
@@ -75,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
                                                         this.sanitizer);
         this.themeService.setTheme(
           this.mainDataService.getAuthData()?.viewSettings.theme || sysConfig.appConfig.themeName);
+        this.viewSettingsService.viewSettings = this.mainDataService.getAuthData()?.viewSettings;
         this.assetService.refreshAssetSlots();
       });
 

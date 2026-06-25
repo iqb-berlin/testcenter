@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 import { MessageService } from '@shared/services/message.service';
 import { AssetService } from '@shared/services/asset.service';
 import { NgTemplateOutlet } from '@angular/common';
+import { ViewSettingsService } from '@shared/services/view-settings.service';
 
 @Component({
   selector: 'tc-header',
@@ -42,6 +43,7 @@ export class HeaderComponent implements OnDestroy {
 
   constructor(public headerService: HeaderService,
               public mainDataService: MainDataService,
+              public viewSettingsService: ViewSettingsService,
               public assetService: AssetService,
               private messageService: MessageService,
               private router: Router) {

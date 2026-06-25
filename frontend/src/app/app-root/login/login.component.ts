@@ -23,6 +23,7 @@ import {
   MainDataService,
   UserAgentService, SharedModule, AlertComponent, CustomtextPipe
 } from '../../shared/shared.module';
+import { ViewSettingsService } from '@shared/services/view-settings.service';
 
 @Component({
   templateUrl: 'login.component.html',
@@ -69,6 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private footerService: FooterService,
     private themeService: ThemeService,
+    private viewSettingsService: ViewSettingsService,
     protected assetService: AssetService
   ) { }
 
@@ -99,6 +101,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        this.viewSettingsService.viewSettings = authData.viewSettings;
         this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authDataTyped);
       },

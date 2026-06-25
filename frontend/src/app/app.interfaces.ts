@@ -40,14 +40,17 @@ export interface AuthData {
   flags: AuthFlagType[];
   claims: { [key in AuthAccessType]: AccessObject[] };
   groupToken: string | null;
-  viewSettings: {
-    theme?: string;
-    codeInput?: {
-      type: CodeInputType;
-      length: number;
-    },
-    monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
-  }
+  viewSettings: ViewSettings;
+}
+
+export interface ViewSettings {
+  theme?: string;
+  codeInput?: {
+    type: CodeInputType;
+    length: number;
+  },
+  monitorBookletVisibility?: 'visible' | 'collapsed' | 'hidden';
+  standardDesign?: boolean;
 }
 
 export type CodeInputType = 'text-field' | 'keypad-symbols' | 'keypad-numbers' | 'keypad-symbols-alt';

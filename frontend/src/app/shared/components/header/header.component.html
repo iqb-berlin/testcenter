@@ -1,6 +1,16 @@
 @if (!headerService.isHeaderHidden) {
-<mat-toolbar>
+<mat-toolbar [class.alt-design]="!viewSettingsService.viewSettings?.standardDesign">
   <!-- Wrapper divs are necessary for fixing positions, in case items are missing. -->
+  <div class="side logo">
+    @if (headerService.showLogo && logoURL) {
+      <ng-container *ngTemplateOutlet="logo"></ng-container>
+    }
+  </div>
+  <div class="center">
+    @if (headerService.title) {
+      <h1>{{ headerService.title }}</h1>
+    }
+  </div>
   <div class="side">
     @if (headerService.showAccountPanel) {
       <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu" data-cy="account-button">
@@ -30,16 +40,6 @@
           Abmelden
         </button>
       </mat-menu>
-    }
-  </div>
-  <div class="center">
-    @if (headerService.title) {
-      <h1>{{ headerService.title }}</h1>
-    }
-  </div>
-  <div class="side logo">
-    @if (headerService.showLogo && logoURL) {
-      <ng-container *ngTemplateOutlet="logo"></ng-container>
     }
   </div>
 </mat-toolbar>
