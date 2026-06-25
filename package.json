@@ -94,7 +94,7 @@
     "@iqb/eslint-config": "2.1.1",
     "@types/jest": "~27.4.1",
     "axios": "^1.8.4",
-    "dredd": "^14.1.0",
+    "dredd": "^14.0.0",
     "eslint-plugin-cypress": "~2.12.1",
     "eslint-plugin-html": "~6.2.0",
     "fs-extra": "^10.0.1",
