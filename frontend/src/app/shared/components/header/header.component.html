@@ -12,7 +12,7 @@
     }
   </div>
   <div class="side">
-    @if (headerService.showAccountPanel) {
+    @if (headerService.showAccountPanel || viewSettingsService.viewSettings?.standardDesign) {
       <button matIconButton class="account-button" [matMenuTriggerFor]="accountMenu" data-cy="account-button">
         <mat-icon svgIcon="person"></mat-icon>
       </button>
