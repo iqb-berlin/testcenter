@@ -6,7 +6,6 @@ export class TestModeData {
   forceTimeRestrictions: boolean = false;
   forceNaviRestrictions: boolean = false;
   monitorable: boolean = false;
-  presetCode: boolean = true;
   showTimeLeft: boolean = false;
   showUnitMenu: boolean = false;
   receiveRemoteCommands: boolean = false;
@@ -20,7 +19,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
@@ -33,7 +31,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
@@ -46,7 +43,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: true,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
@@ -59,7 +55,6 @@ export class TestModeData {
       saveResponses: true,
       forceTimeRestrictions: true,
       forceNaviRestrictions: true,
-      presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
@@ -72,7 +67,6 @@ export class TestModeData {
       saveResponses: true,
       forceTimeRestrictions: true,
       forceNaviRestrictions: true,
-      presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
@@ -85,7 +79,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: true,
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
@@ -98,7 +91,6 @@ export class TestModeData {
       saveResponses: true,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: true,
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
@@ -111,7 +103,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: true,
       forceNaviRestrictions: true,
-      presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
@@ -124,7 +115,6 @@ export class TestModeData {
       saveResponses: false,
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
-      presetCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false
