@@ -50,7 +50,15 @@ exports.oldDocsIndex = done => {
   done();
 };
 
+const copyReadme = done => {
+  const output = fs.readFileSync(`${rootPath}/README.md`, 'utf8').toString();
+  const prefix = '---\nlayout: default\n---\n';
+  fs.writeFileSync(`${docsDir}/index.md`, prefix + output, 'utf8');
+  done();
+};
+
 exports.createDocs = gulp.series(
+  copyReadme,
   bookletDocs,
   testtakerDocs
 );
