@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare TARGET_VERSION="next"
+declare TARGET_VERSION="18.1.0"
 
 function migrate_env_file() {
   if ! grep -q "^PASSWORD_MIN_LENGTH=" .env.prod; then
