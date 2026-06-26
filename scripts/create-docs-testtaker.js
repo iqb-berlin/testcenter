@@ -1,8 +1,8 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies */
 
 /**
- * Generiert flache, stabile Markdown-Dokumentationen für das Testtaker XML-Format
- * basierend auf dem JSON-Schema, erweitert um strukturelle Pfad-Marker.
+ * Generiert flache, Markdown-Dokumentationen für das Testtaker XML-Format
+ * basierend auf dem JSON-Schema
  */
 
 const fs = require('fs');
@@ -85,7 +85,7 @@ const renderDefaultAndExamples = prop => {
 const renderRef = ref => {
   if (!ref) return '';
   const name = ref.replace('#/$defs/', '');
-  return ` → Siehe [${name}\`](#${anchor(name)})`;
+  return ` → Siehe [${name}](#${anchor(name)})`;
 };
 
 const renderProperty = (key, prop, schema, requiredList = [], parentPath = '', forcedRef = null) => {
@@ -93,27 +93,24 @@ const renderProperty = (key, prop, schema, requiredList = [], parentPath = '', f
   const isRequired = requiredList.includes(key);
   const isDeprecated = resolved.deprecated === true;
   const currentPath = parentPath ? `${parentPath}.${key}` : key;
-
   const badges = [];
   const typeBadge = renderTypeBadge(resolved);
+
   if (typeBadge) badges.push(typeBadge);
   if (isRequired) badges.push('`Pflichtfeld`');
   if (isDeprecated) badges.push('⚠️ *deprecated*');
 
   const badgeString = badges.length > 0 ? ` (${badges.join(' • ')})` : '';
   let result = `### ▪ \`${currentPath}\`${badgeString}\n\n`;
-
   result += renderDeprecation(resolved);
   const desc = resolved.description ?? resolved.title ?? '';
   if (desc) result += `${desc}\n`;
-
   result += renderDefaultAndExamples(resolved);
   result += renderEnumList(resolved);
 
   if (resolved.type === 'array' && resolved.items?.$ref) {
     result += `\nTyp: Array aus ${renderRef(resolved.items.$ref)}\n`;
   }
-
   const refToRender = forcedRef || prop.$ref;
   if (refToRender && resolved.type !== 'array' && !resolved.enum) {
     result += `\nStruktur: ${renderRef(refToRender)}\n`;
@@ -129,9 +126,7 @@ const renderPropertiesList = (properties, schema, required = [], parentPath = ''
   Object.keys(properties).forEach(key => {
     const originalProp = properties[key];
     const originalRef = originalProp ? originalProp.$ref : null;
-
     if (originalProp && originalProp.description) {
-      // Erzwingt lokale Beschreibungen gegenüber globalen Referenz-Texten
       const clonedProp = { ...originalProp };
       const resolved = resolve(clonedProp, schema);
       resolved.description = originalProp.description;
@@ -149,6 +144,7 @@ const renderPropertiesList = (properties, schema, required = [], parentPath = ''
 
 const renderMetadata = (schema, current) => {
   let result = current;
+  result += '\n';
   result += '\n## Metadata\n\n';
   result += `${schema.properties.metadata.description}\n\n`;
   result += renderPropertiesList(
@@ -162,9 +158,9 @@ const renderMetadata = (schema, current) => {
 
 const renderCustomTextsRef = (schema, current) => {
   let result = current;
-  result += '\n## CustomTexts\n\n';
+  result += '\n## CustomTexts (optional)\n\n';
   result += `${schema.properties.customTexts.description}\n`;
-  result += '\n→ Siehe [CustomTexts](custom-texts.html)\n';
+  result += '\n→ Siehe [Testtaker-Textersetzungen](custom-texts.html)\n';
   return result;
 };
 
@@ -178,7 +174,7 @@ const renderGroups = (schema, current) => {
 
 const renderProfiles = (schema, current) => {
   let result = current;
-  result += '\n## Profiles\n\n';
+  result += '\n## Profiles (optional)\n\n';
   result += `${schema.properties.profiles.description}\n`;
   const gmProp = schema.properties.profiles.properties.groupMonitor;
   result += `\n### \`GroupMonitor\`\n\n${gmProp.description}\n`;
@@ -189,17 +185,18 @@ const renderProfiles = (schema, current) => {
 // Rendert globale Sektionen am Ende ($defs), filtert reine Hilfs-Enums heraus
 const renderDefs = (schema, current) => {
   let result = current;
-  result += '\n---\n';
+
+  result += '\n\n---\n';
+  result += '# Kinderelemente\n\n';
+  result += '> Hier werden die Attribute der Kinderelemnente beschrieben.\n\n';
 
   const excludeList = ['ColumnSetting', 'FilterSetting'];
 
   Object.keys(schema.$defs).forEach(defName => {
     if (excludeList.includes(defName)) return;
-
     const def = schema.$defs[defName];
-    result += `\n## ${defName}\n\n`;
+    result += `\n## \`${defName}\`\n\n`;
     if (def.description) result += `${def.description}\n\n`;
-
     if (def.properties) {
       result += renderPropertiesList(def.properties, schema, def.required ?? [], defName);
     }
@@ -217,8 +214,6 @@ const renderDefs = (schema, current) => {
 
 exports.testSessionSuperStates = done => {
   cliPrint.headline('SuperStates: Writing HTML documentation');
-
-  // Inhalte elegant per .map() generieren
   const content = Object.entries(superStates)
     .map(([key, state]) => {
       const className = state.class || ''; // Falls .class undefined ist
@@ -246,8 +241,6 @@ exports.testSessionSuperStates = done => {
 </table>`;
     })
     .join('\n');
-
-  // Template einlesen, Platzhalter ersetzen und schreiben
   const template = fs.readFileSync(`${docsDir}/src/test-session-super-states.html`, 'utf8');
   const output = template.replace('%%%CONTENT%%%', content);
 
@@ -257,38 +250,26 @@ exports.testSessionSuperStates = done => {
 
 exports.testMode = done => {
   cliPrint.headline('TestMode: Writing Markdown documentation');
-
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
   const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
-
   let output = fs.readFileSync(`${docsDir}/src/test-mode.md`, 'utf8').toString();
-
   output += '\n### Verfügbare Modi\n\n';
-  Object.keys(definition).forEach(k => {
+  const modeKeys = Object.keys(definition);
+  modeKeys.forEach(k => {
     output += `* \`${k}${k === 'RUN-DEMO' ? '` (default): ' : '`: '}${definition[k].label}\n`;
   });
-
-  output += '\n### Merkmale der Modi\n\n';
-  const optionsKeys = Object.keys(modeOptions);
-  optionsKeys.forEach((mode, index) => {
-    output += `${index + 1}. ${modeOptions[mode]}\n`;
-  });
-
-  output += '\n';
-
-  const tableHeader1 = `| Modus | ${optionsKeys.map((_, i) => ` ${i + 1} |`).join('')}`;
-  const tableHeader2 = `| :--- | ${optionsKeys.map(() => ' :---: |').join('')}`;
-
+  output += '\n### Merkmale der Modi im Vergleich\n\n';
+  const tableHeader1 = `| Merkmal / Option | ${modeKeys.map(k => ` \`${k}\` |`).join('')}`;
+  const tableHeader2 = `| :--- | ${modeKeys.map(() => ' :---: |').join('')}`;
   output += `${tableHeader1}\n${tableHeader2}\n`;
-
-  Object.keys(definition).forEach(k => {
-    let row = `| \`${k}\` | `;
-    optionsKeys.forEach(mode => {
-      row += definition[k].config[mode] ? ' ✅ |' : '  |';
+  const optionsKeys = Object.keys(modeOptions);
+  optionsKeys.forEach(optionKey => {
+    let row = `| ${modeOptions[optionKey]} | `;
+    modeKeys.forEach(modeKey => {
+      row += definition[modeKey].config[optionKey] ? ' ✅ |' : '  |';
     });
     output += `${row}\n`;
   });
-
   fs.writeFileSync(`${docsDir}/pages/test-mode.md`, output, 'utf8');
   done();
 };
@@ -402,7 +383,7 @@ const testtakerDocsNative = gulp.series(
   exports.testtakerDefs
 );
 
-// Allumfassende Haupt-Pipeline Task
+// Main-Pipeline Task
 exports.testtakerDocs = gulp.series(
   exports.testSessionSuperStates,
   exports.testMode,

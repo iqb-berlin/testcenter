@@ -110,12 +110,6 @@
       "properties": {
         "CodeToEnter": { "$ref": "#/$defs/CodeToEnter" },
         "TimeMax": { "$ref": "#/$defs/TimeMax" },
-        "show": {
-          "title": "Bedingte Anzeige (Show)",
-          "description": "Bedingungen für die adaptive Anzeige des Blocks basierend auf States.",
-          "type": "array",
-          "items": { "$ref": "#/$defs/Show" }
-        },
         "denyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" },
         "lockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
       }
@@ -125,14 +119,6 @@
       "additionalProperties": false,
       "properties": {
         "code": { "type": "string" }
-      }
-    },
-    "Show": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "if": { "type": "string" },
-        "is": { "type": "string" }
       }
     },
     "TimeMax": {

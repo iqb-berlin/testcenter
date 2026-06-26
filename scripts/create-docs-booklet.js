@@ -1,7 +1,7 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies */
 
 /**
- * Generiert flache, stabile Markdown-Dokumentationen für das Booklet XML-Format
+ * Generiert flache, Markdown-Dokumentationen für das Booklet XML-Format
  * sowie die dazugehörigen Booklet-Konfigurationsparameter.
  */
 
@@ -13,7 +13,6 @@ const rootPath = fs.realpathSync(`${__dirname}/..`);
 const docsDir = `${rootPath}/docs`;
 const definitionsDir = `${rootPath}/definitions/booklet`;
 
-// Centralisierte Schema-Loader, um externe Referenzen aufzulösen
 const readMainSchema = () => JSON.parse(fs.readFileSync(`${definitionsDir}/booklet.schema.json`).toString());
 const readAdaptiveSchema = () => JSON.parse(fs.readFileSync(`${definitionsDir}/adaptive-config.json`).toString());
 
@@ -24,7 +23,7 @@ const readAdaptiveSchema = () => JSON.parse(fs.readFileSync(`${definitionsDir}/a
 const resolveRef = (ref, schema) => {
   if (!ref) return null;
 
-  // ERWEITERUNG: Unterstützung für die ausgelagerte adaptive-config.json
+  // Unterstützung für die ausgelagerte adaptive-config.json
   if (ref.startsWith('adaptive-config.json')) {
     const adaptiveSchema = readAdaptiveSchema();
     if (ref === 'adaptive-config.json') return adaptiveSchema;
@@ -180,6 +179,7 @@ const renderPropertiesList = (properties, schema, required = [], parentPath = ''
 
 const renderMetadata = (schema, current) => {
   let result = current;
+  result += '\n';
   result += '\n## Metadata\n\n';
   result += `${schema.properties.metadata.description}\n\n`;
   result += renderPropertiesList(
@@ -193,26 +193,18 @@ const renderMetadata = (schema, current) => {
 
 const renderConfigRef = (schema, current) => {
   let result = current;
-  result += '\n## BookletConfig\n\n';
+  result += '\n## BookletConfig (optional)\n\n';
   result += `${schema.properties.config.description}\n`;
   result += '\n→ Siehe [Booklet-Konfiguration](booklet-config.html)\n';
-  return result;
-};
-
-const renderCustomTextsRef = (schema, current) => {
-  let result = current;
-  result += '\n## CustomTexts\n\n';
-  result += `${schema.properties.customTexts.description}\n`;
-  result += '\n→ Siehe [Custom Texts](custom-texts.html)\n';
   return result;
 };
 
 const renderStates = (schema, current) => {
   let result = current;
   if (!schema.properties.states) return result;
-  result += '\n## States\n\n';
+  result += '\n## States (optional)\n\n';
   result += `${schema.properties.states.description}\n`;
-  result += '\n→ Siehe [Booklet-Adaptivität](adaptive-config.html)\n';
+  result += '\n→ Siehe [Booklet-Adaptives Testen](adaptive-config.html)\n';
   return result;
 };
 
@@ -227,6 +219,8 @@ const renderUnits = (schema, current) => {
 const renderDefs = (schema, current) => {
   let result = current;
   result += '\n---\n';
+  result += '# Kinderelemente\n\n';
+  result += '> Hier werden die Attribute der Kinderelemnente beschrieben.\n\n';
 
   const nameMapping = {
     FirstTestlet: 'Testlet (Hauptblock / Startabschnitt)',
@@ -241,7 +235,7 @@ const renderDefs = (schema, current) => {
     const anchorId = createAnchor(cleanName);
 
     // Expliziter HTML-Anker wird vor die Überschrift gesetzt, damit die Markdown-Verlinkung plattformunabhängig greift
-    result += `\n<a id="${anchorId}"></a>\n## ${cleanName}\n\n`;
+    result += `\n<a id="${anchorId}"></a>\n### ${cleanName}\n\n`;
 
     if (def.description) result += `${def.description}\n\n`;
 
@@ -254,10 +248,6 @@ const renderDefs = (schema, current) => {
 
   return result;
 };
-
-// ---------------------------------------------------------------------------
-// Gulp-Task: Booklet-Config
-// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Gulp-Task: Booklet-Config
@@ -288,7 +278,7 @@ exports.bookletConfig = done => {
       if (param.deprecationNote && param.deprecationNote.trim() !== '') {
         deprecationBlock += `\n| > ${param.deprecationNote}\n`;
       } else {
-        // Wenn keine Notiz da ist, schließen wir den Block sauber ab
+        // Wenn keine Notiz da ist, abschließen des Blocks
         deprecationBlock += '\n';
       }
 
@@ -378,13 +368,6 @@ exports.bookletConfigRef = done => {
   done();
 };
 
-exports.bookletCustomTextsRef = done => {
-  cliPrint.headline('Booklet: Writing customTexts reference section');
-  const schema = readMainSchema();
-  writeFile(bookletFile, renderCustomTextsRef(schema, readFile(bookletFile)));
-  done();
-};
-
 exports.bookletStates = done => {
   cliPrint.headline('Booklet: Writing states section');
   const schema = readMainSchema();
@@ -412,7 +395,6 @@ exports.bookletDocs = gulp.series(
   exports.bookletHeader,
   exports.bookletMetadata,
   exports.bookletConfigRef,
-  exports.bookletCustomTextsRef,
   exports.bookletStates,
   exports.bookletUnits,
   exports.bookletDefs

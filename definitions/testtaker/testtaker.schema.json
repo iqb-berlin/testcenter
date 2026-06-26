@@ -105,7 +105,7 @@
           "description": "Optionale Zuweisung von externen Assets zu benannten Slots für alle Logins der Gruppe. Login-eigene Zuweisungen überschreiben Gruppen-Zuweisungen für denselben Slot.",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/AssetAssignments"
+            "$ref": "#/$defs/Asset"
           }
         },
         "logins": {
@@ -187,7 +187,7 @@
           "description": "Optionale Zuweisung von externen Assets zu benannten Slots, spezifisch für diesen Login.",
           "type": "array",
           "items": {
-            "$ref": "#/$defs/AssetAssignments"
+            "$ref": "#/$defs/Asset"
           }
         },
         "viewSettings": {
@@ -218,16 +218,6 @@
           "examples": [
             "x4u t5a z9i"
           ]
-        },
-        "state": {
-          "title": "Anfangszustand",
-          "description": "Kommagetrennte Liste von State-Zuweisungen im Format 'state-id:option-id'. Setzt den adaptiven Anfangszustand des Booklets für diesen Login.",
-          "type": "string",
-          "pattern": "^([a-z\\d-]+:[a-z\\d-]+,?\\s?)+$",
-          "examples": [
-            "difficulty:hard",
-            "difficulty:easy, language:de"
-          ]
         }
       }
     },
@@ -247,7 +237,7 @@
         }
       }
     },
-    "AssetAssignments": {
+    "Asset": {
       "title": "Asset-Zuweisung",
       "description": "Weist eine externe Ressource einem benannten Slot zu. Slot-Namen müssen pro Login oder Gruppe eindeutig sein.",
       "type": "object",
@@ -301,7 +291,7 @@
           "type": "string"
         },
         "codeInput": {
-          "$ref": "#/$defs/CodeInputSetting"
+          "$ref": "#/$defs/codeInput"
         },
         "monitorBookletVisibility": {
           "title": "Testheft-Sichtbarkeit im Monitor",
@@ -320,7 +310,7 @@
         }
       }
     },
-    "CodeInputSetting": {
+    "codeInput": {
       "title": "CodeInputSetting",
       "description": "Konfiguration der Eingabemaske für den Personencode bei zweistufiger Anmeldung.",
       "type": "object",
