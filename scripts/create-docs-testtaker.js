@@ -101,7 +101,7 @@ const renderProperty = (key, prop, schema, requiredList = [], parentPath = '', f
   if (isDeprecated) badges.push('⚠️ *deprecated*');
 
   const badgeString = badges.length > 0 ? ` (${badges.join(' • ')})` : '';
-  let result = `### ▪ \`${currentPath}\`${badgeString}\n\n`;
+  let result = `## ▪ \`${currentPath}\`${badgeString}\n\n`;
   result += renderDeprecation(resolved);
   const desc = resolved.description ?? resolved.title ?? '';
   if (desc) result += `${desc}\n`;
@@ -187,15 +187,15 @@ const renderDefs = (schema, current) => {
   let result = current;
 
   result += '\n\n---\n';
-  result += '# Kinderelemente\n\n';
-  result += '> Hier werden die Attribute der Kinderelemnente beschrieben.\n\n';
+  result += '# Kind-Elemente\n\n';
+  result += '> Hier werden die Attribute der Kind-Elemente beschrieben.\n\n';
 
   const excludeList = ['ColumnSetting', 'FilterSetting'];
 
   Object.keys(schema.$defs).forEach(defName => {
     if (excludeList.includes(defName)) return;
     const def = schema.$defs[defName];
-    result += `\n## \`${defName}\`\n\n`;
+    result += `\n## ${defName}\n\n`;
     if (def.description) result += `${def.description}\n\n`;
     if (def.properties) {
       result += renderPropertiesList(def.properties, schema, def.required ?? [], defName);

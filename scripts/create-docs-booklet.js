@@ -130,7 +130,7 @@ const renderProperty = (key, prop, schema, requiredList = [], parentPath = '', f
   if (isDeprecated) badges.push('⚠️ *deprecated*');
 
   const badgeString = badges.length > 0 ? ` (${badges.join(' • ')})` : '';
-  let result = `### ▪ \`${currentPath}\`${badgeString}\n\n`;
+  let result = `## ▪ \`${currentPath}\`${badgeString}\n\n`;
 
   result += renderDeprecation(resolved);
   const desc = resolved.description ?? resolved.title ?? '';
@@ -219,8 +219,8 @@ const renderUnits = (schema, current) => {
 const renderDefs = (schema, current) => {
   let result = current;
   result += '\n---\n';
-  result += '# Kinderelemente\n\n';
-  result += '> Hier werden die Attribute der Kinderelemnente beschrieben.\n\n';
+  result += '# Kind-Elemente\n\n';
+  result += '> Hier werden die Attribute der Kind-Elemente beschrieben.\n\n';
 
   const nameMapping = {
     FirstTestlet: 'Testlet (Hauptblock / Startabschnitt)',
@@ -235,7 +235,7 @@ const renderDefs = (schema, current) => {
     const anchorId = createAnchor(cleanName);
 
     // Expliziter HTML-Anker wird vor die Überschrift gesetzt, damit die Markdown-Verlinkung plattformunabhängig greift
-    result += `\n<a id="${anchorId}"></a>\n### ${cleanName}\n\n`;
+    result += `\n<a id="${anchorId}"></a>\n## ${cleanName}\n\n`;
 
     if (def.description) result += `${def.description}\n\n`;
 

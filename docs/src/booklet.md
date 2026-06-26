@@ -36,6 +36,6 @@ layout: default
 </Booklet>
 
 ```
-# Booklet Wurzelelemente
+# Root-Elemente
 
 > An dieser Stelle werden nur die nicht optionalen Felder der primären Knoten (Wurzelelemente) beschrieben.<br> Die optionalen Felder sind aufgeführt, die Dokumentation dazu wird aber separat geführt.
