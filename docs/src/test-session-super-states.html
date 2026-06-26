@@ -5,7 +5,7 @@ layout: default
 <!DOCTYPE html>
 <html lang="de">
 <meta charset="utf-8">
-<title>Groupmonitor states of running tests</title>
+<title>Gruppenmonitor Statusmeldungen</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://iqb-berlin.github.io/testcenter/assets/css/style.css" rel="stylesheet">
 <style>
@@ -32,18 +32,20 @@ layout: default
 </style>
 </html>
 <body>
-<h1>States of Running Tests</h1>
+<h1>Gruppenmonitor Statusmeldungen</h1>
 <p>
-  These are the different states of running tests which can be shown by the group-monitor.
+  Dies sind die verschiedenen Zustände laufender Tests, die im Gruppenmonitor angezeigt werden können.
 </p>
 <p>
-  Background: There are plenty of different combinations of state-values of a running test: Some states are reported
-  by the frontend, like <quote>CONTROLLER</quote>, some come from the backend like if the test is locked.
-  State means a set of values represenatating, wether the test is started, which unit was shown last, the remaining
-  time, an error if there is any, wether it is locked and so on. Various combinations are possible: a test can be
-  locked and paused at the same time for example. Those things are boiled down to the following states
-  (internally called super-states) to be displayed to be more convinient for the user. The order means the importance:
-  if there is a error, the super-state will be <quote>error</quote>, regardless of if the test is paused or not.
+  Hintergrund: Es gibt eine Vielzahl möglicher Kombinationen von Zustandswerten eines laufenden Tests.
+  Manche Zustände werden vom Frontend gemeldet, wie z. B. <quote>CONTROLLER</quote>, andere kommen vom
+  Backend, etwa ob ein Test gesperrt ist. Ein Zustand umfasst eine Menge von Werten, die beschreiben,
+  ob der Test gestartet wurde, welche Unit zuletzt angezeigt wurde, die verbleibende Zeit, ein etwaiger
+  Fehler, ob der Test gesperrt ist usw. Dabei sind verschiedene Kombinationen möglich — ein Test kann
+  gleichzeitig gesperrt und pausiert sein. Um die Anzeige für die Testleitung übersichtlicher zu gestalten,
+  werden diese Kombinationen auf die folgenden Zustände (intern als Super-States bezeichnet) verdichtet.
+  Die Reihenfolge spiegelt die Priorität wider: Liegt ein Fehler vor, ist der Super-State <quote>error</quote>
+  — unabhängig davon, ob der Test gleichzeitig pausiert ist oder nicht.
 </p>
 %%%CONTENT%%%
 </body>
