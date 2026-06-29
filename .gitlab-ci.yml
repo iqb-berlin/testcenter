@@ -75,6 +75,7 @@ build-doc:
   script:
     - npm i
     - mkdir tmp
+    - mkdir docs/dist
     - npm run backend:update-specs
     - npm run create-docs
   artifacts:
