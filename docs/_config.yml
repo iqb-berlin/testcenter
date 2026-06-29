@@ -12,12 +12,32 @@ baseurl: "/testcenter" # the subpath of your site, e.g. /blog
 url: "https://iqb.pages.cms.hu-berlin.de/" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
-theme: minima
+theme: just-the-docs
 
 include:
   - _css
   - _icons
   - _js
+
+exclude:
+  - src
+
+kramdown:
+  toc_levels: "1"
+
+sass:
+  sass_dir: _sass
+  style: :compressed
+
+callouts:
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
+  highlight:
+    color: yellow
 
 # Exclude from processing.
 # The following items will not be processed, by default.

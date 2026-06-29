@@ -230,7 +230,7 @@
     "defaultvalue": "FALSE"
   },
   "silent_mode": {
-    "label": "Unterdrückung von Einblendungen, z.B. Dialoge",
+    "label": "Unterdrückung von Einblendungen, wie unerlaubte Navigation und Ablauf Timer.",
     "options": {
       "TRUE": "Einblendungen werden unterdrückt.",
       "FALSE": "Normales Anzeigeverhalten"
