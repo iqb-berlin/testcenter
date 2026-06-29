@@ -2,14 +2,10 @@
 layout: default
 ---
 
-# Booklet config
-There are some configuration parameters for adjusting the behaviour during the test.This 
-document describes the ways to bring the parameters to the application and lists
-all possible keys.
- 
-## Configuration via booklet XML
-The configuration can be set for every single booklet. You need to add one XML-Element 
-into the booklet-file. Example:
+# Booklet: Konfiguration
+
+Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
+
 ```
 ...
 </Metadata>
@@ -20,231 +16,223 @@ into the booklet-file. Example:
 </BookletConfig>
 ```
 
-## List of parameters
+## Liste der Konfigurationsparameter
 
-### loading_mode
+## `loading_mode`
 Ladeverhalten beim Start
  * **"LAZY" - Start sobald wie möglich, Laden im Hintergrund fortsetzen**
  * "EAGER" - Testheft erst dann starten, wenn alle Inhalte geladen sind
 
-### logPolicy
+## `logPolicy`
 Erfassen und Speichern von Log-Daten
  * "disabled" - Ausgeschaltet
  * "lean" - Nur wichtige Meldungen
  * **"rich" - Alles außer debug-Informationen**
  * "debug" - Auch debug-Informationen
 
-### browserBehaviour
-Verhalten bei Browser-Navigation
- * **"standard" - Standardverhalten des Browsers verwenden**
- * "preventNav" - Navigationselemente des Browsers (Zurück Button, direkte URL Eingabe) werden im Testverlauf verhindert
+## `browserBehaviour`
+Mit dieser Einstellung kann das normale Verhalten der Navigation im Browser unterdrückt werden. Dies kann nützlich sein, um versehentliches Navigieren, bspw. über Wischgesten auf Touchscreens, zu vermeiden. Das betrifft alle gängigen Navigationsmechanismen im Browser, also Vor- und Zurück-Knopf und direkte URL-Eingabe.
+ * **"standard" - Standardverhalten des Browsers wird verwendet.**
+ * "preventNav" - Navigation des Browsers wird verhindert.
 
-### pagingMode
+## `pagingMode`
 pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
  * **"separate" - pages are separated**
  * "concat-scroll" - concat-scroll
  * "concat-scroll-snap" - concat-scroll-snap
  * "buttons" - buttons for the next page
 
-### force_presentation_complete
+## `force_presentation_complete`
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde
  * **"OFF" - Das Verlassen der unvollständig betrachteten Aufgabe wird nicht verhindert.**
  * "ALWAYS" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
-### force_response_complete
+## `force_response_complete`
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
  * **"OFF" - Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.**
  * "ALWAYS" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert.
  * "ON" - Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
-### unit_time_left_warnings
+## `unit_time_left_warnings`
 Konfiguriert, bei wie vielen verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll. Beliebige Werte sind möglich. Der Wert "10,5,1" würde zum Beispiel bedeuten, dass bei zehn, fünf und bei einer verbleibenden Minute jeweils eine Warnung angezeigt wird. Wird der Parameter angegeben, aber leer gelassen oder enthält keine Zahlen, so werden keine Warnungen dieser Art angezeigt.
  * **5,1**
 
-### show_end_button_in_player
+## `show_end_button_in_player`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> 
-
 
 Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.
  * **"OFF" - Den Test-Beenden-Button im Player nie anzeigen.**
  * "ALWAYS" - Den Test-Beenden-Button im Player immer anzeigen.
  * "ONLY_LAST_UNIT" - Den Test-Beenden-Button im Player nur in der letzten Unit anzeigen.
 
-### restore_current_page_on_return
+## `restore_current_page_on_return`
 Legt fest, ob, wenn (z. B.) nach einem Neuladen eine Unit wieder geöffnet wird, zur letzten geöffneten Seite gesprungen werden soll.
  * **"OFF" - Beim Zurückkehren zur Unit auf Seite 1 beginnen.**
  * "ON" - Beim Zurückkehren zur Unit auf der letzten gesehenen Seite beginnen.
 
-### allow_player_to_terminate_test
+## `allow_player_to_terminate_test`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> 
-
 
 Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen entsprechenden Navigationsknopf zeigt.
  * "OFF" - Der Player darf den laufenden Test nicht beenden.
  * "LAST_UNIT" - Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.
  * **"ON" - Der Player darf den laufenden test immer beenden. (`force_presentation_complete` und `force_response_complete` gelten trotzdem!).**
 
-### lock_test_on_termination
+## `lock_test_on_termination`
 Legt fest, ob der test gesperrt werden soll, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
  * "ON" - Ja, der Test soll gesperrt werden, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
  * **"OFF" - Nein, der test kann nach dem Beenden wieder aufgerufen werden, so lange der account aktiv ist.**
 
-### ask_for_fullscreen
+## `ask_for_fullscreen`
 Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehen?
  * "ON" - Ja.
  * **"OFF" - Nein.**
 
-### unit_responses_buffer_time
+## `unit_responses_buffer_time`
 Speicherfrequenz für Antworten in Ms.
  * **5000**
 
-### unit_state_buffer_time
+## `unit_state_buffer_time`
 Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
  * **6000**
 
-### test_state_buffer_time
+## `test_state_buffer_time`
 Speicherfrequenz für Test-Zustände in Ms.
  * **1000**
 
-### header_hidden
+## `header_hidden`
 Erlaubt das Ausblenden der Kopfzeile. Das Logo und die damit verbundene Navigation zum Verlassen des Tests bleibt sichtbar und überragt den Player-Bereich (Testinhalte).
  * "TRUE" - Kopfzeile wird ausgeblendet.
  * **"FALSE" - Kopfzeile wird angezeigt.**
 
-### header_content
-Legt fest, was im Kopfbereich als Titel angezeigt wird. Bei via 'header_hidden' versteckten Header, greift diese Einstellung nicht.
+## `header_content`
+Legt fest, was im Kopfbereich als Titel angezeigt wird. Bei via 'header_hidden' versteckten Header, greift diese Einstellung nicht. 
  * "NONE" - Titel auf der Kopfzeile bleibt leer
  * **"BOOKLET_LABEL" - Titel des Testhefts/Booklets**
  * "BLOCK_LABEL" - Titel des Aufgabenblocks
  * "UNIT_LABEL" - Titel der Unit
 
-### navbar_unit_label
+## `navbar_unit_label`
 Darstellung der aktiven Aufgabe/Unit auf der Navigationsleiste.
  * "HIDDEN" - Anzeige der aktiven Unit wird ausgeblendet (übernimmt ggf. die Aufgabe selbst)
  * **"INDEX" - Index der aktuellen Unit und die Gesamtzahl der Units**
  * "LABEL" - Der Anzeigename der aktuellen Unit wird angezeigt
 
-### navbar_unit_controls_hidden
+## `navbar_unit_controls_hidden`
 Ausblenden der Elemente für die Navigation zwischen Units. Wenn gesetzt, wird nur die Beschriftung angezeigt, aber keine Knöpfe. Einstellung greift nur, wenn das Element nicht ausgeblendet ist.
  * "TRUE" - Navigationselemente sind ausgeblendet
  * **"FALSE" - Navigationselemente sind benutzbar**
 
-### navbar_page_label
+## `navbar_page_label`
 Darstellung der aktiven Seite/Teilaufgabe (innerhalb einer Aufgabe)
  * "HIDDEN" - Anzeige der aktiven Seite/Teilaufgabe wird ausgeblendet
  * **"INDEX" - Index der aktuellen Seite/Teilaufgabe und die Gesamtzahl der Seiten**
  * "LABEL" - Der Anzeigename der aktuellen Seite
  * "LIST" - Seiten werden als horizontale Liste angezeigt
 
-### navbar_page_controls_hidden
+## `navbar_page_controls_hidden`
 Ausblenden der Elemente für die Navigation zwischen Seiten/Teilaufgaben. Wenn gesetzt, wird nur die Beschriftung angezeigt, aber keine Knöpfe. Einstellung greift nur, wenn das Element nicht ausgeblendet ist.
  * "TRUE" - Navigationselemente sind ausgeblendet
  * **"FALSE" - Navigationselemente sind benutzbar**
 
-### navbar_backward_button
+## `navbar_backward_button`
 Zeigt einen Knopf zur Rückwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur vorherigen Seite oder der vorherigen Unit zu navigieren, falls die erste Seite der Unit aktiv ist.
  * **"HIDDEN" - Navigationselement ist ausgeblendet**
  * "DYNAMIC" - Navigationselement navigiert automatisch zur vorherigen Seite oder Unit
  * "UNITS" - Navigationselement navigiert zur vorherigen Unit
  * "PAGES" - Navigationselement navigiert zur vorherigen Seite
 
-### navbar_forward_button
+## `navbar_forward_button`
 Zeigt einen Knopf zur Vorwärtsnavigation auf der Navigationsleiste. Kann konfiguriert werden dynamisch entweder zur nächsten Seite oder der nächsten Unit zu navigieren, falls die letzte Seite der Unit aktiv ist.
  * **"HIDDEN" - Navigationselement ist ausgeblendet**
  * "DYNAMIC" - Navigationselement navigiert automatisch zur nächsten Seite oder Unit
  * "UNITS" - Navigationselement navigiert zur nächsten Unit
  * "PAGES" - Navigationselement navigiert zur nächsten Seite
 
-### toolbar_show_unit_title
+## `toolbar_show_unit_title`
 Anzeige des Titels der aktiven Unit auf der Werkzeugleiste
  * **"TRUE" - Titel der Unit wird angezeigt**
  * "FALSE" - Titel wird ausgeblendet
 
-### toolbar_show_unit_list
+## `toolbar_show_unit_list`
 Listenansicht aller Units via Werkzeugleiste
  * "TRUE" - Element zum Einblenden der Liste wird angezeigt.
  * **"FALSE" - Element zum Einblenden der Liste ist nicht verfügbar.**
 
-### toolbar_show_fullscreen_button
+## `toolbar_show_fullscreen_button`
 Knopf für Vollbilddarstellung via Werkzeugleiste
  * "TRUE" - Element wird angezeigt.
  * **"FALSE" - Element wird ausgeblendet.**
 
-### toolbar_show_reload_button
+## `toolbar_show_reload_button`
 Knopf für 'Seite neu laden' via Werkzeugleiste
  * "TRUE" - Element wird angezeigt.
  * **"FALSE" - Element wird ausgeblendet.**
 
-### toolbar_show_time_left
+## `toolbar_show_time_left`
 Anzeige verbleibender Zeit (falls definiert) auf der Werkzeugleiste
  * "TRUE" - Die verbleibende Zeit wird angezeigt.
  * **"FALSE" - Die verbleibende Zeit wird ausgeblendet.**
 
-### silent_mode
-Unterdrückung von Einblendungen, z.B. Dialoge
+## `silent_mode`
+Unterdrückung von Einblendungen, wie unerlaubte Navigation und Ablauf Timer.
  * "TRUE" - Einblendungen werden unterdrückt.
  * **"FALSE" - Normales Anzeigeverhalten**
 
-### page_navibuttons
+## `page_navibuttons`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen navbar_page_label
-
+| > Nutzen Sie stattdessen navbar_page_label
 
 Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
  * "OFF" - Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)
  * **"INDEX" - Seitennavigation zeigt nur Pfeile und den aktuellen Index**
  * "FULL" - Seitennavigation zeigt horizontale Liste aller Seiten
 
-### unit_navibuttons
+## `unit_navibuttons`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen navbar_page_label
-
+| > Nutzen Sie stattdessen navbar_unit_label
 
 Navigationsbuttons für die Navigation zwischen den Aufgaben
  * "OFF" - Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)
  * **"INDEX" - Der index der aktuellen Aufgabe und die Gesamtzahl an Aufgaben**
  * "LABEL" - Der Anzeigename der aktuellen Aufgabe wird angezeigt
 
-### unit_menu
+## `unit_menu`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen toolbar_show_unit_list
-
+| > Nutzen Sie stattdessen toolbar_show_unit_list
 
 Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
  * **"OFF" - Nein**
  * "FULL" - Ja
 
-### unit_screenheader
+## `unit_screenheader`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen header_content
-
+| > Nutzen Sie stattdessen header_content
 
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
  * "OFF" - Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).
@@ -253,66 +241,61 @@ Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. 
  * "WITH_BLOCK_TITLE" - Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)
  * **"EMPTY" - Seitenkopf wird angezeigt (leer)**
 
-### unit_title
+## `unit_title`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen toolbar_show_unit_title
-
+| > Nutzen Sie stattdessen toolbar_show_unit_title
 
 Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll
  * "OFF" - Keine Titelzeile
  * **"ON" - Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML).**
 
-### unit_show_time_left
+## `unit_show_time_left`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen toolbar_show_time_left
-
+| > Nutzen Sie stattdessen toolbar_show_time_left
 
 Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.
  * **"OFF" - Die verbleibende Zeit wird nicht angezeigt.**
  * "ON" - Die verbleibende Zeit wird angezeigt.
 
-### show_fullscreen_button
+## `show_fullscreen_button`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen toolbar_show_fullscreen_button
-
+| > Nutzen Sie stattdessen toolbar_show_fullscreen_button
 
 Soll ein Knopf für Vollbild in der Titelleiste angezeigt werden?
  * "ON" - Ja.
  * **"OFF" - Nein.**
 
-### show_reload_button
+## `show_reload_button`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen toolbar_show_reload_button
-
+| > Nutzen Sie stattdessen toolbar_show_reload_button
 
 Soll ein Knopf für 'Seite neu laden' in der Titelleiste angezeigt werden?
  * "ON" - Ja.
  * **"OFF" - Nein.**
 
-### ui_mode
+## `ui_mode`
 > ⚠️ **Abgekündigt**
 >
 > Dieser Parameter sollte nicht mehr verwendet werden.
 > Er wird in einer kommenden Version entfernt.
 >
-> Nutzen Sie stattdessen silent_mode
-
+| > Nutzen Sie stattdessen silent_mode
 
 Sichtbarkeit von UI-Elementen in hot Testmodi (run-hot-restart, run-hot-return, run-trial)
  * **"ALL" - Alle UI-Elemente anzeigen (Standard-Verhalten)**

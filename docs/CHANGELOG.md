@@ -1,5 +1,4 @@
-# next
-
+# 18.1.0
 ## Neue Funktionen
 - Der Header kann während des Testablaufs ausgeblendet werden. Das Logo bleibt sichtbar und kann weiterhin zur Navigation zum hauptmenü verwendet werden. Es ist zu beachten, dass das Logo den Bereicht der Testinhalte überragt und ggf. teilweise verdeckt.
   - Hierzu wurde ein neuer Booklet-Parameter hinzugefügt: *header_hidden*. Details zur Benutzung kann, wie immer, in der entsprechenden Dokumentation eingesehen werden.
@@ -25,6 +24,7 @@
 - Knöpfe zur Aufgabennavigation deaktivieren sich, wenn nicht entsprechend navigiert werden kann.
 - Hintergrundfarbe im Testablauf auf Weiß, entsprechend Design-Vorlage, korrigiert.
   - Ausnahme bildet die Codeeingabemaske, wenn die alternative Variante (keypad-symbols-alt) gewählt ist. Dann erscheint die Sekundärfarbe.
+- Auf den SysCheck-Seiten kann nun ggf. gescrollt werden
 
 ## Technisches
 - Compodoc-Dokumentation und Testabdeckungsberichte werden nicht mehr automatisch generiert und auch nicht mehr in der ReadMe verlinkt.
