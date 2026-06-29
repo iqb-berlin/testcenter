@@ -7,9 +7,13 @@ import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
 
 @Component({
-    templateUrl: './sys-check.component.html',
-    styleUrls: ['./sys-check.component.css'],
-    standalone: false
+  templateUrl: './sys-check.component.html',
+  styleUrls: ['./sys-check.component.css'],
+  standalone: false,
+  styles: `
+      :host {
+        overflow: auto;
+      }`
 })
 
 export class SysCheckComponent implements OnInit {
