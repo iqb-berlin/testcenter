@@ -11,7 +11,7 @@
     <Config key="unit_navibuttons">FULL</Config>
     <Config key="controller_design">2018</Config>
     <Config key="unit_screenheader">WITH_UNIT_TITLE</Config>
-    <Config key="unit_title">ON</Config>
+    <Config key="force_response_complete">ALWAYS</Config>
   </BookletConfig>
   <Units>
     <Unit id="testcenter-sample1" label="Beispiel-Unit 1" labelshort="1"/>

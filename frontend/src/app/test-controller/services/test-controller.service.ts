@@ -673,8 +673,8 @@ export class TestControllerService {
       Infinity :
       null;
 
-    let forward: NavigationDirectionValue = 'yes';
-    let backward: NavigationDirectionValue = 'yes';
+    let forward: NavigationDirectionValue = next !== null ? 'yes' : 'no';
+    let backward: NavigationDirectionValue = previous !== null ? 'yes' : 'no';
     if (this.currentUnit && this.checkCompleteness(this.currentUnit, 'forward').length) {
       forward = 'markedNo';
     }
@@ -939,7 +939,7 @@ export class TestControllerService {
 
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
-    return this.messageService.showConfirmDialog({
+    return this.messageService.showInfoDialog({
       title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
       content: reasons
         .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))

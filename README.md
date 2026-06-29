@@ -49,18 +49,3 @@ There are two important files for the Testcenter. A file named **Testtaker** def
 
 * [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html)
 * [Verona Player API](https://verona-interfaces.github.io/player/)
-
-### Compodoc Documentation
-
-* [Frontend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-frontend/index.html)
-* [Broadcaster](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-broadcaster/index.html)
-
-### Test Coverage
-
-* [Backend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-backend-unit/index.html)
-* [Frontend by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-frontend-unit/report/index.html)
-* [Broadcaster by Unit-Tests](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-coverage-broadcaster-unit/lcov-report/index.html)
-
-### Misc
-
-* [Install and run without docker](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-local.html)

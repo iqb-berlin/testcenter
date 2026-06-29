@@ -5,14 +5,30 @@
   - Hierzu wurde ein neuer Booklet-Parameter hinzugefügt: *header_hidden*. Details zur Benutzung kann, wie immer, in der entsprechenden Dokumentation eingesehen werden.
 
 ## Änderungen
+- Der Begleiter mit der Fehlermeldung erscheint nun in allen varianten der Codeingabe erst nach Falscheingabe.
+  - Der Text in der Sprechblase kann via custom-text angepasst werden. Die neuen Parameter heißen:
+    - login_codeInputErrorTitle
+    - login_codeInputErrorBody
 - Der globale Warnhinweis bei veraltetem Browser, der auf allen Seiten erschien wurde abgeschafft. Es gibt nun nur noch
   den Warnhinweis auf Anmeldeseite.
   - Da es nun nur noch 1 Art der Warnung gibt, entfällt ein custom-text.
     - *login_unsupportedBrowser* übernimmt den Inhalt von *login_unsupportedBrowserBanner*
     - login_unsupportedBrowserBanner wurde entfernt
+- Folgende custom-texts wurden durch feste Textbausteine ersetzt und stehen nicht mehr zur Verfügung:
+  - gm_booklet_error_general
+  - gm_booklet_error_missing_file
+  - gm_booklet_error_missing_id
+  - gm_booklet_error_xml
 
 ## Fehlerbehebungen
 - Navigationsleite verschwindet komplett, wenn alle angezeigten Elemente darauf wegkonfiguriert wurden.
+- Knöpfe zur Aufgabennavigation deaktivieren sich, wenn nicht entsprechend navigiert werden kann.
+- Hintergrundfarbe im Testablauf auf Weiß, entsprechend Design-Vorlage, korrigiert.
+  - Ausnahme bildet die Codeeingabemaske, wenn die alternative Variante (keypad-symbols-alt) gewählt ist. Dann erscheint die Sekundärfarbe.
+
+## Technisches
+- Compodoc-Dokumentation und Testabdeckungsberichte werden nicht mehr automatisch generiert und auch nicht mehr in der ReadMe verlinkt.
+  - Diese Dokumente sind nur sehr selten nützlich und wenn dann eher als internes Echtwickungswerkzeug und nicht für Externe.
 
 # 18.0.0
 Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, einen neuen Theming-Mechanismus und das Austauschen von Bildern.
@@ -48,14 +64,14 @@ Diese Version beinhaltet eine komplette Überarbeitung der Benutzeroberfläche, 
     - *keypad-symbols* - Tastenfeld mit Symbolen
     - *keypad-symbols-alt* - Tastenfeld mit alternativen Symbolen
       - Besonderheit dieser Variante ist die Beschränkung auf maximal 6 Felder.
-  - Die Länge des Codes kann über die ViewSettings angepasst werden. Standardwert: 5 
+  - Die Länge des Codes kann über die ViewSettings angepasst werden. Standardwert: 5
   - Die Varianten mit Symbolen bilden ebenfalls Ziffernwerte ab. Beginnend mit 1, oben links.
     - Es gilt zu beachten, dass bei der Verwendung von den Tastenfeld-Varianten keine Buchstaben im Freigabecode verwendet werden dürfen. Es gibt hier keinen Mechanismus, der das Benutzen von Buchstaben verhindert - es muss beim Anlegen der Testtaker-Dateien sichergestellt werden.
 ### Bildersetzungen
   - Analog zum Theming gibt es die Möglichkeit, Bildersetzungen vorzunehmen. Dies kann ebenfalls global sowie auf Gruppen- und Loginebene geschehen. Die zur Verfügung stehenden Bilder müssen durch einen Super-Admin hochgeladen werden. Die Namen der hochgeladenen Dateien können dann in Testtaker-Dateien verwendet werden.
-  - Für jeden Slot gibt es einen Standardwert, es muss nichts manuell definiert werden. Wenn für einen Slot mehrere Belegungen existieren, so greift die spezifischste: Global -> Gruppe -> Login. 
+  - Für jeden Slot gibt es einen Standardwert, es muss nichts manuell definiert werden. Wenn für einen Slot mehrere Belegungen existieren, so greift die spezifischste: Global -> Gruppe -> Login.
   - Aktuell gibt es folgende Slots:
-    - logo - permanentes Logo oben rechts auf allen Seiten 
+    - logo - permanentes Logo oben rechts auf allen Seiten
     - loginIllustration - Illustration auf der Anmeldeseite
     - codeInputIllustration - Illustration auf der Codeeingabe-Seite
     - codeInputCompanion - Begleiter auf der Codeeingabe-Seite
@@ -92,7 +108,7 @@ Ausprägungen und ihre Bedeutung können der entsprechenden [Dokumentation](http
   - navbar_show_forward_button
   - header_content
     - Ersetzt in Teilen den alten Parameter *unit_screenheader*
-  - navbar_unit_label  
+  - navbar_unit_label
     - Ersetzt z.T. *unit_navibuttons*
   - navbar_unit_controls_hidden
   - navbar_page_label
