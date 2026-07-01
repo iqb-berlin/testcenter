@@ -9,11 +9,7 @@ import { SysCheckDataService } from './sys-check-data.service';
 @Component({
   templateUrl: './sys-check.component.html',
   styleUrls: ['./sys-check.component.css'],
-  standalone: false,
-  styles: `
-      :host {
-        overflow: auto;
-      }`
+  standalone: false
 })
 
 export class SysCheckComponent implements OnInit {

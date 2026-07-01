@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow: auto;
     }
     .body-text {
       font-size: larger;

@@ -1,3 +1,12 @@
+# 18.1.1
+## Fehlerbehebungen
+- In einigen Anwendungsbereichen erschien keine Scrollbar, wenn der Seiteninhalt den sichtbaren Bereich überragt. Das
+  ist nun behoben. Es betrifft:
+  - Informationsseiten auf der Fußzeile (Impressum, Datenschutz, Barrierefreiheit)
+  - Superadmin-Einstellungen
+  - Systemcheck
+  - Dateiliste im Workspace-Admin-Bereich
+
 # 18.1.0
 ## Neue Funktionen
 - Der Header kann während des Testablaufs ausgeblendet werden. Das Logo bleibt sichtbar und kann weiterhin zur Navigation zum hauptmenü verwendet werden. Es ist zu beachten, dass das Logo den Bereicht der Testinhalte überragt und ggf. teilweise verdeckt.
