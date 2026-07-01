@@ -13,7 +13,7 @@
     <p class="loading-progress-text">{{ tcs.totalLoadingProgress.toFixed(0) }}%</p>
   </div>
 } @else if (unit?.parent?.locked) {
-  <div class="lock-overlay">
+  <div class="lock-overlay" [class.alt-styling]="codeInputMode === 'keypad-symbols-alt'">
     @if (unit?.parent?.locked?.by == 'code') {
       <tc-code-input [inputType]="codeInputMode" [length]="codeInputLength" [problemText]="codeInputErrorText"
                      [buttonLabel]="'Weiter'"

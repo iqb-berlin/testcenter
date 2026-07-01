@@ -18,10 +18,10 @@
     "defaultvalue": "rich"
   },
   "browserBehaviour": {
-    "label": "Verhalten bei Browser-Navigation",
+    "label": "Mit dieser Einstellung kann das normale Verhalten der Navigation im Browser unterdrückt werden. Dies kann nützlich sein, um versehentliches Navigieren, bspw. über Wischgesten auf Touchscreens, zu vermeiden. Das betrifft alle gängigen Navigationsmechanismen im Browser, also Vor- und Zurück-Knopf und direkte URL-Eingabe.",
     "options": {
-      "standard": "Standardverhalten des Browsers verwenden",
-      "preventNav": "Navigationselemente des Browsers (Zurück Button, direkte URL Eingabe) werden im Testverlauf verhindert"
+      "standard": "Standardverhalten des Browsers wird verwendet.",
+      "preventNav": "Navigation des Browsers wird verhindert."
     },
     "defaultvalue": "standard"
   },
@@ -230,7 +230,7 @@
     "defaultvalue": "FALSE"
   },
   "silent_mode": {
-    "label": "Unterdrückung von Einblendungen, z.B. Dialoge",
+    "label": "Unterdrückung von Einblendungen, wie unerlaubte Navigation und Ablauf Timer.",
     "options": {
       "TRUE": "Einblendungen werden unterdrückt.",
       "FALSE": "Normales Anzeigeverhalten"

@@ -4,22 +4,16 @@
       <img [src]="illustrationImageSrc" alt="illustration image">
     }
     <div>
-      <p class="heading">
-        {{ 'Willkommen im IQB‑Testcenter' | customtext : 'login_sidepanel_title' | async }}
-      </p>
-      <p>
-        {{ 'Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im ' +
+      <p class="heading">{{ 'Willkommen im IQB‑Testcenter' | customtext : 'login_sidepanel_title' | async }}</p>
+      <p>{{ 'Das IQB-Testcenter ist eine Anwendung des Instituts zur Qualitätsentwicklung im ' +
            'Bildungswesen (IQB) zur Durchführung digitaler Tests und Befragungen. Der Zugang ist mit den ' +
-           'Zugangsdaten möglich, die Sie vorab erhalten haben.' | customtext : 'login_sidepanel_subtitle' | async }}
-      </p>
+           'Zugangsdaten möglich, die Sie vorab erhalten haben.' | customtext : 'login_sidepanel_subtitle' | async }}</p>
     </div>
   </div>
   <div class="login-section">
     @if (!username) {
       <form [formGroup]="loginForm" (ngSubmit)="nameInput()">
-        <h2>
-          Anmeldenamen eingeben
-        </h2>
+        <h2>Anmeldenamen eingeben</h2>
         <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
           <input matInput formControlName="name" autocapitalize="off">
@@ -41,9 +35,7 @@
           <button matIconButton type="reset" (click)="username = null;">
             <mat-icon svgIcon="chevron_left"></mat-icon>
           </button>
-          <h2>
-            Kennwort eingeben (Benutzer: {{ username }} )
-          </h2>
+          <h2>Kennwort eingeben</h2>
         </div>
         <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>

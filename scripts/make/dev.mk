@@ -4,8 +4,8 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
-	composer-refresh-autoload re-init-backend create-interfaces update-docs docs-frontend-compodoc\
-	docs-broadcaster-compodoc docs-api-specs docs-user create-pages serve-pages new-version
+	composer-refresh-autoload re-init-backend create-interfaces update-docs\
+	docs-api-specs docs-user create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -178,8 +178,6 @@ create-interfaces:
 
 update-docs:
 	cd $(TC_BASE_DIR) &&\
-	make docs-frontend-compodoc &&\
-	make docs-broadcaster-compodoc &&\
 	make docs-api-specs &&\
 	make docs-user
 
@@ -193,12 +191,6 @@ update-docs:
 			--file test/docker-compose.api-test.yml\
 		run --build --rm --no-deps task-runner\
 			npm run $(task)
-
-docs-frontend-compodoc:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=frontend:update-compodoc
-
-docs-broadcaster-compodoc:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=broadcaster:update-compodoc
 
 # Creates a documentation (with ReDoc) of the the API between frontend and backend
 docs-api-specs:

@@ -1,4 +1,4 @@
-import customTextsDefaultJson from '../../../../../definitions/custom-texts.json';
+import customTextsDefaultJson from '../../../../../definitions/testtaker/custom-texts.json';
 
 export const customTexts = customTextsDefaultJson as {
   [key: string]: {

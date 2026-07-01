@@ -52,7 +52,6 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "coverageDirectory": "../../docs/dist/test-coverage-broadcaster-unit",
     "testEnvironment": "node"
   }
 }

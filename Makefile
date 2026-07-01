@@ -37,10 +37,6 @@ update-docs:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 .run-task-runner:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-docs-frontend-compodoc:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
-docs-broadcaster-compodoc:
-	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 docs-api-specs:
 	$(MAKE) -f $(MK_FILE_DIR)/dev.mk -C $(MK_FILE_DIR) $@
 docs-user:
@@ -95,11 +91,7 @@ test-backend-initialization-general:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-broadcaster-unit:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
-test-broadcaster-unit-coverage:
-	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
-test-frontend-unit:	
-	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
-test-frontend-unit-coverage:
+test-frontend-unit:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-frontend-integration:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
@@ -154,7 +146,7 @@ testcenter-import-backend-vol:
 	$(MAKE) -f $(MK_FILE_DIR)/prod.mk -C $(MK_FILE_DIR) $@
 testcenter-update:
 	$(MAKE) -f $(MK_FILE_DIR)/prod.mk -C $(MK_FILE_DIR) $@
-	
+
 prod-test-registry-login:
 	$(MAKE) -f $(MK_FILE_DIR)/prod-test.mk -C $(MK_FILE_DIR) $@
 prod-test-registry-logout:

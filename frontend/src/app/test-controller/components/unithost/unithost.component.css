@@ -27,6 +27,10 @@
   flex-direction: column;
 }
 
+.lock-overlay.alt-styling {
+  background-color: var(--mat-sys-secondary);
+}
+
 .lock-overlay tc-code-input {
   flex: 1;
   max-height: 100%;

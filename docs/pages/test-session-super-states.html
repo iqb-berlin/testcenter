@@ -1,7 +1,11 @@
+---
+layout: default
+---
+
 <!DOCTYPE html>
 <html lang="de">
 <meta charset="utf-8">
-<title>States of Running Tests</title>
+<title>Gruppenmonitor Statusmeldungen</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://iqb-berlin.github.io/testcenter/assets/css/style.css" rel="stylesheet">
 <style>
@@ -28,172 +32,250 @@
 </style>
 </html>
 <body>
-<h1>States of Running Tests</h1>
+<h1>Gruppenmonitor Statusmeldungen</h1>
 <p>
-  These are the different states of running tests which can be shown by the group-monitor.
+  Dies sind die verschiedenen Zustände laufender Tests, die im Gruppenmonitor angezeigt werden können.
 </p>
 <p>
-  Background: There are plenty of different combinations of state-values of a running test: Some states are reported
-  by the frontend, like <quote>CONTROLLER</quote>, some come from the backend like if the test is locked.
-  State means a set of values represenatating, wether the test is started, which unit was shown last, the remaining
-  time, an error if there is any, wether it is locked and so on. Various combinations are possible: a test can be
-  locked and paused at the same time for example. Those things are boiled down to the following states
-  (internally called super-states) to be displayed to be more convinient for the user. The order means the importance:
-  if there is a error, the super-state will be <quote>error</quote>, regardless of if the test is paused or not.
+  Hintergrund: Es gibt eine Vielzahl möglicher Kombinationen von Zustandswerten eines laufenden Tests.
+  Manche Zustände werden vom Frontend gemeldet, wie z. B. <quote>CONTROLLER</quote>, andere kommen vom
+  Backend, etwa ob ein Test gesperrt ist. Ein Zustand umfasst eine Menge von Werten, die beschreiben,
+  ob der Test gestartet wurde, welche Unit zuletzt angezeigt wurde, die verbleibende Zeit, ein etwaiger
+  Fehler, ob der Test gesperrt ist usw. Dabei sind verschiedene Kombinationen möglich — ein Test kann
+  gleichzeitig gesperrt und pausiert sein. Um die Anzeige für die Testleitung übersichtlicher zu gestalten,
+  werden diese Kombinationen auf die folgenden Zustände (intern als Super-States bezeichnet) verdichtet.
+  Die Reihenfolge spiegelt die Priorität wider: Liegt ein Fehler vor, ist der Super-State <quote>error</quote>
+  — unabhängig davon, ob der Test gleichzeitig pausiert ist oder nicht.
 </p>
 
-<table>
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class=" material-icons">person</i></td>
-    <td><strong>pending</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class=" material-icons" style="font-size: 36px;">person</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>pending</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test noch nicht gestartet</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test noch nicht gestartet</code>
+    </td>
   </tr>
    <tr>
-    <td>The test has not been started yet.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Der Test wurde noch nicht gestartet.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class=" material-icons">lock</i></td>
-    <td><strong>locked</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class=" material-icons" style="font-size: 36px;">lock</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>locked</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test gesperrt</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test gesperrt</code>
+    </td>
   </tr>
    <tr>
-    <td>This state is reached if the participant pressed the "Quit"-button or a supervisor hit the "Quit all"-button</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Dieser Zustand wird erreicht, wenn die Testperson den „Test beenden"-Knopf gedrückt hat oder eine Testleitung den „Alle beenden"-Knopf betätigt hat.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="danger material-icons">error</i></td>
-    <td><strong>error</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="danger material-icons" style="font-size: 36px;">error</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>error</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Es ist ein Fehler aufgetreten!</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Es ist ein Fehler aufgetreten!</code>
+    </td>
   </tr>
    <tr>
-    <td>An error has occurred a the participants computer. Probably a network error or the like, but can also indicate bugs and should be investigated if possible. The participant should reload his browser and get support if the problem still exists.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Auf dem Gerät der Testperson ist ein Fehler aufgetreten — wahrscheinlich ein Netzwerkfehler oder Ähnliches. Der Fehler kann aber auch auf einen Programmfehler hinweisen und sollte nach Möglichkeit untersucht werden. Die Testperson sollte den Browser neu laden und bei anhaltenden Problemen Unterstützung anfordern.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="danger material-icons">sync_problem</i></td>
-    <td><strong>controller_terminated</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="danger material-icons" style="font-size: 36px;">sync_problem</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>controller_terminated</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!</code>
+    </td>
   </tr>
    <tr>
-    <td>Test execution has been completed and can be resumed. The browser of the participant is not connected and must be reloaded! Condition occurs when the "Unlock"-Button was used in the group monitor.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Die Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser der Testperson ist nicht verbunden und muss neu geladen werden. Dieser Zustand tritt auf, wenn der „Entsperren"-Knopf im Gruppenmonitor verwendet wurde.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="danger material-icons">error</i></td>
-    <td><strong>connection_lost</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="danger material-icons" style="font-size: 36px;">error</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>connection_lost</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Seite wurde verlassen oder Browserfenster geschlossen!</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Seite wurde verlassen oder Browserfenster geschlossen!</code>
+    </td>
   </tr>
    <tr>
-    <td>The connection to the participant's browser is demolished. He could have closed the window or the network connection is demolished.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Die Verbindung zum Browser der Testperson wurde unterbrochen. Die Testperson hat möglicherweise das Fenster geschlossen oder die Netzwerkverbindung ist abgebrochen.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class=" material-icons">pause</i></td>
-    <td><strong>paused</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class=" material-icons" style="font-size: 36px;">pause</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>paused</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test pausiert</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test pausiert</code>
+    </td>
   </tr>
    <tr>
-    <td>undefined</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      undefined
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="danger material-icons">warning</i></td>
-    <td><strong>focus_lost</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="danger material-icons" style="font-size: 36px;">warning</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>focus_lost</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Fenster/Tab wurde verlassen!</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Fenster/Tab wurde verlassen!</code>
+    </td>
   </tr>
    <tr>
-    <td>Another window or another tab was selected, but the site is still open and connected.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Ein anderes Fenster oder ein anderer Tab wurde in den Vordergrund gebracht, die Seite ist jedoch weiterhin geöffnet und verbunden.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class=" material-icons">hourglass</i></td>
-    <td><strong>idle</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class=" material-icons" style="font-size: 36px;">hourglass_full</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>idle</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test ist 5 Minuten oder länger inaktiv!</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test ist 5 Minuten oder länger inaktiv!</code>
+    </td>
   </tr>
    <tr>
-    <td>The participant was idle for five minutes or longer. This state can only be displayed on polling mode and is intended to be a fallback for the case that the participant's browser or computer was shut down and not able to report the lost connection. It' s not appropriate to measure testees behaviour.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Die Testperson war fünf Minuten oder länger inaktiv. Dieser Zustand kann nur im Polling-Modus angezeigt werden und dient als Fallback für den Fall, dass der Browser oder das Gerät der Testperson unerwartet beendet wurde und den Verbindungsabbruch nicht mehr melden konnte. Er ist nicht geeignet, um das Verhalten von Testpersonen zu messen.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="success material-icons">play_circle</i></td>
-    <td><strong>connection_websocket</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="success material-icons" style="font-size: 36px;">play_circle</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>connection_websocket</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test läuft, Verbindung ist live</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test läuft, Verbindung ist live</code>
+    </td>
   </tr>
    <tr>
-    <td>Test runs and participant is connected in live mode (= WebSocket).</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Der Test läuft und die Testperson ist im Live-Modus verbunden (WebSocket).
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class="success material-icons">play_circle</i></td>
-    <td><strong>connection_polling</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class="success material-icons" style="font-size: 36px;">play_circle</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>connection_polling</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test läuft</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test läuft</code>
+    </td>
   </tr>
    <tr>
-    <td>Test runs and participant is connected in the polling mode connection. This si a fallback for the case that the live-mode is not possible due to the supervisor's browser or a technical error. It works the same but the monitors performance is less smooth because new data is polled every 5 seconds and not pushedwhen there is anything.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Der Test läuft und die Testperson ist über eine Polling-Verbindung verbunden. Dies ist ein Fallback für den Fall, dass der Live-Modus aufgrund des Browsers der Testleitung oder eines technischen Fehlers nicht verfügbar ist. Die Funktionsweise ist identisch, jedoch ist die Anzeige im Monitor weniger flüssig, da neue Daten alle 5 Sekunden abgerufen und nicht sofort übertragen werden.
+    </td>
   </tr>
 </table>
-<br>
-  
-<table>
+
+<table style="width: 100%; max-width: 800px; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;">
   <tr>
-    <td rowspan="3"><i class=" material-icons">play_circle</i></td>
-    <td><strong>ok</strong></td>
+    <td rowspan="3" style="width: 60px; text-align: center; vertical-align: middle; border: 1px solid #ddd;">
+      <i class=" material-icons" style="font-size: 36px;">play_circle</i>
+    </td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; font-size: 1.1em;">
+      <strong>ok</strong>
+    </td>
   </tr>
   <tr>
-    <td>Tooltip: <code>Test läuft</code></td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word;">
+      Tooltip: <code style="white-space: pre-wrap; word-break: break-all;">Test läuft</code>
+    </td>
   </tr>
    <tr>
-    <td>Test seems to run but the connection type is unknown. This is is more or less a fallback state which indicates, that nothing is known about the test except for it's existence. This could be the case in various error-scenarios or misconfigurations but should not happen in general. It should be investigated, but most likely the test can be continued safely since the error is more likely on the monitor's side.</td>
+    <td style="padding: 8px; border: 1px solid #ddd; word-break: break-word; white-space: normal;">
+      Der Test scheint zu laufen, der Verbindungstyp ist jedoch unbekannt. Dies ist ein Fallback-Zustand, der anzeigt, dass über den Test außer seiner bloßen Existenz nichts bekannt ist. Er kann in verschiedenen Fehlerszenarien oder bei Fehlkonfigurationen auftreten, sollte aber regulär nicht vorkommen. Der Zustand sollte untersucht werden — der Test kann in den meisten Fällen jedoch sicher fortgesetzt werden, da der Fehler wahrscheinlich auf der Seite des Monitors liegt.
+    </td>
   </tr>
 </table>
-<br>
-  
 </body>

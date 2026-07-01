@@ -2,24 +2,19 @@ mat-toolbar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 8px;
+  padding: 8px 24px;
 }
 
 .side {
-  width: 15%;
   height: 100%;
   display: flex;
   align-items: center;
 }
 
 .center {
-  width: 85%;
-  display: flex;
-  justify-content: center;
-}
-
-.logo {
-  justify-content: end;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .logo a {

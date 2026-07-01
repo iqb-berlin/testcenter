@@ -63,12 +63,6 @@
               "extractLicenses": true
             },
             "dev": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
             },
             "e2e": {
               "fileReplacements": [
@@ -84,7 +78,6 @@
         "build-coverage": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/testcenter-frontend-coverage",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["src/polyfills.ts"],
