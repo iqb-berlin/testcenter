@@ -28,7 +28,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('OFF (default): forward', () => {
-    loginTestTaker('Bklt_Config-1', '123');
+    loginTestTaker('Bklt_Config-5', '123');
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.contains('Aufgabe darf nicht verlassen werden')
@@ -38,44 +38,37 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('OFF (default): backward', () => {
-    loginTestTaker('Bklt_Config-1', '123');
-    cy.get('[data-cy="unit-navigation-forward"]');
-    cy.get('[data-cy="unit-navigation-backward"]');
-    cy.contains('Aufgabe darf nicht verlassen werden')
-      .should('not.exist');
+    loginTestTaker('Bklt_Config-5', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
+    cy.get('[data-cy="unit-navigation-backward"]')
+      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
   });
 
   it('ON: forward', () => {
-    loginTestTaker('Bklt_Config-2', '123');
-    cy.contains('mat-dialog-container', 'Vollbild')
-      .find('[data-cy="dialog-cancel"]')
-      .click();
+    loginTestTaker('Bklt_Config-6', '123');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
     //wait for response complete
     cy.wait(2000);
-    cy.get('[data-cy="unit-menu"]')
-      .click();
-    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-      .should('be.visible')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.contains('mat-dialog-container', 'abgespielt')
       .find('[data-cy="dialog-confirm"]')
       .click();
-    cy.contains('Aufgabe1');
-    getFromIframe('iframe.unitHost')
-      .find('[data-cy="next-unit-page"]')
-      .click()
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
     //wait for presentation-complete
     cy.wait(2000);
-    cy.get('[data-cy="unit-menu"]')
-      .click();
-    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-      .should('be.visible')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.contains('Aufgabe darf nicht verlassen werden')
       .should('not.exist');
@@ -83,31 +76,21 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ON: backward', () => {
-    loginTestTaker('Bklt_Config-2', '123');
-    cy.contains('mat-dialog-container', 'Vollbild')
-      .find('[data-cy="dialog-cancel"]')
-      .click();
+    loginTestTaker('Bklt_Config-6', '123');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
       .should('be.checked');
     //wait for response complete
     cy.wait(2000);
-    getFromIframe('iframe.unitHost')
-      .find('[data-cy="next-unit-page"]')
-      .click()
+    cy.get('[data-cy="page-navigation-forward"]')
+      .click();
     //wait for presentation-complete
     cy.wait(2000);
-    cy.get('[data-cy="unit-menu"]')
-      .click();
-    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-      .should('be.visible')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.contains('Aufgabe2');
-    cy.get('[data-cy="unit-menu"]')
-      .click();
-    cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
-      .should('be.visible')
+    cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.contains('Aufgabe darf nicht verlassen werden')
       .should('not.exist');
@@ -115,7 +98,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
   });
 
   it('ALWAYS: forward', () => {
-    loginTestTaker('Bklt_Config-3', '123');
+    loginTestTaker('Bklt_Config-7', '123');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
@@ -138,11 +121,11 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
     cy.contains('Aufgabe darf nicht verlassen werden')
       .should('not.exist');
     cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe2')
+      .contains('Aufgabe2');
   });
 
   it('ALWAYS: backward', () => {
-    loginTestTaker('Bklt_Config-3', '123');
+    loginTestTaker('Bklt_Config-7', '123');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
@@ -156,7 +139,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe2')
+      .contains('Aufgabe2');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
@@ -175,13 +158,7 @@ describe.skip('check parameter: presentation-complete', { testIsolation: true },
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1')
+      .contains('Aufgabe1');
   });
 });
-
-
-
-
-
-
 

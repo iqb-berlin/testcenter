@@ -2,7 +2,7 @@
 
 <div class="nav-header flex-row">
   @if (tcs.booklet?.config?.navbar_backward_button !== 'HIDDEN' && testLoaded) {
-    <button matButton="tonal" class="nav-button"
+    <button matButton="tonal" class="nav-button" data-cy="separate-unit-backward-button"
             [disabled]="!unitNavContext.isBackwardAllowed && !pageNavContext.isBackwardAllowed"
             (click)="onNavBack()">
       <mat-icon svgIcon="chevron_left"></mat-icon>
@@ -26,7 +26,7 @@
   }
 
   @if (tcs.booklet?.config?.navbar_forward_button !== 'HIDDEN' && testLoaded) {
-    <button matButton="tonal" class="nav-button"
+    <button matButton="tonal" class="nav-button" data-cy="separate-unit-forward-button"
             [disabled]="!unitNavContext.isForwardAllowed && !pageNavContext.isForwardAllowed"
             (click)="onNavForward()">
       Weiter

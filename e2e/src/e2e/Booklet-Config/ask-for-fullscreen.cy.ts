@@ -18,21 +18,14 @@ describe('check parameter: ask-for-fullscreen', { testIsolation: true }, () => {
   });
 
   it('OFF (default)', () => {
-   loginTestTaker('Bklt_Config-1', '123');
-    cy.contains('Vollbild')
-      .should('not.exist');
+    loginTestTaker('Bklt_Config-1', '123');
+    cy.get('body')
+      .should('not.contain', 'Vollbild');
   });
 
   it('ON', () => {
     loginTestTaker('Bklt_Config-2', '123');
-    cy.contains('mat-dialog-container', 'Vollbild')
-      .find('[data-cy="dialog-cancel"]')
-      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Vollbild');
   });
 });
-
-
-
-
-
-
