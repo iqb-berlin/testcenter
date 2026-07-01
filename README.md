@@ -13,7 +13,7 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 ### General
 
 * [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
-* [Changelog](https://pages.cms.hu-berlin.de/iqb/testcenter/CHANGELOG.html)
+* [Changelog](https://github.com/iqb-berlin/testcenter/releases/latest)
 * **[Detailed Documentation to start the test run](https://iqb-berlin.github.io/tba-info/study-run/)**
 
 ### Advanced Documentation
