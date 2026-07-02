@@ -130,8 +130,7 @@ test-backend-unit:
     - when: never
   before_script:
     - !reference [ .gitlab_login, before_script ]
-    - apt-get update
-    - apt-get install -y make
+    - apk add --no-cache make
   script:
     - make test-backend-unit
   after_script:
