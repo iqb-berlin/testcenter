@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-19</Id>
 		<Label>Bklt-config-19</Label>
-		<Description>navbar_backward_button value 1</Description>
+		<Description>navbar_backward_button default</Description>
 	</Metadata>
 
   <BookletConfig>

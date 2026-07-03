@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-17</Id>
 		<Label>Bklt-config-17</Label>
-		<Description>lock_test_on_termination value 1</Description>
+		<Description>lock_test_on_termination default</Description>
 	</Metadata>
 
   <BookletConfig>
