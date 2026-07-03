@@ -8,7 +8,7 @@
   </button>
 }
 
-<div class="label-container" [class.readonly]="navContext.readonly" [class.list]="navContext.labelMode === 'LIST'">
+<div class="label-container" data-cy="unit-nav-label-container" [class.readonly]="navContext.readonly" [class.list]="navContext.labelMode === 'LIST'">
   <div class="label">
     {{ navContext.label }}
 
