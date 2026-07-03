@@ -20,38 +20,29 @@ describe('check parameter: restore_current_page_on_return', { testIsolation: tru
   });
 
   it('OFF (default)', () => {
-    loginTestTaker('Bklt_Config-1', '123');
+    loginTestTaker('Bklt_Config-27', '123');
     cy.get('[data-cy="page-navigation-forward"]')
       .click();
+    cy.get('[data-cy="page-navigation-forward"]')
+      .should('be.disabled');
     cy.wait(1000); // wait for debounce
     reload();
-    cy.get('[data-cy="page-navigation-0"]')
-      .children()
-      .should('have.attr', 'aria-checked', 'true');
+    cy.get('[data-cy="page-navigation-forward"]')
+      .should('be.enabled');
   });
 
   it('ON', () => {
-    loginTestTaker('Bklt_Config-2', '123');
-    cy.contains('mat-dialog-container', 'Vollbild')
-      .find('[data-cy="dialog-cancel"]')
+    loginTestTaker('Bklt_Config-28', '123');
+    cy.get('[data-cy="page-navigation-forward"]')
       .click();
-    getFromIframe('iframe.unitHost')
-      .find('[data-cy="next-unit-page"]')
-      .click()
+    cy.get('[data-cy="page-navigation-forward"]')
+      .should('be.disabled');
     cy.wait(1000); // wait for debounce
     reload();
-    cy.wait(1000);
-    getFromIframe('iframe.unitHost')
-      .find('[data-pagenr="2"]')
-      .should('have.attr', 'style', 'display: block;');
-    getFromIframe('iframe.unitHost')
-      .find('[data-cy="previous-unit-page"]')
-      .click()
+    cy.get('[data-cy="page-navigation-forward"]')
+      .should('be.disabled');
   });
 });
-
-
-
 
 
 
