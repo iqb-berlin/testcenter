@@ -907,7 +907,7 @@ export class TestControllerService {
       cancelText: 'Trotzdem weiter'
     }).pipe(
       map(cdresult => {
-        if (!cdresult) {
+        if (cdresult === false) {
           this.cancelTimer(); // does lock the block
           return true;
         }
