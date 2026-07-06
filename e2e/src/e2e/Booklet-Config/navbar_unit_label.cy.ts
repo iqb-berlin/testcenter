@@ -19,17 +19,13 @@ describe('check parameter: navbar_unit_label', { testIsolation: true }, () => {
 
   it('INDEX (default)', () => {
     loginTestTaker('Bklt_Config-29', '123');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('be.visible');
-    cy.get('[data-cy="unit-nav-label-container"]')
+    cy.get('[data-cy="unit-navigation-label"]')
       .contains('Aufgabe 1/2');
   });
 
   it('LABEL', () => {
     loginTestTaker('Bklt_Config-30', '123');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('be.visible');
-    cy.get('[data-cy="unit-nav-label-container"]')
+    cy.get('[data-cy="unit-navigation-label"]')
       .contains('Aufgabe1');
   });
 
