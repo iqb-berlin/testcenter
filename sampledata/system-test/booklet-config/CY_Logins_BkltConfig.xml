@@ -106,9 +106,18 @@
     <Login mode="run-hot-restart" name="Bklt_Config-33" pw="123">
       <Booklet>Cy-Bklt_BkltConfig-33</Booklet>
     </Login>
-
-
+    <Login mode="run-hot-restart" name="Bklt_Config-34" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-34</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-35" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-35</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-36" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-36</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Bklt_Config-37" pw="123">
+      <Booklet>Cy-Bklt_BkltConfig-37</Booklet>
+    </Login>
   </Group>
-
 </Testtakers>
 
