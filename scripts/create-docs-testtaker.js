@@ -125,10 +125,6 @@ const renderPropertiesList = (properties, schema, required = [], parentPath = ''
   let result = '';
   Object.keys(properties).forEach(key => {
     const originalProp = properties[key];
-    const resolvedForHiddenCheck = resolve(originalProp, schema);
-    if (originalProp?.hidden === true || resolvedForHiddenCheck?.hidden === true) {
-      return;
-    }
 
     const originalRef = originalProp ? originalProp.$ref : null;
     if (originalProp && originalProp.description) {
@@ -200,7 +196,6 @@ const renderDefs = (schema, current) => {
   Object.keys(schema.$defs).forEach(defName => {
     if (excludeList.includes(defName)) return;
     const def = schema.$defs[defName];
-    if (def.hidden === true) return;
     result += `\n## ${defName}\n\n`;
     if (def.description) result += `${def.description}\n\n`;
     if (def.properties) {
@@ -298,7 +293,6 @@ exports.customTexts = done => {
   grouped.other = [];
 
   Object.keys(definition).forEach(key => {
-    if (definition[key].hidden === true) return;
     const group = CUSTOM_TEXT_GROUPS.find(g => key.startsWith(g.prefix));
     grouped[group ? group.prefix : 'other'].push(key);
   });

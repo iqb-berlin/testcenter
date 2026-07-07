@@ -1,4 +1,13 @@
 # 18.1.1
+
+## Änderungen
+- Folgende custom-texts haben keine Funktion mehr und wurden entfernt:
+  - booklet_loadingBlock
+  - booklet_loadingUnit
+  - booklet_unitLoadingUnknownProgress
+  - booklet_unitLoadingPending
+  - booklet_unitLoading
+
 ## Fehlerbehebungen
 - In einigen Anwendungsbereichen erschien keine Scrollbar, wenn der Seiteninhalt den sichtbaren Bereich überragt. Das
   ist nun behoben. Es betrifft:

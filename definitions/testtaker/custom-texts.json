@@ -147,31 +147,6 @@
     "label" : "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
     "defaultvalue" : "Der Test wurde kurz angehalten."
   },
-  "booklet_loadingBlock" : {
-    "label" : "Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde",
-    "hidden": true,
-    "defaultvalue" : "Aufgabenblock wird geladen"
-  },
-  "booklet_loadingUnit" : {
-    "label" : "Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde",
-    "hidden": true,
-    "defaultvalue" : "Aufgabe wird geladen"
-  },
-  "booklet_unitLoadingUnknownProgress" : {
-    "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt",
-    "hidden": true,
-    "defaultvalue" : "Wird geladen"
-  },
-  "booklet_unitLoadingPending" : {
-    "label" : "Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist",
-    "hidden": true,
-    "defaultvalue" : "In der Warteschleife"
-  },
-  "booklet_unitLoading" : {
-    "label" : "Untertitel des Ladebalkens, xxx% geladen",
-    "hidden": true,
-    "defaultvalue" : "Geladen"
-  },
   "booklet_loading" : {
     "label" : "Test wird geladen",
     "hidden": true,
