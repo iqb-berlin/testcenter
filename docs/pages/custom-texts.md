@@ -179,18 +179,6 @@ Test wird geladen
 
 Standard: Bitte warten
 
-## `booklet_loadingBlock`
-
-Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde
-
-Standard: Aufgabenblock wird geladen
-
-## `booklet_loadingUnit`
-
-Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde
-
-Standard: Aufgabe wird geladen
-
 ## `booklet_lockedBlock`
 
 Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen
@@ -286,24 +274,6 @@ Standard: Ansehen
 Titel für die Auflistung der Aufgaben (Schalter)
 
 Standard: Aufgaben
-
-## `booklet_unitLoading`
-
-Untertitel des Ladebalkens, xxx% geladen
-
-Standard: Geladen
-
-## `booklet_unitLoadingPending`
-
-Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist
-
-Standard: In der Warteschleife
-
-## `booklet_unitLoadingUnknownProgress`
-
-Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt
-
-Standard: Wird geladen
 
 ## `booklet_warningLeaveTextPrompt-testlet`
 
