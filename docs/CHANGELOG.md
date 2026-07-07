@@ -6,6 +6,7 @@
   - Superadmin-Einstellungen
   - Systemcheck
   - Dateiliste im Workspace-Admin-Bereich
+- Bei dem Warndialog zum Verlassen ein zeitbeschränkten Blocks gilt ein Klicken neben den Dialog als Abbruch und führt zum Verbleiben im Block.
 
 # 18.1.0
 ## Neue Funktionen
