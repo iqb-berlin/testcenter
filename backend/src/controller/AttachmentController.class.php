@@ -19,6 +19,13 @@ class AttachmentController extends Controller {
       $attachment
     );
 
+    if (Storage::isObjectStore()) {
+      // Authenticated XHR download: stream through the backend (a cross-origin
+      // redirect to a presigned URL is blocked by CORS for non-simple requests).
+      $response->write(Storage::driver()->get(Storage::toLogical($filePath)));
+      return $response->withHeader('Content-Type', FileExt::getMimeType($filePath));
+    }
+
     $response->write(file_get_contents($filePath));
 
     return $response->withHeader('Content-Type', FileExt::getMimeType($filePath));

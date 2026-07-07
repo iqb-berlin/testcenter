@@ -127,6 +127,23 @@ class WorkspaceController extends Controller {
     $filename = $request->getAttribute('filename', '[filename missing]');
 
     $fullFilename = DATA_DIR . "/ws_$workspaceId/$fileType/$filename";
+
+    if (Storage::isObjectStore()) {
+      $logical = "ws_$workspaceId/$fileType/$filename";
+      if (!Storage::driver()->exists($logical)) {
+        throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+      }
+      // The admin download is an authenticated XHR (custom auth header), so the
+      // browser may NOT follow a cross-origin redirect to a presigned URL
+      // (CORS forbids it for non-simple requests). Stream the bytes through the
+      // backend instead. This is a low-volume admin path; the high-volume
+      // test-taker path (file-server) keeps the 302 presign redirect.
+      return $response
+        ->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml')
+        ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+        ->withBody(new Stream(Storage::driver()->getStream($logical)));
+    }
+
     if (!file_exists($fullFilename)) {
       throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
     }

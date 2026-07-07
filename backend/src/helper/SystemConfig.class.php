@@ -13,6 +13,16 @@ class SystemConfig {
   public static int $cacheServer_port;
   public static string $cacheServer_password = "";
   public static string $cacheServer_includeFiles = "";
+  public static string $storage_driver = 'filesystem';     // 'filesystem' | 's3'
+  public static string $storage_s3Endpoint = '';            // internal endpoint for PUT/GET
+  public static string $storage_s3PublicEndpoint = '';      // browser-facing endpoint for presign
+  public static string $storage_s3Region = 'us-east-1';
+  public static string $storage_s3Bucket = '';
+  public static bool $storage_s3PathStyle = true;
+  public static bool $storage_s3UseSSL = true;
+  public static string $storage_s3AccessKey = '';
+  public static string $storage_s3SecretKey = '';
+  public static int $storage_presignTtl = 3600;
   public static string $password_salt = "t";
   public static int $password_min_length = 7;
   public static string $password_regex_check = "/.*/";
@@ -95,6 +105,19 @@ class SystemConfig {
     $config['cacheServer']['port'] = self::stringEnv('REDIS_PORT');
     $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
     $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
+
+    $config['storage']['driver'] = self::stringEnv('STORAGE_DRIVER', 'filesystem');
+    if ($config['storage']['driver'] === 's3') {
+      $config['storage']['s3Endpoint'] = self::stringEnv('S3_ENDPOINT', '');
+      $config['storage']['s3PublicEndpoint'] = self::stringEnv('S3_PUBLIC_ENDPOINT', '');
+      $config['storage']['s3Region'] = self::stringEnv('S3_REGION', 'us-east-1');
+      $config['storage']['s3Bucket'] = self::stringEnv('S3_BUCKET', '');
+      $config['storage']['s3PathStyle'] = self::boolEnv('S3_USE_PATH_STYLE');
+      $config['storage']['s3UseSSL'] = self::boolEnv('S3_USE_SSL');
+      $config['storage']['s3AccessKey'] = self::stringEnv('S3_ACCESS_KEY', '');
+      $config['storage']['s3SecretKey'] = self::stringEnv('S3_SECRET_KEY', '');
+      $config['storage']['presignTtl'] = self::stringEnv('S3_PRESIGN_TTL', '3600');
+    }
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

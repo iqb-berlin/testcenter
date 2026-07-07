@@ -28,7 +28,8 @@
     "ext-xmlreader": "*",
     "ext-zip": "*",
     "ext-zend-opcache" : "*",
-    "ext-ctype": "*"
+    "ext-ctype": "*",
+    "aws/aws-sdk-php": "3.385.0"
   },
   "require-dev": {
     "amphp/parallel": "2.3.2",
