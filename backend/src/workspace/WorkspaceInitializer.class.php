@@ -80,6 +80,8 @@ class WorkspaceInitializer {
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_39.xml" => "Booklet/CY_Bklt_BkltConfig_39.xml",
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_40.xml" => "Booklet/CY_Bklt_BkltConfig_40.xml",
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_41.xml" => "Booklet/CY_Bklt_BkltConfig_41.xml",
+      "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_42.xml" => "Booklet/CY_Bklt_BkltConfig_42.xml",
+      "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_43.xml" => "Booklet/CY_Bklt_BkltConfig_43.xml",
       "sampledata/system-test/groupmon/CY_Bklt_GM-1.xml" => "Booklet/CY_Bklt_GM-1.xml",
       "sampledata/system-test/session-management/CY_Logins_SM.xml" => "Testtakers/CY_Logins_SM.xml",
       "sampledata/system-test/test-controller/CY_Logins_TestController.xml" => "Testtakers/CY_Logins_TestController.xml",
