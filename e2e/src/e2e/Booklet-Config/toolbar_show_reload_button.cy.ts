@@ -19,6 +19,8 @@ describe('check parameter: toolbar_show_reload_button', { testIsolation: true },
 
   it('FALSE (default)', () => {
     loginTestTaker('Bklt_Config-46', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.get('[data-cy="toolbar-right"]')
       .should('not.be.visible');
   });

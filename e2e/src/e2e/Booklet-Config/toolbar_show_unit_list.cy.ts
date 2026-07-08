@@ -19,6 +19,8 @@ describe('check parameter: toolbar_show_unit_list', { testIsolation: true }, () 
 
   it('FALSE (default)', () => {
     loginTestTaker('Bklt_Config-42', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('be.visible');
     cy.get('[data-cy="unit-menu"]')
       .should('not.exist');
   });

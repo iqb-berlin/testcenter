@@ -37,6 +37,8 @@ describe('check parameter: navbar_page_label', { testIsolation: true }, () => {
 
   it('HIDDEN', () => {
     loginTestTaker('Bklt_Config-37', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.get('[data-cy="page-navigation-forward"]')
       .should('not.exist');
     cy.get('[data-cy="page-navigation-label"]')

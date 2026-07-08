@@ -19,6 +19,8 @@ describe('check parameter: toolbar_show_fullscreen_button', { testIsolation: tru
 
   it('FALSE (default)', () => {
     loginTestTaker('Bklt_Config-44', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.get('[data-cy="toolbar-right"]')
       .should('not.be.visible');
   });

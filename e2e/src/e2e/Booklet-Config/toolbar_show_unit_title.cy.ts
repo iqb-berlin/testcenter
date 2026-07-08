@@ -25,6 +25,8 @@ describe('check parameter: toolbar_show_unit_title', { testIsolation: true }, ()
 
   it('FALSE', () => {
     loginTestTaker('Bklt_Config-41', '123');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .should('be.visible');
     cy.get('[data-cy="unit-title"]')
       .should('not.exist');
   });

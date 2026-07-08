@@ -25,6 +25,8 @@ describe('check parameter: header_hidden', { testIsolation: true }, () => {
 
   it('TRUE', () => {
     loginTestTaker('Bklt_Config-16', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.get('[data-cy="header"]')
       .should('not.exist');
   });

@@ -31,6 +31,8 @@ describe('check parameter: navbar_unit_label', { testIsolation: true }, () => {
 
   it('HIDDEN', () => {
     loginTestTaker('Bklt_Config-31', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     cy.get('[data-cy="unit-navigation-forward"]')
       .should('not.exist');
   });
