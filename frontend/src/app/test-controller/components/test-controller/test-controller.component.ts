@@ -124,6 +124,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             // set all visual flags from booklet configs
             this.testLoaded = true;
             this.showGlobalBack = this.deriveGlobalBack();
+            this.showGlobalForward = this.deriveGlobalForward();
           } catch (err) {
             if (err instanceof MissingBookletError) { // this happens when loading was aborted.
               // eslint-disable-next-line no-console
@@ -445,6 +446,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   protected showGlobalBack = false;
   protected deriveGlobalBack(): boolean {
     const mode = this.tcs.booklet?.config.navbar_backward_button;
+
+    switch (mode) {
+      case 'DYNAMIC':
+      case 'UNITS':
+      case 'PAGES':
+        return true;
+      case 'HIDDEN':
+      case undefined:
+      default:
+        return false;
+    }
+  }
+
+  protected showGlobalForward: boolean = false;
+  protected deriveGlobalForward(): boolean {
+    const mode = this.tcs.booklet?.config.navbar_forward_button;
 
     switch (mode) {
       case 'DYNAMIC':
