@@ -428,10 +428,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   gotoNextPage(): void {
+    if (this.pageService.isLastPage()) {
+      if (this.tcs.shouldShowConfirmationUI()) this.messageService.showSnackbar('Bereits auf der letzten Seite');
+      return;
+    }
     this.gotoPage(this.pageService.currentPageIndex += 1);
   }
 
   gotoPreviousPage(): void {
+    if (this.pageService.isFirstPage()) {
+      if (this.tcs.shouldShowConfirmationUI()) this.messageService.showSnackbar('Bereits auf der ersten Seite');
+      return;
+    }
     this.gotoPage(this.pageService.currentPageIndex -= 1);
   }
 
