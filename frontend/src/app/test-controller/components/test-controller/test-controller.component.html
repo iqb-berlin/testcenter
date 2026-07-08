@@ -1,7 +1,7 @@
 <tc-debug-pane *ngIf="debugPane" />
 
 <div class="nav-header flex-row">
-  @if (tcs.booklet?.config?.navbar_backward_button !== 'HIDDEN' && testLoaded) {
+  @if (showGlobalBack && testLoaded) {
     <button matButton="tonal" class="nav-button" data-cy="separate-unit-backward-button"
             [disabled]="!unitNavContext.isBackwardAllowed && !pageNavContext.isBackwardAllowed"
             (click)="onNavBack()">
