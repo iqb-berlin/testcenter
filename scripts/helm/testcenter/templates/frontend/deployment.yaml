@@ -39,6 +39,13 @@ spec:
             capabilities:
               drop:
                 - ALL
+          {{- if .Values.objectStore.enabled }}
+          env:
+            # Allowlisted in the CSP (connect/img/media/frame/font-src) so the
+            # browser may follow presigned-URL redirects to the object store.
+            - name: OBJECT_STORE_CSP_ORIGIN
+              value: {{ .Values.objectStore.publicEndpoint | quote }}
+          {{- end }}
           ports:
             - name: http-container
               containerPort: 8080

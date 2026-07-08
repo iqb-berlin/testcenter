@@ -39,6 +39,101 @@ spec:
               drop:
                 - ALL
           command: [ "apache2-foreground" ]
+          {{- if .Values.objectStore.enabled }}
+          # With object storage enabled the backend reads its full configuration
+          # from the environment (SystemConfig::readFromEnvironment) rather than the
+          # config.ini on the shared PVC, which can be stale and would ignore the
+          # storage settings. On the default filesystem path this block is absent
+          # and the backend keeps reading config.ini as before.
+          env:
+            - name: BROADCASTER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BROADCASTER_ENABLED
+            - name: FILE_SERVER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: FILE_SERVER_ENABLED
+            - name: REDIS_HOST
+              value: "{{ .Release.Name }}-cache-server"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_CACHE_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: REDIS_CACHE_FILES
+            - name: STORAGE_DRIVER
+              value: "s3"
+            - name: S3_ENDPOINT
+              value: {{ .Values.objectStore.endpoint | quote }}
+            - name: S3_PUBLIC_ENDPOINT
+              value: {{ .Values.objectStore.publicEndpoint | quote }}
+            - name: S3_REGION
+              value: {{ .Values.objectStore.region | quote }}
+            - name: S3_BUCKET
+              value: {{ .Values.objectStore.bucket | quote }}
+            - name: S3_USE_PATH_STYLE
+              value: {{ .Values.objectStore.pathStyle | quote }}
+            - name: S3_USE_SSL
+              value: {{ .Values.objectStore.useSSL | quote }}
+            - name: S3_PRESIGN_TTL
+              value: {{ .Values.objectStore.presignTtlSeconds | quote }}
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.objectStore.existingSecret }}
+                  key: S3_ACCESS_KEY
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.objectStore.existingSecret }}
+                  key: S3_SECRET_KEY
+            - name: MYSQL_HOST
+              value: "{{ .Release.Name }}-db"
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_DATABASE
+              value: "iqb_tba_testcenter"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: MYSQL_PASSWORD
+            - name: PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: PASSWORD_SALT
+            # Required by SystemConfig::readFromEnvironment(); without them the
+            # init falls back to a stale config.ini and ignores env (incl. storage).
+            - name: PASSWORD_MIN_LENGTH
+              value: {{ .Values.config.backend.passwordMinLength | default 7 | quote }}
+            - name: PASSWORD_REGEX_CHECK
+              value: {{ .Values.config.backend.passwordRegexCheck | default "/.*/" | quote }}
+            - name: ADMIN_INIT_PASSWORD
+              value: {{ .Values.config.backend.adminInitPassword | default "user123" | quote }}
+            - name: SKIP_READ_FILES
+              value: "no"
+            - name: SKIP_DB_INTEGRITY
+              value: "no"
+            - name: OVERWRITE_INSTALLATION
+              value: "no"
+            - name: NO_SAMPLE_DATA
+              value: "no"
+          {{- end }}
           ports:
             - name: http-container
               containerPort: 8080
