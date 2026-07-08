@@ -40,7 +40,7 @@
     <p data-cy="unit-title">{{currentUnit?.label}}</p>
   }
 
-  <div class="toolbar-right">
+  <div class="toolbar-right" data-cy="toolbar-right">
     @if ((tcs.testMode.showTimeLeft || (tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue)) {
       <p data-cy="time-value">Verbleibende Zeit: {{timerValue?.timeLeftString}}</p>
     }
