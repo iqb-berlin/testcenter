@@ -25,7 +25,7 @@
     </tc-navigation-control>
   }
 
-  @if (tcs.booklet?.config?.navbar_forward_button !== 'HIDDEN' && testLoaded) {
+  @if (showGlobalForward && testLoaded) {
     <button matButton="tonal" class="nav-button" data-cy="separate-unit-forward-button"
             [disabled]="!unitNavContext.isForwardAllowed && !pageNavContext.isForwardAllowed"
             (click)="onNavForward()">
