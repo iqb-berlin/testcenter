@@ -5,9 +5,9 @@ set_include_path(realpath(__DIR__ . '/..'));
 require_once ROOT_DIR . "/backend/vendor/autoload.php";
 
 try {
-  SystemConfig::read();
+  SystemConfig::readConfigIni();
 } catch (Exception $exception) {
-  SystemConfig::readFromEnvironment();
+  SystemConfig::readEnvironment();
 }
 
 SystemConfig::$debug_allowExternalXmlSchema = false;

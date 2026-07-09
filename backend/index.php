@@ -47,7 +47,7 @@ try {
     exit;
   }
 
-  SystemConfig::read();
+  SystemConfig::readConfigIni();
 
   if (isset($_SERVER['HTTP_TESTMODE'])) {
     error_log("{$_SERVER['HTTP_TESTMODE']}: [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['REQUEST_URI']}");

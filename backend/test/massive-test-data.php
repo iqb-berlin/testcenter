@@ -70,7 +70,7 @@
 define('ROOT_DIR', realpath(__DIR__ . '/../..'));
 const DATA_DIR = ROOT_DIR . '/data';
 require_once(ROOT_DIR . '/backend/vendor/autoload.php');
-SystemConfig::readFromEnvironment();
+SystemConfig::readEnvironment();
 DB::connect();
 
 $args = CLI::getOpt();

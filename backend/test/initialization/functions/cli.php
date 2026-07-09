@@ -12,7 +12,7 @@ function runCli(callable $callback): void {
   define('DATA_DIR', ROOT_DIR . '/data');
 
   require_once ROOT_DIR . "/backend/vendor/autoload.php";
-  SystemConfig::read();
+  SystemConfig::readConfigIni();
 
   try {
     DB::connect();
