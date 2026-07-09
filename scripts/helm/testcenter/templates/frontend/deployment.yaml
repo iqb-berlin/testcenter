@@ -39,13 +39,14 @@ spec:
             capabilities:
               drop:
                 - ALL
-          {{- if .Values.objectStore.enabled }}
           env:
             # Allowlisted in the CSP (connect/img/media/frame/font-src) so the
             # browser may follow presigned-URL redirects to the object store.
+            # Always set (empty when object store is disabled): the frontend nginx
+            # template references ${OBJECT_STORE_CSP_ORIGIN} unconditionally, so an
+            # undefined env var leaves a literal placeholder and nginx fails to start.
             - name: OBJECT_STORE_CSP_ORIGIN
-              value: {{ .Values.objectStore.publicEndpoint | quote }}
-          {{- end }}
+              value: {{ if .Values.objectStore.enabled }}{{ .Values.objectStore.publicEndpoint | quote }}{{ else }}""{{ end }}
           ports:
             - name: http-container
               containerPort: 8080
