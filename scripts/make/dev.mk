@@ -116,7 +116,7 @@ composer-update:
 			--volume $(TC_BASE_DIR)/backend/test:/usr/src/testcenter/backend/test\
 			--volume $(TC_BASE_DIR)/backend/vendor:/usr/src/testcenter/backend/vendor\
 			--volume $(HOME)/.composer:/tmp/cache\
-		composer:lts update\
+		composer:lts update $(lib) $(flag)\
 				--no-interaction\
 				--ignore-platform-reqs\
 				--no-ansi\
