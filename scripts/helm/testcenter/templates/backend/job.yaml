@@ -101,16 +101,15 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secret
                   key: PASSWORD_SALT
-            {{- if .Values.objectStore.enabled }}
-            # Required by SystemConfig::readFromEnvironment(); without them the
-            # init falls back to a stale config.ini and ignores env (incl. storage).
+            # Required by SystemConfig::readFromEnvironment() regardless of storage
+            # driver; without them the init falls back to a stale config.ini and
+            # ignores env (incl. storage).
             - name: PASSWORD_MIN_LENGTH
               value: {{ .Values.config.backend.passwordMinLength | default 7 | quote }}
             - name: PASSWORD_REGEX_CHECK
               value: {{ .Values.config.backend.passwordRegexCheck | default "/.*/" | quote }}
             - name: ADMIN_INIT_PASSWORD
               value: {{ .Values.config.backend.adminInitPassword | default "user123" | quote }}
-            {{- end }}
             - name: SKIP_READ_FILES
               value: "no"
             - name: SKIP_DB_INTEGRITY
