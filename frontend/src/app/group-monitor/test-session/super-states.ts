@@ -10,7 +10,7 @@ export interface IconData {
 export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   pending: {
     tooltip: 'Test noch nicht gestartet',
-    icon: 'person',
+    icon: 'person_outline',
     description: 'Der Test wurde noch nicht gestartet.'
   },
   locked: {
@@ -39,14 +39,15 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   connection_lost: {
     tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!',
-    icon: 'error',
+    icon: 'warning_amber',
     class: 'danger',
     description: 'Die Verbindung zum Browser der Testperson wurde unterbrochen. Die Testperson hat ' +
       'möglicherweise das Fenster geschlossen oder die Netzwerkverbindung ist abgebrochen.'
   },
   paused: {
     tooltip: 'Test pausiert',
-    icon: 'pause'
+    icon: 'pause',
+    description: 'Der Test wurde durch den Monitor pausiert.'
   },
   focus_lost: {
     tooltip: 'Fenster/Tab wurde verlassen!',
@@ -71,7 +72,7 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   connection_polling: {
     tooltip: 'Test läuft',
-    icon: 'play_circle',
+    icon: 'play_circle_outline',
     class: 'success',
     description: 'Der Test läuft und die Testperson ist über eine Polling-Verbindung verbunden. ' +
       'Dies ist ein Fallback für den Fall, dass der Live-Modus aufgrund des Browsers der Testleitung ' +
