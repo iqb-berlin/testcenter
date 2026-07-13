@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-11</Id>
 		<Label>Bklt-config-11</Label>
-		<Description>header_content value 1</Description>
+		<Description>header_content default</Description>
 	</Metadata>
 
   <BookletConfig>

@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-8</Id>
 		<Label>Bklt-config-8</Label>
-		<Description>force-response-complete value 1</Description>
+		<Description>force-response-complete default</Description>
 	</Metadata>
 
   <BookletConfig>

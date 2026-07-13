@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-5</Id>
 		<Label>Bklt-config-5</Label>
-		<Description>force-presentation-complete value 1</Description>
+		<Description>force-presentation-complete default</Description>
 	</Metadata>
 
   <BookletConfig>

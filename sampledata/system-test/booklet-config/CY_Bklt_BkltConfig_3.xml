@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-3</Id>
 		<Label>Bklt-config-3</Label>
-		<Description>BrowserBehavior value 1</Description>
+		<Description>BrowserBehavior default</Description>
 	</Metadata>
 
 	<BookletConfig>

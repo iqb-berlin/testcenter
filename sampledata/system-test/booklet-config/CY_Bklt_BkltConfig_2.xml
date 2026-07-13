@@ -4,7 +4,7 @@
 	<Metadata>
 		<Id>Cy-Bklt_BkltConfig-2</Id>
 		<Label>Bklt-config-2</Label>
-		<Description>ask-for-fullscreen value 2</Description>
+		<Description>ask-for-fullscreen value 1</Description>
 	</Metadata>
 
 	<BookletConfig>
