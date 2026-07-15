@@ -1,0 +1,5 @@
+- whenever you change the properties of an objects that is returned by a DAO function, make sure to trace if that property is returned by the controller back to the client. if so, update the appropriate api call in @docs/api
+- PHP 8.3 with strict typing; Use docstring in the style of phpDocumentor, whenever working with arrays in function signatures (function argument or output) or when retrieving values from an array
+- Database interactions via PDO with custom DAO pattern
+- Whenever possible, work with static functions - we try to achieve functional coding style
+- Use Enums, Classes and other constructs as value objects to mitigate primitive obsession
