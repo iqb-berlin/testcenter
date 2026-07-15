@@ -30,7 +30,7 @@ import { BackendService } from '../../services/backend.service';
             </mat-list-item>
           }
         </mat-selection-list>
-        <h3>alle Kommentare zu diesem Testheft</h3>
+        <h3>Kommentare zum gesamten Testheft</h3>
         <mat-selection-list>
           @for (review of bookletReviews$ | async; track review.id) {
             <mat-list-item (click)="editReview.emit(review)">

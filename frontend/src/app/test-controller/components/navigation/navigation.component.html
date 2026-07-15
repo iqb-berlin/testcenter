@@ -9,7 +9,7 @@
 }
 
 <div class="label-container" [class.readonly]="navContext.readonly" [class.list]="navContext.labelMode === 'LIST'">
-  <div class="label">
+  <div class="label" [attr.data-cy]="dataCy + '-label'">
     {{ navContext.label }}
 
     @if (navContext.labelMode === 'INDEX') {
@@ -19,7 +19,7 @@
 
   @if (navContext.labelMode === 'LIST') {
     @for (item of maxListTabs; track item) {
-      <div class="list-item" [class.selected]="navContext.currentIndex === $index">{{item}}</div>
+      <div class="list-item" [attr.data-cy]="dataCy + '-list-' + $index" [class.selected]="navContext.currentIndex === $index">{{item}}</div>
     }
   }
 </div>

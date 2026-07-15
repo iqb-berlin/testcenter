@@ -232,13 +232,12 @@ try {
   if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
     CLI::warning("No Sys-Admin found.");
 
-    $initial_admin_password = SystemConfig::$admin_init_password;
-    $adminId = $initDAO->createAdmin('super', $initial_admin_password);
-    CLI::success("Sys-Admin created: super:`$initial_admin_password`.");
+    $adminId = $initDAO->createAdmin('super', 'user123');
+    CLI::success("Sys-Admin created: `user123`.");
 
     $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
     foreach ($workspaceIds as $workspaceId) {
-      CLI::p("Workspace `ws_$workspaceId` added to 'super'");
+      CLI::p("Workspace `ws_$workspaceId` added to `user123`.");
     }
 
   } else {

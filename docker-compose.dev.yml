@@ -34,7 +34,6 @@ services:
     volumes:
       - ./common:/usr/src/testcenter/common
       - ./broadcaster/src:/usr/src/testcenter/broadcaster/src
-      - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 

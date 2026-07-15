@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild
+  Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
@@ -15,7 +15,9 @@ import { FabFormComponent } from './fab-form/fab-form.component';
   imports: [
     TextFieldFormComponent,
     FabFormComponent,
-    NgTemplateOutlet
+    NgTemplateOutlet,
+    AsyncPipe,
+    CustomtextPipe
   ]
 })
 export class CodeInputComponent implements OnChanges {
@@ -24,12 +26,6 @@ export class CodeInputComponent implements OnChanges {
   @Input() length: number | undefined; // only used for keypad input
   @Input() disabled: boolean = false;
   @Input() buttonLabel: string = 'Anmelden';
-  @Input() speechBubbleText: { heading?: string, body?: string } = {
-    heading: 'Brauchst du Hilfe?',
-    body: 'Deine Lehrerin oder dein Lehrer hilft dir weiter.\n' +
-          'Melde dich bei ihm/ihr oder klicke auf mich drauf!'
-  };
-
   @Output() submitCode = new EventEmitter<string>();
   @ViewChild(FabFormComponent) fabForm!: FabFormComponent;
   protected companionImageSrc?: string;

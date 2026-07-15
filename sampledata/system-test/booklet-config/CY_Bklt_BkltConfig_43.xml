@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
+	<Metadata>
+		<Id>Cy-Bklt_BkltConfig-43</Id>
+		<Label>Bklt-config-43</Label>
+		<Description>toolbar_show_unit_list value 1</Description>
+	</Metadata>
+
+  <BookletConfig>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
+  </BookletConfig>
+
+  <Units>
+    <Testlet id="Tslt1" label="Aufgabenblock">
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
+    </Testlet>
+  </Units>
+</Booklet>

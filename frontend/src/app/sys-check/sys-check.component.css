@@ -1,6 +1,14 @@
+:host {
+  overflow: auto;
+}
+
 .header {
   justify-content: center;
   align-items: center;
   gap: 15px;
   padding-top: 10px;
+}
+
+.sys-check-body {
+  padding: 5px;
 }

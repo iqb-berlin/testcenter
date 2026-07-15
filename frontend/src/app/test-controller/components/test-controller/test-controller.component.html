@@ -1,8 +1,10 @@
 <tc-debug-pane *ngIf="debugPane" />
 
 <div class="nav-header flex-row">
-  @if (tcs.booklet?.config?.navbar_backward_button !== 'HIDDEN' && testLoaded) {
-    <button matButton="tonal" class="nav-button" (click)="onNavBack()">
+  @if (showGlobalBack && testLoaded) {
+    <button matButton="tonal" class="nav-button" data-cy="separate-unit-backward-button"
+            [disabled]="!unitNavContext.isBackwardAllowed && !pageNavContext.isBackwardAllowed"
+            (click)="onNavBack()">
       <mat-icon svgIcon="chevron_left"></mat-icon>
       Zurück
     </button>
@@ -23,17 +25,14 @@
     </tc-navigation-control>
   }
 
-  @if (tcs.booklet?.config?.navbar_forward_button !== 'HIDDEN' && testLoaded) {
-    <button matButton="tonal" class="nav-button" (click)="onNavForward()">
+  @if (showGlobalForward && testLoaded) {
+    <button matButton="tonal" class="nav-button" data-cy="separate-unit-forward-button"
+            [disabled]="!unitNavContext.isForwardAllowed && !pageNavContext.isForwardAllowed"
+            (click)="onNavForward()">
       Weiter
       <mat-icon svgIcon="chevron_right" iconPositionEnd></mat-icon>
     </button>
   }
-
-  <button mat-button *ngIf="tcs.testMode.canReview" matTooltip="Kommentar verfassen" data-cy="send-comments"
-          (click)="sideNavContent = 'review-form'; sidenav.toggle()">
-    <mat-icon svgIcon="rate_review"></mat-icon>
-  </button>
 </div>
 
 <div class="toolbar-header flex-row" data-cy="unit-screenheader">
@@ -41,16 +40,22 @@
     <p data-cy="unit-title">{{currentUnit?.label}}</p>
   }
 
-  <div class="toolbar-right">
+  <div class="toolbar-right" data-cy="toolbar-right">
     @if ((tcs.testMode.showTimeLeft || (tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue)) {
-      <p data-cy="time-value">
-        Verbleibende Zeit: {{timerValue?.timeLeftString}}
-      </p>
+      <p data-cy="time-value">Verbleibende Zeit: {{timerValue?.timeLeftString}}</p>
+    }
+
+    @if (tcs.testMode.canReview) {
+      <button mat-button matTooltip="Kommentar verfassen" data-cy="send-comments"
+              (click)="sideNavContent = 'review-form'; sidenav.toggle()">
+        <mat-icon svgIcon="rate_review"></mat-icon>
+        Kommentare
+      </button>
     }
 
     @if (tcs.booklet?.config?.toolbar_show_unit_list === 'TRUE') {
       <button matButton data-cy="unit-menu"
-              (click)="sideNavContent = 'unit-menu'; sidenav.toggle(true)">
+              (click)="sideNavContent = 'unit-menu'; sidenav.toggle()">
         <mat-icon svgIcon="clock_loader_60"></mat-icon>
         Bearbeitungsstand
       </button>

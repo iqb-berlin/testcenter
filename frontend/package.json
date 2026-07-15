@@ -11,9 +11,7 @@
     "start:local": "ng serve --configuration=local",
     "build": "ng build",
     "test": "ng test  --watch=false",
-    "lint": "ng lint",
-    "compodoc": "npx compodoc -p tsconfig.doc.json -s -d ./docs/compodoc",
-    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
+    "lint": "ng lint"
   },
   "private": true,
   "browserslist": [
@@ -55,7 +53,6 @@
     "@angular/cli": "^20.3.7",
     "@angular/compiler-cli": "~20.3.7",
     "@angular/language-service": "~20.3.7",
-    "@compodoc/compodoc": "^1.1.19",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/browserslist-useragent": "^3.0.4",
     "@types/jasminewd2": "~2.0.10",

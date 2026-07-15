@@ -27,9 +27,17 @@
   flex-direction: column;
 }
 
+.lock-overlay.alt-styling {
+  background-color: var(--mat-sys-secondary);
+}
+
 .lock-overlay tc-code-input {
   flex: 1;
   max-height: 100%;
+}
+
+:host ::ng-deep .lock-overlay tc-code-input tc-code-text-field-form {
+  margin: 0 auto;
 }
 
 /*The following rules are to try and fit everything vertically on the screen (assuming 744px).*/

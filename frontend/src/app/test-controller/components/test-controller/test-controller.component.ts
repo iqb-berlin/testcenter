@@ -12,7 +12,6 @@ import { HeaderService } from '@shared/services/header.service';
 import {
   CustomtextService, MainDataService, BackendService as SharedBackendService
 } from '../../../shared/shared.module';
-import { UiVisibilityService } from '../../../shared/services/ui-visibility.service';
 import {
   Command, MaxTimerEvent, NavControlContext, NavigationState, Unit,
   UnitNavigationTarget, WindowFocusState
@@ -80,7 +79,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               public cmd: CommandService,
               private tls: TestLoaderService,
               public dialog: MatDialog,
-              private uiVisibilityService: UiVisibilityService,
               private headerService: HeaderService,
               public pageService: PageService,
               private apiService: VeronaAPIService,
@@ -90,7 +88,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mainDataService.clearErrorBuffer();
-      this.updateLogoVisibility();
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
@@ -124,7 +121,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.testId = params.t;
           try {
             await this.tls.loadTest();
+            // set all visual flags from booklet configs
             this.testLoaded = true;
+            this.showGlobalBack = this.deriveGlobalBack();
+            this.showGlobalForward = this.deriveGlobalForward();
           } catch (err) {
             if (err instanceof MissingBookletError) { // this happens when loading was aborted.
               // eslint-disable-next-line no-console
@@ -136,7 +136,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.startAppFocusLogging();
           this.startConnectionStatusLogging();
-          this.updateLogoVisibility();
           if (this.tcs.booklet?.config.ask_for_fullscreen !== 'OFF') {
             await this.requestFullScreen();
           }
@@ -180,8 +179,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
-        this.unitNavContext.isBackwardAllowed = !!nav.targets.previous;
-        this.unitNavContext.isForwardAllowed = !!nav.targets.next;
+        this.unitNavContext.isBackwardAllowed = nav.directions.backward === 'yes';
+        this.unitNavContext.isForwardAllowed = nav.directions.forward === 'yes';
       });
       this.pageService.pagesUpdated.subscribe(() => {
         this.pageNavContext = {
@@ -373,7 +372,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.mainDataService.isFullScreen) {
       document.exitFullscreen();
     }
-    this.uiVisibilityService.setShowConfirmationUI(true);
     this.headerService.isHeaderHidden = false;
   }
 
@@ -414,10 +412,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateLogoVisibility(): void {
-    this.uiVisibilityService.setShowConfirmationUI(this.tcs.shouldShowConfirmationUI());
-  }
-
   async requestFullScreen(): Promise<void> {
     if (this.mainDataService.isFullScreen) {
       return;
@@ -434,10 +428,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   gotoNextPage(): void {
+    if (this.pageService.isLastPage()) {
+      if (this.tcs.shouldShowConfirmationUI()) this.messageService.showSnackbar('Bereits auf der letzten Seite');
+      return;
+    }
     this.gotoPage(this.pageService.currentPageIndex += 1);
   }
 
   gotoPreviousPage(): void {
+    if (this.pageService.isFirstPage()) {
+      if (this.tcs.shouldShowConfirmationUI()) this.messageService.showSnackbar('Bereits auf der ersten Seite');
+      return;
+    }
     this.gotoPage(this.pageService.currentPageIndex -= 1);
   }
 
@@ -448,6 +450,38 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   protected readonly unitNavigationTarget = UnitNavigationTarget;
+
+  protected showGlobalBack = false;
+  protected deriveGlobalBack(): boolean {
+    const mode = this.tcs.booklet?.config.navbar_backward_button;
+
+    switch (mode) {
+      case 'DYNAMIC':
+      case 'UNITS':
+      case 'PAGES':
+        return true;
+      case 'HIDDEN':
+      case undefined:
+      default:
+        return false;
+    }
+  }
+
+  protected showGlobalForward: boolean = false;
+  protected deriveGlobalForward(): boolean {
+    const mode = this.tcs.booklet?.config.navbar_forward_button;
+
+    switch (mode) {
+      case 'DYNAMIC':
+      case 'UNITS':
+      case 'PAGES':
+        return true;
+      case 'HIDDEN':
+      case undefined:
+      default:
+        return false;
+    }
+  }
 
   protected onNavBack() {
     const mode = this.tcs.booklet?.config?.navbar_backward_button;

@@ -130,23 +130,11 @@ test-backend-unit:
     - when: never
   before_script:
     - !reference [ .gitlab_login, before_script ]
+    - apk add --no-cache make
   script:
-    - docker compose
-      --env-file .env.dev-template
-      --file docker-compose.yml
-      --file docker-compose.dev.yml
-      run --rm --entrypoint "" backend
-      php -dxdebug.mode='coverage' /var/www/testcenter/backend/vendor/phpunit/phpunit/phpunit
-      --bootstrap /var/www/testcenter/backend/test/unit/bootstrap.php
-      --configuration /var/www/testcenter/backend/phpunit.xml
-      --coverage-html /docs/dist/test-coverage-backend-unit /var/www/testcenter/backend/test/unit/
-      --testdox;
+    - make test-backend-unit
   after_script:
     - !reference [ .gitlab_login, after_script ]
-  artifacts:
-    paths:
-      - docs/dist/test-coverage-backend-unit/*
-    expire_in: 30 minutes
 
 test-backend-initialization:
   stage: test

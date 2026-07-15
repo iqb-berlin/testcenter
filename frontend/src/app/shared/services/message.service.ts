@@ -16,7 +16,8 @@ export class MessageService {
 
   showSnackbar(text: string, actionText: string = 'Schließen'): MatSnackBarRef<TextOnlySnackBar> {
     return this._snackBar.open(text, actionText, {
-      duration: 5000
+      duration: 5000,
+      panelClass: ['global-snackbar']
     });
   }
 

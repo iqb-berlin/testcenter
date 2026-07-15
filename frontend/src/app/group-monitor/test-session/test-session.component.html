@@ -90,16 +90,16 @@
   <ng-template #noBookletReason>
     <ng-container *ngIf="!isBooklet(testSession.booklet)">
       <span *ngIf="testSession.booklet.error == 'missing-id'">
-        {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
+        Fehler beim Lesen der Testheft-Datei: Kein Testheft zugeordnet.
       </span>
       <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
-        {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
+        Fehler beim Lesen der Testheft-Datei: Datei nicht gefunden.
       </span>
       <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
-        {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
+        Fehler beim Lesen der Testheft-Datei: Invalides XML-Format.
       </span>
       <span *ngIf="testSession.booklet.error == 'general'" class="warning">
-        {{'Fehler beim Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
+        Fehler beim Lesen der Testheft-Datei.
       </span>
     </ng-container>
   </ng-template>

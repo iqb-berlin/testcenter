@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
+	<Metadata>
+		<Id>Cy-Bklt_BkltConfig-6</Id>
+		<Label>Bklt-config-6</Label>
+		<Description>force-presentation-complete value 1</Description>
+	</Metadata>
+
+  <BookletConfig>
+    <Config key="force_presentation_complete">ON</Config>
+  </BookletConfig>
+
+  <Units>
+    <Testlet id="Tslt1" label="Aufgabenblock">
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="1"/>
+      <Unit id="CY-Unit.Sample-101" label="Aufgabe2" labelshort="2" alias="cpy"/>
+    </Testlet>
+  </Units>
+</Booklet>

@@ -21,4 +21,8 @@
     supporting-text-size: 16px,
     supporting-text-line-height: 24px
   ));
+
+  @include mat.sidenav-overrides((
+    content-background-color: white
+  ));
 }

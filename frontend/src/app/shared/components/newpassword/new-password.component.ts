@@ -6,8 +6,6 @@ import {
 import { MatError, MatFormField, MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { samePasswordValidator } from '../../validators/samePassword.validator';
-import { environment } from '../../../../environments/environment';
-
 
 @Component({
   templateUrl: './new-password.component.html',
@@ -29,13 +27,10 @@ import { environment } from '../../../../environments/environment';
 
 export class NewPasswordComponent {
   newPasswordForm = new FormGroup({
-    pw: new FormControl('', [Validators.required, Validators.minLength(environment.passwordMinLength)]),
-    pw_confirm: new FormControl('', [Validators.required, Validators.minLength(environment.passwordMinLength)])
-  },
-  { validators: samePasswordValidator }
+    pw: new FormControl('', [Validators.required, Validators.minLength(7)]),
+    pw_confirm: new FormControl('', [Validators.required, Validators.minLength(7)])
+  }, { validators: samePasswordValidator }
   );
-
-  passwordMinLength = environment.passwordMinLength;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { username: string }) { }
 }

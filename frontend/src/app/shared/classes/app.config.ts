@@ -6,7 +6,7 @@ import {
   SysConfig
 } from '../interfaces/app-config.interfaces';
 // eslint-disable-next-line import/no-relative-packages
-import customTextsDefaultJSON from '../../../../../definitions/custom-texts.json';
+import customTextsDefaultJSON from '../../../../../definitions/testtaker/custom-texts.json';
 
 const customTextsDefault = customTextsDefaultJSON as {
   [k: string]: {
