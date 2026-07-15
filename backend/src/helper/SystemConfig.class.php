@@ -126,7 +126,7 @@ class SystemConfig {
 
   private static function stringEnv(string $name): string {
     $value = getEnv($name);
-    if (!$value) {
+    if (!isset($value)) {
         throw new Exception("Environment-variable missing: `$name`.");
     }
     return $value;
