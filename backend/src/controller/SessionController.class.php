@@ -68,13 +68,11 @@ class SessionController extends Controller {
 
     $body = RequestHelper::getFields($request, [
       "name" => 'REQUIRED',
-      "password" => ''
+      "password" => 'REQUIRED'
     ]);
 
-    $password = $body['password'];
-    $bruteForceProtectionSessions = implode(", ", SystemConfig::$bruteForceProtection_sessions);
-    if ($password && in_array('admin', SystemConfig::$bruteForceProtection_sessions)) {
-      throw new HttpError("Brute Force protection active. Challenge for this password(`$password`) must be solved to create a session(`$bruteForceProtectionSessions`)", 400);
+    if (in_array('admin', SystemConfig::$bruteForceProtection_sessions)) {
+      throw new HttpError('Brute Force protection active. Challenge for this password must be solved to create a session', 400);
     }
 
     return $response->withJson(self::createAdminSession($request, $body['name'], $body['password'] ));
@@ -260,10 +258,17 @@ class SessionController extends Controller {
   }
 
   private static function createAdminSession(Request $request, string $name, string $password): AccessSet {
+    usleep(500000); // 0.5s delay to slow down brute force attack
+
+    $attempts = CacheService::getFailedLogins($name);
+    if ($attempts >= 5) {
+      throw new HttpError('Too many login attempts', 429);
+    }
 
     $token = self::adminDAO()->createAdminToken($name, $password);
     if (is_a($token, FailedLogin::class)) {
-      throw new HttpError("No login with this password.", 400);
+      CacheService::addFailedLogin($name);
+      throw new HttpError('No login with this password.', 400);
     }
 
     $admin = self::adminDAO()->getAdmin($token);
@@ -278,9 +283,16 @@ class SessionController extends Controller {
   }
 
   private static function createLoginSession(Request $request, string $name, string $password): AccessSet {
+    $attempts = CacheService::getFailedLogins($name);
+    if ($attempts >= 5) {
+      throw new HttpError('Too many login attempts', 429);
+    }
 
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($name, $password);
     if (!is_a($loginSession, LoginSession::class)) {
+      if ($loginSession === FailedLogin::wrongPasswordProtectedLogin) {
+        CacheService::addFailedLogin($name);
+      }
       $userName = htmlspecialchars($name);
       throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
@@ -290,10 +302,12 @@ class SessionController extends Controller {
     }
 
     $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
+    CacheService::removeAuthentication($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
     $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
     $sysChecks = self::sessionDAO()->getSysChecksOfPerson($personSession);
     self::registerDependantSessions($loginSession);
+    CacheService::storeAuthentication($personSession);
     return AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors, ...$sysChecks);
   }
 
@@ -301,7 +315,9 @@ class SessionController extends Controller {
 
     $loginSession = self::sessionDAO()->getLoginSessionByToken($token);
     $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $code);
+    CacheService::removeAuthentication($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    CacheService::storeAuthentication($personSession);
     return AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
   }
 }

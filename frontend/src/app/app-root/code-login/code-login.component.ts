@@ -68,7 +68,6 @@ export class CodeLoginComponent {
     if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
       this.bs.createChallenge({ code }).subscribe({
         next: challenge => {
-          console.log('code challenge')
           solveChallengeWorkers(
             `${window.document.baseURI}/altcha-lib/dist/worker.js`,
             8,

@@ -13,7 +13,7 @@ class SystemConfig {
   public static int $cacheServer_port;
   public static string $cacheServer_password = "";
   public static string $cacheServer_includeFiles = "";
-  public static array $bruteForceProtection_sessions;
+  public static array $bruteForceProtection_sessions = [];
   public static string $password_salt = "t";
   public static string $system_version;
   public static int $system_veronaMax;
@@ -44,16 +44,10 @@ class SystemConfig {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
         if (property_exists(self::class, $propertyKey)) {
-
-          $ref = new \ReflectionProperty(self::class, $propertyKey);
-          $propertyType = $ref->getType();
-          // need to check type otherwise php will error with: cannot assign string to array.
-          if ($propertyType == "array") {
-            self::$$propertyKey = explode(" ", trim($value));
+          if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
+            $value = array_values(array_filter(explode(' ', trim($value))));
           }
-          else {
-            self::$$propertyKey = $value;
-          }
+          self::$$propertyKey = $value;
         }
       }
     }
@@ -100,13 +94,10 @@ class SystemConfig {
     $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
     $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
-
     $sessions = self::stringEnv('BRUTE_FORCE_PROTECTION');
     $config['bruteForceProtection']['sessions'] = $sessions;
-    CLI::p("Got `$sessions` for brute force protection");
     $serverKey = self::stringEnv('SERVER_KEY');
     $config['server']['key'] = $serverKey;
-
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {
@@ -155,8 +146,8 @@ class SystemConfig {
           continue;
         }
 
-        if ($sectionName == 'bruteForceProtection' && $key == "sessions") {
-          $value = implode(" ", $value);
+        if ($sectionName == 'bruteForceProtection' && $key == 'sessions') {
+          $value = implode(' ', $value);
         }
         $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
         $output .= "$key=$value\n";

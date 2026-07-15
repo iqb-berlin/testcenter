@@ -332,13 +332,17 @@ final class SessionControllerTest extends TestCase {
 
   public function test_putSessionAdmin(): void {
     $this->mockAdminDAO([
-      'createAdminToken' => 'admin_token',
+      'createAdminToken' => function(string $name, string $password): string {
+        $this->assertSame('super', $name);
+        $this->assertSame('', $password);
+        return 'admin_token';
+      },
       'getAdmin' => new Admin(1, 'Admin1', 'admin1@mail.com', true, 'admin_token'),
       'getWorkspaces' => [new WorkspaceData(1, 'ws1', 'Workspace 1')]
     ]);
 
     $response = SessionController::putSessionAdmin(
-      RequestCreator::create('PUT', '/session/admin', '{"name":"super", "password":"user123"}'),
+      RequestCreator::create('PUT', '/session/admin', '{"name":"super"}'),
       ResponseCreator::createEmpty()
     );
 
