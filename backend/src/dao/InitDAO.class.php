@@ -417,6 +417,15 @@ class InitDAO extends SessionDAO {
     return $report;
   }
 
+  public function writeFullSchema(string $path): void {
+    $schema = '-- IQB-Testcenter DB --';
+    foreach ($this::tables as $table) {
+      $schema .= "\n\n" . $this->_("SHOW CREATE TABLE $table")['Create Table'] . ';';
+      $schema .= "\nTRUNCATE $table; -- to reset auto-increment";
+    }
+    file_put_contents($path, $schema);
+  }
+
   public function createSampleMetaData(): void {
     $this->setMeta('appConfig', 'aKey', 'newValue');
   }

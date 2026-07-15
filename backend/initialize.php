@@ -125,6 +125,8 @@ try {
   $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
 
+  $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
+
   CLI::h2("Workspaces");
 
   if (!file_exists(DATA_DIR)) {

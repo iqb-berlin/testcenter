@@ -154,12 +154,7 @@ class TestEnvironment {
       throw new Exception(implode("; ", $errors));
     }
 
-    $scheme = '-- IQB-Testcenter DB --';
-    foreach ($initDAO::tables as $table) {
-      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] . ";";
-      $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
-    }
-    file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
+    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
   }
 
   private static function rollback(): void {
