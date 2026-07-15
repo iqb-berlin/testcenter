@@ -120,7 +120,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.backendService.login(loginData.name, loginData.pw ?? '').subscribe({
       next: authData => {
         this.mainDataService.setAuthData(authData);
-        if (authData.viewSettings?.theme) this.themeService.setTheme(authData.viewSettings.theme);
+        if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
         this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authData);
       },
