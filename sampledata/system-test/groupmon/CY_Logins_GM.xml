@@ -45,7 +45,7 @@
       <Booklet>Cy-Bklt_GM-1</Booklet>
     </Login>
 
-    <Login mode="monitor-group" name="GM-1" pw="123">
+    <Login mode="monitor-group" name="GM-1" pw="">
       <Profile id="all" />
       <Profile id="small" />
     </Login>

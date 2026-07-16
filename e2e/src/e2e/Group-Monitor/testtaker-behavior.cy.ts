@@ -78,7 +78,7 @@ describe('Check testtaker behavior', { testIsolation: false }, () => {
       testIds: [testId]
     })
     cy.get('[data-cy="booklet-CY-BKLT_GM-1"]')
-      .contains('gesperrt');
+      .contains('Fertig');
   });
 
   it('unlock', () => {
