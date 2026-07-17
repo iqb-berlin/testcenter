@@ -138,6 +138,18 @@ class Workspace {
   }
 
   protected function deleteFileFromFs(string $fullPath): string {
+    if (Storage::isObjectStore()) {
+      $logical = Storage::toLogical($fullPath);
+      if ($logical === null or !Storage::driver()->exists($logical)) {
+        return 'did_not_exist';
+      }
+      if (!$this->isPathLegal($fullPath)) {
+        return 'not_allowed';
+      }
+      Storage::driver()->delete($logical);
+      return 'deleted';
+    }
+
     if (!file_exists($fullPath)) {
       return 'did_not_exist';
     }
@@ -267,9 +279,10 @@ class Workspace {
   }
 
   protected function categorizeFile(string $localFilePath, File $file): bool {
+    $isObjectStore = Storage::isObjectStore();
     $targetFolder = $this->workspacePath . '/' . $file->getType();
 
-    if (!file_exists($targetFolder)) {
+    if (!$isObjectStore and !file_exists($targetFolder)) {
       if (!mkdir($targetFolder)) {
         $file->report('error', "Could not create folder: `$targetFolder`.");
         return false;
@@ -277,8 +290,13 @@ class Workspace {
     }
 
     $targetFilePath = $targetFolder . '/' . basename($localFilePath);
+    $logicalTarget = "ws_$this->workspaceId/{$file->getType()}/" . basename($localFilePath);
 
-    if (file_exists($targetFilePath)) {
+    $targetExists = $isObjectStore
+      ? Storage::driver()->exists($logicalTarget)
+      : file_exists($targetFilePath);
+
+    if ($targetExists) {
       $oldFile = File::get($targetFilePath, $file->getType());
 
       if ($oldFile->getId() !== $file->getId()) {
@@ -310,7 +328,9 @@ class Workspace {
         return false;
       }
 
-      if (!unlink($targetFilePath)) {
+      if ($isObjectStore) {
+        Storage::driver()->delete($logicalTarget);
+      } else if (!unlink($targetFilePath)) {
         $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
         return false;
       }
@@ -318,7 +338,16 @@ class Workspace {
       $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
     }
 
-    if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
+    $sourcePath = $this->workspacePath . '/' . $localFilePath;
+
+    if ($isObjectStore) {
+      try {
+        Storage::driver()->put($logicalTarget, $sourcePath);
+      } catch (Exception $e) {
+        $file->report('error', "Could not store file `$logicalTarget`: {$e->getMessage()}");
+        return false;
+      }
+    } else if (!rename($sourcePath, $targetFilePath)) {
       $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
       return false;
     }
@@ -401,6 +430,11 @@ class Workspace {
   }
 
   public function delete(): void {
+    if (Storage::isObjectStore()) {
+      foreach (Storage::driver()->list("ws_$this->workspaceId/") as $key) {
+        Storage::driver()->delete($key);
+      }
+    }
     Folder::deleteContentsRecursive($this->workspacePath);
     rmdir($this->workspacePath);
   }
@@ -567,7 +601,22 @@ class Workspace {
   }
 
   public function getWorkspaceHash(): string {
+    if (Storage::isObjectStore()) {
+      return hash('XXH3', serialize($this->getObjectStoreFileHashes()));
+    }
     return hash('XXH3', serialize(self::getHashOfAllFiles($this->getWorkspacePath())));
+  }
+
+  private function getObjectStoreFileHashes(): array {
+    $result = [];
+    foreach (Storage::driver()->list("ws_$this->workspaceId/") as $key) {
+      $result[] = [
+        'filename' => basename($key),
+        'filemtime' => Storage::driver()->mtime($key),
+        'filesize' => Storage::driver()->size($key)
+      ];
+    }
+    return $result;
   }
 
   public function setWorkspaceHash(): void {
