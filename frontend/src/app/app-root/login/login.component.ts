@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
-import { solveChallengeWorkers } from 'altcha-lib';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { FooterService } from '@shared/services/footer.service';
@@ -58,6 +57,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   username: string | null = null;
   readonly dialog = inject(MatDialog);
   protected illustrationImageSrc?: string;
+  altchaLib?: Promise<typeof import('altcha-lib')>;
+  altchaLibSubscription?: Subscription;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -86,6 +87,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.footerService.showFooter.set(true);
     this.assetService.assetSlots$.subscribe(() => {
       this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
+    });
+    this.altchaLibSubscription = this.mainDataService.appConfig$.subscribe(appConfig => {
+      if (appConfig.bruteForceProtection.includes('login')) {
+        this.altchaLib = import('altcha-lib');
+      }
     });
   }
 
@@ -130,14 +136,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.user = 'sync';
     this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
       next: challenge => {
-        solveChallengeWorkers(
+        this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
           `${window.document.baseURI}/altcha-lib/dist/worker.js`,
           8,
           challenge.challenge,
           challenge.salt,
           challenge.algorithm,
           challenge.maxNumber
-        ).then(solvedChallenge => {
+        )).then(solvedChallenge => {
           if (!solvedChallenge) {
             this.problemText = 'Problem bei der Anmeldung.';
             return;
@@ -258,5 +264,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
+    this.altchaLibSubscription?.unsubscribe();
   }
 }

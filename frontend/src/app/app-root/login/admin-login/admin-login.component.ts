@@ -8,8 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { Observer } from 'rxjs';
-import { solveChallengeWorkers } from 'altcha-lib';
+import { Observer, Subscription } from 'rxjs';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
@@ -43,6 +42,8 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   showPassword = false;
   admin = 'person';
   unsupportedBrowser: [string, string] | [] = [];
+  altchaLib?: Promise<typeof import('altcha-lib')>;
+  altchaLibSubscription?: Subscription;
 
   loginForm = new FormGroup({
     name: new FormControl(AdminLoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -56,10 +57,16 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     this.headerService.title = 'Anmelden';
     this.checkBrowser();
     this.footerService.showFooter.set(true);
+    this.altchaLibSubscription = this.mainDataService.appConfig$.subscribe(appConfig => {
+      if (appConfig.bruteForceProtection.includes('admin')) {
+        this.altchaLib = import('altcha-lib');
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.footerService.showFooter.set(false);
+    this.altchaLibSubscription?.unsubscribe();
   }
 
   adminLogin(): void {
@@ -81,14 +88,14 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     this.admin = 'sync';
     this.backendService.createChallenge({ loginType: 'admin', name, password }).subscribe({
       next: challenge => {
-        solveChallengeWorkers(
+        this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
           `${window.document.baseURI}/altcha-lib/dist/worker.js`,
           8,
           challenge.challenge,
           challenge.salt,
           challenge.algorithm,
           challenge.maxNumber
-        ).then(solvedChallenge => {
+        )).then(solvedChallenge => {
           if (!solvedChallenge) {
             this.problemText = 'Problem bei der Anmeldung.';
             return;

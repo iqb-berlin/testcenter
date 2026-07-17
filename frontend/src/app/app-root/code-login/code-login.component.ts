@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { AsyncPipe } from '@angular/common';
 import { CustomtextPipe } from '@shared/pipes/customtext/customtext.pipe';
 import { AssetService } from '@shared/services/asset.service';
-import { solveChallengeWorkers } from 'altcha-lib';
+import { Subscription } from 'rxjs';
 
 @Component({
   imports: [
@@ -41,13 +41,15 @@ import { solveChallengeWorkers } from 'altcha-lib';
     '[class.alt-styling]': 'inputType === "keypad-symbols-alt"'
   }
 })
-export class CodeLoginComponent {
+export class CodeLoginComponent implements OnDestroy {
   inputType: CodeInputType = 'text-field';
   length: number | undefined; // only used for keypad input
   problemText = '';
   problemCode = 0;
   loading = false;
   protected illustrationImageSrc?: string;
+  altchaLib?: Promise<typeof import('altcha-lib')>;
+  altchaLibSubscription?: Subscription;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
               public assetService: AssetService) {
@@ -56,6 +58,11 @@ export class CodeLoginComponent {
     this.length = authData?.viewSettings.codeInput?.length;
     this.assetService.assetSlots$.subscribe(() => {
       this.illustrationImageSrc = this.assetService.getAssetSrc('codeInputIllustration');
+    });
+    this.altchaLibSubscription = this.mds.appConfig$.subscribe(appConfig => {
+      if (appConfig.bruteForceProtection.includes('person')) {
+        this.altchaLib = import('altcha-lib');
+      }
     });
   }
 
@@ -68,14 +75,14 @@ export class CodeLoginComponent {
     if (this.mds.appConfig?.bruteForceProtection.includes('person')) {
       this.bs.createChallenge({ code }).subscribe({
         next: challenge => {
-          solveChallengeWorkers(
+          this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
             `${window.document.baseURI}/altcha-lib/dist/worker.js`,
             8,
             challenge.challenge,
             challenge.salt,
             challenge.algorithm,
             challenge.maxNumber
-          ).then(solvedChallenge => {
+          )).then(solvedChallenge => {
             if (!solvedChallenge) {
               this.problemText = 'Problem bei der Anmeldung.';
               this.loading = false;
@@ -104,6 +111,10 @@ export class CodeLoginComponent {
     }
 
     this.bs.codeLogin(code).subscribe(this.codeSubscription);
+  }
+
+  ngOnDestroy(): void {
+    this.altchaLibSubscription?.unsubscribe();
   }
 
   private codeSubscription = {
