@@ -23,7 +23,7 @@ class SessionController extends Controller {
     /**
    * @codeCoverageIgnore
    */
-  public static function putSession(Request $request, Response $response): Response {
+  public static function createSessionFromChallenge(Request $request, Response $response): Response {
 
     $body = RequestHelper::getFields($request, [
       'algorithm' => 'REQUIRED',

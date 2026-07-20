@@ -44,15 +44,15 @@ $app->group('/monitor', function (RouteCollectorProxy $group) {
 $app->get('/session', [SessionController::class, 'getSession'])
   ->add(new RequireToken('login', 'person', 'admin'));
 
-$app->put('/session', [SessionController::class, 'putSession']);
+$app->put('/session', [SessionController::class, 'createSessionFromChallenge']);
 
-$app->post('/session', [SessionController::class, 'createSessionChallenge']);
+$app->post('/session/challenge', [SessionController::class, 'createSessionChallenge']);
 
 $app->put('/session/admin', [SessionController::class, 'putSessionAdmin']);
 
 $app->put('/session/login', [SessionController::class, 'putSessionLogin']);
 
-$app->post('/session/person', [SessionController::class, 'createPersonSessionChallenge'])
+$app->post('/session/person/challenge', [SessionController::class, 'createPersonSessionChallenge'])
   ->add(new RequireToken('login'));
 
 $app->put('/session/person', [SessionController::class, 'putSessionPerson'])

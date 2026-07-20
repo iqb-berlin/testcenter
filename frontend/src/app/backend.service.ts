@@ -15,7 +15,8 @@ export class BackendService {
     challenge: { loginType: 'admin' | 'login', name: string, password: string } | { code: string }
   ): Observable<Challenge>
   {
-    return this.http.post<Challenge>(this.serverUrl + 'session' + ('loginType' in challenge ? '':'/person'), challenge);
+    const path = 'loginType' in challenge ? 'session/challenge' : 'session/person/challenge';
+    return this.http.post<Challenge>(this.serverUrl + path, challenge);
   }
 
   createSession(
