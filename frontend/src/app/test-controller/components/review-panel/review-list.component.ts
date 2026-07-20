@@ -59,6 +59,9 @@ import { BackendService } from '../../services/backend.service';
     .scrollable-area {
       overflow: auto;
     }
+    mat-list-item {
+      margin-bottom: 1rem;
+    }
     .review-entry {
       display: -webkit-box;
       white-space: normal;
