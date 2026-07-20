@@ -33,6 +33,7 @@
   },
   "require-dev": {
     "amphp/parallel": "2.3.2",
+    "carthage-software/mago": "^1.42.0",
     "mikey179/vfsstream": "1.6.12",
     "phpunit/phpunit":  "10.4.2",
     "mockery/mockery": "1.6.12",
