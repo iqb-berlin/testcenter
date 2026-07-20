@@ -18,7 +18,7 @@ import { BackendService } from '../../services/backend.service';
     AsyncPipe
   ],
   template: `
-    <!-- wrapper is needed so host component can be "hidden". The host styling 
+    <!-- wrapper is needed so host component can be "hidden". The host styling
          "display: flex" may override hidden.-->
     <div class="wrapper">
       <div class="scrollable-area">
@@ -26,7 +26,7 @@ import { BackendService } from '../../services/backend.service';
         <mat-selection-list>
           @for (review of unitReviews$ | async; track review.id) {
             <mat-list-item (click)="editReview.emit(review)">
-              {{ review.entry }}
+              <span class="review-entry">{{ review.entry }}</span>
             </mat-list-item>
           }
         </mat-selection-list>
@@ -34,7 +34,7 @@ import { BackendService } from '../../services/backend.service';
         <mat-selection-list>
           @for (review of bookletReviews$ | async; track review.id) {
             <mat-list-item (click)="editReview.emit(review)">
-              {{ review.entry }}
+              <span class="review-entry">{{ review.entry }}</span>
             </mat-list-item>
           }
         </mat-selection-list>
@@ -58,6 +58,12 @@ import { BackendService } from '../../services/backend.service';
     }
     .scrollable-area {
       overflow: auto;
+    }
+    .review-entry {
+      display: -webkit-box;
+      white-space: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
     }
     .close-button {
       margin-top: auto;
