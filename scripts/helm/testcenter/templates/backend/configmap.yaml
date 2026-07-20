@@ -6,4 +6,5 @@ data:
   HOSTNAME: {{ .Values.ingress.baseDomain | quote }}
   BROADCASTER_ENABLED: {{ .Values.config.backend.broadcasterEnabled | quote }}
   FILE_SERVER_ENABLED: {{ .Values.config.backend.fileServerEnabled | quote }}
+  BRUTE_FORCE_PROTECTION: {{ .Values.config.backend.bruteForceProtection | quote }}
   REDIS_CACHE_FILES: {{ .Values.config.backend.redisCacheFiles | quote }}

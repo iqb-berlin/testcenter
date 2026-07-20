@@ -120,6 +120,9 @@ config:
     # When enabled, the backend generates routes for file requests to be routed the external File Server
     # instead of serving files directly. Recommended for production scalability.
     fileServerEnabled: true
+    # -- Session types protected by an ALTCHA challenge (admin, login, person)
+    # Separate multiple session types with spaces. Leave empty to disable protection.
+    bruteForceProtection: 'admin login person'
     # -- Enable Redis caching of static files
     # References the `redisCacheFiles` anchor. When enabled, the backend
     # caches static files in Redis for faster access by the File Server.
@@ -183,6 +186,9 @@ secret:
     # PRODUCTION: Replace 'change_me' with a strong, randomly generated salt!
     # This salt is used for hashing user passwords in the application.
     passwordSalt: change_me
+    # -- Secret key used to generate and verify ALTCHA challenges
+    # PRODUCTION: Replace 'Secret' with a strong, randomly generated key!
+    serverKey: Secret
 
 # =============================================================================
 # INGRESS AND NETWORK EXPOSURE

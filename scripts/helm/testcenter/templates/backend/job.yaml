@@ -38,6 +38,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: FILE_SERVER_ENABLED
+            - name: BRUTE_FORCE_PROTECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BRUTE_FORCE_PROTECTION
             - name: REDIS_HOST
               value: "{{ .Release.Name }}-cache-server"
             - name: REDIS_PORT
@@ -73,6 +78,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secret
                   key: PASSWORD_SALT
+            - name: SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: SERVER_KEY
             - name: SKIP_READ_FILES
               value: "no"
             - name: SKIP_DB_INTEGRITY

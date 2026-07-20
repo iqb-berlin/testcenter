@@ -13,6 +13,7 @@ class SystemConfig {
   public static int $cacheServer_port;
   public static string $cacheServer_password = "";
   public static string $cacheServer_includeFiles = "";
+  public static array $bruteForceProtection_sessions = [];
   public static string $password_salt = "t";
   public static string $system_version;
   public static int $system_veronaMax;
@@ -27,9 +28,10 @@ class SystemConfig {
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
   public static bool $enable_xmlschema_validation = false; // todo this config is not exposed in .env file; xsd validation can be reactivated at a moments notice
+  public static string $server_key = 'Secret';
   // TODO server URL
 
-  public static function read(): void {
+  public static function readConfigIni(): void {
     $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
     if (!$config) {
       throw new Exception('Application config file is missing!');
@@ -37,11 +39,14 @@ class SystemConfig {
     self::apply($config);
   }
 
-  public static function apply(array $config): void {
+  private static function apply(array $config): void {
     foreach ($config as $sectionName => $section) {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
         if (property_exists(self::class, $propertyKey)) {
+          if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
+            $value = array_values(array_filter(explode(' ', trim($value))));
+          }
           self::$$propertyKey = $value;
         }
       }
@@ -52,12 +57,12 @@ class SystemConfig {
       (!isset(self::$system_veronaMax) or !self::$system_veronaMax) or
       (!isset(self::$system_veronaMin) or !self::$system_veronaMin)
     ) {
-      self::readVersion();
+      self::applyVersionFromPackageJson();
     }
-    self::verify();
+    self::verifyClassProperties();
   }
 
-  private static function verify(): void {
+  private static function verifyClassProperties(): void {
     foreach (get_class_vars(self::class) as $key => $value) {
       if (!isset(self::$$key)) {
         throw new Exception("Application config parameter is missing: $key!");
@@ -65,7 +70,7 @@ class SystemConfig {
     }
   }
 
-  public static function readFromEnvironment(): void {
+  public static function readEnvironment(): void {
     $config = [];
 
     $config['database']['name'] = self::stringEnv('MYSQL_DATABASE');
@@ -89,6 +94,11 @@ class SystemConfig {
     $config['cacheServer']['password'] = self::stringEnv('REDIS_PASSWORD');
     $config['cacheServer']['includeFiles'] = self::boolEnv('REDIS_CACHE_FILES');
 
+    $sessions = self::stringEnv('BRUTE_FORCE_PROTECTION');
+    $config['bruteForceProtection']['sessions'] = $sessions;
+    $serverKey = self::stringEnv('SERVER_KEY');
+    $config['server']['key'] = $serverKey;
+
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {
       $overrideConfig = parse_ini_string($overrideConfig, true, INI_SCANNER_TYPED);
@@ -98,7 +108,7 @@ class SystemConfig {
     self::apply($config);
   }
 
-  public static function readVersion(): void {
+  public static function applyVersionFromPackageJson(): void {
     $packageJsonStr = file_get_contents(ROOT_DIR . '/package.json');
     $packageJson = JSON::decode($packageJsonStr);
     $v = "verona-player-api-versions";
@@ -114,21 +124,18 @@ class SystemConfig {
     return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
   }
 
-  private static function stringEnv(string $name, ?string $default = null): string {
+  private static function stringEnv(string $name): string {
     $value = getEnv($name);
-    if (!$value) {
-      if ($default == null) {
+    if (!isset($value)) {
         throw new Exception("Environment-variable missing: `$name`.");
-      }
-      return $default;
     }
     return $value;
   }
 
-  public static function write(): void {
+  public static function writeConfigIni(): void {
     $config = [];
     foreach (get_class_vars(self::class) as $propertyName => $value) {
-      list($sectionName, $key) = explode('_', $propertyName, 2);
+      [$sectionName, $key] = explode('_', $propertyName, 2);
       $config[$sectionName][$key] = self::$$propertyName;
     }
     $output = "";
@@ -137,6 +144,10 @@ class SystemConfig {
       foreach ($section as $key => $value) {
         if (($key == 'version') and (getEnv('VERSION') !== self::$system_version)) {
           continue;
+        }
+
+        if ($sectionName == 'bruteForceProtection' && $key == 'sessions') {
+          $value = implode(' ', $value);
         }
         $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
         $output .= "$key=$value\n";

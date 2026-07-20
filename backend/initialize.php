@@ -24,7 +24,7 @@ const DATA_DIR = ROOT_DIR . '/data';
 require_once "vendor/autoload.php";
 
 try {
-  SystemConfig::readVersion();
+  SystemConfig::applyVersionFromPackageJson();
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
@@ -58,16 +58,16 @@ try {
 
   CLI::h2("System-Config");
   try {
-    SystemConfig::readFromEnvironment();
+    SystemConfig::readEnvironment();
     CLI::connectDBWithRetries();
-    SystemConfig::write();
+    SystemConfig::writeConfigIni();
     CLI::success("New config file created at `/backend/config/config.ini`.");
   } catch (Exception $e) {
     CLI::warning("Failed to write new config file:" . $e->getMessage());
     if (!file_exists(ROOT_DIR . '/backend/config/config.ini')) {
       throw new Exception("No Config file found at `/backend/config/config.ini`!");
     }
-    SystemConfig::read();
+    SystemConfig::readConfigIni();
     CLI::connectDBWithRetries();
     CLI::success("Config file found at `/backend/config/config.ini`.");
   }
