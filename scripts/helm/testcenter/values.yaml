@@ -129,6 +129,7 @@ config:
     redisCacheFiles: *redisCacheFiles
     passwordMinLength: 7
     passwordPattern: "^\d+$"
+    adminInitPassword: "user123"
 
   cacheServer:
     # -- Maximum memory allocation for Redis

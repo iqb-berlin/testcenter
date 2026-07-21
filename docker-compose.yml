@@ -82,6 +82,7 @@ services:
       PASSWORD_SALT: ${PASSWORD_SALT}
       PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH}
       PASSWORD_PATTERN: ${PASSWORD_PATTERN}
+      ADMIN_INIT_PASSWORD: ${ADMIN_INIT_PASSWORD}
     logging:
       options:
         <<: *env-logging-conf

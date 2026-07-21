@@ -32,6 +32,7 @@ class SystemConfig {
   // TODO server URL
   public static int $password_min_length;
   public static string $password_pattern;
+  public static string $admin_init_password;
 
   public static function readConfigIni(): void {
     $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
@@ -85,6 +86,7 @@ class SystemConfig {
     $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
     // Quote regex so parse_ini_file(..., INI_SCANNER_TYPED) treats it as a string.
     $config['password']['pattern'] = "'" . self::stringEnv('PASSWORD_PATTERN') . "'";
+    $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
       $config['broadcaster']['url'] = 'http://broadcaster:3000';

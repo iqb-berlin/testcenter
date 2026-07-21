@@ -18,6 +18,10 @@ function migrate_env_file() {
   if ! grep -q '^PASSWORD_PATTERN=' .env.prod; then
     sed -i.bak '/^PASSWORD_MIN_LENGTH=.*/a PASSWORD_PATTERN=^.*$' .env.prod && rm .env.prod.bak
   fi
+
+  if ! grep -q '^ADMIN_INIT_PASSWORD=' .env.prod; then
+    sed -i.bak '/^PASSWORD_PATTERN=.*/a ADMIN_INIT_PASSWORD=user123' .env.prod && rm .env.prod.bak
+  fi
 }
 
 function main() {
