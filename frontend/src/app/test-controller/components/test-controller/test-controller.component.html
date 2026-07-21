@@ -10,14 +10,14 @@
     </button>
   }
 
-  @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN' && testLoaded) {
+  @if (showUnitNavbar && testLoaded) {
     <tc-navigation-control [navContext]="unitNavContext"
                            dataCy="unit-navigation"
                            (back)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
                            (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
     </tc-navigation-control>
   }
-  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && (pageNavContext.maxIndex > 0) && testLoaded) {
+  @if (showPageNavbar && (pageNavContext.maxIndex > 0) && testLoaded) {
     <tc-navigation-control [navContext]="pageNavContext"
                            dataCy="page-navigation"
                            (back)="gotoPreviousPage()"

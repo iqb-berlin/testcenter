@@ -123,6 +123,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             await this.tls.loadTest();
             // set all visual flags from booklet configs
             this.testLoaded = true;
+            this.showUnitNavbar = this.deriveUnitNavbar();
+            this.showPageNavbar = this.derivePageNavbar();
             this.showGlobalBack = this.deriveGlobalBack();
             this.showGlobalForward = this.deriveGlobalForward();
           } catch (err) {
@@ -480,6 +482,37 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case undefined:
       default:
         return false;
+    }
+  }
+
+  protected showUnitNavbar: boolean = false;
+  protected deriveUnitNavbar(): boolean {
+    const mode = this.tcs.booklet?.config.navbar_unit_label;
+
+    switch (mode) {
+      case 'HIDDEN':
+      case undefined:
+        return false;
+      case 'INDEX':
+      case 'LABEL':
+      default:
+        return true;
+    }
+  }
+
+  protected showPageNavbar: boolean = false;
+  protected derivePageNavbar(): boolean {
+    const mode = this.tcs.booklet?.config.navbar_page_label;
+
+    switch (mode) {
+      case 'HIDDEN':
+      case undefined:
+        return false;
+      case 'INDEX':
+      case 'LABEL':
+      case 'LIST':
+      default:
+        return true;
     }
   }
 
