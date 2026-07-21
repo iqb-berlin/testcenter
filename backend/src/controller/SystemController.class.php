@@ -100,7 +100,9 @@ class SystemController extends Controller {
         'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
         'fileServiceUri' => FileService::getUri(),
         'broadcastingServiceUri' => BroadcastService::getUri(),
-        'supportedBrowsers' => $browsers
+        'supportedBrowsers' => $browsers,
+        'passwordMinLength' => SystemConfig::$password_min_length,
+        'passwordPattern' => SystemConfig::$password_pattern
       ]
     );
   }

@@ -30,6 +30,8 @@ class SystemConfig {
   public static bool $enable_xmlschema_validation = false; // todo this config is not exposed in .env file; xsd validation can be reactivated at a moments notice
   public static string $server_key = 'Secret';
   // TODO server URL
+  public static int $password_min_length;
+  public static string $password_pattern;
 
   public static function readConfigIni(): void {
     $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
@@ -80,6 +82,9 @@ class SystemConfig {
     $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
+    $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
+    // Quote regex so parse_ini_file(..., INI_SCANNER_TYPED) treats it as a string.
+    $config['password']['pattern'] = "'" . self::stringEnv('PASSWORD_PATTERN') . "'";
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
       $config['broadcaster']['url'] = 'http://broadcaster:3000';

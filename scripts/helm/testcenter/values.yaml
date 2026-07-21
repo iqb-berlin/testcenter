@@ -5,8 +5,8 @@
 # =============================================================================
 # DOCKER IMAGE CONFIGURATION
 # =============================================================================
-# This section defines the Docker image configurations for various components 
-# of the Testcenter application. For production deployments, it's recommended 
+# This section defines the Docker image configurations for various components
+# of the Testcenter application. For production deployments, it's recommended
 # to use specific image tags rather than 'stable' to ensure reproducible deployments.
 # Configure image pull policies based on your deployment strategy
 image:
@@ -127,6 +127,8 @@ config:
     # References the `redisCacheFiles` anchor. When enabled, the backend
     # caches static files in Redis for faster access by the File Server.
     redisCacheFiles: *redisCacheFiles
+    passwordMinLength: 7
+    passwordPattern: "^\d+$"
 
   cacheServer:
     # -- Maximum memory allocation for Redis

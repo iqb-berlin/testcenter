@@ -27,4 +27,6 @@ export interface SysConfig {
   bruteForceProtection: string[];
   broadcastingServiceUri: string;
   fileServiceUri: string;
+  passwordMinLength: number;
+  passwordPattern: string;
 }
