@@ -20,7 +20,6 @@ import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
   ],
   standalone: false
 })
-
 export class PageNotFoundComponent {
   url = '';
 
