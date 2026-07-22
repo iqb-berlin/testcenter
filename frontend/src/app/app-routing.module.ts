@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { EmptyComponent } from '@app/app-root/page-not-found/empty.component';
 import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
@@ -56,7 +57,7 @@ const routes: Routes = [
       },
       {
         path: 'route-dispatcher',
-        component: PageNotFoundComponent,
+        component: EmptyComponent,
         canActivate: [RouteDispatcherActivateGuard]
       },
       {
