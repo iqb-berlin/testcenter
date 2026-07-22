@@ -79,6 +79,8 @@ scan-cache-service:
 scan-db:
 	$(MAKE) -f $(MK_FILE_DIR)/scan.mk -C $(MK_FILE_DIR) $@
 
+mago:
+	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-backend-unit:
 	$(MAKE) -f $(MK_FILE_DIR)/dev-test.mk -C $(MK_FILE_DIR) $@
 test-backend-unit-coverage:

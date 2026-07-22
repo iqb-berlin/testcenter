@@ -97,6 +97,7 @@ services:
       - ./backend/routes.php:/var/www/testcenter/backend/routes.php
       - ./backend/src:/var/www/testcenter/backend/src
       - ./backend/test:/var/www/testcenter/backend/test
+      - ./backend/mago.toml:/var/www/testcenter/backend/mago.toml:ro
       - ./definitions:/var/www/testcenter/definitions
       - ./docs/dist:/docs/dist
       - ./package.json:/var/www/testcenter/package.json
