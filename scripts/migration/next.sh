@@ -10,6 +10,18 @@ function migrate_env_file() {
   if ! grep -q '^SERVER_KEY=' .env.prod; then
     sed -i.bak '/^PASSWORD_SALT=.*/a SERVER_KEY=Secret' .env.prod && rm .env.prod.bak
   fi
+
+  if ! grep -q '^PASSWORD_MIN_LENGTH=' .env.prod; then
+    sed -i.bak '/^SERVER_KEY=.*/a PASSWORD_MIN_LENGTH=7' .env.prod && rm .env.prod.bak
+  fi
+
+  if ! grep -q '^PASSWORD_PATTERN=' .env.prod; then
+    sed -i.bak '/^PASSWORD_MIN_LENGTH=.*/a PASSWORD_PATTERN=^.*$' .env.prod && rm .env.prod.bak
+  fi
+
+  if ! grep -q '^ADMIN_INIT_PASSWORD=' .env.prod; then
+    sed -i.bak '/^PASSWORD_PATTERN=.*/a ADMIN_INIT_PASSWORD=user123' .env.prod && rm .env.prod.bak
+  fi
 }
 
 function main() {

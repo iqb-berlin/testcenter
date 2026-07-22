@@ -8,3 +8,5 @@ data:
   FILE_SERVER_ENABLED: {{ .Values.config.backend.fileServerEnabled | quote }}
   BRUTE_FORCE_PROTECTION: {{ .Values.config.backend.bruteForceProtection | quote }}
   REDIS_CACHE_FILES: {{ .Values.config.backend.redisCacheFiles | quote }}
+  PASSWORD_MIN_LENGTH: {{ .Values.config.backend.passwordMinLength | quote }}
+  PASSWORD_PATTERN: {{ .Values.config.backend.passwordPattern | quote }}

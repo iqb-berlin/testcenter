@@ -40,7 +40,6 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [
     SuperadminComponent,
     UsersComponent,
-    NewUserComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
     WorkspacesComponent,

@@ -2,21 +2,30 @@
   <h1 mat-dialog-title>Administrator:in hinzufügen</h1>
 
   <mat-dialog-content>
-    <p>
-      <mat-form-field>
-        <input data-cy="new-user-name" matInput formControlName="name" placeholder="Name" autocomplete="off">
-      </mat-form-field>
-    </p>
-    <p>Achtung: Mindestlänge für Kennwort 7 Zeichen</p>
-    <p>
-      <mat-form-field>
-        <input data-cy="new-user-password" matInput type="password" formControlName="pw" placeholder="Kennwort" autocomplete="off">
-      </mat-form-field>
-    </p>
-    <div>
-      <p>Nach dem Anlegen können Sie die Rechte zuweisen.
-      </p>
-    </div>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input data-cy="new-user-name" matInput formControlName="name" placeholder="Name" autocomplete="off">
+      @if (newUserForm.get('name')?.invalid &&
+           (newUserForm.get('name')?.dirty || newUserForm.get('name')?.touched)) {
+        @if (newUserForm.get('name')?.hasError('minlength')) {
+          <mat-error>Mindestlänge für den Namen ist 3 Zeichen.</mat-error>
+        }
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Kennwort</mat-label>
+      <input data-cy="new-user-password" matInput type="password" formControlName="pw"
+             placeholder="Kennwort" autocomplete="off">
+      @if (newUserForm.get('pw')?.invalid &&
+           (newUserForm.get('pw')?.dirty || newUserForm.get('pw')?.touched)) {
+        @if (newUserForm.get('pw')?.hasError('minlength')) {
+          <mat-error>Mindestlänge für das Kennwort ist {{this.mds.appConfig!.passwordMinLength}} Zeichen.</mat-error>
+        }
+        @if (newUserForm.get('pw')?.hasError('pattern')) {
+          <mat-error>Kennwort muss dem RegEx-Muster {{this.mds.appConfig!.passwordPattern}} entsprechen.</mat-error>
+        }
+      }
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
@@ -26,5 +35,4 @@
     </button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
-
 </form>
