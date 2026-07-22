@@ -16,7 +16,7 @@ import {
   SuperAdminComponentActivateGuard,
   TestComponentActivateGuard
 } from './app-route-guards';
-import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
+import { PageNotFoundComponent } from './app-root/page-not-found/page-not-found.component';
 import { GenericInfoPageComponent } from './app-root/generic-info-page/generic-info-page.component';
 import { AppModuleSettings } from './app.interfaces';
 import { StarterComponent } from './app-root/starter/starter.component';
@@ -56,7 +56,7 @@ const routes: Routes = [
       },
       {
         path: 'route-dispatcher',
-        component: RouteDispatcherComponent,
+        component: PageNotFoundComponent,
         canActivate: [RouteDispatcherActivateGuard]
       },
       {
@@ -136,7 +136,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    component: RouteDispatcherComponent,
+    component: PageNotFoundComponent,
     canActivate: [DirectLoginActivateGuard]
   }
 ];
