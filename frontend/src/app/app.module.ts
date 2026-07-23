@@ -23,6 +23,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ErrorComponent } from '@shared/components/error/error.component';
 import { CustomtextPipe, SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -30,7 +31,7 @@ import { BackendService } from './backend.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
+import { PageNotFoundComponent } from './app-root/page-not-found/page-not-found.component';
 import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
@@ -38,14 +39,13 @@ import { TestModeInterceptor } from './test-mode.interceptor';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { TestCardComponent } from './app-root/starter/test-card.component';
-import { ErrorComponent } from '@shared/components/error/error.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AppRootComponent,
     SysCheckStarterComponent,
-    RouteDispatcherComponent
+    PageNotFoundComponent
   ],
   bootstrap: [AppComponent],
   imports: [
