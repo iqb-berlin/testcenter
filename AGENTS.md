@@ -1,17 +1,11 @@
+- read PR-policy.md
 - focus on achieving the current taks at hand with minimal code. never refactor existing code, if not explicitly being asked to.
-- when touching any JSON file in the 'definitions' folder, regenerate the associated docs with 'make update-docs' and 'make create-interfaces'
-- when creating a new table in scripts/patches.d, add the table in the backend/src/dao/DAO.class.php tables array. the order within the array is important, as tables that ere foreign keys in other tables need to appear first
-- Before opening a PR, always add an entry to CHANGELOG.md
-- when creating a .sql file in scripts/patches.d, always make sure that the backend/test/unit/testdata.sql is also filled with the new fields. testdata.sql is purely INSERTs, not CREATE TABLEs. So the rule only applies if there's data worth seeding.
-- you dont have access to the current data within the database. make changes on database related issues only according to the shape of the tables alone from @scripts/database/full.sql
 - When writing SQL queries (in .php and .sql), use ALLCAPS for SQL keywords
+- Base database-related changes only on the table shape in `scripts/database/full.sql`; current database contents are unavailable.
 
 - **Use declarative colors and font sizes instead of hex codes**: Do not copy hex code colors. Prefer using declarative colors and declarative font sizes when possible.
-- **Concise responses**: In all interactions, plans, and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
-- **Look up library documentation**: If you're ever unsure how a library works, use the Context7 MCP server to research it rather than crawling around node modules or other build files.
 
 
-- Use `rg` instead of `grep` for searching
 - Prefer single quotes over double quotes
 
 
