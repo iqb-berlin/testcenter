@@ -1,0 +1,1 @@
+is it reasonable to basically just read all agents.md files? or is it too pedantic? because there are rules included that try to enforce one specific style
