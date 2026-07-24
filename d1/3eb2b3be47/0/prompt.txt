@@ -1,0 +1,1 @@
+› i want to run 'docker run --rm -v $(pwd):/app -w /app ghcr.io/carthage-software/mago init' and generate a mago file in my backend directory
