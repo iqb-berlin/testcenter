@@ -1,0 +1,1 @@
+i added "read PR-policy.md" to agents.md as these pr rules apply to agents as well
