@@ -1,0 +1,1 @@
+read backend/AGENTS.md . should these rules be written in pr policies instead? i argue it could live in either one
