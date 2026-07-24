@@ -1,0 +1,1 @@
+now the altcha lib seems to load properly oninit. but when logging in, i still get the error, that the workers and helpers seem to be loaded (they appear in network call), but the logging in never finishes. i dont understand the difference now to the latest commit where the library is not async loaded and works
