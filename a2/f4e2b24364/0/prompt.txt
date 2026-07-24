@@ -1,0 +1,1 @@
+do mago format dry run on backend/src/controller/AssetAssignmentController.class.php
