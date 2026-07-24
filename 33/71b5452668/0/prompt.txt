@@ -1,0 +1,1 @@
+was waren die vorteile der alten umsetzung in angular.json?
