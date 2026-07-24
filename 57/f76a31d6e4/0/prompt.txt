@@ -1,0 +1,1 @@
+i am thinking about showing the contentes of the current status component in a dialog rendered by the dialog functions in frontend/src/app/shared/services/message.service.ts . can this safely be done? or does the status route and component have functionality that go beyond what is possible with a dialog?
