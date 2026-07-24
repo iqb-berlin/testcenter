@@ -1,0 +1,1 @@
+› for this branch. check the new endpoints in backend/routes.php . do they semantically make sense? should they be post requests or get? should the endpoint be called /session and not maybe session-challenge?
