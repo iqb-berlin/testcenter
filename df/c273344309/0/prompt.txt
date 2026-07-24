@@ -1,0 +1,1 @@
+merge and solve conflicts in frontend/src/app/app-root/login/admin-login/admin-login.component.ts . HEAD is the base and includes the latest UI rework. commit e97deeb77 includes the new feature that should be built on top
