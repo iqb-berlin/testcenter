@@ -1,0 +1,1 @@
+the source of truth for booklet (booklet.xml) is not changed during runtime. but youre right that the test-controller.service may not have parsed that file yet, whet the property showGlobalBack is initialized
