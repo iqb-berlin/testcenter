@@ -1,0 +1,1 @@
+@backend/src/helper/TestEnvironment.class.php#L157-L161 explain this part. an example of full.sql as they are generated are here scripts/database/full.sql
