@@ -1,0 +1,1 @@
+why does 'touch-action: none;' not work in frontend/src/styles.css on ipad?
