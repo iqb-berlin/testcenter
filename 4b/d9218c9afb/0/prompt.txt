@@ -1,0 +1,1 @@
+@frontend/src/app/test-controller/components/test-controller/test-controller.component.html#L13 should i put this function into the template? i dont want it to execute on every rerender
