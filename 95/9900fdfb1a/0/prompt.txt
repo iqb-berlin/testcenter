@@ -1,0 +1,1 @@
+when opening the frontend on an ipad i can overscroll the app with a swipe down and expose the white background at the top. the scrollbar at the right then also shows that my actual app does not start at the very top but a few pixel below that. why does that happen?
