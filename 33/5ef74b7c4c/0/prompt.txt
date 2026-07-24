@@ -1,0 +1,1 @@
+ok *{} works with disabling touch-action. but frontend/src/app/test-controller/test works mainly with an iframe that is central to the view. within the iframe, touch actions are still enabled. how can i disable it for the iframe as well?
