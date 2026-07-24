@@ -1,0 +1,1 @@
+one question to functions call in templates being re-executed on every render. it that true for if checks as well? in the sense that '@if(showBack === true) ...'. i am asking to assess how bad the performance hit of just using a getter in the template is
