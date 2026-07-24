@@ -1,0 +1,1 @@
+look again at commit f55886b that introduced /status. shouldnt /status render a completely different component that somehow catches the error loop and maybe redirects to /starter or another valid address? or shouldnt the flush error logic happen somewhere else? i think using teststatuscomponent is confusing here
