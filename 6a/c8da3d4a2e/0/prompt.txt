@@ -1,0 +1,1 @@
+check .env.prod-template in the master branch since commit 087f6ea947c39c4484d9b306ae7c32c3104fade3. in the production instance the .env.dev file looks the same as the template. write the migration needed for brute_force_protection and server_key in @next.sh
