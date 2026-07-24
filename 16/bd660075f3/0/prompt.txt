@@ -1,0 +1,1 @@
+does the api test only work when brute_force_protection is deactivated?
