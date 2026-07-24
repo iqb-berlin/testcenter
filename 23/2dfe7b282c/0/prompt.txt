@@ -1,0 +1,1 @@
+brauche ich überhaupt frontend/src/app/shared/altcha/altcha.ts and frontend/src/app/shared/altcha/altcha.worker.ts ? reicht für lazy loading und kleinere bundle sizes nicht einfach das löschen der assets in frontend/angular.json ? kommt mir wie viel komplexität vor ohne einen mehrwert. aber berichtige mich und erkläre, warum dein ansatz notwendig ist, sollte dies der fall sein
