@@ -1,0 +1,1 @@
+@frontend/src/app/test-controller/components/test-controller/test-controller.component.html#L13 how can i write it in opposite. like a switch statement to make it exhaustive check on the type of navbar_unit_label
