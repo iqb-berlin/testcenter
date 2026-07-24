@@ -1,0 +1,1 @@
+in @styles.css 'touch-action: none' does only apply to the header so far. i thought having the css rule written in html, body{} should apply it to all children as well?
