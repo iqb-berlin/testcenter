@@ -1,0 +1,5 @@
+explain how routing is setup in all of frontend. check especially all files with uses of 'RouterModule'. This is a legacy app and i dont understand the reasoning behind a few decisions
+
+- why does 'route-dispatcher' exist? why does path '' route to 'route-dispatcher'?   
+- what is the difference between '' and '**' and both leading to RouterDispatcherComponent
+- why does the TestStatusComponent exist? Why do '' , 'status', ':t/status' lead to it?
