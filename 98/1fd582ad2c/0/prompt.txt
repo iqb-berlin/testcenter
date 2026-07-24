@@ -1,0 +1,1 @@
+in scripts/make/dev-test.mk , remove the MAGO_VERSION hardcoded string and try to parse it from backend/composer.lock entry 'carthage-software/mago' its version number
