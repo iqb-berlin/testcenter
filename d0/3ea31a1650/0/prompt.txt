@@ -1,0 +1,1 @@
+we are working in the file docs/PR-policy.md . structure it in a first run. it will contain obscure knowledge and bespoke workflows necessary for a pr to be complete and ready for human review
