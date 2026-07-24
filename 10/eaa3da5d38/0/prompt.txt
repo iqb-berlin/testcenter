@@ -1,0 +1,21 @@
+# AGENTS.md instructions for /home/oem/IdeaProjects/testcenter2/backend
+
+<INSTRUCTIONS>
+- whenever you change the properties of an objects that is returned by a DAO function, make sure to trace if that property is returned by the controller back to the client. if so, update the appropriate api call in @docs/api
+- PHP 8.3 with strict typing
+- PSR-4 autoloading, classes in `src/` directory
+- PHPUnit 10 for testing
+- Database interactions via PDO with custom DAO pattern
+- Whenever possible, work with static functions - we try to achieve functional coding style
+- Use Enums, Classes and other constructs to mitigate primitive obsession
+- **Documentation**: Use docstring in the style of phpDocumentor, whenever working with arrays (function argument or output) or when retrieving values from an array
+
+</INSTRUCTIONS>
+
+<environment_context>
+  <cwd>/home/oem/IdeaProjects/testcenter2/backend</cwd>
+  <shell>bash</shell>
+  <current_date>2026-07-03</current_date>
+  <timezone>Europe/Berlin</timezone>
+  <filesystem><workspace_roots><root>/home/oem/IdeaProjects/testcenter2/backend</root></workspace_roots><permission_profile type="managed"><file_system type="restricted"><entry access="read"><special>:root</special></entry><entry access="write"><path>/home/oem/IdeaProjects/testcenter2/backend</path></entry><entry access="write"><special>:slash_tmp</special></entry><entry access="write"><special>:tmpdir</special></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/backend/.git</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/backend/.agents</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/backend/.codex</path></entry></file_system></permission_profile></filesystem>
+</environment_context>
