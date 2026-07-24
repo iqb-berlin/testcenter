@@ -1,0 +1,1 @@
+add comments to every single setting in .env.dev-template with the possible option for each
