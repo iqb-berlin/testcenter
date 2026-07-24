@@ -1,0 +1,2 @@
+research: why does '  <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1, user-scalable=no, maximum-scale=1">
+' in my frontend/src/index.html not lead to disabling zoom on ipad ?
