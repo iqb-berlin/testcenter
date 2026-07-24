@@ -1,0 +1,1 @@
+look at the current branch. lets write acceptance criteria together and write them in a brute.md artefact
