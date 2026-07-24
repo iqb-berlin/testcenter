@@ -1,0 +1,72 @@
+# AGENTS.md instructions for /home/oem/IdeaProjects/testcenter2
+
+<INSTRUCTIONS>
+- focus on achieving the current taks at hand with minimal code. never refactor existing code, if not explicitly being asked to.
+- when touching any JSON file in the 'definitions' folder, regenerate the associated docs with 'make update-docs' and 'make create-interfaces'
+- ignore base.sql and full.sql. do the changes on the database from the shape of the tables alone
+
+- Before opening a PR, always add an entry to CHANGELOG.md
+- when creating a .sql in scripts/patches.d - always make sure that the backend/test/unit/testdata.sql is also filled with the new fields. testdata.sql is purely INSERTs, not CREATE TABLEs. So the rule only applies if there's data worth seeding.
+- The state of the database is in base.sql + all subsequent patches in scripts/database/patches.d
+- When writing SQL queries (in .php and .sql), use ALLCAPS for SQL keywords
+
+# Rules
+- **Divide multi-step plans into phases**: For multi-step plans, divide them into multiple phases with different headings. That way I can describe which phases to implement at a time so we don't have to implement everything at once.
+- **Use declarative colors and font sizes instead of hex codes**: Do not copy hex code colors. Prefer using declarative colors and declarative font sizes when possible.
+- **Concise responses**: In all interactions, plans, and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
+- **Look up library documentation**: If you're ever unsure how a library works, use the Context7 MCP server to research it rather than crawling around node modules or other build files.
+- **TypeScript project coding best practices**: Prefer `type` to `interface` when writing TS types. Ensure JS Docs are concise. Follow the Hemingway Test as a guide.
+
+## Code Standards
+
+### General
+- Use `rg` instead of `grep` for searching
+- Prefer single quotes over double quotes
+
+### Frontend (Angular)
+- Angular 16 with TypeScript 5.1
+- Angular Material for UI components
+- Karma/Jasmine for unit testing
+- Use linting rules standard in the version written in /package.json
+- All Code that deals with API calls is written in backend.service.ts of the module
+
+### Broadcaster (Node.js)
+- NestJS framework with TypeScript
+- WebSocket gateway for real-time communication
+- Jest for testing
+- Shared interfaces with common/ directory
+
+## Domain-Specific Terminology
+
+* **Workspace** - One Instance of the testcenter application can have multiple workspaces, each with their own user access rights.
+* **User** - Each User is one administrator of some kind.
+* **Login** - One Login is one person that actually logs in to take the examination.
+* **File** - One file is either following the validation rules for vo_Booklet.xsd, vo_SysCheck.xsd, vo_Testtakers.xsd, vo_Unit.xsd or unvalidated Resource.
+* **Booklet** - The highest level of how a test is structured into which units.
+* **Unit** - Has the actual task and how this task is rendered with which player.
+* **Syscheck** - Describes analogous to Booklets, which units are to be loaded for a syscheck. A syscheck tries to show example units for users to find out if the testcenter instance works.
+* **Resource** - A not defined File that can be loaded into a test.
+* **Attachment** - A deprecated module. Used to describe user uploaded files via direct upload as response object.
+* **Test** - The actual test run. Shows the order of units, described in the Booklet.
+* **Verona-Player** - The html and javascript code that is injected as iframe into the testcenter and visually displays the content of the test.
+* **Testtaker** - The File that defines all logins.
+* **Test Command** - A Navigation command that can be send from a users to a login.
+* **Log** - Set of Data on the unit and test level.
+* **Unit Data** - Set of Data that specifically handles the responses given by logins in their respective tests.
+* **Review** - users can give reviews to uploaded tests.
+
+## Database & Data
+
+- MySQL schema in scripts/database/
+- Migrations via numbered patch files (scripts/database/patches.d/)
+- Sample data in sampledata/
+
+</INSTRUCTIONS>
+
+<environment_context>
+  <cwd>/home/oem/IdeaProjects/testcenter2</cwd>
+  <shell>bash</shell>
+  <current_date>2026-07-05</current_date>
+  <timezone>Europe/Berlin</timezone>
+  <filesystem><workspace_roots><root>/home/oem/IdeaProjects/testcenter2</root></workspace_roots><permission_profile type="managed"><file_system type="restricted"><entry access="read"><special>:root</special></entry><entry access="write"><path>/home/oem/IdeaProjects/testcenter2</path></entry><entry access="write"><special>:slash_tmp</special></entry><entry access="write"><special>:tmpdir</special></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.git</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.agents</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.codex</path></entry></file_system></permission_profile></filesystem>
+</environment_context>
