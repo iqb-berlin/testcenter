@@ -1,0 +1,5 @@
+<image name=[Image #1] path="Screenshot from 2026-07-20 17-24-58.png">
+
+</image>
+
+[Image #1] this is how it looks. the font is cutoff on the top and bottom border.
