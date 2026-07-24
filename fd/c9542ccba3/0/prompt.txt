@@ -1,0 +1,1 @@
+in general explain the flow of the new challenge routes and how they relate to paths without challenge
