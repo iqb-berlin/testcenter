@@ -1,0 +1,5 @@
+<environment_context>
+  <current_date>2026-07-20</current_date>
+  <timezone>Europe/Berlin</timezone>
+  <filesystem><workspace_roots><root>/home/oem/IdeaProjects/testcenter2</root></workspace_roots><permission_profile type="managed"><file_system type="restricted"><entry access="read"><special>:root</special></entry><entry access="write"><path>/home/oem/IdeaProjects/testcenter2</path></entry><entry access="write"><special>:slash_tmp</special></entry><entry access="write"><special>:tmpdir</special></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.git</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.agents</path></entry><entry access="read"><path>/home/oem/IdeaProjects/testcenter2/.codex</path></entry></file_system></permission_profile></filesystem>
+</environment_context>
