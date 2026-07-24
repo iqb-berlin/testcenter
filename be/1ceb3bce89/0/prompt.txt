@@ -1,0 +1,1 @@
+now that the library is set up. how would i daily use it in my work? should i or can i connect it to my ide , eg run on autosave? or as git pre-commit/pre-push hook? or put it in my .gitlab-ci.yml ? how does it differ for mago lint, mago format, mago guard, mago analyze?
