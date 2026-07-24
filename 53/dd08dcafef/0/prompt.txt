@@ -1,0 +1,1 @@
+should the endpoint put /session for the controlleraction verifyChallenge() stay like taht or should the endpoitn be renamed?
