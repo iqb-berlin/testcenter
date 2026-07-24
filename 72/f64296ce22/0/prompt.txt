@@ -1,0 +1,1 @@
+i am using ipados 26.5. the zoom is still happening on the login screen, where there is no iframe yet. neither <meta name="viewport"> nor touch-action: none work.
