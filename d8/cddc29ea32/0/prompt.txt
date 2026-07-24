@@ -1,0 +1,1 @@
+load the library already on init of the component or pretty early in the lifecycle, to prevent long loading times when solving the challenge, as importing may take time. or do you think that importing a chunk is negligebla
