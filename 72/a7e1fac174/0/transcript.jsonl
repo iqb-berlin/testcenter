@@ -1,0 +1,1 @@
+{"v":1,"agent":"codex","cli_version":"0.8.42","type":"user","ts":"2026-07-20T12:30:42.072Z","content":[{"text":"for this branch. check the new endpoints in backend/routes.php . do they semantically make sense? should they be post requests or get? should the endpoint be called /session and not maybe session-challenge?"}]}
