@@ -1,0 +1,1 @@
+read the frontend/src/app/app-root/login/admin-login/admin-login.component.ts again and apply the same structure of async altcha loading to frontend/src/app/app-root/login/login.component.ts and frontend/src/app/app-root/code-login/code-login.component.ts
