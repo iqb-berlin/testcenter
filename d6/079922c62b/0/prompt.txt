@@ -1,0 +1,1 @@
+look at the current branch. apply all changes relevant to docker deployment also to the kubernetes deployment at /scr
