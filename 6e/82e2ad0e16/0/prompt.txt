@@ -1,0 +1,1 @@
+fix the merge conflict in frontend/src/app/app-root/login/login.component.ts  . my local changes are the ui rework that are the base for all changes. incoming changes from the cherry-pick e97deeb77 are the feature request that come bolted on top
