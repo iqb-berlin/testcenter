@@ -1,0 +1,1 @@
+there is a bug in the dialog of checkAndSolveTimer in frontend/src/app/test-controller/services/test-controller.service.ts . when i click outside of the dialog, i would expect that this resolves to false. instead it seems to return true
