@@ -1,0 +1,1 @@
+my aim is to always have an up to date version of full.sql after every initialize, because right now it is only created when runnning tests. that is 1) unintuitive to work with 2) not optimal for llm agent use which i could redirect to the always valid full.sql
