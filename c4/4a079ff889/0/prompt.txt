@@ -1,0 +1,1 @@
+this api spec has been like this and succeeding for years. how does this bug only show up now? has anything somewhere else changed?
