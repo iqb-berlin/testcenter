@@ -1,0 +1,1 @@
+mount for docker-compose.dev.yml the vendor folder so, that i get the vendor into my local file system, so that my ide can autocomplete library code
