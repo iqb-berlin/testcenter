@@ -1,0 +1,6 @@
+'Ich habe mit dem Parameter mal rumgespielt. Meinen Tests und konkreter Erfahrung in der Benutzung nach, funktioniert lazy loading nicht wie gewollt.
+Der Testloader returnt zwar nach dem Laden der ersten "Unit" ein true (Z. 291), sodass der TestControllerService anfaengt den iFrame zu bauen. Beim vorbereiten des iFrames wartet er aber wieder auf das Laden aller Units bevor er weitermacht und unterlaeuft damit die Einstellung. Aber selbst wenn er direkt loslegen wuerde, koennte es nicht klappen, da das Laden der "Unit" nicht das Laden der resources, also der VOUD, beinhaltet, welche ja zwingend noetig ist, um iwas darzustellen.
+
+Mir scheint das schon konzeptionell durcheinander und kaputt zu sein, aber vielleicht verstehe ich es auch nur nicht richtig.'
+
+stimmt das? meiner Meinung nach funktioniert lazy loading, zumindest im happy path, da dies schon lange in produktion ist
