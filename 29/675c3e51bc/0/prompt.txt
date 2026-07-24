@@ -1,0 +1,1 @@
+wenn ich an anderer stelle ein import(altcha-lib) mache um zb die helper funktionen zu nutzen, dann hat sich dieser lazy sparfunktion auch wieder selbst aufgehoben oder? ich frage, weil ich mich frage wie maintainable das sehr explizite worker.js in der angular.json ist
