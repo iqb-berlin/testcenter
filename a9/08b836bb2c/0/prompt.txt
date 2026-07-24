@@ -1,0 +1,1 @@
+my question is: do i actually need to rebuild after composer commands at all?
