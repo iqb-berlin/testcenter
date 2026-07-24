@@ -1,0 +1,4 @@
+can you transfer '- **Concise responses**: In all interactions, plans, and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
+' and '- **Look up library documentation**: If you're ever unsure how a library works, use the Context7 MCP server to research it rather than crawling around node modules or other build files.
+' and '- Use `rg` instead of `grep` for searching
+' from agents.md into my personal agents.md? i guess somewhere in ~/ ? these rules are more personal preference and personal tools than hard rules for the repo
