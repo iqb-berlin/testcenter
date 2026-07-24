@@ -1,0 +1,1 @@
+frontend/src/app/test-controller/services/test-loader.service.ts#66 - can i rewrite the topromise and subsequent if(!testdata) check as regular subscription with next and error key?
