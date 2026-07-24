@@ -1,0 +1,1 @@
+make all uses of 'import from 'altcha-lib' in frontend async. i only want to load the lib if, this.mainDataService.appConfig?.bruteForceProtection.includes() for that component is true
