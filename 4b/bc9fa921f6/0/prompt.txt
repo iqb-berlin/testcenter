@@ -1,0 +1,1 @@
+how to start a binary from backend/vendor/bin?
