@@ -1,0 +1,1 @@
+do the suggested patch in initialize.php
