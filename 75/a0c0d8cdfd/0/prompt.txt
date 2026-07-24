@@ -1,0 +1,1 @@
+is there any downside to mount a volume in the backend sevice in the docker-compose.dev.yml ? i remember slightly that at some point we were deleting 'unnecessary volume mounts' to ensure something with user rights. maybe it was in the kubernetes work. check the git logs to see if you can find something
