@@ -1,0 +1,7 @@
+ablet: Weißer Rand über dem Header#1372
+
+'Am Tablet (iPadOS 26.4.2; Safari) kann man bis über den Header hinaus hochscrollen, sodass ein weißer Rand über dem Header entsteht, s. Bild. Der bleibt dann bestehen, außer man wischt im Header selbst wieder nach unten. Das sollte vermutlich nicht so sein.
+
+Der weiße Rand ist auch die ganze Zeit zu sehen (nicht wegwischbar), wenn man sich im Vollbildmodus befindet.
+'
+das passiert im frontend/src/app/test-controller, wenn toolbar_show_fullscreen_button als booklet config gesetzt ist. der weiße rand erscheint nur auf mobile im fullscreen modus, nicht auf dem pc im fullscreen
