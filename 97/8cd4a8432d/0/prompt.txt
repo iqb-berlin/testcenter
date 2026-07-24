@@ -1,0 +1,1 @@
+i dont have composer on my local system. this mount means that the composer in the container has run and the output vendor folder is now in my local system?
