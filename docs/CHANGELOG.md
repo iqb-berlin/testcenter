@@ -6,6 +6,7 @@
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
   - Das hierbei verwendete Kennwort wird nicht mehr in geloggt.
+- Die Bibliothek zur automatischen Kodierung wurde auf `@iqb/responses` 5.2.2 aktualisiert.
 
 # 18.1.1
 
