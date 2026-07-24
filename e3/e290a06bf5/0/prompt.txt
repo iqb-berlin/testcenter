@@ -1,0 +1,1 @@
+@backend/src/helper/SystemConfig.class.php#L42-L59 What is the difference between self class and static class in this function?
