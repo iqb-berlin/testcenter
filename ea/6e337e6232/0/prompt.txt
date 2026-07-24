@@ -1,0 +1,1 @@
+wenn selbst bei der jetzigen option, der worker-chunk immer deployment artefakt ist, dann ist das doch bis auf ein paar kb unterschied das gleiche wie option 2 mit nur worker in den assets, die man dann vereinfacht im quellcode importieren kann?
