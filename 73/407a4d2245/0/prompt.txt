@@ -1,0 +1,1 @@
+@frontend/src/app/app-root/login/admin-login/admin-login.component.ts#L87-L125 i want to introduce async loaded lib altcha. but it does not work. in the network tab of the browser i see that the chunk is successfully loaded when i try to login. but the login does not continue. i dont know where the error lies
