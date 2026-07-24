@@ -1,0 +1,1 @@
+when switching into fullscreen via rootElem.requestFullscreen in frontend/src/app/test-controller/components/test-controller/test-controller.component.ts there is now a white strip at the top. this was not in git release 17.6.0 as far as i know
