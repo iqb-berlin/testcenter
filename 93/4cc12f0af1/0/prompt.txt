@@ -1,0 +1,1 @@
+{{.entry}} in frontend/src/app/test-controller/components/review-panel/review-list.component.ts renders the text indefenitely, resulting in long entries overflowing horizontally. i want the text to to line break and in the end to truncate with ellipses after certain characters. optimally only with css
