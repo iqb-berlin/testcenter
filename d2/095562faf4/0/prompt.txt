@@ -1,0 +1,1 @@
+after successfully solving challenge and navigating to r/starter page, i have now a bug, where when trying to load a test 'put /test' -> 'get /test/1', the subsequent loading of resources via 'fs/file/REDACTED/ws_1/Resource/verona-player-simple-6.0.html' fails with 'Invalid Token: REDACTED ' although the token in the header is another one '_5wwbb4brtv9ccurw5p36u-5'
