@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "c1f74e4f8b7e",
+  "strategy": "import",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/c1/f74e4f8b7e/0/metadata.json",
+      "transcript": "/c1/f74e4f8b7e/0/full.jsonl",
+      "compact_transcript": "/c1/f74e4f8b7e/0/transcript.jsonl",
+      "content_hash": "/c1/f74e4f8b7e/0/content_hash.txt",
+      "prompt": "/c1/f74e4f8b7e/0/prompt.txt"
+    }
+  ],
+  "imported": true
+}
