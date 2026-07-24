@@ -1,0 +1,1 @@
+in der aktuellen version, ruft der frontend/src/app/shared/altcha/altcha.worker.ts 'altcha-lib/worker' auf. wo bekommt er diesen chunk her, wenn dieser nicht mehr Teil der Assets ist?
