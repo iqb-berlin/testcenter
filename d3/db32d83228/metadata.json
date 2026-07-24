@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "d3db32d83228",
+  "strategy": "import",
+  "checkpoints_count": 1,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/d3/db32d83228/0/metadata.json",
+      "transcript": "/d3/db32d83228/0/full.jsonl",
+      "compact_transcript": "/d3/db32d83228/0/transcript.jsonl",
+      "content_hash": "/d3/db32d83228/0/content_hash.txt",
+      "prompt": "/d3/db32d83228/0/prompt.txt"
+    }
+  ],
+  "imported": true
+}
