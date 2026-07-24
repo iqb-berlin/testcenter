@@ -1,4 +1,4 @@
-import { ResponseValueType as IQBVariableValueType } from '@iqb/responses';
+import type { ResponseValueType as IQBVariableValueType } from '@iqbspecs/response/response.interface';
 import { IQBVariableStatusList } from '../interfaces/iqb.interfaces';
 
 export class IqbVariableUtil {

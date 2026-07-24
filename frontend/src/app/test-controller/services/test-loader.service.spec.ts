@@ -93,6 +93,46 @@ describe('TestLoaderService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should parse coding schemes with the current specification', () => {
+    const scheme = service['getCodingScheme'](JSON.stringify({
+      version: '3.4',
+      variableCodings: [{
+        id: 'item',
+        alias: 'answer',
+        sourceType: 'BASE'
+      }]
+    }));
+
+    expect(scheme).toEqual([{
+      id: 'item',
+      alias: 'answer',
+      sourceType: 'BASE'
+    }]);
+  });
+
+  it('should normalize legacy coding schemes', () => {
+    const scheme = service['getCodingScheme'](JSON.stringify({
+      version: '2.0',
+      variableCodings: [{
+        id: 'legacy-item',
+        sourceType: 'BASE',
+        processing: ['REMOVE_WHITE_SPACES'],
+        codes: []
+      }]
+    }));
+
+    expect(scheme).toEqual([jasmine.objectContaining({
+      id: 'legacy-item',
+      alias: 'legacy-item',
+      sourceType: 'BASE',
+      processing: ['IGNORE_ALL_SPACES'],
+      sourceParameters: {
+        solverExpression: '',
+        processing: []
+      }
+    })]);
+  });
+
   describe('(loadTest)', () => {
     it('should load and parse the booklet, load the units, their definitions and players', async () => {
       await service.loadTest();

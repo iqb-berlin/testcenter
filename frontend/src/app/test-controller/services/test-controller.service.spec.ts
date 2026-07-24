@@ -111,6 +111,106 @@ describe('TestControllerService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should code aliased and derived variables in a subform with the current responses API', () => {
+    service.units[1] = {
+      ...service.units[1],
+      variables: {
+        answerOne: {
+          id: 'answerOne',
+          status: 'VALUE_CHANGED',
+          value: 'first',
+          subform: 'S1'
+        },
+        answerTwo: {
+          id: 'answerTwo',
+          status: 'VALUE_CHANGED',
+          value: 'second',
+          subform: 'S1'
+        },
+        total: {
+          id: 'total',
+          status: 'UNSET',
+          value: null
+        }
+      },
+      baseVariableIds: ['answerOne', 'answerTwo'],
+      scheme: [{
+        id: 'item-one',
+        alias: 'answerOne',
+        sourceType: 'BASE',
+        codes: [{
+          id: 1,
+          type: 'FULL_CREDIT',
+          score: 1,
+          ruleSets: [{
+            rules: [{
+              method: 'MATCH',
+              parameters: ['first']
+            }]
+          }]
+        }]
+      }, {
+        id: 'item-two',
+        alias: 'answerTwo',
+        sourceType: 'BASE',
+        codes: [{
+          id: 1,
+          type: 'FULL_CREDIT',
+          score: 1,
+          ruleSets: [{
+            rules: [{
+              method: 'MATCH',
+              parameters: ['second']
+            }]
+          }]
+        }]
+      }, {
+        id: 'total-internal',
+        alias: 'total',
+        sourceType: 'SUM_SCORE',
+        deriveSources: ['item-one', 'item-two'],
+        codes: [{
+          id: 2,
+          type: 'FULL_CREDIT',
+          score: 2,
+          ruleSets: [{
+            rules: [{
+              method: 'NUMERIC_MATCH',
+              parameters: ['2']
+            }]
+          }]
+        }]
+      }]
+    };
+
+    service['codeVariables'](1);
+
+    expect(service.units[1].variables.answerOne).toEqual({
+      id: 'answerOne',
+      status: 'CODING_COMPLETE',
+      value: 'first',
+      subform: 'S1',
+      code: 1,
+      score: 1
+    });
+    expect(service.units[1].variables.answerTwo).toEqual({
+      id: 'answerTwo',
+      status: 'CODING_COMPLETE',
+      value: 'second',
+      subform: 'S1',
+      code: 1,
+      score: 1
+    });
+    expect(service.units[1].variables.total).toEqual({
+      id: 'total',
+      status: 'CODING_COMPLETE',
+      value: 2,
+      subform: 'S1',
+      code: 2,
+      score: 2
+    });
+  });
+
   it('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
     service.setupUnitDataPartsBuffer();
     service.testMode = new TestMode('run-hot-return');

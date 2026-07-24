@@ -17,7 +17,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
 import { MatIcon } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { ResponseValueType as IQBVariableValueType } from '@iqb/responses/coding-interfaces';
+import type { ResponseValueType as IQBVariableValueType } from '@iqbspecs/response/response.interface';
 import { AuthData } from '@app/app.interfaces';
 import { TestControllerService } from '@app/test-controller';
 import { CustomtextService } from '@shared/services/customtext/customtext.service';

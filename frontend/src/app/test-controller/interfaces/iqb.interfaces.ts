@@ -1,4 +1,4 @@
-import { Response } from '@iqb/responses';
+import type { Response } from '@iqbspecs/response/response.interface';
 
 export type IQBVariable = Response;
 
