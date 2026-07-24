@@ -1,0 +1,1 @@
+look at the current branch. apply all changes relevant to docker deployment also to the kubernetes deployment at scripts/helm/testcenter . i am thinking especially the changes to .env.dev-template .env.prod-template docker-compose.yml
