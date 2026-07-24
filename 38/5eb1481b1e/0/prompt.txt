@@ -1,0 +1,1 @@
+i want to add "carthage-software/mago:^1.42.0" to my backend/composer.json require-dev. i only have access to the container composer via make composer-install and 'make composer-update'.
