@@ -1,0 +1,1 @@
+how can or should i call this library? other dev composer libraries are exclusively called via make at the moment?
