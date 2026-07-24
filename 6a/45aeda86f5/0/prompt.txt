@@ -1,0 +1,1 @@
+does 'make build' also run composer on the image? or do i need to run 'make composer-update' manually myself?
