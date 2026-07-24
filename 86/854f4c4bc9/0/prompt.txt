@@ -1,0 +1,1 @@
+create api tests documentation for all new endpoints in docs/api/session.spec.yml that act as automated tests run with 'make test-backend-api'
