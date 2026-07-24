@@ -1,0 +1,1 @@
+no i meant if it is reasonable to just use all agent.md files as my pr-policy
