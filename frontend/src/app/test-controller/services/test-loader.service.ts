@@ -6,7 +6,8 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CodingScheme } from '@iqb/responses';
+import { CodingSchemeFactory } from '@iqb/responses';
+import { CodingScheme, type VariableCodingData } from '@iqbspecs/coding-scheme';
 import {
   BlockCondition,
   BlockConditionSource,
@@ -355,21 +356,13 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private getCodingScheme(jsonString: string): CodingScheme {
+  private getCodingScheme(jsonString: string): VariableCodingData[] {
     try {
-      const what = JSON.parse(jsonString);
-      const variableCodings = (
-        (typeof what === 'object') &&
-        (what.variableCodings) &&
-        Array.isArray(what.variableCodings)
-      ) ?
-        what.variableCodings :
-        [];
-      return new CodingScheme(variableCodings);
+      return new CodingScheme(jsonString).variableCodings;
     } catch (e) {
       console.warn(e);
     }
-    return new CodingScheme([]);
+    return [];
   }
 
   private getBookletFromXml(xmlString: string): void {
@@ -429,8 +422,10 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
 
   registerIndirectlyTrackedVariables(sequenceId: number): void {
     // this happens when the coding-scheme is available, not when the base variables themselves are registered
-    this.tcs.units[sequenceId].baseVariableIds = this.tcs.units[sequenceId].scheme
-      .getBaseVarsList(Object.keys(this.tcs.units[sequenceId].variables));
+    this.tcs.units[sequenceId].baseVariableIds = CodingSchemeFactory.getBaseVarsList(
+      Object.keys(this.tcs.units[sequenceId].variables),
+      this.tcs.units[sequenceId].scheme
+    );
     this.tcs.units[sequenceId].baseVariableIds
       .forEach(baseVariableId => {
         if (!Object.keys(this.tcs.units[sequenceId].variables).includes(baseVariableId)) {
@@ -510,7 +505,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       dataParts: {},
       loadingProgress: { },
       lockedAfterLeaving: false,
-      scheme: new CodingScheme([])
+      scheme: []
     });
   }
 

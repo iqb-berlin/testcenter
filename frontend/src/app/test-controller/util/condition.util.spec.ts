@@ -1,7 +1,7 @@
 /* eslint-disable object-curly-newline */
 import { ConditionUtil } from './condition.util';
 import { IQBVariable } from '../interfaces/iqb.interfaces';
-import { ResponseStatusType, ResponseValueType } from '@iqb/responses/coding-interfaces';
+import type { ResponseStatusType, ResponseValueType } from '@iqbspecs/response/response.interface';
 import { BlockCondition } from '../../shared/interfaces/booklet.interfaces';
 
 const unitAlias = '';

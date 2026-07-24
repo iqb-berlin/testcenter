@@ -1,4 +1,3 @@
-import { CodingScheme } from '@iqb/responses';
 import { of } from 'rxjs';
 import {
   LoadingProgress,
@@ -241,7 +240,7 @@ export const getTestData = () => {
       variables: {},
       baseVariableIds: [],
       playerFileName: 'Resource/A-PLAYER.HTML',
-      scheme: new CodingScheme([]),
+      scheme: [],
       responseType: 'the-data-type',
       definition: 'the unit (1) definition itself',
       state: {},
@@ -263,7 +262,7 @@ export const getTestData = () => {
       variables: {},
       baseVariableIds: [],
       playerFileName: 'Resource/ANOTHER-PLAYER.HTML',
-      scheme: new CodingScheme([]),
+      scheme: [],
       responseType: 'the-data-type',
       definition: 'the unit (2) definition',
       state: {
@@ -289,7 +288,7 @@ export const getTestData = () => {
       variables: {},
       baseVariableIds: [],
       playerFileName: 'Resource/A-PLAYER-2.HTML',
-      scheme: new CodingScheme([]),
+      scheme: [],
       responseType: 'the-data-type',
       definition: 'the unit (3) definition',
       state: {
@@ -313,7 +312,7 @@ export const getTestData = () => {
       variables: {},
       baseVariableIds: [],
       playerFileName: 'Resource/A-PLAYER.HTML',
-      scheme: new CodingScheme([]),
+      scheme: [],
       responseType: 'the-data-type',
       definition: 'the unit (4) definition itself',
       state: {
@@ -337,7 +336,7 @@ export const getTestData = () => {
       variables: {},
       baseVariableIds: [],
       playerFileName: 'Resource/A-PLAYER.HTML',
-      scheme: new CodingScheme([]),
+      scheme: [],
       responseType: 'the-data-type',
       definition: 'the unit (5) definition itself',
       state: {},
