@@ -1,0 +1,1 @@
+frontend/src/app/app-root/login/admin-login/admin-login.component.ts i want to load the altcha lib async and only when the env brute_force_protection is set. i have the setup in oninit but struggle to write the solvechallengeworkers part
