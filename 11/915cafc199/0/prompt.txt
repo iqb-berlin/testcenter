@@ -1,0 +1,1 @@
+how would i call after booklet load completes. who should call that function? in onInit?
