@@ -1,0 +1,1 @@
+rename the new endpoints of this branch only. prefer session/challenge. also rename the controlleraction putSession to verifyChallenge(?) if fitting
