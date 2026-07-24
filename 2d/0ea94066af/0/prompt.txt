@@ -1,0 +1,1 @@
+is it reasonable to just write in my docs/PR-policy.md to read all agent.md files? because the pr policy is targeted at humans (but also agents) that create pull requests and agent.md is only targeted at agents and really pedantic in an attempt to enforce deterministic code style
