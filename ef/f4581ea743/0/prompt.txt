@@ -1,0 +1,1 @@
+wofür brauchen wir altcha.worker.ts? kann man nicht in altcha.ts einfach 'import "altcha-lib/worker"' selbst aufrufen? würde eine datei sparen
