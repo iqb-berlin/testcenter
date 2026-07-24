@@ -1,0 +1,1 @@
+does calling the statuscomponent also lead to destruction of testcontrollercomponent?
