@@ -1,0 +1,1 @@
+execute 'make test-backend-api' and fix the new session api docs docs/api/session.spec.yml
