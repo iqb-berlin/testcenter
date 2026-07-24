@@ -1,0 +1,1 @@
+look at everything that was done. what was not optimal and should be written as skill, agents.md or a deterministic gate for next time
