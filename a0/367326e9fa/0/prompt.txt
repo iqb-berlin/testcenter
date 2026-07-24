@@ -1,0 +1,1 @@
+i want to trace the use of 'fileserviceuri', because i am thinking about serving the files from s3 storage (locally with minio, per cloud with aws). now i want to understand which files are served at all. then i found the 'definitionfile' and 'schemefile' but dont really understand what they mean. i thought testloader just loads all files. explain the whole mechanism
