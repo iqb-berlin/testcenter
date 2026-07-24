@@ -1,0 +1,1 @@
+can i reuse this part @backend/src/helper/TestEnvironment.class.php#L157-L162 to create full.sql after the block in @backend/initialize.php#L107-L115? could there be side effects? i know that i will be creating full.sql in my container after every initialize but dont see any problem with that
