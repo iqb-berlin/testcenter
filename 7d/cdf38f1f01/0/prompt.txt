@@ -1,0 +1,1 @@
+@frontend/src/app/test-controller/components/test-controller/test-controller.component.ts#L443-L461 can i write the function inline and assign the boolean return value to showGlobalBack?
