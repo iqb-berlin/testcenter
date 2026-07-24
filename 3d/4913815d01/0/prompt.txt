@@ -1,0 +1,47 @@
+when running make test-backend-api , i get this error 'fail: PUT (201) /test/1/unit/1/response duration: 20ms
+fail: statusCode: Expected status code '201', but got '404'.
+
+request: 
+method: PUT
+uri: /test/1/unit/1/response?XDEBUG_SESSION_START=IDEA
+headers: 
+    Content-Type: application/json
+    AuthToken: static:person:sample_group_test_xxx
+    User-Agent: Dredd/14.1.0 (Linux 6.8.0-134-generic; x64)
+    TestMode: api
+    Accept: undefined
+
+body: 
+{
+  "response": "I am the answers to your questions.",
+  "timeStamp": 1582550888563
+}
+
+
+expected: 
+headers: 
+
+statusCode: 201
+
+
+actual: 
+statusCode: 404
+headers: 
+    date: Wed, 15 Jul 2026 20:54:39 GMT
+    server: Apache
+    access-control-allow-origin: *
+    access-control-allow-headers: *
+    access-control-allow-methods: *
+    error-id: error-6a57f38f7c8d06.06347791
+    test-mode: api
+    access-control-expose-headers: SubscribeToken, Error-ID, Test-Mode
+    content-length: 89
+    keep-alive: timeout=5, max=41
+    connection: Keep-Alive
+    content-type: text/html;charset=utf-8
+
+bodyEncoding: utf-8
+body: 
+Unit response could not be saved because the unit does not exist (yet). Please try again.
+
+'. fix this bug
