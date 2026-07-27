@@ -28,8 +28,7 @@ class Password {
     }
 
     $pattern = SystemConfig::$password_pattern;
-    // preg_match does not seem to work without the extra delimiter (/)
-    $check_result = preg_match("/" . $pattern . "/", $password);
+    $check_result = preg_match($pattern, $password);
     if (!$check_result) {
       throw new HttpError("Password must match regex pattern: `$pattern`", 400);
     }
