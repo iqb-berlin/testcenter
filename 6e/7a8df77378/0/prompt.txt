@@ -1,0 +1,10 @@
+why do i get 'backend-1       | [Sat Jul 25 21:33:28.786639 2026] fatal-6a652ba8c00c48.83242387 (500) at /var/www/testcenter/backend/src/helper/SystemConfig.class.php:40
+backend-1       | [Sat Jul 25 21:33:28.786647 2026] Application config file is missing!' since my latest commit 996a57e110ce3b1512e8a8b9af26651fff1e9da5
+
+---
+
+do it
+
+---
+
+skip tests

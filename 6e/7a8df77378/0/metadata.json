@@ -1,0 +1,102 @@
+{
+  "cli_version": "0.8.42",
+  "checkpoint_id": "6e7a8df77378",
+  "session_id": "019f9b32-ca22-7201-b633-f678d8743ec1",
+  "strategy": "manual-commit",
+  "created_at": "2026-07-27T15:58:19.918932415Z",
+  "branch": "remove-ini",
+  "checkpoints_count": 2,
+  "save_step_count": 2,
+  "files_touched": [
+    "backend/src/helper/SystemConfig.class.php"
+  ],
+  "agent": "Codex",
+  "model": "gpt-5.6-sol",
+  "turn_id": "5ac62d2f2a1c",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 99796,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1589760,
+    "output_tokens": 11202,
+    "api_call_count": 27
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-07-27T15:58:19.892789642Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 1,
+    "human_modified": 6,
+    "human_removed": 0,
+    "total_committed": 1,
+    "total_lines_changed": 8,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 6193,
+      "user_lines_removed": 1,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".codex/config.toml": 5,
+        ".codex/hooks.json": 52,
+        ".gitignore": 3,
+        ".humanlayer/workspace.json": 7,
+        ".idea/dataSources.xml": 1,
+        ".idea/db-forest-config.xml": 14,
+        ".idea/git_toolbox_prj.xml": 15,
+        ".idea/go.imports.xml": 10,
+        ".idea/queries/Query.sql": 52,
+        "CONTEXT.md": 180,
+        "GEMINI.md": 4,
+        "MISSION.md": 23,
+        "NOTES.md": 9,
+        "OIDC_Vorschlag.md": 52,
+        "RESOURCES.md": 37,
+        "backup/temp/all-databases.sql": 2315,
+        "backup/temp/iqb_tba_testcenter-data.sql": 224,
+        "backup/temp/iqb_tba_testcenter.sql": 642,
+        "brute.md": 96,
+        "build-test.sh": 49,
+        "docker-push.sh": 44,
+        "generate_logins.py": 75,
+        "iqb-player-lottie-1.0.6.html": 227,
+        "learning-records/0001-existing-web-and-codebase-knowledge.md": 3,
+        "learning-records/0002-separates-identity-session-and-authorization.md": 3,
+        "lessons/0001-identity-session-permissions.html": 359,
+        "lessons/0002-authorization-code-flow.html": 368,
+        "lock-hierarchy.txt": 165,
+        "reference/oauth-oidc-glossary.html": 262,
+        "reference/oidc-authorization-code-flow.html": 223,
+        "scripts/database/full.sql": 320,
+        "workshop_testcenter_skalierung_optimierung.md": 127,
+        "workshop_testcenter_skalierung_optimierung_review.md": 227
+      },
+      "user_removed_per_file": {
+        ".idea/dataSources.xml": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 36,
+      "user_lines_removed": 4,
+      "agent_lines_added": 6190,
+      "agent_lines_removed": 1,
+      "user_added_per_file": {
+        "GEMINI.md": 4,
+        "backend/src/helper/SystemConfig.class.php": 5,
+        "backend/test/unit/helper/SystemConfigTest.php": 27
+      },
+      "user_removed_per_file": {
+        "GEMINI.md": 1,
+        "backend/src/helper/SystemConfig.class.php": 3
+      }
+    }
+  ]
+}
