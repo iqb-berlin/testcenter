@@ -84,8 +84,7 @@ class SystemConfig {
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
     $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
-    // Quote regex so parse_ini_file(..., INI_SCANNER_TYPED) treats it as a string.
-    $config['password']['pattern'] = "'" . self::stringEnv('PASSWORD_PATTERN') . "'";
+    $config['password']['pattern'] = self::stringEnv('PASSWORD_PATTERN');
     $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
@@ -137,30 +136,6 @@ class SystemConfig {
         throw new Exception("Environment-variable missing: `$name`.");
     }
     return $value;
-  }
-
-  public static function writeConfigIni(): void {
-    $config = [];
-    foreach (get_class_vars(self::class) as $propertyName => $value) {
-      [$sectionName, $key] = explode('_', $propertyName, 2);
-      $config[$sectionName][$key] = self::$$propertyName;
-    }
-    $output = "";
-    foreach ($config as $sectionName => $section) {
-      $output .= "[$sectionName]\n";
-      foreach ($section as $key => $value) {
-        if (($key == 'version') and (getEnv('VERSION') !== self::$system_version)) {
-          continue;
-        }
-
-        if ($sectionName == 'bruteForceProtection' && $key == 'sessions') {
-          $value = implode(' ', $value);
-        }
-        $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
-        $output .= "$key=$value\n";
-      }
-    }
-    file_put_contents(ROOT_DIR . '/backend/config/config.ini', $output);
   }
 
   public static function dumpDbConfig(): string {

@@ -28,7 +28,7 @@ class Password {
     }
 
     $pattern = SystemConfig::$password_pattern;
-    $check_result = preg_match($pattern, $password);
+    $check_result = preg_match("/$pattern/", $password);
     if (!$check_result) {
       throw new HttpError("Password must match regex pattern: `$pattern`", 400);
     }
