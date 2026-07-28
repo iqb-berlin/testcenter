@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
-  MatDialog,
-  MatDialogModule
+  MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BackendService } from '@app/workspace-admin/backend.service';
+import { MainDataService } from '@shared/shared.module';
 import { NewUserComponent } from './new-user.component';
+
+class MockService {
+  appConfig = {};
+}
 
 describe('NewuserComponent', () => {
   let component: NewUserComponent;
@@ -16,17 +16,13 @@ describe('NewuserComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [NewUserComponent],
-      imports: [
-        MatDialogModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatIconModule,
-        NoopAnimationsModule
-      ],
       providers: [
-        MatDialog
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {}
+        },
+        { provide: BackendService, useValue: new MockService() },
+        { provide: MainDataService, useValue: new MockService() }
       ]
     })
       .compileComponents();

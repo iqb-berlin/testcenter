@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
-  MatDialog, MatDialogModule
 } from '@angular/material/dialog';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BackendService } from '@app/workspace-admin/backend.service';
+import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { NewPasswordComponent } from './new-password.component';
+
+class MockService {
+  appConfig = {};
+}
 
 describe('NewpasswordComponent', () => {
   let component: NewPasswordComponent;
@@ -15,16 +16,10 @@ describe('NewpasswordComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        NoopAnimationsModule
-      ],
       providers: [
-        MatDialog,
-        { provide: MAT_DIALOG_DATA, useValue: 'Harry Sack' }
+        { provide: BackendService, useValue: new MockService() },
+        { provide: MainDataService, useValue: new MockService() },
+        { provide: MAT_DIALOG_DATA, useValue: {} }
       ]
     })
       .compileComponents();
