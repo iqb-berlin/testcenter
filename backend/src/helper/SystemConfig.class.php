@@ -34,14 +34,6 @@ class SystemConfig {
   public static string $password_pattern;
   public static string $admin_init_password;
 
-  public static function readConfigIni(): void {
-    $config = parse_ini_file(ROOT_DIR . '/backend/config/config.ini', true, INI_SCANNER_TYPED);
-    if (!$config) {
-      throw new Exception('Application config file is missing!');
-    }
-    self::apply($config);
-  }
-
   private static function apply(array $config): void {
     foreach ($config as $sectionName => $section) {
       foreach ($section as $key => $value) {
@@ -83,7 +75,7 @@ class SystemConfig {
     $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
-    $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
+    $config['password']['min_length'] = (int) self::stringEnv('PASSWORD_MIN_LENGTH');
     $config['password']['pattern'] = self::stringEnv('PASSWORD_PATTERN');
     $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
 
