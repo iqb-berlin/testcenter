@@ -85,7 +85,7 @@ class SystemConfig {
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
     $config['password']['min_length'] = self::stringEnv('PASSWORD_MIN_LENGTH');
     // Quote regex so parse_ini_file(..., INI_SCANNER_TYPED) treats it as a string.
-    $config['password']['pattern'] = "'" . self::stringEnv('PASSWORD_PATTERN') . "'";
+    $config['password']['pattern'] = self::stringEnv('PASSWORD_PATTERN');
     $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
