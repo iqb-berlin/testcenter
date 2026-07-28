@@ -3,6 +3,9 @@
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
   - Bei den Gelegenheit wurden die entsprechenden Dialoge visuell etwas verbessert.
 
+## Änderungen
+- Der custom-text "booklet_console_warning" wurde entfernt
+
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
   - Das hierbei verwendete Kennwort wird nicht mehr in geloggt.

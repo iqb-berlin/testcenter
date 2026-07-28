@@ -150,13 +150,6 @@ Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschre
 
 Standard: Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.
 
-## `booklet_console_warning`
-
-Warnung, die auf der Browserkonsole erscheinen soll
-
-Standard: Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*
-Gehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben.
-
 ## `booklet_errormessage`
 
 Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist
