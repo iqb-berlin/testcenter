@@ -1,7 +1,9 @@
-- read PR-policy.md
+- read docs/PR-policy.md
 - focus on achieving the current taks at hand with minimal code. never refactor existing code, if not explicitly being asked to.
 - When writing SQL queries (in .php and .sql), use ALLCAPS for SQL keywords
 - Base database-related changes only on the table shape in `scripts/database/full.sql`; current database contents are unavailable.
+- when modifying the number of rows of any sql table within the sampledata, make sure to adapt calls to 'expect_table_to_have_rows' in all scripts in backend/test/initialization/tests/general
+
 
 - **Use declarative colors and font sizes instead of hex codes**: Do not copy hex code colors. Prefer using declarative colors and declarative font sizes when possible.
 
