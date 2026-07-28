@@ -57,20 +57,10 @@ try {
   }
 
   CLI::h2("System-Config");
-  try {
-    SystemConfig::readEnvironment();
-    CLI::connectDBWithRetries();
-    SystemConfig::writeConfigIni();
-    CLI::success("New config file created at `/backend/config/config.ini`.");
-  } catch (Exception $e) {
-    CLI::warning("Failed to write new config file:" . $e->getMessage());
-    if (!file_exists(ROOT_DIR . '/backend/config/config.ini')) {
-      throw new Exception("No Config file found at `/backend/config/config.ini`!");
-    }
-    SystemConfig::readConfigIni();
-    CLI::connectDBWithRetries();
-    CLI::success("Config file found at `/backend/config/config.ini`.");
-  }
+  SystemConfig::readEnvironment();
+  CLI::success("Environment variables successfully read.");
+  CLI::connectDBWithRetries();
+  CLI::success("Database successfully connected.");
 
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();

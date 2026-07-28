@@ -139,30 +139,6 @@ class SystemConfig {
     return $value;
   }
 
-  public static function writeConfigIni(): void {
-    $config = [];
-    foreach (get_class_vars(self::class) as $propertyName => $value) {
-      [$sectionName, $key] = explode('_', $propertyName, 2);
-      $config[$sectionName][$key] = self::$$propertyName;
-    }
-    $output = "";
-    foreach ($config as $sectionName => $section) {
-      $output .= "[$sectionName]\n";
-      foreach ($section as $key => $value) {
-        if (($key == 'version') and (getEnv('VERSION') !== self::$system_version)) {
-          continue;
-        }
-
-        if ($sectionName == 'bruteForceProtection' && $key == 'sessions') {
-          $value = implode(' ', $value);
-        }
-        $value = is_bool($value) ? ($value ? 'yes' : 'no') : $value;
-        $output .= "$key=$value\n";
-      }
-    }
-    file_put_contents(ROOT_DIR . '/backend/config/config.ini', $output);
-  }
-
   public static function dumpDbConfig(): string {
     return print_r([
       "host" => self::$database_host,
