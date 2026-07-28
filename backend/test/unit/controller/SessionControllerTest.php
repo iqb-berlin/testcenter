@@ -342,7 +342,7 @@ final class SessionControllerTest extends TestCase {
     ]);
 
     $response = SessionController::putSessionAdmin(
-      RequestCreator::create('PUT', '/session/admin', '{"name":"super"}'),
+      RequestCreator::create('PUT', '/session/admin', '{"name":"super", "password":""}'),
       ResponseCreator::createEmpty()
     );
 
