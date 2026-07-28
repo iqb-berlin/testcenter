@@ -115,7 +115,10 @@ try {
   $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
 
-  $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
+  // tables is 'complete', if the current database has all tables, declared in self::tables; not the case for initialize/general scripts that test incomplete table states
+  if ($newDbStatus['tables'] === 'complete') {
+    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
+  }
 
   CLI::h2("Workspaces");
 
