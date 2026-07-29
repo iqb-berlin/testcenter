@@ -2,6 +2,8 @@
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
   - Bei den Gelegenheit wurden die entsprechenden Dialoge visuell etwas verbessert.
+  - Neue Umgebungsvariable `PASSWORD_MIN_LENGTH`
+  - Neue Umgebungsvariable `PASSWORD_PATTERN`
 - Brute-Force-Schutz für Anmeldungen: 
   - Wenn aktiv, muss der eigene Browser bei der Anmeldung als Admin, Login und bei Codeeingabe eine sogenannte Challenge errechnen. Dies verlangsamt den Anmeldeprozess ein wenig, schützt aber den Testcenter Server vor Bot-Angriffen.
   - Aktivierbar über die neue Umgebungsvariable `BRUTE_FORCE_PROTECTION` in `.env.prod`.
@@ -17,10 +19,9 @@
 - Seitennavigation über `navbar_forward_button`/`navbar_backward_button`, die den Anfang bzw. das Ende überschreiten werden nun verhindert; stattdessen erscheint ein entsprechender Hinweis.
 
 ## Technisches
-- Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
+- Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable `ADMIN_INIT_PASSWORD` gesetzt werden.
   - Das hierbei verwendete Kennwort wird nicht mehr geloggt.
 - Neue Umgebungsvariable HSTS_ENABLED: Damit kann der Strict-Transport-Security-Header abgeschaltet werden.
-- Neue Umgebungsvariable `BRUTE_FORCE_PROTECTION` zum (De-)Aktivieren des Anmelde-Brute-Force-Schutzes (siehe oben).
 - Neue Umgebungsvariable `SERVER_KEY` zur zentralen Konfiguration des Server-Schlüssels.
 - Die Bibliothek zur automatischen Kodierung wurde auf `@iqb/responses` 5.2.2 aktualisiert.
 - Pull-Request-Policy im Repository dokumentiert.
