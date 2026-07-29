@@ -6,6 +6,9 @@
 ## Änderungen
 - Der custom-text "booklet_console_warning" wurde entfernt
 
+## Fehlerbehebungen
+- Der Hinweistext bei Navigation aus einer Aufgabe im Review-Modus, die ein vollständiges Ansehen oder Beantworten erzwingt (force_presentation/reponse_complete), wurde korrigiert.
+
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
   - Das hierbei verwendete Kennwort wird nicht mehr in geloggt.

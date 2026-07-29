@@ -933,7 +933,7 @@ export class TestControllerService {
       };
       this.ms.showSnackbar(
         `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
-      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
+      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}`
       );
       return of(true);
     }
