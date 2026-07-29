@@ -1,4 +1,4 @@
-import { ResponseValueType as IQBVariableValueType } from '@iqb/responses/coding-interfaces';
+import type { ResponseValueType as IQBVariableValueType } from '@iqbspecs/response/response.interface';
 import {
   BlockCondition,
   BlockConditionSource, sourceIsConditionAggregation,

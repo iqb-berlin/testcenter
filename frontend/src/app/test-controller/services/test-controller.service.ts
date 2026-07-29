@@ -9,6 +9,7 @@ import {
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { CodingSchemeFactory } from '@iqb/responses';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet,
@@ -798,7 +799,7 @@ export class TestControllerService {
             somethingChanged = true;
           });
       });
-    if (somethingChanged && this.units[sequenceId].scheme.variableCodings.length) {
+    if (somethingChanged && this.units[sequenceId].scheme.length) {
       this.codeVariables(sequenceId);
     }
 
@@ -808,7 +809,7 @@ export class TestControllerService {
   private codeVariables(sequenceId: number): void {
     const baseVars = Object.values(this.units[sequenceId].variables)
       .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
-    this.units[sequenceId].scheme.code(baseVars)
+    CodingSchemeFactory.code(baseVars, this.units[sequenceId].scheme)
       .forEach(variable => {
         if (variable.id in this.units[sequenceId].variables) {
           this.units[sequenceId].variables[variable.id] = variable;
