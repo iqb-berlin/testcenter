@@ -903,6 +903,18 @@ paths:
           content:
             text/html;charset=utf-8:
               example: "3"
+        "400":
+          description: |
+            Bad Request. Possible reasons:
+            - New workspace name is missing from the request body.
+            - A workspace with the given name already exists.
+          content:
+            text/html;charset=utf-8:
+              examples:
+                nameMissing:
+                  value: "New workspace name missing"
+                nameAlreadyExists:
+                  value: "Workspace with name `duplicate-workspace` already exists!"
         "401":
           description: Not authenticated
         "410":
