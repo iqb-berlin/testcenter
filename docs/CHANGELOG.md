@@ -2,18 +2,28 @@
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
   - Bei den Gelegenheit wurden die entsprechenden Dialoge visuell etwas verbessert.
+- Brute-Force-Schutz für Anmeldungen: 
+  - Wenn aktiv, muss der eigene Browser bei der Anmeldung als Admin, Login und bei Codeeingabe eine sogenannte Challenge errechnen. Dies verlangsamt den Anmeldeprozess ein wenig, schützt aber den Testcenter Server vor Bot-Angriffen.
+  - Aktivierbar über die neue Umgebungsvariable `BRUTE_FORCE_PROTECTION` in `.env.prod`.
 
 ## Änderungen
-- Der custom-text "booklet_console_warning" wurde entfernt
+- Der custom-text "booklet_console_warning" wurde entfernt.
+- Die Überschrift der Kommentarliste im Review-Panel wurde von „alle Kommentare zu diesem Testheft“ zu „Kommentare zum gesamten Testheft“ geändert, um den Inhalt besser zu beschreiben.
+- Visuelle Verbesserungen im Review-Panel: mehr Abstand zwischen Einträgen, Einträge auf 2 Zeilen begrenzt, Panel mit maximaler Breite, damit der Hauptbereich immer sichtbar bleibt.
 
 ## Fehlerbehebungen
 - Der Hinweistext bei Navigation aus einer Aufgabe im Review-Modus, die ein vollständiges Ansehen oder Beantworten erzwingt (force_presentation/reponse_complete), wurde korrigiert.
+- Die Buttons `navbar_forward_button` und `navbar_backward_button` werden nur noch bei gültigen Konfigurationswerten angezeigt (bisher erschienen sie bei jedem Wert außer `HIDDEN`).
+- Seitennavigation über `navbar_forward_button`/`navbar_backward_button`, die den Anfang bzw. das Ende überschreiten werden nun verhindert; stattdessen erscheint ein entsprechender Hinweis.
 
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
-  - Das hierbei verwendete Kennwort wird nicht mehr in geloggt.
+  - Das hierbei verwendete Kennwort wird nicht mehr geloggt.
 - Neue Umgebungsvariable HSTS_ENABLED: Damit kann der Strict-Transport-Security-Header abgeschaltet werden.
+- Neue Umgebungsvariable `BRUTE_FORCE_PROTECTION` zum (De-)Aktivieren des Anmelde-Brute-Force-Schutzes (siehe oben).
+- Neue Umgebungsvariable `SERVER_KEY` zur zentralen Konfiguration des Server-Schlüssels.
 - Die Bibliothek zur automatischen Kodierung wurde auf `@iqb/responses` 5.2.2 aktualisiert.
+- Pull-Request-Policy im Repository dokumentiert.
 
 # 18.1.1
 
