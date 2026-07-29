@@ -9,6 +9,7 @@
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable ADMIN_INIT_PASSWORD gesetzt werden.
   - Das hierbei verwendete Kennwort wird nicht mehr in geloggt.
+- Neue Umgebungsvariable HSTS_ENABLED: Damit kann der Strict-Transport-Security-Header abgeschaltet werden.
 
 # 18.1.1
 
