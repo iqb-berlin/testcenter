@@ -50,6 +50,10 @@ class TestEnvironment {
       }
 
       if (self::$testMode == 'api') {
+        // overwrite the settings of .env file, to make the api tests deterministic and independent of real .env configs
+        SystemConfig::$bruteForceProtection_sessions = [];
+        SystemConfig::$server_key = 'Secret';
+
         // api tests can use vfs for more speed
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);

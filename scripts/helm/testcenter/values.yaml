@@ -128,8 +128,7 @@ config:
     # caches static files in Redis for faster access by the File Server.
     redisCacheFiles: *redisCacheFiles
     passwordMinLength: 7
-    passwordPattern: "^\d+$"
-    adminInitPassword: "user123"
+    passwordPattern: '^.*$'
 
   cacheServer:
     # -- Maximum memory allocation for Redis
@@ -192,6 +191,9 @@ secret:
     # -- Secret key used to generate and verify ALTCHA challenges
     # PRODUCTION: Replace 'Secret' with a strong, randomly generated key!
     serverKey: Secret
+    # -- Initial Sys-Admin password, used only when creating the first administrator
+    # PRODUCTION: Replace 'user123' with a strong password matching the configured password rules!
+    adminInitPassword: user123
 
 # =============================================================================
 # INGRESS AND NETWORK EXPOSURE

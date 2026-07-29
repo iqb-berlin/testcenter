@@ -39,6 +39,77 @@ spec:
               drop:
                 - ALL
           command: [ "apache2-foreground" ]
+          env:
+            - name: BROADCASTER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BROADCASTER_ENABLED
+            - name: FILE_SERVER_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: FILE_SERVER_ENABLED
+            - name: BRUTE_FORCE_PROTECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BRUTE_FORCE_PROTECTION
+            - name: REDIS_HOST
+              value: '{{ .Release.Name }}-cache-server'
+            - name: REDIS_PORT
+              value: '6379'
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_CACHE_FILES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: REDIS_CACHE_FILES
+            - name: MYSQL_HOST
+              value: '{{ .Release.Name }}-db'
+            - name: MYSQL_PORT
+              value: '3306'
+            - name: MYSQL_DATABASE
+              value: 'iqb_tba_testcenter'
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: MYSQL_PASSWORD
+            - name: PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: PASSWORD_SALT
+            - name: PASSWORD_MIN_LENGTH
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: PASSWORD_MIN_LENGTH
+            - name: PASSWORD_PATTERN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: PASSWORD_PATTERN
+            - name: ADMIN_INIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: ADMIN_INIT_PASSWORD
+            - name: SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: SERVER_KEY
           ports:
             - name: http-container
               containerPort: 8080
@@ -49,6 +120,7 @@ spec:
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data
+            # backend-config-volume is still kept, as config/.lock files still exist; even if config.ini does not exist anymore
             - name: backend-config-volume
               mountPath: /var/www/testcenter/backend/config
           livenessProbe:
