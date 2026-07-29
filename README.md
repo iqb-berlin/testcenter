@@ -35,6 +35,7 @@ There are two important files for the Testcenter. A file named **Testtaker** def
 
 * [Overview about super-states of running sessions and their icons](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-session-super-states.html)
 * [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
+* [Documentation of all Logs output to admin log-file](https://github.com/iqb-berlin/testcenter/tree/master/docs/pages/logging.md)
 
 ### Install & Run
 
