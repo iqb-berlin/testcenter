@@ -1,0 +1,43 @@
+{
+  "id": "stars-unit-definition",
+  "version": "0.7",
+  "backgroundColor": "#E1E9FF",
+  "ribbonBars": false,
+  "firstAudioOptions": {
+    "firstClickLayer": "TRANSPARENT",
+    "animateButton": "BOLD"
+  },
+  "continueButtonShow": "ON_ANY_RESPONSE",
+  "interactionType": "BUTTONS",
+  "interactionParameters": {
+    "variableId": "interact",
+    "buttonType": "MEDIUM_SQUARE",
+    "multiSelect": false,
+    "triggerNavigationOnSelect": false,
+    "numberOfRows": 2,
+    "options": {
+      "buttons": [
+        { "text": "M" },
+        { "text": "A" },
+        { "text": "F" },
+        { "text": "I" }
+      ]
+    }
+  },
+
+  "variableInfo": [
+    {
+      "variableId": "interact",
+      "responseComplete": "ON_ANY_RESPONSE",
+      "codingSource": "VALUE",
+      "codes": [
+        {
+          "method": "EQUALS",
+          "parameter": "1",
+          "code": 1,
+          "score": 1
+        }
+      ]
+    }
+  ]
+}

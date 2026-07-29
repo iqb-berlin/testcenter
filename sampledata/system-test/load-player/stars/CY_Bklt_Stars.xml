@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
+  <Metadata>
+    <Id>Cy-Bklt_Stars-1</Id>
+    <Label>Cy-Bklt_Stars-1</Label>
+  </Metadata>
+  <BookletConfig>
+    <Config key="loading_mode">LAZY</Config>
+    <Config key="logPolicy">rich</Config>
+    <Config key="browserBehaviour">standard</Config>
+    <Config key="pagingMode">separate</Config>
+    <Config key="force_presentation_complete">OFF</Config>
+    <Config key="force_response_complete">OFF</Config>
+    <Config key="unit_time_left_warnings">5,1</Config>
+    <Config key="restore_current_page_on_return">OFF</Config>
+    <Config key="lock_test_on_termination">OFF</Config>
+    <Config key="ask_for_fullscreen">OFF</Config>
+    <Config key="unit_responses_buffer_time">5000</Config>
+    <Config key="unit_state_buffer_time">6000</Config>
+    <Config key="test_state_buffer_time">1000</Config>
+    <Config key="header_hidden">FALSE</Config>
+    <Config key="header_content">NONE</Config>
+    <Config key="navbar_unit_label">HIDDEN</Config>
+    <Config key="navbar_unit_controls_hidden">FALSE</Config>
+    <Config key="navbar_page_label">HIDDEN</Config>
+    <Config key="navbar_page_controls_hidden">FALSE</Config>
+    <Config key="navbar_backward_button">HIDDEN</Config>
+    <Config key="navbar_forward_button">HIDDEN</Config>
+    <Config key="toolbar_show_unit_title">TRUE</Config>
+    <Config key="toolbar_show_unit_list">FALSE</Config>
+    <Config key="toolbar_show_fullscreen_button">FALSE</Config>
+    <Config key="toolbar_show_reload_button">FALSE</Config>
+    <Config key="toolbar_show_time_left">FALSE</Config>
+    <Config key="silent_mode">TRUE</Config>
+  </BookletConfig>
+  <Units>
+    <Testlet id="tslt-1" label="testlet 1">
+      <Restrictions>
+        <TimeMax minutes="2.66666666666667" leave="allowed"/>
+      </Restrictions>
+      <Unit id="CY-StarsUnit-001" label="Unit-1" labelshort="" alias="1"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-2" labelshort="" alias="2"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-3" labelshort="" alias="3"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-4" labelshort="" alias="4"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-5" labelshort="" alias="5"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-6" labelshort="" alias="6"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-7" labelshort="" alias="7"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-8" labelshort="" alias="8"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-9" labelshort="" alias="9"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-10" labelshort="" alias="10"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-11" labelshort="" alias="11"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-12" labelshort="" alias="12"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-13" labelshort="" alias="13"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-14" labelshort="" alias="14"/>
+    </Testlet>
+
+    <Testlet id="tslt-2" label="testlet 2">
+      <Restrictions>
+        <TimeMax minutes="2.66666666666667" leave="allowed"/>
+      </Restrictions>
+      <Unit id="CY-StarsUnit-001" label="Unit-15" labelshort="" alias="15"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-16" labelshort="" alias="16"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-17" labelshort="" alias="17"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-18" labelshort="" alias="18"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-19" labelshort="" alias="19"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-20" labelshort="" alias="20"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-21" labelshort="" alias="21"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-22" labelshort="" alias="22"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-23" labelshort="" alias="23"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-24" labelshort="" alias="24"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-25" labelshort="" alias="25"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-26" labelshort="" alias="26"/>
+      <Unit id="CY-StarsUnit-001" label="Unit-27" labelshort="" alias="27"/>
+    </Testlet>
+
+    <Unit id="CY-StarsUnit-001" label="Unit-28" labelshort="" alias="28"/>
+
+  </Units>
+</Booklet>
+
