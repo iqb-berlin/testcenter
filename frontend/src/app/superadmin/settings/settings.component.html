@@ -22,13 +22,14 @@
           <mat-label>Text</mat-label>
           <textarea matInput formControlName="globalWarningText"
                     cdkTextareaAutosize
-                    cdkAutosizeMinRows="1"></textarea>
+                    cdkAutosizeMinRows="1"
+                    data-cy="admin-setting-warningfield"></textarea>
         </mat-form-field>
         <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
           <p>Zeige Warnung bis</p>
           <mat-form-field>
             <mat-label>Datum</mat-label>
-            <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
+            <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker" data-cy="admin-setting-set-date">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
@@ -51,7 +52,7 @@
         Name der Anwendung
       </h4>
       <mat-form-field appearance="fill">
-        <input matInput formControlName="appTitle" placeholder="Name">
+        <input matInput formControlName="appTitle" data-cy="admin-setting-app-name" placeholder="Name">
       </mat-form-field>
 
       <h4>
@@ -59,21 +60,24 @@
       </h4>
       <mat-form-field appearance="fill">
         <textarea matInput formControlName="privacy"
-                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"
+                  data-cy="admin-setting-data-protect"></textarea>
       </mat-form-field>
       <h4>
         Barrierefreiheit
       </h4>
       <mat-form-field appearance="fill">
         <textarea matInput formControlName="accessibility"
-                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"
+                  data-cy="admin-setting-accessibility"></textarea>
       </mat-form-field>
       <h4>
         Impressum
       </h4>
       <mat-form-field appearance="fill">
         <textarea matInput formControlName="legalNoticeHtml"
-                  cdkTextareaAutosize cdkAutosizeMinRows="6"></textarea>
+                  cdkTextareaAutosize cdkAutosizeMinRows="6"
+                  data-cy="admin-setting-imprint"></textarea>
       </mat-form-field>
 
       <h4>
@@ -81,11 +85,11 @@
       </h4>
       <div>
         <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" data-cy="admin-setting-repo">
           <mat-label>Ziel-Repository</mat-label>
           <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
         </mat-form-field>
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" data-cy="admin-setting-git-token">
           <mat-label>GitHub-Token</mat-label>
           <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
         </mat-form-field>
@@ -98,7 +102,7 @@
         <h4>Theme</h4>
         <mat-radio-group class="theme-config" formControlName="themeName">
           @for (theme of themeService.availableThemes; track theme.name) {
-            <mat-radio-button [value]="theme.name">
+            <mat-radio-button [value]="theme.name" [attr.data-cy]="'admin-setting-theme-' + theme.name">
               <div class="theme-preview" [style.background-color]="theme.previewColor"></div>
               <p class="theme-name">{{ theme.name }}</p>
               <p class="theme-desc">{{ theme.description }}</p>
@@ -109,9 +113,8 @@
 
       <div class="actions" [class.sticky-actions]="configForm.dirty">
         <button matFab extended data-cy="Settings:Submit-ApplicationConfiguration"
-                [disabled]="!configForm.dirty" (click)="saveAppConfig()">
-          Speichern
-        </button>
+                [disabled]="!configForm.dirty" (click)="saveAppConfig()"
+                data-cy="admin-setting-submit">Speichern</button>
         <button matFab extended [disabled]="!configForm.dirty" (click)="resetAppConfigForm()">
           Zurücksetzen
         </button>
