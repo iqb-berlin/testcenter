@@ -22,13 +22,13 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         if (!this.tcs.booklet) {
           return new RedirectCommand(
             this.router.parseUrl(`/t/${this.tcs.testId}/status`),
-            { skipLocationChange: true, state: { force: true } }
+            { skipLocationChange: true, state: { force: false } }
           );
         }
         await this.tcs.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
         return new RedirectCommand(
           this.router.parseUrl(`/t/${this.tcs.testId}/status`),
-          { skipLocationChange: true, state: { force: true } }
+          { skipLocationChange: true, state: { force: false } }
         );
       }
     }
