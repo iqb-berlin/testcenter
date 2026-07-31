@@ -28,8 +28,7 @@ import { AlertComponent, UserAgentService } from '@shared/shared.module';
     MatIcon,
     RouterLink,
     MatButton,
-    AlertComponent,
-    NgClass
+    AlertComponent
   ],
   styleUrl: './admin-login.component.css'
 })
@@ -40,7 +39,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
-  admin = 'person';
+  busyWithChallenge = false;
   unsupportedBrowser: [string, string] | [] = [];
   altchaLib?: Promise<typeof import('altcha-lib')>;
   altchaLibSubscription?: Subscription;
@@ -85,7 +84,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.admin = 'sync';
+    this.busyWithChallenge = true;
     this.backendService.createChallenge({ loginType: 'admin', name, password }).subscribe({
       next: challenge => {
         this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
@@ -111,12 +110,12 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }).finally(() => {
-          this.admin = 'person';
+          this.busyWithChallenge = false;
         });
       },
       error: error => {
         this.problemText = 'Problem bei der Anmeldung.';
-        this.admin = 'person';
+        this.busyWithChallenge = false;
         throw error;
       }
     });
@@ -129,7 +128,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
         this.router.navigate(['/r/starter']);
       },
       error: error => {
-        this.admin = 'person';
+        this.busyWithChallenge = false;
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';

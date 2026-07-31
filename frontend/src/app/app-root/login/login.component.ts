@@ -39,7 +39,6 @@ import {
     SharedModule,
     AlertComponent,
     AsyncPipe,
-    NgClass,
     CustomtextPipe
   ]
 })
@@ -52,7 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
-  user = 'school';
+  busyWithChallenge = false;
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
@@ -133,7 +132,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.user = 'sync';
+    this.busyWithChallenge = true;
     this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
       next: challenge => {
         this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
@@ -159,12 +158,12 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
         }).finally(() => {
-          this.user = 'school';
+          this.busyWithChallenge = false;
         });
       },
       error: error => {
         this.problemText = 'Problem bei der Anmeldung.';
-        this.user = 'school';
+        this.busyWithChallenge = false;
         throw error;
       }
     });
@@ -179,7 +178,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.navigateAfterLogin(authData);
       },
       error: error => {
-        this.user = 'school';
+        this.busyWithChallenge = false;
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';

@@ -29,8 +29,7 @@
       }
       <mat-card-actions [style.justify-content]="'space-between'">
         <button matButton="filled" type="submit" color="primary" id="admin" data-cy="login-admin"
-                [disabled]="loginForm.invalid || admin === 'sync'">
-          <mat-icon [ngClass]="{'rotate' : admin === 'sync'}">{{ admin }}</mat-icon>
+                [disabled]="loginForm.invalid || busyWithChallenge">
           Anmelden
         </button>
       </mat-card-actions>
