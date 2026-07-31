@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
+
+  <Metadata>
+    <Description>Logins für Cypress Test: Adaptive</Description>
+  </Metadata>
+
+  <Group id="login-adap" label="Login-Adap">
+    <Login mode="run-hot-restart" name="Adap-1" pw="123">
+      <Booklet>CY-Bklt_Adap-1</Booklet>
+    </Login>
+    <Login mode="run-review" name="Adap-2" pw="123">
+      <Booklet state="bonus:yes">CY-Bklt_Adap-1</Booklet>
+      <Booklet state="bonus:no">CY-Bklt_Adap-1</Booklet>
+    </Login>
+  </Group>
+
+</Testtakers>

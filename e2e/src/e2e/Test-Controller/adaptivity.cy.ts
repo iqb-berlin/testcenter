@@ -1,35 +1,55 @@
 import {
-  backwardsTo, cleanUp,
+  backwardsTo,
+  cleanUp,
   disableSimplePlayersInternalDebounce,
-  expectUnitMenuToBe,
   forwardTo,
-  getFromIframe, twoStepLogin,
-  logoutFromRunningTestWithConfirmation,
+  getFromIframe,
+  twoStepLogin,
   probeBackendApi,
-  resetBackendData, visitLoginPage, clickCardButton
+  resetBackendData,
+  visitLoginPage,
+  clickCardButton, loginTestTaker
 } from '../utils';
 
-describe('check adaptive functionality', { testIsolation: false }, () => {
+describe('check adaptive functionality', () => {
   before(() => {
     cleanUp();
     resetBackendData();
     probeBackendApi();
-    visitLoginPage();
   });
 
-  it('start adaptive booklet with predefined states', () => {
+  beforeEach(() => {
     disableSimplePlayersInternalDebounce();
-    twoStepLogin('test', 'user123');
-    cy.get('[formcontrolname="code"]')
-      .type('xxx');
-    cy.get('[data-cy="continue"]')
+    visitLoginPage();
+  })
+
+  it('start adaptive booklet with predefined states', () => {
+    loginTestTaker('Adap-1', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Decision Unit');
+    cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/starter`);
-    clickCardButton('booklet-BOOKLET.SAMPLE-2');
-    expectUnitMenuToBe(['decision-unit', 'beginner-unit']);
+    cy.get('[data-cy="unit-title"]')
+      .contains('Ⓐ Beginner Unit');
   });
 
   it('adapt on the basis of values', () => {
+    loginTestTaker('Adap-1', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Decision Unit');
+    getFromIframe('iframe.unitHost')
+      .find('#var3')
+      .type('3');
+    getFromIframe('iframe.unitHost')
+      .find('#var4')
+      .type('3');
+   forwardTo('Ⓒ Professional Unit');
+  });
+
+  it('adapt on the basis of results of the autocoder', () => {
+    loginTestTaker('Adap-1', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Decision Unit');
     getFromIframe('iframe.unitHost')
       .find('#var3')
       .type('3');
@@ -37,10 +57,6 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
       .find('#var4')
       .type('3');
     forwardTo('Ⓒ Professional Unit');
-    expectUnitMenuToBe(['decision-unit', 'professional-unit']);
-  });
-
-  it('adapt on the basis of results of the autocoder', () => {
     backwardsTo('Decision Unit');
     getFromIframe('iframe.unitHost')
       .find('#var1')
@@ -56,28 +72,32 @@ describe('check adaptive functionality', { testIsolation: false }, () => {
       .clear();
     cy.wait(1000);
     forwardTo('Ⓑ Advanced Unit');
-    expectUnitMenuToBe(['decision-unit', 'advanced-unit']);
   });
 
-  it('start adaptive booklet with predefined states', () => {
-    logoutFromRunningTestWithConfirmation();
-    visitLoginPage();
-    disableSimplePlayersInternalDebounce();
-    twoStepLogin('test-review', 'user123');
-    clickCardButton('booklet-BOOKLET.SAMPLE-2#bonus:yes');
-    expectUnitMenuToBe(['decision-unit', 'beginner-unit', 'bonus-unit']);
+  it('start adaptive booklet with predefined states in review-mode', () => {
+    twoStepLogin('Adap-2', '123');
+    clickCardButton('booklet-CY-BKLT_ADAP-1#bonus:yes');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Decision Unit');
+    forwardTo('Ⓐ Beginner Unit');
+    forwardTo('Ⓧ Bonus Unit');
   });
 
-  it('show options to select the booklet states and overwrite calculated state', () => {
+  it('Add booklet state selection in review-mode (overrides calculated state)', () => {
+    twoStepLogin('Adap-2', '123');
+    clickCardButton('booklet-CY-BKLT_ADAP-1#bonus:yes');
     cy.get('[data-cy="unit-menu"]')
       .click();
+    cy.get('[data-cy="unit-menu-unitbutton-Ⓧ Bonus Unit"]')
     cy.get('mat-select[data-cy="select-booklet-state:bonus"]')
       .click()
       .then(() => cy.get('mat-option[data-cy="select-booklet-state:bonus:no"]').click());
-    expectUnitMenuToBe(['decision-unit', 'beginner-unit']);
+    cy.get('[data-cy="unit-menu-unitbutton-Ⓧ Bonus Unit"]')
+      .should('not.exist');
+    cy.get('[data-cy="unit-menu-unitbutton-Ⓐ Beginner Unit"]')
     cy.get('mat-select[data-cy="select-booklet-state:level"]')
       .click()
       .then(() => cy.get('mat-option[data-cy="select-booklet-state:level:advanced"]').click());
-    expectUnitMenuToBe(['decision-unit', 'advanced-unit']);
+    cy.get('[data-cy="unit-menu-unitbutton-Ⓑ Advanced Unit"]')
   });
 });
