@@ -14,3 +14,5 @@
 - Push helm changes TODO
 <!-- helm push () -->
 <!--   helm package testcenter && helm push testcenter-$(CHART_VERSION).tgz oci://registry-1.docker.io/iqbberlin && rm testcenter-$(CHART_VERSION).tgz -->
+
+install.sh ans release anhaengen
