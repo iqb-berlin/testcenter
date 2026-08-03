@@ -13,6 +13,7 @@
 - Der Hinweistext bei Navigation aus einer Aufgabe im Review-Modus, die ein vollständiges Ansehen oder Beantworten erzwingt (force_presentation/reponse_complete), wurde korrigiert.
 - Die Knöpfe `navbar_forward_button` und `navbar_backward_button` werden nur noch bei gültigen Konfigurationswerten angezeigt (bisher erschienen sie bei jedem Wert außer `HIDDEN`).
 - Seitennavigation über `navbar_forward_button`/`navbar_backward_button`, die den Anfang bzw. das Ende überschreiten werden nun verhindert; stattdessen erscheint ein entsprechender Hinweis.
+- Klick auf das Logo überspringt nun nicht mehr Dialoge in beschränkten Blöcken; z.B. war es vorher möglich das Dialogfenster von zeitbeschränkten Blöcken zu überspringen.
 
 ## Technisches
 - Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable `ADMIN_INIT_PASSWORD` gesetzt werden.
