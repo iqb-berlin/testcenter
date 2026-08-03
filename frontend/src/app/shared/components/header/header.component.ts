@@ -50,7 +50,7 @@ export class HeaderComponent implements OnDestroy {
     ).subscribe(() => {
       this.isLoginRoute = router.url.includes('code-input') ||
                                    router.url.includes('login');
-      this.logoLink = this.isLoginRoute ? ['/r/login'] : ['/r'];
+      this.logoLink = this.isLoginRoute ? ['/r/login'] : ['/r/starter'];
     });
 
     assetService.assetSlots$.subscribe(() => {
