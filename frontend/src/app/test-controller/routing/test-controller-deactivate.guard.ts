@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate, RedirectCommand, Router } from '@angular/router';
+import { CanDeactivate, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { AppError } from '@app/app.interfaces';
 import { MessageService } from '@shared/services/message.service';
 import { TestControllerState, UnitNavigationTarget } from '../interfaces/test-controller.interfaces';
 import { TestControllerComponent } from '../components/test-controller/test-controller.component';
@@ -25,10 +26,10 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
         // in order to correctly return a redirect, instead of hacking (router.navigate + return false)
         if (!this.tcs.booklet) {
-          return new RedirectCommand(
-            this.router.parseUrl(`/t/${this.tcs.testId}/status`),
-            { skipLocationChange: true, state: { force: false } }
-          );
+          throw new AppError({
+            label: 'Kein Booklet gefunden.',
+            description: ''
+          });
         }
         const isLeaveConfirmed = await firstValueFrom(
           this.messageService.showConfirmDialog({
