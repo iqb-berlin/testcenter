@@ -78,8 +78,8 @@ services:
       BRUTE_FORCE_PROTECTION: ${BRUTE_FORCE_PROTECTION:-}
       SERVER_KEY: ${SERVER_KEY}
       <<: [ *env-redis, *env-mysql ]
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
+      MYSQL_HOST: db-post
+      MYSQL_PORT: 5432
       PASSWORD_SALT: ${PASSWORD_SALT}
       PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH}
       PASSWORD_PATTERN: ${PASSWORD_PATTERN}
@@ -115,6 +115,18 @@ services:
     networks:
       testcenter:
 
+  db-post:
+    image: ${DOCKERHUB_PROXY}postgres:18.4
+    <<: *restart-policy
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-${MYSQL_DATABASE}}
+      POSTGRES_USER: ${POSTGRES_USER:-${MYSQL_USER}}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${MYSQL_PASSWORD}}
+    volumes:
+      - db_post_vol:/var/lib/postgresql
+    networks:
+      testcenter:
+
   db:
     image: ${DOCKERHUB_PROXY}mysql:8.4
     <<: *restart-policy
@@ -136,6 +148,7 @@ services:
 
 volumes:
   db_vol:
+  db_post_vol:
   backend_vol:
 
 networks:
