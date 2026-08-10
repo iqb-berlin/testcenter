@@ -551,7 +551,10 @@ export class TestControllerService {
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
     if (!this.booklet) {
-      return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
+      throw new AppError({
+        label: 'Kein Booklet gefunden.',
+        description: ''
+      });
     }
     let navigation: NavigationState;
     switch (navString) {
