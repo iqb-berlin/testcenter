@@ -1,3 +1,8 @@
+#next
+
+## Fehlerbehebungen
+- Workspace-Admin:
+  - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
 # 18.2
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
