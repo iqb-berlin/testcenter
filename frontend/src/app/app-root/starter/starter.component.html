@@ -89,7 +89,7 @@
     }
 
     @if (claims.sysCheck) {
-      <h4>System-Check</h4>
+      <h4>Systemcheck</h4>
       <button *ngFor="let sc of claims.sysCheck" mat-raised-button class="starter"
               [attr.data-cy]="'syscheck-' + sc.id" [routerLink]="['/check', sc.workspaceId, sc.id]">
         <div>{{sc.label}}</div>

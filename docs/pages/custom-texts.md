@@ -16,7 +16,7 @@ listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<Cu
 </CustomTexts>
 ```
 
-## Textersetzungen System-Check
+## Textersetzungen Systemcheck
 {: .no_toc }
 
 Textersetzungen für den System-Check werden im Konfigurationsfeld der **System-Check-XML** angegeben

@@ -19,7 +19,7 @@ export class SysCheckStarterComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mainDataService.appSubTitle$.next('System-Check Auswahl');
+      this.mainDataService.appSubTitle$.next('Systemcheck Auswahl');
       this.loading = true;
       this.bs.getSysCheckInfosAcrossWorkspaces().subscribe(myConfigs => {
         this.checkConfigList = myConfigs || [];

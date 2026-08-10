@@ -81,7 +81,7 @@ export class EditCustomTextsComponent {
         texts: []
       },
       syscheck: {
-        label: 'System-Check',
+        label: 'Systemcheck',
         texts: []
       },
       gm: {

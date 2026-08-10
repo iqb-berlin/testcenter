@@ -57,7 +57,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   typeLabels = {
     Testtakers: 'Teilnehmerlisten',
     Booklet: 'Testhefte',
-    SysCheck: 'System-Check-Definitionen',
+    SysCheck: 'Systemcheck-Definitionen',
     Resource: 'Ressourcen',
     Unit: 'Units'
   };

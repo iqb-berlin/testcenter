@@ -15,7 +15,7 @@
       mat-raised-button
       (click)="deleteReports()"
       [disabled]="!tableSelectionCheckbox.hasValue()"
-      matTooltip="Löschen Berichte für markierte System-Checks"
+      matTooltip="Löschen Berichte für markierte Systemchecks"
       matTooltipPosition="below"
     >
       <mat-icon svgIcon="delete"></mat-icon>
@@ -44,7 +44,7 @@
 
     <ng-container matColumnDef="syscheckLabel">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
-                       [style.justify-content]="'center'">System-Check Name</mat-header-cell>
+                       [style.justify-content]="'center'">Systemcheck Name</mat-header-cell>
       <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.label}} </mat-cell>
     </ng-container>
 
