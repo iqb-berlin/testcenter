@@ -39,7 +39,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         );
         if (isLeaveConfirmed) {
           await this.tcs.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
-          this.terminateTest();
+          await this.terminateTest();
         }
         return isLeaveConfirmed;
       }
@@ -47,8 +47,8 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     return true;
   }
 
-  terminateTest(): void {
-    this.tcs.terminateTest(
+  async terminateTest(): Promise<void> {
+    await this.tcs.terminateTest(
       'BOOKLETLOCKEDbyTESTEE', true, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
