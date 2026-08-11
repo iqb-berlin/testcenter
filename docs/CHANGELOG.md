@@ -1,5 +1,9 @@
 #next
 
+## Änderungen
+- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die
+  Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
+
 ## Fehlerbehebungen
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
