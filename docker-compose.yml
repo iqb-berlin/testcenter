@@ -79,7 +79,7 @@ services:
       SERVER_KEY: ${SERVER_KEY}
       <<: [ *env-redis, *env-mysql ]
       MYSQL_HOST: db
-      MYSQL_PORT: 3306
+      MYSQL_PORT: 5432
       PASSWORD_SALT: ${PASSWORD_SALT}
       PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH}
       PASSWORD_PATTERN: ${PASSWORD_PATTERN}
@@ -116,16 +116,17 @@ services:
       testcenter:
 
   db:
-    image: ${DOCKERHUB_PROXY}mysql:8.4
+    image: ${DOCKERHUB_PROXY}postgres:18.4
     <<: *restart-policy
     environment:
-      <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_INITDB_SKIP_TZINFO: 'true'
+      # The MYSQL_* variables are still the canonical ones in .env; renaming them is a separate step.
+      POSTGRES_DB: ${POSTGRES_DB:-${MYSQL_DATABASE}}
+      POSTGRES_USER: ${POSTGRES_USER:-${MYSQL_USER}}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${MYSQL_PASSWORD}}
     volumes:
-      - db_vol:/var/lib/mysql
+      - db_vol:/var/lib/postgresql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-${MYSQL_USER}}", "-d", "${POSTGRES_DB:-${MYSQL_DATABASE}}", "-h", "127.0.0.1" ]
       start_period: 120s
       start_interval: 5s
       interval: 90s
