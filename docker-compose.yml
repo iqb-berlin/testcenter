@@ -68,7 +68,7 @@ services:
     image: iqbberlin/testcenter-backend:current
     <<: *restart-policy
     depends_on:
-      db:
+      db-post:
         condition: service_healthy
       cache-server:
         condition: service_started
@@ -124,20 +124,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${MYSQL_PASSWORD}}
     volumes:
       - db_post_vol:/var/lib/postgresql
-    networks:
-      testcenter:
-
-  db:
-    image: ${DOCKERHUB_PROXY}mysql:8.4
-    <<: *restart-policy
-    environment:
-      <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_INITDB_SKIP_TZINFO: 'true'
-    volumes:
-      - db_vol:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-${MYSQL_USER}}", "-d", "${POSTGRES_DB:-${MYSQL_DATABASE}}", "-h", "127.0.0.1" ]
       start_period: 120s
       start_interval: 5s
       interval: 90s
@@ -145,6 +133,25 @@ services:
       retries: 3
     networks:
       testcenter:
+
+#  db:
+#    image: ${DOCKERHUB_PROXY}mysql:8.4
+#    <<: *restart-policy
+#    environment:
+#      <<: *env-mysql
+#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#      MYSQL_INITDB_SKIP_TZINFO: 'true'
+#    volumes:
+#      - db_vol:/var/lib/mysql
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin", "ping", "--user", "${MYSQL_USER}", "-h", "127.0.0.1", "--silent" ]
+#      start_period: 120s
+#      start_interval: 5s
+#      interval: 90s
+#      timeout: 30s
+#      retries: 3
+#    networks:
+#      testcenter:
 
 volumes:
   db_vol:
