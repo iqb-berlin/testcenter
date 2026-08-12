@@ -59,8 +59,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains('mat-dialog-container', 'bearbeitet')
-      .find('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="deny-navigation-message"]')
+      .should('contain', 'bearbeitet')
+      .and('not.contain', 'abgespielt');
+    cy.get('[data-cy="close-deny-navigation-message"]')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
@@ -74,9 +76,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains('Aufgabe darf nicht verlassen werden')
+    cy.get('[data-cy="deny-navigation-message"]')
       .should('not.exist');
-    cy.contains('Aufgabe2');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
   });
 
   it('ON: backward', () => {
@@ -96,9 +99,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.contains('Aufgabe2');
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
-    cy.contains('Aufgabe darf nicht verlassen werden')
+    cy.get('[data-cy="deny-navigation-message"]')
       .should('not.exist');
-    cy.contains('Aufgabe1');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
   });
 
   it('ALWAYS: forward', () => {
@@ -109,8 +113,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains('mat-dialog-container', 'bearbeitet')
-      .find('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="deny-navigation-message"]')
+      .should('contain', 'bearbeitet')
+      .and('not.contain', 'abgespielt');
+    cy.get('[data-cy="close-deny-navigation-message"]')
       .click();
     cy.contains('Aufgabe1');
     cy.get('[data-cy="page-navigation-backward"]')
@@ -123,9 +129,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.contains('Aufgabe darf nicht verlassen werden')
+    cy.get('[data-cy="deny-navigation-message"]')
       .should('not.exist');
-    cy.contains('Aufgabe2');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
   });
 
   it('ALWAYS: backward', () => {
@@ -150,8 +157,10 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
-    cy.contains('mat-dialog-container', 'bearbeitet')
-      .find('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="deny-navigation-message"]')
+      .should('contain', 'bearbeitet')
+      .and('not.contain', 'abgespielt');
+    cy.get('[data-cy="close-deny-navigation-message"]')
       .click();
     cy.get('[data-cy="page-navigation-backward"]')
       .click();
@@ -163,6 +172,8 @@ describe.skip('check parameter: response-complete', { testIsolation: true }, () 
     cy.wait(2000);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
+    cy.get('[data-cy="deny-navigation-message"]')
+      .should('not.exist');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1')
   });

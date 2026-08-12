@@ -20,7 +20,7 @@ import { NgTemplateOutlet } from '@angular/common';
   template: `
     <div class="header-line">
       <h2 mat-dialog-title>Anleitung</h2>
-      <button matIconButton mat-dialog-close>
+      <button matIconButton mat-dialog-close data-cy="close-deny-navigation-message">
         <mat-icon svgIcon="close"></mat-icon>
       </button>
     </div>
@@ -28,7 +28,7 @@ import { NgTemplateOutlet } from '@angular/common';
       @if (data.contentTemplate) {
         <ng-container *ngTemplateOutlet="data.contentTemplate"></ng-container>
       } @else {
-        <p>{{ data.content }}</p>
+        <p data-cy="deny-navigation-message"> {{ data.content }}</p>
       }
     </mat-dialog-content>
   `,
