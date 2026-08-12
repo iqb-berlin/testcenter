@@ -13,7 +13,11 @@ import { MessageService } from '@shared/services/message.service';
     <div class="toast-stack" aria-live="polite">
       @for (toast of messageService.toasts(); track toast.id) {
         <div class="toast">
-          <span class="toast-text">{{ toast.text }}</span>
+          <span class="toast-text">
+            @for (segment of toast.segments; track $index) {
+              <span [class.toast-highlight]="segment.emphasized">{{ segment.text }}</span>
+            }
+          </span>
           <button class="toast-action" type="button" (click)="messageService.dismissToast(toast.id)">
             {{ toast.actionText }}
           </button>
@@ -55,6 +59,15 @@ import { MessageService } from '@shared/services/message.service';
       border: none;
       color: var(--mat-sys-inverse-primary);
       cursor: pointer;
+    }
+
+    .toast-highlight {
+      font-family: monospace;
+      font-weight: 700;
+      background: var(--mat-sys-inverse-on-surface);
+      color: var(--mat-sys-inverse-surface);
+      padding: 1px 6px;
+      border-radius: 4px;
     }
   `
 })

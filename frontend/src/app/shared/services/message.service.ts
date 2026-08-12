@@ -35,16 +35,26 @@ export class MessageService {
    *
    * Returns an observable that emits once this particular toast has been dismissed.
    */
-  showSnackbar(text: string, actionText: string = 'Schließen', duration: number = 5000): Observable<void> {
+  showSnackbar(text: ToastContent, actionText: string = 'Schließen', duration: number = 5000): Observable<void> {
     this.toastIdCounter += 1;
     const id = this.toastIdCounter;
     const dismissed$ = new Subject<void>();
     this.dismissSubjects.set(id, dismissed$);
-    this.toasts.update(toasts => [...toasts, { id, text, actionText }]);
+    const segments = MessageService.toSegments(text);
+    this.toasts.update(toasts => [...toasts, { id, segments, actionText }]);
     if (duration > 0) {
       setTimeout((): void => this.dismissToast(id), duration);
     }
     return dismissed$.asObservable();
+  }
+
+  private static toSegments(text: ToastContent): ToastSegment[] {
+    if (typeof text === 'string') {
+      return [{ text }];
+    }
+    return text.map(part => (
+      typeof part === 'string' ? { text: part } : { text: part.emphasized, emphasized: true })
+    );
   }
 
   /** Removes a single toast, e.g. once its action button is clicked. */
@@ -103,6 +113,17 @@ export type ConfirmDialogData = DialogData & {
 // A single stacked toast message, as rendered by `ToastContainerComponent`.
 export interface ToastMessage {
   id: number;
-  text: string;
+  segments: ToastSegment[];
   actionText: string;
 }
+
+// One piece of a toast's text - either rendered plainly, or with emphasis
+// (e.g. a code the user needs to read off) if `emphasized` is set.
+export interface ToastSegment {
+  text: string;
+  emphasized?: boolean;
+}
+
+// `showSnackbar`'s input shape: a plain string, or an array mixing plain
+// strings with `{ emphasized: '...' }` markers for parts that should stand out.
+export type ToastContent = string | (string | { emphasized: string })[];
