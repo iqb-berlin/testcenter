@@ -1,26 +1,17 @@
-import { Injectable, TemplateRef, signal } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { InfoDialogComponent } from '@shared/components/dialog/info-dialog.component';
 import { ThemeService } from '@shared/services/theme.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { ToastContent, ToastService } from '@shared/services/toast.service';
 import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  // We roll our own list instead of Angular Material's `MatSnackBar` because
-  // MatSnackBar can only ever show one message at a time - opening a new one
-  // instantly dismisses whatever is currently shown.
-
-  // Active toast messages, rendered stacked by `ToastContainerComponent`.
-  readonly toasts = signal<ToastMessage[]>([]);
-  private toastIdCounter = 0;
-  // Per-toast "afterDismissed" notifier - replaces what MatSnackBarRef used to provide.
-  private dismissSubjects = new Map<number, Subject<void>>();
-
-  constructor(private dialog: MatDialog,
+  constructor(private dialog: MatDialog, private toastService: ToastService,
               private mds: MainDataService, private themeService: ThemeService) {}
 
   /**
@@ -36,40 +27,7 @@ export class MessageService {
    * Returns an observable that emits once this particular toast has been dismissed.
    */
   showSnackbar(text: ToastContent, actionText: string = 'Schließen', duration: number = 5000): Observable<void> {
-    this.toastIdCounter += 1;
-    const id = this.toastIdCounter;
-    const dismissed$ = new Subject<void>();
-    this.dismissSubjects.set(id, dismissed$);
-    const segments = MessageService.toSegments(text);
-    this.toasts.update(toasts => [...toasts, { id, segments, actionText }]);
-    if (duration > 0) {
-      setTimeout((): void => this.dismissToast(id), duration);
-    }
-    return dismissed$.asObservable();
-  }
-
-  private static toSegments(text: ToastContent): ToastSegment[] {
-    if (typeof text === 'string') {
-      return [{ text }];
-    }
-    return text.map(part => (
-      typeof part === 'string' ? { text: part } : { text: part.emphasized, emphasized: true })
-    );
-  }
-
-  /** Removes a single toast, e.g. once its action button is clicked. */
-  dismissToast(id: number): void {
-    this.toasts.update(toasts => toasts.filter(toast => toast.id !== id));
-    const dismissed$ = this.dismissSubjects.get(id);
-    // The auto-dismiss setTimeout scheduled in showSnackbar() is never cancelled,
-    // so dismissToast() can genuinely run twice for the same id - once from an
-    // early dismissal (e.g. action click) and once when the stale timer still
-    // fires afterwards. The `if` below is what makes that harmless.
-    if (dismissed$) {
-      dismissed$.next();
-      dismissed$.complete();
-      this.dismissSubjects.delete(id);
-    }
+    return this.toastService.showSnackbar(text, actionText, duration);
   }
 
   showConfirmDialog(dialogData: ConfirmDialogData): Observable<boolean> {
@@ -109,21 +67,3 @@ export type ConfirmDialogData = DialogData & {
   cancelText? : string;
   safeMode?: boolean;
 };
-
-// A single stacked toast message, as rendered by `ToastContainerComponent`.
-export interface ToastMessage {
-  id: number;
-  segments: ToastSegment[];
-  actionText: string;
-}
-
-// One piece of a toast's text - either rendered plainly, or with emphasis
-// (e.g. a code the user needs to read off) if `emphasized` is set.
-export interface ToastSegment {
-  text: string;
-  emphasized?: boolean;
-}
-
-// `showSnackbar`'s input shape: a plain string, or an array mixing plain
-// strings with `{ emphasized: '...' }` markers for parts that should stand out.
-export type ToastContent = string | (string | { emphasized: string })[];

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { MessageService } from '@shared/services/message.service';
+import { ToastService } from '@shared/services/toast.service';
 
-// Renders all currently active `MessageService.showSnackbar(...)` messages as a
+// Renders all currently active `ToastService.showSnackbar(...)` messages as a
 // vertically stacked list of toasts, so several messages triggered in quick
 // succession stay visible at once instead of replacing each other (which is
 // the built-in limit of Angular Material's `MatSnackBar`).
@@ -11,14 +11,14 @@ import { MessageService } from '@shared/services/message.service';
   imports: [],
   template: `
     <div class="toast-stack" aria-live="polite">
-      @for (toast of messageService.toasts(); track toast.id) {
+      @for (toast of toastService.toasts(); track toast.id) {
         <div class="toast">
           <span class="toast-text">
             @for (segment of toast.segments; track $index) {
               <span [class.toast-highlight]="segment.emphasized">{{ segment.text }}</span>
             }
           </span>
-          <button class="toast-action" type="button" (click)="messageService.dismissToast(toast.id)">
+          <button class="toast-action" type="button" (click)="toastService.dismissToast(toast.id)">
             {{ toast.actionText }}
           </button>
         </div>
@@ -72,5 +72,5 @@ import { MessageService } from '@shared/services/message.service';
   `
 })
 export class ToastContainerComponent {
-  constructor(public messageService: MessageService) {}
+  constructor(public toastService: ToastService) {}
 }
