@@ -3,6 +3,8 @@
 ## Änderungen
 - Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die
   Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
+- Kurzmeldungen (Snackbar), die kurz nacheinander ausgelöst werden, werden nun gestapelt angezeigt, statt dass eine
+  neue Meldung die vorherige sofort ersetzt.
 
 ## Fehlerbehebungen
 - Workspace-Admin:

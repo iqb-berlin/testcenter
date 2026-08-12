@@ -39,6 +39,7 @@ import { TestModeInterceptor } from './test-mode.interceptor';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { TestCardComponent } from './app-root/starter/test-card.component';
+import { ToastContainerComponent } from './shared/components/toast/toast-container.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { TestCardComponent } from './app-root/starter/test-card.component';
     AppRoutingModule,
     SharedModule,
     CdkAccordionModule,
-    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent, ErrorComponent, CustomtextPipe],
+    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent, ErrorComponent, CustomtextPipe,
+    ToastContainerComponent],
   providers: [
     BackendService,
     MatDialog,

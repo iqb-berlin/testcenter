@@ -121,7 +121,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
                   'Kennwort erfolgreich geändert. Sie werden abgemeldet.' :
                   'Fehler beim Ändern des Kennworts. Sie werden abgemeldet.';
                 this.ms.showSnackbar(messageText)
-                  .afterDismissed()
                   .subscribe(() => this.mds.logOut());
               });
           });
@@ -174,7 +173,6 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(result => {
         if (result) {
           this.ms.showSnackbar('Kennwort erfolgreich geändert. Sie werden abgemeldet.')
-            .afterDismissed()
             .subscribe(() => this.mds.logOut());
         }
       });
