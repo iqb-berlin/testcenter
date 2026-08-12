@@ -33,6 +33,7 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { PageService } from '../../services/page.service';
 import { VeronaAPIService } from '../../services/verona-api.service';
+import { MessageService } from '@app/shared/services/message.service';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -65,6 +66,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               private apiService: VeronaAPIService,
               @Inject('FILE_SERVER_URL') private readonly fileServerUrl: string,
               public themeService: ThemeService, public assetService: AssetService,
+              private messageService: MessageService,
               private bs: BackendService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -362,8 +364,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private runUnit(): void {
     if (this.tcs.currentUnit && this.tcs.currentUnit.parent.locked) {
-      if (this.tcs.testMode.presetCode) {
-        this.clearCode = this.tcs.currentUnit.parent.locked?.through.restrictions.codeToEnter?.code || '';
+      if (this.tcs.testMode.showCode) {
+        this.messageService.showSnackbar(
+          [
+            'Das Freigabewort lautet ',
+            { emphasized: this.tcs.currentUnit.parent.locked?.through.restrictions.codeToEnter?.code ?? '' }
+          ],
+          'Schließen',
+          0
+        );
       }
       return;
     }
