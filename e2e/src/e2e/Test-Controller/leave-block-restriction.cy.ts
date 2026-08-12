@@ -37,7 +37,7 @@ describe('check LockAfterLeaving: confirm: true & scope = unit', { testIsolation
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe2');
     cy.get('[data-cy="unit-navigation-backward"]')
-      .should('have.attr', 'aria-disabled', 'true');
+      .should('have.attr', 'disabled');
   });
 });
 
@@ -78,6 +78,6 @@ describe('check LockAfterLeaving: confirm: false & scope = testlet', { testIsola
     cy.get('[data-cy="unit-title"]')
       .contains('Endseite');
     cy.get('[data-cy="unit-navigation-backward"]')
-      .should('have.attr', 'aria-disabled', 'true');
+      .should('have.attr', 'disabled');
   });
 });
