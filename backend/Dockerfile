@@ -12,13 +12,24 @@ RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
 WORKDIR /usr/src/testcenter/backend
-COPY backend/src ./src/
-COPY backend/test/unit/test-helper ./test/unit/test-helper
 
+# resolving and downloading the dependencies depends on composer.lock alone, so it
+# is done before the code is copied and stays cached across source code changes
 RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
     --mount=type=bind,source=backend/composer.lock,target=composer.lock \
     --mount=type=cache,target=/tmp/cache \
     composer install \
+      --no-interaction \
+      --no-autoloader \
+      --ignore-platform-reqs
+
+COPY backend/src ./src/
+COPY backend/test/unit/test-helper ./test/unit/test-helper
+
+# the classmap is the only part of the autoloader that needs the code
+RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
+    --mount=type=bind,source=backend/composer.lock,target=composer.lock \
+    composer dump-autoload \
       --no-interaction \
       --ignore-platform-reqs
 
@@ -31,12 +42,23 @@ RUN mkdir -p /var/www/testcenter/data/.schemas
 COPY scripts/download-schemas.sh /tmp/download-schemas.sh
 RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
 
-COPY backend/src ./src/
-
+# resolving and downloading the dependencies depends on composer.lock alone, so it
+# is done before the code is copied and stays cached across source code changes
 RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
     --mount=type=bind,source=backend/composer.lock,target=composer.lock \
     --mount=type=cache,target=/tmp/cache \
     composer install \
+      --no-interaction \
+      --no-dev \
+      --no-autoloader \
+      --ignore-platform-reqs
+
+COPY backend/src ./src/
+
+# the classmap is the only part of the autoloader that needs the source code
+RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
+    --mount=type=bind,source=backend/composer.lock,target=composer.lock \
+    composer dump-autoload \
       --no-interaction \
       --no-dev \
       --ignore-platform-reqs
