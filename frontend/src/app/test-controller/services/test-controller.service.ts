@@ -902,7 +902,11 @@ export class TestControllerService {
       return of(true);
     }
 
-    if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
+    if (skipIfNoTimeRestrictionEnforcement(
+      'Im normalen Testablauf wird beim Verlassen des zeitbegrenzten Blocks eine Warnung angezeigt.'
+    )) {
+      return of(true);
+    }
 
     return this.messageService.showConfirmDialog({
       title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
