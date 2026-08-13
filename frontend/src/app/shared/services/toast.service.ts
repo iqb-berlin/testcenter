@@ -9,7 +9,6 @@ export class ToastService {
   // MatSnackBar can only ever show one message at a time - opening a new one
   // instantly dismisses whatever is currently shown.
 
-  // Active toast messages, rendered stacked by `ToastContainerComponent`.
   readonly toasts = signal<ToastMessage[]>([]);
   private toastIdCounter = 0;
   // Per-toast "afterDismissed" notifier - replaces what MatSnackBarRef used to provide.
@@ -37,7 +36,6 @@ export class ToastService {
     );
   }
 
-  /** Removes a single toast, e.g. once its action button is clicked. */
   dismissToast(id: number): void {
     this.toasts.update(toasts => toasts.filter(toast => toast.id !== id));
     const dismissed$ = this.dismissSubjects.get(id);
@@ -53,19 +51,15 @@ export class ToastService {
   }
 }
 
-// A single stacked toast message, as rendered by `ToastContainerComponent`.
 export interface ToastMessage {
   id: number;
   segments: ToastSegment[];
   actionText: string;
 }
 
-// One piece of a toast's text - rendered with emphasis if `emphasized` is set.
 export interface ToastSegment {
   text: string;
   emphasized?: boolean;
 }
 
-// `showSnackbar`'s input shape: a plain string, or an array mixing plain
-// strings with `{ emphasized: '...' }` markers for parts that should stand out.
 export type ToastContent = string | (string | { emphasized: string })[];
