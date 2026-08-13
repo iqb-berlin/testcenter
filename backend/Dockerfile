@@ -78,21 +78,22 @@ RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
 FROM system AS base
 # Copy backend code
 WORKDIR /var/www/testcenter/backend/
+
 RUN chown -R www-data:www-data /var/www
 RUN mkdir ./config && chown www-data:www-data ./config
+RUN mkdir -p ../data/.schemas && chown -R www-data:www-data ../data
+COPY --chown=www-data:www-data --from=schema-downloader /var/www/testcenter/data/.schemas/ ../data/.schemas/
+
+COPY --chown=www-data:www-data definitions ../definitions
+COPY --chown=www-data:www-data scripts/database ../scripts/database
+COPY --chown=www-data:www-data sampledata ../sampledata
+COPY --chown=www-data:www-data package.json ../package.json
 
 COPY --chown=www-data:www-data backend/.htaccess .
 COPY --chown=www-data:www-data backend/index.php .
 COPY --chown=www-data:www-data backend/initialize.php .
 COPY --chown=www-data:www-data backend/routes.php .
 COPY --chown=www-data:www-data backend/src ./src
-
-RUN mkdir -p ../data/.schemas && chown -R www-data:www-data ../data
-COPY --chown=www-data:www-data --from=schema-downloader /var/www/testcenter/data/.schemas/ ../data/.schemas/
-COPY --chown=www-data:www-data definitions ../definitions
-COPY --chown=www-data:www-data package.json ../package.json
-COPY --chown=www-data:www-data sampledata ../sampledata
-COPY --chown=www-data:www-data scripts/database ../scripts/database
 
 VOLUME /var/www/testcenter/data
 EXPOSE 8080
