@@ -1,19 +1,6 @@
 # PR policy
 
-This document collects bespoke workflows and checklists that are required before a pull request is considered complete and ready for human review. It focuses on objectively reviewable artefacts. For code style and project taste, consult the appropriate AGENTS.md file in each module.
-
-## Deployment changes
-
-Whenever anything deployment-related (eg. .env files, Docker compose, nginx.conf, angular.json) is changed, apply the same changes the Kubernetes deployment files in `scripts/helm/testcenter` and corresponding `scripts/helm/testcenter/values.yaml`
-
-## Generated documentation and interfaces
-
-When touching any JSON file in `definitions`, regenerate the associated documentation and interfaces:
-
-```sh
-make update-docs
-make create-interfaces
-```
+This document collects bespoke workflows and checklists that are required before a pull request is considered complete and ready for human review. It focuses on objectively reviewable artefacts. For code style and project taste, consult the appropriate AGENTS.md file in each module and the files under docs/agents.
 
 ## Database changes
 
@@ -33,4 +20,3 @@ Before opening a PR, add an entry to `CHANGELOG.md`.
 ## Tests
 
 - have sufficient tests to secure the committed changes (e2e tests, unit tests, api tests)
-- 
