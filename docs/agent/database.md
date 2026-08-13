@@ -1,0 +1,4 @@
+- When writing SQL queries (in .php and .sql), use ALLCAPS for SQL keywords
+- Base database-related changes only on the table shape in `scripts/database/full.sql`; current database contents are unavailable.
+- when modifying the number of rows of any sql table within the sampledata, make sure to adapt calls to 'expect_table_to_have_rows' in all scripts in backend/test/initialization/tests/general
+- Migrations: SQL patches go in `scripts/patches.d/`. Seeds go in `backend/test/unit/testdata.sql` (INSERT statements only).

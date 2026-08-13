@@ -1,0 +1,1 @@
+- Whenever anything deployment-related (eg. .env files, Docker compose, nginx.conf) is changed, apply the same changes the Kubernetes deployment files in `scripts/helm/testcenter` and corresponding `scripts/helm/testcenter/values.yaml`

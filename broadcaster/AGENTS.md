@@ -1,1 +1,0 @@
-- Prefer `type` to `interface` when writing TS types. Ensure JS Docs are concise. Follow the Hemingway Test as a guide.
