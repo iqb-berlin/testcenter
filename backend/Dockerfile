@@ -42,7 +42,7 @@ RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
       --ignore-platform-reqs
 
 
-FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS base
+FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS system
 # Install PHP extensions
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -67,6 +67,15 @@ COPY backend/config/security.conf /etc/apache2/conf-available
 RUN a2enconf security
 RUN sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
 
+
+# dev extensions are built here, before any application code is copied, so that
+# code changes do not invalidate the (slow) xdebug/pcntl compilation
+FROM system AS dev-extension
+RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
+
+
+FROM system AS base
 # Copy backend code
 WORKDIR /var/www/testcenter/backend/
 RUN mkdir ./config
@@ -96,9 +105,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 
 FROM base AS dev
-# Install PHP dev extensions
-RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
-RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
+# copy PHP dev extensions built in the dev-extension stage to the right spot
+COPY --from=dev-extension /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=dev-extension /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 # Copy dev dependencies
 COPY --chown=www-data:www-data --from=dev-composer /usr/src/testcenter/backend/vendor/ vendor/
