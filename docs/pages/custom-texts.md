@@ -19,7 +19,7 @@ listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<Cu
 ## Textersetzungen Systemcheck
 {: .no_toc }
 
-Textersetzungen für den System-Check werden im Konfigurationsfeld der **System-Check-XML** angegeben
+Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemcheck-XML** angegeben
 .
 ```
 <Config>
@@ -310,7 +310,7 @@ Texte für den System-Check.
 
 ## `syscheck_intro`
 
-Text auf der ersten Seite des System-Checks
+Text auf der ersten Seite des Systemchecks
 
 Standard: Dieser Systemcheck soll gewährleisten, dass das von Ihnen verwendete Endgerät für eine bestimmte Befragung oder Testung geeignet ist.
 
@@ -330,7 +330,7 @@ Standard: Bitte bearbeiten Sie die nachfolgenden Fragen.
 
 Dialog 'Bericht senden': Text über das Passworteingabefeld
 
-Standard: Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!
+Standard: Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Systemcheck-Kennwort ein, das Sie von der Projektleitung erhalten haben!
 
 ## `syscheck_report_aboutReportId`
 
