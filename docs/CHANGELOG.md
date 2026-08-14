@@ -65,6 +65,8 @@ folgenden Punkten:
 - Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht
   auf das Stopp-Signal, wurde nach 10 Sekunden per SIGKILL beendet (Exit-Code 137) und brach dabei laufende
   Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden weniger.
+- Backend: Anfragen an nicht existierende Routen lieferten einen 404-Fehler ohne Body-Text zurück. Dies war die einzige Fehlerantwort des Backends ohne Text und somit inkonsistent zu allen anderen Fehlerfällen. Nicht existierende Routen werden nun wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern ebenfalls einen Text im Body.
+- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
 
 # 18.3.0
 
@@ -121,7 +123,6 @@ folgenden Punkten:
   Token hat keine Funktion mehr und sollte ggf. widerrufen werden.
 - Alle Logs, die in die Log-Datei des Adminbereichs geschrieben werden, sind nun dokumentiert:
   `docs/pages/logging.md`.
-- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
 
 # 18.2
 ## Neue Funktionen

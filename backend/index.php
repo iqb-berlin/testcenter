@@ -78,11 +78,6 @@ try {
 
   include_once 'routes.php';
 
-  $app->any('/{path:.*}', function (Request $request, Response $response): Response {
-    return $response
-      ->withStatus(404);
-  });
-
   $app->run();
 
 } catch (Throwable $e) {
