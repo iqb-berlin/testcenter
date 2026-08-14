@@ -78,7 +78,7 @@ try {
 
   if ($args['overwrite_existing_installation'] or ($dbStatus['tables'] == 'empty')) {
     CLI::p("Install basic database structure");
-    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/full.postgres.sql");
   }
 
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
