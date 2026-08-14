@@ -90,7 +90,7 @@ class DAO {
 
   public function getDBSchemaVersion(): string {
     try {
-      $result = $this->_("select `value` from meta where metaKey = 'dbSchemaVersion'");
+      $result = $this->_("SELECT `value` FROM meta WHERE metaKey = 'dbSchemaVersion'");
       return $result['value'] ?? '0.0.0-no-entry';
 
     } catch (Exception) {
