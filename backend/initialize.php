@@ -88,17 +88,15 @@ try {
     echo ": DB Schema is uptodate";
   } else {
     CLI::p("Looking for new patches to install.");
-    $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-    $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", $allowFailing);
+    $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
     foreach ($patchInstallReport['patches'] as $patch) {
       if (isset($patchInstallReport['errors'][$patch])) {
         CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
-
       } else {
         CLI::success("* $patch: installed successfully.");
       }
     }
-    if (count($patchInstallReport['errors']) and !$allowFailing) {
+    if (count($patchInstallReport['errors'])) {
       throw new Exception('Installing database patches failed.');
     }
   }

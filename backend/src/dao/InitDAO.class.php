@@ -315,7 +315,7 @@ class InitDAO extends SessionDAO {
     ];
   }
 
-  public function installPatches(string $patchesDir, bool $allowFailing): array {
+  public function installPatches(string $patchesDir): array {
     $report = [
       'patches' => [],
       'errors' => []
@@ -357,9 +357,7 @@ class InitDAO extends SessionDAO {
       } catch (PDOException $exception) {
         $report['errors'][$patch] = $exception->getMessage();
 
-        if (!$allowFailing) {
-          return $report;
-        }
+        return $report;
       }
     }
 
