@@ -121,6 +121,7 @@ folgenden Punkten:
   Token hat keine Funktion mehr und sollte ggf. widerrufen werden.
 - Alle Logs, die in die Log-Datei des Adminbereichs geschrieben werden, sind nun dokumentiert:
   `docs/pages/logging.md`.
+- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
 
 # 18.2
 ## Neue Funktionen

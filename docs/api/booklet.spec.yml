@@ -34,12 +34,28 @@ paths:
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?><Booklet..."
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /booklet/{booklet_name}/data:
     get:
@@ -73,9 +89,25 @@ paths:
                 label: "Booklet's little label"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
