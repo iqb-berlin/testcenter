@@ -108,137 +108,138 @@ try {
   $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
 
+  // todo postgres is full.sql still needed after migration
   // tables is 'complete', if the current database has all tables, declared in self::tables; not the case for initialize/general scripts that test incomplete table states
   if ($newDbStatus['tables'] === 'complete') {
     $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
   }
 
-  CLI::h2("Workspaces");
-
-  if (!file_exists(DATA_DIR)) {
-    mkdir(DATA_DIR);
-    CLI::success("Data-Directory created: `" . DATA_DIR . "`");
-  }
-
-  $initializer = new WorkspaceInitializer();
-
-  if ($args['overwrite_existing_installation']) {
-    foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
-      $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
-        return $carry + $item;
-      }, 0);
-
-      $initializer->cleanWorkspace($workspace->getId());
-      CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
-
-      Folder::deleteContentsRecursive($workspace->getWorkspacePath());
-    }
-  }
-
-  $workspaceIds = [];
-
-  foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
-    $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
-    $workspaceIds[] = $workspaceData['id'];
-    CLI::h3("Workspace `{$workspaceData['name']}`");
-    if (isset($workspaceData['restored'])) {
-      CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
-    }
-
-    if (!$args['skip_read_workspace_files']) {
-      $t1 = microtime(true);
-
-      $currentHashOfFiles = $workspace->getWorkspaceHash();
-      if ($workspace->hasFilesChanged($currentHashOfFiles)) {
-        $stats = $workspace->storeAllFiles();
-        $workspace->setWorkspaceHash();
-        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
-
-        $statsString = implode(
-          ", ",
-          array_filter(
-            array_map(
-              function($key, $value) {
-                return $value ? "$key: $value" : null;
-              },
-              array_keys($stats['valid']),
-              array_values($stats['valid']),
-            )
-          )
-        );
-        $t2 = microtime(true);
-        $duration = $t2 - $t1;
-        CLI::p("Files found: " . $statsString);
-        CLI::p("Processing time: $duration sec.");
-
-        if ($stats['invalid']) {
-          CLI::warning("Invalid files found: {$stats['invalid']}");
-        }
-        $i = 0;
-        foreach ($stats['reports'] as $file => $report) {
-          if ($i++ > 4) {
-            CLI::warning('.. and ' . ($stats['invalid'] - 5) . ' more.');
-            break;
-          }
-          CLI::warning(' - ' . $file);
-          foreach ($report as $entry) {
-            CLI::warning('   - ' . $entry);
-          }
-        }
-
-      } else {
-        CLI::p("No changes in files detected.");
-      }
-    }
-  }
-
-  if (!count($workspaceIds) and !$args['dont_create_sample_data']) {
-    $sampleWorkspaceId = $initDAO->createWorkspace('Sample Workspace');
-    $sampleWorkspace = new Workspace($sampleWorkspaceId);
-
-    CLI::success("Sample Workspace as `ws_$sampleWorkspaceId` created");
-
-    $initializer->importSampleFiles($sampleWorkspaceId);
-
-    if (!$args['skip_read_workspace_files']) {
-      $stats = $sampleWorkspace->storeAllFiles();
-      $sampleWorkspace->setWorkspaceHash();
-      array_map(
-        fn($k, $v) => CLI::p("$v ($k) files were stored."),
-        array_keys($stats['valid']),
-        array_values($stats['valid'])
-      );
-    }
-
-    CLI::success("Sample content files created.");
-
-    $workspaceIds[] = $sampleWorkspaceId;
-  }
-
-  CLI::h2("Sys-Admin");
-
-  if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
-    CLI::warning("No Sys-Admin found.");
-
-    $initial_admin_password = SystemConfig::$admin_init_password;
-    $adminId = $initDAO->createAdmin('super', $initial_admin_password);
-    CLI::success("Sys-Admin \"super\" created.");
-
-    $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
-    foreach ($workspaceIds as $workspaceId) {
-      CLI::p("Workspace `ws_$workspaceId` added to \"super\".");
-    }
-
-  } else {
-    CLI::p("At least one Sys-Admin found; nothing to do.");
-  }
-
-  $bsStatus = BroadcastService::getStatus();
-  if ($bsStatus == 'online') {
-    CLI::h2("Flashing Broadcaster");
-    BroadcastService::send('system/clean');
-  }
-
+//  CLI::h2("Workspaces");
+//
+//  if (!file_exists(DATA_DIR)) {
+//    mkdir(DATA_DIR);
+//    CLI::success("Data-Directory created: `" . DATA_DIR . "`");
+//  }
+//
+//  $initializer = new WorkspaceInitializer();
+//
+//  if ($args['overwrite_existing_installation']) {
+//    foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+//      $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
+//        return $carry + $item;
+//      }, 0);
+//
+//      $initializer->cleanWorkspace($workspace->getId());
+//      CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
+//
+//      Folder::deleteContentsRecursive($workspace->getWorkspacePath());
+//    }
+//  }
+//
+//  $workspaceIds = [];
+//
+//  foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+//    $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
+//    $workspaceIds[] = $workspaceData['id'];
+//    CLI::h3("Workspace `{$workspaceData['name']}`");
+//    if (isset($workspaceData['restored'])) {
+//      CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
+//    }
+//
+//    if (!$args['skip_read_workspace_files']) {
+//      $t1 = microtime(true);
+//
+//      $currentHashOfFiles = $workspace->getWorkspaceHash();
+//      if ($workspace->hasFilesChanged($currentHashOfFiles)) {
+//        $stats = $workspace->storeAllFiles();
+//        $workspace->setWorkspaceHash();
+//        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+//
+//        $statsString = implode(
+//          ", ",
+//          array_filter(
+//            array_map(
+//              function($key, $value) {
+//                return $value ? "$key: $value" : null;
+//              },
+//              array_keys($stats['valid']),
+//              array_values($stats['valid']),
+//            )
+//          )
+//        );
+//        $t2 = microtime(true);
+//        $duration = $t2 - $t1;
+//        CLI::p("Files found: " . $statsString);
+//        CLI::p("Processing time: $duration sec.");
+//
+//        if ($stats['invalid']) {
+//          CLI::warning("Invalid files found: {$stats['invalid']}");
+//        }
+//        $i = 0;
+//        foreach ($stats['reports'] as $file => $report) {
+//          if ($i++ > 4) {
+//            CLI::warning('.. and ' . ($stats['invalid'] - 5) . ' more.');
+//            break;
+//          }
+//          CLI::warning(' - ' . $file);
+//          foreach ($report as $entry) {
+//            CLI::warning('   - ' . $entry);
+//          }
+//        }
+//
+//      } else {
+//        CLI::p("No changes in files detected.");
+//      }
+//    }
+//  }
+//
+//  if (!count($workspaceIds) and !$args['dont_create_sample_data']) {
+//    $sampleWorkspaceId = $initDAO->createWorkspace('Sample Workspace');
+//    $sampleWorkspace = new Workspace($sampleWorkspaceId);
+//
+//    CLI::success("Sample Workspace as `ws_$sampleWorkspaceId` created");
+//
+//    $initializer->importSampleFiles($sampleWorkspaceId);
+//
+//    if (!$args['skip_read_workspace_files']) {
+//      $stats = $sampleWorkspace->storeAllFiles();
+//      $sampleWorkspace->setWorkspaceHash();
+//      array_map(
+//        fn($k, $v) => CLI::p("$v ($k) files were stored."),
+//        array_keys($stats['valid']),
+//        array_values($stats['valid'])
+//      );
+//    }
+//
+//    CLI::success("Sample content files created.");
+//
+//    $workspaceIds[] = $sampleWorkspaceId;
+//  }
+//
+//  CLI::h2("Sys-Admin");
+//
+//  if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
+//    CLI::warning("No Sys-Admin found.");
+//
+//    $initial_admin_password = SystemConfig::$admin_init_password;
+//    $adminId = $initDAO->createAdmin('super', $initial_admin_password);
+//    CLI::success("Sys-Admin \"super\" created.");
+//
+//    $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
+//    foreach ($workspaceIds as $workspaceId) {
+//      CLI::p("Workspace `ws_$workspaceId` added to \"super\".");
+//    }
+//
+//  } else {
+//    CLI::p("At least one Sys-Admin found; nothing to do.");
+//  }
+//
+//  $bsStatus = BroadcastService::getStatus();
+//  if ($bsStatus == 'online') {
+//    CLI::h2("Flashing Broadcaster");
+//    BroadcastService::send('system/clean');
+//  }
+//
   CLI::h1("Ready.");
 
 } catch (InvalidArgumentException $e) {
