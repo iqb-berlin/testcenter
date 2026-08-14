@@ -149,7 +149,7 @@ class TestEnvironment {
     $initDAO = new InitDAO();
     $initDAO->clearDB();
     $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
-    $report = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
+    $report = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
     if (count($report['errors'])) {
       $errors = [];
       foreach ($report['errors'] as $patch => $error) {
