@@ -223,16 +223,12 @@ class InitDAO extends SessionDAO {
   public function clearDB(): array {
     $droppedTables = [];
 
-    $this->_('SET FOREIGN_KEY_CHECKS = 0');
-
     foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
       if ($this->getTableStatus($table) !== 'missing') {
         $droppedTables[] = $table;
-        $this->_("drop table $table");
+        $this->_("DROP TABLE IF EXISTS $table CASCADE");
       }
     }
-
-    $this->_('SET FOREIGN_KEY_CHECKS = 1');
 
     return $droppedTables;
   }
