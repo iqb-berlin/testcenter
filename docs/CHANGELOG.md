@@ -10,6 +10,11 @@
 ## Fehlerbehebungen
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
+
+## Technisches
+- Backend: Anfragen an nicht existierende Routen lieferten einen 404-Fehler ohne Body-Text zurück. Dies war die einzige Fehlerantwort des Backends ohne Text und somit inkonsistent zu allen anderen Fehlerfällen. Nicht existierende Routen werden nun wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern ebenfalls einen Text im Body.
+- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
+
 # 18.2
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
