@@ -430,8 +430,4 @@ class InitDAO extends SessionDAO {
     $this->setMeta('appConfig', 'aKey', 'newValue');
   }
 
-  public function checkSQLMode(): bool {
-    $d = $this->_("select 'a' || 'b' as merged")['merged'];
-    return $d === 'ab';
-  }
 }
