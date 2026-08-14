@@ -10,6 +10,10 @@
 ## Fehlerbehebungen
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
+
+## Technisches
+- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
+
 # 18.2
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
