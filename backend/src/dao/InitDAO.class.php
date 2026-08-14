@@ -233,16 +233,6 @@ class InitDAO extends SessionDAO {
     return $droppedTables;
   }
 
-  public function cloneDB(string $prodDBName): void {
-    $this->clearDB();
-
-    foreach ($this::tables as $table) {
-      $creationString = $this->_("show create table $prodDBName.$table")['Create Table'];
-      $this->_($creationString);
-      $this->_("truncate $table"); // to reset auto-increment
-    }
-  }
-
   // TODO unit-test
   public function getDbStatus(): array {
     $tableStatus = [
@@ -275,7 +265,7 @@ class InitDAO extends SessionDAO {
 
   protected function getTableStatus(string $table): string {
     try {
-      $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+      $entries = $this->_("SELECT * FROM $table LIMIT 10", [], true);
       return count($entries) ? 'used' : 'empty';
 
     } catch (Exception) {

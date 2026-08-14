@@ -82,13 +82,12 @@ try {
   }
 
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
-  $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
+  $isCurrentVersion = Version::compare($dbSchemaVersion) >= 0; // 1 : DB is current version!, -1 : DB is outdated
   CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
-  if ($isCurrentVersion >= 0) {
-    echo ": O.K.";
-
+  if ($isCurrentVersion) {
+    echo ": DB Schema is uptodate";
   } else {
-    CLI::p("Install patches if necessary");
+    CLI::p("Looking for new patches to install.");
     $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
     $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", $allowFailing);
     foreach ($patchInstallReport['patches'] as $patch) {
