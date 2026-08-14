@@ -117,11 +117,11 @@ values (4, 1, 'COMMAND_B', '', 3, '2020-08-20 07:23:20');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp)
 values (1, 2, 'COMMAND_X', '', 3, '2020-08-20 07:40:00');
 
-insert into meta(category, metaKey, value) values ('cat1', 'keyA', 'valueA');
-insert into meta(category, metaKey, value) values ('cat1', 'keyB', 'valueB');
-insert into meta(category, metaKey, value) values ('cat2', 'keyA', 'valueA');
-insert into meta(category, metaKey, value) values ('cat2', 'keyB', 'valueB');
-insert into meta(category, metaKey, value) values (null, 'key-no-cat', 'value-no-cat');
+insert into meta(category, "metaKey", value) values ('cat1', 'keyA', 'valueA');
+insert into meta(category, "metaKey", value) values ('cat1', 'keyB', 'valueB');
+insert into meta(category, "metaKey", value) values ('cat2', 'keyA', 'valueA');
+insert into meta(category, "metaKey", value) values ('cat2', 'keyB', 'valueB');
+insert into meta(category, "metaKey", value) values (null, 'key-no-cat', 'value-no-cat');
 
 insert into files(workspace_id, name, id, label, description, type, modification_ts, is_valid, size)
 values(1, 'Booklet.xml', 'BOOKLET.SAMPLE-1', 'Sample Booklet Label', 'Desc', 'Booklet', '2023-01-16 09:00:00', 1, 195);

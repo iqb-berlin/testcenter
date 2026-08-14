@@ -375,12 +375,12 @@ class InitDAO extends SessionDAO {
 
     if ($currentDBSchemaVersion == '0.0.0-no-entry') {
       $this->_(
-        "insert into meta (metaKey, value) values ('dbSchemaVersion', :new_version)",
+        "insert into meta (\"metaKey\", value) values ('dbSchemaVersion', :new_version)",
         [':new_version' => $newVersion]
       );
     } else {
       $this->_(
-        "update meta set value = :new_version where metaKey = 'dbSchemaVersion'",
+        "update meta set value = :new_version where \"metaKey\" = 'dbSchemaVersion'",
         [':new_version' => $newVersion]
       );
     }

@@ -5,8 +5,8 @@ source backend/test/initialization/functions/functions.sh
   echo_h1 "New installation of current Version";
 
   create_patch 7.0.0 "totally not valid sql"
-  create_patch 10.0.9998 "insert into meta (metaKey, value) VALUES ('but me,', 'i have to be there');"
-  create_patch 10.0.9999 "insert into meta (metaKey, value) VALUES ('and me', 'too');"
+  create_patch 10.0.9998 "insert into meta (\"metaKey\", value) VALUES ('but me,', 'i have to be there');"
+  create_patch 10.0.9999 "insert into meta (\"metaKey\", value) VALUES ('and me', 'too');"
 
   take_current_version
 

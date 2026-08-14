@@ -90,7 +90,7 @@ class DAO {
 
   public function getDBSchemaVersion(): string {
     try {
-      $result = $this->_("SELECT `value` FROM meta WHERE metaKey = 'dbSchemaVersion'");
+      $result = $this->_("SELECT value FROM meta WHERE \"metaKey\" = 'dbSchemaVersion'");
       return $result['value'] ?? '0.0.0-no-entry';
 
     } catch (Exception) {
@@ -112,11 +112,11 @@ class DAO {
   }
 
   public function setMeta(string $category, string $key, ?string $value): void {
-    $currentValue = $this->_("select `value` from meta where metaKey = :key", [':key' => $key]);
+    $currentValue = $this->_('select `value` from meta where "metaKey" = :key', [':key' => $key]);
 
     if (!$currentValue) {
       $this->_(
-        "insert into meta (category, metaKey, value) values (:category, :key, :value)",
+        'insert into meta (category, "metaKey", value) values (:category, :key, :value)',
         [
           ':key' => $key,
           ':category' => $category,
@@ -125,7 +125,7 @@ class DAO {
       );
     } else {
       $this->_(
-        "update meta set value=:value, category=:category where metaKey = :key",
+        'update meta set value=:value, category=:category where "metaKey" = :key',
         [
           ':key' => $key,
           ':category' => $category,

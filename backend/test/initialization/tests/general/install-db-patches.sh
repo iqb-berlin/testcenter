@@ -40,9 +40,9 @@ source backend/test/initialization/functions/functions.sh
   echo_h1 "Skip future patch versions"
 
   fake_version 10.0.9999
-  create_patch 1000.0.0 "insert into meta (metaKey, value) VALUES ('i should', 'never be applied');"
-  create_patch 10.0.9998 "insert into meta (metaKey, value) VALUES ('but me,', 'i have to be there');"
-  create_patch 10.0.9999 "insert into meta (metaKey, value) VALUES ('and me', 'too');"
+  create_patch 1000.0.0 "insert into meta (\"metaKey\", value) VALUES ('i should', 'never be applied');"
+  create_patch 10.0.9998 "insert into meta (\"metaKey\", value) VALUES ('but me,', 'i have to be there');"
+  create_patch 10.0.9999 "insert into meta (\"metaKey\", value) VALUES ('and me', 'too');"
 
   php backend/initialize.php \
     --dont_create_sample_data \
