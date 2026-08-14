@@ -27,6 +27,9 @@
 - Auf der Codeingabemaske im Testablauf wird nun korrekt der custom-text `booklet_codeToEnterPrompt` unter der
   Überschrift angezeigt.
 
+## Technisches
+- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
+
 # 18.2
 ## Neue Funktionen
 - Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.

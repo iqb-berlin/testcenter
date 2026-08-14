@@ -47,12 +47,28 @@ paths:
           description: OK, image was uploaded
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /attachment/{attachment_id}/file/{attachment_file_id}:
     get:
@@ -89,12 +105,28 @@ paths:
                 format: binary
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
     delete:
       summary: delete an attachment-file
@@ -125,12 +157,28 @@ paths:
             description: OK File deleted
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /attachments/list:
     get:
@@ -178,12 +226,28 @@ paths:
                 ]
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /attachment/{attachment_id}/data:
     get:
@@ -225,12 +289,28 @@ paths:
                 }
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /attachment/{attachment_id}/page:
     get:
@@ -276,12 +356,28 @@ paths:
 
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /attachments/pages:
     get:
@@ -318,11 +414,27 @@ paths:
                 format: binary
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
 

@@ -109,9 +109,25 @@ paths:
                   bookletlabel: "Sample booklet"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
