@@ -19,7 +19,7 @@ import { NgTemplateOutlet } from '@angular/common';
   ],
   template: `
     <div class="header-line">
-      <h2 mat-dialog-title>Anleitung</h2>
+      <h2 mat-dialog-title>{{ data.title  }}</h2>
       <button matIconButton mat-dialog-close data-cy="close-deny-navigation-message">
         <mat-icon svgIcon="close"></mat-icon>
       </button>
