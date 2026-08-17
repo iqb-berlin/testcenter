@@ -56,19 +56,14 @@ import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
 import { createTicker } from '../util/worker.util';
 
-// Result of one leave-check (checkAndSolveCompleteness/checkAndSolveTimer/checkAndSolveLeaveLocks
-// on TestControllerService). These checks only ever *describe* what applies - they never call
-// MessageService (dialogs/snackbars) themselves; canDeactivateUnit's resolveLeaveCheckResult is
-// the only place that actually shows anything and decides the final true/false.
 type LeaveCheckResult =
-  // proceed; `notify` is an optional non-blocking FYI toast (used for test-mode previews of what
-  // would have been blocked/warned about in real test mode)
+  // proceed; `notify` is an optional non-blocking FYI toast (test-mode preview of what would have
+  // been blocked/warned about in real test mode)
   | { kind: 'allow'; notify?: string }
   // block navigation; either silently, with an FYI toast, or after a blocking info dialog the
   // user just acknowledges (no real choice involved)
   | { kind: 'deny'; notify?: string; infoDialog?: { title: string; content: string } }
-  // block unless the user explicitly confirms leaving; `onConfirmed` runs only then (e.g.
-  // cancelTimer()/activating a lock) and may itself return a follow-up notify text
+  // block unless the user explicitly confirms leaving
   | { kind: 'confirm'; title: string; content: string; onConfirmed: () => string | undefined };
 
 @Injectable({
@@ -889,7 +884,6 @@ export class TestControllerService {
     this.addToTestStateBuffer('BOOKLET_STATES', JSON.stringify(bookletStates));
   }
 
-  // See the `LeaveCheckResult` doc comment above for what this (and the two checks below) return.
   private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<LeaveCheckResult> {
     if (!this.currentTimerId) { // leaving unit is not in a timed block
       return of({ kind: 'allow' });
@@ -955,9 +949,6 @@ export class TestControllerService {
       });
     }
 
-    // not a MessageService call (no dialog/snackbar) - an internal event for other listeners
-    // (e.g. the VERONA player message bridge), so it stays here rather than moving to the
-    // resolver; it should fire at the same point in time it always has.
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
     return of({
@@ -978,8 +969,6 @@ export class TestControllerService {
     }
 
     const lockScope = currentUnit.parent.restrictions.lockAfterLeaving.scope;
-    // actually applies the lock; if leave-lock restrictions aren't enforced (test/preview mode),
-    // returns an FYI notice instead
     const leaveLock = (): string | undefined => {
       if (this.testMode.forceNaviRestrictions) {
         if (lockScope === 'testlet') {
@@ -993,7 +982,6 @@ export class TestControllerService {
       return `${lockScope} würde im Testmodus nun gesperrt werden.`;
     };
 
-    // new unit is in the same testlet as currentUnit, and the lockscope is testlet
     if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
       return of({ kind: 'allow' });
     }
@@ -1017,49 +1005,41 @@ export class TestControllerService {
   // the whole test - not just leave the current unit. TestControllerDeactivateGuard normally asks
   // its own separate "end the test?" question for that; when a 'confirm' result ends up showing a
   // dialog here anyway, we fold that into THIS dialog (one confirm covers both) instead of leaving
-  // it to a second, separate one right after: swap in the same generic title
-  // confirmEndTestIfNeeded would use on its own (the more consequential fact takes the prominent
-  // title slot), keep the restriction-specific text as the body, and terminate the test ourselves
-  // once confirmed. When `alsoEndsTest` is false (still inside the running test, e.g. moving to
-  // the next unit), this is entirely unchanged from before.
+  // it to a second, separate one right after
   private resolveLeaveCheckResult(result: LeaveCheckResult, alsoEndsTest: boolean): Observable<boolean> {
     switch (result.kind) {
-    case 'allow':
-      return of(true);
-    case 'deny':
-      return result.infoDialog
-        ? this.messageService.showInfoDialog(result.infoDialog).pipe(map(() => false))
-        : of(false);
-    case 'confirm':
-      return this.messageService.showConfirmDialog({
-        title: alsoEndsTest ? 'Sicher, dass du den Test beenden möchtest?' : result.title,
-        content: result.content,
-        confirmText: 'Hier bleiben',
-        cancelText: 'Trotzdem weiter'
-      }).pipe(
-        concatMap(cdresult => {
-          if (cdresult !== false) {
-            return of(false); // user chose "Hier bleiben" - stay
-          }
-          // "Trotzdem weiter" - leave anyway. Distinct from `result.notify` above (which
-          // 'confirm' results don't even have) - this is a follow-up notice that only exists once
-          // the side effect of actually leaving has run, e.g. leaveLock() reporting that it only
-          // showed an FYI instead of really locking because restrictions aren't enforced.
-          const followUpNotify = result.onConfirmed();
-          if (followUpNotify) {
-            this.ms.showSnackbar(followUpNotify);
-          }
-          if (!alsoEndsTest) {
-            return of(true);
-          }
-          // terminateConfirmedLeave() transitions state$ away from RUNNING/PAUSED before this
-          // resolves, so confirmEndTestIfNeeded() (called next, by TestControllerDeactivateGuard)
-          // will see that and skip its own dialog/termination - no extra flag needed to signal it.
-          return from(this.terminateConfirmedLeave()).pipe(map(() => true));
-        })
-      );
-    default:
-      return of(true);
+      case 'allow':
+        return of(true);
+      case 'deny':
+        return result.infoDialog ?
+          this.messageService.showInfoDialog(result.infoDialog).pipe(map(() => false)) :
+          of(false);
+      case 'confirm':
+        return this.messageService.showConfirmDialog({
+          title: alsoEndsTest ? 'Sicher, dass du den Test beenden möchtest?' : result.title,
+          content: result.content,
+          confirmText: 'Hier bleiben',
+          cancelText: 'Trotzdem weiter'
+        }).pipe(
+          concatMap(cdresult => {
+            if (cdresult !== false) {
+              return of(false); // user chose "Hier bleiben" - stay
+            }
+            const followUpNotify = result.onConfirmed();
+            if (followUpNotify) {
+              this.ms.showSnackbar(followUpNotify);
+            }
+            if (!alsoEndsTest) {
+              return of(true);
+            }
+            // terminateConfirmedLeave() transitions state$ away from RUNNING/PAUSED before this
+            // resolves, so confirmEndTestIfNeeded() (called next, by TestControllerDeactivateGuard)
+            // will see that and skip its own dialog/termination.
+            return from(this.terminateConfirmedLeave()).pipe(map(() => true));
+          })
+        );
+      default:
+        return of(true);
     }
   }
 
@@ -1094,8 +1074,6 @@ export class TestControllerService {
       return of(true);
     }
 
-    // whether leaving to `nextStateUrl` would, by itself, also end the whole test - see the doc
-    // comment on willAlsoEndTest below
     const alsoEndsTest = this.willAlsoEndTest(nextStateUrl);
 
     return from([
@@ -1115,17 +1093,13 @@ export class TestControllerService {
       );
   }
 
-  // Whether navigating to `nextStateUrl` would, by itself, also end the entire test - not just
-  // leave the current unit - i.e. the target is outside the running test (`/t/:testId/...`) and
-  // the condition confirmEndTestIfNeeded checks before showing its own "end the test?" dialog is
-  // met. Used by canDeactivateUnit so resolveLeaveCheckResult can fold that confirmation into its
-  // own dialog instead of leaving it to a second, separate one.
+  // Whether navigating to `nextStateUrl` would also end the test - not just leave the current unit.
   willAlsoEndTest(nextStateUrl: string): boolean {
     if (!this.testMode.saveResponses) {
       return false;
     }
-    // parse the URL through Angular's own router instead of guessing at its shape - the segment
-    // structure mirrors app-routing.module.ts's `{ path: 't', ... }` directly
+    // parse the URL through Angular's own router; the segment
+    // structure mirrors app-routing.module.ts's `{ path: 't', ... }`
     const firstSegment = this.router.parseUrl(nextStateUrl).root.children[PRIMARY_OUTLET]?.segments[0]?.path;
     if (firstSegment === 't') {
       return false; // still inside the running test, not actually exiting it
@@ -1136,10 +1110,8 @@ export class TestControllerService {
   }
 
   // Both UnitDeactivateGuard and TestControllerDeactivateGuard call this - instead of
-  // canDeactivateUnit directly - whenever the navigation is leaving a unit page. Angular runs
-  // canDeactivate guards for a single navigation concurrently, not sequentially (its router
-  // internals combine the checks for every route being deactivated via mergeMap, not concatMap),
-  // so without sharing this exact check - and its result - both guards could independently run
+  // canDeactivateUnit directly - whenever the navigation is leaving a unit page.
+  // So without sharing this exact check - and its result - both guards could independently run
   // the checks above and pop their dialogs on top of one another. `shareReplay(1)` makes sure the
   // underlying checks - and any dialog they show - only run once, no matter which guard
   // subscribes first or how many do. Keyed by the current navigation's id (not the URL) so a
@@ -1158,9 +1130,7 @@ export class TestControllerService {
     return this.pendingUnitDeactivationCheck.result$;
   }
 
-  // Terminates the test as a consequence of the user confirming they want to leave/end it. Shared
-  // by confirmEndTestIfNeeded's own dialog below and by resolveLeaveCheckResult's merged dialog
-  // (see willAlsoEndTest) so the actual termination steps only exist in one place.
+  // Terminates the test as a consequence of the user confirming they want to leave/end it.
   private async terminateConfirmedLeave(): Promise<void> {
     await this.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
     await this.terminateTest(
@@ -1169,13 +1139,11 @@ export class TestControllerService {
     this.cts.restoreDefault(false);
   }
 
-  // REVIEW: relocated verbatim from TestControllerDeactivateGuard.canDeactivate() - pure move, no
-  // behavior change. The guard is now a thin adapter that just calls this and returns its result;
-  // all the "should we end the test, and did the user confirm that" logic lives here instead.
   async confirmEndTestIfNeeded(): Promise<boolean> {
     if (this.testMode.saveResponses) {
       const testStatus: TestControllerState = this.state$.getValue();
-      const ignorePause = this.shouldShowConfirmationUI(); // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation
+      // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation
+      const ignorePause = this.shouldShowConfirmationUI();
       if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED' && !ignorePause)) {
         // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
         // in order to correctly return a redirect, instead of hacking (router.navigate + return false)

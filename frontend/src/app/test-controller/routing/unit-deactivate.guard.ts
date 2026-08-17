@@ -28,10 +28,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return false;
     }
 
-    // Routed through TestControllerService (instead of calling canDeactivateUnit directly) so that
-    // TestControllerDeactivateGuard - which Angular may check concurrently for this same navigation
-    // when this unit route's parent (`:t`) is also being deactivated - can reuse this exact check
-    // instead of running its own, separate one and popping a second dialog on top of/after this one.
     return this.tcs.getUnitDeactivationCheck(nextState.url);
   }
 }

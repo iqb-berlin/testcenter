@@ -18,13 +18,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     nextState: RouterStateSnapshot
   ) {
     // If we're currently on a unit page, UnitDeactivateGuard is also being checked for this same
-    // navigation. Angular runs canDeactivate guards for one navigation concurrently, not
-    // sequentially, so without this we could show our own dialog on top of/right after that
-    // guard's. Await the SAME (memoized) check it uses instead of deciding independently here.
-    // `currentRoute` is the ActivatedRouteSnapshot for this (`:t`) route; its `firstChild` is
-    // Angular's own resolved snapshot for whichever child route is currently active - comparing
-    // its `component` is the router's own record of what's on screen, not a guess re-derived from
-    // the URL string.
+    // navigation. Await the SAME (memoized) check it uses instead of deciding independently here.
     const leavingUnitPage = currentRoute.firstChild?.component === UnithostComponent;
     if (leavingUnitPage) {
       const unitLeaveAllowed = await firstValueFrom(this.tcs.getUnitDeactivationCheck(nextState.url));
