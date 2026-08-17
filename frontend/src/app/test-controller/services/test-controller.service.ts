@@ -2,7 +2,7 @@ import {
   bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, forkJoin, from,
+  BehaviorSubject, firstValueFrom, forkJoin, from,
   lastValueFrom, merge, Observable, of, Subject,
   Subscription, timer
 } from 'rxjs';
@@ -1045,6 +1045,41 @@ export class TestControllerService {
         takeWhile(checkResult => checkResult, true),
         last()
       );
+  }
+
+  // REVIEW: relocated verbatim from TestControllerDeactivateGuard.canDeactivate() - pure move, no
+  // behavior change. The guard is now a thin adapter that just calls this and returns its result;
+  // all the "should we end the test, and did the user confirm that" logic lives here instead.
+  async confirmEndTestIfNeeded(): Promise<boolean> {
+    if (this.testMode.saveResponses) {
+      const testStatus: TestControllerState = this.state$.getValue();
+      const ignorePause = this.shouldShowConfirmationUI(); // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation
+      if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED' && !ignorePause)) {
+        // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
+        // in order to correctly return a redirect, instead of hacking (router.navigate + return false)
+        if (!this.booklet) {
+          throw new AppError({
+            label: 'Kein Booklet gefunden.',
+            description: ''
+          });
+        }
+        const isLeaveConfirmed = await firstValueFrom(
+          this.messageService.showConfirmDialog({
+            title: 'Sicher, dass du den Test beenden möchtest?',
+            content: ''
+          })
+        );
+        if (isLeaveConfirmed) {
+          await this.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
+          await this.terminateTest(
+            'BOOKLETLOCKEDbyTESTEE', true, this.booklet?.config.lock_test_on_termination === 'ON'
+          );
+          this.cts.restoreDefault(false);
+        }
+        return isLeaveConfirmed;
+      }
+    }
+    return true;
   }
 
   shouldShowConfirmationUI(): boolean {

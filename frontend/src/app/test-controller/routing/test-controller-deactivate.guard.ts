@@ -1,55 +1,15 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { AppError } from '@app/app.interfaces';
-import { MessageService } from '@shared/services/message.service';
-import { TestControllerState, UnitNavigationTarget } from '../interfaces/test-controller.interfaces';
+import { CanDeactivate } from '@angular/router';
 import { TestControllerComponent } from '../components/test-controller/test-controller.component';
 import { TestControllerService } from '../services/test-controller.service';
-import { CustomtextService } from '@shared/services/customtext/customtext.service';
 
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
-  constructor(
-    private tcs: TestControllerService,
-    private messageService: MessageService,
-    private cts: CustomtextService,
-    private router: Router
-  ) {
-  }
+  constructor(private tcs: TestControllerService) {}
 
-  async canDeactivate() {
-    if (this.tcs.testMode.saveResponses) {
-      const testStatus: TestControllerState = this.tcs.state$.getValue();
-      const ignorePause = this.tcs.shouldShowConfirmationUI(); // at this moment in time, hideConfirmationUI comes with ignorePause for Logo Navigation
-      if ((testStatus === 'RUNNING') || (testStatus === 'PAUSED' && !ignorePause)) {
-        // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
-        // in order to correctly return a redirect, instead of hacking (router.navigate + return false)
-        if (!this.tcs.booklet) {
-          throw new AppError({
-            label: 'Kein Booklet gefunden.',
-            description: ''
-          });
-        }
-        const isLeaveConfirmed = await firstValueFrom(
-          this.messageService.showConfirmDialog({
-            title: 'Sicher, dass du den Test beenden möchtest?',
-            content: ''
-          })
-        );
-        if (isLeaveConfirmed) {
-          await this.tcs.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
-          await this.terminateTest();
-        }
-        return isLeaveConfirmed;
-      }
-    }
-    return true;
-  }
-
-  async terminateTest(): Promise<void> {
-    await this.tcs.terminateTest(
-      'BOOKLETLOCKEDbyTESTEE', true, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
-    this.cts.restoreDefault(false);
+  canDeactivate() {
+    // Actual "should we end the test, and does the user confirm that" logic lives on
+    // TestControllerService (confirmEndTestIfNeeded) - this guard is just a thin adapter into it.
+    return this.tcs.confirmEndTestIfNeeded();
   }
 }
