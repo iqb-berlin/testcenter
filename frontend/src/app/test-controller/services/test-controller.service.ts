@@ -1,5 +1,5 @@
 import {
-  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, withLatestFrom
+  bufferWhen, concatMap, last, map, scan, takeUntil, takeWhile, tap, withLatestFrom
 } from 'rxjs/operators';
 import {
   BehaviorSubject, firstValueFrom, forkJoin, from,
@@ -55,6 +55,21 @@ import { isIQBVariable } from '../interfaces/iqb.interfaces';
 import { TestStateUtil } from '../util/test-state.util';
 import { ConditionUtil } from '../util/condition.util';
 import { createTicker } from '../util/worker.util';
+
+// Result of one leave-check (checkAndSolveCompleteness/checkAndSolveTimer/checkAndSolveLeaveLocks
+// on TestControllerService). These checks only ever *describe* what applies - they never call
+// MessageService (dialogs/snackbars) themselves; canDeactivateUnit's resolveLeaveCheckResult is
+// the only place that actually shows anything and decides the final true/false.
+type LeaveCheckResult =
+  // proceed; `notify` is an optional non-blocking FYI toast (used for test-mode previews of what
+  // would have been blocked/warned about in real test mode)
+  | { kind: 'allow'; notify?: string }
+  // block navigation; either silently, with an FYI toast, or after a blocking info dialog the
+  // user just acknowledges (no real choice involved)
+  | { kind: 'deny'; notify?: string; infoDialog?: { title: string; content: string } }
+  // block unless the user explicitly confirms leaving; `onConfirmed` runs only then (e.g.
+  // cancelTimer()/activating a lock) and may itself return a follow-up notify text
+  | { kind: 'confirm'; title: string; content: string; onConfirmed: () => string | undefined };
 
 @Injectable({
   providedIn: 'root'
@@ -874,66 +889,58 @@ export class TestControllerService {
     this.addToTestStateBuffer('BOOKLET_STATES', JSON.stringify(bookletStates));
   }
 
-  private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+  // See the `LeaveCheckResult` doc comment above for what this (and the two checks below) return.
+  private checkAndSolveTimer(currentUnit: Unit, newUnit: Unit | null): Observable<LeaveCheckResult> {
     if (!this.currentTimerId) { // leaving unit is not in a timed block
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
     if (newUnit && newUnit.parent.timerId && // staying in the same timed block
       (newUnit.parent.timerId === this.currentTimerId)
     ) {
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
-    const skipIfNoTimeRestrictionEnforcement = (text: string) => {
-      if (!this.testMode.forceTimeRestrictions) {
-        this.interruptTimer();
-        this.ms.showSnackbar(text);
-        return true;
-      }
+    // when time restrictions aren't enforced (test/preview mode), interrupt the timer and let the
+    // caller show an informational toast instead of actually blocking/asking
+    const allowWithNotice = (text: string): LeaveCheckResult => {
+      this.interruptTimer();
+      return { kind: 'allow', notify: text };
     };
 
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'forbidden') {
-      if (skipIfNoTimeRestrictionEnforcement('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.')) return of(true);
-
-      this.ms.showSnackbar('Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.');
-      return of(false);
+      if (!this.testMode.forceTimeRestrictions) {
+        return of(allowWithNotice('Im Testmodus wäre die Navigation vor Ablauf der Zeit nicht möglich.'));
+      }
+      return of({ kind: 'deny', notify: 'Es darf erst weiter geblättert werden, wenn die Zeit abgelaufen ist.' });
     }
 
     if (this.testlets[this.currentTimerId].restrictions.timeMax?.leave === 'allowed') {
       this.cancelTimer();
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
-    if (skipIfNoTimeRestrictionEnforcement(
-      'Im normalen Testablauf wird beim Verlassen des zeitbegrenzten Blocks eine Warnung angezeigt.'
-    )) {
-      return of(true);
+    if (!this.testMode.forceTimeRestrictions) {
+      return of(allowWithNotice(
+        'Im normalen Testablauf wird beim Verlassen des zeitbegrenzten Blocks eine Warnung angezeigt.'
+      ));
     }
 
-    return this.messageService.showConfirmDialog({
+    return of({
+      kind: 'confirm',
       title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
       content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-      confirmText: 'Hier bleiben',
-      cancelText: 'Trotzdem weiter'
-    }).pipe(
-      map(cdresult => {
-        if (cdresult === false) {
-          this.cancelTimer(); // does lock the block
-          return true;
-        }
-        return false;
-      })
-    );
+      onConfirmed: () => { this.cancelTimer(); return undefined; } // does lock the block
+    });
   }
 
-  private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+  private checkAndSolveCompleteness(currentUnit: Unit, newUnit: Unit | null): Observable<LeaveCheckResult> {
     const direction = (!newUnit || currentUnit.sequenceId < newUnit.sequenceId) ? 'forward' : 'backward';
     const reasons = this.checkCompleteness(currentUnit, direction);
 
     // if no testlet has no DenyNavigationOnIncomplete defined
     if (!reasons.length) {
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
     if (!this.testMode.forceNaviRestrictions) {
@@ -941,31 +948,39 @@ export class TestControllerService {
         presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
         responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
       };
-      this.ms.showSnackbar(
-        `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
+      return of({
+        kind: 'allow',
+        notify: `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
       werden: ${reasons.map(r => reasonTexts[r]).join(' ')}`
-      );
-      return of(true);
+      });
     }
 
+    // not a MessageService call (no dialog/snackbar) - an internal event for other listeners
+    // (e.g. the VERONA player message bridge), so it stays here rather than moving to the
+    // resolver; it should fire at the same point in time it always has.
     this._navigationDenial$.next({ sourceUnitSequenceId: currentUnit.sequenceId, reason: reasons });
 
-    return this.messageService.showInfoDialog({
-      title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
-      content: reasons
-        .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
-        .join(' ')
-    }).pipe(map(() => false));
+    return of({
+      kind: 'deny',
+      infoDialog: {
+        title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+        content: reasons
+          .map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`))
+          .join(' ')
+      }
+    });
   }
 
-  private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<boolean> {
+  private checkAndSolveLeaveLocks(currentUnit: Unit, newUnit: Unit | null): Observable<LeaveCheckResult> {
     // no lockAfterLeaving defined for testlet
     if (!currentUnit.parent.restrictions.lockAfterLeaving) {
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
     const lockScope = currentUnit.parent.restrictions.lockAfterLeaving.scope;
-    const leaveLock = () => {
+    // actually applies the lock; if leave-lock restrictions aren't enforced (test/preview mode),
+    // returns an FYI notice instead
+    const leaveLock = (): string | undefined => {
       if (this.testMode.forceNaviRestrictions) {
         if (lockScope === 'testlet') {
           this.activateTestletLeaveLock(currentUnit.parent.id);
@@ -973,35 +988,63 @@ export class TestControllerService {
         if (lockScope === 'unit') {
           this.activateUnitLeaveLock(currentUnit.sequenceId);
         }
-      } else {
-        this.ms.showSnackbar(`${lockScope} würde im Testmodus nun gesperrt werden.`);
+        return undefined;
       }
+      return `${lockScope} würde im Testmodus nun gesperrt werden.`;
     };
 
     // new unit is in the same testlet as currentUnit, and the lockscope is testlet
     if ((lockScope === 'testlet') && (newUnit?.parent.id === currentUnit.parent.id)) {
-      return of(true);
+      return of({ kind: 'allow' });
     }
 
     if (currentUnit.parent.restrictions.lockAfterLeaving.confirm) {
-      return this.messageService.showConfirmDialog({
+      return of({
+        kind: 'confirm',
         title: this.cts.getCustomText(`booklet_warningLeaveTitle-${lockScope}`),
         content: this.cts.getCustomText(`booklet_warningLeaveTextPrompt-${lockScope}`),
+        onConfirmed: () => leaveLock()
+      });
+    }
+
+    return of({ kind: 'allow', notify: leaveLock() });
+  }
+
+  // The only place that calls MessageService for the three checks above - shows whatever they
+  // decided (confirm dialog / info dialog / nothing) and resolves the final true/false.
+  private resolveLeaveCheckResult(result: LeaveCheckResult): Observable<boolean> {
+    switch (result.kind) {
+    case 'allow':
+      return of(true);
+    case 'deny':
+      return result.infoDialog
+        ? this.messageService.showInfoDialog(result.infoDialog).pipe(map(() => false))
+        : of(false);
+    case 'confirm':
+      return this.messageService.showConfirmDialog({
+        title: result.title,
+        content: result.content,
         confirmText: 'Hier bleiben',
         cancelText: 'Trotzdem weiter'
       }).pipe(
-        map(cdresult => {
-          if ((typeof cdresult === 'undefined') || (cdresult === true)) {
-            return false;
+        concatMap(cdresult => {
+          if (cdresult !== false) {
+            return of(false); // user chose "Hier bleiben" - stay
           }
-          leaveLock();
-          return true;
+          // "Trotzdem weiter" - leave anyway. Distinct from `result.notify` above (which
+          // 'confirm' results don't even have) - this is a follow-up notice that only exists once
+          // the side effect of actually leaving has run, e.g. leaveLock() reporting that it only
+          // showed an FYI instead of really locking because restrictions aren't enforced.
+          const followUpNotify = result.onConfirmed();
+          if (followUpNotify) {
+            this.ms.showSnackbar(followUpNotify);
+          }
+          return of(true);
         })
       );
+    default:
+      return of(true);
     }
-
-    leaveLock();
-    return of(true);
   }
 
   canDeactivateUnit(nextStateUrl: string, ignoreRouterState?: boolean): Observable<boolean> {
@@ -1042,8 +1085,13 @@ export class TestControllerService {
     ])
       .pipe(
         concatMap(check => check(currentUnit, newUnit)),
-        takeWhile(checkResult => checkResult, true),
-        last()
+        // show each check's own FYI toast (`result.notify`) as it flows through, in order - not
+        // just the last one's, since an earlier check's "allow" can carry a notice even when a
+        // later check goes on to decide the final outcome
+        tap(result => { if (result.kind !== 'confirm' && result.notify) this.ms.showSnackbar(result.notify); }),
+        takeWhile(result => result.kind === 'allow', true),
+        last(),
+        concatMap(result => this.resolveLeaveCheckResult(result))
       );
   }
 
