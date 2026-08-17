@@ -7,8 +7,47 @@
   </Metadata>
 
   <Group id="demo" label="Demo">
-    <Login mode="run-demo" name="Test_Ctrl-1" pw="123">
-      <Booklet>Cy-Bklt_TC-1</Booklet>
+    <Login mode="run-demo" name="Test_Ctrl-1a" pw="123">
+      <Booklet>Cy-Bklt_TC-1a</Booklet>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-1b" pw="123">
+      <Booklet>Cy-Bklt_TC-1b</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>text-field</type>
+          <length>4</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-1c" pw="123">
+      <Booklet>Cy-Bklt_TC-1c</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>keypad-symbols</type>
+          <length>3</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-1d" pw="123">
+      <Booklet>Cy-Bklt_TC-1d</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>keypad-numbers</type>
+          <length>3</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-1e" pw="123">
+      <Booklet>Cy-Bklt_TC-1e</Booklet>
+    </Login>
+    <Login mode="run-demo" name="Test_Ctrl-1f" pw="123">
+      <Booklet>Cy-Bklt_TC-1f</Booklet>
     </Login>
   </Group>
 

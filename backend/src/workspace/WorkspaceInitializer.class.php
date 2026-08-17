@@ -20,7 +20,12 @@ class WorkspaceInitializer {
       "sampledata/coding-scheme.vocs.json" => "Resource/coding-scheme.vocs.json",
     ],
     "system-test" => [
-      "sampledata/system-test/test-controller/CY_Bklt_TC-1.xml" => "Booklet/CY_Bklt_TC-1.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1a.xml" => "Booklet/CY_Bklt_TC-1a.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1b.xml" => "Booklet/CY_Bklt_TC-1b.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1c.xml" => "Booklet/CY_Bklt_TC-1c.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1d.xml" => "Booklet/CY_Bklt_TC-1d.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1e.xml" => "Booklet/CY_Bklt_TC-1e.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1f.xml" => "Booklet/CY_Bklt_TC-1f.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-2.xml" => "Booklet/CY_Bklt_TC-2.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-3.xml" => "Booklet/CY_Bklt_TC-3.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-4.xml" => "Booklet/CY_Bklt_TC-4.xml",

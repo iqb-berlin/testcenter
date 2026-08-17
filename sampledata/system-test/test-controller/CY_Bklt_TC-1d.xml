@@ -2,14 +2,14 @@
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 	<Metadata>
-		<Id>Cy-Bklt_SM-1</Id>
-		<Label>SM-1</Label>
-		<Description>Testheft Session-Management 1</Description>
+		<Id>Cy-Bklt_TC-1d</Id>
+		<Label>Test-Controller-1d</Label>
+		<Description>Testheft Test-Controller:Demo 1d: Code-Wort: keypad-numbers</Description>
 	</Metadata>
 
 	<BookletConfig>
 		<Config key="unit_show_time_left">OFF</Config>
-		<Config key="toolbar_show_unit_list">FALSE</Config>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
 	</BookletConfig>
 
 	<Units>
@@ -17,7 +17,7 @@
 
 		<Testlet id="Tslt1" label="Aufgabenblock">
 			<Restrictions>
-				<CodeToEnter code="Hase">Bitte gib das Freigabewort ein.</CodeToEnter>
+				<CodeToEnter code="123">Bitte gib das Freigabewort ein.</CodeToEnter>
 				<TimeMax minutes="1"/>
 			</Restrictions>
 			<Unit id="CY-Unit.Sample-101" label="Aufgabe1" labelshort="2"/>
