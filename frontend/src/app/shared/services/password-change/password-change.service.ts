@@ -11,12 +11,16 @@ import { NewPasswordComponent } from '../../components/newpassword/new-password.
 export class PasswordChangeService {
   constructor(private newpasswordDialog: MatDialog, private bs: BackendService) { }
 
-  showPasswordChangeDialog(user: { id: number; name: string }): Observable<boolean> {
+  // `isSelfService` distinguishes a user changing their own password (current password required by
+  // the backend, so the dialog must collect it) from a super-admin resetting another user's forgotten
+  // password (no current password to give, so the dialog must not ask for one).
+  showPasswordChangeDialog(user: { id: number; name: string }, isSelfService = false): Observable<boolean> {
     const dialogRef =
       this.newpasswordDialog.open(NewPasswordComponent, {
         width: '600px',
         data: {
-          username: user.name
+          username: user.name,
+          isSelfService
         }
       });
 
@@ -27,7 +31,8 @@ export class PasswordChangeService {
         }
         return this.bs.changePassword(
           user.id,
-          result.get('pw').value
+          result.get('pw').value,
+          isSelfService ? result.get('pwOld').value : undefined
         ).pipe(
           map(() => true)
         );

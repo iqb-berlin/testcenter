@@ -1,5 +1,8 @@
 #next
 
+## Neue Funktionen
+- Beim Ändern des eigenen Kennworts muss nun zusätzlich das aktuelle Kennwort eingegeben werden, um die Änderung zu bestätigen. Dies betrifft nicht das Zurücksetzen eines fremden Kennworts durch Super-Admins.
+
 ## Änderungen
 - Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
 - Freigabewörter werden in den entsprechenden Modi nicht mehr voreingetragen. Hier war eine Änderung nötig, da das alte
@@ -26,6 +29,9 @@
 - Super-Admin: Wird beim Setzen/Entziehen des Superadmin-Status ein falsches (eigenes) Kennwort eingegeben, erscheint die Meldung nun direkt im Dialog und der Dialog bleibt für einen erneuten Versuch geöffnet. Bisher erschien stattdessen der allgemeine, technische Fehlerdialog, und der Passwort-Dialog hatte sich bereits geschlossen, sodass der gesamte Vorgang (Auswahl, Aktion) wiederholt werden musste.
 - Auf der Codeingabemaske im Testablauf wird nun korrekt der custom-text `booklet_codeToEnterPrompt` unter der
   Überschrift angezeigt.
+
+## Technisches
+- ⚠️ **Breaking Change:** `PATCH /user/{user_id}/password` verlangt jetzt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten ab sofort `400 Bad Request`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort optional/unbenutzt. Siehe `docs/api/user.spec.yml`.
 
 # 18.2
 ## Neue Funktionen

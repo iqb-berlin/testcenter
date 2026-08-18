@@ -137,7 +137,9 @@ paths:
   /user/{user_id}/password:
     patch:
       summary: change user-password
-      description: changes the password of a given user. Can be called by super admin for all other admins or by the affected workspace admins themselves
+      description: changes the password of a given user. Can be called by super admin for all other admins or by the affected workspace admins themselves.
+       * **if `user_id` is the performing user's own id (self-service change), `oldPassword` is required and is checked against the performing user's current password**
+       * **if a super-admin resets another user's password, `oldPassword` is not required**
       tags:
         - super admin
         - workspace admin
@@ -158,16 +160,27 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              p: secondUsersNewPassword
+            schema:
+              type: object
+              properties:
+                p:
+                  type: string
+                  description: "the new password"
+                  example: secondUsersNewPassword
+                oldPassword:
+                  type: string
+                  description: "the performing user's current password; required only for a self-service password change"
+                  example: myCurrentPassword
 
       responses:
         "200":
           description: password has changed / user did not exist
+        "400":
+          description: Password missing, or performing own change without providing oldPassword
         "401":
           description: Not authenticated
         "403":
-          description: Forbidden
+          description: Forbidden, or oldPassword incorrect
         "410":
           description: Session Expired
         "500":
