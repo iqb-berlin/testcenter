@@ -60,6 +60,18 @@ const changeBody = (transaction, changeMap) => {
   transaction.request.body = JSON.stringify(body);
 };
 
+const deleteBodyKeys = (transaction, keys) => {
+  if (!transaction.request.body) {
+    return;
+  }
+
+  const body = JSON.parse(transaction.request.body);
+
+  keys.forEach(key => { delete body[key]; });
+
+  transaction.request.body = JSON.stringify(body);
+};
+
 const changeUri = (transaction, changeMap) => {
   Object.keys(changeMap).forEach(key => {
     // eslint-disable-next-line no-param-reassign
@@ -105,6 +117,12 @@ const beforeEach = async (transaction, done) => {
           code: '__invalid_code__',
           signature: '__invalid_signature__'
         });
+        // The re-authentication ("confirm your own password") endpoints return 400 when the
+        // password field is missing entirely, not just wrong - so simulate that by removing it,
+        // rather than by corrupting its value like changeBody above (a wrong-but-present password
+        // is a 403, not a 400). Deleting a key that isn't present on a given transaction is a no-op,
+        // so this is safe to apply to every 400 case, not just these endpoints.
+        deleteBodyKeys(transaction, ['p', 'oldPassword']);
         changeAuthToken(transaction, {
           loginToken: 'static:login:test',
           adminToken: 'static:admin:super'
