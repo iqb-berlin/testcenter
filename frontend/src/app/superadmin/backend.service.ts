@@ -45,8 +45,21 @@ export class BackendService {
       );
   }
 
-  deleteUsers(users: string[]): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.serverUrl}users`, { body: { u: users } });
+  deleteUsers(users: string[], password: string): Observable<boolean> {
+    return this.http
+      .delete<boolean>(`${this.serverUrl}users`, { body: { u: users, p: password } })
+      .pipe(
+        catchError((err: AppError) => {
+          if (err.code === 403) {
+            throw new AppError({
+              type: 'warning',
+              description: '',
+              label: 'Bitte geben Sie zur Sicherheit *Ihr eigenes* Kennwort korrekt ein!'
+            });
+          }
+          throw err;
+        })
+      );
   }
 
   getWorkspacesByUser(userId: number): Observable<IdRoleData[]> {

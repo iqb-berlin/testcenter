@@ -2,6 +2,7 @@
 
 ## Neue Funktionen
 - Beim Ändern des eigenen Kennworts muss nun zusätzlich das aktuelle Kennwort eingegeben werden, um die Änderung zu bestätigen. Dies betrifft nicht das Zurücksetzen eines fremden Kennworts durch Super-Admins.
+- Beim Löschen von Administrator:innen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
 
 ## Änderungen
 - Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
@@ -28,6 +29,7 @@
 
 ## Technisches
 - ⚠️ **Breaking Change:** `PATCH /user/{user_id}/password` verlangt jetzt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten ab sofort `400 Bad Request`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort optional/unbenutzt. Siehe `docs/api/user.spec.yml`.
+- ⚠️ **Breaking Change:** `DELETE /users` verlangt jetzt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten ab sofort `400 Bad Request`. Siehe `docs/api/system.spec.yml`.
 
 # 18.2
 ## Neue Funktionen
