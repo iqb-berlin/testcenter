@@ -142,11 +142,8 @@ export class ErrorDialogComponent implements OnInit {
   }
 
   protected onClose() {
-    if (this.error?.type === 'session') {
-      this.mainDataService.logOut();
-    } else {
-      this.mainDataService.reloadPage();
-    }
+    const resetAuthData = this.error?.type === 'session';
+    this.mainDataService.reloadPage(resetAuthData);
   }
 
   ngOnDestroy(): void {
