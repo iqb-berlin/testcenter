@@ -52,8 +52,8 @@ export class BackendService {
     return this.http.patch<void>(`${this.serverUrl}workspace/${workspaceId}`, { name: wsName });
   }
 
-  deleteWorkspaces(workspaces: number[]): Observable<void> {
-    return this.http.delete<void>(`${this.serverUrl}workspaces`, { body: { ws: workspaces } });
+  deleteWorkspaces(workspaces: number[], password: string): Observable<void> {
+    return this.http.delete<void>(`${this.serverUrl}workspaces`, { body: { ws: workspaces, p: password } });
   }
 
   getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {
