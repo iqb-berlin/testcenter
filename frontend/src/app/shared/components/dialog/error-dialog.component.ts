@@ -25,10 +25,10 @@ import { MatIcon } from '@angular/material/icon';
   ],
   template: `
     <h2 mat-dialog-title><mat-icon [svgIcon]="'error'"></mat-icon>{{error?.label}}</h2>
-    @if (error?.errorId) {
-      <p><b>Error-Id:</b> {{error?.errorId}} {{error?.testMode ? '(test-mode: ' + error?.testMode + ')' : ''}}</p>
-    }
     <mat-dialog-content>
+      @if (error?.errorId) {
+        <p><b>Error-Id:</b> {{error?.errorId}} {{error?.testMode ? '(test-mode: ' + error?.testMode + ')' : ''}}</p>
+      }
       @if (errorMessage) {
         <p style="white-space: pre-wrap">
           {{ errorMessage }}
