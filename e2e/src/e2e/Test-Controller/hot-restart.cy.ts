@@ -126,7 +126,9 @@ describe('check hot-restart: complete tests with different logins', { testIsolat
       cy.get('[data-cy="endTest"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?');
+        .contains('Sicher, dass du den Test beenden möchtest?');
+      cy.get('[data-cy="dialog-content"]')
+        .contains('zeitbeschränkten Bereich');
       cy.get('[data-cy="dialog-confirm"]')
         .click();
       cy.get('.mat-drawer-backdrop')

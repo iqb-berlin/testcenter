@@ -124,7 +124,9 @@ describe('check hot-return: complete tests with different logins', { testIsolati
       cy.get('[data-cy="endTest"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?');
+        .contains('Sicher, dass du den Test beenden möchtest?');
+      cy.get('[data-cy="dialog-content"]')
+        .contains('zeitbeschränkten Bereich');
       cy.get('[data-cy="dialog-confirm"]')
         .click();
       cy.get('.mat-drawer-backdrop')
