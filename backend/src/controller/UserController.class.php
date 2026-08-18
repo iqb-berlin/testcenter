@@ -81,7 +81,7 @@ class UserController extends Controller {
     }
 
     if (!self::superAdminDAO()->checkPassword($authToken->getId(), $requestBody->p)) {
-      throw new HttpForbiddenException($request, "Invalid password $requestBody->p {$authToken->getId()}");
+      throw new HttpForbiddenException($request, "Invalid password for user {$authToken->getId()}");
     }
 
     self::superAdminDAO()->setSuperAdminStatus($userId, ($toStatusString == 'on'));
