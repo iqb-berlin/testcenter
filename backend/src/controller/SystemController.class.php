@@ -30,6 +30,16 @@ class SystemController extends Controller {
       throw new HttpBadRequestException($request);
     }
 
+    if (!isset($bodyData->p)) {
+      throw new HttpBadRequestException($request, "Provide Password for security reasons!");
+    }
+
+    $authToken = $request->getAttribute('AuthToken');
+
+    if (!self::superAdminDAO()->checkPassword($authToken->getId(), $bodyData->p)) {
+      throw new HttpForbiddenException($request, "Invalid password for user {$authToken->getId()}");
+    }
+
     self::superAdminDAO()->deleteWorkspaces($workspaceList);
 
     foreach ($workspaceList as $workspaceId) {
