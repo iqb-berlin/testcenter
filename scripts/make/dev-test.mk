@@ -1,5 +1,14 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
+MAGO_VERSION := ${shell jq -r '."packages-dev"[] | select(.name == "carthage-software/mago") | .version' $(TC_BASE_DIR)/backend/composer.lock}
 target ?= .
+args ?= --help
+
+test-backend-static-analysis:
+	docker run --rm\
+			--user $(shell id -u):$(shell id -g)\
+			--volume $(TC_BASE_DIR)/backend:/app\
+			--workdir /app\
+		ghcr.io/carthage-software/mago:$(MAGO_VERSION) $(args)
 
 test-backend-unit:
 	cd $(TC_BASE_DIR) &&\

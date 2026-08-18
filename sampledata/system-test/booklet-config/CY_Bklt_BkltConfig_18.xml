@@ -8,6 +8,7 @@
 	</Metadata>
 
   <BookletConfig>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
     <Config key="lock_test_on_termination">ON</Config>
   </BookletConfig>
 

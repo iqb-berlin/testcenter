@@ -102,7 +102,8 @@ const beforeEach = async (transaction, done) => {
       case '400':
         changeBody(transaction, {
           password: '__totally_invalid_password__',
-          code: '__invalid_code__'
+          code: '__invalid_code__',
+          signature: '__invalid_signature__'
         });
         changeAuthToken(transaction, {
           loginToken: 'static:login:test',

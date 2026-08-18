@@ -65,7 +65,7 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="continue"]')
       .click();
     cy.get('[data-cy="login-code-problem"]')
-      .contains('Der Code ist leider nicht gültig.');
+      .contains('Ups, falscher Code!');
   });
 
   it('login with right code and password', () => {

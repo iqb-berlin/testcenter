@@ -83,5 +83,10 @@ describe('check parameter: navbar_backward_button', { testIsolation: true }, () 
       .should('not.be.disabled');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe2');
+    cy.get('[data-cy="separate-unit-backward-button"]')
+      .click();
+    cy.get('.global-snackbar')
+      .should('be.visible')
+      .and('contain.text', 'Bereits auf der ersten Seite');
   });
 });

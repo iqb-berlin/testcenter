@@ -65,5 +65,10 @@ describe('check parameter: navbar_forward_button', { testIsolation: true }, () =
       .should('be.disabled');
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
+    cy.get('[data-cy="separate-unit-forward-button"]')
+      .click();
+    cy.get('.global-snackbar')
+      .should('be.visible')
+      .and('contain.text', 'Bereits auf der letzten Seite');
   });
 });

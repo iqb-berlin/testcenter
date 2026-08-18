@@ -90,8 +90,9 @@ describe('Check monitor functions', { testIsolation: false }, () => {
     }).as('terminateCommand');
     cy.get('[data-cy="GM_end_button"]')
       .click();
-    cy.contains('mat-dialog-container', 'Testdurchführung Beenden')
-      .find('[data-cy="dialog-confirm"]')
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Testdurchführung beenden');
+    cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.wait('@terminateCommand');
     cy.contains('Testgruppen-Überwachung');

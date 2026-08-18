@@ -93,13 +93,16 @@ class SystemController extends Controller {
         'customTexts' => (object) $meta['customTexts'],
         'appConfig' => (object) $meta['appConfig'],
         'baseUrl' => Server::getUrl(),
+        'bruteForceProtection' => SystemConfig::$bruteForceProtection_sessions,
         'veronaPlayerApiVersionMin' => SystemConfig::$system_veronaMin,
         'veronaPlayerApiVersionMax' => SystemConfig::$system_veronaMax,
         'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,
         'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
         'fileServiceUri' => FileService::getUri(),
         'broadcastingServiceUri' => BroadcastService::getUri(),
-        'supportedBrowsers' => $browsers
+        'supportedBrowsers' => $browsers,
+        'passwordMinLength' => SystemConfig::$password_min_length,
+        'passwordPattern' => SystemConfig::$password_pattern
       ]
     );
   }

@@ -24,7 +24,7 @@ const DATA_DIR = ROOT_DIR . '/data';
 require_once "vendor/autoload.php";
 
 try {
-  SystemConfig::readVersion();
+  SystemConfig::applyVersionFromPackageJson();
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
@@ -57,20 +57,10 @@ try {
   }
 
   CLI::h2("System-Config");
-  try {
-    SystemConfig::readFromEnvironment();
-    CLI::connectDBWithRetries();
-    SystemConfig::write();
-    CLI::success("New config file created at `/backend/config/config.ini`.");
-  } catch (Exception $e) {
-    CLI::warning("Failed to write new config file:" . $e->getMessage());
-    if (!file_exists(ROOT_DIR . '/backend/config/config.ini')) {
-      throw new Exception("No Config file found at `/backend/config/config.ini`!");
-    }
-    SystemConfig::read();
-    CLI::connectDBWithRetries();
-    CLI::success("Config file found at `/backend/config/config.ini`.");
-  }
+  SystemConfig::readEnvironment();
+  CLI::success("Environment variables successfully read.");
+  CLI::connectDBWithRetries();
+  CLI::success("Database successfully connected.");
 
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();
@@ -124,6 +114,11 @@ try {
   }
   $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
+
+  // tables is 'complete', if the current database has all tables, declared in self::tables; not the case for initialize/general scripts that test incomplete table states
+  if ($newDbStatus['tables'] === 'complete') {
+    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
+  }
 
   CLI::h2("Workspaces");
 
@@ -232,12 +227,13 @@ try {
   if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
     CLI::warning("No Sys-Admin found.");
 
-    $adminId = $initDAO->createAdmin('super', 'user123');
-    CLI::success("Sys-Admin created: `user123`.");
+    $initial_admin_password = SystemConfig::$admin_init_password;
+    $adminId = $initDAO->createAdmin('super', $initial_admin_password);
+    CLI::success("Sys-Admin \"super\" created.");
 
     $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
     foreach ($workspaceIds as $workspaceId) {
-      CLI::p("Workspace `ws_$workspaceId` added to `user123`.");
+      CLI::p("Workspace `ws_$workspaceId` added to \"super\".");
     }
 
   } else {

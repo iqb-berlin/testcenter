@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, of, switchMap } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { NewPasswordComponent } from '../../components/newpassword/new-password.component';
 
@@ -27,6 +28,8 @@ export class PasswordChangeService {
         return this.bs.changePassword(
           user.id,
           result.get('pw').value
+        ).pipe(
+          map(() => true)
         );
       }));
   }

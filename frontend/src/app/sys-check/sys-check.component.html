@@ -1,5 +1,5 @@
 <div class="flex-row header">
-  <h2>System-Check: {{checkLabel}}</h2>
+  <h2>Systemcheck: {{checkLabel}}</h2>
   <button id="syscheck-previous-step" mat-fab matTooltip="Zurück"
           [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done"
           [routerLink]="[ds.prevStep]">

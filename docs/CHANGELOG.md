@@ -1,5 +1,46 @@
-# 18.1.1
+#next
 
+## Änderungen
+- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
+- Freigabewörter werden in den entsprechenden Modi nicht mehr voreingetragen. Hier war eine Änderung nötig, da das alte
+  Verfahren nicht für die neue Codeeingabe über Symbole funktioniert. Stattdessen wird der Freigabecode nun angezeigt
+  und muss abgeschrieben werden.
+- Kurzmeldungen (Snackbar), die kurz nacheinander ausgelöst werden, werden nun gestapelt angezeigt, statt dass eine neue Meldung die vorherige sofort ersetzt.
+
+## Fehlerbehebungen
+- Workspace-Admin:
+  - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
+# 18.2
+## Neue Funktionen
+- Bei der Installation können Mindestlänge und Muster für Superadmin-Passwörter gesetzt werden. Diese werden im Adminbereich validiert und etwaige Probleme angezeigt.
+  - Bei der Gelegenheit wurden die entsprechenden Dialoge etwas verbessert.
+
+## Änderungen
+- Der custom-text "booklet_console_warning" wurde entfernt.
+- Kommentare:
+  - Die Überschrift der Kommentarliste im Kommentar-Panel wurde von „alle Kommentare zu diesem Testheft“ zu „Kommentare zum gesamten Testheft“ geändert, um den Inhalt besser zu beschreiben.
+  - Visuelle Verbesserungen im Kommentar-Panel: mehr Abstand zwischen Einträgen, Einträge auf 2 Zeilen begrenzt, Panel mit maximaler Breite versehen, damit der Hauptbereich immer sichtbar bleibt.
+
+## Fehlerbehebungen
+- Der Hinweistext bei Navigation aus einer Aufgabe im Review-Modus, die ein vollständiges Ansehen oder Beantworten erzwingt (force_presentation/reponse_complete), wurde korrigiert.
+- Die Knöpfe `navbar_forward_button` und `navbar_backward_button` werden nur noch bei gültigen Konfigurationswerten angezeigt (bisher erschienen sie bei jedem Wert außer `HIDDEN`).
+- Seitennavigation über `navbar_forward_button`/`navbar_backward_button`, die den Anfang bzw. das Ende überschreiten werden nun verhindert; stattdessen erscheint ein entsprechender Hinweis.
+- Klick auf das Logo überspringt nun nicht mehr Dialoge in beschränkten Blöcken; z.B. war es vorher möglich das Dialogfenster von zeitbeschränkten Blöcken zu überspringen.
+
+## Technisches
+- Das Kennwort des automatisch angelegten superadmin kann nun via Umgebungsvariable `ADMIN_INIT_PASSWORD` gesetzt werden.
+  - Das hierbei verwendete Kennwort wird nicht mehr in den Logs angezeigt.
+- Neue Umgebungsvariable `HSTS_ENABLED`: Damit kann der Strict-Transport-Security-Header abgeschaltet werden.
+- Neue Umgebungsvariable `SERVER_KEY` zur zentralen Konfiguration des Server-Schlüssels.
+- Neue Umgebungsvariable `PASSWORD_MIN_LENGTH`
+- Neue Umgebungsvariable `PASSWORD_PATTERN`
+- Brute-Force-Schutz für Anmeldungen:
+  - Wenn aktiv, muss der eigene Browser bei der Anmeldung als Admin, Login und bei Codeeingabe eine sogenannte Challenge errechnen. Dies verlangsamt den Anmeldeprozess ein wenig, schützt aber den Testcenter Server vor Bot-Angriffen.
+  - Aktivierbar über die neue Umgebungsvariable `BRUTE_FORCE_PROTECTION` in `.env.prod`.
+- Die Backend-Konfigurationsdatei `config/config.ini` wurde entfernt. Das Backend schreibt nicht länger die Werte der Umgebungsvariablen in die Datei, sondern nutzt diese direkt. Alle anderen Werte in dieser Datei haben definierte Standardwerte direkt im Code.
+- Die Bibliothek zur automatischen Kodierung wurde auf `@iqb/responses` 5.2.2 aktualisiert.
+
+# 18.1.1
 ## Änderungen
 - Folgende custom-texts haben keine Funktion mehr und wurden entfernt:
   - booklet_loadingBlock

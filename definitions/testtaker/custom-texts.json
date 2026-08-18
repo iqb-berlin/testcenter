@@ -139,10 +139,6 @@
     "label" : "Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist",
     "defaultvalue" : "Leider gab es ein technisches Problem. Versuche Folgendes:\n\n1. Lade die Seite neu. Drücke dafür die Taste F5 oder am Tablet das Neu-Laden-Symbol oben rechts neben der Internetadresse.\n\nFunktioniert nicht? Dann...\n\n2. Melde dich mit deinen Zugangsdaten in einem anderen Browser neu an (Browser: Mozilla Firefox, Google Chrome, Apple Safari).\n\nFunktioniert auch nicht? Dann...\n\n3. Melde dich mit deinen Zugangsdaten an einem anderen Gerät neu an. Spreche das aber vorher mit der Lehrkraft bzw. Testleitung ab."
   },
-  "booklet_console_warning": {
-    "label": "Warnung, die auf der Browserkonsole erscheinen soll",
-    "defaultvalue": "Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*\nGehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben."
-  },
   "booklet_pausedmessage" : {
     "label" : "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
     "defaultvalue" : "Der Test wurde kurz angehalten."
@@ -185,7 +181,7 @@
     "defaultvalue" : "Bitte prüfen Sie die folgenden Aufgaben-Elemente"
   },
   "syscheck_intro" : {
-    "label" : "Text auf der ersten Seite des System-Checks",
+    "label" : "Text auf der ersten Seite des Systemchecks",
     "defaultvalue" : "Dieser Systemcheck soll gewährleisten, dass das von Ihnen verwendete Endgerät für eine bestimmte Befragung oder Testung geeignet ist."
   },
   "syscheck_report_id" : {
@@ -194,7 +190,7 @@
   },
   "syscheck_report_aboutPassword": {
     "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",
-    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!"
+    "defaultvalue" : "Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Systemcheck-Kennwort ein, das Sie von der Projektleitung erhalten haben!"
   },
   "syscheck_report_aboutReportId": {
     "label" : "Dialog 'Bericht senden': Text über das Passworteingabefeld",

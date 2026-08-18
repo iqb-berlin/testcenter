@@ -50,6 +50,10 @@ class TestEnvironment {
       }
 
       if (self::$testMode == 'api') {
+        // overwrite the settings of .env file, to make the api tests deterministic and independent of real .env configs
+        SystemConfig::$bruteForceProtection_sessions = [];
+        SystemConfig::$server_key = 'Secret';
+
         // api tests can use vfs for more speed
         self::setUpVirtualFilesystem();
         self::createTestFiles(false);
@@ -154,12 +158,7 @@ class TestEnvironment {
       throw new Exception(implode("; ", $errors));
     }
 
-    $scheme = '-- IQB-Testcenter DB --';
-    foreach ($initDAO::tables as $table) {
-      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] . ";";
-      $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
-    }
-    file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
+    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
   }
 
   private static function rollback(): void {

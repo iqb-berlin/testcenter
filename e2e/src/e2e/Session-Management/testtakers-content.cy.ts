@@ -7,7 +7,9 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Check Testtakers Content', () => {
+// TODO Zur Zeit ist eine restriktive Validierung abgeschaltet und das Testcenter verhält sich flexibel bei nicht konformen Testdateien. Daher ist dieser Test erst einmal ausgeschaltet. Sobald eine Validierung wieder eingeschaltet ist, kann der Test wieder aktiviert werden.
+
+describe.skip('Check Testtakers Content', () => {
   before(() => {
     resetBackendData();
     probeBackendApi();

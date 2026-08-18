@@ -5,8 +5,8 @@
 # =============================================================================
 # DOCKER IMAGE CONFIGURATION
 # =============================================================================
-# This section defines the Docker image configurations for various components 
-# of the Testcenter application. For production deployments, it's recommended 
+# This section defines the Docker image configurations for various components
+# of the Testcenter application. For production deployments, it's recommended
 # to use specific image tags rather than 'stable' to ensure reproducible deployments.
 # Configure image pull policies based on your deployment strategy
 image:
@@ -120,10 +120,15 @@ config:
     # When enabled, the backend generates routes for file requests to be routed the external File Server
     # instead of serving files directly. Recommended for production scalability.
     fileServerEnabled: true
+    # -- Session types protected by an ALTCHA challenge (admin, login, person)
+    # Separate multiple session types with spaces. Leave empty to disable protection.
+    bruteForceProtection: 'admin login person'
     # -- Enable Redis caching of static files
     # References the `redisCacheFiles` anchor. When enabled, the backend
     # caches static files in Redis for faster access by the File Server.
     redisCacheFiles: *redisCacheFiles
+    passwordMinLength: 7
+    passwordPattern: '^.*$'
 
   cacheServer:
     # -- Maximum memory allocation for Redis
@@ -215,6 +220,12 @@ secret:
     # PRODUCTION: Replace 'change_me' with a strong, randomly generated salt!
     # This salt is used for hashing user passwords in the application.
     passwordSalt: change_me
+    # -- Secret key used to generate and verify ALTCHA challenges
+    # PRODUCTION: Replace 'Secret' with a strong, randomly generated key!
+    serverKey: Secret
+    # -- Initial Sys-Admin password, used only when creating the first administrator
+    # PRODUCTION: Replace 'user123' with a strong password matching the configured password rules!
+    adminInitPassword: user123
 
 # =============================================================================
 # INGRESS AND NETWORK EXPOSURE

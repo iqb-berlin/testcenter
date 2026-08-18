@@ -6,10 +6,131 @@ info:
 
 paths:
 
+  /session/challenge:
+    post:
+      summary: Create Session Challenge
+      description: Creates a proof-of-work challenge for starting an Admin or Login session.
+      tags:
+        - session management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - loginType
+                - name
+                - password
+              properties:
+                loginType:
+                  type: string
+                  enum:
+                    - admin
+                    - login
+                name:
+                  type: string
+                password:
+                  type: string
+            example:
+              loginType: admin
+              name: super
+              password: user123
+      responses:
+        '200':
+          description: Challenge created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - algorithm
+                  - challenge
+                  - maxNumber
+                  - salt
+                  - signature
+                properties:
+                  algorithm:
+                    type: string
+                    enum:
+                      - SHA-1
+                      - SHA-256
+                      - SHA-512
+                  challenge:
+                    type: string
+                  maxNumber:
+                    type: integer
+                  salt:
+                    type: string
+                  signature:
+                    type: string
+        '500':
+          description: Server Error
+
+  /session/person/challenge:
+    post:
+      summary: Create Person Session Challenge
+      description: Creates a proof-of-work challenge for starting a Person session with a code.
+      tags:
+        - session management
+      parameters:
+        - in: header
+          name: AuthToken
+          description: Auth token for a Login session
+          schema:
+            type: string
+          example: 'l:user000000000.test0000000'
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+            example:
+              code: 'xxx'
+      responses:
+        '200':
+          description: Challenge created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - algorithm
+                  - challenge
+                  - maxNumber
+                  - salt
+                  - signature
+                properties:
+                  algorithm:
+                    type: string
+                    enum:
+                      - SHA-1
+                      - SHA-256
+                      - SHA-512
+                  challenge:
+                    type: string
+                  maxNumber:
+                    type: integer
+                  salt:
+                    type: string
+                  signature:
+                    type: string
+        '401':
+          description: Login session authentication missing
+        '500':
+          description: Server Error
+
   /session:
     get:
       summary: get a session
-      description:
+      description: |
         Returns session data according to an authToken.
         ** Note, that it contains the relevant data twice, one time in the deprecated object `access` and one in the new
         form, `claims`. Don't use `access`, it will be removed.**
@@ -92,6 +213,85 @@ paths:
         "410":
           description: Session Expired
         "500":
+          description: Server Error
+    put:
+      summary: Verify Challenge and create Session
+      description: Verifies a solved proof-of-work challenge and starts the requested session.
+      tags:
+        - session management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - algorithm
+                - challenge
+                - salt
+                - signature
+                - number
+              properties:
+                algorithm:
+                  type: string
+                  enum:
+                    - SHA-1
+                    - SHA-256
+                    - SHA-512
+                challenge:
+                  type: string
+                salt:
+                  type: string
+                signature:
+                  type: string
+                number:
+                  type: integer
+                  minimum: 0
+            example:
+              algorithm: SHA-256
+              challenge: 1ee58f58dca8fce65a63bdc02b3a2346e9c1fe7be4a2edf7593061a34c7c2f3f
+              salt: '000000000000000000000000?loginType=admin&name=super&password=user123&'
+              signature: aac6f23c76800951465f0dac364077d270f463659f8e8c0d79c51c3668bc047c
+              number: 0
+      responses:
+        '200':
+          description: Challenge verified and session started
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/session'
+              example:
+                token: 'static:admin:super'
+                displayName: super
+                loginName: super
+                groupLabel: null
+                id: 1
+                pwSetByAdmin: false
+                customTexts: {}
+                flags: []
+                claims:
+                  workspaceAdmin:
+                    - id: '1'
+                      type: workspaceAdmin
+                      label: sample_workspace
+                      flags:
+                        mode: RW
+                    - id: '2'
+                      type: workspaceAdmin
+                      label: second_workspace
+                      flags:
+                        mode: RW
+                  superAdmin: []
+                groupToken: null
+                viewSettings: []
+                access:
+                  workspaceAdmin:
+                    - '1'
+                    - '2'
+                  superAdmin: []
+        '400':
+          description: Challenge solution invalid
+        '500':
           description: Server Error
     delete:
       summary: delete a session

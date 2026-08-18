@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { CodingScheme } from '@iqb/responses';
+import type { VariableCodingData } from '@iqbspecs/coding-scheme';
 import {
   BookletDef,
   BookletStateDef,
@@ -236,7 +236,7 @@ export interface Unit extends UnitDef {
   variables: { [variableId: string]: IQBVariable };
   baseVariableIds: string[];
   playerFileName: string;
-  scheme: CodingScheme;
+  scheme: VariableCodingData[];
   responseType: string | undefined;
   definition: string;
   state: UnitState;

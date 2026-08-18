@@ -16,10 +16,10 @@ listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<Cu
 </CustomTexts>
 ```
 
-## Textersetzungen System-Check
+## Textersetzungen Systemcheck
 {: .no_toc }
 
-Textersetzungen für den System-Check werden im Konfigurationsfeld der **System-Check-XML** angegeben
+Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemcheck-XML** angegeben
 .
 ```
 <Config>
@@ -149,13 +149,6 @@ Standard: Aufgabenblock ist gesperrt, Freigabewort benötigt
 Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung
 
 Standard: Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.
-
-## `booklet_console_warning`
-
-Warnung, die auf der Browserkonsole erscheinen soll
-
-Standard: Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*
-Gehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben.
 
 ## `booklet_errormessage`
 
@@ -317,7 +310,7 @@ Texte für den System-Check.
 
 ## `syscheck_intro`
 
-Text auf der ersten Seite des System-Checks
+Text auf der ersten Seite des Systemchecks
 
 Standard: Dieser Systemcheck soll gewährleisten, dass das von Ihnen verwendete Endgerät für eine bestimmte Befragung oder Testung geeignet ist.
 
@@ -337,7 +330,7 @@ Standard: Bitte bearbeiten Sie die nachfolgenden Fragen.
 
 Dialog 'Bericht senden': Text über das Passworteingabefeld
 
-Standard: Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das System-Check-Kennwort ein, das Sie von der Projektleitung erhalten haben!
+Standard: Nur berechtigten Personen ist das Speichern erlaubt. Bitte geben Sie unten das Systemcheck-Kennwort ein, das Sie von der Projektleitung erhalten haben!
 
 ## `syscheck_report_aboutReportId`
 

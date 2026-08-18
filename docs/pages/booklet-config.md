@@ -20,7 +20,7 @@ Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
 
 ## `loading_mode`
 Ladeverhalten beim Start
- * **"LAZY" - Start sobald wie möglich, Laden im Hintergrund fortsetzen**
+ * **"LAZY" - Start des Tests sobald wie möglich. Im Hintergrund werden die weiteren Blöcke (Testlets) geladen. Wenn sich Units außerhalb von Blöcken befinden gilt das ganze Booklet als Block und wird komplett geladen. Es müssen also Testlet-Elemente verwendet werden, damit lazy loading funktioniert.**
  * "EAGER" - Testheft erst dann starten, wenn alle Inhalte geladen sind
 
 ## `logPolicy`

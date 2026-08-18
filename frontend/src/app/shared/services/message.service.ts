@@ -1,24 +1,33 @@
 import { Injectable, TemplateRef } from '@angular/core';
-import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
-import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { InfoDialogComponent } from '@shared/components/dialog/info-dialog.component';
 import { ThemeService } from '@shared/services/theme.service';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
+import { ToastContent, ToastService } from '@shared/services/toast.service';
+import { ConfirmDialogComponent } from '../components/dialog/confirm-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  constructor(private _snackBar: MatSnackBar, private dialog: MatDialog,
+  constructor(private dialog: MatDialog, private toastService: ToastService,
               private mds: MainDataService, private themeService: ThemeService) {}
 
-  showSnackbar(text: string, actionText: string = 'Schließen'): MatSnackBarRef<TextOnlySnackBar> {
-    return this._snackBar.open(text, actionText, {
-      duration: 5000,
-      panelClass: ['global-snackbar']
-    });
+  /**
+   * Shows a toast message. Multiple messages triggered in quick succession are
+   * stacked on top of each other instead of replacing one another, and each is
+   * dismissed independently after its own `duration`.
+   *
+   * `text` is either a plain string, or an array mixing plain strings with
+   * `{ emphasized: '...' }` markers.
+   *
+   * Pass `duration <= 0` to show the message indefinitely.
+   *
+   * Returns an observable that emits once this particular toast has been dismissed.
+   */
+  showSnackbar(text: ToastContent, actionText: string = 'Schließen', duration: number = 5000): Observable<void> {
+    return this.toastService.showSnackbar(text, actionText, duration);
   }
 
   showConfirmDialog(dialogData: ConfirmDialogData): Observable<boolean> {

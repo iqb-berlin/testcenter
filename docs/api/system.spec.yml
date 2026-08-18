@@ -60,6 +60,10 @@ paths:
                   supportedBrowsers:
                     type: array
                     description: list of supported browsers
+                  passwordMinLength:
+                    type: number
+                  passwordPattern:
+                    type: string
                 required:
                   - version
                   - customTexts
@@ -70,6 +74,8 @@ paths:
                   - veronaPlayerApiVersionMax
                   - baseUrl
                   - supportedBrowsers
+                  - passwordMinLength
+                  - passwordPattern
               example:
                 version: "%%%VERSION%%%"
                 customTexts: {}
@@ -80,6 +86,8 @@ paths:
                 veronaPlayerApiVersionMax: 4
                 baseUrl: http://testcenter.de
                 supportedBrowsers: ["chrome 131", "firefox 133"]
+                passwordMinLength: 7
+                passwordPattern: "^\\d+$"
         "500":
           description: Server Error
 
@@ -184,10 +192,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/workspace_list'
+                type: array
+                description: List of Workspaces
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "example_workspace"
+                    latest_modification_ts:
+                      type: string
+                      format: date-time
+                      nullable: true
+                      description: timestamp of the latest file modification in the workspace, or null if the workspace has no files
+                      example: "2023-01-16 09:00:00"
+                  required:
+                    - id
+                    - name
               example:
-                - id: '1'
+                - id: 1
                   name: "example_workspace"
+                  latest_modification_ts: "2023-01-16 09:00:00"
         "401":
           description: Not authenticated
         "410":

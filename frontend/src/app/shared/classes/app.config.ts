@@ -37,9 +37,12 @@ export class AppConfig {
   globalWarningExpiredHour = '';
   bugReportAuth: string = '';
   bugReportTarget: string = '';
+  bruteForceProtection: string[] = [];
   broadcastingServiceUri: string = '';
   fileServiceUri: string = '';
   themeName: string = '';
+  passwordMinLength: number = 0;
+  passwordPattern: string = '';
 
   constructor(sysConfig: SysConfig, cts: CustomtextService, defaultThemeName: string, sanitizer: DomSanitizer) {
     this.sanitizer = sanitizer;
@@ -53,8 +56,11 @@ export class AppConfig {
     this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
     this.iqbStandardResponseTypeMin = sysConfig.iqbStandardResponseTypeMin;
     this.iqbStandardResponseTypeMax = sysConfig.iqbStandardResponseTypeMax;
+    this.bruteForceProtection = sysConfig.bruteForceProtection;
     this.broadcastingServiceUri = sysConfig.broadcastingServiceUri;
     this.fileServiceUri = sysConfig.fileServiceUri;
+    this.passwordMinLength = sysConfig.passwordMinLength;
+    this.passwordPattern = sysConfig.passwordPattern;
   }
 
   setCustomTexts(customTexts: KeyValuePairs): void {

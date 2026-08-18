@@ -1,3 +1,7 @@
+.mat-expansion-panel {
+  overflow: unset;
+}
+
 .selected-row {
   background-color: #0080001a;
 }

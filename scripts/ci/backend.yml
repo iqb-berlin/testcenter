@@ -132,6 +132,7 @@ test-backend-unit:
     - !reference [ .gitlab_login, before_script ]
     - apk add --no-cache make
   script:
+    - make init
     - make test-backend-unit
   after_script:
     - !reference [ .gitlab_login, after_script ]

@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate, RedirectCommand, Router } from '@angular/router';
+import { CanDeactivate, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { AppError } from '@app/app.interfaces';
+import { MessageService } from '@shared/services/message.service';
 import { TestControllerState, UnitNavigationTarget } from '../interfaces/test-controller.interfaces';
-import { TestControllerService } from '../services/test-controller.service';
 import { TestControllerComponent } from '../components/test-controller/test-controller.component';
+import { TestControllerService } from '../services/test-controller.service';
+import { CustomtextService } from '@shared/services/customtext/customtext.service';
 
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
   constructor(
     private tcs: TestControllerService,
+    private messageService: MessageService,
+    private cts: CustomtextService,
     private router: Router
   ) {
   }
@@ -20,18 +26,30 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         // this whole inner block mimics setUnitNavigationRequest(PAUSE), without manually triggering router.navigate()
         // in order to correctly return a redirect, instead of hacking (router.navigate + return false)
         if (!this.tcs.booklet) {
-          return new RedirectCommand(
-            this.router.parseUrl(`/t/${this.tcs.testId}/status`),
-            { skipLocationChange: true, state: { force: true } }
-          );
+          throw new AppError({
+            label: 'Kein Booklet gefunden.',
+            description: ''
+          });
         }
-        await this.tcs.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
-        return new RedirectCommand(
-          this.router.parseUrl(`/t/${this.tcs.testId}/status`),
-          { skipLocationChange: true, state: { force: true } }
+        const isLeaveConfirmed = await firstValueFrom(
+          this.messageService.showConfirmDialog({
+            title: 'Sicher, dass du den Test beenden möchtest?',
+            content: ''
+          })
         );
+        if (isLeaveConfirmed) {
+          await this.tcs.closeAllBuffers(`setUnitNavigationRequest(${UnitNavigationTarget.PAUSE} NEXT`);
+          await this.terminateTest();
+        }
+        return isLeaveConfirmed;
       }
     }
     return true;
+  }
+
+  async terminateTest(): Promise<void> {
+    await this.tcs.terminateTest(
+      'BOOKLETLOCKEDbyTESTEE', true, this.tcs.booklet?.config.lock_test_on_termination === 'ON');
+    this.cts.restoreDefault(false);
   }
 }

@@ -522,7 +522,7 @@ paths:
                     report: [ ]
                     dependencies: [ ]
                     info:
-                      label: System-Check Beispiel
+                      label: Systemcheck Beispiel
                       description: Beschreibungstext für den Systemcheck
                 Testtakers:
                   - name: SAMPLE_TESTTAKERS.XML

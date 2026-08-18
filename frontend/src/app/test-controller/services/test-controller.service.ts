@@ -9,6 +9,7 @@ import {
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { CodingSchemeFactory } from '@iqb/responses';
 import { TimerData } from '../classes/test-controller.classes';
 import {
   Booklet,
@@ -550,7 +551,10 @@ export class TestControllerService {
 
   async setUnitNavigationRequest(navString: string, force = false): Promise<boolean> {
     if (!this.booklet) {
-      return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
+      throw new AppError({
+        label: 'Kein Booklet gefunden.',
+        description: ''
+      });
     }
     let navigation: NavigationState;
     switch (navString) {
@@ -798,7 +802,7 @@ export class TestControllerService {
             somethingChanged = true;
           });
       });
-    if (somethingChanged && this.units[sequenceId].scheme.variableCodings.length) {
+    if (somethingChanged && this.units[sequenceId].scheme.length) {
       this.codeVariables(sequenceId);
     }
 
@@ -808,7 +812,7 @@ export class TestControllerService {
   private codeVariables(sequenceId: number): void {
     const baseVars = Object.values(this.units[sequenceId].variables)
       .filter(vari => this.units[sequenceId].baseVariableIds.includes(vari.id));
-    this.units[sequenceId].scheme.code(baseVars)
+    CodingSchemeFactory.code(baseVars, this.units[sequenceId].scheme)
       .forEach(variable => {
         if (variable.id in this.units[sequenceId].variables) {
           this.units[sequenceId].variables[variable.id] = variable;
@@ -898,7 +902,11 @@ export class TestControllerService {
       return of(true);
     }
 
-    if (skipIfNoTimeRestrictionEnforcement('Im Testmodus würde ein Dialog die Navigation abfragen.')) return of(true);
+    if (skipIfNoTimeRestrictionEnforcement(
+      'Im normalen Testablauf wird beim Verlassen des zeitbegrenzten Blocks eine Warnung angezeigt.'
+    )) {
+      return of(true);
+    }
 
     return this.messageService.showConfirmDialog({
       title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
@@ -932,7 +940,7 @@ export class TestControllerService {
       };
       this.ms.showSnackbar(
         `Im Testmodus dürfte hier nicht ${(direction === 'forward') ? 'weiter' : ' zurück'} geblättert
-      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`
+      werden: ${reasons.map(r => reasonTexts[r]).join(' ')}`
       );
       return of(true);
     }

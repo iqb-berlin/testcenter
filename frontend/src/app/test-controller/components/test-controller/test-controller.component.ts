@@ -179,8 +179,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       });
       this.tcs.navigation$.subscribe((nav: NavigationState) => {
-        this.unitNavContext.isBackwardAllowed = nav.directions.backward === 'yes';
-        this.unitNavContext.isForwardAllowed = nav.directions.forward === 'yes';
+        this.unitNavContext.isBackwardAllowed = nav.directions.backward !== 'no';
+        this.unitNavContext.isForwardAllowed = nav.directions.forward !== 'no';
       });
       this.pageService.pagesUpdated.subscribe(() => {
         this.pageNavContext = {

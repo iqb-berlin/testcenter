@@ -93,9 +93,9 @@ export class SyscheckComponent implements OnInit, OnDestroy {
 
       let prompt = 'Es werden alle Berichte für diese';
       if (selectedReports.length > 1) {
-        prompt = `${prompt} ${selectedReports.length} System-Checks `;
+        prompt = `${prompt} ${selectedReports.length} Systemchecks `;
       } else {
-        prompt = `${prompt}n System-Check "${selectedReports[0]}" `;
+        prompt = `${prompt}n Systemcheck "${selectedReports[0]}" `;
       }
 
       this.messageService.showConfirmDialog({

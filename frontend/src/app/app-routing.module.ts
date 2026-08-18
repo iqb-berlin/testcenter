@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { EmptyComponent } from '@app/app-root/page-not-found/empty.component';
 import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { AdminLoginComponent } from './app-root/login/admin-login/admin-login.component';
@@ -16,7 +17,7 @@ import {
   SuperAdminComponentActivateGuard,
   TestComponentActivateGuard
 } from './app-route-guards';
-import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
+import { PageNotFoundComponent } from './app-root/page-not-found/page-not-found.component';
 import { GenericInfoPageComponent } from './app-root/generic-info-page/generic-info-page.component';
 import { AppModuleSettings } from './app.interfaces';
 import { StarterComponent } from './app-root/starter/starter.component';
@@ -56,7 +57,7 @@ const routes: Routes = [
       },
       {
         path: 'route-dispatcher',
-        component: RouteDispatcherComponent,
+        component: EmptyComponent,
         canActivate: [RouteDispatcherActivateGuard]
       },
       {
@@ -136,7 +137,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    component: RouteDispatcherComponent,
+    component: PageNotFoundComponent,
     canActivate: [DirectLoginActivateGuard]
   }
 ];

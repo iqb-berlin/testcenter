@@ -39,12 +39,6 @@ spec:
               drop:
                 - ALL
           command: [ "apache2-foreground" ]
-          {{- if .Values.objectStore.enabled }}
-          # With object storage enabled the backend reads its full configuration
-          # from the environment (SystemConfig::readFromEnvironment) rather than the
-          # config.ini on the shared PVC, which can be stale and would ignore the
-          # storage settings. On the default filesystem path this block is absent
-          # and the backend keeps reading config.ini as before.
           env:
             - name: BROADCASTER_ENABLED
               valueFrom:
@@ -56,10 +50,15 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: FILE_SERVER_ENABLED
+            - name: BRUTE_FORCE_PROTECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: BRUTE_FORCE_PROTECTION
             - name: REDIS_HOST
-              value: "{{ .Release.Name }}-cache-server"
+              value: '{{ .Release.Name }}-cache-server'
             - name: REDIS_PORT
-              value: "6379"
+              value: '6379'
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -70,6 +69,10 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: REDIS_CACHE_FILES
+            {{- if .Values.objectStore.enabled }}
+            # Object-store path only. Without this block STORAGE_DRIVER stays unset,
+            # SystemConfig keeps its 'filesystem' default and the backend serves from
+            # the data PVC exactly as before.
             - name: STORAGE_DRIVER
               value: "s3"
             - name: S3_ENDPOINT
@@ -96,12 +99,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.objectStore.existingSecret }}
                   key: S3_SECRET_KEY
+            {{- end }}
             - name: MYSQL_HOST
-              value: "{{ .Release.Name }}-db"
+              value: '{{ .Release.Name }}-db'
             - name: MYSQL_PORT
-              value: "3306"
+              value: '3306'
             - name: MYSQL_DATABASE
-              value: "iqb_tba_testcenter"
+              value: 'iqb_tba_testcenter'
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
@@ -117,23 +121,26 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-backend-secret
                   key: PASSWORD_SALT
-            # Required by SystemConfig::readFromEnvironment(); without them the
-            # init falls back to a stale config.ini and ignores env (incl. storage).
             - name: PASSWORD_MIN_LENGTH
-              value: {{ .Values.config.backend.passwordMinLength | default 7 | quote }}
-            - name: PASSWORD_REGEX_CHECK
-              value: {{ .Values.config.backend.passwordRegexCheck | default "/.*/" | quote }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: PASSWORD_MIN_LENGTH
+            - name: PASSWORD_PATTERN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: PASSWORD_PATTERN
             - name: ADMIN_INIT_PASSWORD
-              value: {{ .Values.config.backend.adminInitPassword | default "user123" | quote }}
-            - name: SKIP_READ_FILES
-              value: "no"
-            - name: SKIP_DB_INTEGRITY
-              value: "no"
-            - name: OVERWRITE_INSTALLATION
-              value: "no"
-            - name: NO_SAMPLE_DATA
-              value: "no"
-          {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: ADMIN_INIT_PASSWORD
+            - name: SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-backend-secret
+                  key: SERVER_KEY
           ports:
             - name: http-container
               containerPort: 8080
@@ -144,6 +151,7 @@ spec:
           volumeMounts:
             - name: backend-volume
               mountPath: /var/www/testcenter/data
+            # backend-config-volume is still kept, as config/.lock files still exist; even if config.ini does not exist anymore
             - name: backend-config-volume
               mountPath: /var/www/testcenter/backend/config
           livenessProbe:

@@ -1,8 +1,9 @@
 import {
   clickSuperadminSettings,
-  loginSuperAdmin, logout,
+  loginSuperAdmin,
+  logout,
   probeBackendApi,
-  resetBackendData, visitLoginPage,
+  resetBackendData,
   visitLoginPageWithProdDb
 } from '../utils';
 
@@ -19,30 +20,36 @@ describe('Settings (setting-tab)', () => {
   });
 
   it('all setting options are visible', () => {
+
     cy.get('[data-cy="superadmin-tabs:settings"]')
-      .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/superadmin/settings`);
-    cy.contains('Testheft');
-    cy.contains('Gruppenmonitor');
-    cy.contains('Login');
-    cy.contains('System-Check');
-    cy.contains('Warnung auf der Startseite');
-    cy.contains('Logo');
+      .click({ timeout: 10000 });
+    cy.get('[data-cy="admin-setting-warningfield"]');
+    cy.get('[data-cy="admin-setting-app-name"]')
+    cy.get('[data-cy="admin-setting-data-protect"]')
+    cy.get('[data-cy="admin-setting-accessibility"]')
+    cy.get('[data-cy="admin-setting-imprint"]')
+    cy.get('[data-cy="admin-setting-repo"]')
+    cy.get('[data-cy="admin-setting-git-token"]')
+    cy.get('[data-cy="admin-setting-theme-Primar"]')
+    cy.get('[data-cy="admin-setting-theme-Sekundar"]')
+    cy.get('[data-cy="admin-setting-theme-Erwachsene"]')
+    cy.get('[data-cy="admin-setting-submit"]')
   });
 
   // todo check how to test this without polluting the real database -> this test can be observed in regular dev container db (make up)
   it('set a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
-      .click();
-    cy.get('[formcontrolname="globalWarningText"]')
+      .click({ timeout: 10000 });
+    cy.get('[data-cy="admin-setting-warningfield"]')
+      .clear()
       .type('Maintenance works');
-    cy.get('[formcontrolname="globalWarningExpiredDay"]')
+    cy.get('[data-cy="admin-setting-set-date"]')
+      .clear()
       .type('12.12.2050');
-    cy.get('[formcontrolname="appTitle"]')
+    cy.get('[data-cy="admin-setting-app-name"]')
       .clear()
       .type('NewName');
-    cy.get('[data-cy="Settings:Submit-ApplicationConfiguration"]')
+    cy.get('[data-cy="admin-setting-submit"]')
       .click();
     cy.get('[data-cy="logo"]')
       .click();
@@ -54,14 +61,14 @@ describe('Settings (setting-tab)', () => {
 
   it('clear a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
-      .click();
-    cy.get('[formcontrolname="globalWarningText"]')
+      .click({ timeout: 10000 });
+    cy.get('[data-cy="admin-setting-warningfield"]')
       .clear();
-    cy.get('[formcontrolname="globalWarningExpiredDay"]')
+    cy.get('[data-cy="admin-setting-set-date"]')
       .clear();
-    cy.get('[formcontrolname="appTitle"]')
+    cy.get('[data-cy="admin-setting-app-name"]')
       .clear();
-    cy.get('[data-cy="Settings:Submit-ApplicationConfiguration"]')
+    cy.get('[data-cy="admin-setting-submit"]')
       .click();
     cy.get('[data-cy="logo"]')
       .click();

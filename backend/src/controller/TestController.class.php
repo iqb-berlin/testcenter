@@ -360,7 +360,7 @@ class TestController extends Controller {
     $unitResponse = RequestHelper::getFields($request, [
       'timeStamp' => 'REQUIRED',
       'dataParts' => [],
-      'OriginalUnitId' => '',
+      'originalUnitId' => '',
       'responseType' => 'unknown'
     ]);
 

@@ -1,6 +1,6 @@
 {
   "name": "iqb-testcenter",
-  "version": "18.1.1",
+  "version": "18.2.0",
   "iqb": {
     "release-channels": {
       "lts": "16.3",
@@ -94,6 +94,7 @@
     "@iqb/eslint-config": "2.1.1",
     "@types/jest": "~27.4.1",
     "axios": "^1.8.4",
+    "browserslist": "^4.28.7",
     "dredd": "^14.0.0",
     "eslint-plugin-cypress": "~2.12.1",
     "eslint-plugin-html": "~6.2.0",

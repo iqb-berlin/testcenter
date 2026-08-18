@@ -19,7 +19,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   navLinks = [
     { path: 'files', label: 'Dateien' },
-    { path: 'syscheck', label: 'System-Check Berichte' },
+    { path: 'syscheck', label: 'Systemcheck Berichte' },
     { path: 'results', label: 'Ergebnisse/Antworten' },
     { path: 'tests', label: 'Tests löschen' }
   ];
