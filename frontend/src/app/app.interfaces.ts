@@ -96,6 +96,9 @@ export class AppError extends Error implements AppErrorInterface {
   constructor(p: AppErrorInterface) {
     super();
     Object.assign(this, p);
+    if (!this.details) {
+      this.details = this.stack;
+    }
   }
 }
 

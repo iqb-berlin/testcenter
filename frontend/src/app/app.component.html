@@ -1,11 +1,5 @@
 <tc-header></tc-header>
 
-@if (showError) {
-  <div id="main-alert-container">
-    <error [onBeforeClose]="closeErrorBox.bind(this)"></error>
-  </div>
-}
-
 <router-outlet></router-outlet>
 
 <tc-toast-container></tc-toast-container>

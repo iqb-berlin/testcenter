@@ -558,8 +558,11 @@ export class TestControllerService {
     }
     let navigation: NavigationState;
     switch (navString) {
-    case UnitNavigationTarget.PAUSE:
     case UnitNavigationTarget.ERROR:
+      navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
+      this.messageService.showErrorDialog(this.cts.getCustomText('booklet_errormessage'));
+      return false;
+    case UnitNavigationTarget.PAUSE:
       navigation = await this.closeAllBuffers(`setUnitNavigationRequest(${navString} NEXT`);
       return this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     case UnitNavigationTarget.NEXT:

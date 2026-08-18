@@ -12,6 +12,7 @@ import { AppConfig } from './shared/classes/app.config';
 import { ThemeService } from './shared/services/theme.service';
 import { FooterService } from '@shared/services/footer.service';
 import { AssetService } from '@shared/services/asset.service';
+import { MessageService } from '@shared/services/message.service';
 
 @Component({
   selector: 'tc-root',
@@ -23,7 +24,6 @@ import { AssetService } from '@shared/services/asset.service';
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription | null = null;
   private appTitleSubscription: Subscription | null = null;
-  showError = false;
 
   constructor(public mainDataService: MainDataService,
               private backendService: BackendService,
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private titleService: Title,
               private themeService: ThemeService,
               private assetService: AssetService,
+              private messageService: MessageService,
               private sanitizer: DomSanitizer,
               private route: ActivatedRoute,
               public footerService: FooterService) { }
@@ -42,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.mainDataService.quit();
         }
         if (!this.disableGlobalErrorDisplay()) {
-          this.showError = true;
+          this.messageService.showErrorDialog();
         }
       });
 
@@ -115,10 +116,6 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       false
     );
-  }
-
-  closeErrorBox(): void {
-    this.showError = false;
   }
 
   ngOnDestroy(): void {
