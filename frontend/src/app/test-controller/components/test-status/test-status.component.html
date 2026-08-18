@@ -12,19 +12,6 @@
     </mat-card-content>
   </mat-card>
 
-  <error
-    *ngSwitchCase="'ERROR'"
-    [onClose]="reloadPage.bind(this)"
-    [closeCaption]="('Neu Laden' | customtext:'booklet_reload' | async) || ''"
-    [additionalReport]="{
-      login: loginName,
-      booklet: tcs.booklet?.metadata?.label || tcs.booklet?.metadata?.id || '',
-      mode: tcs.testMode.modeLabel
-    }"
-  >
-    <p style="white-space: pre-wrap">{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }}</p>
-  </error>
-
   <mat-card *ngSwitchCase="'LOADING'">
     <mat-card-content>
       <tc-alert level="info" text="Test wird gestartet"></tc-alert>
