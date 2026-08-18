@@ -10,10 +10,18 @@
   - Es gibt nun keine Möglichkeit mehr Fehlerberichte automatisch auf GitHub hoch oder als Datei runterzuladen. Diese Features wurden in der Vergangenheit selten bis nie benutzt. Das betrifft auch die zugehörigen Konfigurationsmöglichkeiten für Super-Admins.
   - Es gibt keine automatisches neu laden der Anwendung mehr. Erst wenn der Dialog geschlossen wird, wird die Anwendung neu geladen.
   - Der Stacktrace eines Fehlers wird nun auch im Fehlerbericht (nicht mehr nur in der Browser-Konsole) angezeigt. Dies soll dabei helfen, selten und scheinbar zufällig auftretende Fehler (z.B. `NG0203`) anhand eines eingereichten Fehlerberichts genauer nachvollziehen zu können.
+- Die Standardtexte folgender custom-texts wurden angepasst: `booklet_warningLeaveTimerBlockTextPrompt`,
+  `booklet_warningLeaveTextPrompt-testlet`, `booklet_warningLeaveTextPrompt-unit`. Die abschließende Frage
+  "Trotzdem weiterblättern?" wurde entfernt, da diese Entscheidung bereits eindeutig durch die Beschriftung der
+  Dialog-Knöpfe ("Hier bleiben" / "Trotzdem weiter") abgebildet wird.
+  - **Hinweis für Testheft-Ersteller:innen:** Wurde für eines dieser drei custom-texts ein eigener Text hinterlegt,
+    sollte dieser geprüft und ggf. entsprechend gekürzt werden, damit er nicht weiterhin redundant nach dem
+    Weiterblättern fragt.
 
 ## Fehlerbehebungen
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
+- Testheft-Anzeige: Beim Verlassen einer Aufgabe zurück ins Startmenü erschienen bisher unter Umständen zwei Bestätigungsdialoge nacheinander (etwa bei einem zeitbeschränkten Block oder einer Bereichssperre). Es erscheint nun nur noch ein einziger, zusammengeführter Dialog.
 
 # 18.2
 ## Neue Funktionen
