@@ -63,7 +63,6 @@ import { MatIcon } from '@angular/material/icon';
         </mat-expansion-panel-header>
         <h3>Fehlerbericht: {{error?.label}}</h3>
         <p [innerHtml]="error?.description"></p>
-        <p>{{error?.details}}</p>
         @if (error?.errorId) {
           <p><b>Error-Id:</b> {{error?.errorId}}</p>
         }
@@ -75,16 +74,17 @@ import { MatIcon } from '@angular/material/icon';
         <p><b>Booklet: </b>{{ tcs.booklet?.metadata?.label || tcs.booklet?.metadata?.id || '' }}</p>
         <p><b>Login: </b>{{loginName}}</p>
         <p><b>Mode: </b>{{ tcs.testMode.modeLabel }}</p>
+        <p>{{error?.details}}</p>
 
         @if (errorBuffer.length) {
           <p><b>Weitere Fehler:</b></p>
           <div>
             @for (err of errorBuffer; track err.label) {
               <p><b>{{err.label}}: </b>{{err.description}}</p>
-              <p>{{err.details}}</p>
               @if (err.errorId) {
                 <p><b>Error-Id:</b> {{err.errorId}}</p>
               }
+              <p>{{err.details}}</p>
             }
           </div>
         }

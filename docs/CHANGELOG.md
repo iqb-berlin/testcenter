@@ -9,6 +9,7 @@
 - Der Dialog zur Fehlerbehandlung wurde visuell und inhaltlich überarbeitet.
   - Es gibt nun keine Möglichkeit mehr Fehlerberichte automatisch auf GitHub hoch oder als Datei runterzuladen. Diese Features wurden in der Vergangenheit selten bis nie benutzt. Das betrifft auch die zugehörigen Konfigurationsmöglichkeiten für Super-Admins.
   - Es gibt keine automatisches neu laden der Anwendung mehr. Erst wenn der Dialog geschlossen wird, wird die Anwendung neu geladen.
+  - Der Stacktrace eines Fehlers wird nun auch im Fehlerbericht (nicht mehr nur in der Browser-Konsole) angezeigt. Dies soll dabei helfen, selten und scheinbar zufällig auftretende Fehler (z.B. `NG0203`) anhand eines eingereichten Fehlerberichts genauer nachvollziehen zu können.
 
 ## Fehlerbehebungen
 - Workspace-Admin:
