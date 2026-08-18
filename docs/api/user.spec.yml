@@ -230,10 +230,12 @@ paths:
       responses:
         "200":
           description: password has changed / user did not exist
+        "400":
+          description: Password missing
         "401":
           description: Not authenticated
         "403":
-          description: Forbidden
+          description: Forbidden, or password incorrect
         "410":
           description: Session Expired
         "500":
