@@ -8,15 +8,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { SuperadminPasswordRequestComponent } from './superadmin-password-request.component';
+import { ConfirmWithPasswordComponent } from './confirm-with-password.component';
 
-describe('SuperadminPasswordRequestComponent', () => {
-  let component: SuperadminPasswordRequestComponent;
-  let fixture: ComponentFixture<SuperadminPasswordRequestComponent>;
+describe('ConfirmWithPasswordComponent', () => {
+  let component: ConfirmWithPasswordComponent;
+  let fixture: ComponentFixture<ConfirmWithPasswordComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [SuperadminPasswordRequestComponent],
+      declarations: [ConfirmWithPasswordComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,
@@ -26,14 +26,14 @@ describe('SuperadminPasswordRequestComponent', () => {
       ],
       providers: [
         MatDialog,
-        { provide: MAT_DIALOG_DATA, useValue: 'fonk' }
+        { provide: MAT_DIALOG_DATA, useValue: { title: 'fonk' } }
       ]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SuperadminPasswordRequestComponent);
+    fixture = TestBed.createComponent(ConfirmWithPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

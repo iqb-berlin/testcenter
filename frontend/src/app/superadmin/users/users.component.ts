@@ -6,9 +6,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '@shared/services/message.service';
 import { PasswordChangeService } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
-import {
-  SuperadminPasswordRequestComponent
-} from '../superadmin-password-request/superadmin-password-request.component';
+import { ConfirmWithPasswordComponent } from '../confirm-with-password/confirm-with-password.component';
 import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 
@@ -80,9 +78,9 @@ export class UsersComponent implements OnInit {
     }
 
     const userObject = <UserData>selectedRows[0];
-    const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
+    const passwdDialogRef = this.superadminPasswordDialog.open(ConfirmWithPasswordComponent, {
       width: '600px',
-      data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
+      data: { title: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}` }
     });
 
     passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
