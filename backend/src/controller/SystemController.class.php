@@ -7,6 +7,7 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
 use Slim\Routing\Route;
@@ -47,6 +48,17 @@ class SystemController extends Controller {
 
   public static function deleteUsers(Request $request, Response $response): Response {
     $bodyData = JSON::decode($request->getBody()->getContents());
+
+    if (!isset($bodyData->p)) {
+      throw new HttpBadRequestException($request, "Provide Password for security reasons!");
+    }
+
+    $authToken = $request->getAttribute('AuthToken');
+
+    if (!self::superAdminDAO()->checkPassword($authToken->getId(), $bodyData->p)) {
+      throw new HttpForbiddenException($request, "Invalid password for user {$authToken->getId()}");
+    }
+
     self::superAdminDAO()->deleteUsers($bodyData->u ?? []);
     return $response;
   }
