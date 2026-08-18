@@ -48,7 +48,6 @@ class UserController extends Controller {
   public static function patchPassword(Request $request, Response $response): Response {
     /**
      * TODO change p to password
-     * TODO validate old password by changing
      */
 
     $requestBody = JSON::decode($request->getBody()->getContents());
@@ -57,7 +56,21 @@ class UserController extends Controller {
     if (!isset($requestBody->p)) {
       throw new HttpBadRequestException($request, "Password missing");
     }
+
     $authToken = $request->getAttribute('AuthToken');
+
+    $isSelfService = $userId === $authToken->getId();
+
+    if ($isSelfService) {
+      if (!isset($requestBody->oldPassword)) {
+        throw new HttpBadRequestException($request, "Provide your current password (oldPassword) for security reasons!");
+      }
+
+      if (!self::superAdminDAO()->checkPassword($userId, $requestBody->oldPassword)) {
+        throw new HttpForbiddenException($request, "Invalid current password for user $userId");
+      }
+    }
+
     self::superAdminDAO()->setPassword($userId, $requestBody->p, $authToken);
 
     return $response;

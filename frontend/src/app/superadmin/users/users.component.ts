@@ -6,9 +6,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MessageService } from '@shared/services/message.service';
 import { PasswordChangeService } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
-import {
-  SuperadminPasswordRequestComponent
-} from '../superadmin-password-request/superadmin-password-request.component';
+import { ConfirmWithPasswordComponent } from '../confirm-with-password/confirm-with-password.component';
 import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 
@@ -80,9 +78,9 @@ export class UsersComponent implements OnInit {
     }
 
     const userObject = <UserData>selectedRows[0];
-    const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
+    const passwdDialogRef = this.superadminPasswordDialog.open(ConfirmWithPasswordComponent, {
       width: '600px',
-      data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
+      data: { title: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}` }
     });
 
     passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
@@ -122,21 +120,26 @@ export class UsersComponent implements OnInit {
     const prompt = selectedRows.length > 1 ?
       `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?` :
       `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
-    this.messageService.showConfirmDialog({
-      title: 'Löschen von Administrator:innen',
-      content: prompt,
-      confirmText: 'Administrator:in löschen'
-    }).subscribe(result => {
-      if (result) {
-        const usersToDelete: string[] = [];
-        selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
-        this.bs.deleteUsers(usersToDelete).subscribe(
-          () => {
-            this.messageService.showSnackbar('Administrator:in gelöscht');
-            this.updateObjectList();
-          }
-        );
+    const passwdDialogRef = this.superadminPasswordDialog.open(ConfirmWithPasswordComponent, {
+      width: '600px',
+      data: {
+        title: 'Löschen von Administrator:innen',
+        content: prompt,
+        confirmText: 'Administrator:in löschen'
       }
+    });
+    passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
+      if (!afterClosedResult) {
+        return;
+      }
+      const usersToDelete: string[] = [];
+      selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
+      this.bs.deleteUsers(usersToDelete, afterClosedResult.get('pw').value).subscribe(
+        () => {
+          this.messageService.showSnackbar('Administrator:in gelöscht');
+          this.updateObjectList();
+        }
+      );
     });
   }
 

@@ -4,11 +4,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MessageService } from '@shared/services/message.service';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { IdAndName, IdRoleData } from '../superadmin.interfaces';
+import { ConfirmWithPasswordComponent } from '../confirm-with-password/confirm-with-password.component';
 
 @Component({
     templateUrl: './workspaces.component.html',
@@ -31,8 +31,7 @@ export class WorkspacesComponent implements OnInit {
     private backendService: BackendService,
     private newWorkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
-    private messageService: MessageService,
-    private messsageDialog: MatDialog,
+    private superadminPasswordDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
     this.tableSelectionRow.changed.subscribe(
@@ -126,20 +125,25 @@ export class WorkspacesComponent implements OnInit {
     } else {
       prompt = `Arbeitsbereich "${selectedRows[0].name}" löschen?`;
     }
-    this.messageService.showConfirmDialog({
-      title: 'Löschen von Arbeitsbereichen',
-      content: prompt,
-      confirmText: 'Arbeitsbereich(e) löschen'
-    }).subscribe(result => {
-      if (result) {
-        const workspacesToDelete: number[] = [];
-        selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
-        this.backendService.deleteWorkspaces(workspacesToDelete)
-          .subscribe(() => {
-            this.snackBar.open('Arbeitsbereich(e) gelöscht', 'Fehler', { duration: 1000 });
-            this.updateWorkspaceList();
-          });
+    const passwdDialogRef = this.superadminPasswordDialog.open(ConfirmWithPasswordComponent, {
+      width: '600px',
+      data: {
+        title: 'Löschen von Arbeitsbereichen',
+        content: prompt,
+        confirmText: 'Arbeitsbereich(e) löschen'
       }
+    });
+    passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
+      if (!afterClosedResult) {
+        return;
+      }
+      const workspacesToDelete: number[] = [];
+      selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
+      this.backendService.deleteWorkspaces(workspacesToDelete, afterClosedResult.get('pw').value)
+        .subscribe(() => {
+          this.snackBar.open('Arbeitsbereich(e) gelöscht', 'Fehler', { duration: 1000 });
+          this.updateWorkspaceList();
+        });
     });
   }
 
