@@ -67,7 +67,7 @@ describe('check parameter: navbar_forward_button', { testIsolation: true }, () =
       .contains('Aufgabe1');
     cy.get('[data-cy="separate-unit-forward-button"]')
       .click();
-    cy.get('.global-snackbar')
+    cy.get('[data-cy="toast-text-0"]')
       .should('be.visible')
       .and('contain.text', 'Bereits auf der letzten Seite');
   });
