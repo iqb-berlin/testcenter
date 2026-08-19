@@ -20,6 +20,7 @@
                      (submitCode)="onSubmitCode($event)">
         <div>
           <h2>{{ 'Aufgabenblock ist noch gesperrt' | customtext:'booklet_codeToEnterTitle' | async}}</h2>
+          <p>{{ 'Bitte gib das Freigabewort ein, das angesagt wurde!' | customtext:'booklet_codeToEnterPrompt' | async }}</p>
           @if (unit?.parent?.locked?.through?.restrictions?.codeToEnter?.message) {
             <p>{{ unit?.parent?.locked?.through?.restrictions?.codeToEnter?.message }}</p>
           }
