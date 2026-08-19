@@ -34,7 +34,7 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
 import {
   SuperadminPasswordRequestComponent
 } from './superadmin-password-request/superadmin-password-request.component';
-import { SharedModule } from '../shared/shared.module';
+import { AlertComponent, SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -72,7 +72,8 @@ import { SharedModule } from '../shared/shared.module';
     MatDividerModule,
     SharedModule,
     MatProgressBarModule,
-    FormsModule
+    FormsModule,
+    AlertComponent
   ],
   exports: [
     SuperadminComponent

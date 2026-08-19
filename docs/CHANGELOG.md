@@ -22,6 +22,7 @@
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
 - Testheft-Anzeige: Beim Verlassen einer Aufgabe zurück ins Startmenü erschienen bisher unter Umständen zwei Bestätigungsdialoge nacheinander (etwa bei einem zeitbeschränkten Block oder einer Bereichssperre). Es erscheint nun nur noch ein einziger, zusammengeführter Dialog.
+- Super-Admin: Wird beim Setzen/Entziehen des Superadmin-Status ein falsches (eigenes) Kennwort eingegeben, erscheint die Meldung nun direkt im Dialog und der Dialog bleibt für einen erneuten Versuch geöffnet. Bisher erschien stattdessen der allgemeine, technische Fehlerdialog, und der Passwort-Dialog hatte sich bereits geschlossen, sodass der gesamte Vorgang (Auswahl, Aktion) wiederholt werden musste.
 
 # 18.2
 ## Neue Funktionen

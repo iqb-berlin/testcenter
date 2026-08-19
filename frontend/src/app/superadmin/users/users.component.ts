@@ -85,19 +85,28 @@ export class UsersComponent implements OnInit {
       data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
     });
 
-    passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
-      if (!afterClosedResult) {
-        return;
-      }
+    passwdDialogRef.componentInstance.passwordSubmit.subscribe(password => {
       this.bs.setSuperUserStatus(
         selectedRows[0].id,
         !userObject.isSuperadmin,
-        afterClosedResult.get('pw').value
-      )
-        .subscribe(() => {
+        password
+      ).subscribe({
+        next: () => {
+          passwdDialogRef.close();
           this.messageService.showSnackbar('Status geändert');
           this.updateObjectList();
-        });
+        },
+        error: error => {
+          // A wrong confirmation password is an expected, recoverable input mistake - show it
+          // inline in the still-open dialog instead of letting it reach the generic global error
+          // dialog.
+          if (error.code === 403) {
+            passwdDialogRef.componentInstance.errorMessage = 'Falsches Kennwort.';
+          } else {
+            throw error;
+          }
+        }
+      });
     });
   }
 
