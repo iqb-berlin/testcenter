@@ -17,6 +17,7 @@
   - **Hinweis für Testheft-Ersteller:innen:** Wurde für eines dieser drei custom-texts ein eigener Text hinterlegt,
     sollte dieser geprüft und ggf. entsprechend gekürzt werden, damit er nicht weiterhin redundant nach dem
     Weiterblättern fragt.
+- Der custom-text `CodeToEnterWarning` wurde entfernt.
 
 ## Fehlerbehebungen
 - Workspace-Admin:

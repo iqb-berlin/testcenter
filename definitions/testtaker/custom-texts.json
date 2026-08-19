@@ -103,10 +103,6 @@
     "label" : "Dialogbox für die Eingabe eines Freigabewortes: Aufforderung für die Eingabe eines Freigabewortes",
     "defaultvalue" : "Bitte gib das Freigabewort ein, das angesagt wurde!"
   },
-  "booklet_codeToEnterWarning": {
-    "label" : "Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung",
-    "defaultvalue" : "Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben."
-  },
   "booklet_msgTimerStarted" : {
     "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",
     "defaultvalue" : "Die Bearbeitungszeit für diesen Abschnitt hat begonnen: "
