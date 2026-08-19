@@ -3,3 +3,4 @@
 - Database interactions via PDO with custom DAO pattern
 - Whenever possible, work with static functions - we try to achieve functional coding style
 - Use Enums, Classes and other constructs as value objects to mitigate primitive obsession
+- Run the API tests with `make test-backend-api` (from the repo root).

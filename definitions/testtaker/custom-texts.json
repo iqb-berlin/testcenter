@@ -21,7 +21,7 @@
   },
   "booklet_warningLeaveTimerBlockTextPrompt" : {
     "label" : "Schalterbeschriftung für 'Zurück zum Test'",
-    "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
+    "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren."
   },
   "booklet_warningLeaveTitle-testlet" : {
     "label" : "Titel für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
@@ -33,11 +33,11 @@
   },
   "booklet_warningLeaveTextPrompt-testlet" : {
     "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
-    "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+    "defaultvalue" : "Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst."
   },
   "booklet_warningLeaveTextPrompt-unit" : {
     "label": "Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.",
-    "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?"
+    "defaultvalue" : "Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst."
   },
   "booklet_blockLockedByAfterLeave" : {
     "label": "Block kann nicht noch einmal betreten werden",
