@@ -119,8 +119,11 @@
     <Login mode="run-hot-restart" name="Test_Ctrl-19" pw="123">
       <Booklet>Cy-Bklt_TC-10</Booklet>
     </Login>
-    <Login mode="run-hot-restart" name="Test_Ctrl-20" pw="123">
-      <Booklet>Cy-Bklt_TC-11</Booklet>
+    <Login mode="run-hot-restart" name="Test_Ctrl-20a" pw="123">
+      <Booklet>Cy-Bklt_TC-11a</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-20b" pw="123">
+      <Booklet>Cy-Bklt_TC-11b</Booklet>
     </Login>
     <!--Leave-Block-Restriction-->
     <Login mode="run-hot-restart" name="Test_Ctrl-21" pw="123">
@@ -141,8 +144,11 @@
     <Login mode="run-hot-restart" name="Test_Ctrl-25" pw="123">
       <Booklet>Cy-Bklt_TC-16</Booklet>
     </Login>
-    <Login mode="run-hot-restart" name="Test_Ctrl-26" pw="123">
-      <Booklet>Cy-Bklt_TC-17</Booklet>
+    <Login mode="run-hot-restart" name="Test_Ctrl-26a" pw="123">
+      <Booklet>Cy-Bklt_TC-17a</Booklet>
+    </Login>
+    <Login mode="run-hot-restart" name="Test_Ctrl-26b" pw="123">
+      <Booklet>Cy-Bklt_TC-17b</Booklet>
     </Login>
   </Group>
 
