@@ -53,7 +53,7 @@
       </button>
     }
 
-    @if (tcs.booklet?.config?.toolbar_show_unit_list === 'TRUE') {
+    @if (tcs.booklet?.config?.toolbar_show_unit_list === 'TRUE' || tcs.testMode.showUnitMenu) {
       <button matButton data-cy="unit-menu"
               (click)="sideNavContent = 'unit-menu'; sidenav.toggle()">
         <mat-icon svgIcon="clock_loader_60"></mat-icon>

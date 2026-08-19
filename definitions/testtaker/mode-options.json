@@ -7,7 +7,7 @@
   "monitorable": "Kann im Gruppen-Monitor beobachtet werden",
   "showCode": "Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses eingeblendet.",
   "showTimeLeft": "Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.",
-  "showUnitMenu": "Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.",
+  "showUnitMenu": "Die Aufgaben-Übersicht wird angezeigt, auch wenn die Booklet-Konfiguration dies nicht vorsieht.",
   "receiveRemoteCommands": "Kann aus dem Gruppen-Monitor aus gesteuert werden",
   "canChangeStateOptions": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab."
 }
