@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
+            xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
 
   <Metadata>
     <Description>Logins für Cypress Test: Test-Controller</Description>
@@ -52,8 +52,33 @@
   </Group>
 
   <Group id="review" label="Review">
-    <Login mode="run-review" name="Test_Ctrl-2" pw="123">
-      <Booklet>Cy-Bklt_TC-2</Booklet>
+    <Login mode="run-review" name="Test_Ctrl-2a" pw="123">
+      <Booklet>Cy-Bklt_TC-2a</Booklet>
+    </Login>
+    <Login mode="run-review" name="Test_Ctrl-2b" pw="123">
+      <Booklet>Cy-Bklt_TC-2b</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>text-field</type>
+          <length>4</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-review" name="Test_Ctrl-2c" pw="123">
+      <Booklet>Cy-Bklt_TC-2c</Booklet>
+      <ViewSettings>
+        <theme>Primar</theme>
+        <codeInput>
+          <type>keypad-symbols</type>
+          <length>4</length>
+        </codeInput>
+        <monitorBookletVisibility>hidden</monitorBookletVisibility>
+      </ViewSettings>
+    </Login>
+    <Login mode="run-review" name="Test_Ctrl-2d" pw="123">
+      <Booklet>Cy-Bklt_TC-2d</Booklet>
     </Login>
   </Group>
 
