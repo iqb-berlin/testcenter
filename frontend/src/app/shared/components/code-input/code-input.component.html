@@ -16,10 +16,10 @@
 <div class="companion error" [class.hidden]="problemText === ''">
   <img [src]="companionImageSrc" alt="Helper character" class="companion-image">
   <div class="companion-speech-bubble">
-    <p class="bubble-title">
+    <p class="bubble-title" [attr.data-cy]="'login-code-problem'">
       {{ 'Ups, falscher Code!' | customtext:'login_codeInputErrorHeading' | async }}
     </p>
-    <p class="bubble-body" [attr.data-cy]="'login-code-problem'">
+    <p class="bubble-body" [attr.data-cy]="'login-code-problem-instruction'">
       {{ 'Versuche es noch einmal.' | customtext:'login_codeInputErrorBody' | async }}
     </p>
     <!-- The image here is just the little arrow on the bubble, pointing towards the companion.-->

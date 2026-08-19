@@ -173,8 +173,12 @@ export const logoutFromRunningTestWithConfirmation = (): Chainable => {
     if (!isOnStarterPage) {
       cy.get('[data-cy="logo"]')
         .click();
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?')
+        .should('be.visible');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
     }
-    cy.get('[data-cy="endTest-1"]').click();
     cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
     cy.contains('Übersicht').should('be.visible');
@@ -383,7 +387,7 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
       .then(splitCsvID);
   }
   if (fileType === 'reviews') {
-    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-reviews.csv`)
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/testcenter-reviews.csv`)
       .then(splitCsvID);
   }
   throw new Error(`Unknown filetype: ${fileType}`);
@@ -422,7 +426,7 @@ export const gotoPage = (pageIndex: number) => {
 export const readBlockTime = (): Chainable => cy.get('[data-cy="time-value"]')
   .invoke('text')
   .then(currTimeStr => {
-    const currBlockTimeStr = currTimeStr.replace(/0:/, '');
+    const currBlockTimeStr = currTimeStr.replace(/.*0:/, '');
     return +currBlockTimeStr;
   });
 

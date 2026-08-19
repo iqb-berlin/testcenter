@@ -2,16 +2,14 @@
 <Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">
 	<Metadata>
-		<Id>Cy-Bklt_TC-3</Id>
-		<Label>Test-Controller-3</Label>
-		<Description>Testheft Test-Controller 3</Description>
+		<Id>Cy-Bklt_TC-1b</Id>
+		<Label>Test-Controller-1b</Label>
+		<Description>Testheft Test-Controller:Demo 1b: Code-Wort: Text-Field</Description>
 	</Metadata>
 
 	<BookletConfig>
-		<Config key="force_presentation_complete">OFF</Config>
-		<Config key="force_response_complete">OFF</Config>
-		<Config key="unit_show_time_left">ON</Config>
-		<Config key="toolbar_show_unit_list">TRUE</Config>
+		<Config key="unit_show_time_left">OFF</Config>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
 	</BookletConfig>
 
 	<Units>

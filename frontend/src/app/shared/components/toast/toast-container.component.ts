@@ -10,15 +10,20 @@ import { ToastService } from '@shared/services/toast.service';
   selector: 'tc-toast-container',
   imports: [],
   template: `
-    <div class="toast-stack" aria-live="polite">
-      @for (toast of toastService.toasts(); track toast.id) {
-        <div class="toast">
-          <span class="toast-text">
+    <div class="toast-stack" aria-live="polite" data-cy="toast-container">
+      @for (toast of toastService.toasts(); track toast.id; let i = $index) {
+        <div class="toast" [attr.data-cy]="'toast-item-' + i">
+          <span class="toast-text" [attr.data-cy]="'toast-text-' + i">
             @for (segment of toast.segments; track $index) {
               <span [class.toast-highlight]="segment.emphasized">{{ segment.text }}</span>
             }
           </span>
-          <button class="toast-action" type="button" (click)="toastService.dismissToast(toast.id)">
+          <button
+            class="toast-action"
+            type="button"
+            [attr.data-cy]="'toast-action-' + i"
+            (click)="toastService.dismissToast(toast.id)"
+          >
             {{ toast.actionText }}
           </button>
         </div>

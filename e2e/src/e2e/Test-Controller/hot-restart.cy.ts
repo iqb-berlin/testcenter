@@ -5,18 +5,16 @@ import {
   forwardTo,
   getFromIframe,
   getResultFileRows,
-  gotoPage,
   loginSuperAdmin,
   loginTestTaker, logout,
   logoutAdmin,
-  logoutFromRunningTestWithConfirmation,
   openWorkspace,
   probeBackendApi,
   resetBackendData,
   visitLoginPage
 } from '../utils';
 
-describe('check hot-restart functionalities', { testIsolation: false }, () => {
+describe('check hot-restart: complete tests with different logins', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
@@ -24,12 +22,16 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     probeBackendApi();
   });
 
-  describe('Login1: complete the test, leave the block via iqb-logo', { testIsolation: false }, () => {
+  describe('Login1', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
       disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-7', '123');
+    });
+
+    after(() => {
+      logout();
     });
 
     it('start a test without booklet selection', () => {
@@ -40,24 +42,20 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('enter the block with incorrect password is not possible', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="unit-block-dialog-title"]')
-        .contains('Aufgabenblock');
-      cy.get('[data-cy="unlockUnit"]')
+      cy.get('[data-cy="code-input"]')
         .should('contain', '')
         .type('Hund');
-      cy.get('[data-cy="unit-block-dialog-submit"]')
+      cy.get('[data-cy="continue"]')
         .click();
-      cy.get('.snackbar-wrong-block-code')
-        .contains('stimmt nicht');
+      cy.get('[data-cy="login-code-problem"]')
+        .contains('Ups, falscher Code!');
     });
 
     it('enter the block with correct password', () => {
-      cy.get('[data-cy="unit-block-dialog-title"]')
-        .contains('Aufgabenblock');
-      cy.get('[data-cy="unlockUnit"]')
-        .should('contain', '')
+      cy.get('[data-cy="code-input"]')
+        .clear()
         .type('Hase');
-      cy.get('[data-cy="unit-block-dialog-submit"]')
+      cy.get('[data-cy="continue"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
@@ -66,11 +64,14 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     });
 
     it('Complete all question-elements in Aufgabe 1', () => {
-      gotoPage(1);
+      //gotoPage(1);
+      cy.get('[data-cy="page-navigation-forward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
-      gotoPage(0);
+      cy.get('[data-cy="page-navigation-backward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -119,62 +120,61 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .should('be.checked');
     });
 
-    it('leave the time restricted block backward without a message ist not possible', () => {
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?');
-      cy.get('[data-cy="dialog-confirm"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe1');
-    });
-
     it('leave the time restricted block in unit-menu without a message is not possible', () => {
       cy.get('[data-cy="unit-menu"]')
         .click();
       cy.get('[data-cy="endTest"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?');
+        .contains('Sicher, dass du den Test beenden möchtest?');
+      cy.get('[data-cy="dialog-content"]')
+        .contains('zeitbeschränkten Bereich');
       cy.get('[data-cy="dialog-confirm"]')
         .click();
       cy.get('.mat-drawer-backdrop')
         .click({force: true});
     });
 
-    it('leave the block via iqb-logo, check the locked block', () => {
-      cy.get('[data-cy="logo"]')
+    it('leave the time restricted block backward', () => {
+      cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
         .contains('Aufgabenabschnitt verlassen?');
       cy.get('[data-cy="dialog-cancel"]')
         .click();
-      cy.get('[data-cy="resumeTest-1"]')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Startseite');
+    });
+
+    it('check the locked block', () => {
+      cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Endseite');
     });
 
-    it('booklet-config: lock_test_on_termination: booklet is locked; end the test', () => {
+   it('leave the test via iqb-logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
-      cy.get('[data-cy="endTest-1"]')
-        .click();
-      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]')
-        .contains('gesperrt');
-      logout();
-      cy.get('[data-cy="login-admin-form"]')
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?')
         .should('be.visible');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]');
     });
   });
 
-  describe('Login2: run and complete the test, leave the block with unit-navigation forward', { testIsolation: false }, () => {
+  describe('Login2', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
       disableSimplePlayersInternalDebounce();
       loginTestTaker('Test_Ctrl-7', '123');
+    });
+
+    after(() => {
+      logout();
     });
 
     it('start a test without booklet selection', () => {
@@ -185,23 +185,25 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('enter the block with correct password', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="unit-block-dialog-title"]')
-        .contains('Aufgabenblock');
-      cy.get('[data-cy="unlockUnit"]')
-        .should('contain', '')
+      cy.get('[data-cy="code-input"]')
+        .clear()
         .type('Hase');
-      cy.get('[data-cy="unit-block-dialog-submit"]')
+      cy.get('[data-cy="continue"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      cy.get('.snackbar-time-started')
+        .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     });
 
     it('Complete all question-elements in Aufgabe 1', () => {
-      gotoPage(1);
+      cy.get('[data-cy="page-navigation-forward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
-      gotoPage(0);
+      cy.get('[data-cy="page-navigation-backward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -230,7 +232,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.wait(1000);
     });
 
-    it('leave the block with nav-forward, check the locked block', () => {
+   it('leave the block with nav-forward, check the locked block', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
@@ -245,18 +247,16 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
         .contains('Startseite');
     });
 
-    it('end the test via unit-menu', () => {
+    it('leave the test via unit-menu', () => {
       cy.get('[data-cy="unit-menu"]')
         .click();
       cy.get('[data-cy="endTest"]')
-        .click();
-      logout();
-      cy.get('[data-cy="login-admin-form"]')
-        .should('be.visible');
+        .click({force: true});
+      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]');
     });
   });
 
-  describe('Login3: run and complete the test, leave the block with unit-navigation backward', { testIsolation: false }, () => {
+  describe('Login3', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
@@ -265,7 +265,7 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     });
 
     after(() => {
-      logoutFromRunningTestWithConfirmation();
+      logout();
     });
 
     it('start a test without booklet selection', () => {
@@ -276,23 +276,25 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
     it('enter the block with correct password', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="unit-block-dialog-title"]')
-        .contains('Aufgabenblock');
-      cy.get('[data-cy="unlockUnit"]')
-        .should('contain', '')
+      cy.get('[data-cy="code-input"]')
+        .clear()
         .type('Hase');
-      cy.get('[data-cy="unit-block-dialog-submit"]')
+      cy.get('[data-cy="continue"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      cy.get('.snackbar-time-started')
+        .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     });
 
     it('Complete all question-elements in Aufgabe 1', () => {
-      gotoPage(1);
+      cy.get('[data-cy="page-navigation-forward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
-      gotoPage(0);
+      cy.get('[data-cy="page-navigation-backward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -337,9 +339,20 @@ describe('check hot-restart functionalities', { testIsolation: false }, () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Endseite');
     });
+
+    it('leave the test via iqb-logo', () => {
+      cy.get('[data-cy="logo"]')
+        .click();
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?')
+        .should('be.visible');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
+      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]');
+    });
   });
 
-describe('Login4: complete the test, leave the block via unit-menu', { testIsolation: false }, () => {
+describe('Login4', { testIsolation: false }, () => {
     before(() => {
       cleanUp();
       visitLoginPage();
@@ -348,7 +361,7 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     });
 
     after(() => {
-      logoutFromRunningTestWithConfirmation();
+      logout();
     });
 
     it('start a test without booklet selection', () => {
@@ -359,23 +372,25 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     it('enter the block with correct password', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.get('[data-cy="unit-block-dialog-title"]')
-        .contains('Aufgabenblock');
-      cy.get('[data-cy="unlockUnit"]')
-        .should('contain', '')
+      cy.get('[data-cy="code-input"]')
+        .clear()
         .type('Hase');
-      cy.get('[data-cy="unit-block-dialog-submit"]')
+      cy.get('[data-cy="continue"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
+      cy.get('.snackbar-time-started')
+        .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     });
 
     it('Complete all question-elements in Aufgabe 1', () => {
-      gotoPage(1);
+      cy.get('[data-cy="page-navigation-forward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-Text-Aufg1-S2"]')
         .contains('Presentation complete');
-      gotoPage(0);
+      cy.get('[data-cy="page-navigation-backward"]')
+        .click();
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -405,20 +420,31 @@ describe('Login4: complete the test, leave the block via unit-menu', { testIsola
     });
 
     it('leave the block with unit-menu, check the locked block', () => {
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.contains('Endseite')
+        cy.get('[data-cy="unit-menu"]')
+          .click();
+        cy.contains('Endseite')
+          .click();
+        cy.get('[data-cy="dialog-title"]')
+          .contains('Aufgabenabschnitt verlassen?');
+        cy.get('[data-cy="dialog-cancel"]')
+          .click();
+        cy.get('[data-cy="unit-title"]')
+          .contains('Endseite');
+        cy.get('[data-cy="unit-navigation-backward"]')
+          .click();
+        cy.get('[data-cy="unit-title"]')
+          .contains('Startseite');
+      });
+
+    it('leave the test via iqb-logo', () => {
+      cy.get('[data-cy="logo"]')
         .click();
       cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?');
-      cy.get('[data-cy="dialog-cancel"]')
+        .contains('Sicher, dass du den Test beenden möchtest?')
+        .should('be.visible');
+      cy.get('[data-cy="dialog-confirm"]')
         .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Endseite');
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Startseite');
+      cy.get('[data-cy="booklet-CY-BKLT_TC-4"]');
     });
   });
 

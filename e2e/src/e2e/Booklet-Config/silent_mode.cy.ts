@@ -19,13 +19,13 @@ describe('check parameter: silent_mode', { testIsolation: true }, () => {
 
   it('FALSE (default)', () => {
     loginTestTaker('Bklt_Config-50', '123');
-    cy.get('.snackbar-time-started');
+    cy.get('.snackbar-time-started')
+      .should('be.visible');
     cy.get('[data-cy="unit-title"]')
       .contains('Ende');
     cy.get('.snackbar-time-ended');
     cy.visit(`${Cypress.config().baseUrl}/#/t/3/u/4`);
-    cy.get('.global-snackbar')
-      .should('be.visible');
+    cy.get('[data-cy="toast-text-0"]');
   });
 
   it('TRUE', () => {
@@ -39,7 +39,7 @@ describe('check parameter: silent_mode', { testIsolation: true }, () => {
     cy.get('.snackbar-time-ended')
       .should('not.exist');
     cy.visit(`${Cypress.config().baseUrl}/#/t/3/u/4`);
-    cy.get('.global-snackbar')
+    cy.get('[data-cy="toast-text-0"]')
       .should('not.exist');
   });
 });

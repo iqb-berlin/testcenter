@@ -9,7 +9,7 @@
 
 	<BookletConfig>
 		<Config key="unit_show_time_left">OFF</Config>
-		<Config key="unit_menu">OFF</Config>
+		<Config key="toolbar_show_unit_list">FALSE</Config>
 	</BookletConfig>
 
 	<Units>

@@ -1,7 +1,6 @@
 import {
   backwardsTo,
   disableSimplePlayersInternalDebounce,
-  forwardTo,
   getFromIframe,
   loginSuperAdmin,
   openWorkspace,
@@ -10,47 +9,26 @@ import {
   visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
 } from '../utils';
 
-describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
+describe('run a demo test, check time block dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     resetBackendData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    twoStepLogin('Test_Ctrl-1', '123');
+    twoStepLogin('Test_Ctrl-1a', '123');
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   });
 
-  it('start a demo-test without booklet selection', () => {
+  it('Complete Aufgabe 1', () => {
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
-    cy.url()
-      .should('include', '/u/1');
-  });
-
-  it('booklet-config: there is no unit menu', () => {
-    cy.get('[data-cy="unit-menu"]')
-      .should('not.exist');
-  });
-
-  it('enter the block: the password should already be filled in', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.get('[data-cy="unit-block-dialog-title"]')
-      .contains('Aufgabenblock');
-    cy.get('[data-cy="unlockUnit"]')
-      .should('have.value', 'Hase');
-    cy.get('[data-cy="unit-block-dialog-submit"]')
-      .click();
-    cy.get('[data-cy="unit-title"]')
-      .contains('Aufgabe1');
-    cy.url()
-      .should('include', '/u/2');
     cy.get('.snackbar-time-started')
       .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
-  });
-
-  it('Complete all question-elements in Aufgabe 1', () => {
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .click()
@@ -59,19 +37,35 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.wait(1000);
   });
 
-  it('verify that the last answer is there', () => {
-    forwardTo('Aufgabe2');
-    backwardsTo('Aufgabe1')
+  it('Complete Aufgabe 2', () => {
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
     getFromIframe('iframe.unitHost')
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+      .find('[data-cy="TestController-radio1-Aufg2"]')
+      .click()
       .should('be.checked');
+    // some time to ensure that the answer is saved
+    cy.wait(1000);
+  });
+
+ it('verify that the last answer is there', () => {
+   backwardsTo('Aufgabe1');
+   getFromIframe('iframe.unitHost')
+    .find('[data-cy="TestController-radio1-Aufg1"]')
+    .should('be.checked');
   });
 
   it('start the booklet again after exiting the test', () => {
     cy.get('[data-cy="logo"]')
       .click();
-    cy.get('[data-cy="booklet-CY-BKLT_TC-1"]')
-      .contains('Fortsetzen')
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('zeitbegrenzten Blocks');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true });
+    cy.get('[data-cy="booklet-CY-BKLT_TC-1A"]')
+      .contains('Weiter')
       .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Startseite');
@@ -80,13 +74,8 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
   it('the last answers is no longer exist', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.get('[data-cy="unlockUnit"]');
-    cy.get('[data-cy="unit-block-dialog-submit"]')
-      .click();
     cy.get('[data-cy="unit-title"]')
       .contains('Aufgabe1');
-    cy.get('.snackbar-time-started')
-      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
     getFromIframe('iframe.unitHost')
       .find('[data-cy="TestController-radio1-Aufg1"]')
       .should('not.be.checked');
@@ -108,6 +97,160 @@ describe('navigation-& testlet restrictions', { testIsolation: false }, () => {
     cy.get('[data-cy="download-responses"]')
       .click();
     cy.contains('Keine Daten verfügbar');
+  });
+});
+
+describe('check code word guidelines', { testIsolation: true }, () => {
+  before(() => {
+    cleanUp();
+    resetBackendData();
+    probeBackendApi();
+  });
+
+  beforeEach(() => {
+    disableSimplePlayersInternalDebounce();
+    visitLoginPage();
+  });
+
+  it('show the current code word: text-field', () => {
+    twoStepLogin('Test_Ctrl-1b', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Startseite');
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('Das Freigabewort lautet Hase');
+    cy.get('[data-cy="code-input"]')
+      .type('Hase');
+    cy.get('[data-cy="continue"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true });
+    cy.get('[data-cy="toast-item"]')
+      .should('not.exist');
+    cy.get('.snackbar-time-started')
+      .contains('Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min');
+  });
+
+  it('show the current code word: keypad-symbols', () => {
+    twoStepLogin('Test_Ctrl-1c', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Startseite');
+    //wait for presentation complete
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('Das Freigabewort lautet 123');
+    cy.get('[data-cy="code-btn-1"]')
+      .click();
+    cy.get('[data-cy="code-btn-2"]')
+      .click();
+    cy.get('[data-cy="code-btn-3"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true });
+    cy.get('[data-cy="toast-item"]')
+      .should('not.exist');
+  });
+
+  it('show the current code word: keypad-numbers', () => {
+    twoStepLogin('Test_Ctrl-1d', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Startseite');
+    //wait for presentation complete
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('Das Freigabewort lautet 123');
+    cy.get('[data-cy="code-btn-1"]')
+      .click();
+    cy.get('[data-cy="code-btn-2"]')
+      .click();
+    cy.get('[data-cy="code-btn-3"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true });
+    cy.get('[data-cy="toast-item"]')
+      .should('not.exist');
+  });
+});
+
+describe('check deny navigation dialogs', { testIsolation: false }, () => {
+  before(() => {
+    cleanUp();
+    resetBackendData();
+    probeBackendApi();
+    visitLoginPage();
+  });
+
+  beforeEach(() => {
+    disableSimplePlayersInternalDebounce();
+    visitLoginPage();
+  });
+
+  it('presentation/response-complete ON', () => {
+    twoStepLogin('Test_Ctrl-1e', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Startseite');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('abgespielt')
+      .and('contain', 'bearbeitet');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true});
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-backward"]')
+      .click();
+    cy.get('[data-cy="toast-item-0"]')
+      .should('not.exist');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+  });
+
+  it('presentation/response-complete ALWAYS', () => {
+    twoStepLogin('Test_Ctrl-1f', '123');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Startseite');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-forward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('abgespielt')
+      .and('contain', 'bearbeitet');
+    cy.get('[data-cy="toast-action-0"]')
+      .click({ force: true});
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe2');
+    cy.wait(1000);
+    cy.get('[data-cy="unit-navigation-backward"]')
+      .click();
+    cy.get('[data-cy="toast-text-0"]')
+      .contains('abgespielt')
+      .and('contain', 'bearbeitet');
+    cy.get('[data-cy="unit-title"]')
+      .contains('Aufgabe1');
   });
 });
 
