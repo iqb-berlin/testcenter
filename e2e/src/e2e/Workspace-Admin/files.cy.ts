@@ -106,8 +106,8 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Erfolgreich hochgeladen');
     cy.contains('AnyResource.txt');
   });
-
-  it('uploading invalid files is not possible', () => {
+  // TODO Zur Zeit ist eine restriktive Validierung abgeschaltet und das Testcenter verhält sich flexibel bei nicht konformen Testdateien. Daher ist dieser Test erst einmal ausgeschaltet. Sobald eine Validierung wieder eingeschaltet ist, kann der Test wieder aktiviert werden.
+  it.skip('uploading invalid files is not possible', () => {
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Testtakers_error.xml`, { force: true });
     cy.contains('Abgelehnt');
@@ -297,8 +297,9 @@ describe('Workspace-Admin-files', () => {
       .click();
     cy.get('[data-cy="files-checkbox-TESTTAKERS.XML"]');
   });
-
-  it('upload a Booklet-File with 2 Testlets and the same Testlet-Names is not possible', () => {
+  // TODO Zur Zeit ist eine restriktive Validierung abgeschaltet und das Testcenter verhält sich flexibel bei nicht konformen Testdateien. Daher ist dieser Test erst einmal ausgeschaltet. Sobald eine Validierung wieder eingeschaltet ist, kann der Test wieder aktiviert werden.
+  // TODO: Hier mit Nam sprechen, ob das so absichtlich gewollt ist und so von ihm umgesetzt wurde?
+  it.skip('upload a Booklet-File with 2 Testlets and the same Testlet-Names is not possible', () => {
     // firstly delete the testtakers and booklet, because after Backend-Reset the filenames are different
     cy.get('[data-cy="files-checkAll-Testtakers"]')
       .click();
@@ -322,7 +323,8 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Booklet_sameTestlets.xml')
       .should('not.exist');
   });
-
+  //todo: mit Nam klären, eigentlich meinte er doch, dass das trotzdem geladen wird und dann ein alias dazu gebaut wird
+  // laut diesem funktionierenden Test kann das aber bicht sein. In diesem Zusammenhang nochmal Ticket: 1488 klären
   it('upload a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
     // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
@@ -332,8 +334,21 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
       .should('not.exist');
   });
-
+  // todo: wenn geskipter Test mit Kommentar geklärt ist, kann das Löschen aller Booklets wieder aus diesem Test entfernt werden
   it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
+    cy.get('[data-cy="files-checkAll-Testtakers"]')
+      .click();
+    cy.get('[data-cy="files-checkAll-Booklet"]')
+      .click();
+    cy.get('[data-cy="delete-files"]')
+      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Löschen von Dateien');
+    cy.get('[data-cy="dialog-confirm"]')
+      .contains('Löschen')
+      .click();
+    cy.get('[data-cy="files-checkAll-Booklet"]')
+      .click();
     // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs_Alias.xml`, { force: true });
