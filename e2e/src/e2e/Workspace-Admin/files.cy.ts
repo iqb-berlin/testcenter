@@ -323,19 +323,9 @@ describe('Workspace-Admin-files', () => {
     cy.contains('Booklet_sameTestlets.xml')
       .should('not.exist');
   });
-  //todo: mit Nam klären, eigentlich meinte er doch, dass das trotzdem geladen wird und dann ein alias dazu gebaut wird
-  // laut diesem funktionierenden Test kann das aber bicht sein. In diesem Zusammenhang nochmal Ticket: 1488 klären
+  //todo: wenn voheriger Test wieder eingeschaltet, alles bzgl. Löschung Booklet und Testtaker wieder entfernen,
+  // wird dann wieder im ausgeschlateten Testschritt gemacht
   it('upload a Booklet-File with 2 Units and the same Unit-IDs is not possible', () => {
-    // load a prepared Booklet-File from fixtures folder
-    cy.get('[data-cy="upload-file-select"]')
-      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs.xml`, { force: true });
-    cy.contains('Abgelehnt');
-    cy.contains('Unit');
-    cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
-      .should('not.exist');
-  });
-  // todo: wenn geskipter Test mit Kommentar geklärt ist, kann das Löschen aller Booklets wieder aus diesem Test entfernt werden
-  it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
     cy.get('[data-cy="files-checkAll-Testtakers"]')
       .click();
     cy.get('[data-cy="files-checkAll-Booklet"]')
@@ -347,8 +337,27 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="dialog-confirm"]')
       .contains('Löschen')
       .click();
+    cy.contains('Dateien erfolgreich gelöscht.');
+    // load a prepared Booklet-File from fixtures folder
+    cy.get('[data-cy="upload-file-select"]')
+      .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs.xml`, { force: true });
+    cy.contains('Erfolgreich hochgeladen');
+    cy.contains('Unit');
+    cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
+      .should('not.exist');
+  });
+  // todo: wenn geskipter Test mit Kommentar geklärt ist, kann das Löschen aller Booklets wieder aus diesem Test entfernt werden
+  it('upload a Booklet-File with 2 same Unit-IDs and a unit alias', () => {
     cy.get('[data-cy="files-checkAll-Booklet"]')
       .click();
+    cy.get('[data-cy="delete-files"]')
+      .click();
+    cy.get('[data-cy="dialog-title"]')
+      .contains('Löschen von Dateien');
+    cy.get('[data-cy="dialog-confirm"]')
+      .contains('Löschen')
+      .click();
+    cy.contains('Dateien erfolgreich gelöscht.');
     // load a prepared Booklet-File from fixtures folder
     cy.get('[data-cy="upload-file-select"]')
       .selectFile(`${Cypress.config('fixturesFolder')}/Booklet_sameUnitIDs_Alias.xml`, { force: true });
@@ -366,7 +375,7 @@ describe('Workspace-Admin-files', () => {
     cy.get('[data-cy="dialog-confirm"]')
       .contains('Löschen')
       .click();
-    cy.contains('erfolgreich gelöscht.');
+    cy.contains('Dateien erfolgreich gelöscht.');
     cy.get('[data-cy="upload-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen');
