@@ -43,10 +43,14 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.get('[formcontrolname="pw"]')
       .type('invalidPassword');
-    cy.get('[data-cy="dialog-change-superadmin"] [type="submit"]')
+    cy.get('[data-cy="dialog-change-superadmin"]')
+      .contains('Superadmin-Status setzen');
+    cy.get('[data-cy="pw-submit"]')
       .click();
-    cy.get('[data-cy="main-alert:warning"] [data-cy="close"]')
-      .click();
+    cy.get('[data-cy="dialog-change-superadmin-error"]')
+      .contains('Falsches Kennwort.');
+    cy.get('[data-cy="dialog-change-superadmin"]')
+      .should('be.visible');
   });
 
   it('set admin rights for a workspaceadmin with correct password', () => {
