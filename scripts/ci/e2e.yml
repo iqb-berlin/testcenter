@@ -22,10 +22,6 @@ build-e2e:
     - docker push --quiet --all-tags ${IMAGE_NAME}
   after_script:
     - !reference [ .gitlab_login, after_script ]
-  artifacts:
-    when: always
-    paths:
-      - e2e/cypress-headless
 
 .e2e-test-template:
   stage: test-e2e
@@ -49,6 +45,11 @@ build-e2e:
       up --abort-on-container-exit --exit-code-from=e2e
   after_script:
     - !reference [ .gitlab_login, after_script ]
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - e2e/cypress-headless
 
 .e2e-test:
   before_script:
