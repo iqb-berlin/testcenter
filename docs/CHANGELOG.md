@@ -21,8 +21,7 @@ folgenden Punkten:
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
 ## Änderungen
-- Der Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) wird nun unabhängig
-  von Groß- und Kleinschreibung akzeptiert.
+- Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 
 ## Fehlerbehebungen
 - (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
