@@ -531,10 +531,11 @@ class SessionDAO extends DAO {
       ]
     );
 
-    $code = $bookletDef['code'];
+    $code = strtolower($bookletDef['code']);
     $codes2booklets = JSON::decode($bookletDef['codes_to_booklets'], true);
+    $codes2booklets = $codes2booklets ? array_change_key_case($codes2booklets, CASE_LOWER) : [];
 
-    return $codes2booklets and isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
+    return isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
   }
 
   public function ownsTest(string $personToken, string $testId): bool {
@@ -555,7 +556,8 @@ class SessionDAO extends DAO {
    * @return TestData[]
    */
   public function getTestsOfPerson(PersonSession $personSession): array {
-    $testNames = $personSession->getLoginSession()->getLogin()->testNames()[$personSession->getPerson()->getCode() ?? ''];
+    $testNamesByCode = array_change_key_case($personSession->getLoginSession()->getLogin()->testNames(), CASE_LOWER);
+    $testNames = $testNamesByCode[strtolower($personSession->getPerson()->getCode() ?? '')] ?? [];
     if (!count($testNames)) return [];
 
     $replacementsVirtualTable = [];

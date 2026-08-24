@@ -90,6 +90,7 @@ class Login extends DataCollectionTypeSafe {
   }
 
   public function codeExists(string $code): bool {
-    return array_key_exists($code, $this->testNames);
+    // Codes are compared case-insensitively
+    return array_key_exists(strtolower($code), array_change_key_case($this->testNames, CASE_LOWER));
   }
 }
