@@ -25,6 +25,7 @@ import { TestControllerComponent } from './components/test-controller/test-contr
 import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
+import { LoadingProgressComponent } from '../shared/components/loading-progress/loading-progress.component';
 import { UnitActivateGuard } from './routing/unit-activate.guard';
 import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
 import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
@@ -67,6 +68,7 @@ export { TestControllerService } from './services/test-controller.service';
     ReviewPanelComponent,
     NavigationComponent,
     AlertComponent,
+    LoadingProgressComponent,
     CustomtextPipe,
     DebugPaneComponent,
     UnitInaccessiblePipe,

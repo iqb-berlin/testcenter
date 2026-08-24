@@ -2,7 +2,7 @@ import {
   bufferWhen, concatMap, last, map, scan, shareReplay, takeUntil, takeWhile, tap, withLatestFrom
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, firstValueFrom, forkJoin, from,
+  BehaviorSubject, combineLatest, firstValueFrom, forkJoin, from,
   lastValueFrom, merge, Observable, of, Subject,
   Subscription, timer
 } from 'rxjs';
@@ -17,8 +17,10 @@ import {
   BufferFlushEventType,
   bufferTypes,
   isTestlet,
+  isUnit,
   KeyValuePairNumber,
   KeyValuePairString,
+  LoadingProgress,
   MaxTimerEvent,
   NavigationDirection, NavigationDirectionValue,
   NavigationLeaveRestrictionValue,
@@ -74,6 +76,7 @@ export class TestControllerService {
   readonly state$ = new BehaviorSubject<TestControllerState>('INIT');
   workspaceId = 0;
   totalLoadingProgress = 0;
+  readonly unitContentReady$ = new BehaviorSubject<boolean>(false);
   testMode = new TestMode();
 
   // TODO hide those behind functions, this will be way easier with ts 5.5
@@ -315,6 +318,7 @@ export class TestControllerService {
     this.sharedParameters = [];
 
     this.currentUnitSequenceId = -Infinity;
+    this.unitContentReady$.next(false);
 
     this.booklet = null;
     this.units = {};
@@ -450,6 +454,31 @@ export class TestControllerService {
       });
     }
     return unit;
+  }
+
+  private getUnitBlockIds(sequenceId: number): number[] {
+    const unit = this.getUnit(sequenceId);
+    if (!unit.parent) {
+      return [sequenceId];
+    }
+    const ids: number[] = [];
+    const addChildren = (testlet: Testlet): void => {
+      testlet.children.forEach(child => {
+        if (isUnit(child)) {
+          ids.push(child.sequenceId);
+        } else {
+          addChildren(child);
+        }
+      });
+    };
+    addChildren(unit.parent);
+    return ids;
+  }
+
+  unitBlockResourcesLoaded$(sequenceId: number): Observable<LoadingProgress[]> {
+    const resourcesToLoad = this.getUnitBlockIds(sequenceId)
+      .flatMap(id => Object.values(this.getUnit(id).loadingProgress));
+    return combineLatest(resourcesToLoad);
   }
 
   restoreTime(testlet: Testlet, timeGivenByGm: number): void {

@@ -1,7 +1,9 @@
+@let isLoading = isLoading$ | async;
+
 <tc-debug-pane *ngIf="debugPane" />
 
 <div class="nav-header flex-row">
-  @if (showGlobalBack && testLoaded) {
+  @if (showGlobalBack && !isLoading) {
     <button matButton="tonal" class="nav-button" data-cy="separate-unit-backward-button"
             [disabled]="!unitNavContext.isBackwardAllowed && !pageNavContext.isBackwardAllowed"
             (click)="onNavBack()">
@@ -10,14 +12,14 @@
     </button>
   }
 
-  @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN' && testLoaded) {
+  @if (tcs.booklet?.config?.navbar_unit_label !== 'HIDDEN' && !isLoading) {
     <tc-navigation-control [navContext]="unitNavContext"
                            dataCy="unit-navigation"
                            (back)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
                            (forward)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)">
     </tc-navigation-control>
   }
-  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && (pageNavContext.maxIndex > 0) && testLoaded) {
+  @if (tcs.booklet?.config?.navbar_page_label !== 'HIDDEN' && (pageNavContext.maxIndex > 0) && !isLoading) {
     <tc-navigation-control [navContext]="pageNavContext"
                            dataCy="page-navigation"
                            (back)="gotoPreviousPage()"
@@ -25,7 +27,7 @@
     </tc-navigation-control>
   }
 
-  @if (showGlobalForward && testLoaded) {
+  @if (showGlobalForward && !isLoading) {
     <button matButton="tonal" class="nav-button" data-cy="separate-unit-forward-button"
             [disabled]="!unitNavContext.isForwardAllowed && !pageNavContext.isForwardAllowed"
             (click)="onNavForward()">
@@ -35,54 +37,56 @@
   }
 </div>
 
-<div class="toolbar-header flex-row" data-cy="unit-screenheader">
-  @if (tcs.booklet?.config?.toolbar_show_unit_title !== 'FALSE') {
-    <p data-cy="unit-title">{{currentUnit?.label}}</p>
-  }
-
-  <div class="toolbar-right" data-cy="toolbar-right">
-    @if ((tcs.testMode.showTimeLeft || (tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue)) {
-      <p data-cy="time-value">Verbleibende Zeit: {{timerValue?.timeLeftString}}</p>
+@if (!isLoading) {
+  <div class="toolbar-header flex-row" data-cy="unit-screenheader">
+    @if (tcs.booklet?.config?.toolbar_show_unit_title !== 'FALSE') {
+      <p data-cy="unit-title">{{currentUnit?.label}}</p>
     }
 
-    @if (tcs.testMode.canReview) {
-      <button mat-button matTooltip="Kommentar verfassen" data-cy="send-comments"
-              (click)="sideNavContent = 'review-form'; sidenav.toggle()">
-        <mat-icon svgIcon="rate_review"></mat-icon>
-        Kommentare
-      </button>
-    }
+    <div class="toolbar-right" data-cy="toolbar-right">
+      @if ((tcs.testMode.showTimeLeft || (tcs.booklet?.config?.toolbar_show_time_left === 'TRUE') && timerValue)) {
+        <p data-cy="time-value">Verbleibende Zeit: {{timerValue?.timeLeftString}}</p>
+      }
 
-    @if (tcs.booklet?.config?.toolbar_show_unit_list === 'TRUE' || tcs.testMode.showUnitMenu) {
-      <button matButton data-cy="unit-menu"
-              (click)="sideNavContent = 'unit-menu'; sidenav.toggle()">
-        <mat-icon svgIcon="clock_loader_60"></mat-icon>
-        Bearbeitungsstand
-      </button>
-    }
+      @if (tcs.testMode.canReview) {
+        <button mat-button matTooltip="Kommentar verfassen" data-cy="send-comments"
+                (click)="sideNavContent = 'review-form'; sidenav.toggle()">
+          <mat-icon svgIcon="rate_review"></mat-icon>
+          Kommentare
+        </button>
+      }
 
-    @if (!(tcs.booklet?.config?.toolbar_show_fullscreen_button === 'FALSE' &&
-           tcs.booklet?.config?.toolbar_show_reload_button === 'FALSE')) {
-      <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
-        <mat-icon svgIcon="more_vert"></mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        @if (tcs.booklet?.config?.toolbar_show_fullscreen_button !== 'FALSE') {
-          <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
-            <mat-icon svgIcon="arrows_output"></mat-icon>
-            <span>Vollbild</span>
-          </button>
-        }
-        @if (tcs.booklet?.config?.toolbar_show_reload_button !== 'FALSE') {
-          <button mat-menu-item (click)="reload()" data-cy="reloadPage">
-            <mat-icon svgIcon="autorenew"></mat-icon>
-            <span>Neu laden</span>
-          </button>
-        }
-      </mat-menu>
-    }
+      @if (tcs.booklet?.config?.toolbar_show_unit_list === 'TRUE' || tcs.testMode.showUnitMenu) {
+        <button matButton data-cy="unit-menu"
+                (click)="sideNavContent = 'unit-menu'; sidenav.toggle()">
+          <mat-icon svgIcon="clock_loader_60"></mat-icon>
+          Bearbeitungsstand
+        </button>
+      }
+
+      @if (!(tcs.booklet?.config?.toolbar_show_fullscreen_button === 'FALSE' &&
+             tcs.booklet?.config?.toolbar_show_reload_button === 'FALSE')) {
+        <button matIconButton class="menu-button" [matMenuTriggerFor]="menu">
+          <mat-icon svgIcon="more_vert"></mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          @if (tcs.booklet?.config?.toolbar_show_fullscreen_button !== 'FALSE') {
+            <button mat-menu-item (click)="toggleFullScreen()" data-cy="fullscreen">
+              <mat-icon svgIcon="arrows_output"></mat-icon>
+              <span>Vollbild</span>
+            </button>
+          }
+          @if (tcs.booklet?.config?.toolbar_show_reload_button !== 'FALSE') {
+            <button mat-menu-item (click)="reload()" data-cy="reloadPage">
+              <mat-icon svgIcon="autorenew"></mat-icon>
+              <span>Neu laden</span>
+            </button>
+          }
+        </mat-menu>
+      }
+    </div>
   </div>
-</div>
+}
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="over" position="end" opened="false" (openedStart)="reviewComponent?.onOpen()">
@@ -95,6 +99,11 @@
 
   <mat-sidenav-content>
     <router-outlet></router-outlet>
+    @if (isLoading) {
+      <div class="loading-overlay">
+        <tc-loading-progress [progress]="tcs.totalLoadingProgress" heading="Gleich geht's los!"></tc-loading-progress>
+      </div>
+    }
   </mat-sidenav-content>
 
 </mat-sidenav-container>
