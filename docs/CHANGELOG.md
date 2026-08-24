@@ -1,6 +1,8 @@
 #next
 
 ## Änderungen
+- Der Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) wird nun unabhängig
+  von Groß- und Kleinschreibung akzeptiert.
 - Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
 - Freigabewörter werden in den entsprechenden Modi nicht mehr voreingetragen. Hier war eine Änderung nötig, da das alte
   Verfahren nicht für die neue Codeeingabe über Symbole funktioniert. Stattdessen wird der Freigabecode nun angezeigt
