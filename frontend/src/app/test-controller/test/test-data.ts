@@ -423,13 +423,20 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
 
     // start here because loading is lazy
     { name: 'tcs.testStatus$', value: 'RUNNING' },
-    { name: 'tls.loadTest', value: true },
 
-    // load external unit contents - start with unit 3, because it's the current unit
+    // load external unit contents - start with unit 3, because it's the current unit. loadTest()
+    // now waits for the CURRENT unit's own block resources (TestControllerService
+    // .unitBlockResourcesLoaded$()) before resolving/navigating there - so, unlike unit 2's below
+    // (a different block, which keeps loading in the background undisturbed), these four ticks
+    // happen BEFORE tls.loadTest resolves, not after.
     { name: 'tcs.totalLoadingProgress', value: 90 }, // 0% of unit 3 definition
     { name: 'tcs.totalLoadingProgress', value: 92.5 }, // 50% of unit 3 definition
     { name: 'tcs.totalLoadingProgress', value: 93.75 }, // 75% of unit 3 definition
     { name: 'tcs.totalLoadingProgress', value: 95 }, // 100% of unit 3 definition
+
+    // unit 3 (the starting unit) is fully ready now - only then do we navigate
+    { name: 'tls.loadTest', value: true },
+
     { name: 'tcs.totalLoadingProgress', value: 95 }, // 0% of unit 2 definition
     { name: 'tcs.totalLoadingProgress', value: 97.5 }, // 50% of unit 2 definition
     { name: 'tcs.totalLoadingProgress', value: 98.75 }, // 75% of unit 2 definition

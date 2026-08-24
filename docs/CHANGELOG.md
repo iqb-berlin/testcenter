@@ -109,6 +109,8 @@ folgenden Punkten:
   Schaltfläche nicht mehr grün ist.
 
 ## Fehlerbehebungen
+- Testheft-Anzeige: Beim (Neu-)Start eines Tests gab es bisher eine sichtbare Unterbrechung zwischen zwei unterschiedlichen Ladeanzeigen (erst ein einfacher Text ohne Fortschrittsanzeige, kurz danach ein Fortschrittsbalken, mit einer kurzen leeren Lücke dazwischen) und die Adresse im Browser wechselte sichtbar, bevor die erste Aufgabe tatsächlich bereit war. Es wird nun durchgehend dieselbe Fortschrittsanimation angezeigt, und es wird erst dann zur ersten Aufgabe gewechselt, wenn diese vollständig geladen ist.
+  - Dabei wurde außerdem ein Fehler behoben, durch den beim Wechsel in einen noch nicht fertig geladenen Aufgabenblock (z.B. bei aktiviertem "lazy loading") unter Umständen kurzzeitig eine leere/weiße Fläche statt der Ladeanimation angezeigt wurde.
 - Die automatisierten Systemtests für Hot-Restart und Hot-Return wählen beim Ergebnisdownload nun die vorgesehene
   Login-Gruppe unabhängig von der Reihenfolge der Ergebniszeilen aus.
 - Workspace-Admin:
