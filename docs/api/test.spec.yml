@@ -53,10 +53,22 @@ paths:
                 xml: "(contents of a booklet.xml)"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}:
     get:
@@ -114,10 +126,22 @@ paths:
                     definition: "(content of Sample Unit 2)"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/review:
     put:
@@ -180,10 +204,22 @@ paths:
           description: OK, created
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/review:
     put:
@@ -234,10 +270,22 @@ paths:
           description: OK, created
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/reviews:
     get:
@@ -349,10 +397,22 @@ paths:
                   originalUnitId: "UNIT.SAMPLE"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/reviews:
       get:
@@ -435,10 +495,22 @@ paths:
                     userAgent: "Mozilla/5.0..."
           "401":
             description: Not authenticated
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/review/{review_id}:
       patch:
@@ -509,10 +581,22 @@ paths:
             description: OK, review updated
           "401":
             description: Not authenticated
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
 
       delete:
         summary: delete a unit review
@@ -553,10 +637,22 @@ paths:
             description: OK, review deleted (no content)
           "401":
             description: Not authenticated
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/review/{review_id}:
       patch:
@@ -620,10 +716,22 @@ paths:
             description: OK, review updated
           "401":
             description: Not authenticated
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
 
       delete:
         summary: delete a booklet review
@@ -657,10 +765,22 @@ paths:
             description: OK, review deleted (no content)
           "401":
             description: Not authenticated
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "403":
             description: Forbidden
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
           "500":
             description: Server Error
+            content:
+              text/html:
+                schema:
+                  $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/response:
     put:
@@ -718,10 +838,22 @@ paths:
           description: OK, created
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/state:
     patch:
@@ -778,10 +910,22 @@ paths:
           description: OK, updated
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/state:
     patch:
@@ -826,10 +970,22 @@ paths:
           description: OK, updated
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/unit/{unit_name}/log:
     put:
@@ -876,10 +1032,22 @@ paths:
           description: OK, log saved
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/log:
     put:
@@ -916,10 +1084,22 @@ paths:
           description:  OK, log saved
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
 
   /test/{test_id}/lock:
@@ -963,10 +1143,22 @@ paths:
           description:  OK, locked
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test:
     put:
@@ -1001,12 +1193,28 @@ paths:
               example: "1"
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/command/{command_id}/executed:
     patch:
@@ -1042,12 +1250,28 @@ paths:
           description: OK, command is marked as executed (or was already set as executed before)
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/commands:
     get:
@@ -1113,12 +1337,28 @@ paths:
                     - p4
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "423":
           description: Test is locked!
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /test/{test_id}/connection-lost:
     post:
@@ -1142,5 +1382,13 @@ paths:
           description: OK, test was marked as disconnected
         "404":
           description: Test not found
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
