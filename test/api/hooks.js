@@ -4,7 +4,6 @@ const dreddHooks = require('hooks');
 const fs = require('fs');
 const { Readable } = require('stream');
 const Multipart = require('../../node_modules/multi-part');
-const streamToString = require('../../node_modules/stream-to-string');
 
 const skipAfterFirstFail = true; // change this to debug
 let errorOccurred = false;
@@ -183,7 +182,10 @@ const attachUploadFile = async (transaction, done) => {
   try {
     const form = new Multipart();
     form.append('fileforvo', fs.createReadStream(`${sampledataDir}/Unit.xml`, 'utf-8'), { filename: 'SAMPLE_UNIT.XML' });
-    transaction.request.body = await streamToString(form.stream());
+    // multi-part v4 dropped v3's synchronous `stream()` in favour of the async `buffer()`, which
+    // generates the multipart body and returns it in one go. Dredd wants the request body as a
+    // string, so the buffer is decoded here.
+    transaction.request.body = (await form.buffer()).toString();
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
   } catch (e) {
     transaction.fail = e;
@@ -195,7 +197,8 @@ const addInvalidUploadFile = async (transaction, done) => {
   try {
     const form = new Multipart();
     form.append('fileforvo', fs.createReadStream(`${sampledataDir}/Unit.xml`, 'utf-8'), { filename: 'SAMPLE_UNIT.XML' });
-    transaction.request.body = (await streamToString(form.stream()))
+    transaction.request.body = (await form.buffer())
+      .toString()
       .replace('<Unit', '<Invalid')
       .replace('</Unit', '</Invalid');
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
@@ -211,7 +214,7 @@ const addHugeFile = async (transaction, done) => {
     const tooBigContent = Readable.from(['x'.repeat(1024)]);
     form.append('MAX_FILE_SIZE', '512');
     form.append('fileforvo', tooBigContent, { filename: 'HUGE_FILE.XML' });
-    transaction.request.body = await streamToString(form.stream());
+    transaction.request.body = (await form.buffer()).toString();
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
   } catch (e) {
     transaction.fail = e;
@@ -239,7 +242,7 @@ const attachUploadImage = async (transaction, done) => {
     const form = new Multipart();
     form.append('attachment', Readable.from(['image data']), { filename: 'image.png' });
     form.append('type', 'image');
-    transaction.request.body = await streamToString(form.stream());
+    transaction.request.body = (await form.buffer()).toString();
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
   } catch (e) {
     transaction.fail = e;

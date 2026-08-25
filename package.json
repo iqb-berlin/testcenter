@@ -108,7 +108,6 @@
     "minimist": ">=0.2.1",
     "multi-part": "^4.0.0",
     "redis": "^4.6.11",
-    "stream-to-string": "^1.2.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.1.6",
     "y18n": ">=3.2.2",
