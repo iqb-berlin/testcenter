@@ -115,7 +115,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
             const userID = this.mds.getAuthData()?.id;
             const username = this.mds.getAuthData()?.displayName;
             if (userID === undefined || username === undefined) throw new Error('Error getting user ID');
-            this.pcs.showPasswordChangeDialog({ id: userID, name: username })
+            this.pcs.showPasswordChangeDialog({ id: userID, name: username }, true)
               .subscribe((pwChangeResult: boolean) => {
                 const messageText = pwChangeResult ?
                   'Kennwort erfolgreich geändert. Sie werden abgemeldet.' :
@@ -169,7 +169,7 @@ export class StarterComponent implements OnInit, AfterViewInit, OnDestroy {
     const userID = this.mds.getAuthData()?.id;
     const username = this.mds.getAuthData()?.displayName;
     if (userID === undefined || username === undefined) throw new Error('Error getting user ID');
-    this.pcs.showPasswordChangeDialog({ id: userID, name: username })
+    this.pcs.showPasswordChangeDialog({ id: userID, name: username }, true)
       .subscribe(result => {
         if (result) {
           this.ms.showSnackbar('Kennwort erfolgreich geändert. Sie werden abgemeldet.')

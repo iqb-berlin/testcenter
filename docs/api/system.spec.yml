@@ -227,7 +227,8 @@ paths:
 
     delete:
       summary: delete some workspaces
-      description: deletes a list of workspaces given by their ids
+      description: deletes a list of workspaces given by their ids.
+       * **requires the password of the performing user for security reasons**
       tags:
         - super admin
       parameters:
@@ -246,18 +247,28 @@ paths:
                   description: list of Workspace-Id
                   items:
                     type: integer
+                p:
+                  type: string
+                  description: "performing user's password"
+                  example: user123
               required:
                 - ws
+                - p
             example:
               ws: [2]
+              p: user123
 
       responses:
+        "200":
+          description: ok
+        "400":
+          description: Password missing
         "401":
           description: Not authenticated
         "410":
           description: Session Expired
         "403":
-          description: Forbidden
+          description: Forbidden, or password incorrect
         "500":
           description: Server Error
 
@@ -298,6 +309,7 @@ paths:
       summary: delete some users
       description: deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no
         check if the user exists beforeheand.
+       * **requires the password of the performing user for security reasons**
       tags:
         - super admin
       parameters:
@@ -317,19 +329,26 @@ paths:
                   items:
                     type: string
                     description: user-id
+                p:
+                  type: string
+                  description: "performing user's password"
+                  example: user123
             example:
               u:
                 - 2
+              p: user123
 
       responses:
         "200":
           description: ok
+        "400":
+          description: Password missing
         "401":
           description: Not authenticated
         "410":
           description: Session Expired
         "403":
-          description: Forbidden
+          description: Forbidden, or password incorrect
         "500":
           description: Server Error
 
