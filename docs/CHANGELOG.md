@@ -1,15 +1,17 @@
-#next
+# 18.3.0
 
 ## Änderungen
-- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
+- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testpersonen die Möglichkeit, den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
+- Ein Klick auf das Logo während eines laufenden Tests führt nicht mehr auf eine Zwischenseite mit Statusinformationen.
 - Freigabewörter werden in den entsprechenden Modi nicht mehr voreingetragen. Hier war eine Änderung nötig, da das alte
-  Verfahren nicht für die neue Codeeingabe über Symbole funktioniert. Stattdessen wird der Freigabecode nun angezeigt
+  Verfahren nicht für die neue Codeeingabe über Symbole funktioniert. Stattdessen wird das Freigabewort nun angezeigt
   und muss abgeschrieben werden.
 - Kurzmeldungen (Snackbar), die kurz nacheinander ausgelöst werden, werden nun gestapelt angezeigt, statt dass eine neue Meldung die vorherige sofort ersetzt.
 - Der Dialog zur Fehlerbehandlung wurde visuell und inhaltlich überarbeitet.
-  - Es gibt nun keine Möglichkeit mehr Fehlerberichte automatisch auf GitHub hoch oder als Datei runterzuladen. Diese Features wurden in der Vergangenheit selten bis nie benutzt. Das betrifft auch die zugehörigen Konfigurationsmöglichkeiten für Super-Admins.
-  - Es gibt keine automatisches neu laden der Anwendung mehr. Erst wenn der Dialog geschlossen wird, wird die Anwendung neu geladen.
-  - Der Stacktrace eines Fehlers wird nun auch im Fehlerbericht (nicht mehr nur in der Browser-Konsole) angezeigt. Dies soll dabei helfen, selten und scheinbar zufällig auftretende Fehler (z.B. `NG0203`) anhand eines eingereichten Fehlerberichts genauer nachvollziehen zu können.
+  - Fehler werden nun in einem Dialog angezeigt, statt auf eine eigene Statusseite zu navigieren.
+  - Es gibt nun keine Möglichkeit mehr, Fehlerberichte automatisch auf GitHub hochzuladen oder als Datei herunterzuladen. Diese Funktionen wurden in der Vergangenheit selten bis nie benutzt. Das betrifft auch die zugehörigen Konfigurationsmöglichkeiten für Super-Admins.
+  - Es gibt kein automatisches Neuladen der Anwendung mehr. Erst wenn der Dialog geschlossen wird, wird die Anwendung neu geladen.
+  - Der Stacktrace eines Fehlers wird nun auch in den Fehlerdetails (nicht mehr nur in der Browser-Konsole) angezeigt. Dies soll dabei helfen, selten und scheinbar zufällig auftretende Fehler anhand eines gemeldeten Fehlers genauer nachvollziehen zu können.
 - Die Standardtexte folgender custom-texts wurden angepasst: `booklet_warningLeaveTimerBlockTextPrompt`,
   `booklet_warningLeaveTextPrompt-testlet`, `booklet_warningLeaveTextPrompt-unit`. Die abschließende Frage
   "Trotzdem weiterblättern?" wurde entfernt, da diese Entscheidung bereits eindeutig durch die Beschriftung der
@@ -17,15 +19,38 @@
   - **Hinweis für Testheft-Ersteller:innen:** Wurde für eines dieser drei custom-texts ein eigener Text hinterlegt,
     sollte dieser geprüft und ggf. entsprechend gekürzt werden, damit er nicht weiterhin redundant nach dem
     Weiterblättern fragt.
-- Der custom-text `CodeToEnterWarning` wurde entfernt.
+- Der custom-text `booklet_codeToEnterWarning` wurde entfernt.
+- Alle Vorkommen von "System-Check" wurden durch die einheitliche Schreibweise "Systemcheck" ersetzt. Das betrifft
+  Seitentitel, Menüeinträge und Schaltflächen sowie die Beschriftungen und Standardtexte der custom-texts
+  `syscheck_intro` und `syscheck_report_aboutPassword`.
+- Auf der Startseite des Systemchecks wird nicht mehr auf den "grünen Schalter" verwiesen, da die entsprechende
+  Schaltfläche nicht mehr grün ist.
 
 ## Fehlerbehebungen
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
 - Testheft-Anzeige: Beim Verlassen einer Aufgabe zurück ins Startmenü erschienen bisher unter Umständen zwei Bestätigungsdialoge nacheinander (etwa bei einem zeitbeschränkten Block oder einer Bereichssperre). Es erscheint nun nur noch ein einziger, zusammengeführter Dialog.
-- Super-Admin: Wird beim Setzen/Entziehen des Superadmin-Status ein falsches (eigenes) Kennwort eingegeben, erscheint die Meldung nun direkt im Dialog und der Dialog bleibt für einen erneuten Versuch geöffnet. Bisher erschien stattdessen der allgemeine, technische Fehlerdialog, und der Passwort-Dialog hatte sich bereits geschlossen, sodass der gesamte Vorgang (Auswahl, Aktion) wiederholt werden musste.
-- Auf der Codeingabemaske im Testablauf wird nun korrekt der custom-text `booklet_codeToEnterPrompt` unter der
+- In den Review-Modi wird die Aufgaben-Übersicht nun angezeigt, auch wenn die Booklet-Konfiguration
+  (`toolbar_show_unit_list`) dies nicht vorsieht.
+- Beim Beenden eines Tests wird dieser nun zuverlässig gesperrt, sofern über `lock_test_on_termination` konfiguriert.
+  Bisher wurde die Sperre erst nach dem Wechsel ins Startmenü angefordert und daher unter Umständen nicht mehr
+  ausgeführt.
+- Der Hinweisdialog, der bei unterbundener Navigation erscheint, zeigte immer die Überschrift "Anleitung" anstelle der
+  jeweils vorgesehenen.
+- Nach einem Sitzungsfehler wird die Anwendung beim Schließen des Fehlerdialogs nun korrekt neu geladen und die
+  gespeicherten Anmeldedaten werden verworfen.
+- Ist beim Verlassen einer Aufgabe kein Testheft vorhanden, wird nun ein Fehler angezeigt. Bisher wurde auf eine
+  Statusseite umgeleitet, von der aus der Test nur beendet werden konnte, ohne die Ursache beheben zu können.
+- Super-Admin: Wird beim Setzen/Entziehen des Super-Admin-Status ein falsches (eigenes) Kennwort eingegeben, erscheint die Meldung nun direkt im Dialog und der Dialog bleibt für einen erneuten Versuch geöffnet. Bisher erschien stattdessen der allgemeine, technische Fehlerdialog, und der Passwort-Dialog hatte sich bereits geschlossen, sodass der gesamte Vorgang (Auswahl, Aktion) wiederholt werden musste.
+- Auf der Codeeingabemaske im Testablauf wird nun korrekt der custom-text `booklet_codeToEnterPrompt` unter der
   Überschrift angezeigt.
+
+## Technisches
+- Die App-Einstellungen `bugReportTarget` und `bugReportAuth` (Ziel-Repository und GitHub-Token für automatische
+  Fehlerberichte) werden nicht mehr verwendet und sind aus dem Super-Admin-Bereich entfernt. Ein dort hinterlegtes
+  Token hat keine Funktion mehr und sollte ggf. widerrufen werden.
+- Alle Logs, die in die Log-Datei des Adminbereichs geschrieben werden, sind nun dokumentiert:
+  `docs/pages/logging.md`.
 
 # 18.2
 ## Neue Funktionen
