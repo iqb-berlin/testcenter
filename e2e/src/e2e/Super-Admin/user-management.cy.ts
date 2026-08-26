@@ -141,10 +141,11 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.get('[data-cy="delete-user"]')
       .click();
-    cy.get('[data-cy="dialog-title"]')
+    cy.get('[data-cy="dialog-change-superadmin"]')
       .contains('Löschen von Administrator:innen');
-    cy.get('[data-cy="dialog-confirm"]')
-      .contains('Administrator:in löschen')
+    cy.get('[data-cy="dialog-change-superadmin-pw"]')
+      .type('user123');
+    cy.get('[data-cy="pw-submit"]')
       .click();
     cy.contains('workspace_admin')
       .should('not.exist');
