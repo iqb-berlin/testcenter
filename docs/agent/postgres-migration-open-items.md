@@ -65,27 +65,37 @@ before touching the schema, they cover the enum, boolean, collation and `REPLACE
    upgrade paths, which cease to exist. `patches.d/` is now empty (`.gitkeep`) and is where postgres
    patches will land.
 
-2. **Get `initialize.php` to "Ready."** Rename `full.postgres.sql` -> `full.sql` and track it; delete
-   `writeFullSchema()` and point `buildTestDB()` at the file. Then the three call sites in initialize's
-   path: `InitDAO:296` (backtick-quoted `` `id` ``), `WorkspaceDAO:160` and `:555` (`replace into`),
-   `InitDAO:290` (`is_superadmin = 1` against a boolean column).
-   *Check:* `make up` reaches `Ready.`, sample workspace and `super` admin exist.
+2. ~~**Get `initialize.php` to "Ready."**~~ Done. Initialize now runs end-to-end on a clean postgres
+   database: 11 files, 14 relations, 16 logins, sample workspace and `super` admin created, `/version`
+   responds. It needed more than the three call sites originally listed - what the run actually turned up:
+   - **Duplicate rows are real.** A booklet can list the same unit twice, so a file's relation list
+     contains duplicates and `REPLACE INTO` was absorbing them silently. Both `file_relations` and
+     `unit_defs_attachments` need `on conflict ... do nothing`, not a plain insert.
+   - **A category that was not on the list: mysql multi-table `UPDATE`/`DELETE ... JOIN`,** which postgres
+     spells `UPDATE ... FROM` / `DELETE ... USING`. Fixed in `WorkspaceDAO::updateValidUntilInPersonSession()`;
+     `AdminDAO:148` (`delete tests from tests inner join ...`) is the same bug and is left for step 4, since
+     it is an admin flow that cannot be exercised until the test suite is back.
+   - **Boolean *binds* are fine, only literals break.** `$file->isValid() ? 1 : 0` and friends work - PDO
+     sends `'1'`, which postgres accepts as boolean input text. Only `is_valid = 1` written into the SQL
+     string fails. So the `? 1 : 0` binds need no change; all six literal comparisons were fixed.
+   - `$updatedRelations` in `storeRelations()` was dead - the only caller takes just the first element of
+     the returned array - so the `rowCount()` check that fed it is gone.
 
 3. **Restore a feedback loop** before the bulk rewrites - see "Test database" below, plus converting
    `backend/test/unit/testdata.sql` (52 statements: backticks throughout, and positional inserts putting
    `1`/`0` into what are now boolean columns).
 
-4. **The remaining DAO rewrites.** 3x `replace into`, 4x `on duplicate key update`, the remaining
-   backticks (`DAO:115` in `setMeta`, `SuperAdminDAO:182`, `:225`), and 6 boolean comparisons
-   (`AdminDAO:666`, `InitDAO:290`, `TestDAO:634`, `:672`, `WorkspaceDAO:602`, `:659`).
-   **Not mechanical** - two traps:
-   - Three call sites read mysql's affected-rows semantics as control flow. `DAO:65` stores
-     `rowCount()`, and mysql returns 2 for a REPLACE that replaced an existing row versus 1 for a fresh
-     insert; postgres returns 1 either way. Affects `WorkspaceDAO:567` (`$updatedRelations` would become
-     always-empty), `SessionDAO:176` and `:451`.
-   - `REPLACE INTO files` is DELETE+INSERT and therefore cascade-deletes dependent `file_relations` and
-     `unit_defs_attachments` rows (`full.postgres.sql:523, 553`). `ON CONFLICT DO UPDATE` does not.
-     Check whether `storeAllFiles()` relies on that to clear stale relations before converting.
+4. **The remaining DAO rewrites** - everything outside initialize's path:
+   - 4x `on duplicate key update` (`SessionDAO:167`, `AssetDAO:174`, `TestDAO:445`, `:534`)
+   - the remaining backticks: `DAO:115` (`setMeta`), `SuperAdminDAO:182`, `:225`
+   - `AdminDAO:148`, the multi-table `delete ... inner join` (see step 2)
+   - **The affected-rows trap:** `DAO:65` stores `rowCount()`, and mysql returns 2 for a REPLACE that
+     replaced an existing row versus 1 for a fresh insert; postgres returns 1 either way. `SessionDAO:176`
+     and `:451` read that value as control flow and need checking. (`WorkspaceDAO:567` was the third case -
+     already resolved, it was dead code.)
+   - While in `storeRelations()`: `$unresolvedRelations` is initialised as an array but incremented with
+     `++`, which PHP silently ignores for arrays - so `relations_unresolved` is always 0. Pre-existing,
+     unrelated to postgres.
 
 5. **Decide the boolean API contract.** PDO now returns real `true`/`false` where mysql returned
    `"0"`/`"1"`, so anything JSON-encoded straight to the client changes shape. Either cast back in SQL to
