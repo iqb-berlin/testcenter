@@ -631,7 +631,7 @@ class TestDAO extends DAO {
   }
 
   public function getCommands(int $testId, ?int $lastCommandId = null): array {
-    $sql = "select * from test_commands where test_id = :test_id and executed = 0 order by timestamp";
+    $sql = "select * from test_commands where test_id = :test_id and executed = false order by timestamp";
     $replacements = [':test_id' => $testId];
     if ($lastCommandId) {
       $replacements[':last_id'] = $lastCommandId;
@@ -669,7 +669,7 @@ class TestDAO extends DAO {
     }
 
     $this->_(
-      'update test_commands set executed = 1 where test_id = :testId and id = :commandId',
+      'update test_commands set executed = true where test_id = :testId and id = :commandId',
       [':testId' => $testId, ':commandId' => $commandId]
     );
 

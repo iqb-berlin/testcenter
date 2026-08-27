@@ -131,34 +131,12 @@ class TestEnvironment {
     }
   }
 
+  // full.sql is the complete, hand-maintained schema, so the test DB is just a plain re-run of it.
+  // It used to be a generated cache of base.sql + all patches, which had to be rebuilt when it went stale.
   static function buildTestDB(): void {
     $initDAO = new InitDAO();
-    $nextPatchPath = ROOT_DIR . '/scripts/database/patches.d/next.sql';
-    $fullSchemePath = ROOT_DIR . '/scripts/database/full.sql';
-    $patchFileChanged = (file_exists($nextPatchPath) and (filemtime($nextPatchPath) > filemtime($fullSchemePath)));
-
-    if (!file_exists($fullSchemePath) or $patchFileChanged) {
-      TestEnvironment::updateDataBaseScheme();
-      return;
-    }
     $initDAO->clearDB();
     $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
-  }
-
-  private static function updateDataBaseScheme(): void {
-    $initDAO = new InitDAO();
-    $initDAO->clearDB();
-    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
-    $report = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
-    if (count($report['errors'])) {
-      $errors = [];
-      foreach ($report['errors'] as $patch => $error) {
-        $errors[] = "Patch $patch failed with: `$error`";
-      }
-      throw new Exception(implode("; ", $errors));
-    }
-
-    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
   }
 
   private static function rollback(): void {

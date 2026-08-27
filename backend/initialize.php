@@ -78,7 +78,7 @@ try {
 
   if ($args['overwrite_existing_installation'] or ($dbStatus['tables'] == 'empty')) {
     CLI::p("Install basic database structure");
-    $initDAO->runFile(ROOT_DIR . "/scripts/database/full.postgres.sql");
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/full.sql");
   }
 
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
@@ -107,11 +107,6 @@ try {
   }
   $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
-
-  // tables is 'complete', if the current database has all tables, declared in self::tables; not the case for initialize/general scripts that test incomplete table states
-  if ($newDbStatus['tables'] === 'complete') {
-    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
-  }
 
   CLI::h2("Workspaces");
 

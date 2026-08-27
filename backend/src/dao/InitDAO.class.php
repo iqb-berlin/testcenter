@@ -287,13 +287,13 @@ class InitDAO extends SessionDAO {
   }
 
   public function adminExists(): bool {
-    $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
+    $admins = $this->_("select count(*) as count from users where is_superadmin = true");
     return (int) $admins['count'] > 0;
   }
 
   public function createWorkspaceIfMissing(Workspace $workspace): array {
     $workspaceFromDb = $this->_(
-      "select workspaces.id, workspaces.name from workspaces where `id` = :ws_id",
+      "select workspaces.id, workspaces.name from workspaces where id = :ws_id",
       [':ws_id' => $workspace->getId()]
     );
 
@@ -399,15 +399,6 @@ class InitDAO extends SessionDAO {
     }
 
     return $report;
-  }
-
-  public function writeFullSchema(string $path): void {
-    $schema = '-- IQB-Testcenter DB --';
-    foreach ($this::tables as $table) {
-      $schema .= "\n\n" . $this->_("SHOW CREATE TABLE $table")['Create Table'] . ';';
-      $schema .= "\nTRUNCATE $table; -- to reset auto-increment";
-    }
-    file_put_contents($path, $schema);
   }
 
   public function createSampleMetaData(): void {

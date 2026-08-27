@@ -216,10 +216,4 @@ serve-pages:
 
 new-version:
 	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.dev\
-			--file docker-compose.yml\
-			--file docker-compose.dev.yml\
-		run --rm --entrypoint="" backend\
-			php /var/www/testcenter/backend/test/update-sql-scheme.php &&\
 	make .run-task-runner task="new-version $(version)"

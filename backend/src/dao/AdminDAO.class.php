@@ -663,7 +663,7 @@ class AdminDAO extends DAO {
               or unit_reviews.entry is not null
               or test_reviews.entry is not null
           )
-          and tests.running = 1
+          and tests.running = true
           group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
       group by group_name",
