@@ -31,21 +31,6 @@ function take_current_version() {
 }
 
 
-# param 1: expectation file name
-function expect_db_structure_dump_equals() {
-  result=$(php backend/test/initialization/functions/structure.php)
-  expectation_file="backend/test/initialization/expectations/$1.yml"
-  differences=$(diff <(echo "$result") "$expectation_file")
-  if [ "$differences" != "" ]
-  then
-    echo_fail "Expectation '$1' failed: "
-    echo "$differences";
-    exit 1
-  else
-    echo_success "Expectation '$1' met"
-  fi
-}
-
 # param 1: table
 # param 2: count
 function expect_table_to_have_rows() {

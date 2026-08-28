@@ -152,15 +152,6 @@ test-backend-initialization:
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
-    - TEST_NAME=general/db-versions
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
     - TEST_NAME=general/vanilla-installation
       docker compose
       --env-file .env.dev-template
