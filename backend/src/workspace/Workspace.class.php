@@ -492,7 +492,7 @@ class Workspace {
     }
 
     if ($file::canBeRelationSubject) {
-      list($relationsUnresolved) = $this->workspaceDAO->storeRelations($file);
+      [$relationsUnresolved] = $this->workspaceDAO->storeRelations($file);
       $stats['relations_resolved'] = count($file->getRelations()) - count($relationsUnresolved);
       $stats['relations_unresolved'] = count($relationsUnresolved);
     }

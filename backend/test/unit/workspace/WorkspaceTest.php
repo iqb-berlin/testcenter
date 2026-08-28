@@ -263,7 +263,7 @@ class WorkspaceTest extends TestCase {
       ->twice();
     $this->workspaceDaoMock
       ->expects('storeRelations')
-      ->andReturn([[], []]);
+      ->andReturn([[]]);
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
       ->twice();
@@ -357,7 +357,7 @@ class WorkspaceTest extends TestCase {
       ->expects('storeFile');
     $this->workspaceDaoMock
       ->expects('storeRelations')
-      ->andReturn([[], []]);
+      ->andReturn([[]]);
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes');
     $this->workspaceDaoMock
@@ -404,7 +404,7 @@ class WorkspaceTest extends TestCase {
       ->times(4);
     $this->workspaceDaoMock
       ->expects('storeRelations')
-      ->andReturn([[], []])
+      ->andReturn([[]])
       ->times(3);
     $this->workspaceDaoMock
       ->expects('getFileById')
@@ -540,7 +540,7 @@ class WorkspaceTest extends TestCase {
       ->times(4);
     $this->workspaceDaoMock
       ->expects('storeRelations')
-      ->andReturn([[], []])
+      ->andReturn([[]])
       ->times(3);
     $this->workspaceDaoMock
       ->expects('getFileById')
@@ -662,7 +662,7 @@ class WorkspaceTest extends TestCase {
       ->twice();
     $this->workspaceDaoMock
       ->shouldReceive('storeRelations')
-      ->andReturn([[], []])
+      ->andReturn([[]])
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
@@ -744,7 +744,7 @@ class WorkspaceTest extends TestCase {
       ->times(4);
     $this->workspaceDaoMock
       ->shouldReceive('storeRelations')
-      ->andReturn([[], []])
+      ->andReturn([[]])
       ->times(3);
     $this->workspaceDaoMock
       ->expects('getFileById')
@@ -837,7 +837,7 @@ class WorkspaceTest extends TestCase {
       ->once();
     $this->workspaceDaoMock
       ->expects('storeRelations')
-      ->andReturn([[], []])
+      ->andReturn([[]])
       ->once();
     $this->workspaceDaoMock
       ->expects('getDependentFilesByTypes')
