@@ -7,8 +7,7 @@ Working notes for the `postgres-migration` branch. Delete this file once the mig
 Branch history rewritten to 7 commits (backup: `backup/postgres-migration-pre-cleanup`), not pushed.
 
 Verified by running it: postgres 18.4 comes up, the backend connects via `pdo_pgsql`,
-`full.postgres.sql` creates all 22 tables and the integrity check passes. `initialize.php` then
-crashes in `writeFullSchema()` on `SHOW CREATE TABLE`.
+`full.postgres.sql` creates all 22 tables and the integrity check passes.
 
 `full.postgres.sql` carries its own translation notes at the end (`MIGRATIONSHINWEISE`) - read them
 before touching the schema, they cover the enum, boolean, collation and `REPLACE INTO` decisions.
@@ -21,14 +20,11 @@ before touching the schema, they cover the enum, boolean, collation and `REPLACE
   `writeFullSchema()`, `updateDataBaseScheme()` and `backend/test/update-sql-scheme.php` are deleted -
   the generate-and-cache pipeline exists only because replaying `base.sql` + 39 patches per test run was
   slow, which stops being true once the complete schema is a checked-in file.
-  *Cost:* a schema change must be written twice - as a patch *and* folded into `full.sql` by hand.
+- [ ] *Cost:* a schema change must be written twice - as a patch *and* folded into `full.sql` by hand.
   Needs a drift guard: a test that installs `full.sql` and asserts `installPatches()` has nothing left
   to do and the integrity check passes.
 
-- **The mysql patches are not ported.** A postgres database is born at the latest patch level, so every
-  existing patch is unreachable by definition. `patches.d/` starts empty for postgres and the mysql
-  patches are deleted - leaving them would mean `initialize.php:91` feeds mysql SQL to postgres as soon
-  as the stamped version changes. Today nothing fires only by accident.
+- **The mysql patches are not ported.** 
 
 - **Upgrading is a two-step process, enforced in code.** There is no in-place mysql -> postgres upgrade,
   and an admin on an older release would need mysql patches the postgres release no longer ships. So
@@ -158,13 +154,6 @@ fixing while we are in here.
     (`initialize.php:70`, `:104`) use only `'message'` and `'tables'`.
 
 ### Test database
-
-`scripts/database/000-create-test-db.sh` was mounted into the mysql container's
-`docker-entrypoint-initdb.d`; that mount is gone and nothing replaced it. `DB::connectToTestDB()` still
-expects `TEST_<dbname>`, so the backend test suite cannot run. Needs a postgres version - note that
-postgres folds unquoted identifiers to lowercase, so the `CREATE DATABASE` must quote the name or the
-connection string will not find it. Still referenced (chmod only) in `scripts/ci/e2e.yml`,
-`scripts/ci/backend.yml`, `scripts/make/dev.mk`.
 
 The initialization tests bring their own database:
 `backend/test/initialization/docker-compose.initialization-test.yml:79` starts `mysql:8.4`. The test
