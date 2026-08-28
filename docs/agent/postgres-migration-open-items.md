@@ -77,9 +77,10 @@ before touching the schema, they cover the enum, boolean, collation and `REPLACE
    - `$updatedRelations` in `storeRelations()` was dead - the only caller takes just the first element of
      the returned array - so the `rowCount()` check that fed it is gone.
 
-3. **Restore a feedback loop** before the bulk rewrites - see "Test database" below, plus converting
-   `backend/test/unit/testdata.sql` (52 statements: backticks throughout, and positional inserts putting
-   `1`/`0` into what are now boolean columns).
+3. ~~**Restore a feedback loop**~~ before the bulk rewrites - see "Test database" below.
+   `backend/test/unit/testdata.sql` is now PostgreSQL-native: MySQL identifier quoting and integer boolean
+   literals are gone, and sequences affected by fixed fixture IDs are resynchronized before the tests create
+   further records.
 
 4. **The remaining DAO rewrites** - everything outside initialize's path:
    - 4x `on duplicate key update` (`SessionDAO:167`, `AssetDAO:174`, `TestDAO:445`, `:534`)
