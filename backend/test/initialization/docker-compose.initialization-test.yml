@@ -10,16 +10,28 @@ x-env-redis: &env-redis
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
 
-x-env-mysql: &env-mysql
-  MYSQL_DATABASE: testcenter_db
-  MYSQL_USER: testcenter_user
-  MYSQL_PASSWORD: testcenter_pw
+# Keep one source of truth for the credentials exposed under two sets of names:
+# the backend still reads its legacy MYSQL_* variables, while the PostgreSQL
+# image requires POSTGRES_* variables during cluster initialization.
+x-test-db-name: &test-db-name testcenter_db
+x-test-db-user: &test-db-user testcenter_user
+x-test-db-password: &test-db-password testcenter_pw
+
+x-env-backend-database: &env-backend-database
+  MYSQL_DATABASE: *test-db-name
+  MYSQL_USER: *test-db-user
+  MYSQL_PASSWORD: *test-db-password
+
+x-env-postgres: &env-postgres
+  POSTGRES_DB: *test-db-name
+  POSTGRES_USER: *test-db-user
+  POSTGRES_PASSWORD: *test-db-password
 
 services:
   initialization-test-runner:
     image: iqbberlin/testcenter-task-runner
     profiles:
-      - dredd_test_against_mysql
+      - dredd_test_against_postgres
     build:
       context: ../../..
       dockerfile: task-runner/Dockerfile
@@ -47,13 +59,17 @@ services:
       context: ../../..
       dockerfile: backend/Dockerfile
       target: dev
-    entrypoint: [ "bash", "-c", "(cd /var/www/testcenter && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)" ]
+    entrypoint: [ "bash", "/var/www/testcenter/backend/test/initialization/entrypoint.sh" ]
     environment:
+      # Pass the selection into the container explicitly. The previous inline
+      # entrypoint happened to expand TEST_NAME while Compose parsed this file.
+      TEST_NAME: ${TEST_NAME:-fallback}
       BROADCASTER_ENABLED: false
       FILE_SERVER_ENABLED: false
-      <<: [ *env-redis, *env-mysql ]
+      <<: [ *env-redis, *env-backend-database ]
       MYSQL_HOST: initialization-test-db
-      MYSQL_PORT: 3306
+      # SystemConfig still uses the legacy variable name, but PDO now connects to PostgreSQL.
+      MYSQL_PORT: 5432
       PASSWORD_SALT: 't'
     volumes:
       - ../../../backend/.htaccess:/var/www/testcenter/backend/.htaccess
@@ -66,7 +82,13 @@ services:
       - ../../../docs:/docs
       - ../../../package.json:/var/www/testcenter/package.original.json
       - ../../../sampledata:/var/www/testcenter/sampledata
-      - ../../../scripts/database:/var/www/testcenter/scripts/database
+      # The patch tests create short-lived SQL patches. Keep those writes in an
+      # anonymous, --renew-anon-volumes-managed volume instead of mutating the
+      # developer's bind-mounted checkout from a container running as www-data.
+      - /var/www/testcenter/scripts/database
+      # Mount the checkout read-only as the authoritative input. The test
+      # entrypoint copies it into the writable volume before starting a case.
+      - ../../../scripts/database:/var/www/testcenter/scripts/database-source:ro
     depends_on:
       initialization-test-db:
         condition: service_healthy
@@ -76,24 +98,19 @@ services:
       - "85:80"
 
   initialization-test-db:
-    image: ${DOCKERHUB_PROXY}mysql:8.4
-    command:
-      - "--explicit-defaults-for-timestamp=TRUE"
-      - "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
-      - "--tls-version=TLSv1.2,TLSv1.3"
-      - "--max-connections=500"
-      - "--log_error_verbosity=1"
+    image: ${DOCKERHUB_PROXY}postgres:18.4
+    # The MySQL compatibility and TLS flags have no PostgreSQL equivalent.
+    # Preserve only the increased connection limit used by this test service.
+    command: [ "postgres", "-c", "max_connections=500" ]
     environment:
-      <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: testcenter_root_pw
-      MYSQL_INITDB_SKIP_TZINFO: 'true'
-    user: root
+      <<: *env-postgres
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent" ]
+      # Double dollar signs defer expansion to the container, where POSTGRES_* is available.
+      test: [ "CMD-SHELL", "pg_isready --username \"$${POSTGRES_USER}\" --dbname \"$${POSTGRES_DB}\" --host 127.0.0.1" ]
       interval: 1s
       retries: 120
     ports:
-      - "9091:3306"
+      - "9091:5432"
     networks:
       initialization-test:
 

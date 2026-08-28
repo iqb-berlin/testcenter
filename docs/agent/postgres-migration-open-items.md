@@ -153,12 +153,7 @@ fixing while we are in here.
   - The `'used'` key in the return array (`InitDAO:261`) is read by nobody; both callers
     (`initialize.php:70`, `:104`) use only `'message'` and `'tables'`.
 
-### Test database
 
-The initialization tests bring their own database:
-`backend/test/initialization/docker-compose.initialization-test.yml:79` starts `mysql:8.4`. The test
-scripts themselves reach the DB through PHP (`functions.sh` `run sql` -> `functions/sql.php`), so the
-compose service and the `MYSQL_HOST`/`MYSQL_PORT` wiring are what need changing, not the test bodies.
 
 ### Remaining mysql references
 

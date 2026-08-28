@@ -9,6 +9,23 @@ declare(strict_types=1);
 */
 
 class InitDAO extends SessionDAO {
+  /**
+   * PostgreSQL enum types owned by the Testcenter database schema.
+   *
+   * Unlike MySQL's inline ENUM declarations, these objects are independent
+   * from the tables using them. Consequently, dropping every application table
+   * does not remove the types. Keeping the ownership list next to clearDB()
+   * makes the overwrite operation cover the complete schema created by
+   * scripts/database/full.sql.
+   */
+  const schemaTypes = [
+    'file_type',
+    'verona_module_type',
+    'file_relationship_type',
+    'attachment_type',
+    'assignment_scope'
+  ];
+
   const legacyTableNames = [
     'admintokens',
     'persons',
@@ -228,6 +245,15 @@ class InitDAO extends SessionDAO {
         $droppedTables[] = $table;
         $this->_("DROP TABLE IF EXISTS $table CASCADE");
       }
+    }
+
+    // PostgreSQL keeps named enum types after their consuming tables are gone.
+    // Remove exactly the application-owned types so full.sql can recreate the
+    // schema during --overwrite_existing_installation. Deliberately omit
+    // CASCADE here: an unexpected dependency should stop the destructive reset
+    // instead of silently deleting a database object not owned by Testcenter.
+    foreach ($this::schemaTypes as $type) {
+      $this->_("DROP TYPE IF EXISTS $type");
     }
 
     return $droppedTables;
