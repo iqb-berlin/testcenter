@@ -221,8 +221,9 @@ final class AdminDAOTest extends TestCase {
       "keyword" => 'a_keyword',
       "parameter" => '["first_argument","second_argument"]',
       "commander_id" => 1,
-      'timestamp' => '2020-08-20 08:30:00',
-      'executed' => '0'
+      // 1597905000 is 06:30 UTC, stored as the instant it is rather than as local wall time
+      'timestamp' => '2020-08-20 06:30:00+00',
+      'executed' => false
     ];
     $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
     $this->assertEquals($expectation, $result);

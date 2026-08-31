@@ -353,7 +353,7 @@ class InitDAO extends SessionDAO {
       return $workspaceFromDb;
     }
 
-    $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
+    $name = "ws {$workspace->getId()} [restored " . TimeStamp::toDisplayFormat(TimeStamp::now()) . "]";
 
     $this->_(
       'insert into workspaces (name, id) values (:ws_name, :ws_id)',

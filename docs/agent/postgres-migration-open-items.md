@@ -98,7 +98,15 @@ before touching the schema, they cover the enum, boolean, collation and `REPLACE
    `"0"`/`"1"`, so anything JSON-encoded straight to the client changes shape. Either cast back in SQL to
    preserve the contract, or accept it and update `docs/api` and the frontend.
 
-6. **The rest:** `scripts/migration/next.sh`, helm, `update.sh`'s backup, the `MYSQL_*` rename, porting
+6. **The display timezone is still hardcoded.** The app-DB boundary is timezone-free now:
+   `toSQLFormat()` writes UTC with an explicit offset and `fromSQLFormat()` honours the offset postgres
+   returns. (Before, the app wrote `Europe/Berlin` wall-clock strings into a UTC session and read them
+   back the same way - two errors that cancelled under mysql and stopped cancelling here.) But
+   `SystemConfig::$system_timezone` is a hardcoded `'Europe/Berlin'` with no env override. It now only
+   affects display formatting and parsing wall-clock times out of booklet XML, so nothing stored depends
+   on it - still, a deployment outside Germany has no way to set it.
+
+7. **The rest:** `scripts/migration/next.sh`, helm, `update.sh`'s backup, the `MYSQL_*` rename, porting
    the `tests/general/` initialization suites.
 
 ### initialize.php cleanup

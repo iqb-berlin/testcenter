@@ -102,9 +102,30 @@ class TimeStampTest extends TestCase {
   }
 
   function test_fromSQLFormat() {
-    $this->assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00'));
+    // The offset is part of the value, so the moment is absolute: 10:00 UTC, not 10:00 local time.
+    $this->assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+00'));
+    $this->assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+02'));
     $this->assertEquals(0, TimeStamp::fromSQLFormat(false));
     $this->assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
+  }
+
+  function test_fromSQLFormatRejectsUnreadableValue() {
+    $this->expectException(Exception::class);
+    TimeStamp::fromSQLFormat('yesterday afternoon');
+  }
+
+  function test_toSQLFormat() {
+    $this->assertEquals('2020-08-20 06:30:00+00:00', TimeStamp::toSQLFormat(1597905000));
+    $this->assertNull(TimeStamp::toSQLFormat(0));
+  }
+
+  function test_sqlFormatSurvivesRoundTrip() {
+    $this->assertEquals(1597905000, TimeStamp::fromSQLFormat(TimeStamp::toSQLFormat(1597905000)));
+  }
+
+  function test_toDisplayFormat() {
+    $this->assertEquals('2020-08-20 08:30:00', TimeStamp::toDisplayFormat(1597905000));
+    $this->assertNull(TimeStamp::toDisplayFormat(0));
   }
 
 }
