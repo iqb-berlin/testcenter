@@ -580,8 +580,8 @@ class SessionDAO extends DAO {
         tests.locked,
         tests.running,
         files.name,
-        files.id as bookletId,
-        files.label as testLabel,
+        files.id as \"bookletId\",
+        files.label as \"testLabel\",
         files.description
       from ba
         left outer join tests

@@ -427,10 +427,10 @@ class AdminDAO extends DAO {
         login_sessions.name as loginname,
         person_sessions.name_suffix as code,
         tests.name as bookletname,
-        tests.id as testId,
+        tests.id as "testId",
         units.name as unitname,
         units.laststate,
-        units.original_unit_id as originalUnitId
+        units.original_unit_id as "originalUnitId"
       from
         login_sessions
           inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
@@ -465,7 +465,7 @@ class AdminDAO extends DAO {
           part_id as id,
           content,
           ts,
-          response_type as responseType
+          response_type as "responseType"
         from
           unit_data
         where
@@ -497,7 +497,7 @@ class AdminDAO extends DAO {
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             units.name as unitname,
-            units.original_unit_id as originalUnitId,
+            units.original_unit_id as \"originalUnitId\",
 				    unit_logs.timestamp,
             unit_logs.logentry
 			  FROM
@@ -523,7 +523,7 @@ class AdminDAO extends DAO {
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             '' as unitname,
-            '' as originalUnitId,
+            '' as \"originalUnitId\",
             test_logs.timestamp,
             test_logs.logentry
 			  FROM
@@ -558,12 +558,12 @@ class AdminDAO extends DAO {
         units.name as unitname,
         unit_reviews.priority,
         unit_reviews.categories,
-        unit_reviews.reviewtime,
+        to_char(unit_reviews.reviewtime AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') as reviewtime,
         unit_reviews.entry,
         unit_reviews.page,
         unit_reviews.pagelabel,
-        units.original_unit_id as originalUnitId,
-        unit_reviews.user_agent as userAgent,
+        units.original_unit_id as \"originalUnitId\",
+        unit_reviews.user_agent as \"userAgent\",
         unit_reviews.reviewer
 			from
         unit_reviews
@@ -585,12 +585,12 @@ class AdminDAO extends DAO {
         '' as unitname,
         test_reviews.priority,
         test_reviews.categories,
-        test_reviews.reviewtime,
+        to_char(test_reviews.reviewtime AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') as reviewtime,
         test_reviews.entry,
         null as page,
         null as pagelabel,
-        '' as originalUnitId,
-        test_reviews.user_agent as userAgent,
+        '' as \"originalUnitId\",
+        test_reviews.user_agent as \"userAgent\",
         test_reviews.reviewer
 			from
         test_reviews
@@ -624,7 +624,7 @@ class AdminDAO extends DAO {
       select
         group_name,
         group_label,
-        count(*) as bookletsStarted,
+        count(*) as \"bookletsStarted\",
         min(num_units) as num_units_min,
         max(num_units) as num_units_max,
         sum(num_units) as num_units_total,
@@ -637,7 +637,8 @@ class AdminDAO extends DAO {
         select
           login_sessions.group_name,
           group_label,
-          count(distinct units.name, units.test_id) as num_units,
+          count(distinct (units.name, units.test_id))
+            filter (where units.name is not null and units.test_id is not null) as num_units,
           max(tests.timestamp_server) as timestamp_server,
           login_session_groups.last_modified as group_last_modified
         from
@@ -666,7 +667,7 @@ class AdminDAO extends DAO {
           and tests.running = true
           group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
-      group by group_name",
+      group by group_name, group_label",
       $params,
       true
     );
@@ -766,20 +767,20 @@ class AdminDAO extends DAO {
     }
 
     $sql = "select
-                group_label as groupLabel,
-                logins.group_name as groupName,
-                logins.name as loginName,
-                name_suffix as nameSuffix,
-                tests.label as testLabel,
-                tests.id as testId,
-                tests.name as bookletName,
-                unit_defs_attachments.unit_name as unitName,
-                unit_defs_attachments.unit_name as unitLabel, -- TODO get real unitLabel
-                variable_id as variableId,
-                attachment_type as attachmentType,
-                unit_data.content as dataPartContent,
-                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) as attachmentId,
-                unit_data.ts as lastModified
+                group_label as \"groupLabel\",
+                logins.group_name as \"groupName\",
+                logins.name as \"loginName\",
+                name_suffix as \"nameSuffix\",
+                tests.label as \"testLabel\",
+                tests.id as \"testId\",
+                tests.name as \"bookletName\",
+                unit_defs_attachments.unit_name as \"unitName\",
+                unit_defs_attachments.unit_name as \"unitLabel\", -- TODO get real unitLabel
+                variable_id as \"variableId\",
+                attachment_type as \"attachmentType\",
+                unit_data.content as \"dataPartContent\",
+                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) as \"attachmentId\",
+                unit_data.ts as \"lastModified\"
             from
                 unit_defs_attachments
                 left join tests on booklet_name = tests.name

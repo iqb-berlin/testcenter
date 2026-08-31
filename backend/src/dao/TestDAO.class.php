@@ -173,8 +173,8 @@ class TestDAO extends DAO {
             unit_reviews.reviewer,
             unit_reviews.page,
             unit_reviews.pagelabel,
-            unit_reviews.user_agent as userAgent,
-            units.original_unit_id as originalUnitId
+            unit_reviews.user_agent as "userAgent",
+            units.original_unit_id as "originalUnitId"
           from unit_reviews
           left join units on units.test_id = unit_reviews.test_id
               and units.name = unit_reviews.unit_name
@@ -202,7 +202,7 @@ class TestDAO extends DAO {
           categories,
           entry,
           reviewer,
-          user_agent as userAgent
+          user_agent as "userAgent"
         from test_reviews
         where booklet_id = :test_id
           and person_id = :person_id
@@ -354,7 +354,7 @@ class TestDAO extends DAO {
         person_sessions.code,
         person_sessions.token as person_token,
         tests.person_id, 
-        tests.laststate as testState,
+        tests.laststate as "testState",
         tests.id,
         tests.locked,
         tests.running,
