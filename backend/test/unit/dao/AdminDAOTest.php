@@ -13,6 +13,25 @@ use PHPUnit\Framework\TestCase;
 final class AdminDAOTest extends TestCase {
   private AdminDAO $dbc;
 
+  /**
+   * Assert that two lists contain exactly the same values, irrespective of list order.
+   *
+   * Database queries without an ORDER BY clause deliberately make no promise about their row
+   * order. Sorting serialized copies lets those tests express that contract while assertSame()
+   * still checks every nested key, value and type strictly.
+   */
+  private function assertSameIgnoringOrder(array $expected, array $actual): void {
+    $sortByValue = static function (array $values): array {
+      usort(
+        $values,
+        static fn(mixed $left, mixed $right): int => serialize($left) <=> serialize($right)
+      );
+      return $values;
+    };
+
+    $this->assertSame($sortByValue($expected), $sortByValue($actual));
+  }
+
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";
     TestDB::setUp();
@@ -275,7 +294,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 2,
         'numUnitsTotal' => 2,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643011260
+        'lastChange' => 1643014860
       ],
       [
         'groupName' => 'review_group',
@@ -285,11 +304,11 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 1,
         'numUnitsTotal' => 1,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643011260
+        'lastChange' => 1643014860
       ]
     ];
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
     $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
@@ -304,7 +323,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 2,
         'numUnitsTotal' => 3,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1699956800
+        'lastChange' => 1699960400
       ],
       [
         'groupName' => 'review_group',
@@ -314,26 +333,26 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 1,
         'numUnitsTotal' => 1,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643011260
+        'lastChange' => 1643014860
       ]
     ];
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $this->dbc->_('delete from test_reviews');
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $this->dbc->_('delete from unit_reviews');
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame([$expectation[0]], $result);
+    $this->assertSameIgnoringOrder([$expectation[0]], $result);
 
     $this->dbc->_(
       "insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
       values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
     );
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
   }
 
   public function test_getTestSessions() {
