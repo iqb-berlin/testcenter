@@ -250,7 +250,7 @@ final class AdminDAOTest extends TestCase {
 
   function test_getTest() {
     $expectation = [
-      'locked' => '0',
+      'locked' => false,
       'id' => '1',
       'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
       'label' => 'first test label'
@@ -311,7 +311,8 @@ final class AdminDAOTest extends TestCase {
     $this->assertSameIgnoringOrder($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
-    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
+    // PostgreSQL has a strict boolean type and does not implicitly convert MySQL-style 0/1 values.
+    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1, false, true, '2023-11-14 11:13:20', '$someTestState')");
     $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
 
     $expectation = [
