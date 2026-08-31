@@ -238,13 +238,16 @@ class InitDAO extends SessionDAO {
   }
 
   public function clearDB(): array {
+    $existingTables = $this->getExistingTables();
     $droppedTables = [];
 
     foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
-      if ($this->getTableStatus($table) !== 'missing') {
-        $droppedTables[] = $table;
-        $this->_("DROP TABLE IF EXISTS $table CASCADE");
+      if (!in_array($table, $existingTables, true)) {
+        continue;
       }
+
+      $droppedTables[] = $table;
+      $this->_("DROP TABLE IF EXISTS $table CASCADE");
     }
 
     // PostgreSQL keeps named enum types after their consuming tables are gone.
@@ -267,8 +270,15 @@ class InitDAO extends SessionDAO {
       'empty' => []
     ];
 
+    $existingTables = $this->getExistingTables();
+
     foreach ($this::tables as $table) {
-      $tableStatus[$this->getTableStatus($table)][] = $table;
+      if (!in_array($table, $existingTables, true)) {
+        $tableStatus['missing'][] = $table;
+        continue;
+      }
+
+      $tableStatus[$this->isTableEmpty($table) ? 'empty' : 'used'][] = $table;
     }
 
     $used = count($tableStatus['used']);
@@ -289,14 +299,30 @@ class InitDAO extends SessionDAO {
     ];
   }
 
-  protected function getTableStatus(string $table): string {
-    try {
-      $entries = $this->_("SELECT * FROM $table LIMIT 10", [], true);
-      return count($entries) ? 'used' : 'empty';
+  /**
+   * Names of all tables present in the database's current schema.
+   *
+   * Existence is read from the catalog, never from whether a query against a table fails: on
+   * PostgreSQL a failed statement is a real server error - it is written to the server log, and
+   * inside a transaction it aborts every following statement until rollback.
+   *
+   * @return string[]
+   */
+  private function getExistingTables(): array {
+    $tables = $this->_(
+      "select table_name from information_schema.tables where table_schema = current_schema()",
+      [],
+      true
+    );
 
-    } catch (Exception) {
-      return 'missing';
-    }
+    return array_column($tables, 'table_name');
+  }
+
+  /**
+   * Whether the given table holds no rows at all. The table has to exist, see getExistingTables().
+   */
+  private function isTableEmpty(string $table): bool {
+    return $this->_("select 1 from $table limit 1") === null;
   }
 
   public function createSampleCommands(int $commanderId): void {
