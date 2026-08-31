@@ -161,29 +161,18 @@ class SessionDAO extends DAO {
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
 
-    $this->_(
-      'insert ignore into login_sessions (token, name, workspace_id, group_name)
+    // returning hands back the row in both cases: the one just inserted, or the one that was already
+    // there - which then keeps its original token and only gets its group refreshed (see #766).
+    $session = $this->_(
+      'insert into login_sessions (token, name, workspace_id, group_name)
             values(:token, :name, :ws, :group_name)
-            on duplicate key update group_name = :group_name',
+            on conflict (name, workspace_id) do update set group_name = excluded.group_name
+            returning id, token',
       [
         ':token' => $loginToken,
         ':name' => $login->getName(),
         ':ws' => $login->getWorkspaceId(),
         ':group_name' => $login->getGroupName()
-      ]
-    );
-
-    if ($this->lastAffectedRows) {
-      $id = (int) $this->pdoDBhandle->lastInsertId();
-      return new LoginSession($id, $loginToken, $groupToken, $login);
-    }
-
-    // there is no way in MySQL to combine insert & select into one query, so have to retrieve it to get the id
-    $session = $this->_(
-      'select id, token from login_sessions where name = :name and workspace_id = :ws_id',
-      [
-        ':name' => $login->getName(),
-        ':ws_id' => $login->getWorkspaceId()
       ]
     );
 
@@ -438,7 +427,9 @@ class SessionDAO extends DAO {
   public function getOrCreateGroupToken(int $workspaceId, string $groupName, string $groupLabel): string {
     $newGroupToken = Token::generate('group', $groupName);
     $this->_(
-      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token, last_modified) values (?, ?, ?, ?, ?)',
+      'insert into login_session_groups (group_name, workspace_id, group_label, token, last_modified)
+        values (?, ?, ?, ?, ?)
+        on conflict do nothing',
       [
         $groupName,
         $workspaceId,

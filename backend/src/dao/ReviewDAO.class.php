@@ -22,7 +22,7 @@ class ReviewDAO extends DAO
       $params[':testId'] = $testId;
     }
 
-    return $this->_(
+    $reviews = $this->_(
       "
         select
           login_sessions.group_name as groupname,
@@ -77,6 +77,14 @@ class ReviewDAO extends DAO
       ",
       $params,
       true
+    );
+
+    return array_map(
+      function(array $review): array {
+        $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
+        return $review;
+      },
+      $reviews
     );
   }
 }

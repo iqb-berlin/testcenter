@@ -131,6 +131,13 @@ class TimeStamp {
     return $dateTime->format("Y-m-d H:i:s");
   }
 
+  /**
+   * Renders a timestamp as the database returned it for people to read.
+   */
+  static public function sqlToDisplayFormat(?string $sqlFormatTimestamp): ?string {
+    return self::toDisplayFormat(self::fromSQLFormat($sqlFormatTimestamp));
+  }
+
   static public function fromXMLFormat(?string $xmlFormatTimestamp): int {
     if (!$xmlFormatTimestamp) {
       return 0;

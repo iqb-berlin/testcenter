@@ -121,7 +121,7 @@ class TestDAO extends DAO {
     ?string $reviewer = null,
   ): void {
     $this->_(
-      'insert ignore into units (name, test_id, original_unit_id) values(:u, :t, :o)',
+      'insert into units (name, test_id, original_unit_id) values(:u, :t, :o) on conflict do nothing',
       [
         ':u' => $unitName,
         ':t' => $testId,
@@ -442,7 +442,9 @@ class TestDAO extends DAO {
     $this->_(
       'insert into units (test_id, name, laststate, laststate_update_ts, original_unit_id)
       values (:testId, :unitName, :laststate, :laststate_update_ts, :originalUnitId)
-      on duplicate key update laststate = :laststate, laststate_update_ts = :laststate_update_ts;',
+      on conflict (test_id, name) do update set
+        laststate = excluded.laststate,
+        laststate_update_ts = excluded.laststate_update_ts;',
       [
         ':laststate' => json_encode((object)$newState['newState']),
         ':laststate_update_ts' => json_encode($newState['updateTs']),
@@ -531,10 +533,11 @@ class TestDAO extends DAO {
       $this->_(
       'insert into unit_data(unit_name, test_id, part_id, content, ts, response_type)
             values (:unit_name, :test_id, :part_id, :content, :ts, :response_type)
-            on duplicate key update
-              content = if (ts < :ts, :content, content),
-              ts = if (ts < :ts, :ts, ts),
-              response_type = if (ts < :ts, :response_type, response_type);',
+            on conflict (part_id, test_id, unit_name) do update set
+              content = excluded.content,
+              ts = excluded.ts,
+              response_type = excluded.response_type
+            where unit_data.ts < excluded.ts;',
         [
           ':unit_name' => $unitName,
           ':test_id' => $testId,

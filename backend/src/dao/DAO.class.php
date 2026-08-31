@@ -112,7 +112,7 @@ class DAO {
   }
 
   public function setMeta(string $category, string $key, ?string $value): void {
-    $currentValue = $this->_('select `value` from meta where "metaKey" = :key', [':key' => $key]);
+    $currentValue = $this->_('select value from meta where "metaKey" = :key', [':key' => $key]);
 
     if (!$currentValue) {
       $this->_(

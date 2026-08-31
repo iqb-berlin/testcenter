@@ -548,7 +548,7 @@ class AdminDAO extends DAO {
     $bindParams = array_merge([$workspaceId], $groups, [$workspaceId], $groups);
 
     // TODO: use data class
-    return $this->_(
+    $reviews = $this->_(
       "
       select
         login_sessions.group_name as groupname,
@@ -558,7 +558,7 @@ class AdminDAO extends DAO {
         units.name as unitname,
         unit_reviews.priority,
         unit_reviews.categories,
-        to_char(unit_reviews.reviewtime AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') as reviewtime,
+        unit_reviews.reviewtime,
         unit_reviews.entry,
         unit_reviews.page,
         unit_reviews.pagelabel,
@@ -585,7 +585,7 @@ class AdminDAO extends DAO {
         '' as unitname,
         test_reviews.priority,
         test_reviews.categories,
-        to_char(test_reviews.reviewtime AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') as reviewtime,
+        test_reviews.reviewtime,
         test_reviews.entry,
         null as page,
         null as pagelabel,
@@ -603,6 +603,14 @@ class AdminDAO extends DAO {
 			",
       $bindParams,
       true
+    );
+
+    return array_map(
+      function(array $review): array {
+        $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
+        return $review;
+      },
+      $reviews
     );
   }
 
