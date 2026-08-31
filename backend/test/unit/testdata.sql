@@ -81,13 +81,13 @@ insert into person_sessions(code, login_sessions_id, valid_until, token, name_su
 values ('', 7, '2032-01-02 10:00:00', 'person-of-review-group-token', '');
 
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
-values ('first sample test', 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', false, 'first test label', true, '2022-01-24 09:01:00');
+values ('first sample test', 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', false, 'first test label', true, '2022-01-24 09:01:00+01:00');
 
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1', 1, '', false, 'second test label', true, '2022-01-24 09:01:00');
+values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1', 1, '', false, 'second test label', true, '2022-01-24 09:01:00+01:00');
 
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1#bookletstate=isset', 'BOOKLET.SAMPLE-1', 5, null, false, 'review test label', true, '2022-01-24 09:01:00');
+values ('BOOKLET.SAMPLE-1#bookletstate=isset', 'BOOKLET.SAMPLE-1', 5, null, false, 'review test label', true, '2022-01-24 09:01:00+01:00');
 
 insert into units (name, test_id, laststate, original_unit_id)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}', 'UNIT_1');

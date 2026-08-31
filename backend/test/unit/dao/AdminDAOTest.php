@@ -294,7 +294,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 2,
         'numUnitsTotal' => 2,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643014860
+        'lastChange' => 1643011260
       ],
       [
         'groupName' => 'review_group',
@@ -304,7 +304,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 1,
         'numUnitsTotal' => 1,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643014860
+        'lastChange' => 1643011260
       ]
     ];
     $result = $this->dbc->getResultStats(1);
@@ -312,7 +312,7 @@ final class AdminDAOTest extends TestCase {
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
     // PostgreSQL has a strict boolean type and does not implicitly convert MySQL-style 0/1 values.
-    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1, false, true, '2023-11-14 11:13:20', '$someTestState')");
+    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1, false, true, '2023-11-14 11:13:20+00:00', '$someTestState')");
     $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
 
     $expectation = [
@@ -334,7 +334,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 1,
         'numUnitsTotal' => 1,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1643014860
+        'lastChange' => 1643011260
       ]
     ];
     $result = $this->dbc->getResultStats(1);
