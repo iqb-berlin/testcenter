@@ -324,15 +324,21 @@ class SessionDAO extends DAO {
         ]
       );
     } catch (Exception $ee) {
-      // allow retry on duplicate suffix - unlikely in prod, but always happens in testing when rand is static
+      // A random suffix can collide. This is unlikely in production, but integration tests deliberately reset the
+      // random-number generator for every request, so the retry path is exercised there on repeated logins.
       if ($originalException = $ee->getPrevious()) {
+        $sqlState = property_exists($originalException, 'errorInfo')
+          ? ($originalException->errorInfo[0] ?? null)
+          : null;
+        $databaseMessage = property_exists($originalException, 'errorInfo')
+          ? ($originalException->errorInfo[2] ?? '')
+          : '';
+
+        // twice the same suffix (not_unique error) can be recovered, by starting the function anew and giving a new suffix
         if (
-          property_exists($originalException, 'errorInfo')
-          and ($originalException->errorInfo[1] == 1062)
-          and ($originalException->getCode() == 23000)
-          and (str_ends_with($originalException->errorInfo[2], "for key 'person_sessions.unique_person_session'"))
+          ($sqlState === '23505')
+          and str_contains($databaseMessage, 'unique_person_session')
         ) {
-          error_log("Create person-session: retry on duplicate suffix (`{$loginSession->getLogin()->getName()}` / `$suffix`)");
           return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired, $forceUpdateToken);
         }
       }

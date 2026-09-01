@@ -388,6 +388,28 @@ class SessionDAOTest extends TestCase {
     $this->assertEquals(7, $this->countTableRows('person_sessions'));
   }
 
+  function test_createOrUpdatePersonSession_retriesPostgresSuffixCollision() {
+    // Arrange the exact collision seen in the system test. srand(1) makes the next generated suffix `h5ki-bd-`;
+    // placing that suffix in the database first forces PostgreSQL to report SQLSTATE 23505.
+    $this->dbc->_(
+      'insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+       values (:token, :code, :login_id, :valid_until, :suffix)',
+      [
+        ':token' => 'pre-existing-collision-token',
+        ':code' => 'existing_code',
+        ':login_id' => $this->testLoginSession->getId(),
+        ':valid_until' => '2030-01-01 12:00:00+00',
+        ':suffix' => 'existing_code/h5ki-bd-'
+      ]
+    );
+
+    $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
+
+    // The failed insert consumes an identity value in PostgreSQL, so assert the behavior rather than a brittle id.
+    $this->assertEquals('existing_code/va4dg-jc', $result->getPerson()->getNameSuffix());
+    $this->assertEquals(7, $this->countTableRows('person_sessions'));
+  }
+
   function test_getPersonSessionByToken_correctToken() {
     $result = $this->dbc->getPersonSessionByToken('person-token');
     $this->assertEquals($this->testPersonSession, $result);

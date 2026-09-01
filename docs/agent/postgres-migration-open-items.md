@@ -23,12 +23,6 @@ general backend initialization suites (`make test-backend-initialization-general
   Fix in the DAO (`setval(pg_get_serial_sequence('workspaces', 'id'), ...)` after the insert), and check
   the other identity tables listed in note 4 for the same pattern.
 
-- [ ] **`SessionDAO`'s duplicate-suffix retry is still mysql-only.** `SessionDAO:325-337` catches the
-  unique-constraint violation on `person_sessions` and retries, but matches `errorInfo[1] == 1062`,
-  `getCode() == 23000` and the mysql message text `for key 'person_sessions.unique_person_session'`.
-  Postgres reports SQLSTATE `23505` with a different driver code and message, so the branch is dead code
-  and a suffix collision now surfaces as a 500. Match on the SQLSTATE instead of the driver code.
-
 - [ ] **`AdminDAO::deleteResultDataByPersonAndBooklet()` runs the same three-table join twice**
   (`AdminDAO:136` to find the affected groups, `AdminDAO:150` to delete), and no transaction wraps the
   two. Letting the first query return `tests.id` and deleting by id would leave one join and one
