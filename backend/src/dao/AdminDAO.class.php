@@ -145,13 +145,15 @@ class AdminDAO extends DAO {
       true
     );
 
+    // Postgres joins in a DELETE via `using` instead of mysql's multi-table `delete <table> from`. The
+    // join conditions move into the where-clause, the matched rows stay the same.
     $this->_(
       "
-      delete tests 
-       from tests
-       inner join person_sessions on tests.person_id = person_sessions.id
-       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-       where login_sessions.workspace_id = :workspace_id
+      delete from tests
+       using person_sessions, login_sessions
+       where tests.person_id = person_sessions.id
+          and person_sessions.login_sessions_id = login_sessions.id
+          and login_sessions.workspace_id = :workspace_id
           and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
       $params
     );
@@ -388,7 +390,7 @@ class AdminDAO extends DAO {
         $session['booklet_label']
       );
     }
-    
+
     return $groupedSessions;
   }
 
@@ -470,7 +472,8 @@ class AdminDAO extends DAO {
           unit_data
         where
           unit_name = :unit_name
-          and test_id = :test_id',
+          and test_id = :test_id
+        order by part_id',
         [
           ':unit_name' => $unitName,
           ':test_id' => $testId

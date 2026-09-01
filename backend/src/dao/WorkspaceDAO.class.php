@@ -418,11 +418,24 @@ class WorkspaceDAO extends DAO {
     $validFilePaths = 0;
 
     foreach ($localPaths as $fileLocalPath) {
-      $partParts = explode('/', $fileLocalPath, 2);
-      if (count($partParts) == 2) {
-        list($replacements[], $replacements[]) = $partParts;
-        $validFilePaths++;
+      $pathParts = explode('/', $fileLocalPath, 2);
+      if (count($pathParts) != 2) {
+        continue;
       }
+
+      list($type, $name) = $pathParts;
+
+      // These paths come straight from the client, so the type part can be anything. `files.type` is
+      // an enum column and postgres rejects any value that is not one of its labels, so unknown types
+      // are dropped here - they can not match a row anyway. The caller then reports the path as not
+      // existing, just as it does for a known type with an unknown name.
+      if (!FileType::tryFrom($type)) {
+        continue;
+      }
+
+      $replacements[] = $type;
+      $replacements[] = $name;
+      $validFilePaths++;
     }
 
     $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
@@ -467,7 +480,17 @@ class WorkspaceDAO extends DAO {
       }
       $files[$row['type']][$row['name']] = $this->resultRow2File($row, $dependencies ?? []);
     }
-    return $files;
+
+    // The queries have no `order by`, so the row order is up to the database. The inner arrays are
+    // keyed by file name, so sorting them by key gives every file listing a stable order - here
+    // rather than in each query, which would also depend on the collation of the deployment's db.
+    return array_map(
+      function (array $filesOfType): array {
+        ksort($filesOfType, SORT_STRING);
+        return $filesOfType;
+      },
+      $files
+    );
   }
 
   private function resultRow2File(array $row, array $relations): ?File {

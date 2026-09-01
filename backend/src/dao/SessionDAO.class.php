@@ -550,18 +550,27 @@ class SessionDAO extends DAO {
     if (!count($testNames)) return [];
 
     $replacementsVirtualTable = [];
-    foreach ($testNames as $testName) {
+    $virtualTableRows = [];
+    // array_values() makes sure the key is the position in the list, whatever keys the list arrived
+    // with - it is also read back from JSON stored in logins.codes_to_booklets.
+    foreach (array_values($testNames) as $ordinal => $testName) {
       $testName = TestName::fromString($testName);
       $replacementsVirtualTable[] = $testName->name;
       $replacementsVirtualTable[] = $testName->bookletFileId;
+      // The tests are expected in the order the login lists them. That position travels with the
+      // data instead of being looked up by test name again, which keeps the order independent of
+      // how TestName normalizes a name.
+      $replacementsVirtualTable[] = $ordinal;
+      // The cast is needed because parameters in a `values` list default to text, which would sort
+      // position 10 before position 2.
+      $virtualTableRows[] = '(?, ?, ?::int)';
     }
 
-    $virtualTable = implode(",\n", array_fill(0, count($testNames), 'row (?, ?)'));
-    $orderField = implode(', ', array_fill(0, count($testNames), '?'));
+    $virtualTable = implode(",\n          ", $virtualTableRows);
 
     $sql = "
-      with ba (test_name, booklet_file_id) as (
-        values 
+      with ba (test_name, booklet_file_id, ordinal) as (
+        values
           $virtualTable
       )
       select
@@ -583,15 +592,14 @@ class SessionDAO extends DAO {
             and files.workspace_id = ?
             and files.type = 'Booklet'
       order by
-        field(ba.test_name, $orderField)
+        ba.ordinal
     ";
     $tests = $this->_(
       $sql,
       [
         ...$replacementsVirtualTable,
         $personSession->getPerson()->getId(),
-        $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
-        ...$testNames
+        $personSession->getLoginSession()->getLogin()->getWorkspaceId()
       ],
       true
     );

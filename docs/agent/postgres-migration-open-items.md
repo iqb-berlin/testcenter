@@ -8,14 +8,13 @@ boolean, collation and `REPLACE INTO` decisions.
 
 ### Code
 
-- **`AdminDAO::deleteResultDataByPersonAndBooklet()` still uses mysql multi-table `DELETE`**
-  (`AdminDAO:148`, `delete tests from tests inner join ...`). Postgres spells it `DELETE ... USING`.
-  This is the last known-broken production query; no unit test reaches it.
-
-- **`WorkspaceDAOTest::test_getGlobalIds` fails on row order.** `getGlobalIds()` has no `ORDER BY`, so
-  the order is engine-dependent and the expectation froze what mysql happened to return. Either add an
-  `ORDER BY` (the API response becomes deterministic) or sort in the test. The only failing unit test:
-  256 of 257 pass.
+- [ ] **`AdminDAO::deleteResultDataByPersonAndBooklet()` runs the same three-table join twice**
+  (`AdminDAO:136` to find the affected groups, `AdminDAO:150` to delete), and no transaction wraps the
+  two. Letting the first query return `tests.id` and deleting by id would leave one join and one
+  parameter list - but only inside a transaction, otherwise the ids can go stale between the statements
+  and a test that appears in between survives the delete. Needs `array_unique` for the group names
+  (`select distinct` no longer yields them uniquely once ids are selected) and an early return on an
+  empty result (`id in ()` is a syntax error). The mysql `DELETE` syntax itself is ported.
 
 - **`SessionDAOTest.php:522` inserts a timestamp without an offset.** Same gap that was closed in
   `testdata.sql`; harmless today because the test does not assert on that value, but it is read in the
