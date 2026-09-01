@@ -47,6 +47,8 @@
   Schaltfläche nicht mehr grün ist.
 
 ## Fehlerbehebungen
+- Die automatisierten Systemtests für Hot-Restart und Hot-Return wählen beim Ergebnisdownload nun die vorgesehene
+  Login-Gruppe unabhängig von der Reihenfolge der Ergebniszeilen aus.
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
 - Testheft-Anzeige: Beim Verlassen einer Aufgabe zurück ins Startmenü erschienen bisher unter Umständen zwei Bestätigungsdialoge nacheinander (etwa bei einem zeitbeschränkten Block oder einer Bereichssperre). Es erscheint nun nur noch ein einziger, zusammengeführter Dialog.
