@@ -5,32 +5,16 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once "test/unit/test-helper/AssertsArraysIgnoringOrder.php";
 
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class AdminDAOTest extends TestCase {
+  use AssertsArraysIgnoringOrder;
+
   private AdminDAO $dbc;
-
-  /**
-   * Assert that two lists contain exactly the same values, irrespective of list order.
-   *
-   * Database queries without an ORDER BY clause deliberately make no promise about their row
-   * order. Sorting serialized copies lets those tests express that contract while assertSame()
-   * still checks every nested key, value and type strictly.
-   */
-  private function assertSameIgnoringOrder(array $expected, array $actual): void {
-    $sortByValue = static function (array $values): array {
-      usort(
-        $values,
-        static fn(mixed $left, mixed $right): int => serialize($left) <=> serialize($right)
-      );
-      return $values;
-    };
-
-    $this->assertSame($sortByValue($expected), $sortByValue($actual));
-  }
 
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";

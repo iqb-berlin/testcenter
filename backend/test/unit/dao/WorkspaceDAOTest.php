@@ -3,11 +3,15 @@
 
 use PHPUnit\Framework\TestCase;
 
+require_once "test/unit/test-helper/AssertsArraysIgnoringOrder.php";
+
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class WorkspaceDAOTest extends TestCase {
+  use AssertsArraysIgnoringOrder;
+
   private WorkspaceDAO $dbc;
 
   function setUp(): void {
@@ -29,7 +33,8 @@ class WorkspaceDAOTest extends TestCase {
       ]
     ];
     $result = $this->dbc->getGlobalIds();
-    $this->assertEquals($expectation, $result);
+    // getGlobalIds() queries without `order by`, so neither the ids nor the keys have a fixed order
+    $this->assertSameIgnoringOrder($expectation, $result);
   }
 
   public function test_getWorkspaceName(): void {
