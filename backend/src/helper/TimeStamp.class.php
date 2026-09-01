@@ -87,8 +87,20 @@ class TimeStamp {
       return (int) $sqlFormatTimestamp;
     }
 
-    // The value carries its own offset, so no timezone has to be assumed here.
-    $dateTime = DateTime::createFromFormat("Y-m-d H:i:sP", $sqlFormatTimestamp);
+    // PostgreSQL datatype timestampz omits fractional seconds when they are zero and emits up to six digits when they
+    // are not. Check for the existence of either with microseconds as primary and no-microseconds as fallback
+    $sqlTimestampFormats = [
+      "Y-m-d H:i:s.uP",
+      "Y-m-d H:i:sP"
+    ];
+
+    foreach ($sqlTimestampFormats as $sqlTimestampFormat) {
+      // The value carries its own offset, so no timezone has to be assumed here.
+      $dateTime = DateTime::createFromFormat($sqlTimestampFormat, $sqlFormatTimestamp);
+      if ($dateTime) {
+        break;
+      }
+    }
 
     // An unreadable timestamp must not silently become 0: callers pass the result into
     // TimeStamp::isExpired(), where 0 means "no limit set" - a login that can never expire.

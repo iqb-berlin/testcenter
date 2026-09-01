@@ -72,7 +72,22 @@ that question rather than after.
   override. Nothing stored depends on it any more - it only affects display formatting and parsing
   wall-clock times out of booklet XML - but a deployment outside Germany has no way to set it.
 
-- should timezone even be part of the timestamp output (before in mysql it was not part of it).
+### Contracts decided
+
+- **Accept PostgreSQL's timestamp representation at the database and external API boundaries.** A
+  `timestamptz` value returned by PostgreSQL carries an offset and may carry up to six fractional-second
+  digits, for example `2021-07-29 10:00:00.744751+00`; PostgreSQL omits the fraction when it is zero.
+  `TimeStamp::fromSQLFormat()` therefore accepts both `Y-m-d H:i:s.uP` and `Y-m-d H:i:sP`. The offset is
+  part of the instant and must be honoured rather than interpreted in the configured display timezone.
+  This is an intentional compatibility change from MySQL, whose returned timestamp strings had neither
+  an offset nor fractional seconds.
+
+  This representation is also part of the externally observable contract wherever a DAO value is passed
+  through without formatting, such as JSON API fields and CSV exports containing database timestamps.
+  Those consumers must accept the PostgreSQL representation, including its offset and optional fractional
+  seconds. Call sites that promise an integer Unix timestamp or a human-readable display timestamp must
+  continue to convert explicitly with `fromSQLFormat()` or `sqlToDisplayFormat()` respectively; they must
+  not expose an accidental mixture of database and display formats.
 
 ### initialize.php
 

@@ -105,6 +105,7 @@ class TimeStampTest extends TestCase {
     // The offset is part of the value, so the moment is absolute: 10:00 UTC, not 10:00 local time.
     $this->assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+00'));
     $this->assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00+02'));
+    $this->assertEquals(1627552800, TimeStamp::fromSQLFormat('2021-07-29 10:00:00.744751+00'));
     $this->assertEquals(0, TimeStamp::fromSQLFormat(false));
     $this->assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
   }
