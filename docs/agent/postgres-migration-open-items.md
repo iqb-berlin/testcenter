@@ -6,8 +6,9 @@ Working notes for the `postgres-migration` branch. Delete this file once the mig
 translation notes at the end (`MIGRATIONSHINWEISE`) - read them before touching it, they cover the enum,
 boolean, collation and `REPLACE INTO` decisions.
 
-The backend unit suite is green on postgres: 257 tests, 820 assertions (`make test-backend-unit`). No
-other test tier has been run against postgres yet - see "Testing".
+The backend unit suite is green on postgres: 257 tests, 820 assertions (`make test-backend-unit`). The
+general backend initialization suites (`make test-backend-initialization-general`) and Dredd API tests
+(`make test-backend-api`) are green as well. See "Testing" for the remaining test tiers.
 
 ### Code
 
@@ -51,14 +52,15 @@ other test tier has been run against postgres yet - see "Testing".
 
 ### Testing
 
-None of these has been run against postgres yet; CI runs all of them.
+CI runs all of these test tiers. Their current postgres status is tracked below.
 
-- [ ] **`backend/test/initialization/tests/general/`** - 4 suites, via
+- [x] **`backend/test/initialization/tests/general/`** - all 4 suites are green via
   `make test-backend-initialization-general`. `db-versions.sh` was deleted with the mysql patches.
   Note that the target runs `make stop` first.
   `no-db-but-files` walks the workspace-restore path, so it is the natural place to cover the identity
   sequence bug above.
-- [ ] **The dredd API tests** (`make test-backend-api`, `docs/agent/api-testing-dredd.md`).
+- [x] **The Dredd API tests** are green (`make test-backend-api`,
+  `docs/agent/api-testing-dredd.md`).
 - [ ] **The 8 cypress e2e suites** (`scripts/ci/e2e.yml`).
 
 The last two are what actually exercise the boolean contract end to end, so run them *before* deciding
@@ -75,6 +77,8 @@ that question rather than after.
   for people). But `SystemConfig::$system_timezone` is a hardcoded `'Europe/Berlin'` with no env
   override. Nothing stored depends on it any more - it only affects display formatting and parsing
   wall-clock times out of booklet XML - but a deployment outside Germany has no way to set it.
+
+- should timezone even be part of the timestamp output (before in mysql it was not part of it).
 
 ### initialize.php
 
