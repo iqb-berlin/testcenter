@@ -5,7 +5,7 @@ import {
   loginTestTaker,
   openWorkspace,
   probeBackendApi,
-  resetBackendTestData,
+  resetBackendTestData, selectResultGroup,
   visitLoginPage
 } from '../utils';
 
@@ -59,9 +59,7 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('Hote-Modes');
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Hote-Modes');
     cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownload');
     cy.get('[data-cy="download-responses"]')
       .click();

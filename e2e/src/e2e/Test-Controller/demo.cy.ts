@@ -6,6 +6,7 @@ import {
   openWorkspace,
   probeBackendApi,
   resetBackendTestData,
+  selectResultGroup,
   visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
 } from '../utils';
 
@@ -91,9 +92,7 @@ describe('run a demo test, check time block dialogs', { testIsolation: false }, 
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('Demo');
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Demo');
     cy.get('[data-cy="download-responses"]')
       .click();
     cy.contains('Keine Daten verfügbar');

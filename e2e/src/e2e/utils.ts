@@ -378,6 +378,14 @@ export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): C
     .then(splitCSVFile);
 };
 
+export const selectResultGroup = (groupLabel: string): void => {
+  cy.contains('mat-row', groupLabel)
+    .within(() => {
+      cy.get('mat-checkbox')
+        .click();
+    });
+};
+
 export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
   const splitCsvID = str => str.split('\n')
     .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));

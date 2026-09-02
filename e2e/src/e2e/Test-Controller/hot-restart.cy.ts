@@ -10,7 +10,7 @@ import {
   logoutAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendTestData,
+  resetBackendTestData, selectResultGroup,
   visitLoginPage
 } from '../utils';
 
@@ -459,15 +459,12 @@ describe('Login4', { testIsolation: false }, () => {
       openWorkspace('workspace-card-sample_workspace', 1);
       cy.get('[data-cy="Ergebnisse/Antworten"]')
         .click();
-      cy.contains('Hot-Restart');
-      cy.get('[data-cy="results-checkbox1"]')
-        .click();
+      selectResultGroup('Hot-Restart');
       cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownloadResponse');
       cy.get('[data-cy="download-responses"]')
         .click();
       cy.wait('@waitForDownloadResponse');
-      cy.get('[data-cy="results-checkbox1"]')
-        .click();
+      selectResultGroup('Hot-Restart');
       cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/log?*`).as('waitForDownloadLogs');
       cy.get('[data-cy="download-logs"]')
         .click();
