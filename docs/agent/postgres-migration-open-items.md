@@ -10,6 +10,8 @@ The backend unit suite is green on postgres: 257 tests, 820 assertions (`make te
 general backend initialization suites (`make test-backend-initialization-general`) and Dredd API tests
 (`make test-backend-api`) are green as well. See "Testing" for the remaining test tiers.
 
+All e2e tests are green now.
+
 ### Code
 
 - [ ] **Identity sequences are not resynced after an explicit-id insert.**
@@ -55,7 +57,7 @@ CI runs all of these test tiers. Their current postgres status is tracked below.
   sequence bug above.
 - [x] **The Dredd API tests** are green (`make test-backend-api`,
   `docs/agent/api-testing-dredd.md`).
-- [ ] **The 8 cypress e2e suites** (`scripts/ci/e2e.yml`).
+- [x] **The 8 cypress e2e suites** (`scripts/ci/e2e.yml`).
 
 The last two are what actually exercise the boolean contract end to end, so run them *before* deciding
 that question rather than after.
