@@ -25,7 +25,8 @@ Read these notes before you change the schema.
 | Backend initialization tests | Done | All four general suites pass |
 | Dredd API tests | Done | API suite passes |
 | Cypress end-to-end tests | Done | All eight suites pass |
-| Upgrade from the last MySQL release | Open | Release blocker |
+| MySQL-to-PostgreSQL data migration | Out of scope | Not supported |
+| Isolation from the legacy MySQL Compose volume | Open | Release blocker |
 | Deployment and Helm conversion | Open | Release blocker |
 | Backup and restore conversion | Open | Release blocker |
 | Runtime identity-sequence repair | Open | Release blocker |
@@ -79,37 +80,22 @@ The resulting contract is:
 
 ## Work remaining before release
 
-### 1. Build the supported MySQL-to-PostgreSQL upgrade path
+### 1. Protect the legacy MySQL volume during a Compose update
 
-The project does not support a direct, in-place database upgrade.
-An older installation can also require MySQL patches that the PostgreSQL release no longer includes.
+The project will not migrate MySQL data to PostgreSQL.
+An existing server can use the new Compose file with the same Compose project name.
+The old Compose file uses `db_vol` for the MySQL data directory.
+If the new file also uses `db_vol`, Compose attaches the existing MySQL volume to PostgreSQL.
 
-- [ ] Create `scripts/migration/next.sh`.
-  During release preparation, rename it to the release version, as you do for `patches.d/next.sql`.
-- [ ] Refuse migration unless `meta.dbSchemaVersion` is at least the final MySQL release version.
-- [ ] Dump the MySQL database.
-  Then convert its data to the PostgreSQL schema and restore the data to PostgreSQL.
-- [ ] Synchronize all identity sequences listed in `full.sql` migration note 4 after importing explicit
-  IDs.
-- [ ] Handle the existing `db_vol`.
-  Before the upgrade, this volume contains a MySQL data directory. After the migration, it contains PostgreSQL data.
-- [ ] Add automated coverage for a representative upgrade with real MySQL data.
-- [ ] Automate the release-script rename, or add a check for it.
-  If nobody renames `next.sh`, `update.sh` does not download it. The migration guard then does not run.
+- [ ] Rename the PostgreSQL volume key from `db_vol` to `postgres_vol` in `docker-compose.yml`.
+- [ ] Keep the PostgreSQL mount at its required data path.
+- [ ] Make sure that the new Compose file does not attach or change the legacy `db_vol`.
+- [ ] Test the transition with the same Compose project name that the old installation used.
+  Make sure that Compose creates a new PostgreSQL volume and keeps the MySQL volume unchanged.
+- [ ] If the old files require unavailable database data, make sure that the application reports a clear error.
 
-The integration hook already exists.
-`update.sh` calls `run_complementary_migration_scripts()` after `create_data_backup` and before the image swap.
-MySQL still operates at this point. Thus, the script can safely refuse the upgrade.
-
-You must address two constraints:
-
-- Migration scripts do not receive `SOURCE_VERSION`.
-  `update.sh` calls them without arguments and does not export the variable.
-  The migration script must read `meta.dbSchemaVersion` from the MySQL container.
-  Alternatively, change the update infrastructure to pass the version.
-- A nonzero migration-script exit does not stop the update.
-  `update.sh` asks whether to continue and uses yes as the default answer.
-  Decide whether to keep this behavior with a clear warning or require a stop. See “Decisions required.”
+This isolation protects the old MySQL files, but it does not make their data available to PostgreSQL.
+If operators need to recover MySQL data, they can return to the old release and its volume.
 
 ### 2. Convert deployment configuration and Helm
 
@@ -161,8 +147,7 @@ After a file restore, the next UI-created workspace can fail with a duplicate-ke
 
 ### 5. Remove obsolete MySQL runtime dependencies
 
-- [ ] Remove `pdo_mysql` from `backend/Dockerfile` once the migration tooling no longer needs it in that
-  image.
+- [ ] Remove `pdo_mysql` from `backend/Dockerfile`.
 - [ ] Remove `ext-pdo_mysql` from `backend/composer.json` and require `ext-pdo_pgsql` instead.
 - [ ] Regenerate `backend/composer.lock` if necessary. Make sure that the new file is correct.
 
@@ -223,8 +208,7 @@ No user can then log in as an administrator.
 - [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
   PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.
   No current DAO uses these operations. Future queries must obey this constraint.
-- [ ] Delete `scripts/database/mysql-legacy/` after the migration converter and upgrade tests no longer
-  need the original MySQL column definitions.
+- [ ] Delete `scripts/database/mysql-legacy/` after the PostgreSQL schema review no longer needs the original MySQL column definitions.
 
 ## Decisions required before implementation can be finalized
 
@@ -254,16 +238,6 @@ Choose one approach:
 
 This rename is a breaking deployment and configuration change.
 
-### Migration failure behavior
-
-Choose one approach:
-
-1. Keep the general “proceed after migration failure” prompt in `update.sh`.
-   Make the PostgreSQL migration warning clear. Use no as the default answer for this case.
-2. Stop the target release update when the MySQL prerequisite check or data migration fails.
-
-A hard stop is safer for data integrity but changes the shared update infrastructure.
-
 ### Configurable display timezone
 
 `SystemConfig::$system_timezone` has the fixed value `Europe/Berlin`.
@@ -287,13 +261,13 @@ Add the operator and integrator items under `Technisches`.
 These items affect external deployments and meet the changelog rule for that section.
 
 - [ ] **Required:** State that Testcenter uses PostgreSQL instead of MySQL.
-  Include the supported PostgreSQL version. State that users cannot directly reuse an existing MySQL data directory.
-- [ ] **Required:** Document the supported upgrade path and the minimum source release or schema version.
-  Include automatic steps, manual steps, expected downtime, backup behavior, recovery, and rollback.
-- [ ] **Required:** Document how the migration handles the existing `db_vol`.
-  Include the free-space requirements while the dump and new PostgreSQL data both exist.
+  Include the supported PostgreSQL version. State that the release does not migrate or reuse MySQL data.
+- [ ] **Required:** Document what occurs when an existing server uses the new Compose file.
+  The new file creates `postgres_vol` and leaves the legacy `db_vol` unchanged.
+- [ ] **Required:** Document that the application starts with a new PostgreSQL database.
+  Explain which existing non-database volumes remain available and which data is unavailable without MySQL.
 - [ ] **Required:** Document the new backup and restore commands and artifact format.
-  State whether users can restore old MySQL dumps. Name the required release or tool.
+  State that PostgreSQL cannot restore old MySQL dumps. Operators must use an old release or an external tool for MySQL data.
 - [ ] **Required:** Document the PostgreSQL timestamp strings in APIs and CSV exports.
   These strings can include a UTC offset and optional fractional seconds.
 - [ ] **Required:** Document changes to Docker and Compose images, Helm values, and secrets.
@@ -308,8 +282,8 @@ These items affect external deployments and meet the changelog rule for that sec
 
 - [ ] Update the installation documentation.
   Cover PostgreSQL prerequisites, configuration, credentials, port, storage, health checks, and initial database creation.
-- [ ] Add a migration guide.
-  Cover prerequisite checks, backup checks, migration steps, expected duration, downtime, validation, rollback, and troubleshooting.
+- [ ] Add a Compose transition guide.
+  Cover the new volume name, the unchanged legacy volume, the empty PostgreSQL database, rollback, and troubleshooting.
 - [ ] Update backup and disaster-recovery documentation with PostgreSQL commands and restore tests.
 - [ ] Update Helm documentation and example values, including the secret-key migration.
 - [ ] Document how custom deployments must provide `pdo_pgsql`. Remove assumptions about `pdo_mysql`.
@@ -328,10 +302,11 @@ These items affect external deployments and meet the changelog rule for that sec
 
 - [ ] Complete all release-blocking implementation items in this document.
 - [ ] Make sure that all four test tiers pass after the final contract decisions.
-- [ ] Successfully migrate a MySQL installation from the minimum supported source version.
-- [ ] Test the backup, migration error, retry, restore, and rollback paths.
+- [ ] Test a Compose transition from the last MySQL release without a database migration.
+- [ ] Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
+- [ ] Test the new PostgreSQL backup, restore, and rollback paths.
 - [ ] Make sure that new Compose and Helm installations work.
 - [ ] Make sure that no production path or dependency requires MySQL.
 - [ ] Delete `scripts/database/mysql-legacy/`.
-- [ ] Publish the required changelog, migration, installation, backup, Helm, API, and CSV documentation.
+- [ ] Publish the required changelog, transition, installation, backup, Helm, API, and CSV documentation.
 - [ ] Delete this working document.
