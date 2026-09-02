@@ -5,14 +5,14 @@ import {
   loginTestTaker,
   logoutFromRunningTestWithConfirmation,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('Check monitor functions', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     // one test needs to be started for the group monitor to gain functionality

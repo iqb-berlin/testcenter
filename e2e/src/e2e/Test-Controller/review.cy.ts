@@ -9,7 +9,7 @@ import {
   logoutFromTestNoConfirmation,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   twoStepLogin,
   clickCardButton,
@@ -20,7 +20,7 @@ describe('run a review test, check time block dialogs', { testIsolation: false }
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -126,7 +126,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -243,7 +243,7 @@ describe('check code word options', { testIsolation: true }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -303,7 +303,7 @@ describe('check deny navigation dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();

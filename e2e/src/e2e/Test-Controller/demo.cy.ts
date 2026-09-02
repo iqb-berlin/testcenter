@@ -5,14 +5,14 @@ import {
   loginSuperAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
 } from '../utils';
 
 describe('run a demo test, check time block dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -103,7 +103,7 @@ describe('run a demo test, check time block dialogs', { testIsolation: false }, 
 describe('check code word guidelines', { testIsolation: true }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -186,7 +186,7 @@ describe('check code word guidelines', { testIsolation: true }, () => {
 describe('check deny navigation dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
   });

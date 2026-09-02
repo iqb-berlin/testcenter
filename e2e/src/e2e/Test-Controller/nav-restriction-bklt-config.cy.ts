@@ -4,7 +4,7 @@ import {
   getFromIframe,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -12,7 +12,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
 
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

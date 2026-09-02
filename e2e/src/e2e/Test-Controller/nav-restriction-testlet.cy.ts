@@ -5,14 +5,14 @@ import {
   getFromIframe,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check DenyNavigationOnIncomplete: response & presentation', { testIsolation: true }, () => {
 
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

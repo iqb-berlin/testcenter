@@ -7,7 +7,7 @@ import {
   logoutFromRunningTestWithConfirmation,
   probeBackendApi,
   readBlockTime,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage, clickCardButton
 } from '../utils';
 
@@ -21,7 +21,7 @@ const timeToDisplayedDialog: number = 3000;
 
 describe('Block Time-Restrictions demo and review-mode', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -84,7 +84,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: true }, () => {
   beforeEach(() => {
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
-    resetBackendData();
+    resetBackendTestData();
   });
 
   it('hot-restart:timer is not stopped while the exit block message is displayed', () => {
@@ -257,7 +257,7 @@ describe('Block Time-Restrictions hot-modes', { testIsolation: true }, () => {
 //todo: Kommentierte Test repararieren, wenn entsprechendes Ticket abgearbeitet ist
 describe.skip('check attribute: leave', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

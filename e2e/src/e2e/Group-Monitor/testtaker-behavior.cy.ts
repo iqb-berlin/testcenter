@@ -4,7 +4,7 @@ import {
   loginMonitor,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   sendMonitorCommand, logout
 } from '../utils';
@@ -12,7 +12,7 @@ import {
 describe('Check testtaker behavior', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     loginMonitor('GM-1', '');

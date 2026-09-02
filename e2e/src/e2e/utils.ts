@@ -72,7 +72,7 @@ export const probeBackendApi = () => {
   cy.wait('@waitForConfig', { timeout: 30000 });
 };
 
-export const resetBackendData = () => {
+export const resetBackendTestData = () => {
   cy.log('🔄 Setze Backend-Daten zurück');
   cy.request({
     url: `${Cypress.env('urls').backend}/version`,
@@ -376,21 +376,6 @@ export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): C
   }
   return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-logs.csv`)
     .then(splitCSVFile);
-};
-
-/**
- * Selects a result group by its visible label instead of its current table index.
- *
- * Result rows are returned by the backend and may legitimately change their order. Using selectors such as
- * `results-checkbox1` therefore couples a test to unrelated fixture rows and can make it download another group's
- * results. Keeping the label lookup in one helper also makes that intent explicit at every call site.
- */
-export const selectResultGroup = (groupLabel: string): void => {
-  cy.contains('mat-row', groupLabel)
-    .within(() => {
-      cy.get('mat-checkbox')
-        .click();
-    });
 };
 
 export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {

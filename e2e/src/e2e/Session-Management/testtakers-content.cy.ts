@@ -3,7 +3,7 @@ import {
   loginSuperAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -11,7 +11,7 @@ import {
 
 describe.skip('Check Testtakers Content', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(() => {

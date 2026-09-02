@@ -2,7 +2,7 @@ import {
   deleteDownloadsFolder,
   loginMonitor,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   clickCardButton
 } from './utils';
@@ -10,7 +10,7 @@ import {
 describe('Study-Monitor User', () => {
   before(() => {
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(() => {

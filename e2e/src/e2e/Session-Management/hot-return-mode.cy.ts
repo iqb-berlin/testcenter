@@ -5,8 +5,7 @@ import {
   loginTestTaker,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
-  selectResultGroup,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -14,7 +13,7 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
   // TODO Testfälle bzgl. Ticket #315 erstellen
   before(() => {
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(() => {
@@ -60,8 +59,9 @@ describe('Check hot-return mode functions', { testIsolation: true }, () => {
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    // Select the group by identity: fixture rows are not guaranteed to keep a particular table position.
-    selectResultGroup('Hote-Modes');
+    cy.contains('Hote-Modes');
+    cy.get('[data-cy="results-checkbox1"]')
+      .click();
     cy.intercept('GET', `${Cypress.env('urls').backend}/workspace/1/report/response?*`).as('waitForDownload');
     cy.get('[data-cy="download-responses"]')
       .click();

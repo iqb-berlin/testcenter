@@ -2,14 +2,14 @@ import {
   disableSimplePlayersInternalDebounce, getFromIframe,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   clickCardButton
 } from '../utils';
 
 describe('check parameter: lock_test_on_termination', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

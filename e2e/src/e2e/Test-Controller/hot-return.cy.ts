@@ -9,7 +9,7 @@ import {
   loginTestTaker, logout,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -17,7 +17,7 @@ describe('check hot-return: complete tests with different logins', { testIsolati
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

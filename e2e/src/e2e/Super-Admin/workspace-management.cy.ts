@@ -5,13 +5,13 @@ import {
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('Management Workspaces (workspace-tab)', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(() => {

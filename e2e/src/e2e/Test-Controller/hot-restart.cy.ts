@@ -10,7 +10,7 @@ import {
   logoutAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -18,7 +18,7 @@ describe('check hot-restart: complete tests with different logins', { testIsolat
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

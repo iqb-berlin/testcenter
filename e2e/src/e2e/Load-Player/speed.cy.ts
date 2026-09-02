@@ -5,7 +5,7 @@ import {
   getFromIframe, loginMonitor,
   logout,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   twoStepLogin,
   visitLoginPage
 } from '../utils';
@@ -19,7 +19,7 @@ Experimentell zum lokalen Testen des Speedtest-Players: Durchläuft mehrere Test
 describe('run a booklet', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
