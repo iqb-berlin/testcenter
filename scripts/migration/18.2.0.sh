@@ -4,7 +4,7 @@ declare TARGET_VERSION='next'
 
 function migrate_env_file() {
   if ! grep -q '^BRUTE_FORCE_PROTECTION=' .env.prod; then
-    sed -i.bak '/^FILE_SERVER_ENABLED=.*/a BRUTE_FORCE_PROTECTION=admin login person' .env.prod && rm .env.prod.bak
+    sed -i.bak "/^FILE_SERVER_ENABLED=.*/a BRUTE_FORCE_PROTECTION='admin login person'" .env.prod && rm .env.prod.bak
   fi
 
   if ! grep -q '^SERVER_KEY=' .env.prod; then

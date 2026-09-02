@@ -3,6 +3,10 @@
 ## Technisches
 - `install.sh` und `update.sh` sind nun schlanke, versionsunabhängige Bootstrap-Skripte: Sie ermitteln nur noch die gewünschte Release-Version und laden anschließend die eigentliche Installations- bzw. Update-Logik der passenden Release-Version nach (`scripts/installer.sh` bzw. `scripts/updater.sh`). Der bisherige Mechanismus, bei dem `install.sh`/`update.sh` sich selbst mit der Zielversion verglichen und sich bei Abweichung durch sich selbst ersetzten, entfällt damit.
   - Bei `update.sh` wird `scripts/updater.sh` dabei zweimal geladen: einmal aus der aktuell installierten Version (für Backup und Migrationsskripte, deren Logik zur tatsächlich laufenden Installation passen muss) und einmal aus der Zielversion (für Datei-Updates, Einstellungen und Neustart).
+- Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` war nicht in Anführungszeichen gesetzt und führte
+  beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits
+  über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf
+  `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
 
 # 18.3.0
 
