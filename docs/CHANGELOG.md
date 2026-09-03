@@ -11,6 +11,12 @@
   beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits
   über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf
   `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
+- Es gibt eine neue Umgebungsvariable `COMPOSE_PROJECT_NAME` (siehe `.env.dev-template`/`.env.prod-template`), mit
+  der sich Container, Volumes und das Docker-Netzwerk benennen lassen. Sie dient dazu, eine Dev- und eine
+  Produktivinstallation auf demselben Host kollisionsfrei parallel betreiben zu können. Der Netzwerkname war zuvor
+  fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange
+  `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende
+  Installationen von dieser Änderung nicht betroffen sind.
 
 # 18.3.0
 

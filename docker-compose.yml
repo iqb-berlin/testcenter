@@ -140,7 +140,7 @@ volumes:
 
 networks:
   testcenter:
-    name: testcenter
+    name: ${COMPOSE_PROJECT_NAME:-testcenter}
     driver: bridge
     driver_opts:
       com.docker.network.driver.mtu: ${DOCKER_DAEMON_MTU:-1500}
