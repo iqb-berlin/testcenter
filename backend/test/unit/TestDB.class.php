@@ -4,24 +4,21 @@ class TestDB {
   static function setUp(): void {
     SystemConfig::$debug_useInsecurePasswords = false;
     SystemConfig::$debug_useStaticTokens = true;
-    self::connectWithRetries(10);
+
+    try {
+      DB::connectToTestDB(10, TestDB::reportFailedConnection(...));
+    } catch (DBConnectionException $exception) {
+      if ($exception->getHint()) {
+        echo "\n Hint: {$exception->getHint()}";
+      }
+      echo "\n Database configuration used: " . SystemConfig::dumpDbConfig();
+      throw $exception;
+    }
+
     TestEnvironment::buildTestDB();
   }
 
-  private static function connectWithRetries(int $retries = 1): void {
-    while ($retries--) {
-      try {
-        DB::connectToTestDB();
-        return;
-      } catch (Throwable $t) {
-        $msg = $t->getMessage();
-        echo "\n Database Connection failed! \n Error: $msg \n Retry: $retries attempts left.";
-        if ($retries) {
-          usleep(50 * 100000); // give database container time to come up
-        }
-      }
-    }
-    throw new RuntimeException("DB-connection failed. \n Config:" . SystemConfig::dumpDbConfig());
+  private static function reportFailedConnection(DBConnectionException $exception, int $attempt, int $attempts): void {
+    echo "\n Database Connection attempt $attempt of $attempts failed: {$exception->getMessage()}";
   }
 }
-

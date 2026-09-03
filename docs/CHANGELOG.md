@@ -1,6 +1,8 @@
 # next
 
 ## Technisches
+- Schlägt der Verbindungsaufbau zur Datenbank beim Start aus einem Grund fehl, der sich durch Warten nicht beheben lässt - etwa falsche Zugangsdaten -, bricht das Backend nun sofort mit einer Meldung ab, die die Ursache benennt. Bisher wurde es rund 100 Sekunden lang wiederholt und dann nur `Database connection failed.` ausgegeben.
+- Schlägt die Datenbankverbindung im laufenden Betrieb fehl, antwortet das Backend nun mit Status `503` und einer allgemeinen Meldung. Bisher wurde die Originalmeldung des Treibers an den Client ausgegeben, die unter anderem den Namen des Datenbank-Benutzers enthielt.
 - Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
   `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
   die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von
