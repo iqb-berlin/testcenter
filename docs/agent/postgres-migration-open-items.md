@@ -90,12 +90,12 @@ An existing server can use the new Compose file with the same Compose project na
 The old Compose file uses `db_vol` for the MySQL data directory.
 If the new file also uses `db_vol`, Compose attaches the existing MySQL volume to PostgreSQL.
 
-- [ ] Rename the PostgreSQL volume key from `db_vol` to `postgres_vol` in `docker-compose.yml`.
-- [ ] Keep the PostgreSQL mount at its required data path.
-- [ ] Make sure that the new Compose file does not attach or change the legacy `db_vol`.
-- [ ] Test the transition with the same Compose project name that the old installation used.
+- [x] Rename the PostgreSQL volume key from `db_vol` to `postgres_vol` in `docker-compose.yml`.
+- [x] Keep the PostgreSQL mount at its required data path.
+- [x] Make sure that the new Compose file does not attach or change the legacy `db_vol`.
+- [x] Test the transition with the same Compose project name that the old installation used.
   Make sure that Compose creates a new PostgreSQL volume and keeps the MySQL volume unchanged.
-- [ ] If the old files require unavailable database data, make sure that the application reports a clear error.
+- [x] If the old files require unavailable database data, make sure that the application reports a clear error.
 
 This isolation protects the old MySQL files, but it does not make their data available to PostgreSQL.
 If operators need to recover MySQL data, they can return to the old release and its volume.

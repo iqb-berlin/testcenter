@@ -124,7 +124,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-${MYSQL_USER}}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${MYSQL_PASSWORD}}
     volumes:
-      - db_vol:/var/lib/postgresql
+      - postgres_vol:/var/lib/postgresql
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-${MYSQL_USER}}", "-d", "${POSTGRES_DB:-${MYSQL_DATABASE}}", "-h", "127.0.0.1" ]
       start_period: 120s
@@ -136,7 +136,7 @@ services:
       testcenter:
 
 volumes:
-  db_vol:
+  postgres_vol:
   backend_vol:
 
 networks:
