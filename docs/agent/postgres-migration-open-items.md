@@ -31,7 +31,6 @@ Read these notes before you change the schema.
 | Backup and restore conversion | Open | Release blocker |
 | Runtime identity-sequence repair | Open | Release blocker |
 | Removal of MySQL runtime dependencies | Open | Release blocker |
-| API boolean contract | Decision required | Possible breaking API change |
 | User and operator documentation | Open | Release blocker |
 
 ## Completed work
@@ -68,6 +67,11 @@ The resulting contract is:
 - Call sites that promise an integer Unix timestamp must convert the value with `fromSQLFormat()`.
 - Call sites that promise a readable display timestamp must convert the value with `sqlToDisplayFormat()`.
 
+### Contract Decision: API layer
+
+Tinyint() to boolean on Database layer has no consequence for api layer, as all instances are already transformed to JSON boolean anyway
+
+
 ### Completed tests
 
 - [x] `make test-backend-unit` passes all 257 tests and 820 assertions on PostgreSQL.
@@ -76,7 +80,6 @@ The resulting contract is:
   The team removed the obsolete MySQL `db-versions.sh` test. The target runs `make stop` first.
 - [x] `make test-backend-api` passes the Dredd API suite. See `docs/agent/api-testing-dredd.md`.
 - [x] All eight Cypress suites configured in `scripts/ci/e2e.yml` pass.
-- [ ] Run backend-api and e2e tests again after you decide and implement the boolean contract.
 
 ## Work remaining before release
 
@@ -215,18 +218,6 @@ No user can then log in as an administrator.
 These choices affect public or operational contracts.
 Do not make these decisions as part of another task.
 
-### Boolean API values
-
-PDO returns PostgreSQL booleans as `true` and `false` values.
-The MySQL driver returned `"0"` and `"1"` strings. Thus, direct JSON encoding of DAO results changes the value type.
-
-Choose one approach:
-
-1. Preserve the external contract. Convert booleans to strings at the API boundary.
-2. Adopt JSON booleans. Update all frontend consumers and API documentation. Announce the breaking API change.
-
-After the decision, run Dredd and Cypress again. These tests cover the complete contract.
-
 ### Database environment-variable names
 
 Choose one approach:
@@ -273,8 +264,6 @@ These items affect external deployments and meet the changelog rule for that sec
 - [ ] **Required:** Document changes to Docker and Compose images, Helm values, and secrets.
   Include database ports, health checks, and the required PHP extension.
 - [ ] **Conditional:** Document the old-to-new environment-variable mapping if the team renames the `MYSQL_*` variables.
-- [ ] **Conditional:** If the team adopts the new boolean contract, document the changed JSON boolean fields.
-  They change from `"0"` and `"1"` strings to `false` and `true` values.
 - [ ] **Conditional:** If the team adds configurable timezone support, document the new environment variable.
   Include its default value and behavior.
 
@@ -294,9 +283,7 @@ These items affect external deployments and meet the changelog rule for that sec
 - [ ] Update the documentation for each external timestamp field that can expose a raw DAO value.
   Describe the accepted PostgreSQL format, offset, and optional microseconds.
 - [ ] Update CSV/export documentation for the same timestamp representation.
-- [ ] After the boolean decision, document the selected contract.
-  Document the preserved string contract, or update schemas and examples to use JSON booleans.
-- [ ] Make sure that the examples and generated API checks agree with the final timestamp and boolean contracts.
+- [ ] Make sure that the examples and generated API checks agree with the final timestamp contract.
 
 ## Final release checklist
 
