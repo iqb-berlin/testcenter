@@ -1,6 +1,10 @@
 # next
 
 ## Technisches
+- Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
+  `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
+  die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von
+  Response-Teil-Objekten (`id`, `content`, `ts`, `responseType`) enthält. Das Schema wurde entsprechend korrigiert.
 - `install.sh` und `update.sh` sind nun schlanke, versionsunabhängige Bootstrap-Skripte: Sie ermitteln nur noch die gewünschte Release-Version und laden anschließend die eigentliche Installations- bzw. Update-Logik der passenden Release-Version nach (`scripts/installer.sh` bzw. `scripts/updater.sh`). Der bisherige Mechanismus, bei dem `install.sh`/`update.sh` sich selbst mit der Zielversion verglichen und sich bei Abweichung durch sich selbst ersetzten, entfällt damit.
   - Bei `update.sh` wird `scripts/updater.sh` dabei zweimal geladen: einmal aus der aktuell installierten Version (für Backup und Migrationsskripte, deren Logik zur tatsächlich laufenden Installation passen muss) und einmal aus der Zielversion (für Datei-Updates, Einstellungen und Neustart).
 - Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` war nicht in Anführungszeichen gesetzt und führte

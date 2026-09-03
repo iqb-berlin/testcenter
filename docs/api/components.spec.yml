@@ -466,7 +466,18 @@ components:
           unitname:
             type: string
           responses:
-            type: string
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                content:
+                  type: string
+                ts:
+                  type: integer
+                responseType:
+                  type: string
           restorePoint:
             type: string
           responseType:
