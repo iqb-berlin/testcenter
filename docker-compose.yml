@@ -10,10 +10,10 @@ x-env-redis: &env-redis
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   REDIS_CACHE_FILES: ${REDIS_CACHE_FILES:-false}
 
-x-env-mysql: &env-mysql
-  MYSQL_DATABASE: ${MYSQL_DATABASE}
-  MYSQL_USER: ${MYSQL_USER}
-  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+x-env-db: &env-db
+  DB_DATABASE: ${DB_DATABASE}
+  DB_USER: ${DB_USER}
+  DB_PASSWORD: ${DB_PASSWORD}
 
 x-env-logging-conf: &env-logging-conf
   max-size: "200m"
@@ -77,9 +77,9 @@ services:
       FILE_SERVER_ENABLED: ${FILE_SERVER_ENABLED}
       BRUTE_FORCE_PROTECTION: ${BRUTE_FORCE_PROTECTION:-}
       SERVER_KEY: ${SERVER_KEY}
-      <<: [ *env-redis, *env-mysql ]
-      MYSQL_HOST: db
-      MYSQL_PORT: 5432
+      <<: [ *env-redis, *env-db ]
+      DB_HOST: db
+      DB_PORT: 5432
       PASSWORD_SALT: ${PASSWORD_SALT}
       PASSWORD_MIN_LENGTH: ${PASSWORD_MIN_LENGTH}
       PASSWORD_PATTERN: ${PASSWORD_PATTERN}
@@ -119,14 +119,14 @@ services:
     image: ${DOCKERHUB_PROXY}postgres:18.4
     <<: *restart-policy
     environment:
-      # The MYSQL_* variables are still the canonical ones in .env; renaming them is a separate step.
-      POSTGRES_DB: ${POSTGRES_DB:-${MYSQL_DATABASE}}
-      POSTGRES_USER: ${POSTGRES_USER:-${MYSQL_USER}}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${MYSQL_PASSWORD}}
+      # POSTGRES_* is the fixed interface of the official image. DB_* remains the only public configuration.
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_vol:/var/lib/postgresql
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-${MYSQL_USER}}", "-d", "${POSTGRES_DB:-${MYSQL_DATABASE}}", "-h", "127.0.0.1" ]
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_DATABASE}", "-h", "127.0.0.1" ]
       start_period: 120s
       start_interval: 5s
       interval: 90s

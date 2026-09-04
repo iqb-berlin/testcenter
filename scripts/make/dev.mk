@@ -90,8 +90,8 @@ connect-db:
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec db mysql --user=$(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
+			--file docker-compose.dev.yml\
+		exec db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)
 
 composer-install:
 	docker run --rm --interactive --tty\

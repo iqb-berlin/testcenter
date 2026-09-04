@@ -18,12 +18,12 @@ fi
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
 ENV_VARS[REDIS_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-ENV_VARS[MYSQL_USER]=iqb_tba_db_user
-ENV_VARS[MYSQL_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
+ENV_VARS[DB_DATABASE]=iqb_tba_testcenter
+ENV_VARS[DB_USER]=iqb_tba_db_user
+ENV_VARS[DB_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 ENV_VARS[PASSWORD_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
 
-ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD PASSWORD_SALT)
+ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD DB_DATABASE DB_USER DB_PASSWORD PASSWORD_SALT)
 
 declare TARGET_DIR
 

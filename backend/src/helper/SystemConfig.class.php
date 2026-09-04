@@ -68,11 +68,11 @@ class SystemConfig {
   public static function readEnvironment(): void {
     $config = [];
 
-    $config['database']['name'] = self::stringEnv('MYSQL_DATABASE');
-    $config['database']['host'] = self::stringEnv('MYSQL_HOST');
-    $config['database']['port'] = self::stringEnv('MYSQL_PORT');
-    $config['database']['user'] = self::stringEnv('MYSQL_USER');
-    $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
+    $config['database']['name'] = self::stringEnv('DB_DATABASE');
+    $config['database']['host'] = self::stringEnv('DB_HOST');
+    $config['database']['port'] = self::stringEnv('DB_PORT');
+    $config['database']['user'] = self::stringEnv('DB_USER');
+    $config['database']['password'] = self::stringEnv('DB_PASSWORD');
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
     $config['password']['min_length'] = (int) self::stringEnv('PASSWORD_MIN_LENGTH');

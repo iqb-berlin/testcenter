@@ -102,32 +102,32 @@ If operators need to recover MySQL data, they can return to the old release and 
 
 ### 2. Convert deployment configuration and Helm
 
-- [ ] Decide whether to rename the legacy `MYSQL_*` database connection variables.
+- [x] Decide whether to rename the legacy `MYSQL_*` database connection variables.
   Choose neutral names or PostgreSQL-specific names. If you rename them, change all names in one update.
   Add an explicit mapping to the release notes.
-- [ ] Update all consumers of the selected variable names.
+- [x] Update all consumers of the selected variable names.
   These consumers include `SystemConfig.class.php`, `docker-compose.yml`, `.env.dev-template`, and `.env.prod-template`.
-  They also include `scripts/install.sh` and the Compose configuration for initialization tests.
-- [ ] Remove the unused `MYSQL_ROOT_PASSWORD` and `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS` configuration.
-- [ ] Replace the MySQL Helm resources in `scripts/helm/testcenter/templates/db/` with PostgreSQL resources.
+  They also include `scripts/installer.sh` and the Compose configuration for initialization tests.
+- [x] Remove the unused `MYSQL_ROOT_PASSWORD` and `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS` configuration.
+- [x] Replace the MySQL Helm resources in `scripts/helm/testcenter/templates/db/` with PostgreSQL resources.
   Replace the Deployment, Service, and Secret.
-- [ ] Update the backend Helm Deployment and Job, `values.yaml`, and their secrets to use the final
+- [x] Update the backend Helm Deployment and Job, `values.yaml`, and their secrets to use the final
   database configuration.
-- [ ] Update or replace `scripts/helm/helm-install-tc.sh`.
+- [x] Update or replace `scripts/helm/helm-install-tc.sh`.
   It generates MySQL credentials and changes `mysqlUser`, `mysqlPassword`, and `mysqlRootPassword`.
-- [ ] Make sure that a new Compose installation and a new Helm installation work.
+- [x] Make sure that a new Compose installation and a new Helm installation work.
 
-The current Compose setup operates PostgreSQL.
-It maps the existing `MYSQL_*` configuration to the PostgreSQL `POSTGRES_*` initialization configuration.
-This compatibility bridge is temporary.
+The public database configuration now uses only `DB_*` names.
+Compose maps these values directly to the standard PostgreSQL image variables at the database container boundary.
+There is no fallback for the former `MYSQL_*` names or public `POSTGRES_*` names.
 
 ### 3. Convert operational database tooling
 
-- [ ] Replace the pre-update `mysqldump` backup in `scripts/update.sh` with a PostgreSQL backup.
-- [ ] Convert all `backup` and `restore` targets in `scripts/make/prod.mk`.
-  Include the all-databases variants that authenticate as the MySQL root user.
-- [ ] Replace the MySQL shell opened by `scripts/make/dev.mk` with `psql`.
-- [ ] Replace the `mysql:8.4` image scan in `scripts/make/scan.mk` with the PostgreSQL image scan.
+- [x] Replace the pre-update `mysqldump` backup in `scripts/updater.sh` with a PostgreSQL backup.
+- [x] Convert all `backup` and `restore` targets in `scripts/make/prod.mk`.
+  Include the all-databases variants that previously authenticated as the MySQL root user.
+- [x] Replace the MySQL shell opened by `scripts/make/dev.mk` with `psql`.
+- [x] Replace the `mysql:8.4` image scan in `scripts/make/scan.mk` with the PostgreSQL image scan.
 - [ ] Test backup and restore.
   Include error behavior and restoration to an empty deployment.
 
@@ -220,12 +220,9 @@ Do not make these decisions as part of another task.
 
 ### Database environment-variable names
 
-Choose one approach:
-
-1. Keep `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`, and `MYSQL_PORT` temporarily as
-   compatibility names, despite the database now being PostgreSQL.
-2. Rename them in one change to the agreed `DB_*` or `POSTGRES_*` names.
-   Document a complete old-to-new mapping for Compose, `.env.prod`, Helm values, and custom deployments.
+Decision: Use only the neutral `DB_*` names for the public database configuration.
+The release notes document the complete old-to-new mapping for Compose, Helm, and custom deployments.
+The official PostgreSQL image variables exist only at the database container boundary.
 
 This rename is a breaking deployment and configuration change.
 
@@ -251,19 +248,19 @@ A conditional entry becomes required if the team selects its breaking option.
 Add the operator and integrator items under `Technisches`.
 These items affect external deployments and meet the changelog rule for that section.
 
-- [ ] **Required:** State that Testcenter uses PostgreSQL instead of MySQL.
+- [x] **Required:** State that Testcenter uses PostgreSQL instead of MySQL.
   Include the supported PostgreSQL version. State that the release does not migrate or reuse MySQL data.
-- [ ] **Required:** Document what occurs when an existing server uses the new Compose file.
+- [x] **Required:** Document what occurs when an existing server uses the new Compose file.
   The new file creates `postgres_vol` and leaves the legacy `db_vol` unchanged.
-- [ ] **Required:** Document that the application starts with a new PostgreSQL database.
+- [x] **Required:** Document that the application starts with a new PostgreSQL database.
   Explain which existing non-database volumes remain available and which data is unavailable without MySQL.
-- [ ] **Required:** Document the new backup and restore commands and artifact format.
+- [x] **Required:** Document the new backup and restore commands and artifact format.
   State that PostgreSQL cannot restore old MySQL dumps. Operators must use an old release or an external tool for MySQL data.
 - [ ] **Required:** Document the PostgreSQL timestamp strings in APIs and CSV exports.
   These strings can include a UTC offset and optional fractional seconds.
-- [ ] **Required:** Document changes to Docker and Compose images, Helm values, and secrets.
+- [x] **Required:** Document changes to Docker and Compose images, Helm values, and secrets.
   Include database ports, health checks, and the required PHP extension.
-- [ ] **Conditional:** Document the old-to-new environment-variable mapping if the team renames the `MYSQL_*` variables.
+- [x] **Conditional:** Document the old-to-new environment-variable mapping if the team renames the `MYSQL_*` variables.
 - [ ] **Conditional:** If the team adds configurable timezone support, document the new environment variable.
   Include its default value and behavior.
 

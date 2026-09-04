@@ -12,6 +12,8 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/backend/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/backend/secret.yaml") . | sha256sum }}
+        # Restart the backend when the shared database credentials change.
+        checksum/db-secret: {{ include (print $.Template.BasePath "/db/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-backend-pod
     spec:
@@ -69,22 +71,23 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: REDIS_CACHE_FILES
-            - name: MYSQL_HOST
+            # DB_* is the stable application interface. The database pod maps it to PostgreSQL below.
+            - name: DB_HOST
               value: '{{ .Release.Name }}-db'
-            - name: MYSQL_PORT
-              value: '3306'
-            - name: MYSQL_DATABASE
-              value: 'iqb_tba_testcenter'
-            - name: MYSQL_USER
+            - name: DB_PORT
+              value: '5432'
+            - name: DB_DATABASE
+              value: {{ .Values.config.db.database | quote }}
+            - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secret
-                  key: MYSQL_USER
-            - name: MYSQL_PASSWORD
+                  name: {{ .Release.Name }}-db-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-backend-secret
-                  key: MYSQL_PASSWORD
+                  name: {{ .Release.Name }}-db-secret
+                  key: DB_PASSWORD
             - name: PASSWORD_SALT
               valueFrom:
                 secretKeyRef:
@@ -157,7 +160,8 @@ spec:
             capabilities:
               drop:
                 - ALL
-          command: [ 'sh', '-c', 'until nc -z {{ .Release.Name }}-db 3306; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
+          # BusyBox nc waits for input after a successful connection unless it receives a timeout.
+          command: [ 'sh', '-c', 'until nc -z -w 2 {{ .Release.Name }}-db 5432; do echo waiting for {{ .Release.Name }}-db; sleep 2; done;' ]
       volumes:
         - name: backend-volume
           persistentVolumeClaim:

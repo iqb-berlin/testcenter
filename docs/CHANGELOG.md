@@ -1,6 +1,29 @@
 # next
 
 ## Technisches
+- Testcenter verwendet PostgreSQL 18.4 statt MySQL. Diese Version überträgt keine MySQL-Daten und verwendet das alte
+  Volume `db_vol` nicht. Compose legt das neue Volume `postgres_vol` an. Andere Volumes, zum Beispiel für
+  hochgeladene Dateien, bleiben verfügbar. Daten aus dem alten MySQL-Volume bleiben ohne MySQL nicht verfügbar.
+- Die Variablen für Datenbankverbindungen heißen jetzt neutral. Es gibt keinen Rückfall auf alte `MYSQL_*`-Namen
+  oder alternative `POSTGRES_*`-Namen. Bestehende `.env.prod`-Dateien und eigene Deployments brauchen diese Zuordnung:
+  - `MYSQL_DATABASE` → `DB_DATABASE`
+  - `MYSQL_USER` → `DB_USER`
+  - `MYSQL_PASSWORD` → `DB_PASSWORD`
+  - `MYSQL_HOST` → `DB_HOST`
+  - `MYSQL_PORT` → `DB_PORT`
+  - `MYSQL_ROOT_PASSWORD` entfällt ohne Ersatz.
+  - `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS` entfällt ohne Ersatz.
+- Das Helm-Chart verwendet PostgreSQL auf Port 5432 und prüft die Datenbank mit `pg_isready`.
+  Die Helm-Werte und Secret-Schlüssel ändern sich wie folgt:
+  - Der neue Wert `config.db.database` legt den Datenbanknamen fest.
+  - `secret.db.mysqlUser` und `secret.backend.mysqlUser` werden durch `secret.db.user` ersetzt.
+  - `secret.db.mysqlPassword` und `secret.backend.mysqlPassword` werden durch `secret.db.password` ersetzt.
+  - `secret.db.mysqlRootPassword` entfällt ohne Ersatz.
+  - Die Secret-Schlüssel `MYSQL_USER` und `MYSQL_PASSWORD` heißen jetzt `DB_USER` und `DB_PASSWORD`.
+- Eigene Backend-Images brauchen die PHP-Erweiterung `pdo_pgsql`. Die Erweiterung `pdo_mysql` ist nicht mehr nötig.
+- Die Befehle für Datenbankzugriff, Sicherung und Wiederherstellung verwenden jetzt `psql`, `pg_dump` und `pg_dumpall`.
+  Die Sicherungen bleiben SQL-Dateien, enthalten aber PostgreSQL-SQL. PostgreSQL kann alte MySQL-Sicherungen nicht
+  wiederherstellen. Dafür ist eine alte Testcenter-Version mit MySQL oder ein externes Übertragungswerkzeug nötig.
 - Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
   `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
   die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von

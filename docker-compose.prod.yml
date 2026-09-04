@@ -42,8 +42,6 @@ services:
 
   db:
     image: ${DOCKERHUB_PROXY}postgres:18.4
-    # The mysql server flags have no postgres counterpart worth carrying over; postgres ships with a
-    # strict, standard-conforming mode by default. Only the connection limit is kept.
     command:
       - "postgres"
       - "-c"

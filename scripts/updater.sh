@@ -143,38 +143,30 @@ data_services_down() {
 }
 
 dump_db() {
-  declare db_name="${MYSQL_DATABASE}" # see docker environment file!
+  declare db_name="${DB_DATABASE}" # see docker environment file!
   declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
+  declare compose_file="${APP_DIR}/docker-compose.prod.yml"
 
   if ${TLS_ENABLED}; then
-    docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-      exec "${DB_SERVICE_NAME}" mysqldump \
-      --add-drop-database \
-      --user=root \
-      --password="${MYSQL_ROOT_PASSWORD}" \
-      --databases "${db_name}" \
-      2>/dev/null \
-      >"${APP_DIR}/${db_dump_file}"
-  else
-    docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.yml" \
-      exec "${DB_SERVICE_NAME}" mysqldump \
-      --add-drop-database \
-      --user=root \
-      --password="${MYSQL_ROOT_PASSWORD}" \
-      --databases "${db_name}" \
-      2>/dev/null \
-      >"${APP_DIR}/${db_dump_file}"
+    compose_file="${APP_DIR}/docker-compose.prod.tls.yml"
   fi
 
-  if test $? -eq 0; then
+  if docker compose \
+      --env-file "${APP_DIR}/.env.prod" \
+      --file "${APP_DIR}/docker-compose.yml" \
+      --file "${compose_file}" \
+      exec --no-TTY "${DB_SERVICE_NAME}" pg_dump \
+      --clean \
+      --if-exists \
+      --create \
+      --username="${DB_USER}" \
+      --dbname="${db_name}" \
+      2>/dev/null \
+      >"${APP_DIR}/${db_dump_file}"; then
     printf -- "  - Current db dump has been saved at: '%s'\n" "${db_dump_file}"
   else
+    # Do not leave a partial file that an operator can mistake for a valid backup.
+    rm -f "${APP_DIR}/${db_dump_file}"
     declare continue
     printf -- "  - Current db dump was not successful!\n"
     read -p "  Do you want to continue? [y/N] " -er -n 1 continue
