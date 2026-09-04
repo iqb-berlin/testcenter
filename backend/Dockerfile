@@ -12,13 +12,24 @@ RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
 WORKDIR /usr/src/testcenter/backend
-COPY backend/src ./src/
-COPY backend/test/unit/test-helper ./test/unit/test-helper
 
+# resolving and downloading the dependencies depends on composer.lock alone, so it
+# is done before the code is copied and stays cached across source code changes
 RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
     --mount=type=bind,source=backend/composer.lock,target=composer.lock \
     --mount=type=cache,target=/tmp/cache \
     composer install \
+      --no-interaction \
+      --no-autoloader \
+      --ignore-platform-reqs
+
+COPY backend/src ./src/
+COPY backend/test/unit/test-helper ./test/unit/test-helper
+
+# the classmap is the only part of the autoloader that needs the code
+RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
+    --mount=type=bind,source=backend/composer.lock,target=composer.lock \
+    composer dump-autoload \
       --no-interaction \
       --ignore-platform-reqs
 
@@ -31,18 +42,29 @@ RUN mkdir -p /var/www/testcenter/data/.schemas
 COPY scripts/download-schemas.sh /tmp/download-schemas.sh
 RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
 
-COPY backend/src ./src/
-
+# resolving and downloading the dependencies depends on composer.lock alone, so it
+# is done before the code is copied and stays cached across source code changes
 RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
     --mount=type=bind,source=backend/composer.lock,target=composer.lock \
     --mount=type=cache,target=/tmp/cache \
     composer install \
       --no-interaction \
       --no-dev \
+      --no-autoloader \
+      --ignore-platform-reqs
+
+COPY backend/src ./src/
+
+# the classmap is the only part of the autoloader that needs the source code
+RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
+    --mount=type=bind,source=backend/composer.lock,target=composer.lock \
+    composer dump-autoload \
+      --no-interaction \
+      --no-dev \
       --ignore-platform-reqs
 
 
-FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS base
+FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS system
 # Install PHP extensions
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -67,24 +89,33 @@ COPY backend/config/security.conf /etc/apache2/conf-available
 RUN a2enconf security
 RUN sed -i 's|Listen 80|Listen 8080|' /etc/apache2/ports.conf
 
+
+# dev extensions are built here, before any application code is copied, so that
+# code changes do not invalidate the (slow) xdebug/pcntl compilation
+FROM system AS dev-extension
+RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
+
+
+FROM system AS base
 # Copy backend code
 WORKDIR /var/www/testcenter/backend/
-RUN mkdir ./config
-
-COPY backend/.htaccess .
-COPY backend/index.php .
-COPY backend/initialize.php .
-COPY backend/routes.php .
-COPY backend/src ./src
-
-RUN mkdir -p ../data/.schemas
-COPY --from=schema-downloader /var/www/testcenter/data/.schemas/ ../data/.schemas/
-COPY definitions ../definitions
-COPY package.json ../package.json
-COPY sampledata ../sampledata
-COPY scripts/database ../scripts/database
 
 RUN chown -R www-data:www-data /var/www
+RUN mkdir ./config && chown www-data:www-data ./config
+RUN mkdir -p ../data/.schemas && chown -R www-data:www-data ../data
+COPY --chown=www-data:www-data --from=schema-downloader /var/www/testcenter/data/.schemas/ ../data/.schemas/
+
+COPY --chown=www-data:www-data definitions ../definitions
+COPY --chown=www-data:www-data scripts/database ../scripts/database
+COPY --chown=www-data:www-data sampledata ../sampledata
+COPY --chown=www-data:www-data package.json ../package.json
+
+COPY --chown=www-data:www-data backend/.htaccess .
+COPY --chown=www-data:www-data backend/index.php .
+COPY --chown=www-data:www-data backend/initialize.php .
+COPY --chown=www-data:www-data backend/routes.php .
+COPY --chown=www-data:www-data backend/src ./src
 
 VOLUME /var/www/testcenter/data
 EXPOSE 8080
@@ -96,9 +127,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 
 FROM base AS dev
-# Install PHP dev extensions
-RUN pecl install xdebug-3.4.1 && docker-php-ext-enable xdebug   # @TODO: change xdebug and php release (xdebug-3.4.2 does not work with php-8.3.12!)
-RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl
+# copy PHP dev extensions built in the dev-extension stage to the right spot
+COPY --from=dev-extension /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=dev-extension /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 # Copy dev dependencies
 COPY --chown=www-data:www-data --from=dev-composer /usr/src/testcenter/backend/vendor/ vendor/
