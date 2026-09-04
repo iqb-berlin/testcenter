@@ -150,9 +150,9 @@ After a file restore, the next UI-created workspace can fail with a duplicate-ke
 
 ### 5. Remove obsolete MySQL runtime dependencies
 
-- [ ] Remove `pdo_mysql` from `backend/Dockerfile`.
-- [ ] Remove `ext-pdo_mysql` from `backend/composer.json` and require `ext-pdo_pgsql` instead.
-- [ ] Regenerate `backend/composer.lock` if necessary. Make sure that the new file is correct.
+- [x] Remove `pdo_mysql` from `backend/Dockerfile`.
+- [x] Remove `ext-pdo_mysql` from `backend/composer.json` and require `ext-pdo_pgsql` instead.
+- [x] Regenerate `backend/composer.lock` if necessary. Make sure that the new file is correct.
 
 ### 6. Resolve remaining initialization correctness issues
 
