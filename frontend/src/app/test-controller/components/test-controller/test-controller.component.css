@@ -54,6 +54,15 @@
   flex: 1;
 }
 
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mat-sys-surface);
+}
+
 mat-sidenav {
   max-width: 90%;
   width: unset;

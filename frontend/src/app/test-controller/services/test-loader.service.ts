@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, Subject, Subscription
+  from, lastValueFrom, Observable, of, ReplaySubject, Subject, Subscription
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
@@ -107,7 +107,7 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     this.loadingQueue = [];
   }
 
-  private resumeTest(lastState: { [k in TestStateKey]?: string }): Promise<boolean> {
+  private async resumeTest(lastState: { [k in TestStateKey]?: string }): Promise<boolean> {
     if (!this.tcs.booklet) {
       throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
     }
@@ -125,6 +125,18 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
       return this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
     }
     this.tcs.state$.next('RUNNING');
+    // Wait for the starting unit's own block resources (definition/scheme) here, BEFORE
+    // navigating - not just its unit/player data (already awaited above, via loadUnits()).
+    try {
+      await lastValueFrom(this.tcs.unitBlockResourcesLoaded$(resumeTargetUnitSequenceId));
+    } catch (err) {
+      const info = (err as { info?: string })?.info;
+      throw new AppError({
+        label: `Unit konnte nicht geladen werden. ${info || ''}`,
+        description: info || String(err),
+        type: 'network'
+      });
+    }
     return this.tcs.setUnitNavigationRequest(resumeTargetUnitSequenceId.toString());
   }
 
@@ -283,7 +295,8 @@ export class TestLoaderService extends BookletParserService<Unit, Testlet, Bookl
     const progress$: { [queueIndex: number] : Subject<LoadingProgress> } = {};
     this.loadingQueue
       .forEach((queueEntry, i) => {
-        progress$[i] = new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
+        progress$[i] = new ReplaySubject<LoadingProgress>(1);
+        progress$[i].next({ progress: 'PENDING' });
         this.tcs.units[queueEntry.sequenceId].loadingProgress[queueEntry.type] = progress$[i].asObservable();
       });
 
