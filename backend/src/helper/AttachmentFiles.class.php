@@ -12,13 +12,23 @@ class AttachmentFiles {
 
     $dataParts = [];
     foreach ($uploadedFiles as $originalFileName) {
-      $dst = "$workspacePath/UnitAttachments/";
-      Folder::createPath($dst);
       $attachmentCode = Random::string(32, false);
       $extension = FileExt::get($originalFileName);
       $attachmentFileId = "$type:$attachmentCode.$extension";
-      copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-      unlink("$workspacePath/$originalFileName");
+
+      if (Storage::isObjectStore()) {
+        Storage::driver()->put(
+          "ws_$workspaceId/UnitAttachments/$attachmentCode.$extension",
+          "$workspacePath/$originalFileName"
+        );
+        unlink("$workspacePath/$originalFileName");
+      } else {
+        $dst = "$workspacePath/UnitAttachments/";
+        Folder::createPath($dst);
+        copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
+        unlink("$workspacePath/$originalFileName");
+      }
+
       $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
       $dataParts[$attachment->attachmentId] = self::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
     }
@@ -56,7 +66,9 @@ class AttachmentFiles {
     }
 
     $filePath = self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment);
-    if (!file_exists($filePath)) {
+    if (Storage::isObjectStore()) {
+      Storage::driver()->delete(Storage::toLogical($filePath));
+    } else if (!file_exists($filePath)) {
       unlink($filePath);
     }
   }
@@ -77,7 +89,10 @@ class AttachmentFiles {
 
     $filePath = DATA_DIR . "/ws_$workspaceId/UnitAttachments/$fileName";
 
-    if (!file_exists($filePath)) {
+    $exists = Storage::isObjectStore()
+      ? Storage::driver()->exists("ws_$workspaceId/UnitAttachments/$fileName")
+      : file_exists($filePath);
+    if (!$exists) {
       throw new HttpError("File not found:`$attachment->attachmentId`", 404);
     }
 
