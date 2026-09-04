@@ -94,4 +94,10 @@ class CacheService {
     $expiration = SystemConfig::$debug_fastLoginReuse ? 5 : 30 * 60;
     self::$redis->set("login-failed:$name:", $loginsFailed, $expiration);
   }
+
+  public static function resetFailedLogins(string $name): void {
+    if (!self::connect()) return;
+
+    self::$redis->del("login-failed:$name:");
+  }
 }
