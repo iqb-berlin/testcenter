@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Booklet 18.0",
+  "schema_version": "18.0",
+  "additionalProperties": false,
+  "description": "Testheft Konfiguration und Organisation von Units und Testlets. **Hier sind beispielhafte Booklet-XML's zu finden: [Booklet adaptives Testen](https://iqb-berlin.github.io/tba-info/study-run/preparation/adaptive/#Beispielkonfiguration), [Booklet ohne adaptives Testen](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/booklet-xml.html#aufbau)**",
+  "type": "object",
+  "required": [
+    "Metadata",
+    "Units"
+  ],
+
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URI zum JSON-Schema für Validierung und Autovervollständigung"
+    },
+    "Metadata": {
+      "title": "Metadata",
+      "description": "Pflichtangaben zur Identifikation des Booklets.",
+      "type": "object",
+      "required": ["Id", "Label"],
+      "additionalProperties": false,
+      "properties": {
+        "Id": { "type": "string" },
+        "Label": { "type": "string" },
+        "Description": { "type": "string" }
+      }
+    },
+    "BookletConfig": {
+      "type": "object",
+      "description": "Optionale Konfigurationsparameter zur Steuerung von Darstellung und Verhalten des Testhefts.",
+      "additionalProperties": false,
+      "properties": {
+        "Config": {
+          "type": "array",
+          "description": "Die Beschreibung der möglichen key-value-Paare erfolgt separat und kann [**hier**](https://iqb.pages.cms.hu-berlin.de/testcenter/pages/booklet-config.html) eingesehen werden."
+        }
+      }
+    },
+    "CustomTexts": {
+      "type":  "object",
+      "title": "CustomTexts",
+      "description": "Optionale Textersetzungen für UI-Labels, spezifisch für dieses Booklet."
+    },
+
+    "States": {
+      "type": "array",
+      "title": "States",
+      "additionalProperties": false,
+      "description": "Definition von adaptiven Variablen (Zuständen) für das Testheft. Ermöglicht die komplexe Steuerung von bedingten Blöcken.",
+      "items": {
+        "type": "object",
+        "required": ["State"],
+        "additionalProperties": false,
+        "properties": {
+          "State": {
+            "$ref": "#/$defs/State"
+          }
+        }
+      }
+    },
+    "Units": {
+      "type": "object",
+      "description": "Hier werden Units und Testlets definiert. **Zu beachten ist, dass mindestens eines von beiden angelegt sein muss!**",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "Testlet": {
+          "type": "array",
+          "description": "Liste von Testlets auf oberster Ebene (Mindestens 'unit' oder 'testlet' erforderlich).",
+          "items": {
+            "$ref": "#/$defs/Testlet"
+          }
+        },
+        "Unit": {
+          "type": "array",
+          "description": "Liste von Einzel-Units auf oberster Ebene (Mindestens 'unit' oder 'testlet' erforderlich).",
+          "items": {
+            "$ref": "#/$defs/Unit"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Testlet": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Eindeutige Identifikation des Testlets."
+        },
+        "label": {
+          "type": "string",
+          "description": "Anzeigename des Testlets."
+        },
+        "Restrictions": {
+          "$ref": "#/$defs/Restrictions"
+        },
+        "Unit": {
+          "type": "array",
+          "description": "Untergeordnete Units innerhalb dieses Testlets.",
+          "items": {
+            "$ref": "#/$defs/Unit"
+          }
+        },
+        "Testlet": {
+          "type": "array",
+          "description": "Untergeordnete Testlets innerhalb dieses Testlets.",
+          "items": {
+            "$ref": "#/$defs/Testlet"
+          }
+        }
+      },
+      "dependentSchemas": {
+        "id": {
+          "comment": "Stellt sicher, dass neben den Metadaten mindestens 'unit' oder 'testlet' vorhanden ist.",
+          "anyOf": [
+            { "required": ["Unit"] },
+            { "required": ["Testlet"] }
+          ]
+        }
+      }
+    },
+    "Unit": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "labelshort": {
+          "type": "string",
+          "description": "Optionaler Kurzname der Unit, der in der Aufgabennavigation angezeigt werden kann. Ab Testcenterversion 18.0.0 hat dieses Label keine Funktion mehr."},
+        "alias": {
+          "type": "string",
+          "description": "Da im Booklet keine Unit-Id Duplikate zulässig sind, kann manuell ein Alias vergeben werden. Wird ein Booklet in das Testcenter geladen mit Unit-Id Duplikaten, wird automatisch ein Alias vergeben.",
+          "default": "alias"
+        }
+      }
+    },
+    "Restrictions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CodeToEnter": { "$ref": "#/$defs/CodeToEnter" },
+        "TimeMax": { "$ref": "#/$defs/TimeMax" },
+        "show": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Show" }
+        },
+        "denyNavigationOnIncomplete": { "$ref": "#/$defs/DenyNavigationOnIncomplete" },
+        "lockAfterLeaving": { "$ref": "#/$defs/LockAfterLeaving" }
+      }
+    },
+    "CodeToEnter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Code, der eingegeben werden muss, um den Block zu betreten."}
+      }
+    },
+    "Show": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Bedingte Anzeige eines Testlets in Abhängigkeit der State-Id und der Options-Id.",
+      "properties": {
+        "if": {
+          "type": "string",
+          "description": "State-Id, die geprüft werden soll."
+        },
+        "is": {
+          "type": "string",
+          "description": "Options-Id."}
+      }
+    },
+    "TimeMax": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minutes": {
+          "type": "number",
+          "description": "Maximale Dauer in Minuten für einen Block. Sekunden können als Teil einer Minute angegeben werden. So entspricht eine Eingabe von bspw. 0.2 Minuten 12 Sekunden."},
+        "leave": {
+          "type": "string", "enum": ["forbidden", "confirm", "allowed"],
+          "description": "Verhalten beim Verlassen des Zeitblocks. Wenn 'confirm' oder 'allowed' gewählt wird, wird der Zeitblock nach dem Verlassen gesperrt und kann nicht mehr betreten werden. Bei 'forbidden' kann der Zeitblock nicht verlassen werden." }
+      }
+    },
+    "DenyNavigationOnIncomplete": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Testlet interne Navigationsbeschränkungen. **Diese sind unabhängig von gesetzten Navigationsbeschränkungen in der Booklet-Konfiguration.**",
+      "properties": {
+        "presentation": {
+          "type": "string",
+          "enum": ["ON", "OFF", "ALWAYS"],
+          "description": "'ON' Kontrolle bei Aufgabennavigation vorwärts. 'ALWAYS' Kontrolle bei Aufgabennavigation vorwärts und rückwärts." },
+        "response": {
+          "type": "string",
+          "enum": ["ON", "OFF", "ALWAYS"],
+          "description": "'ON' Kontrolle bei Aufgabennavigation vorwärts. 'ALWAYS' Kontrolle bei Aufgabennavigation vorwärts und rückwärts." }
+      }
+    },
+    "LockAfterLeaving": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Sperrt beim Verlassen entweder eine Unit oder ein Testlet. Zusätzlich kann angegeben werden, ob ein Bestätigungsdialog erscheinen soll.",
+      "properties": {
+        "confirm": { "type": "boolean" },
+        "scope": { "type": "string", "enum": ["unit", "testlet"] }
+      }
+    },
+    "State": {
+      "title": "State",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z\\d-]*$" },
+        "label": { "type": "string" },
+        "Option": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/option" }
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z\\d-]*$" },
+        "label": { "type": "string" },
+        "If": {
+          "type": "array",
+          "description": "Hier können die Bedingungen zur Anzeige von Aufgaben festgelegt werden. Die Bedingung der If-Anweisung wird aus zwei Felder gebildet. Zum einen das Feld mit optionalen Werten wie bspw. 'Sum' oder 'Count' und zum anderen ein Feld zur Prüfung mit dem Namen 'Is'.",
+          "items": { "$ref": "#/$defs/Condition" }
+        }
+      }
+    },
+    "Condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": { "$ref": "#/$defs/VariableReference" },
+        "Status": { "$ref": "#/$defs/VariableReference" },
+        "Code": { "$ref": "#/$defs/VariableReference" },
+        "Score": { "$ref": "#/$defs/AggregationScore" },
+        "Sum": { "$ref": "#/$defs/VariableAggregation" },
+        "Median": { "$ref": "#/$defs/VariableAggregation" },
+        "Mean": { "$ref": "#/$defs/VariableAggregation" },
+        "Count": { "$ref": "#/$defs/CountDefinition" },
+        "Is": { "$ref": "#/$defs/Comparison" }
+      }
+    },
+    "VariableReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "of": {
+          "type": "string",
+          "description": "Name der Variable, die zur Berechnung genutzt werden soll."
+        },
+        "from": {
+          "type": "string",
+          "description": "Name der Unit, aus der die Variable bezogen werden soll."
+        }
+      }
+    },
+    "VariableAggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": { "type": "array", "items": { "$ref": "#/$defs/VariableReference" }, "minItems": 2 },
+        "Code": { "type": "array", "items": { "$ref": "#/$defs/VariableReference" }, "minItems": 2 },
+        "Score": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AggregationScore" },
+          "minItems": 2
+        }
+      }
+    },
+    "Comparison": {
+      "title": "Comparison(Is)",
+      "description": "Vergleichsoperatoren für die Ergebnisprüfung der Bedingung 'Is'.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lowerThan": { "type": "number" },
+        "greaterThan": { "type": "number" },
+        "equal": { "type": "string" },
+        "notEqual": { "type": "string" }
+      }
+    },
+    "CountDefinition": {
+      "title": "Count",
+      "description": "Zählt, wie viele der untergeordneten Bedingungen zutreffen.",
+      "type": "object",
+      "required": ["if"],
+      "properties": {
+        "if": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Condition" },
+          "minItems": 2
+        }
+      }
+    },
+    "AggregationScore": {
+      "title": "AggregationScore",
+      "description": "Struktur für Score-Einträge innerhalb von Aggregationen.",
+      "type": "object",
+      "required": ["of", "from"],
+      "properties": {
+        "of": {
+          "type": "string",
+          "description": "Name der Variable, die zur Berechnung genutzt werden soll."
+        },
+        "from": {
+          "type": "string",
+          "description": "Name der Unit, aus der die Variable bezogen werden soll."
+        },
+        "or": {
+          "type": "number",
+          "description": "Optionaler Wert, der als Ersatzwert genutzt wird, falls die Variable nicht gesetzt ist."}
+      }
+    }
+  }
+}
