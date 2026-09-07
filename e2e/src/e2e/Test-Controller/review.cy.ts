@@ -271,6 +271,8 @@ describe('check code word options', { testIsolation: true }, () => {
       .contains('Aufgabe1');
     cy.get('[data-cy="toast-action-0"]')
       .click({ force: true });
+    cy.get('[data-cy="toast-item-0"]')
+      .should('not.exist');
   });
 
   it('show the current code word: keypad-symbols', () => {
