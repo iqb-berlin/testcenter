@@ -5,9 +5,8 @@ include $(TC_BASE_DIR)/.env.prod
 ## prevents collisions of make target names with possible file names
 .PHONY: testcenter-up testcenter-up-fg testcenter-down testcenter-start testcenter-stop testcenter-restart\
  	testcenter-status testcenter-logs testcenter-config testcenter-system-prune testcenter-volumes-prune\
- 	testcenter-images-clean testcenter-connect-db testcenter-dump-all testcenter-restore-all testcenter-dump-db\
- 	testcenter-restore-db testcenter-dump-db-data-only testcenter-restore-db-data-only testcenter-export-backend-vol\
- 	testcenter-import-backend-vol testcenter-update
+ 	testcenter-images-clean testcenter-connect-db testcenter-dump-db testcenter-restore-db\
+ 	testcenter-export-backend-vol testcenter-import-backend-vol testcenter-update
 
 ## disables printing the recipe of a make target before executing it
 .SILENT: testcenter-images-clean
@@ -227,51 +226,6 @@ testcenter-connect-db:
 			--file docker-compose.prod.yml\
 		exec db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)
 
-## Extract all PostgreSQL databases and roles into a plain SQL file
-# Keep the password from the target environment when this dump is restored.
-testcenter-dump-all:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.prod\
-			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec --no-TTY db pg_dumpall --clean --if-exists --no-role-passwords --username=$(DB_USER)\
-			>$(TC_BASE_DIR)/backup/temp/all-databases.sql
-
-## Restore all PostgreSQL databases and roles from the plain SQL file
-# ---------------------------------------------------------------------------
-# Why this target is more involved than the MySQL equivalent
-# ---------------------------------------------------------------------------
-# * A PostgreSQL container is created with a bootstrap superuser (DB_USER). This
-#   role already exists before any dump is applied. The `pg_dumpall` output
-#   therefore contains `DROP ROLE` and `CREATE ROLE` statements for that same
-#   user.
-# * Re‑executing those statements would cause errors like "role already exists"
-#   or "cannot drop role because it is required for the running database".
-# * To make the restore idempotent we discover the actual role name at runtime
-#   (`SELECT quote_ident(current_user)`) and then filter out the matching
-#   `DROP ROLE` and `CREATE ROLE` lines from the dump using `awk`.
-# * The filtered SQL is piped directly into `psql` with `--set ON_ERROR_STOP=on`
-#   so any unexpected failure aborts the restore, providing a safe and predictable
-#   behaviour.
-# * This extra logic replaces the simple MySQL restore that could use the root
-#   user without additional filtering.
-testcenter-restore-all:
-	cd $(TC_BASE_DIR) &&\
-	db_role=$$(docker compose\
-			--env-file .env.prod\
-			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec --no-TTY db psql --tuples-only --no-align --username=$(DB_USER) --dbname=postgres\
-			--command="SELECT quote_ident(current_user);") &&\
-	awk -v drop_role="DROP ROLE IF EXISTS $${db_role};" -v create_role="CREATE ROLE $${db_USER};"\
-		'$$0 != drop_role && $$0 != create_role' $(TC_BASE_DIR)/backup/temp/all-databases.sql |\
-	docker compose\
-			--env-file .env.prod\
-			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec --no-TTY db psql --set ON_ERROR_STOP=on --username=$(DB_USER) --dbname=postgres
-
 ## Extract the application database into a plain SQL file
 testcenter-dump-db:
 	cd $(TC_BASE_DIR) &&\
@@ -292,26 +246,6 @@ testcenter-restore-db:
 			--file docker-compose.prod.yml\
 		exec --no-TTY db psql --set ON_ERROR_STOP=on --username=$(DB_USER) --dbname=postgres\
 			<$(TC_BASE_DIR)/backup/temp/$(DB_DATABASE).sql
-
-## Extract only the application database data into a plain SQL file
-testcenter-dump-db-data-only:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.prod\
-			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec --no-TTY db pg_dump --data-only --username=$(DB_USER) --dbname=$(DB_DATABASE)\
-			>$(TC_BASE_DIR)/backup/temp/$(DB_DATABASE)-data.sql
-
-## Restore only the application database data from the plain SQL file
-testcenter-restore-db-data-only:
-	cd $(TC_BASE_DIR) &&\
-	docker compose\
-			--env-file .env.prod\
-			--file docker-compose.yml\
-			--file docker-compose.prod.yml\
-		exec --no-TTY db psql --set ON_ERROR_STOP=on --username=$(DB_USER) --dbname=$(DB_DATABASE)\
-			<$(TC_BASE_DIR)/backup/temp/$(DB_DATABASE)-data.sql
 
 ## Creates a gzip'ed tarball in temporary backup directory from backend data (backend has to be up!)
 testcenter-export-backend-vol:

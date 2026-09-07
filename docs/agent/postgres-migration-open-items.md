@@ -112,12 +112,19 @@ the rename cannot break the dump.
 
 ### 2. Verify the operational database tooling
 
-- [ ] Fix `testcenter-restore-all` in `scripts/make/prod.mk:267`.
-  The `awk` filter builds `create_role` from the undefined `$${db_USER}` instead of `$${db_role}`,
-  so the restore fails on the existing bootstrap role. Verify the filter against real `pg_dumpall` output.
+- [x] Remove `testcenter-dump-all`, `testcenter-restore-all`, `testcenter-dump-db-data-only`, and
+  `testcenter-restore-db-data-only` from `scripts/make/prod.mk` and the root `Makefile`.
+  `testcenter-restore-all` was broken: its `awk` filter built `create_role` from the undefined
+  `$${db_USER}` instead of `$${db_role}`, so the unfiltered `CREATE ROLE` statement reached `psql`
+  and `ON_ERROR_STOP=on` aborted the restore on the existing bootstrap role.
+  Instead of repairing the filter, the targets are gone: the container hosts only the one
+  application database, and the only role is the bootstrap superuser that the image creates from
+  `DB_USER`/`DB_PASSWORD`, so `pg_dumpall` dumps nothing that `.env.prod` and a fresh container do
+  not already provide. Nothing in the repository called any of the four targets.
 - [ ] Test backup and restore.
-  Cover the `testcenter-dump-*` and `testcenter-restore-*` targets, the pre-update dump in
+  Cover `testcenter-dump-db` and `testcenter-restore-db`, the pre-update dump in
   `scripts/updater.sh`, the error behavior, and restoration into an empty deployment.
+  Confirm that both produce interchangeable artifacts.
 
 The backup artifact format and the operational commands change with this release.
 This is a breaking change for operators. Document it before the release.

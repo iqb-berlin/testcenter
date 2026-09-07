@@ -21,9 +21,6 @@
   - `secret.db.mysqlRootPassword` entfällt ohne Ersatz.
   - Die Secret-Schlüssel `MYSQL_USER` und `MYSQL_PASSWORD` heißen jetzt `DB_USER` und `DB_PASSWORD`.
 - Eigene Backend-Images brauchen die PHP-Erweiterung `pdo_pgsql`. Die Erweiterung `pdo_mysql` ist nicht mehr nötig.
-- Die Befehle für Datenbankzugriff, Sicherung und Wiederherstellung verwenden jetzt `psql`, `pg_dump` und `pg_dumpall`.
-  Die Sicherungen bleiben SQL-Dateien, enthalten aber PostgreSQL-SQL. PostgreSQL kann alte MySQL-Sicherungen nicht
-  wiederherstellen. Dafür ist eine alte Testcenter-Version mit MySQL oder ein externes Übertragungswerkzeug nötig.
 - Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
   `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
   die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von
