@@ -291,8 +291,11 @@ paths:
                       description: ID of the person who created the review
                     reviewtime:
                       type: string
-                      format: date-time
-                      description: timestamp of review creation/last edit
+                      description: >-
+                        Time of review creation or last edit, as PostgreSQL returns it:
+                        `YYYY-MM-DD HH:MM:SS+00`, with up to six fractional-second digits when they
+                        are not zero. Evaluate the offset; it is not guaranteed to be `+00`.
+                      example: "2025-12-17 14:30:00+00"
                     priority:
                       type: integer
                       description: priority (0-3)
@@ -325,7 +328,7 @@ paths:
                   unit_name: "UNIT.SAMPLE"
                   test_id: 1
                   person_id: 5
-                  reviewtime: "2025-12-17T14:30:00Z"
+                  reviewtime: "2025-12-17 14:30:00+00"
                   priority: 2
                   categories: "content design"
                   entry: "This is a review comment"
@@ -338,7 +341,7 @@ paths:
                   unit_name: "UNIT.SAMPLE"
                   test_id: 1
                   person_id: 5
-                  reviewtime: "2025-12-17T15:00:00Z"
+                  reviewtime: "2025-12-17 15:00:00+00"
                   priority: 1
                   categories: "tech"
                   entry: "Another review"
@@ -396,8 +399,11 @@ paths:
                         description: ID of the person who created the review
                       reviewtime:
                         type: string
-                        format: date-time
-                        description: timestamp of review creation/last edit
+                        description: >-
+                          Time of review creation or last edit, as PostgreSQL returns it:
+                          `YYYY-MM-DD HH:MM:SS+00`, with up to six fractional-second digits when
+                          they are not zero. Evaluate the offset; it is not guaranteed to be `+00`.
+                        example: "2025-12-17 14:30:00+00"
                       priority:
                         type: integer
                         description: priority (0-3)
@@ -418,7 +424,7 @@ paths:
                   - id: 1
                     booklet_id: 1
                     person_id: 5
-                    reviewtime: "2025-12-17T14:30:00Z"
+                    reviewtime: "2025-12-17 14:30:00+00"
                     priority: 1
                     categories: "content"
                     entry: "This booklet needs improvement"
@@ -427,7 +433,7 @@ paths:
                   - id: 2
                     booklet_id: 1
                     person_id: 5
-                    reviewtime: "2025-12-17T15:30:00Z"
+                    reviewtime: "2025-12-17 15:30:00+00"
                     priority: 2
                     categories: "design"
                     entry: "Navigation could be better"

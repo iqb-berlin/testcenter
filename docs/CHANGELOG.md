@@ -21,6 +21,17 @@
   - `secret.db.mysqlRootPassword` entfällt ohne Ersatz.
   - Die Secret-Schlüssel `MYSQL_USER` und `MYSQL_PASSWORD` heißen jetzt `DB_USER` und `DB_PASSWORD`.
 - Eigene Backend-Images brauchen die PHP-Erweiterung `pdo_pgsql`. Die Erweiterung `pdo_mysql` ist nicht mehr nötig.
+- Zeitstempel, die die API unverändert aus der Datenbank ausliefert, haben jetzt das PostgreSQL-Format
+  `YYYY-MM-DD HH:MM:SS+00` - mit UTC-Offset und, sofern nicht null, mit bis zu sechs Nachkommastellen
+  (`2021-07-29 10:00:00.744751+00`). MySQL lieferte `2021-07-29 10:00:00` ohne Offset. Betroffen sind das Feld
+  `reviewtime` in `GET /test/{test_id}/reviews` und `GET /test/{test_id}/unit/{unit_name}/reviews` sowie das Feld
+  `createdAt` der Asset-Liste. Clients müssen den Offset auswerten; er ist nicht garantiert `+00`, sondern richtet
+  sich nach der Zeitzone der Datenbanksitzung.
+- Alle Zeitstempel-Felder der API-Dokumentation waren als `format: date-time` (RFC 3339, also
+  `2021-07-29T10:00:00Z`) deklariert. Kein Feld hat dieses Format jemals geliefert. Die Deklarationen wurden
+  korrigiert und beschreiben nun das tatsächliche Format. Betroffen sind `reviewtime`, `date` in
+  `SysCheckReport` und `latest_modification_ts`. Aus der Spezifikation generierte Clients konnten diese Werte
+  nicht einlesen.
 - Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
   `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
   die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von

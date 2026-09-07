@@ -3,10 +3,9 @@
 This is a working document for the `postgres-migration` branch. Delete it after the release.
 Before you delete it, move all required information to the permanent documentation.
 
-Completed and verified work is no longer listed here. The branch history and
-`scripts/database/full.sql` record it. This document now contains only what is still open,
-the contracts that still have to be documented, and the issues that the migration uncovered
-but does not have to fix.
+Completed and verified work is no longer listed here. The branch history,
+`scripts/database/full.sql`, and `docs/CHANGELOG.md` record it. This document contains only what is
+still open and the issues that the migration uncovered but does not have to fix.
 
 ## Purpose and source of truth
 
@@ -35,67 +34,10 @@ Schema, backend operation, all four test tiers, Compose volume isolation, Helm a
 configuration, the operational `psql`/`pg_dump` tooling, the runtime identity-sequence repair,
 and the removal of the MySQL runtime dependencies are done and verified.
 
-## Confirmed contracts
-
-These contracts are decided. They are listed here because the release documentation still has to
-describe them.
-
-### Timestamps
-
-The database and external APIs accept the PostgreSQL timestamp representation.
-A `timestamptz` value can contain an offset and up to six fractional-second digits.
-For example, the value can be `2021-07-29 10:00:00.744751+00`.
-PostgreSQL omits the fraction when its value is zero.
-
-This format intentionally differs from the previous MySQL format.
-The MySQL format contained no offset and no fractional seconds.
-
-The resulting contract is:
-
-- `TimeStamp::fromSQLFormat()` accepts `Y-m-d H:i:s.uP` and `Y-m-d H:i:sP`.
-- The offset identifies the instant. Consumers must use the offset and must not reinterpret it in the configured display timezone.
-- JSON API fields and CSV exports can expose DAO timestamp values without conversion.
-  These values can include the PostgreSQL offset and optional fractional seconds.
-- Call sites that promise an integer Unix timestamp must convert the value with `fromSQLFormat()`.
-- Call sites that promise a readable display timestamp must convert the value with `sqlToDisplayFormat()`.
-
-### Booleans in the API layer
-
-The change from `tinyint(1)` to `boolean` in the database layer has no consequence for the API layer.
-All affected values already pass through a transformation to a JSON boolean.
-
-### Database environment-variable names
-
-The public database configuration uses only the neutral `DB_*` names.
-Compose maps these values to the standard PostgreSQL image variables at the database container
-boundary. There is no fallback for the former `MYSQL_*` names and no public `POSTGRES_*` names.
-
-This rename is a breaking deployment and configuration change.
-The release notes contain the complete old-to-new mapping for Compose, Helm, and custom deployments.
-
-## Decision still required
-
-### Configurable display timezone
-
-`SystemConfig::$system_timezone` has the fixed value `Europe/Berlin`.
-Stored instants do not depend on it.
-It controls display formats and the interpretation of wall-clock times from booklet XML.
-
-Choose one approach:
-
-1. Keep Europe/Berlin as the product-wide fixed timezone and document that limitation.
-2. Add an environment variable and keep Europe/Berlin as the default.
-   Document its effect on displayed timestamps and booklet time interpretation.
-
 ## Work remaining before release
 
 ### 1. Rename the database variables in an existing `.env.prod`
 
-- [x] `scripts/migration/next.sh` renames `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, and a
-  hand-added `MYSQL_HOST` or `MYSQL_PORT` to their `DB_*` names, removes `MYSQL_ROOT_PASSWORD` and
-  `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS`, and then verifies that `DB_DATABASE`, `DB_USER`, and
-  `DB_PASSWORD` are present and not empty. It exits with status 1 if they are not, so
-  `scripts/updater.sh` reports the failure. It is idempotent and does not source `.env.prod`.
 - [ ] **At release time:** rename `scripts/migration/next.sh` to `scripts/migration/<release>.sh`
   and set its `TARGET_VERSION` accordingly.
   `scripts/updater.sh` looks for `scripts/migration/<release tag>.sh` for every release between the
@@ -112,15 +54,6 @@ the rename cannot break the dump.
 
 ### 2. Verify the operational database tooling
 
-- [x] Remove `testcenter-dump-all`, `testcenter-restore-all`, `testcenter-dump-db-data-only`, and
-  `testcenter-restore-db-data-only` from `scripts/make/prod.mk` and the root `Makefile`.
-  `testcenter-restore-all` was broken: its `awk` filter built `create_role` from the undefined
-  `$${db_USER}` instead of `$${db_role}`, so the unfiltered `CREATE ROLE` statement reached `psql`
-  and `ON_ERROR_STOP=on` aborted the restore on the existing bootstrap role.
-  Instead of repairing the filter, the targets are gone: the container hosts only the one
-  application database, and the only role is the bootstrap superuser that the image creates from
-  `DB_USER`/`DB_PASSWORD`, so `pg_dumpall` dumps nothing that `.env.prod` and a fresh container do
-  not already provide. Nothing in the repository called any of the four targets.
 - [ ] Test backup and restore.
   Cover `testcenter-dump-db` and `testcenter-restore-db`, the pre-update dump in
   `scripts/updater.sh`, the error behavior, and restoration into an empty deployment.
@@ -137,18 +70,6 @@ This is a breaking change for operators. Document it before the release.
 ## Documentation required for users and operators
 
 Document all confirmed compatibility changes before the release.
-A conditional entry becomes required if the team selects its breaking option.
-
-### Release notes in `docs/CHANGELOG.md`
-
-The `Technisches` section already documents the switch to PostgreSQL, the volume behavior, the
-environment-variable mapping, the Helm and image changes, and the new backup commands.
-The following entries are still missing.
-
-- [ ] **Required:** Document the PostgreSQL timestamp strings in APIs and CSV exports.
-  These strings can include a UTC offset and optional fractional seconds.
-- [ ] **Conditional:** If the team adds configurable timezone support, document the new environment
-  variable. Include its default value and behavior.
 
 ### Permanent operator documentation
 
@@ -163,13 +84,6 @@ The following entries are still missing.
 - [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
   PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.
   No current DAO uses these operations. Future queries must obey this constraint.
-
-### API and integration documentation
-
-- [ ] Update the documentation for each external timestamp field that can expose a raw DAO value.
-  Describe the accepted PostgreSQL format, offset, and optional microseconds.
-- [ ] Update CSV/export documentation for the same timestamp representation.
-- [ ] Make sure that the examples and generated API checks agree with the final timestamp contract.
 
 ## Issues found during the migration that are not release blockers
 
@@ -217,6 +131,45 @@ The second group belongs to the migration but can wait.
   The PostgreSQL conversion changed only the `DELETE` syntax and kept this shape.
   A refactoring should select the affected test IDs once, delete by ID in one transaction, apply
   `array_unique` to the group names, and return early when there are no IDs.
+- **The `OVERRIDE_CONFIG` of the e2e Compose file is dead.**
+  `e2e/docker-compose.system-test-headless.yml:33` sets `[fileService] external=` and
+  `[broadcastingService] external=`, but the properties are `$fileServer_url` and `$broadcaster_url`.
+  `SystemConfig::apply()` skips unknown keys through its `property_exists()` check, so both
+  overrides are discarded without a warning.
+  `$fileService_external` was renamed in commit `e55ebcc90` (2025-05-23) and the override was never
+  updated, so it has been ineffective since then. All eight Cypress suites pass regardless, which
+  means the values are not needed - either delete them or correct the key names.
+  Worth considering separately: `apply()` silently ignoring unknown keys is what let this rot
+  unnoticed, and `OVERRIDE_CONFIG` is not reachable in production anyway, because
+  `docker-compose.yml` does not pass it to the backend service.
+- **The display timezone is not configurable.**
+  `SystemConfig::$system_timezone` is fixed to `Europe/Berlin`. The migration does not change this
+  behavior in either direction, so there is nothing here to document for the release.
+  The setting is the last piece of deployment-specific configuration that is compiled into the
+  product, and it does two different jobs:
+  - Semantic: `TimeStamp::fromXMLFormat()` interprets the `validFrom`/`validTo` wall times of
+    Testtakers XML (`XMLFileTesttakers.class.php:269-270`), so the zone decides when a login window
+    opens and closes.
+  - Cosmetic: the display formats, the CSV and SysCheck report dates, and the expiration messages,
+    plus the `date_default_timezone_set()` default in `index.php:57`.
+
+  Stored instants never depend on it: `toSQLFormat()` always writes UTC with an explicit offset, and
+  `now()`, `isExpired()`, and `expirationFromNow()` compare Unix timestamps.
+  `GET /system/time` already publishes the value, and the SysCheck warns whenever the browser zone
+  differs (`welcome.component.ts:160`) - a warning that currently fires for every non-Berlin user.
+
+  Constraints for whoever implements it:
+  - Make the variable optional with `Europe/Berlin` as the fallback. `stringEnv()` throws on a
+    missing variable and `verifyClassProperties()` requires every property to be set, so an
+    optional read needs a small default-aware helper. Optional means no migration script and no
+    operator action, in this release or any later one.
+  - Validate the value once at configuration time. `TimeStamp` builds a `DateTimeZone` on nearly
+    every call, so an invalid zone would otherwise surface as a 500 inside an unrelated request.
+  - Treat it as install-time-only and say so. Changing it on a running installation leaves stored
+    instants correct but silently reinterprets every `validFrom`/`validTo` in existing Testtakers
+    XML, which shifts login windows.
+  - Feed every deployment path: both env templates, `docker-compose.yml`, the initialization-test
+    Compose configuration, and the Helm values and Deployment.
 
 ### Migration follow-ups that can wait
 
@@ -229,6 +182,11 @@ The second group belongs to the migration but can wait.
   or `password:` key in the values file.
   `values.yaml` currently contains exactly one of each (lines 107, 157, 160), so the result is
   correct today, but a second such key would break it. Anchor each substitution to its path.
+- **The two endpoints that expose a raw database timestamp have no test coverage.**
+  Neither Dredd nor any backend test calls `GET /test/{test_id}/reviews` or
+  `GET /test/{test_id}/unit/{unit_name}/reviews`, so nothing verifies their documented examples
+  against real output. Their `reviewtime` is the only externally visible value whose format the
+  migration changed, which makes it the one place where a regression would go unnoticed.
 - **No schema-drift guard exists.**
   Nothing verifies that `installPatches()` has no patches left to apply directly after an
   installation of `full.sql` and that the schema integrity check passes.
@@ -236,7 +194,7 @@ The second group belongs to the migration but can wait.
 ## Final release checklist
 
 - [ ] Complete all release-blocking implementation items in this document.
-- [ ] Make sure that all four test tiers pass after the final contract decisions.
+- [ ] Make sure that all four test tiers pass.
 - [ ] Test a Compose transition from the last MySQL release without a database migration.
       Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
 - [ ] Test an update of an existing `.env.prod` with the new migration script.
