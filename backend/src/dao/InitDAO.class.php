@@ -360,6 +360,20 @@ class InitDAO extends SessionDAO {
       [':ws_name' => $name, ':ws_id' => $workspace->getId()]
     );
 
+    // The ID comes from the folder name and is inserted explicitly, which leaves the identity sequence untouched.
+    // Without this repair the next workspace created in the UI collides with an existing ID.
+    // greatest() with nextval() keeps the sequence monotonic: max(id) alone could move it backwards behind IDs it
+    // has already issued, re-using the ID of a deleted workspace. The value nextval() consumes is skipped.
+    $this->_(
+      "select setval(
+            pg_get_serial_sequence('workspaces', 'id'),
+            greatest(
+              (select max(id) from workspaces),
+              nextval(pg_get_serial_sequence('workspaces', 'id'))
+            )
+          )"
+    );
+
     return [
       "name" => $name,
       "restored" => true,

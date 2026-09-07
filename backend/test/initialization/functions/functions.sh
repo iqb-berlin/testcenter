@@ -129,6 +129,12 @@ function remove_patch() {
   rm -f "scripts/database/patches.d/$1.sql"
 }
 
+# param 1: workspace-name
+# echoes the ID the database assigned
+function create_workspace() {
+  php backend/test/initialization/functions/create-workspace.php --ws_name="$1"
+}
+
 # param 1: workspace-id
 function delete_workspace() {
   php backend/test/initialization/functions/delete-workspace.php --ws_id="$1"
