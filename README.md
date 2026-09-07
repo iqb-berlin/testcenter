@@ -18,24 +18,14 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 
 ### Advanced Documentation
 
-There are two important files for the Testcenter. A file named **Testtaker** defines access rights for testtakers and the behavior of the test-control system. A second file named **Booklet** governs the behavior and structure of the booklet. The fields and attributes of these files are described below. This is a condensed, automatically generated documentation. Detailed information can be found [here](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/). The additional documentation covers the groupmonitor status and the test modes. **This documentation is in German.**
+To start a test via the Testcenter, several test files are required. These contain the units and serve the purpose of configuration.
+Two test files are required for the configuration. They are named **Booklet-XML** and **Testtaker-XML**. The structure and content of these two files are documented in [IQB-Specifications](https://iqb-specifications.github.io/).
+There are one repository for testtaker-XML and one for booklet-XML:
 
-**Booklet:**
+* [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
+* [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
 
-* [Parameters of required booklet elements](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet.html)
-* [Parameters of optional booklet-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html)
-* [Parameters of optional adaptive-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/adaptive-config.html)
-
-**Testtaker:**
-
-* [Parameters of required testtaker elements](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/testtaker.html)
-* [Parameters of optional testtaker custom-text](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html)
-
-**Additional information:**
-
-* [Overview about super-states of running sessions and their icons](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-session-super-states.html)
-* [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
-* [Documentation of all Logs output to admin log-file](https://github.com/iqb-berlin/testcenter/tree/master/docs/pages/logging.md)
+**More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
 
 ### Install & Run
 
