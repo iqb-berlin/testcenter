@@ -80,22 +80,37 @@ class File extends FileData {
 
     $this->path = $path;
 
-    if (!file_exists($path)) {
-      $this->size = 0;
-      $this->name = basename($path);
-      $this->modificationTime = 1;
-      $this->report('error', "File does not exist: `" . dirname($path) . '/'. basename($path) . "`");
-
-    } else {
+    if (file_exists($path)) {
       $this->size = filesize($path);
       $this->name = basename($path);
       $this->modificationTime = FileTime::modification($path);
+      return;
     }
+
+    if (Storage::isObjectStore() and ($logical = Storage::toLogical($path)) !== null and Storage::driver()->exists($logical)) {
+      $this->size = Storage::driver()->size($logical);
+      $this->name = basename($path);
+      $this->modificationTime = Storage::driver()->mtime($logical);
+      return;
+    }
+
+    $this->size = 0;
+    $this->name = basename($path);
+    $this->modificationTime = 1;
+    $this->report('error', "File does not exist: `" . dirname($path) . '/'. basename($path) . "`");
   }
 
   protected function load(): void {
-    if (($this->content === null) and $this->path and file_exists($this->path)) {
+    if ($this->content !== null or !$this->path) {
+      return;
+    }
+    if (file_exists($this->path)) {
       $this->content = file_get_contents($this->path);
+      $this->validate();
+      return;
+    }
+    if (Storage::isObjectStore() and ($logical = Storage::toLogical($this->path)) !== null and Storage::driver()->exists($logical)) {
+      $this->content = Storage::driver()->get($logical);
       $this->validate();
     }
   }
