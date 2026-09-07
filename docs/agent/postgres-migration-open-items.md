@@ -3,13 +3,18 @@
 This is a working document for the `postgres-migration` branch. Delete it after the release.
 Before you delete it, move all required information to the permanent documentation.
 
+Completed and verified work is no longer listed here. The branch history and
+`scripts/database/full.sql` record it. This document now contains only what is still open,
+the contracts that still have to be documented, and the issues that the migration uncovered
+but does not have to fix.
+
 ## Purpose and source of truth
 
 This document answers three questions:
 
-1. What has already been migrated and verified?
-2. What still has to be implemented or decided before release?
-3. Which compatibility changes must be documented for users and operators?
+1. What still has to be implemented or decided before release?
+2. Which compatibility changes must be documented for users and operators?
+3. Which issues did the migration uncover that the team can address later?
 
 `scripts/database/full.sql` is the hand-maintained source of truth for the PostgreSQL schema.
 The `MIGRATIONSHINWEISE` section records the schema conversion decisions.
@@ -20,35 +25,22 @@ Read these notes before you change the schema.
 
 | Area | Status | Release relevance |
 | --- | --- | --- |
-| PostgreSQL schema and basic backend operation | Done | Migration foundation |
-| Backend unit tests | Done | 257 tests and 820 assertions pass |
-| Backend initialization tests | Done | All four general suites pass |
-| Dredd API tests | Done | API suite passes |
-| Cypress end-to-end tests | Done | All eight suites pass |
-| MySQL-to-PostgreSQL data migration | Out of scope | Not supported |
-| Isolation from the legacy MySQL Compose volume | Open | Release blocker |
-| Deployment and Helm conversion | Open | Release blocker |
-| Backup and restore conversion | Open | Release blocker |
-| Runtime identity-sequence repair | Done | Restore after a file-only recovery |
-| Removal of MySQL runtime dependencies | Open | Release blocker |
+| `MYSQL_*` to `DB_*` rename in an existing `.env.prod` | Done, needs a release-time rename | Release blocker |
+| Verification of backup and restore | Open | Release blocker |
 | User and operator documentation | Open | Release blocker |
+| Initialization correctness follow-ups | Deferred | Not a blocker |
+| Pre-existing defects found during the migration | Deferred | Not a blocker |
 
-## Completed work
+Schema, backend operation, all four test tiers, Compose volume isolation, Helm and deployment
+configuration, the operational `psql`/`pg_dump` tooling, the runtime identity-sequence repair,
+and the removal of the MySQL runtime dependencies are done and verified.
 
-### Database and application migration
+## Confirmed contracts
 
-- [x] The team converted the application schema in `scripts/database/full.sql` to PostgreSQL.
-- [x] The team documented the important schema conversion decisions in the `MIGRATIONSHINWEISE` section of `full.sql`.
-- [x] The MySQL-specific multi-table `DELETE` used by
-  `AdminDAO::deleteResultDataByPersonAndBooklet()` now uses PostgreSQL syntax.
-  The method still needs a transaction and simpler queries. See the remaining correctness work.
-- [x] `TimeStamp::fromSQLFormat()` accepts PostgreSQL `timestamptz` values both with and without fractional
-  seconds.
-- [x] `testdata.sql` synchronizes the test-fixture identity sequences with `setval`.
-- [x] The `no-db-but-files` initialization test covers the restore-from-files initialization path.
-  It does not prove that the workspace identity sequence works after restoration.
+These contracts are decided. They are listed here because the release documentation still has to
+describe them.
 
-### Decided compatibility contract: timestamps
+### Timestamps
 
 The database and external APIs accept the PostgreSQL timestamp representation.
 A `timestamptz` value can contain an offset and up to six fractional-second digits.
@@ -67,181 +59,21 @@ The resulting contract is:
 - Call sites that promise an integer Unix timestamp must convert the value with `fromSQLFormat()`.
 - Call sites that promise a readable display timestamp must convert the value with `sqlToDisplayFormat()`.
 
-### Contract Decision: API layer
+### Booleans in the API layer
 
-Tinyint() to boolean on Database layer has no consequence for api layer, as all instances are already transformed to JSON boolean anyway
-
-
-### Completed tests
-
-- [x] `make test-backend-unit` passes all 257 tests and 820 assertions on PostgreSQL.
-- [x] `make test-backend-initialization-general` passes.
-  All four suites in `backend/test/initialization/tests/general/` pass.
-  The team removed the obsolete MySQL `db-versions.sh` test. The target runs `make stop` first.
-- [x] `make test-backend-api` passes the Dredd API suite. See `docs/agent/api-testing-dredd.md`.
-- [x] All eight Cypress suites configured in `scripts/ci/e2e.yml` pass.
-
-## Work remaining before release
-
-### 1. Protect the legacy MySQL volume during a Compose update
-
-The project will not migrate MySQL data to PostgreSQL.
-An existing server can use the new Compose file with the same Compose project name.
-The old Compose file uses `db_vol` for the MySQL data directory.
-If the new file also uses `db_vol`, Compose attaches the existing MySQL volume to PostgreSQL.
-
-- [x] Rename the PostgreSQL volume key from `db_vol` to `postgres_vol` in `docker-compose.yml`.
-- [x] Keep the PostgreSQL mount at its required data path.
-- [x] Make sure that the new Compose file does not attach or change the legacy `db_vol`.
-- [x] Test the transition with the same Compose project name that the old installation used.
-  Make sure that Compose creates a new PostgreSQL volume and keeps the MySQL volume unchanged.
-- [x] If the old files require unavailable database data, make sure that the application reports a clear error.
-
-This isolation protects the old MySQL files, but it does not make their data available to PostgreSQL.
-If operators need to recover MySQL data, they can return to the old release and its volume.
-
-### 2. Convert deployment configuration and Helm
-
-- [x] Decide whether to rename the legacy `MYSQL_*` database connection variables.
-  Choose neutral names or PostgreSQL-specific names. If you rename them, change all names in one update.
-  Add an explicit mapping to the release notes.
-- [x] Update all consumers of the selected variable names.
-  These consumers include `SystemConfig.class.php`, `docker-compose.yml`, `.env.dev-template`, and `.env.prod-template`.
-  They also include `scripts/installer.sh` and the Compose configuration for initialization tests.
-- [x] Remove the unused `MYSQL_ROOT_PASSWORD` and `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS` configuration.
-- [x] Replace the MySQL Helm resources in `scripts/helm/testcenter/templates/db/` with PostgreSQL resources.
-  Replace the Deployment, Service, and Secret.
-- [x] Update the backend Helm Deployment and Job, `values.yaml`, and their secrets to use the final
-  database configuration.
-- [x] Update or replace `scripts/helm/helm-install-tc.sh`.
-  It generates MySQL credentials and changes `mysqlUser`, `mysqlPassword`, and `mysqlRootPassword`.
-- [x] Make sure that a new Compose installation and a new Helm installation work.
-- [ ] Add a `scripts/migration/<release>.sh` that renames the `MYSQL_*` entries in an existing `.env.prod`.
-  `scripts/updater.sh` runs the script that matches the target release.
-  Without it, an update leaves the old names and the backend has no database configuration.
-- [ ] Make the value substitution in `scripts/helm/helm-install-tc.sh` unambiguous.
-  It replaces any four-space-indented `database:`, `user:`, or `password:` key in the values file.
-
-The public database configuration now uses only `DB_*` names.
-Compose maps these values directly to the standard PostgreSQL image variables at the database container boundary.
-There is no fallback for the former `MYSQL_*` names or public `POSTGRES_*` names.
-
-### 3. Convert operational database tooling
-
-- [x] Replace the pre-update `mysqldump` backup in `scripts/updater.sh` with a PostgreSQL backup.
-- [x] Convert all `backup` and `restore` targets in `scripts/make/prod.mk`.
-  Include the all-databases variants that previously authenticated as the MySQL root user.
-- [x] Replace the MySQL shell opened by `scripts/make/dev.mk` with `psql`.
-- [x] Replace the `mysql:8.4` image scan in `scripts/make/scan.mk` with the PostgreSQL image scan.
-- [ ] Fix `testcenter-restore-all` in `scripts/make/prod.mk`.
-  The `awk` filter builds `create_role` from the undefined `$${db_USER}` instead of `$${db_role}`,
-  so the restore fails on the existing bootstrap role. Verify the filter against real `pg_dumpall` output.
-- [ ] Decide what the pre-update backup in `scripts/updater.sh` does on a MySQL installation.
-  `pg_dump` cannot dump it, and `.env.prod` still has only the `MYSQL_*` names, so the dump fails.
-- [ ] Test backup and restore.
-  Include error behavior and restoration to an empty deployment.
-
-The backup artifact format and the operational commands will change.
-This is a breaking change for operators. Document it before the release.
-
-### 4. Fix runtime identity sequences after explicit-ID inserts
-
-`InitDAO::createWorkspaceIfMissing()` inserts `workspaces.name` and a `workspaces.id` that the caller supplies.
-`initialize.php` uses this method when a workspace exists on disk but has no database row.
-MySQL moved `AUTO_INCREMENT` past an explicitly inserted ID. PostgreSQL does not move `GENERATED BY DEFAULT AS IDENTITY` in this case.
-After a file restore, the next UI-created workspace can fail with a duplicate-key error.
-
-- [x] Synchronize the `workspaces.id` sequence after an explicit-ID insert.
-  `createWorkspaceIfMissing()` now calls `setval(pg_get_serial_sequence('workspaces', 'id'), ...)`.
-  The value is the greater of `max(id)` and `nextval()`, so the sequence never moves backwards
-  behind an ID it has already issued and never re-uses the ID of a deleted workspace.
-- [x] Examine every other identity table in `full.sql` migration note 4.
-  No other runtime path inserts an explicit ID into an identity table.
-  `AdminDAO::storeCommand()` supplies `test_commands.id`, but that column has no sequence.
-  `testdata.sql` uses explicit IDs only for `users` and `workspaces` and already calls `setval` for both.
-- [x] Extend `backend/test/initialization/tests/general/no-db-but-files.sh`.
-  Test 3.2 creates a workspace through `SuperAdminDAO::createWorkspace()` after the restoration
-  and expects the ID 3. Without the sequence repair the test fails with a duplicate-key error on ID 1.
-
-### 5. Remove obsolete MySQL runtime dependencies
-
-- [x] Remove `pdo_mysql` from `backend/Dockerfile`.
-- [x] Remove `ext-pdo_mysql` from `backend/composer.json` and require `ext-pdo_pgsql` instead.
-- [x] Regenerate `backend/composer.lock` if necessary. Make sure that the new file is correct.
-
-### 6. Resolve remaining initialization correctness issues
-
-#### Give `meta.dbSchemaVersion` one meaning
-
-This value must record the newest schema change in the database.
-Currently, `initialize.php` always writes the application version after initialization.
-In contrast, `installPatches()` writes the version of each applied patch.
-The application-version comparison can also skip all files in `patches.d`.
-An existing database then cannot find a patch that developers add later in the same development cycle.
-
-- [ ] Remove the unconditional application-version stamp.
-- [ ] Remove the gate that compares the database version with the application version.
-  `installPatches()` already finds the missing schema patches.
-- [ ] Replace the stale `18.2.0` value in `full.sql` with the correct baseline strategy.
-- [ ] Make `setDBSchemaVersion()` report or reject the `0.0.0-no-table` case.
-  Callers must be able to distinguish “stamped” from “skipped.”
-
-#### Make initialization locking recoverable
-
-`initialize.php` creates `backend/config/init.lock` and refuses to operate while the file exists.
-If the process stops before cleanup, the file remains.
-The next process catches the exception and exits with status 0.
-As a result, Apache does not start under Compose.
-The Helm initialization Job incorrectly reports success.
-
-- [ ] Choose and implement either a stale-lock/PID strategy or a PostgreSQL advisory lock.
-- [ ] Make sure that an initialization refusal or error returns a nonzero exit status.
-- [ ] Add tests for interrupted initialization and a subsequent retry.
-
-#### Separate admin bootstrapping from sample data
-
-`--dont_create_sample_data` prevents creation of the sample workspace and the first system administrator.
-As a result, a new production installation with `NO_SAMPLE_DATA=yes` can have no administrator.
-No user can then log in as an administrator.
-
-- [ ] Create the first administrator independently of the sample-data flag.
-- [ ] Decide whether `InitDAO::createAdmin()` must still create an administrator token during installation.
-  The current code contains an unresolved `TODO` about this behavior.
-- [ ] Cover a fresh installation with sample data disabled.
-
-### 7. Fix or record adjacent correctness and maintenance issues
-
-- [ ] Refactor `AdminDAO::deleteResultDataByPersonAndBooklet()`.
-  Select the affected test IDs one time. Delete by ID in one transaction.
-  Remove duplicate group names with `array_unique`. If there are no IDs, return before the code creates `id in ()`.
-- [ ] Record that `AdminDAO::storeCommand()` derives `test_commands.id` from `max(id) + 1`.
-  Two commanders can compute the same ID. This problem existed before the PostgreSQL migration.
-- [ ] Add an explicit offset to the timestamp in `SessionDAOTest.php`.
-  The test does not assert this value.
-  PostgreSQL interprets it in the session timezone, not as the apparent Berlin wall time.
-- [ ] Initialize `$unresolvedRelations` in `WorkspaceDAO::storeRelations()` as an integer.
-  The code initializes it as an array and increments it with `++`.
-  Thus, `relations_unresolved` is always zero. This problem existed before the PostgreSQL migration and is unrelated to it.
-- [ ] Add a schema-drift guard.
-  After installation of `full.sql`, `installPatches()` must have no patches to apply. The schema integrity check must pass.
-- [ ] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
-- [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
-  PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.
-  No current DAO uses these operations. Future queries must obey this constraint.
-- [ ] Delete `scripts/database/mysql-legacy/` after the PostgreSQL schema review no longer needs the original MySQL column definitions.
-
-## Decisions required before implementation can be finalized
-
-These choices affect public or operational contracts.
-Do not make these decisions as part of another task.
+The change from `tinyint(1)` to `boolean` in the database layer has no consequence for the API layer.
+All affected values already pass through a transformation to a JSON boolean.
 
 ### Database environment-variable names
 
-Decision: Use only the neutral `DB_*` names for the public database configuration.
-The release notes document the complete old-to-new mapping for Compose, Helm, and custom deployments.
-The official PostgreSQL image variables exist only at the database container boundary.
+The public database configuration uses only the neutral `DB_*` names.
+Compose maps these values to the standard PostgreSQL image variables at the database container
+boundary. There is no fallback for the former `MYSQL_*` names and no public `POSTGRES_*` names.
 
 This rename is a breaking deployment and configuration change.
+The release notes contain the complete old-to-new mapping for Compose, Helm, and custom deployments.
+
+## Decision still required
 
 ### Configurable display timezone
 
@@ -255,6 +87,46 @@ Choose one approach:
 2. Add an environment variable and keep Europe/Berlin as the default.
    Document its effect on displayed timestamps and booklet time interpretation.
 
+## Work remaining before release
+
+### 1. Rename the database variables in an existing `.env.prod`
+
+- [x] `scripts/migration/next.sh` renames `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, and a
+  hand-added `MYSQL_HOST` or `MYSQL_PORT` to their `DB_*` names, removes `MYSQL_ROOT_PASSWORD` and
+  `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS`, and then verifies that `DB_DATABASE`, `DB_USER`, and
+  `DB_PASSWORD` are present and not empty. It exits with status 1 if they are not, so
+  `scripts/updater.sh` reports the failure. It is idempotent and does not source `.env.prod`.
+- [ ] **At release time:** rename `scripts/migration/next.sh` to `scripts/migration/<release>.sh`
+  and set its `TARGET_VERSION` accordingly.
+  `scripts/updater.sh` looks for `scripts/migration/<release tag>.sh` for every release between the
+  installed and the target release, so a file named `next.sh` is never found automatically.
+  This is the same convention that the previous env-file migrations used; `18.2.0.sh` still carries
+  the `TARGET_VERSION='next'` of its development phase.
+  Without the rename an update leaves the old names, and the backend has no database configuration.
+
+The pre-update database dump does not need a MySQL fallback.
+`scripts/update.sh` runs the backup phase with the updater of the *installed* release, so an old
+installation dumps itself with `mysqldump` and its own `MYSQL_*` names.
+`backup_phase()` creates that dump before it runs the migration scripts of the target release, so
+the rename cannot break the dump.
+
+### 2. Verify the operational database tooling
+
+- [ ] Fix `testcenter-restore-all` in `scripts/make/prod.mk:267`.
+  The `awk` filter builds `create_role` from the undefined `$${db_USER}` instead of `$${db_role}`,
+  so the restore fails on the existing bootstrap role. Verify the filter against real `pg_dumpall` output.
+- [ ] Test backup and restore.
+  Cover the `testcenter-dump-*` and `testcenter-restore-*` targets, the pre-update dump in
+  `scripts/updater.sh`, the error behavior, and restoration into an empty deployment.
+
+The backup artifact format and the operational commands change with this release.
+This is a breaking change for operators. Document it before the release.
+
+### 3. Remove the legacy schema reference
+
+- [ ] Delete `scripts/database/mysql-legacy/` when the PostgreSQL schema review no longer needs the
+  original MySQL column definitions.
+
 ## Documentation required for users and operators
 
 Document all confirmed compatibility changes before the release.
@@ -262,24 +134,14 @@ A conditional entry becomes required if the team selects its breaking option.
 
 ### Release notes in `docs/CHANGELOG.md`
 
-Add the operator and integrator items under `Technisches`.
-These items affect external deployments and meet the changelog rule for that section.
+The `Technisches` section already documents the switch to PostgreSQL, the volume behavior, the
+environment-variable mapping, the Helm and image changes, and the new backup commands.
+The following entries are still missing.
 
-- [x] **Required:** State that Testcenter uses PostgreSQL instead of MySQL.
-  Include the supported PostgreSQL version. State that the release does not migrate or reuse MySQL data.
-- [x] **Required:** Document what occurs when an existing server uses the new Compose file.
-  The new file creates `postgres_vol` and leaves the legacy `db_vol` unchanged.
-- [x] **Required:** Document that the application starts with a new PostgreSQL database.
-  Explain which existing non-database volumes remain available and which data is unavailable without MySQL.
-- [x] **Required:** Document the new backup and restore commands and artifact format.
-  State that PostgreSQL cannot restore old MySQL dumps. Operators must use an old release or an external tool for MySQL data.
 - [ ] **Required:** Document the PostgreSQL timestamp strings in APIs and CSV exports.
   These strings can include a UTC offset and optional fractional seconds.
-- [x] **Required:** Document changes to Docker and Compose images, Helm values, and secrets.
-  Include database ports, health checks, and the required PHP extension.
-- [x] **Conditional:** Document the old-to-new environment-variable mapping if the team renames the `MYSQL_*` variables.
-- [ ] **Conditional:** If the team adds configurable timezone support, document the new environment variable.
-  Include its default value and behavior.
+- [ ] **Conditional:** If the team adds configurable timezone support, document the new environment
+  variable. Include its default value and behavior.
 
 ### Permanent operator documentation
 
@@ -290,7 +152,10 @@ These items affect external deployments and meet the changelog rule for that sec
 - [ ] Update backup and disaster-recovery documentation with PostgreSQL commands and restore tests.
 - [ ] Update Helm documentation and example values, including the secret-key migration.
 - [ ] Document how custom deployments must provide `pdo_pgsql`. Remove assumptions about `pdo_mysql`.
-- [ ] Add the schema-maintenance and collation constraints to `docs/agent/database.md`.
+- [ ] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
+- [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
+  PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.
+  No current DAO uses these operations. Future queries must obey this constraint.
 
 ### API and integration documentation
 
@@ -299,12 +164,75 @@ These items affect external deployments and meet the changelog rule for that sec
 - [ ] Update CSV/export documentation for the same timestamp representation.
 - [ ] Make sure that the examples and generated API checks agree with the final timestamp contract.
 
+## Issues found during the migration that are not release blockers
+
+The migration exposed these issues. None of them blocks the release.
+The first group existed before the migration and is unrelated to PostgreSQL.
+The second group belongs to the migration but can wait.
+
+### Pre-existing issues, unrelated to PostgreSQL
+
+- **`test_commands.id` has a race.**
+  `AdminDAO::storeCommand()` derives the ID from `max(id) + 1`. Two commanders can compute the same ID.
+- **`relations_unresolved` is always zero.**
+  `WorkspaceDAO::storeRelations()` initializes `$unresolvedRelations` as an array in
+  `WorkspaceDAO.class.php:584` and increments it with `++` in line 592.
+- **`meta.dbSchemaVersion` has two meanings.**
+  `initialize.php:108` always stamps the application version after initialization, while
+  `installPatches()` stamps the version of each applied patch.
+  The comparison in `initialize.php:85` can also skip all files in `patches.d`, so an existing
+  database cannot find a patch that developers add later in the same development cycle.
+  A cleanup has to remove the unconditional stamp, remove the version gate, decide the baseline
+  value that `full.sql:669` writes (currently the stale `18.2.0`), and make
+  `setDBSchemaVersion()` report or reject the `0.0.0-no-table` case so that callers can distinguish
+  “stamped” from “skipped.”
+- **Initialization locking is not recoverable.**
+  `initialize.php` creates `backend/config/init.lock` and refuses to operate while the file exists.
+  If the process stops before cleanup, the file remains. The next process catches the exception and
+  exits with status 0. As a result Apache does not start under Compose, and the Helm initialization
+  Job incorrectly reports success.
+  A fix has to choose a stale-lock/PID strategy or a PostgreSQL advisory lock, return a nonzero exit
+  status on refusal or error, and add tests for an interrupted initialization and a retry.
+- **Admin bootstrapping depends on the sample-data flag.**
+  `--dont_create_sample_data` prevents creation of the sample workspace *and* of the first system
+  administrator, so a new production installation with `NO_SAMPLE_DATA=yes` can have no
+  administrator and nobody can log in.
+  The first administrator has to be created independently of the flag, and a fresh installation
+  without sample data needs test coverage. `InitDAO::createAdmin()` also contains an unresolved
+  `TODO` about whether installation must still create an administrator token.
+- **`InitDAO::installPatches()` reads `$patches[0]` before it checks the list.**
+  Line 398 accesses the first element to detect a `next` patch.
+  `scripts/database/patches.d` is empty on this branch, so every initialization run takes that path
+  with an empty array.
+- **`AdminDAO::deleteResultDataByPersonAndBooklet()` needs a cleanup.**
+  The method runs without a transaction, does not deduplicate the affected group names, and produces
+  `in ()` for an empty `$setsToDelete`.
+  The PostgreSQL conversion changed only the `DELETE` syntax and kept this shape.
+  A refactoring should select the affected test IDs once, delete by ID in one transaction, apply
+  `array_unique` to the group names, and return early when there are no IDs.
+
+### Migration follow-ups that can wait
+
+- **`SessionDAOTest.php:544` uses a timestamp without an offset.**
+  PostgreSQL interprets `'2030-01-02 10:00:00'` in the session timezone rather than as the apparent
+  Berlin wall time. The test does not assert this value, so it passes either way.
+  Add an explicit offset.
+- **The Helm value substitution is broader than intended.**
+  `scripts/helm/helm-install-tc.sh:280-284` replaces any four-space-indented `database:`, `user:`,
+  or `password:` key in the values file.
+  `values.yaml` currently contains exactly one of each (lines 107, 157, 160), so the result is
+  correct today, but a second such key would break it. Anchor each substitution to its path.
+- **No schema-drift guard exists.**
+  Nothing verifies that `installPatches()` has no patches left to apply directly after an
+  installation of `full.sql` and that the schema integrity check passes.
+
 ## Final release checklist
 
 - [ ] Complete all release-blocking implementation items in this document.
 - [ ] Make sure that all four test tiers pass after the final contract decisions.
 - [ ] Test a Compose transition from the last MySQL release without a database migration.
-- [ ] Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
+      Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
+- [ ] Test an update of an existing `.env.prod` with the new migration script.
 - [ ] Test the new PostgreSQL backup, restore, and rollback paths.
 - [ ] Make sure that new Compose and Helm installations work.
 - [ ] Make sure that no production path or dependency requires MySQL.
