@@ -55,8 +55,12 @@ Document all confirmed compatibility changes before the release.
 
 ### Permanent operator documentation
 
-- [ ] Update the installation documentation.
-  Cover PostgreSQL prerequisites, configuration, credentials, port, storage, health checks, and initial database creation.
+- [x] Update the installation documentation.
+  `docs/pages/installation-prod.md` gained a `Database` section under `Configuration`: the three `DB_*` settings,
+  the fixed host and port, the password that only applies while the database is created, and `psql` access.
+  Deliberately not covered: prerequisites, storage, health checks, and the first-start sequence. Nothing there
+  changed for an operator - the database was a container nobody installs by hand under MySQL as well - and the
+  documentation never described any of it. Document it if someone asks, not as part of this migration.
 - [ ] Add a Compose transition guide.
   Cover the new volume name, the unchanged legacy volume, the empty PostgreSQL database, rollback, and troubleshooting.
 - [ ] Update Helm documentation and example values, including the secret-key migration.

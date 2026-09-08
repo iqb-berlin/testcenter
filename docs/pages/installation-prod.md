@@ -128,3 +128,33 @@ TLS Certificates can be managed manually or via a ACME provider like "Let's Encr
 If you choose to use an ACME provider, the install process will ask for all necessary configuration data and fill in the `.env` file and create additional config files.
 If managed manually, the TLS certificate must be named `certificate.pem` and TLS Private Key must be named `private_key.pem` and both need to be placed in the folder _/secrets/traefik/certs_. 
 If no certificates are configured, self-signed certificates are generated and used. This may cause a browser warning.
+
+### Database
+The database runs as a container inside the application's own network and is not published to the host. It is
+configured by three settings in `.env.prod`:
+
+```
+DB_DATABASE=iqb_tba_testcenter
+DB_USER=iqb_tba_db_user
+DB_PASSWORD=<generated during installation>
+```
+
+The installation generates the password randomly. Host and port are not configurable: the backend always reaches the
+database as `db` on port 5432. The `POSTGRES_*` variables that the database image expects are derived from the three
+settings above; do not set them yourself.
+
+`DB_PASSWORD` is only applied while the database is being created, during the very first start. Changing it in
+`.env.prod` afterwards does not change the password in the existing database, and the backend can no longer log in.
+Change it in both places:
+
+```
+make testcenter-connect-db
+```
+```
+ALTER USER iqb_tba_db_user WITH PASSWORD 'new password';
+```
+
+Afterwards set the same value in `.env.prod` and restart the application with `make testcenter-restart`.
+
+`make testcenter-connect-db` opens a `psql` prompt in the database container, for this and for any other database
+task. It works no matter what `DB_PASSWORD` says, because connections from inside the container need no password.
