@@ -1,12 +1,17 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
+## Captured before the `include` below, which would otherwise be the last entry of MAKEFILE_LIST.
+## Absolute, because the targets calling back into it change directory first.
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+
 include $(TC_BASE_DIR)/.env.prod
 
 ## prevents collisions of make target names with possible file names
 .PHONY: testcenter-up testcenter-up-fg testcenter-down testcenter-start testcenter-stop testcenter-restart\
  	testcenter-status testcenter-logs testcenter-config testcenter-system-prune testcenter-volumes-prune\
- 	testcenter-images-clean testcenter-connect-db testcenter-dump-db testcenter-restore-db\
- 	testcenter-export-backend-vol testcenter-import-backend-vol testcenter-update
+ 	testcenter-images-clean testcenter-connect-db testcenter-backup testcenter-restore testcenter-dump-db\
+ 	testcenter-restore-db testcenter-start-db testcenter-export-backend-vol testcenter-import-backend-vol\
+ 	testcenter-update
 
 ## disables printing the recipe of a make target before executing it
 .SILENT: testcenter-images-clean
@@ -226,7 +231,15 @@ testcenter-connect-db:
 			--file docker-compose.prod.yml\
 		exec db psql --username=$(DB_USER) --dbname=$(DB_DATABASE)
 
+## Backup set the single-step targets work on, relative to the installation directory, e.g.
+## `make testcenter-dump-db BACKUP=backup/2026-09-08T10-42-00Z`.
+BACKUP ?= backup/temp
+DB_DUMP_FILE = $(TC_BASE_DIR)/$(BACKUP)/$(DB_DATABASE).sql
+MANIFEST_FILE = $(TC_BASE_DIR)/$(BACKUP)/manifest
+
 ## Extract the application database into a plain SQL file
+# Moved into place only on success: the shell truncates a redirect target before pg_dump runs, so
+# writing directly would destroy the previous dump whenever a dump fails.
 testcenter-dump-db:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
@@ -234,7 +247,9 @@ testcenter-dump-db:
 			--file docker-compose.yml\
 			--file docker-compose.prod.yml\
 		exec --no-TTY db pg_dump --clean --if-exists --create --username=$(DB_USER)\
-			--dbname=$(DB_DATABASE) >$(TC_BASE_DIR)/backup/temp/$(DB_DATABASE).sql
+			--dbname=$(DB_DATABASE) >$(DB_DUMP_FILE).part\
+	&& mv $(DB_DUMP_FILE).part $(DB_DUMP_FILE)\
+	|| { rm -f $(DB_DUMP_FILE).part; echo "Database dump failed. '$(DB_DUMP_FILE)' is unchanged."; exit 1; }
 
 ## Restore the application database from the plain SQL file
 # Connect to postgres because the dump drops and recreates the application database.
@@ -245,25 +260,105 @@ testcenter-restore-db:
 			--file docker-compose.yml\
 			--file docker-compose.prod.yml\
 		exec --no-TTY db psql --set ON_ERROR_STOP=on --username=$(DB_USER) --dbname=postgres\
-			<$(TC_BASE_DIR)/backup/temp/$(DB_DATABASE).sql
+			<$(DB_DUMP_FILE)
 
-## Creates a gzip'ed tarball in temporary backup directory from backend data (backend has to be up!)
+## Addressed by name rather than through the backend container, so both directions also work while
+## the application is down. Mounted at its usual path, which is what the archive's paths are relative to.
+BACKEND_VOLUME = $(COMPOSE_PROJECT_NAME)_backend_vol
+BACKEND_VOLUME_DIR = /var/www/testcenter/data
+BACKEND_VOLUME_ARCHIVE = $(TC_BASE_DIR)/$(BACKUP)/backend_vol.tar.gz
+
+## Creates a gzip'ed tarball of the backend data files in the backup set
+# The volume has to exist: `docker run` would otherwise create an empty one and archive nothing.
 testcenter-export-backend-vol:
-	@container_id=$$(docker compose ps -q backend 2>/dev/null); \
-	docker run --rm \
-		--volumes-from "$${container_id}" \
-		--volume $(TC_BASE_DIR)/backup/temp:/tmp \
-		busybox tar czvf /tmp/backend_vol.tar.gz /var/www/testcenter/data
-
-
-## Extracts a gzip'ed tarball from temporary backup directory into backend data volume (backend has to be up!)
-testcenter-import-backend-vol:
-	@container_id=$$(docker compose ps -q backend 2>/dev/null); \
+	docker volume inspect $(BACKEND_VOLUME) >/dev/null &&\
 	docker run --rm\
-			--volumes-from "$${container_id}"\
-			--volume $(TC_BASE_DIR)/backup/temp:/tmp\
+			--volume $(BACKEND_VOLUME):$(BACKEND_VOLUME_DIR):ro\
+			--volume $(TC_BASE_DIR)/$(BACKUP):/tmp\
+		busybox tar czvf /tmp/backend_vol.tar.gz $(BACKEND_VOLUME_DIR)
+
+
+## Extracts the backend data files of the backup set into the backend data volume
+# The volume may be absent - importing into a deployment that has never run is a valid case, and the
+# volume Compose uses afterwards is the one this creates.
+# The data directory is replaced, not merged into, so that no file the archive lacks survives a
+# restore. Since that discards data, a volume that already holds files needs FORCE=yes.
+testcenter-import-backend-vol:
+	@test -s $(BACKEND_VOLUME_ARCHIVE) ||\
+		{ echo "No archive at '$(BACKEND_VOLUME_ARCHIVE)'. Nothing was changed."; exit 1; }
+	@if [ "$(FORCE)" != "yes" ] &&\
+		[ -n "$$(docker run --rm --volume $(BACKEND_VOLUME):$(BACKEND_VOLUME_DIR):ro busybox ls -A $(BACKEND_VOLUME_DIR))" ]; then\
+			echo "The backend data volume is not empty. Repeat with FORCE=yes to replace its contents.";\
+			exit 1;\
+	fi
+	docker run --rm\
+			--volume $(BACKEND_VOLUME):$(BACKEND_VOLUME_DIR)\
+			--volume $(TC_BASE_DIR)/$(BACKUP):/tmp\
 		busybox sh\
-			-c "cd /var/www/testcenter/data && tar xvzf /tmp/backend_vol.tar.gz --strip-components 4"
+			-c "find $(BACKEND_VOLUME_DIR) -mindepth 1 -delete &&\
+				tar xvzf /tmp/backend_vol.tar.gz --strip-components 4 -C $(BACKEND_VOLUME_DIR)"
+
+## Create a complete backup - database, backend data files and a manifest - as one timestamped set
+## below `backup/`. The manifest is what tells a later restore that both halves belong together.
+testcenter-backup:
+	@set -e;\
+	backup="backup/$$(date -u '+%Y-%m-%dT%H-%M-%SZ')";\
+	mkdir -p $(TC_BASE_DIR)/$${backup};\
+	echo "Creating backup set '$${backup}'";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-dump-db BACKUP="$${backup}";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-export-backend-vol BACKUP="$${backup}";\
+	cd $(TC_BASE_DIR)/$${backup};\
+	{\
+		echo "version=$(VERSION)";\
+		echo "database=$(DB_DATABASE)";\
+		echo "created=$$(date -u '+%Y-%m-%dT%H:%M:%SZ')";\
+		sha256sum $(DB_DATABASE).sql backend_vol.tar.gz;\
+	} >manifest;\
+	echo "Backup set '$${backup}' complete."
+
+## Restore a complete backup set, e.g. `make testcenter-restore BACKUP=backup/2026-09-08T10-42-00Z`.
+## Restores both halves with the application down, so it never starts on halves that do not match.
+testcenter-restore:
+	@set -e;\
+	test -f $(MANIFEST_FILE) || {\
+		echo "'$(BACKUP)' is not a backup set: no manifest.";\
+		echo "Name a set created by 'make testcenter-backup', e.g. BACKUP=backup/2026-09-08T10-42-00Z";\
+		exit 1;\
+	};\
+	echo "Verifying backup set '$(BACKUP)'";\
+	( cd $(TC_BASE_DIR)/$(BACKUP) && grep -E '^[0-9a-f]{64} ' manifest | sha256sum --check --quiet );\
+	echo "- both artifacts are intact";\
+	backup_version=$$(sed -ne 's|^version=||p' $(MANIFEST_FILE));\
+	test "$${backup_version}" = "$(VERSION)" ||\
+		echo "- NOTE: the set was taken on version '$${backup_version}', this installation runs '$(VERSION)'";\
+	echo "Stopping the application";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-down;\
+	echo "Starting the database on its own";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-start-db;\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-restore-db BACKUP="$(BACKUP)";\
+	echo "- database restored";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-import-backend-vol BACKUP="$(BACKUP)" FORCE=yes;\
+	echo "- data files restored";\
+	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-down;\
+	echo "Restore complete. Start the application with 'make testcenter-up'."
+
+## Start the database alone and wait until it accepts connections
+testcenter-start-db:
+	@if $(TLS_ENABLED); then\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.tls.yml\
+			up --detach --wait db;\
+	else\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+			up --detach --wait db;\
+	fi
 
 # Start testcenter update procedure
 testcenter-update:

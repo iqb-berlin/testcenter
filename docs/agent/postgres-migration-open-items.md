@@ -25,14 +25,21 @@ Read these notes before you change the schema.
 | Area | Status | Release relevance |
 | --- | --- | --- |
 | `MYSQL_*` to `DB_*` rename in an existing `.env.prod` | Done, needs a release-time rename | Release blocker |
-| Verification of backup and restore | Open | Release blocker |
-| User and operator documentation | Open | Release blocker |
+| Verification of backup and restore | Done | - |
+| User and operator documentation | Open, except backup and disaster recovery | Release blocker |
 | Initialization correctness follow-ups | Deferred | Not a blocker |
 | Pre-existing defects found during the migration | Deferred | Not a blocker |
 
 Schema, backend operation, all four test tiers, Compose volume isolation, Helm and deployment
 configuration, the operational `psql`/`pg_dump` tooling, the runtime identity-sequence repair,
 and the removal of the MySQL runtime dependencies are done and verified.
+
+Backup and restore are done and verified in a Compose installation: `make testcenter-backup` and
+`make testcenter-restore` write and read one timestamped set per backup, the pre-update backup of
+`scripts/updater.sh` is such a set and restorable, and a database restored into a deployment with an
+empty data volume no longer keeps the backend from starting.
+The verification used locally built images in a throwaway installation directory, not a published
+release. Only the Compose deployment is covered - see the Helm item further down.
 
 ## Work remaining before release
 
@@ -52,17 +59,7 @@ installation dumps itself with `mysqldump` and its own `MYSQL_*` names.
 `backup_phase()` creates that dump before it runs the migration scripts of the target release, so
 the rename cannot break the dump.
 
-### 2. Verify the operational database tooling
-
-- [ ] Test backup and restore.
-  Cover `testcenter-dump-db` and `testcenter-restore-db`, the pre-update dump in
-  `scripts/updater.sh`, the error behavior, and restoration into an empty deployment.
-  Confirm that both produce interchangeable artifacts.
-
-The backup artifact format and the operational commands change with this release.
-This is a breaking change for operators. Document it before the release.
-
-### 3. Remove the legacy schema reference
+### 2. Remove the legacy schema reference
 
 - [ ] Delete `scripts/database/mysql-legacy/` when the PostgreSQL schema review no longer needs the
   original MySQL column definitions.
@@ -77,7 +74,6 @@ Document all confirmed compatibility changes before the release.
   Cover PostgreSQL prerequisites, configuration, credentials, port, storage, health checks, and initial database creation.
 - [ ] Add a Compose transition guide.
   Cover the new volume name, the unchanged legacy volume, the empty PostgreSQL database, rollback, and troubleshooting.
-- [ ] Update backup and disaster-recovery documentation with PostgreSQL commands and restore tests.
 - [ ] Update Helm documentation and example values, including the secret-key migration.
 - [ ] Document how custom deployments must provide `pdo_pgsql`. Remove assumptions about `pdo_mysql`.
 - [ ] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
@@ -114,6 +110,12 @@ The second group belongs to the migration but can wait.
   Job incorrectly reports success.
   A fix has to choose a stale-lock/PID strategy or a PostgreSQL advisory lock, return a nonzero exit
   status on refusal or error, and add tests for an interrupted initialization and a retry.
+- **A failed initialization restarts forever without a usable signal.**
+  Every other error path ends in `exit(1)`, which `backend/entrypoint.sh` propagates. Under
+  `RESTART_POLICY=always` the container then repeats the same failure indefinitely; the healthcheck
+  reports `starting` until it gives up, and the actual message is only in the log. The one cause
+  this migration produced is gone (a restored database with an empty data volume), but any other
+  initialization error still behaves this way.
 - **Admin bootstrapping depends on the sample-data flag.**
   `--dont_create_sample_data` prevents creation of the sample workspace *and* of the first system
   administrator, so a new production installation with `NO_SAMPLE_DATA=yes` can have no
@@ -173,6 +175,14 @@ The second group belongs to the migration but can wait.
 
 ### Migration follow-ups that can wait
 
+- **The Helm deployment has no backup or restore of its own.**
+  `make testcenter-backup` and `make testcenter-restore` are Compose commands: they address the
+  Compose volume and `docker compose exec`. The chart in `scripts/helm/testcenter` ships nothing
+  equivalent. The bundled Longhorn chart can snapshot and back up volumes, but each volume on its
+  own, so a pair taken that way is not guaranteed to match across the database and the data volume.
+  This gap predates the migration - the MySQL releases had no Helm backup tooling either - so it is
+  not a regression, but the Helm documentation should at least say which mechanism operators are
+  expected to use.
 - **`SessionDAOTest.php:544` uses a timestamp without an offset.**
   PostgreSQL interprets `'2030-01-02 10:00:00'` in the session timezone rather than as the apparent
   Berlin wall time. The test does not assert this value, so it passes either way.
@@ -198,7 +208,11 @@ The second group belongs to the migration but can wait.
 - [ ] Test a Compose transition from the last MySQL release without a database migration.
       Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
 - [ ] Test an update of an existing `.env.prod` with the new migration script.
-- [ ] Test the new PostgreSQL backup, restore, and rollback paths.
+- [x] Test the new PostgreSQL backup, restore, and rollback paths.
+      Done for Compose with locally built images: a backup set and its restore, restoration into an
+      empty deployment, the pre-update set of `scripts/updater.sh` and its restore, and the refusal
+      paths (database in use, missing or damaged artifact, non-empty data volume without `FORCE`).
+      Repeat against the published release images before the release.
 - [ ] Make sure that new Compose and Helm installations work.
 - [ ] Make sure that no production path or dependency requires MySQL.
 - [ ] Delete `scripts/database/mysql-legacy/`.

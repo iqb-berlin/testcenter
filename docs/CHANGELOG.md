@@ -48,6 +48,13 @@
   fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange
   `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende
   Installationen von dieser Änderung nicht betroffen sind.
+- Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank
+  und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/`
+  mit UTC-Zeitstempel und enthält das Datenbankabbild, ein Archiv der Backend-Dateien und eine Datei `manifest` mit
+  Version, Datenbanknamen und Prüfsummen. Nicht enthalten sind `.env.prod`, `config/` und `secrets/`; diese Dateien
+  müssen separat gesichert werden.
+- Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt
+  sich mit `make testcenter-restore` wiederherstellen.
 
 # 18.3.0
 

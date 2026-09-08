@@ -54,6 +54,60 @@ make testcenter-update
 ```
 from the installation directory.
 
+### Backup and restore
+
+An installation keeps its state in two places: the **database** (accounts, logins, test results) and the **data
+files** (units, booklets, testtaker files, resources). A backup is only usable if both halves come from the same
+moment, so back them up together:
+
+```
+make testcenter-backup
+```
+
+This writes one timestamped backup set into the installation directory, e.g.:
+
+```
+backup/2026-09-08T10-42-00Z/
+├── iqb_tba_testcenter.sql   # the database
+├── backend_vol.tar.gz       # the data files
+└── manifest                 # version, database name, checksums of both artifacts
+```
+
+The application may keep running while a backup is taken.
+
+To restore a backup set, name it:
+
+```
+make testcenter-restore BACKUP=backup/2026-09-08T10-42-00Z
+make testcenter-up
+```
+
+The restore checks the manifest first and refuses to start if an artifact is damaged or missing. It then stops the
+application, replaces both halves, and leaves the application stopped so you can start it yourself. Restoring
+**replaces** the data files: anything not contained in the backup is gone afterwards.
+
+`make testcenter-update` takes such a backup set of its own before it changes anything, and it can be restored with
+the same command.
+
+#### Disaster recovery on a new machine
+
+1. Install the same release the backup set was taken with (the release is recorded in the manifest; the restore warns
+   if it does not match).
+2. Copy the backup set into the `backup` directory of the new installation.
+3. Run `make testcenter-restore BACKUP=backup/<set>`, then `make testcenter-up`.
+
+#### What a backup set does not contain
+
+Your configuration - `.env.prod`, `config/` and `secrets/` - is not part of a backup set. Keep a copy of those
+separately; without them a new installation cannot be reached under the same host name and TLS certificates.
+
+#### Restoring only one half
+
+`testcenter-dump-db`, `testcenter-restore-db`, `testcenter-export-backend-vol` and `testcenter-import-backend-vol`
+work on a single half, by default in `backup/temp`, and accept `BACKUP=` like the commands above. Be aware that a
+database and data files from different moments do not match: workspaces whose content is missing stay empty, and the
+application says so during start-up.
+
 ### Login
 
 After installation two logins are prepared:

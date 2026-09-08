@@ -28,12 +28,12 @@ declare RELEASE_REGEX='^((0|([1-9][0-9]*)))\.((0|([1-9][0-9]*)))\.((0|([1-9][0-9
 declare PRERELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))$'
 declare ALL_RELEASE_REGEX='^(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))\.(0|([1-9][0-9]*))(-((alpha|beta|rc)((\.)?([1-9][0-9]*))?))?$'
 
-declare BACKUP_DIR
 declare DB_SERVICE_NAME='db'
-declare BACKEND_SERVICE_NAME='backend'
-declare BACKEND_VOLUME_NAME='backend_vol'
-declare BACKEND_VOLUME_DIR='/var/www/testcenter/data'
 declare ARE_DATA_SERVICES_UP=false
+
+# The installed release's makefile. The backup phase runs from the installed release too (see the
+# header), so this script and the targets it calls always come from one and the same release.
+declare MAKEFILE="${APP_DIR}/scripts/make/${APP_NAME}.mk"
 
 declare HAS_ENV_FILE_UPDATE=false
 declare HAS_CONFIG_FILE_UPDATE=false
@@ -86,125 +86,42 @@ create_app_dir_backup() {
   printf "Application directory backup created.\n\n"
 }
 
+# Only the database has to run for a backup: the data files are archived from their volume, not out
+# of the backend container.
 data_services_up() {
-  if ${TLS_ENABLED}; then
-    if [ "$(docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
+  if [ -n "$(docker compose \
+    --env-file "${APP_DIR}/.env.prod" \
+    --file "${APP_DIR}/docker-compose.yml" \
+    ps -q "${DB_SERVICE_NAME}")" ]; then
 
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
-    else
-      ARE_DATA_SERVICES_UP=true
-    fi
-  else
-    if [ "$(docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${APP_DIR}/docker-compose.prod.yml" \
-      ps -q "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}" | wc -l)" != 2 ]; then
-
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        up -d "${DB_SERVICE_NAME}" "${BACKEND_SERVICE_NAME}"
-    else
-      ARE_DATA_SERVICES_UP=true
-    fi
+    ARE_DATA_SERVICES_UP=true
+    return
   fi
+
+  make --file "${MAKEFILE}" testcenter-start-db
 }
 
 data_services_down() {
   if ! ${ARE_DATA_SERVICES_UP}; then
-    if ${TLS_ENABLED}; then
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        down
-    else
-      docker compose \
-        --progress quiet \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        down
-    fi
+    make --file "${MAKEFILE}" testcenter-down
   fi
 }
 
-dump_db() {
-  declare db_name="${DB_DATABASE}" # see docker environment file!
-  declare db_dump_file="${BACKUP_DIR}/${db_name}.sql"
-  declare compose_file="${APP_DIR}/docker-compose.prod.yml"
-
-  if ${TLS_ENABLED}; then
-    compose_file="${APP_DIR}/docker-compose.prod.tls.yml"
+# The pre-update backup is an ordinary backup set, so it can be restored with
+# 'make testcenter-restore BACKUP=<set>' like any other.
+create_backup_set() {
+  if make --file "${MAKEFILE}" testcenter-backup; then
+    return
   fi
 
-  if docker compose \
-      --env-file "${APP_DIR}/.env.prod" \
-      --file "${APP_DIR}/docker-compose.yml" \
-      --file "${compose_file}" \
-      exec --no-TTY "${DB_SERVICE_NAME}" pg_dump \
-      --clean \
-      --if-exists \
-      --create \
-      --username="${DB_USER}" \
-      --dbname="${db_name}" \
-      2>/dev/null \
-      >"${APP_DIR}/${db_dump_file}"; then
-    printf -- "  - Current db dump has been saved at: '%s'\n" "${db_dump_file}"
-  else
-    # Do not leave a partial file that an operator can mistake for a valid backup.
-    rm -f "${APP_DIR}/${db_dump_file}"
-    declare continue
-    printf -- "  - Current db dump was not successful!\n"
-    read -p "  Do you want to continue? [y/N] " -er -n 1 continue
+  declare continue
+  printf -- "  - Data backup was not successful!\n"
+  read -p "  Do you want to continue? [y/N] " -er -n 1 continue
 
-    if [[ ! $continue =~ ^[yY]$ ]]; then
-      printf "'%s' update script finished.\n" "${APP_NAME}"
+  if [[ ! ${continue} =~ ^[yY]$ ]]; then
+    printf "'%s' update script finished.\n" "${APP_NAME}"
 
-      exit 0
-    fi
-  fi
-}
-
-export_backend_volume() {
-  declare volume_name
-  declare container_name
-
-  volume_name="$(basename "${APP_DIR}" | tr '[:upper:]' '[:lower:]')_${BACKEND_VOLUME_NAME}"
-  container_name=$(basename "${APP_DIR}" | tr '[:upper:]' '[:lower:]')-backend-1
-
-  docker run \
-    --rm \
-    --volumes-from "${container_name}" \
-    --volume "${APP_DIR}/${BACKUP_DIR}":/tmp \
-    busybox tar czvf "/tmp/${BACKEND_VOLUME_NAME}.tar.gz" "${BACKEND_VOLUME_DIR}" &>/dev/null
-
-  if test ${?} -eq 0; then
-    declare backup_file="${BACKUP_DIR}/${BACKEND_VOLUME_NAME}.tar.gz"
-    printf -- "  - Current '%s' volume has been saved at: '%s'\n" "${volume_name}" "${backup_file}"
-  else
-    declare continue
-    printf -- "  - Current '%s' backup was not successful!\n" "${volume_name}"
-    read -p "    Do you want to continue? [y/N] " -er -n 1 continue
-
-    if [[ ! ${continue} =~ ^[yY]$ ]]; then
-      printf "'%s' update script finished.\n" "${APP_NAME}"
-
-      exit 0
-    fi
+    exit 0
   fi
 }
 
@@ -215,13 +132,9 @@ create_data_backup() {
   read -p "  Do you want to create a data backup? [Y/n] " -er -n 1 backup
 
   if ! [[ ${backup} =~ ^[nN]$ ]]; then
-    BACKUP_DIR="backup/$(date '+%Y-%m-%d')"
-    mkdir -p "${APP_DIR}/${BACKUP_DIR}"
-
     printf "\n  Dumping '%s' DB and exporting backend data files (this may take a while) ...\n" "${APP_NAME}"
     data_services_up
-    dump_db
-    export_backend_volume
+    create_backup_set
     data_services_down
     printf "  DB dumped and backend data files exported.\n"
   fi
