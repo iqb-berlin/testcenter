@@ -61,10 +61,16 @@ Document all confirmed compatibility changes before the release.
   Deliberately not covered: prerequisites, storage, health checks, and the first-start sequence. Nothing there
   changed for an operator - the database was a container nobody installs by hand under MySQL as well - and the
   documentation never described any of it. Document it if someone asks, not as part of this migration.
-- [ ] Add a Compose transition guide.
-  Cover the new volume name, the unchanged legacy volume, the empty PostgreSQL database, rollback, and troubleshooting.
-- [ ] Update Helm documentation and example values, including the secret-key migration.
-- [ ] Document how custom deployments must provide `pdo_pgsql`. Remove assumptions about `pdo_mysql`.
+- [x] Add a Compose transition guide.
+  `docs/pages/transition-to-postgres.md`. It is deliberately not linked from `docs/index.md` or the installation
+  documentation; `docs/CHANGELOG.md` links to it from its own `Umstieg` section, which now carries only the
+  important points and leaves every detail to the guide.
+- [ ] Update Helm documentation and example values.
+  The secret-key migration itself is covered by the transition guide; what is missing is the chart documentation
+  and the example values.
+- [x] Document how custom deployments must provide `pdo_pgsql`.
+  In the transition guide under "Custom deployments". Nothing had to be removed: no documentation page ever named
+  `pdo_mysql`.
 - [ ] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
 - [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
   PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.

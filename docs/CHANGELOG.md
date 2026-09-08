@@ -1,32 +1,26 @@
 # next
 
-## Technisches
-- Testcenter verwendet PostgreSQL 18.4 statt MySQL. Diese Version überträgt keine MySQL-Daten und verwendet das alte
-  Volume `db_vol` nicht. Compose legt das neue Volume `postgres_vol` an. Andere Volumes, zum Beispiel für
-  hochgeladene Dateien, bleiben verfügbar. Daten aus dem alten MySQL-Volume bleiben ohne MySQL nicht verfügbar.
-- Die Variablen für Datenbankverbindungen heißen jetzt neutral. Es gibt keinen Rückfall auf alte `MYSQL_*`-Namen
-  oder alternative `POSTGRES_*`-Namen. Bestehende `.env.prod`-Dateien und eigene Deployments brauchen diese Zuordnung:
-  - `MYSQL_DATABASE` → `DB_DATABASE`
-  - `MYSQL_USER` → `DB_USER`
-  - `MYSQL_PASSWORD` → `DB_PASSWORD`
-  - `MYSQL_HOST` → `DB_HOST`
-  - `MYSQL_PORT` → `DB_PORT`
-  - `MYSQL_ROOT_PASSWORD` entfällt ohne Ersatz.
-  - `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS` entfällt ohne Ersatz.
-- Das Helm-Chart verwendet PostgreSQL auf Port 5432 und prüft die Datenbank mit `pg_isready`.
-  Die Helm-Werte und Secret-Schlüssel ändern sich wie folgt:
-  - Der neue Wert `config.db.database` legt den Datenbanknamen fest.
-  - `secret.db.mysqlUser` und `secret.backend.mysqlUser` werden durch `secret.db.user` ersetzt.
-  - `secret.db.mysqlPassword` und `secret.backend.mysqlPassword` werden durch `secret.db.password` ersetzt.
-  - `secret.db.mysqlRootPassword` entfällt ohne Ersatz.
-  - Die Secret-Schlüssel `MYSQL_USER` und `MYSQL_PASSWORD` heißen jetzt `DB_USER` und `DB_PASSWORD`.
+## Umstieg von MySQL auf PostgreSQL
+
+Testcenter verwendet PostgreSQL 18.4 statt MySQL. Das Update überträgt die vorhandenen MySQL-Daten **nicht**: Die
+Anwendung startet mit einer leeren PostgreSQL-Datenbank im neuen Volume `postgres_vol`, das alte Volume `db_vol`
+bleibt unverändert liegen. Workspaces, ihre Dateien und die Logins aus den Testtaker-Dateien entstehen beim ersten
+Start automatisch neu; Testergebnisse, Logs, Reviews und alle Admin-Konten gehen verloren. Danach existiert nur das
+Konto `super` mit dem Passwort aus `ADMIN_INIT_PASSWORD`, das sofort geändert werden sollte. Wer aktualisiert,
+sollte vorher die noch benötigten Ergebnisse exportieren.
+
+Vorbereitung, Ablauf, Zugriff auf die alten Daten und Rollback beschreibt
+[Transition from MySQL to PostgreSQL](pages/transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
+folgenden Punkten:
+
+- Die Variablen für Datenbankverbindungen heißen jetzt neutral `DB_*`. Es gibt keinen Rückfall auf alte
+  `MYSQL_*`-Namen oder alternative `POSTGRES_*`-Namen. `make testcenter-update` passt `.env.prod` automatisch an.
+- Das Helm-Chart verwendet PostgreSQL auf Port 5432; Werte und Secret-Schlüssel ändern sich.
 - Eigene Backend-Images brauchen die PHP-Erweiterung `pdo_pgsql`. Die Erweiterung `pdo_mysql` ist nicht mehr nötig.
-- Zeitstempel, die die API unverändert aus der Datenbank ausliefert, haben jetzt das PostgreSQL-Format
-  `YYYY-MM-DD HH:MM:SS+00` - mit UTC-Offset und, sofern nicht null, mit bis zu sechs Nachkommastellen
-  (`2021-07-29 10:00:00.744751+00`). MySQL lieferte `2021-07-29 10:00:00` ohne Offset. Betroffen sind das Feld
-  `reviewtime` in `GET /test/{test_id}/reviews` und `GET /test/{test_id}/unit/{unit_name}/reviews` sowie das Feld
-  `createdAt` der Asset-Liste. Clients müssen den Offset auswerten; er ist nicht garantiert `+00`, sondern richtet
-  sich nach der Zeitzone der Datenbanksitzung.
+- Zeitstempel, die die API unverändert aus der Datenbank ausliefert (`reviewtime` und `createdAt`), tragen jetzt
+  einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
+
+## Technisches
 - Alle Zeitstempel-Felder der API-Dokumentation waren als `format: date-time` (RFC 3339, also
   `2021-07-29T10:00:00Z`) deklariert. Kein Feld hat dieses Format jemals geliefert. Die Deklarationen wurden
   korrigiert und beschreiben nun das tatsächliche Format. Betroffen sind `reviewtime`, `date` in
