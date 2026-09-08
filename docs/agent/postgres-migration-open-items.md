@@ -71,10 +71,11 @@ Document all confirmed compatibility changes before the release.
 - [x] Document how custom deployments must provide `pdo_pgsql`.
   In the transition guide under "Custom deployments". Nothing had to be removed: no documentation page ever named
   `pdo_mysql`.
-- [ ] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
-- [ ] Document the `german2_ci` constraint in `docs/agent/database.md`.
-  PostgreSQL rejects `LIKE`, `~`, and regular-expression operations on columns with this non-deterministic collation.
-  No current DAO uses these operations. Future queries must obey this constraint.
+- [x] Document in `docs/agent/database.md` that `full.sql` is hand-maintained rather than generated.
+  The note also states the rule that follows from it: a patch in `patches.d/` has to be applied to `full.sql` as
+  well, together with the version that `full.sql` stamps, or a fresh installation applies the patch twice and the
+  test database drifts from production.
+- [x] Document the `german2_ci` constraint in `docs/agent/database.md`.
 
 ## Issues found during the migration that are not release blockers
 
