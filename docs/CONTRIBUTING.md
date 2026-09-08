@@ -3,17 +3,31 @@
 This guide is aimed primarily at external institutes and partner
 organizations who contribute code on a regular basis. It describes how a
 contribution goes from idea to merge.
-TODO: Warum gibt es diesen Guide? (Mehrarbeit vermeiden, effiziente Arbeitsabläufe für alle, etc.)
 
-> Quick summary: (For big changes: Discuss →) Fork/branch → PR against `master` on GitHub (with a
-> descriptive summary) → _automatic CI check (mirrored to our GitLab
-> instance) → review by at least 1 maintainer → merge_.
+Why this guide exists: contributions are most valuable when they don't
+create extra work — neither for you nor for us. A finished PR of several
+hundred lines that gets rejected afterwards for conceptual reasons is
+frustrating for everyone and effort that could have been avoided. Knowing
+the workflow up front means your change lands in a predictable way, reviews
+stay short, and nobody spends time on work that was never going to be
+merged.
+
+> **Quick summary**
+> **Your part:** (for larger changes: discuss first →) fork or branch →
+> open a PR against `master` on GitHub with a descriptive summary.
+> **Our part:** trigger the CI pipeline → review by at least one
+> maintainer → merge.
 
 ---
 
 ## 1. Guiding Principles
 
-- **IQB möchte entscheiden** TODO  
+- **The product direction stays with IQB.** Testcenter is used by many
+  institutes, and keeping it coherent and maintainable in the long run is
+  our responsibility as its maintainer. The decision about what becomes
+  part of the product therefore rests with us — which is also why we'd
+  rather hear about your plans early: it's the easiest way to make sure
+  your work goes in a direction we can merge.
 - **Reach out early.** Especially for your first contribution or anything
   beyond a small fix, it's a good idea to get in touch with us before you
   start — a short message about what you're planning saves everyone time
@@ -21,7 +35,10 @@ TODO: Warum gibt es diesen Guide? (Mehrarbeit vermeiden, effiziente Arbeitsablä
   a more formal proposal.
 - **Small, reviewable changes** are preferable to large, opaque PRs. A PR
   should represent one coherent change, not several unrelated topics at
-  once. TODO: Please divide large PRs into smaller commits for easier review.
+  once. Please make sure the change stays readable and understandable for
+  someone who didn't write it, and split your work into logical units —
+  either as separate commits within one PR, or as several connected PRs if
+  the topics can stand on their own.
 - **Discuss before you code** for larger changes (new modules, changes to
   public interfaces, architectural decisions). See section 2.
 - **Every external contribution goes through review.**
@@ -39,9 +56,12 @@ TODO: Warum gibt es diesen Guide? (Mehrarbeit vermeiden, effiziente Arbeitsablä
 
 ## 3. Workflow in Detail
 
-TODO: ### 3.1 Vorarbeiten
+### 3.1 Issues
 
-- Issue anlegen (mit richtigem Template)
+- If you want to report a bug or suggest a feature, please use one of our
+  [issue templates](https://github.com/iqb-berlin/testcenter/issues/new/choose).
+- For small changes and anything that doesn't need discussion, an issue is
+  **not** required (see section 2): a PR with a good description is enough.
 
 ### 3.2 Repository and Branches
 
@@ -52,10 +72,13 @@ TODO: ### 3.1 Vorarbeiten
 
 ### 3.3 Pull Requests
 
-- PRs are opened **exclusively on GitHub** — CI is manually triggered by 
-  the maintainers when the review process starts and turns green. Once that's happened, the
-  CI status appears as a normal check on your PR, just like for internal
-  contributions. (TODO)
+- PRs are opened **exclusively on GitHub**.
+- Our CI pipeline **cannot run on forks**. For the checks to run, a
+  maintainer has to create a branch for your changes in the main
+  repository; only then can your commits receive the CI checkmark. This
+  happens once the review process starts, so don't be surprised if no
+  check shows up right after you open the PR — you don't need to do
+  anything yourself.
 - The PR description should include *what* was changed, *why*, and *how it was tested*.
 - Reference the related issue, e.g. `#123`. **Please don't use GitHub
   keywords like `Closes #123` or `Fixes #123`** — these auto-close the
@@ -64,7 +87,7 @@ TODO: ### 3.1 Vorarbeiten
 - Feel free to open a PR as a **draft** if you'd like early feedback on
   direction before the implementation is finished.
 - Updating `CHANGELOG.md` as part of your PR is appreciated but not
-  required. TODO: Diesen Teil rausnehmen und extra Dokument on how to code ?
+  required.
 
 ### 3.4 Review
 
@@ -75,15 +98,20 @@ TODO: ### 3.1 Vorarbeiten
   while. We aim to respond in a timely manner, but ask for your
   understanding if it sometimes takes longer. A brief, friendly reminder on
   the PR is completely fine if nothing has happened for a while.
-- If `master` has moved on and your branch develops conflicts, we'll ask you
-  to bring it up to date — for small or simple cases, a maintainer may just
-  do this directly instead. **Rebasing onto `master` is recommended**, but
-  merging `master` into your branch is fine too. One thing to watch out
-  for: once a maintainer or someone else has started working on your
-  branch, please avoid rebasing from that point on, since it rewrites
-  history and can silently drop or duplicate their changes — a merge is the
-  safer choice at that point. Feel free to work out the specifics for a
-  given PR directly in the PR comments. TODO: nochmal diskutieren: Wer hat am Ende weniger Schmerz? Vielleicht auch in der Runde 
+- If `master` has moved on, we don't expect you to keep your branch
+  continuously up to date. An update is only needed when your branch
+  actually conflicts with `master`, or when the CI checks have to run
+  against the current state. Keeping the PR mergeable is the contributor's
+  responsibility — for small or simple cases, a maintainer may just do it
+  directly instead.
+- **Rebasing onto `master` is what we prefer** for feature branches, so
+  that merge commits don't pollute the history. Merging `master` into your
+  branch isn't forbidden though — if that makes life easier on a particular
+  branch, go ahead.
+- **As soon as other people commit to your branch** — a reviewer pushing a
+  fix, for instance — rebasing and rewriting history is a no-go, since it
+  can silently drop or duplicate their work. From that point on, please
+  merge or get in contact.
 
 ---
 
@@ -108,10 +136,11 @@ TODO: ### 3.1 Vorarbeiten
 
 ## 6. Communication
 
-- **Issues**: for anything related to the functionality/feature. 
+- **Issues**: for anything related to the functionality/feature.
 - **PRs**: for anything directly related to the code.
-- *[Add further channel here, e.g. mailing list / Matrix / recurring call
-  between participating institutes — link here if applicable]*
+- *TODO: further channels (e.g. mailing list / Matrix / recurring call
+  between participating institutes) are not decided yet — link them here
+  once they are.*
 
 ---
 
