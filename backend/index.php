@@ -55,7 +55,22 @@ try {
   } else { // productive
     define('DATA_DIR', ROOT_DIR . '/data');
     date_default_timezone_set(SystemConfig::$system_timezone); // just to be safe. TimeStamp-class should be used everywhere anyway
-    DB::connect();
+
+    try {
+      DB::connect();
+
+    } catch (DBConnectionException $exception) {
+      // the error handler middleware is not set up yet, so this has to be answered by hand.
+      // Details belong in the log only: they can contain the name of the database user.
+      ErrorHandler::logException($exception, true);
+      if ($exception->getHint()) {
+        error_log("Hint: {$exception->getHint()}");
+      }
+      http_response_code(503);
+      header('Retry-After:30');
+      echo "Service is temporarily unavailable.";
+      exit;
+    }
   }
 
   $container = new Container();

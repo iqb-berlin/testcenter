@@ -26,21 +26,32 @@ class CLI {
     "Grey" => "47",
   ];
 
-  static function connectDBWithRetries(int $retries = 5): void {
-    while ($retries--) {
-      try {
-          CLI::p("Database Connection attempt.");
-          DB::connect();
-          CLI::success("Database Connection successful!");
-          return;
-      } catch (Throwable) {
-        CLI::warning("Database Connection failed! Retry: $retries attempts left.");
-        usleep(20 * 1000000); // give database container time to come up
+  /**
+   * @throws DBConnectionException
+   */
+  static function connectDBWithRetries(int $attempts = 6): void {
+    try {
+      DB::connect($attempts, CLI::reportFailedDBConnection(...));
+    } catch (DBConnectionException $exception) {
+      $hint = $exception->getHint();
+      if ($hint) {
+        CLI::error("Hint: $hint");
       }
+      CLI::p("Database configuration used: " . SystemConfig::dumpDbConfig());
+      throw $exception;
     }
+    CLI::success("Database Connection successful!");
+  }
 
-//    CLI::printData(SystemConfig);
-    throw new Exception("Database connection failed.");
+  private static function reportFailedDBConnection(DBConnectionException $exception, int $attempt, int $attempts): void {
+    CLI::warning("Database Connection attempt $attempt of $attempts failed: {$exception->getMessage()}");
+
+    if (!$exception->isRecoverable()) {
+      CLI::error("This error will not resolve by retrying. Giving up.");
+
+    } else if ($attempt >= $attempts) {
+      CLI::error("Database Connection failed after $attempts attempts.");
+    }
   }
 
   // PHP's getopt is bogus: it can not handle empty strings as params properly
