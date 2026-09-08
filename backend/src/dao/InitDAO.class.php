@@ -343,6 +343,11 @@ class InitDAO extends SessionDAO {
     return (int) $admins['count'] > 0;
   }
 
+  public function workspacesExist(): bool {
+    $workspaces = $this->_("select count(*) as count from workspaces");
+    return (int) $workspaces['count'] > 0;
+  }
+
   public function createWorkspaceIfMissing(Workspace $workspace): array {
     $workspaceFromDb = $this->_(
       "select workspaces.id, workspaces.name from workspaces where id = :ws_id",

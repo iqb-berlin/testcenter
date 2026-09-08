@@ -405,6 +405,17 @@ class Workspace {
     rmdir($this->workspacePath);
   }
 
+  /**
+   * Reads the workspace folder and brings the database in line with it.
+   *
+   * @return array{
+   *   valid: array<string, int>,
+   *   invalid: int,
+   *   logins: array{added: int, deleted: int},
+   *   reports: array<string, string[]>,
+   *   pruning_skipped: bool
+   * }
+   */
   // TODO unit-test
   public function storeAllFiles(): array {
     $workspaceCache = new WorkspaceCache($this);
@@ -416,7 +427,8 @@ class Workspace {
     ];
     $invalidCount = 0;
 
-    $loginStats['deleted'] = $this->removeVanishedFilesFromDB($workspaceCache);
+    $pruningSkipped = $this->isSuspectedIncompleteRestore($workspaceCache);
+    $loginStats['deleted'] = $pruningSkipped ? 0 : $this->removeVanishedFilesFromDB($workspaceCache);
 
     $workspaceCache->validate();
 
@@ -447,8 +459,27 @@ class Workspace {
       'valid' => $typeStats,
       'invalid' => $invalidCount,
       'logins' => $loginStats,
-      'reports' => $reports
+      'reports' => $reports,
+      'pruning_skipped' => $pruningSkipped
     ];
+  }
+
+  // An empty workspace folder next to a database that still knows files for it is almost always a lost data volume or
+  // a restore that only got as far as the database - not somebody deleting all content at once. Pruning would then
+  // delete the file rows and the logins derived from the Testtakers XML, which only the backup still holds.
+  // The check is deliberately narrow: emptying a workspace by hand still prunes as soon as one file remains.
+  private function isSuspectedIncompleteRestore(WorkspaceCache $workspaceCache): bool {
+    if (count($workspaceCache->getFiles(true))) {
+      return false;
+    }
+
+    foreach ($this->workspaceDAO->getAllFiles() as $fileSet) {
+      if (count($fileSet)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private function removeVanishedFilesFromDB(WorkspaceCache $workspaceCache): int {

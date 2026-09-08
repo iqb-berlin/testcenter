@@ -65,6 +65,7 @@ test-backend-initialization-general:
 	cd $(TC_BASE_DIR) && make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/vanilla-installation
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/no-db-but-files
+	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/db-but-no-files
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/install-db-patches
 	cd $(TC_BASE_DIR) && make test-backend-initialization test=general/re-initialize
 

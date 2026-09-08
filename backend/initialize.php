@@ -149,6 +149,11 @@ try {
         $workspace->setWorkspaceHash();
         CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
+        if ($stats['pruning_skipped']) {
+          CLI::warning("Workspace-folder `ws_{$workspace->getId()}` is empty, but the database holds files for it.");
+          CLI::warning("Nothing was deleted. Restore the backend data volume, or upload the content again.");
+        }
+
         $statsString = implode(
           ", ",
           array_filter(
@@ -187,7 +192,19 @@ try {
     }
   }
 
-  if (!count($workspaceIds) and !$args['dont_create_sample_data']) {
+  // Whether the installation is new has to be answered by the database, not by `$workspaceIds`: that holds only the
+  // workspaces which have a folder, and a restored database dump in a deployment with an empty data volume has
+  // workspaces but no folders. Creating the sample workspace would then collide with a restored row.
+  $workspacesExist = $initDAO->workspacesExist();
+
+  if ($workspacesExist and !count($workspaceIds)) {
+    // Starting up is deliberate: an operator needs a running application to finish the restore or to upload the
+    // content again. But it has to be visible, because a workspace without content cannot deliver a test.
+    CLI::warning("Workspaces exist in the database, but the data directory holds no workspace folder.");
+    CLI::warning("Restore the backend data volume, or upload the workspace content again.");
+  }
+
+  if (!$workspacesExist and !$args['dont_create_sample_data']) {
     $sampleWorkspaceId = $initDAO->createWorkspace('Sample Workspace');
     $sampleWorkspace = new Workspace($sampleWorkspaceId);
 

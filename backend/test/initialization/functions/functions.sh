@@ -110,6 +110,12 @@ function expect_init_script_failed() {
   echo_success "Init-Script failed as expected"
 }
 
+# param 1: table
+# echoes the current number of rows
+function count_rows() {
+  php backend/test/initialization/functions/count.php --table="$1"
+}
+
 # param 1: expectation folder name
 function create_sample_folder() {
   mkdir -p "data"
