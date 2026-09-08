@@ -24,7 +24,7 @@ Read these notes before you change the schema.
 
 | Area | Status | Release relevance |
 | --- | --- | --- |
-| `MYSQL_*` to `DB_*` rename in an existing `.env.prod` | Done, needs a release-time rename | Release blocker |
+| `MYSQL_*` to `DB_*` rename in an existing `.env.prod` | Done | - |
 | Verification of backup and restore | Done | - |
 | User and operator documentation | Open, except backup and disaster recovery | Release blocker |
 | Initialization correctness follow-ups | Deferred | Not a blocker |
@@ -43,26 +43,11 @@ release. Only the Compose deployment is covered - see the Helm item further down
 
 ## Work remaining before release
 
-### 1. Rename the database variables in an existing `.env.prod`
+Only documentation is left; see the next section.
 
-- [ ] **At release time:** rename `scripts/migration/next.sh` to `scripts/migration/<release>.sh`
-  and set its `TARGET_VERSION` accordingly.
-  `scripts/updater.sh` looks for `scripts/migration/<release tag>.sh` for every release between the
-  installed and the target release, so a file named `next.sh` is never found automatically.
-  This is the same convention that the previous env-file migrations used; `18.2.0.sh` still carries
-  the `TARGET_VERSION='next'` of its development phase.
-  Without the rename an update leaves the old names, and the backend has no database configuration.
-
-The pre-update database dump does not need a MySQL fallback.
-`scripts/update.sh` runs the backup phase with the updater of the *installed* release, so an old
-installation dumps itself with `mysqldump` and its own `MYSQL_*` names.
-`backup_phase()` creates that dump before it runs the migration scripts of the target release, so
-the rename cannot break the dump.
-
-### 2. Remove the legacy schema reference
-
-- [ ] Delete `scripts/database/mysql-legacy/` when the PostgreSQL schema review no longer needs the
-  original MySQL column definitions.
+The env-variable migration script `scripts/migration/next.sh` is written and needs no further work
+here. Renaming it to `scripts/migration/<release>.sh` at release time is ordinary release procedure
+and is documented in `docs/release_process.md`.
 
 ## Documentation required for users and operators
 
@@ -203,11 +188,14 @@ The second group belongs to the migration but can wait.
 
 ## Final release checklist
 
-- [ ] Complete all release-blocking implementation items in this document.
 - [ ] Make sure that all four test tiers pass.
 - [ ] Test a Compose transition from the last MySQL release without a database migration.
       Make sure that the transition creates `postgres_vol` and leaves `db_vol` unchanged.
 - [ ] Test an update of an existing `.env.prod` with the new migration script.
+      The pre-update database dump cannot break in the process: `scripts/update.sh` runs the backup
+      phase with the updater of the *installed* release, so an old installation dumps itself with
+      `mysqldump` and its own `MYSQL_*` names, and `backup_phase()` creates that dump before the
+      migration scripts of the target release run.
 - [x] Test the new PostgreSQL backup, restore, and rollback paths.
       Done for Compose with locally built images: a backup set and its restore, restoration into an
       empty deployment, the pre-update set of `scripts/updater.sh` and its restore, and the refusal
@@ -215,6 +203,5 @@ The second group belongs to the migration but can wait.
       Repeat against the published release images before the release.
 - [ ] Make sure that new Compose and Helm installations work.
 - [ ] Make sure that no production path or dependency requires MySQL.
-- [ ] Delete `scripts/database/mysql-legacy/`.
 - [ ] Publish the required changelog, transition, installation, backup, Helm, API, and CSV documentation.
 - [ ] Delete this working document.

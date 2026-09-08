@@ -1,1 +1,0 @@
-ALTER TABLE unit_data MODIFY COLUMN content LONGTEXT;
