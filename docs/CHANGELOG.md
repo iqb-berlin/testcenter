@@ -10,7 +10,7 @@ Konto `super` mit dem Passwort aus `ADMIN_INIT_PASSWORD`, das sofort geändert w
 sollte vorher die noch benötigten Ergebnisse exportieren.
 
 Vorbereitung, Ablauf, Zugriff auf die alten Daten und Rollback beschreibt
-[Transition from MySQL to PostgreSQL](pages/transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
+[Transition from MySQL to PostgreSQL](transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
 folgenden Punkten:
 
 - Die Variablen für Datenbankverbindungen heißen jetzt neutral `DB_*`. Es gibt keinen Rückfall auf alte
@@ -21,6 +21,9 @@ folgenden Punkten:
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
 ## Technisches
+- Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
+  `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte
+  überhaupt kein Konto, und niemand konnte sich anmelden.
 - Alle Zeitstempel-Felder der API-Dokumentation waren als `format: date-time` (RFC 3339, also
   `2021-07-29T10:00:00Z`) deklariert. Kein Feld hat dieses Format jemals geliefert. Die Deklarationen wurden
   korrigiert und beschreiben nun das tatsächliche Format. Betroffen sind `reviewtime`, `date` in

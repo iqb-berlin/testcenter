@@ -48,4 +48,5 @@ php backend/initialize.php \
 expect_init_script_ok
 expect_data_dir_equals empty_data_dir
 expect_table_to_have_rows workspaces 0
+expect_table_to_have_rows users 1
 

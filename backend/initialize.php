@@ -7,6 +7,8 @@
  * --skip_db_integrity_check
  * --skip_read_workspace_files
  * --dont_create_sample_data
+ *     Skips the sample workspace and its content. The first system administrator is created
+ *     regardless - it is not sample data, and without it nobody can log in.
  * ```
  */
 
@@ -230,7 +232,7 @@ try {
 
   CLI::h2("Sys-Admin");
 
-  if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
+  if (!$initDAO->adminExists()) {
     CLI::warning("No Sys-Admin found.");
 
     $initial_admin_password = SystemConfig::$admin_init_password;
