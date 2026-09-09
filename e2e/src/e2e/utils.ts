@@ -235,6 +235,18 @@ export const clickCardButton = (element: string, cardLabel?: string, buttonText?
     .click();
 };
 
+// Opens the unit menu and navigates to the unit with the given label. The menu is a mat-sidenav
+// whose backdrop can end up over the entry between Cypress' actionability check and the click; the
+// click then closes the menu instead of navigating, leaving the test waiting for something that
+// never happens. Dispatching on the entry itself takes the hit-test out of the picture.
+export const gotoUnitFromMenu = (unitLabel: string): Chainable => {
+  cy.get('[data-cy="unit-menu"]')
+    .click();
+  return cy.get(`[data-cy="unit-menu-unitbutton-${unitLabel}"]`)
+    .should('be.visible')
+    .click({ force: true });
+};
+
 export const openWorkspace = (workspaceName: string, workspaceNumber: number) => {
   clickCardButton(workspaceName);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/${workspaceNumber}/files`);

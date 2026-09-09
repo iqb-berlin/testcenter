@@ -3,6 +3,7 @@
 import {
   disableSimplePlayersInternalDebounce,
   getFromIframe,
+  gotoUnitFromMenu,
   loginTestTaker,
   probeBackendApi,
   resetBackendTestData,
@@ -24,11 +25,10 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-18', '123');
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation/response-complete: forward in unit-menu', () => {
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
+      gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
@@ -72,13 +72,12 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-19', '123');
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation-complete: forward in unit-menu', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
+      gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('contain', 'abgespielt');
       cy.get('[data-cy="close-deny-navigation-message"]')
@@ -174,16 +173,15 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       disableSimplePlayersInternalDebounce();
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation-complete: forward/backward in unit-menu', () => {
       loginTestTaker('Test_Ctrl-20a', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
       //wait for presentation complete
       cy.wait(1000);
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
+      gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('contain', 'abgespielt');
       cy.get('[data-cy="close-deny-navigation-message"]')
@@ -194,20 +192,14 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .click();
       //wait for presentation-complete
       cy.wait(1000);
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
+      gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
       //wait for presentation complete
       cy.wait(1000);
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
-        .click();
+      gotoUnitFromMenu('Aufgabe1');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('contain', 'abgespielt')
       cy.get('[data-cy="close-deny-navigation-message"]')
