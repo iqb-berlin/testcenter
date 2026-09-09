@@ -72,11 +72,17 @@ The update then renames the database settings in `.env.prod`, keeping their valu
 The new database is therefore created with the same name, user and password as the old one. It is created in a new
 volume named `postgres_vol`; `db_vol` is not touched.
 
-## The first start
+## Filling the new database
 
-The first start takes considerably longer than usual, because the application reads every file of every workspace
-back into the empty database. Watch it with `make testcenter-logs`. Along the way the log reports what is being
-restored:
+From this release on, starting the application no longer sets the database up - it only verifies that the schema
+matches and refuses to serve otherwise. `make testcenter-update` therefore runs the new step
+
+```
+make testcenter-init
+```
+
+before it starts anything. This is the step that takes considerably longer than usual here, because it reads every
+file of every workspace back into the empty database. It reports what it restores:
 
 ```
 Orphaned workspace-folder found `ws_1` and restored in DB.
@@ -84,10 +90,13 @@ Logins updated: -0 / +37
 Sys-Admin "super" created.
 ```
 
+The update asks at the end whether to restart the installation, and runs this step only if you agree.
+If you decline, run `make testcenter-init` yourself before `make testcenter-up` - the backend refuses
+to serve until the schema is in place.
+
 ## Log in again
 
-All administrator accounts are gone, so the application creates a single system administrator during the first
-start:
+All administrator accounts are gone, so a single system administrator is created while the database is filled:
 
 - user `super`
 - password: the value of `ADMIN_INIT_PASSWORD` in `.env.prod`, which is `user123` unless you have changed it
@@ -160,11 +169,17 @@ PostgreSQL: 2021-07-29 10:00:00+00
 The value carries a UTC offset now, and up to six fractional-second digits when they are not zero. Clients have to
 evaluate the offset: it is not guaranteed to be `+00`, but follows the time zone of the database session.
 
+Asset file names are also compared case-sensitively from now on. Uploading `logo.png` when `Logo.png` already
+exists creates a second asset, where MySQL replaced the existing one. Names that differ only in capitalisation
+therefore no longer overwrite each other.
+
 ## Troubleshooting
 
 **The backend never becomes healthy and its container restarts again and again.**
-Check that `.env.prod` contains `DB_DATABASE`, `DB_USER` and `DB_PASSWORD`. If it still has the `MYSQL_*` names,
-the migration did not run; rename the keys as listed above and restart with `make testcenter-restart`.
+Look at `make testcenter-logs`. If it says *"The database holds no Testcenter schema"* or names a schema version
+other than the one the release requires, the database step was skipped - run `make testcenter-init`.
+Otherwise check that `.env.prod` contains `DB_DATABASE`, `DB_USER` and `DB_PASSWORD`. If it still has the `MYSQL_*`
+names, the migration did not run; rename the keys as listed above and restart with `make testcenter-restart`.
 
 **The log says "Workspaces exist in the database, but the data directory holds no workspace folder".**
 The data volume is empty, so the workspaces were not rebuilt from their files. Restore the data files from
