@@ -2,7 +2,7 @@
   "loading_mode": {
     "label": "Ladeverhalten beim Start",
     "options": {
-      "LAZY": "Start des Tests sobald wie möglich. Im Hintergrund werden die weiteren Blöcke (Testlets) geladen. Wenn sich Units außerhalb von Blöcken befinden gilt das ganze Booklet als Block und wird komplett geladen. Es müssen also Testlet-Elemente verwendet werden, damit lazy loading funktioniert.",
+      "LAZY": "Start des Tests sobald wie möglich. Im Hintergrund werden die weiteren Blöcke (Testlets) geladen. 2 Voraussetzungen für die erfolgreiche Funktionalität: 1) Die zu lazy ladende Unit muss sich innerhalb eines Blocks (<Testlet>) befinden und darf nicht freistehend sein. In den meisten Szenarien bedeutet das, dass die erste Unit innerhalb eines Blocks positioniert sein muss. 2) Lazy Loading funktioniert nur beim ersten mal, an dem ein Booklet gestartet wird. Wird ein Booklet fortgesetzt oder per Seiten-Reload erneut geladen, greift Lazy Loading nicht.",
       "EAGER": "Testheft erst dann starten, wenn alle Inhalte geladen sind"
     },
     "defaultvalue": "LAZY"
@@ -102,17 +102,17 @@
     "defaultvalue": "OFF"
   },
   "unit_responses_buffer_time": {
-    "label": "Speicherfrequenz für Antworten in Ms.",
+    "label": "Speicherfrequenz für Antworten in ms.",
     "options": {},
     "defaultvalue": "5000"
   },
   "unit_state_buffer_time": {
-    "label": "Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.",
+    "label": "Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in ms.",
     "options": {},
     "defaultvalue": "6000"
   },
   "test_state_buffer_time": {
-    "label": "Speicherfrequenz für Test-Zustände in Ms.",
+    "label": "Speicherfrequenz für Test-Zustände in ms.",
     "options": {},
     "defaultvalue": "1000"
   },

@@ -20,6 +20,12 @@ folgenden Punkten:
 - Zeitstempel, die die API unverändert aus der Datenbank ausliefert (`reviewtime` und `createdAt`), tragen jetzt
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
+## Fehlerbehebungen
+- (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
+  CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
+- Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
+  die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
+
 ## Technisches
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
   `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte

@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Testtaker 18.0",
+  "schema_version": "18.0",
+  "description": "Festlegung von Logins, Gruppen und Testheften für die Testdurchführung im IQB-Testcenter. **[Hier](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/testtaker-xml.html#aufbau) ist eine beispielhafte Testtaker-XML's zu finden.**",
+  "type": "object",
+  "required": [
+    "Metadata",
+    "Group"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URI zum JSON-Schema für Validierung und Autovervollständigung"
+    },
+    "Metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "CustomTexts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Key-Value Paare für benutzerdefinierte Texte.",
+      "properties": {
+        "CustomText": {
+          "type": "array",
+          "description": "Die Dokumentation der key-value-Paare erfolgt separat und ist [**hier**](https://iqb.pages.cms.hu-berlin.de/testcenter/pages/custom-texts.html) zu finden."
+        }
+      }
+    },
+    "Profiles": {
+      "type": "object",
+      "description": "Ein Profil für den Gruppenmonitor. Steuert Spalten, Ansicht, Filter und Automatisierungen. Wird in Logins mit dem Modus monitor-group per ID referenziert.",
+      "properties": {
+        "GroupMonitor": {
+          "type": "object",
+          "properties": {
+            "Profile": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Profile"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Group": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "Login"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Datum und Uhrzeit, ab der die Testung freigegeben ist. Format: M/D/YYYY HH:mm"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Datum und Uhrzeit, bis zu der die Testung freigegeben ist. Format: M/D/YYYY HH:mm"
+          },
+          "validFor": {
+            "type": "integer",
+            "description": "Dauer in Minuten, für die die Testung freigegeben ist."
+          },
+          "AssetAssignments": {
+            "$ref": "#/$defs/AssetAssignments"
+          },
+          "Login": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/Login"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "AssetAssignments": {
+      "type": "object",
+      "description": "Enthält die Asset-Zuweisungen",
+      "properties": {
+        "Asset": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slot": {
+                "type": "string",
+                "enum": [
+                  "logo",
+                  "codeInputIllustration",
+                  "loginIllustration",
+                  "codeInputCompanion",
+                  "starterCompanion",
+                  "starterCardDone",
+                  "loadingProgress",
+                  "confirmDialog"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "description": "Bilddatei als png, jpg oder svg. Muss in Bereich der Systemeinstellungen/Bildersetzung geladen sein"
+              }
+            },
+            "required": ["slot"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Login": {
+      "type": "object",
+      "required": [
+        "name",
+        "mode"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "pw": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "description": "Durchführungsmodus für den Login. Die Dokumentation der Modi erfolgt separat und ist [**hier**](https://iqb.pages.cms.hu-berlin.de/testcenter/pages/test-mode.html) zu finden."
+        },
+        "Booklet": {
+          "type": "array",
+          "description": "Referenzierung des Booklets mittels Booklet-Id.",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Id des Booklets"
+              },
+              "codes": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "Profile": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Referenziert ein im Kopf der Testtaker angelegtes Profil mittels der dort gesetzten Id."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "AssetAssignments": {
+          "$ref": "#/$defs/AssetAssignments"
+        },
+        "ViewSettings": {
+          "type": "object",
+          "properties": {
+            "theme": {
+              "type": "string",
+              "enum": [
+                "Primar",
+                "Sekundar",
+                "Erwachsene"
+              ]
+            },
+            "codeInput": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "text-field",
+                    "keypad-symbols",
+                    "keypad-symbols-alt",
+                    "keypad-numbers"
+                  ]
+                },
+                "length": {
+                  "type": "integer",
+                  "minimum": 3
+                }
+              },
+              "additionalProperties": false
+            },
+            "monitorBookletVisibility": {
+              "type": "string",
+              "enum": [
+                "visible",
+                "collapsed",
+                "hidden"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Profile": {
+      "type": "object",
+      "description": "Ein Profil für den Gruppenmonitor. Steuert Spalten, Ansicht, Filter und Automatisierungen. Wird in Logins mit dem Modus monitor-group per ID referenziert.",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "blockColumn": {
+          "type": "string",
+          "description": "Sichtbarkeit der Block-Spalte im Gruppenmonitor.",
+          "enum": ["show", "hide"]
+        },
+        "unitColumn": {
+          "type": "string",
+          "description": "Sichtbarkeit der Unit-Spalte im Gruppenmonitor.",
+          "enum": ["show", "hide"]
+        },
+        "groupColumn": {
+          "type": "string",
+          "description": "Sichtbarkeit der Gruppen-Spalte im Gruppenmonitor.",
+          "enum": ["show", "hide"]
+        },
+        "bookletColumn": {
+          "type": "string",
+          "description": "Sichtbarkeit der Testheft-Spalte im Gruppenmonitor.",
+          "enum": ["show", "hide"]
+        },
+        "bookletStatesColumns": {
+          "type": "string",
+          "description": " Liste von State-IDs, deren Werte als eigene Spalten im Gruppenmonitor angezeigt werden."
+        },
+        "view": {
+          "type": "string",
+          "description": "Definiert die Detailstufe der Darstellung im Gruppenmonitor",
+          "enum": ["full", "medium", "small"]
+        },
+        "filterPending": {
+          "type": "string",
+          "description": "Steuert die Filterung von ausstehenden (pending) Tests. Hierbei handelt sich um einen der oben genannten Standardfilter. Dieser ist dann je nach Wert aktiv oder eben nicht.",
+          "enum": ["yes", "no"]
+        },
+        "filterLocked": {
+          "type": "string",
+          "description": "Steuert die Filterung von gesperrten Tests. Hierbei handelt sich um einen der oben genannten Standardfilter. Dieser ist dann je nach Wert aktiv oder eben nicht.",
+          "enum": ["yes", "no"]
+        },
+        "autoselectNextBlock": {
+          "type": "string",
+          "description": "Steuert die automatische Auswahl des nächsten Blocks. Im Detail: Ist yes als Wert hinterlegt, wird nach jedem Sprung zu einem Block automatisch der nächste Block markiert. Ein erneuter Klick auf den Schalter “Springe zu” veranlasst dann einen Sprung zu dem automatisch markierten Block. Der Wert no verhindert diese automatische Markierung des nächsten Blocks. Das kann dann Sinn machen, wenn die Gefahr verringert werden soll, dass aus Versehen (Doppelklick auf “Springe zu”) in einen Block gesprungen wird, der noch nicht an der Reihe ist.",
+          "enum": ["yes", "no"]
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string",
+                "enum": [
+                  "bookletLabel",
+                  "personLabel",
+                  "state",
+                  "blockLabel",
+                  "groupName",
+                  "bookletId",
+                  "unitId",
+                  "unitLabel",
+                  "blockId",
+                  "testState",
+                  "mode",
+                  "bookletSpecies",
+                  "bookletStates"
+                ]
+              },
+              "type": {
+                "type": "string",
+                "enum": ["equal", "substring", "regex"]
+              },
+              "value": {
+                "type": "string"
+              },
+              "subValue": {
+                "type": "string"
+              },
+              "not": {
+                "type": "boolean",
+                "description": "Negation des booleschen Wertes."
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
