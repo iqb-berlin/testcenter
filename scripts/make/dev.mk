@@ -4,7 +4,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
-	composer-refresh-autoload re-init-backend create-interfaces update-docs\
+	composer-refresh-autoload init-backend create-interfaces update-docs\
 	docs-api-specs docs-user create-pages serve-pages new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
@@ -161,16 +161,17 @@ data-push:
 					--file docker-compose.yml\
 					--file docker-compose.dev.yml\
 				cp - backend:/var/www/testcenter &&\
-	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) re-init-backend
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) init-backend
 
-# Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
-re-init-backend:
+# Installs the database schema, applies new patches and reads the data-dir - the dev stack's
+# counterpart of `testcenter-init`.
+init-backend:
 	cd $(TC_BASE_DIR) &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		exec --no-TTY backend php /var/www/testcenter/backend/initialize.php
+		run --rm --no-TTY --entrypoint /initialize_only.sh backend
 
 # Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:

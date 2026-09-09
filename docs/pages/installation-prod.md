@@ -28,6 +28,17 @@ bash install.sh
 ```
 
 ## Usage
+### Database setup
+
+DB schema set up:
+```
+make testcenter-init
+```
+Run this once before the first start. `make testcenter-update` runs it for you as part of an update.
+
+The command is safe to repeat: it applies only what is missing. Because it also reads the workspace files, it is
+likewise how you make the application notice files you placed in the data volume by hand.
+
 ### Start & Stop
 Run application in background
 ```
@@ -126,7 +137,7 @@ Check after every update of the testcenter version, whether new configurations h
 ### TLS
 TLS Certificates can be managed manually or via a ACME provider like "Let's Encrypt" or "Sectigo".
 If you choose to use an ACME provider, the install process will ask for all necessary configuration data and fill in the `.env` file and create additional config files.
-If managed manually, the TLS certificate must be named `certificate.pem` and TLS Private Key must be named `private_key.pem` and both need to be placed in the folder _/secrets/traefik/certs_. 
+If managed manually, the TLS certificate must be named `certificate.pem` and TLS Private Key must be named `private_key.pem` and both need to be placed in the folder _/secrets/traefik/certs_.
 If no certificates are configured, self-signed certificates are generated and used. This may cause a browser warning.
 
 ### Database

@@ -184,13 +184,17 @@ application_start() {
     read -p "Do you want to start $APP_NAME now? [Y/n] " -er -n 1 is_start_now
     printf '\n'
     if [[ ! $is_start_now =~ [nN] ]]; then
+      # The schema has to exist before the backend starts; it refuses to serve without it.
+      make testcenter-init
       make testcenter-up
     else
+      printf "Run 'make testcenter-init' before the first start.\n\n"
       printf "'%s' installation script finished.\n" "$APP_NAME"
       exit 0
     fi
   else
-    printf 'You can start the docker services now.\n\n'
+    printf 'You can start the docker services now.\n'
+    printf "Run 'make testcenter-init' before the first start.\n\n"
     printf "'%s' installation script finished.\n" "$APP_NAME"
     exit 0
   fi

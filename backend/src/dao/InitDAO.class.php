@@ -400,6 +400,12 @@ class InitDAO extends SessionDAO {
     );
     usort($patches, [Version::class, 'compare']);
 
+    if (!count($patches)) {
+      return $report;
+    }
+
+    // `next` parses as 0.0.0 and was therefore sorted first.
+    // It belongs last and is moved there.
     $nextPatchAvailable = ($patches[0] == 'next');
     if ($nextPatchAvailable) {
       $patches[] = array_shift($patches);
@@ -409,13 +415,15 @@ class InitDAO extends SessionDAO {
 
     foreach ($patches as $patch) {
       $lastWasFutureVersion = $patchIsFutureVersion;
+      // One argument compares against the application version: true when the patch belongs to a
+      // release newer than the one running. Applying it would put the schema ahead of the code.
       $patchIsFutureVersion = Version::compare($patch) > 0;
-      $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
+      $patchAlreadyApplied = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
       $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
 
       if (
         (!$forcePatch) &&
-        ($patchIsFutureVersion or $shouldBeInstalled)
+        ($patchIsFutureVersion or $patchAlreadyApplied)
       ) {
         continue;
       }

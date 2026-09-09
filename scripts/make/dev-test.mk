@@ -42,6 +42,12 @@ test-backend-api:
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
 			--file test/docker-compose.api-test.yml\
+		run --rm --entrypoint /initialize_only.sh backend &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+			--file test/docker-compose.api-test.yml\
 		run --rm task-runner-backend\
 			node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest
 
@@ -113,6 +119,12 @@ test-file-server-api:
 test-system-headless:
 	-cd $(TC_BASE_DIR) &&\
 	make down &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+			--file e2e/docker-compose.system-test-headless.yml\
+		run --rm --entrypoint /initialize_only.sh backend &&\
 	SPEC=$(spec) \
 	docker compose\
 			--env-file .env.dev\
@@ -133,6 +145,11 @@ test-system-headless:
 
 test-system:
 	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		run --rm --entrypoint /initialize_only.sh backend &&\
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\

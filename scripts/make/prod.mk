@@ -11,7 +11,7 @@ include $(TC_BASE_DIR)/.env.prod
  	testcenter-status testcenter-logs testcenter-config testcenter-system-prune testcenter-volumes-prune\
  	testcenter-images-clean testcenter-connect-db testcenter-backup testcenter-restore testcenter-dump-db\
  	testcenter-restore-db testcenter-start-db testcenter-export-backend-vol testcenter-import-backend-vol\
- 	testcenter-update
+ 	testcenter-pull testcenter-init testcenter-update
 
 ## disables printing the recipe of a make target before executing it
 .SILENT: testcenter-images-clean
@@ -358,6 +358,45 @@ testcenter-start-db:
 				--file docker-compose.yml\
 				--file docker-compose.prod.yml\
 			up --detach --wait db;\
+	fi
+
+## Pull the images of the configured version without starting or stopping anything.
+testcenter-pull:
+	@if $(TLS_ENABLED); then\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.tls.yml\
+			pull;\
+	else\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+			pull;\
+	fi
+
+## Install the database schema, apply pending patches and read the workspace files.
+## Needed once before the first start and after every update; the backend refuses to serve while the
+## schema does not match. Idempotent, so it is also the way to pick up files added to the data volume.
+testcenter-init:
+	@$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-start-db
+	@if $(TLS_ENABLED); then\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.tls.yml\
+			run --rm --entrypoint /initialize_only.sh backend;\
+	else\
+		cd $(TC_BASE_DIR);\
+		docker compose\
+				--env-file .env.prod\
+				--file docker-compose.yml\
+				--file docker-compose.prod.yml\
+			run --rm --entrypoint /initialize_only.sh backend;\
 	fi
 
 # Start testcenter update procedure

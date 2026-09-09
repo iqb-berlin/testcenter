@@ -98,6 +98,7 @@ services:
       - ./backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
       - ./backend/config/no-cors.htaccess/:/var/www/testcenter/.htaccess
       - ./backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
+      - ./backend/check-db-compatibility.php:/var/www/testcenter/backend/check-db-compatibility.php
       - ./backend/index.php:/var/www/testcenter/backend/index.php
       - ./backend/initialize.php:/var/www/testcenter/backend/initialize.php
       - ./backend/routes.php:/var/www/testcenter/backend/routes.php

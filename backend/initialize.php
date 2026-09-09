@@ -28,16 +28,12 @@ try {
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    throw new InvalidArgumentException("Initialize is already running.");
-  }
   if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
     $msg = file_get_contents(ROOT_DIR . '/backend/config/error.lock');
     unlink(ROOT_DIR . '/backend/config/error.lock');
     CLI::warning("Last initialize failed with error: $msg.");
     CLI::warning("Trying again:");
   }
-  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
   $opt = CLI::getOpt();
   $args = [
@@ -82,30 +78,35 @@ try {
   }
 
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
-  $isCurrentVersion = Version::compare($dbSchemaVersion) >= 0; // 1 : DB is current version!, -1 : DB is outdated
   CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
-  if ($isCurrentVersion) {
-    echo ": DB Schema is uptodate";
-  } else {
-    CLI::p("Looking for new patches to install.");
-    $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
-    foreach ($patchInstallReport['patches'] as $patch) {
-      if (isset($patchInstallReport['errors'][$patch])) {
-        CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
-      } else {
-        CLI::success("* $patch: installed successfully.");
-      }
+
+  CLI::p("Looking for new patches to install.");
+  $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
+  foreach ($patchInstallReport['patches'] as $patch) {
+    if (isset($patchInstallReport['errors'][$patch])) {
+      CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
+    } else {
+      CLI::success("* $patch: installed successfully.");
     }
-    if (count($patchInstallReport['errors'])) {
-      throw new Exception('Installing database patches failed.');
-    }
+  }
+  if (count($patchInstallReport['errors'])) {
+    throw new Exception('Installing database patches failed.');
   }
 
   $newDbStatus = $initDAO->getDbStatus();
-  if (!($newDbStatus['tables'] == 'complete') and !$args['skip_db_integrity_check']) {
-    throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
+  if (!$args['skip_db_integrity_check']) {
+    if ($newDbStatus['tables'] != 'complete') {
+      throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
+    }
+
+    $resultingSchemaVersion = $initDAO->getDBSchemaVersion();
+    if ($resultingSchemaVersion !== DBSchema::REQUIRED_VERSION) {
+      throw new Exception(
+        "Database integrity check failed: schema is $resultingSchemaVersion, "
+        . "but this release requires " . DBSchema::REQUIRED_VERSION . "."
+      );
+    }
   }
-  $initDAO->setDBSchemaVersion($systemVersion);
   CLI::success("DB passed integrity check.");
 
   CLI::h2("Workspaces");
@@ -253,23 +254,12 @@ try {
 
   CLI::h1("Ready.");
 
-} catch (InvalidArgumentException $e) {
-  CLI::warning($e->getMessage());
-  exit(0);
-
 } catch (Exception $e) {
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
-  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    unlink(ROOT_DIR . '/backend/config/init.lock');
-  }
   file_put_contents(ROOT_DIR . '/backend/config/error.lock', $e->getMessage());
   exit(1);
-}
-
-if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-  unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
 echo "\n";

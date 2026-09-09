@@ -504,39 +504,12 @@ application_restart() {
   read -p "Do you want to restart '${APP_NAME}' now? [Y/n] " -er -n 1 restart
 
   if [[ ! ${restart} =~ [nN] ]]; then
-    if ${TLS_ENABLED}; then
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        down
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        pull
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.tls.yml" \
-        up --detach
-    else
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        down
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        pull
-      docker compose \
-        --env-file "${APP_DIR}/.env.prod" \
-        --file "${APP_DIR}/docker-compose.yml" \
-        --file "${APP_DIR}/docker-compose.prod.yml" \
-        up --detach
-    fi
+    make --file "${MAKEFILE}" testcenter-down
+    make --file "${MAKEFILE}" testcenter-pull
+    # Pulled first, so the schema is applied by the target release. Before the backend starts,
+    # because it refuses to serve a schema it does not expect.
+    make --file "${MAKEFILE}" testcenter-init
+    make --file "${MAKEFILE}" testcenter-up
   else
     printf "'%s' update script finished.\n\n" "${APP_NAME}"
 

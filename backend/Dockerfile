@@ -71,6 +71,7 @@ WORKDIR /var/www/testcenter/backend/
 RUN mkdir ./config
 
 COPY backend/.htaccess .
+COPY backend/check-db-compatibility.php .
 COPY backend/index.php .
 COPY backend/initialize.php .
 COPY backend/routes.php .

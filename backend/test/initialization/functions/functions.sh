@@ -125,6 +125,12 @@ function create_sample_folder() {
 }
 
 
+# Pretend the database was left behind by an older release.
+# param 1: version
+function set_db_schema_version() {
+  echo "update meta set value = '$1' where \"metaKey\" = 'dbSchemaVersion'" | run sql
+}
+
 # param 1: patch-version
 # param 2: patch-content
 function create_patch() {
