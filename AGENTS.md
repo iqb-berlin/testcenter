@@ -1,5 +1,3 @@
-- Add lots of comments so reviewing and understanding changes is easier for developers. You may mark comments that are
-  only for reviewing purposes and can be deleted after code review.
 - When implementing features or bugfixes also add documentation about it in the file docs/CHANGELOG.md. user facing changes at the top.
   - Leave a note under "Technisches" only if the change matters to people operating or extending a
     deployment of this project from the outside - e.g. API changes, database/schema changes,
