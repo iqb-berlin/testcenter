@@ -34,16 +34,21 @@ class SystemConfig {
   public static string $password_pattern;
   public static string $admin_init_password;
 
+  /**
+   * @param array<string, array<string, mixed>> $config section name => key => value
+   * @throws Exception if a section and key name no configuration property
+   */
   private static function apply(array $config): void {
     foreach ($config as $sectionName => $section) {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
-        if (property_exists(self::class, $propertyKey)) {
-          if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
-            $value = array_values(array_filter(explode(' ', trim($value))));
-          }
-          self::$$propertyKey = $value;
+        if (!property_exists(self::class, $propertyKey)) {
+          throw new Exception("Unknown configuration key `[$sectionName] $key`: no property `$propertyKey` exists.");
         }
+        if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
+          $value = array_values(array_filter(explode(' ', trim($value))));
+        }
+        self::$$propertyKey = $value;
       }
     }
 
