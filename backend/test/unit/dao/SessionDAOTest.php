@@ -541,7 +541,7 @@ class SessionDAOTest extends TestCase {
         \'{"xxx":["BOOKLET.SAMPLE-1"]}\',
         \'unit test\',
         null,
-        \'2030-01-02 10:00:00\',
+        \'2030-01-02 10:00:00+01:00\',
         null,
         \'new_id\', -- this can happen as result of a re-upload of a TT.xml with changed group-id
         \'Sample Group\'
