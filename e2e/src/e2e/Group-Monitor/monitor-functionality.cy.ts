@@ -100,6 +100,8 @@ describe('Check monitor functions', { testIsolation: false }, () => {
 
   it('button: unlock', () => {
     clickCardButton('gm-card-0');
+    // the toolbar renders before the session list arrives, so wait for a session to be there
+    cy.contains('testtaker-a');
     const testId = Cypress.env('savedTestId');
     cy.intercept('POST', `${Cypress.env('urls').backend}/monitor/group/filter-profiles/tests/unlock`, req => {
       req.continue(res => {

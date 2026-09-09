@@ -71,6 +71,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   isScrollable = false;
   isClosing = false;
+  checkedSessionCount = 0;
 
   quickFilter: string = '';
   quickFilterBoxOpen: boolean = false;
@@ -168,6 +169,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private onCheckedChange(stats: TestSessionSetStat): void {
+    // the test commands act on the checked sessions, so the toolbar disables them when there are none
+    this.checkedSessionCount = stats.numberOfSessions;
+
     if (stats.differentBookletSpecies > 1) {
       this.currentlySelected = null;
     }

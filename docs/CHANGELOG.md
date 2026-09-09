@@ -25,6 +25,9 @@ folgenden Punkten:
   CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
   die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
+- In der Gruppenüberwachung sind »Weiter«, »Pause«, »Springe zu« und »Test Entsperren« deaktiviert, solange kein
+  Test ausgewählt ist. Bisher liessen sie sich anklicken und meldeten lediglich »Keine Tests betroffen« – etwa
+  direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
 
 ## Technisches
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte

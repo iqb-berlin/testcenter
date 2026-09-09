@@ -125,12 +125,12 @@
     </div>
 
     <div class="toolbar-section">
-      <button mat-raised-button class="control" data-cy="GM_forward_button" (click)="tsm.testCommandResume()">
+      <button mat-raised-button class="control" data-cy="GM_forward_button" [disabled]="!checkedSessionCount" (click)="tsm.testCommandResume()">
         <mat-icon svgIcon="play_arrow"></mat-icon>
         {{'weiter' | customtext:'gm_control_resume' | async}}
       </button>
 
-      <button mat-raised-button class="control" data-cy="GM_pause_button" (click)="tsm.testCommandPause()">
+      <button mat-raised-button class="control" data-cy="GM_pause_button" [disabled]="!checkedSessionCount" (click)="tsm.testCommandPause()">
         <mat-icon svgIcon="pause"></mat-icon>
         {{'pause' | customtext:'gm_control_pause' | async}}
       </button>
@@ -141,6 +141,7 @@
         mat-raised-button
         class="control"
         data-cy="GM_jump_button"
+        [disabled]="!checkedSessionCount"
         (click)="testCommandGoto()"
         matTooltip="{{currentlySelected?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)}}"
       >
@@ -155,6 +156,7 @@
         mat-raised-button
         class="control"
         data-cy="GM_lock_button"
+        [disabled]="!checkedSessionCount"
         (click)="unlockCommand()"
         matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
       >
