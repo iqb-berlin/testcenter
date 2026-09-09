@@ -1,6 +1,8 @@
 # next
 
 ## Fehlerbehebungen
+- (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
+  CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
   die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
 
