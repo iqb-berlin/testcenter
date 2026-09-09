@@ -107,14 +107,13 @@ class SysCheckReportFile {
     }
 
 
-    // TODO unit Test
     function getDigest(): array {
 
         return [
-            'os' =>  $this->getValueIfExists('environment', 'Betriebsystem') . ' '
-                . $this->getValueIfExists('environment', 'Betriebsystem-Version'),
+            'os' =>  $this->getValueIfExists('environment', 'Betriebssystem') . ' '
+                . $this->getValueIfExists('environment', 'Betriebssystemversion'),
             'browser' => $this->getValueIfExists('environment', 'Browser') . ' '
-                . $this->getValueIfExists('environment', 'Browser-Version'),
+                . $this->getValueIfExists('environment', 'Browserversion'),
         ];
     }
 
