@@ -1,8 +1,8 @@
 - When writing SQL queries (in .php and .sql), use ALLCAPS for SQL keywords
 - Base database-related changes only on the table shape in `scripts/database/full.sql`; current database contents are unavailable.
-- `full.sql` is hand-maintained, not dumped from a running database. Its `MIGRATIONSHINWEISE` section records the
-  conversion decisions of the PostgreSQL migration (enums, booleans, collations, identity sequences,
-  `REPLACE INTO`); read it before you change the schema. When you add a patch to `patches.d/`, apply the same change to
+- `full.sql` is hand-maintained, not dumped from a running database. Its comments record the decisions that are not
+  visible in the DDL itself (collations, the constant `file_type` column, the `reviewtime` triggers); read them
+  before you change the schema. When you add a patch to `patches.d/`, apply the same change to
   `full.sql` as well and raise the version that `full.sql` writes into `meta.dbSchemaVersion` to that patch's
   version. A fresh installation runs `full.sql` and then every patch newer than that stamp, and the test database
   runs `full.sql` alone - so if the two drift apart, either a patch is applied a second time or the tests run
