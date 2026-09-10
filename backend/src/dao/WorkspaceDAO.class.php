@@ -157,7 +157,19 @@ class WorkspaceDAO extends DAO {
   }
 
   public function storeFile(File $file): void {
-    $this->_("replace into files (
+    // Postgres has no REPLACE INTO. The DELETE is required, not just cosmetic: it cascades to
+    // file_relations and unit_defs_attachments, clearing this file's stale rows before they are re-added.
+    $ownTransaction = !$this->pdoDBhandle->inTransaction();
+    if ($ownTransaction) {
+      $this->beginTransaction();
+    }
+
+    $this->_(
+      'delete from files where workspace_id = ? and name = ? and type = ?',
+      [$this->workspaceId, $file->getName(), $file->getType()]
+    );
+
+    $this->_("insert into files (
                     workspace_id,
                     name,
                     id,
@@ -198,6 +210,10 @@ class WorkspaceDAO extends DAO {
         serialize($file->getContextData())
       ]
     );
+
+    if ($ownTransaction) {
+      $this->commitTransaction();
+    }
   }
 
   /**
@@ -254,8 +270,11 @@ class WorkspaceDAO extends DAO {
       /* @var RequestedAttachment $requestedAttachment */
 
       $this->_(
-        'replace into unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
-                    values(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)',
+        // a booklet can request the same attachment twice (same unit listed in two places);
+        // REPLACE INTO used to absorb that silently
+        'insert into unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
+                    values(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)
+                    on conflict (workspace_id, booklet_name, unit_name, variable_id) do nothing',
         [
           ':workspace_id' => $this->workspaceId,
           ':booklet_name' => $bookletName,
@@ -399,11 +418,24 @@ class WorkspaceDAO extends DAO {
     $validFilePaths = 0;
 
     foreach ($localPaths as $fileLocalPath) {
-      $partParts = explode('/', $fileLocalPath, 2);
-      if (count($partParts) == 2) {
-        list($replacements[], $replacements[]) = $partParts;
-        $validFilePaths++;
+      $pathParts = explode('/', $fileLocalPath, 2);
+      if (count($pathParts) != 2) {
+        continue;
       }
+
+      list($type, $name) = $pathParts;
+
+      // These paths come straight from the client, so the type part can be anything. `files.type` is
+      // an enum column and postgres rejects any value that is not one of its labels, so unknown types
+      // are dropped here - they can not match a row anyway. The caller then reports the path as not
+      // existing, just as it does for a known type with an unknown name.
+      if (!FileType::tryFrom($type)) {
+        continue;
+      }
+
+      $replacements[] = $type;
+      $replacements[] = $name;
+      $validFilePaths++;
     }
 
     $filePathCondition = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
@@ -448,7 +480,17 @@ class WorkspaceDAO extends DAO {
       }
       $files[$row['type']][$row['name']] = $this->resultRow2File($row, $dependencies ?? []);
     }
-    return $files;
+
+    // The queries have no `order by`, so the row order is up to the database. The inner arrays are
+    // keyed by file name, so sorting them by key gives every file listing a stable order - here
+    // rather than in each query, which would also depend on the collation of the deployment's db.
+    return array_map(
+      function (array $filesOfType): array {
+        ksort($filesOfType, SORT_STRING);
+        return $filesOfType;
+      },
+      $files
+    );
   }
 
   private function resultRow2File(array $row, array $relations): ?File {
@@ -540,7 +582,6 @@ class WorkspaceDAO extends DAO {
 
   public function storeRelations(File $file): array {
     $unresolvedRelations = [];
-    $updatedRelations = [];
 
     foreach ($file->getRelations() as $relation) {
       /* @var $relation FileRelation */
@@ -551,9 +592,12 @@ class WorkspaceDAO extends DAO {
         $unresolvedRelations++;
       }
 
+      // a file can declare the same relation twice (e.g. a booklet listing one unit in two places);
+      // REPLACE INTO used to absorb that silently
       $this->_(
-        "replace into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
-                values (?, ?, ?, ?, ?, ?);",
+        "insert into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name)
+                values (?, ?, ?, ?, ?, ?)
+                on conflict on constraint unique_combination do nothing;",
         [
           $this->workspaceId,
           $file->getName(),
@@ -563,13 +607,9 @@ class WorkspaceDAO extends DAO {
           $relatedFile->getName()
         ]
       );
-
-      if ($this->lastAffectedRows != 1) {
-        $updatedRelations[] = $relation;
-      }
     }
 
-    return [$unresolvedRelations, $updatedRelations];
+    return [$unresolvedRelations];
   }
 
   public function getBookletResourcePaths(string $bookletFileName): array {
@@ -599,7 +639,7 @@ class WorkspaceDAO extends DAO {
             where
               bookletContainsUnit.subject_name = :booklet_file_name
               and resourceFiles.workspace_id = :ws_id
-              and resourceFiles.is_valid = 1",
+              and resourceFiles.is_valid = true",
             [
               ':ws_id' => $this->workspaceId,
               ':booklet_file_name' => $bookletFileName
@@ -656,7 +696,7 @@ class WorkspaceDAO extends DAO {
     
     // Get all remaining testtakers files in this workspace
     $testtakersFiles = $this->_(
-      "select name from files where workspace_id = :ws_id and type = 'Testtakers' and is_valid = 1",
+      "select name from files where workspace_id = :ws_id and type = 'Testtakers' and is_valid = true",
       [':ws_id' => $this->workspaceId],
       true
     );
@@ -760,11 +800,13 @@ class WorkspaceDAO extends DAO {
 
   private function updateValidUntilInPersonSession() {
     $this->_(
+      // postgres spells the multi-table update UPDATE ... FROM; the SET column must stay unqualified
       "
-      update person_sessions ps 
-      join login_sessions ls on ps.login_sessions_id = ls.id
-      join logins l on ls.name = l.name
-      set ps.valid_until = l.valid_to
+      update person_sessions ps
+      set valid_until = l.valid_to
+      from login_sessions ls
+        join logins l on ls.name = l.name
+      where ps.login_sessions_id = ls.id
       ",
       [],
       true

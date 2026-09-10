@@ -9,18 +9,18 @@ import {
   logoutFromTestNoConfirmation,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   twoStepLogin,
   clickCardButton,
-  logout
+  logout, selectResultGroup
 } from '../utils';
 
 describe('run a review test, check time block dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -99,9 +99,7 @@ describe('run a review test, check time block dialogs', { testIsolation: false }
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('Review');
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Review');
     cy.get('[data-cy="download-responses"]')
       .click();
     cy.get('[data-cy="toast-text-0"]')
@@ -111,8 +109,7 @@ describe('run a review test, check time block dialogs', { testIsolation: false }
   });
 
   it('there are no logs in the response file', () => {
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Review');
     cy.get('[data-cy="download-logs"]')
       .click();
     cy.get('[data-cy="toast-text-0"]')
@@ -126,7 +123,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -243,7 +240,7 @@ describe('check code word options', { testIsolation: true }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -305,7 +302,7 @@ describe('check deny navigation dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();

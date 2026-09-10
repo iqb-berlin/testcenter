@@ -205,9 +205,12 @@ paths:
                       example: "example_workspace"
                     latest_modification_ts:
                       type: string
-                      format: date-time
                       nullable: true
-                      description: timestamp of the latest file modification in the workspace, or null if the workspace has no files
+                      description: >-
+                        Time of the latest file modification in the workspace, in the system
+                        timezone, formatted `YYYY-MM-DD HH:MM:SS`, or null if the workspace has no
+                        files. Not RFC 3339: the value carries neither a `T` separator nor an
+                        offset.
                       example: "2023-01-16 09:00:00"
                   required:
                     - id

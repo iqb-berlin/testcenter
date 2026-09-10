@@ -18,12 +18,12 @@ fi
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
 ENV_VARS[REDIS_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-ENV_VARS[MYSQL_USER]=iqb_tba_db_user
-ENV_VARS[MYSQL_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
+ENV_VARS[DB_DATABASE]=iqb_tba_testcenter
+ENV_VARS[DB_USER]=iqb_tba_db_user
+ENV_VARS[DB_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 ENV_VARS[PASSWORD_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
 
-ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD PASSWORD_SALT)
+ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD DB_DATABASE DB_USER DB_PASSWORD PASSWORD_SALT)
 
 declare TARGET_DIR
 
@@ -184,13 +184,17 @@ application_start() {
     read -p "Do you want to start $APP_NAME now? [Y/n] " -er -n 1 is_start_now
     printf '\n'
     if [[ ! $is_start_now =~ [nN] ]]; then
+      # The schema has to exist before the backend starts; it refuses to serve without it.
+      make testcenter-init
       make testcenter-up
     else
+      printf "Run 'make testcenter-init' before the first start.\n\n"
       printf "'%s' installation script finished.\n" "$APP_NAME"
       exit 0
     fi
   else
-    printf 'You can start the docker services now.\n\n'
+    printf 'You can start the docker services now.\n'
+    printf "Run 'make testcenter-init' before the first start.\n\n"
     printf "'%s' installation script finished.\n" "$APP_NAME"
     exit 0
   fi

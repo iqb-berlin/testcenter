@@ -31,21 +31,6 @@ function take_current_version() {
 }
 
 
-# param 1: expectation file name
-function expect_db_structure_dump_equals() {
-  result=$(php backend/test/initialization/functions/structure.php)
-  expectation_file="backend/test/initialization/expectations/$1.yml"
-  differences=$(diff <(echo "$result") "$expectation_file")
-  if [ "$differences" != "" ]
-  then
-    echo_fail "Expectation '$1' failed: "
-    echo "$differences";
-    exit 1
-  else
-    echo_success "Expectation '$1' met"
-  fi
-}
-
 # param 1: table
 # param 2: count
 function expect_table_to_have_rows() {
@@ -125,6 +110,12 @@ function expect_init_script_failed() {
   echo_success "Init-Script failed as expected"
 }
 
+# param 1: table
+# echoes the current number of rows
+function count_rows() {
+  php backend/test/initialization/functions/count.php --table="$1"
+}
+
 # param 1: expectation folder name
 function create_sample_folder() {
   mkdir -p "data"
@@ -134,6 +125,12 @@ function create_sample_folder() {
 }
 
 
+# Pretend the database was left behind by an older release.
+# param 1: version
+function set_db_schema_version() {
+  echo "update meta set value = '$1' where \"metaKey\" = 'dbSchemaVersion'" | run sql
+}
+
 # param 1: patch-version
 # param 2: patch-content
 function create_patch() {
@@ -142,6 +139,12 @@ function create_patch() {
 
 function remove_patch() {
   rm -f "scripts/database/patches.d/$1.sql"
+}
+
+# param 1: workspace-name
+# echoes the ID the database assigned
+function create_workspace() {
+  php backend/test/initialization/functions/create-workspace.php --ws_name="$1"
 }
 
 # param 1: workspace-id

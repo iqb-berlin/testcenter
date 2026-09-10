@@ -20,11 +20,11 @@ declare TRAEFIK_ENV_VAR_ORDER=(TESTCENTER_BASE_DOMAIN HTTP_PORT HTTPS_PORT TLS_E
 
 declare -A TESTCENTER_ENV_VARS
 TESTCENTER_ENV_VARS[REDIS_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-TESTCENTER_ENV_VARS[MYSQL_USER]=iqb_tba_db_user
-TESTCENTER_ENV_VARS[MYSQL_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
-TESTCENTER_ENV_VARS[MYSQL_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
-declare TESTCENTER_ENV_VAR_ORDER=(REDIS_PASSWORD MYSQL_ROOT_PASSWORD MYSQL_USER MYSQL_PASSWORD MYSQL_SALT)
+TESTCENTER_ENV_VARS[DB_DATABASE]=iqb_tba_testcenter
+TESTCENTER_ENV_VARS[DB_USER]=iqb_tba_db_user
+TESTCENTER_ENV_VARS[DB_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
+TESTCENTER_ENV_VARS[PASSWORD_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
+declare TESTCENTER_ENV_VAR_ORDER=(REDIS_PASSWORD DB_DATABASE DB_USER DB_PASSWORD PASSWORD_SALT)
 
 check_prerequisites() {
   printf "\nChecking required packages ...\n"
@@ -276,13 +276,14 @@ install_testcenter() {
 
     sed -i.bak "s|redisPassword: \&redisPassword.*|redisPassword: \&redisPassword ${TESTCENTER_ENV_VARS[REDIS_PASSWORD]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
-    sed -i.bak "s|mysqlRootPassword:.*|mysqlRootPassword: ${TESTCENTER_ENV_VARS[MYSQL_ROOT_PASSWORD]}|" \
+    # The database fields have unique four-space indentation in the chart's values file.
+    sed -i.bak "s|^    database:.*|    database: ${TESTCENTER_ENV_VARS[DB_DATABASE]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
-    sed -i.bak "s|mysqlUser: \&dbUser.*|mysqlUser: \&dbUser ${TESTCENTER_ENV_VARS[MYSQL_USER]}|" \
+    sed -i.bak "s|^    user:.*|    user: ${TESTCENTER_ENV_VARS[DB_USER]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
-    sed -i.bak "s|mysqlPassword: \&dbUserPassword.*|mysqlPassword: \&dbUserPassword ${TESTCENTER_ENV_VARS[MYSQL_PASSWORD]}|" \
+    sed -i.bak "s|^    password:.*|    password: ${TESTCENTER_ENV_VARS[DB_PASSWORD]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
-    sed -i.bak "s|passwordSalt:.*|passwordSalt: ${TESTCENTER_ENV_VARS[MYSQL_SALT]}|" \
+    sed -i.bak "s|passwordSalt:.*|passwordSalt: ${TESTCENTER_ENV_VARS[PASSWORD_SALT]}|" \
       testcenter-values.yaml && rm testcenter-values.yaml.bak
     printf "Customization of Testcenter default configuration done (q.v. testcenter-values.yaml).\n\n"
 

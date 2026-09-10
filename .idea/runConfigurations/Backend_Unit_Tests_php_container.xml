@@ -8,8 +8,8 @@
         <option name="interpreterName" value="iqbberlin/testcenter-backend:current" />
       </PhpTestInterpreterSettings>
       <envs>
-        <env name="MYSQL_HOST" value="host-gateway" />
-        <env name="MYSQL_PORT" value="3306" />
+        <env name="DB_HOST" value="host-gateway" />
+        <env name="DB_PORT" value="9092" />
       </envs>
     </CommandLine>
     <option name="envFilePaths">

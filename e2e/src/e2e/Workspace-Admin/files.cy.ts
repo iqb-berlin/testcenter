@@ -6,14 +6,14 @@ import {
   openWorkspace,
   probeBackendApi,
   reload,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin-files', () => {
   before(() => {
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

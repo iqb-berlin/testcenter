@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class SuperAdminDAO extends DAO {
   public function getWorkspaces(): array {
-    return $this->_(
+    $workspaces = $this->_(
       'select workspaces.id, workspaces.name, MAX(files.modification_ts) AS latest_modification_ts
       FROM workspaces
       LEFT JOIN files ON workspaces.id = files.workspace_id
@@ -12,6 +12,15 @@ class SuperAdminDAO extends DAO {
       ORDER BY workspaces.name',
       [],
       true
+    );
+
+    // A workspace without files has no latest modification: sqlToDisplayFormat() passes that null through.
+    return array_map(
+      function(array $workspace): array {
+        $workspace['latest_modification_ts'] = TimeStamp::sqlToDisplayFormat($workspace['latest_modification_ts']);
+        return $workspace;
+      },
+      $workspaces
     );
   }
 
@@ -179,7 +188,7 @@ class SuperAdminDAO extends DAO {
 
   public function getOrCreateWorkspace(string $name): array {
     $workspace = $this->_(
-      "select workspaces.id, workspaces.name from workspaces where `name` = :ws_name",
+      "select workspaces.id, workspaces.name from workspaces where name = :ws_name",
       [':ws_name' => $name]
     );
 
@@ -222,7 +231,7 @@ class SuperAdminDAO extends DAO {
     }
 
     $workspace = $this->_(
-      "select workspaces.id, workspaces.name from workspaces where `name` = :ws_name",
+      "select workspaces.id, workspaces.name from workspaces where name = :ws_name",
       [':ws_name' => $newName]
     );
 

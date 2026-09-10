@@ -525,7 +525,10 @@ components:
             example: 'X'
           reviewtime:
             type: string
-            format: date-time
+            description: >-
+              Review time in the system timezone, formatted `YYYY-MM-DD HH:MM:SS`.
+              Not RFC 3339: the value carries neither a `T` separator nor an offset.
+            example: "2021-07-29 10:00:00"
           entry:
             type: string
           page:
@@ -565,7 +568,10 @@ components:
             type: boolean
           reviewtime:
             type: string
-            format: date-time
+            description: >-
+              Review time in the system timezone, formatted `YYYY-MM-DD HH:MM:SS`.
+              Not RFC 3339: the value carries neither a `T` separator nor an offset.
+            example: "2021-07-29 10:00:00"
           page:
             type: number
             nullable: true
@@ -607,7 +613,10 @@ components:
         properties:
           date:
             type: string
-            format: date-time
+            description: >-
+              Report date in the system timezone, formatted `YYYY-MM-DD HH:MM:SS`.
+              Not RFC 3339: the value carries neither a `T` separator nor an offset.
+            example: "2021-07-29 10:00:00"
           checkId:
             type: string
           checkLabel:

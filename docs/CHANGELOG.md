@@ -1,12 +1,43 @@
 # next
 
+## Umstieg von MySQL auf PostgreSQL
+
+Testcenter verwendet PostgreSQL 18.4 statt MySQL. Das Update überträgt die vorhandenen MySQL-Daten **nicht**: Die
+Anwendung startet mit einer leeren PostgreSQL-Datenbank im neuen Volume `postgres_vol`, das alte Volume `db_vol`
+bleibt unverändert liegen. Workspaces, ihre Dateien und die Logins aus den Testtaker-Dateien entstehen beim ersten
+Start automatisch neu; Testergebnisse, Logs, Reviews und alle Admin-Konten gehen verloren. Danach existiert nur das
+Konto `super` mit dem Passwort aus `ADMIN_INIT_PASSWORD`, das sofort geändert werden sollte. Wer aktualisiert,
+sollte vorher die noch benötigten Ergebnisse exportieren.
+
+Vorbereitung, Ablauf, Zugriff auf die alten Daten und Rollback beschreibt
+[Transition from MySQL to PostgreSQL](transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
+folgenden Punkten:
+
+- Die Variablen für Datenbankverbindungen heißen jetzt neutral `DB_*`. Es gibt keinen Rückfall auf alte
+  `MYSQL_*`-Namen oder alternative `POSTGRES_*`-Namen. `make testcenter-update` passt `.env.prod` automatisch an.
+- Das Helm-Chart verwendet PostgreSQL auf Port 5432; Werte und Secret-Schlüssel ändern sich.
+- Eigene Backend-Images brauchen die PHP-Erweiterung `pdo_pgsql`. Die Erweiterung `pdo_mysql` ist nicht mehr nötig.
+- Zeitstempel, die die API unverändert aus der Datenbank ausliefert (`reviewtime` und `createdAt`), tragen jetzt
+  einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
+
 ## Fehlerbehebungen
 - (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
   CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
   die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
+- In der Gruppenüberwachung sind »Weiter«, »Pause«, »Springe zu« und »Test Entsperren« deaktiviert, solange kein
+  Test ausgewählt ist. Bisher liessen sie sich anklicken und meldeten lediglich »Keine Tests betroffen« – etwa
+  direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
 
 ## Technisches
+- Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
+  `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte
+  überhaupt kein Konto, und niemand konnte sich anmelden.
+- Alle Zeitstempel-Felder der API-Dokumentation waren als `format: date-time` (RFC 3339, also
+  `2021-07-29T10:00:00Z`) deklariert. Kein Feld hat dieses Format jemals geliefert. Die Deklarationen wurden
+  korrigiert und beschreiben nun das tatsächliche Format. Betroffen sind `reviewtime`, `date` in
+  `SysCheckReport` und `latest_modification_ts`. Aus der Spezifikation generierte Clients konnten diese Werte
+  nicht einlesen.
 - Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
   `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
   die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von
@@ -23,6 +54,13 @@
   fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange
   `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende
   Installationen von dieser Änderung nicht betroffen sind.
+- Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank
+  und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/`
+  mit UTC-Zeitstempel und enthält das Datenbankabbild, ein Archiv der Backend-Dateien und eine Datei `manifest` mit
+  Version, Datenbanknamen und Prüfsummen. Nicht enthalten sind `.env.prod`, `config/` und `secrets/`; diese Dateien
+  müssen separat gesichert werden.
+- Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt
+  sich mit `make testcenter-restore` wiederherstellen.
 
 # 18.3.0
 
@@ -53,6 +91,8 @@
   Schaltfläche nicht mehr grün ist.
 
 ## Fehlerbehebungen
+- Die automatisierten Systemtests für Hot-Restart und Hot-Return wählen beim Ergebnisdownload nun die vorgesehene
+  Login-Gruppe unabhängig von der Reihenfolge der Ergebniszeilen aus.
 - Workspace-Admin:
   - In der Dateien-Ansicht wird der Tooltip mit Information bzw. Warnungen zu einer Datei nicht mehr abgeschnitten.
 - Testheft-Anzeige: Beim Verlassen einer Aufgabe zurück ins Startmenü erschienen bisher unter Umständen zwei Bestätigungsdialoge nacheinander (etwa bei einem zeitbeschränkten Block oder einer Bereichssperre). Es erscheint nun nur noch ein einziger, zusammengeführter Dialog.

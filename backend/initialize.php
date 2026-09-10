@@ -7,6 +7,8 @@
  * --skip_db_integrity_check
  * --skip_read_workspace_files
  * --dont_create_sample_data
+ *     Skips the sample workspace and its content. The first system administrator is created
+ *     regardless - it is not sample data, and without it nobody can log in.
  * ```
  */
 
@@ -28,16 +30,12 @@ try {
   $systemVersion = SystemConfig::$system_version;
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    throw new InvalidArgumentException("Initialize is already running.");
-  }
   if (file_exists(ROOT_DIR . '/backend/config/error.lock')) {
     $msg = file_get_contents(ROOT_DIR . '/backend/config/error.lock');
     unlink(ROOT_DIR . '/backend/config/error.lock');
     CLI::warning("Last initialize failed with error: $msg.");
     CLI::warning("Trying again:");
   }
-  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
   $opt = CLI::getOpt();
   $args = [
@@ -64,10 +62,6 @@ try {
 
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();
-  if (!$initDAO->checkSQLMode()) {
-    throw new Exception('SQLMode is not set properly. Check the config and restart.');
-  }
-  CLI::success("SQL-Mode seems to be OK.");
 
   CLI::h2("Database Structure");
 
@@ -82,43 +76,40 @@ try {
 
   if ($args['overwrite_existing_installation'] or ($dbStatus['tables'] == 'empty')) {
     CLI::p("Install basic database structure");
-    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/full.sql");
   }
 
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
-  $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
   CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
-  if ($isCurrentVersion >= 0) {
-    echo ": O.K.";
 
-  } else {
-    CLI::p("Install patches if necessary");
-    $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-    $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", $allowFailing);
-    foreach ($patchInstallReport['patches'] as $patch) {
-      if (isset($patchInstallReport['errors'][$patch])) {
-        CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
-
-      } else {
-        CLI::success("* $patch: installed successfully.");
-      }
+  CLI::p("Looking for new patches to install.");
+  $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d");
+  foreach ($patchInstallReport['patches'] as $patch) {
+    if (isset($patchInstallReport['errors'][$patch])) {
+      CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
+    } else {
+      CLI::success("* $patch: installed successfully.");
     }
-    if (count($patchInstallReport['errors']) and !$allowFailing) {
-      throw new Exception('Installing database patches failed.');
-    }
+  }
+  if (count($patchInstallReport['errors'])) {
+    throw new Exception('Installing database patches failed.');
   }
 
   $newDbStatus = $initDAO->getDbStatus();
-  if (!($newDbStatus['tables'] == 'complete') and !$args['skip_db_integrity_check']) {
-    throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
-  }
-  $initDAO->setDBSchemaVersion($systemVersion);
-  CLI::success("DB passed integrity check.");
+  if (!$args['skip_db_integrity_check']) {
+    if ($newDbStatus['tables'] != 'complete') {
+      throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
+    }
 
-  // tables is 'complete', if the current database has all tables, declared in self::tables; not the case for initialize/general scripts that test incomplete table states
-  if ($newDbStatus['tables'] === 'complete') {
-    $initDAO->writeFullSchema(ROOT_DIR . '/scripts/database/full.sql');
+    $resultingSchemaVersion = $initDAO->getDBSchemaVersion();
+    if ($resultingSchemaVersion !== DBSchema::REQUIRED_VERSION) {
+      throw new Exception(
+        "Database integrity check failed: schema is $resultingSchemaVersion, "
+        . "but this release requires " . DBSchema::REQUIRED_VERSION . "."
+      );
+    }
   }
+  CLI::success("DB passed integrity check.");
 
   CLI::h2("Workspaces");
 
@@ -161,6 +152,11 @@ try {
         $workspace->setWorkspaceHash();
         CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
+        if ($stats['pruning_skipped']) {
+          CLI::warning("Workspace-folder `ws_{$workspace->getId()}` is empty, but the database holds files for it.");
+          CLI::warning("Nothing was deleted. Restore the backend data volume, or upload the content again.");
+        }
+
         $statsString = implode(
           ", ",
           array_filter(
@@ -199,7 +195,19 @@ try {
     }
   }
 
-  if (!count($workspaceIds) and !$args['dont_create_sample_data']) {
+  // Whether the installation is new has to be answered by the database, not by `$workspaceIds`: that holds only the
+  // workspaces which have a folder, and a restored database dump in a deployment with an empty data volume has
+  // workspaces but no folders. Creating the sample workspace would then collide with a restored row.
+  $workspacesExist = $initDAO->workspacesExist();
+
+  if ($workspacesExist and !count($workspaceIds)) {
+    // Starting up is deliberate: an operator needs a running application to finish the restore or to upload the
+    // content again. But it has to be visible, because a workspace without content cannot deliver a test.
+    CLI::warning("Workspaces exist in the database, but the data directory holds no workspace folder.");
+    CLI::warning("Restore the backend data volume, or upload the workspace content again.");
+  }
+
+  if (!$workspacesExist and !$args['dont_create_sample_data']) {
     $sampleWorkspaceId = $initDAO->createWorkspace('Sample Workspace');
     $sampleWorkspace = new Workspace($sampleWorkspaceId);
 
@@ -224,7 +232,7 @@ try {
 
   CLI::h2("Sys-Admin");
 
-  if (!$initDAO->adminExists() and !$args['dont_create_sample_data']) {
+  if (!$initDAO->adminExists()) {
     CLI::warning("No Sys-Admin found.");
 
     $initial_admin_password = SystemConfig::$admin_init_password;
@@ -248,23 +256,12 @@ try {
 
   CLI::h1("Ready.");
 
-} catch (InvalidArgumentException $e) {
-  CLI::warning($e->getMessage());
-  exit(0);
-
 } catch (Exception $e) {
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
-  if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-    unlink(ROOT_DIR . '/backend/config/init.lock');
-  }
   file_put_contents(ROOT_DIR . '/backend/config/error.lock', $e->getMessage());
   exit(1);
-}
-
-if (file_exists(ROOT_DIR . '/backend/config/init.lock')) {
-  unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
 echo "\n";

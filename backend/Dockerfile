@@ -43,12 +43,11 @@ RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
 
 
 FROM ${REGISTRY_PATH}php:${PHP_VERSION} AS base
-# Install PHP extensions
 RUN --mount=type=cache,sharing=locked,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
-    libzip-dev
+    libzip-dev libpq-dev
 
-RUN docker-php-ext-install -j$(nproc) pdo_mysql zip opcache
+RUN docker-php-ext-install -j$(nproc) pdo_pgsql zip opcache
 RUN pecl install igbinary && docker-php-ext-enable igbinary
 RUN pecl install redis && docker-php-ext-enable redis
 
@@ -72,6 +71,7 @@ WORKDIR /var/www/testcenter/backend/
 RUN mkdir ./config
 
 COPY backend/.htaccess .
+COPY backend/check-db-compatibility.php .
 COPY backend/index.php .
 COPY backend/initialize.php .
 COPY backend/routes.php .

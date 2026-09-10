@@ -2,13 +2,13 @@ import {
   disableSimplePlayersInternalDebounce,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check parameter: toolbar_show_unit_title', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

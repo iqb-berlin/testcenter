@@ -2,13 +2,13 @@ import {
   disableSimplePlayersInternalDebounce,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check parameter: toolbar_show_time_left', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

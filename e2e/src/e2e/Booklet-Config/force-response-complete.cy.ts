@@ -3,7 +3,7 @@ import {
   getFromIframe,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
@@ -18,7 +18,7 @@ Dazu im verwendeten Booklet presentation-/response-complete ON setzen!
 
 describe.skip('check parameter: response-complete', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

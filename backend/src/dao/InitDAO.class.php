@@ -9,6 +9,23 @@ declare(strict_types=1);
 */
 
 class InitDAO extends SessionDAO {
+  /**
+   * PostgreSQL enum types owned by the Testcenter database schema.
+   *
+   * Unlike MySQL's inline ENUM declarations, these objects are independent
+   * from the tables using them. Consequently, dropping every application table
+   * does not remove the types. Keeping the ownership list next to clearDB()
+   * makes the overwrite operation cover the complete schema created by
+   * scripts/database/full.sql.
+   */
+  const schemaTypes = [
+    'file_type',
+    'verona_module_type',
+    'file_relationship_type',
+    'attachment_type',
+    'assignment_scope'
+  ];
+
   const legacyTableNames = [
     'admintokens',
     'persons',
@@ -221,30 +238,28 @@ class InitDAO extends SessionDAO {
   }
 
   public function clearDB(): array {
+    $existingTables = $this->getExistingTables();
     $droppedTables = [];
 
-    $this->_('SET FOREIGN_KEY_CHECKS = 0');
-
     foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
-      if ($this->getTableStatus($table) !== 'missing') {
-        $droppedTables[] = $table;
-        $this->_("drop table $table");
+      if (!in_array($table, $existingTables, true)) {
+        continue;
       }
+
+      $droppedTables[] = $table;
+      $this->_("DROP TABLE IF EXISTS $table CASCADE");
     }
 
-    $this->_('SET FOREIGN_KEY_CHECKS = 1');
+    // PostgreSQL keeps named enum types after their consuming tables are gone.
+    // Remove exactly the application-owned types so full.sql can recreate the
+    // schema during --overwrite_existing_installation. Deliberately omit
+    // CASCADE here: an unexpected dependency should stop the destructive reset
+    // instead of silently deleting a database object not owned by Testcenter.
+    foreach ($this::schemaTypes as $type) {
+      $this->_("DROP TYPE IF EXISTS $type");
+    }
 
     return $droppedTables;
-  }
-
-  public function cloneDB(string $prodDBName): void {
-    $this->clearDB();
-
-    foreach ($this::tables as $table) {
-      $creationString = $this->_("show create table $prodDBName.$table")['Create Table'];
-      $this->_($creationString);
-      $this->_("truncate $table"); // to reset auto-increment
-    }
   }
 
   // TODO unit-test
@@ -255,8 +270,15 @@ class InitDAO extends SessionDAO {
       'empty' => []
     ];
 
+    $existingTables = $this->getExistingTables();
+
     foreach ($this::tables as $table) {
-      $tableStatus[$this->getTableStatus($table)][] = $table;
+      if (!in_array($table, $existingTables, true)) {
+        $tableStatus['missing'][] = $table;
+        continue;
+      }
+
+      $tableStatus[$this->isTableEmpty($table) ? 'empty' : 'used'][] = $table;
     }
 
     $used = count($tableStatus['used']);
@@ -277,14 +299,30 @@ class InitDAO extends SessionDAO {
     ];
   }
 
-  protected function getTableStatus(string $table): string {
-    try {
-      $entries = $this->_("SELECT * FROM $table limit 10", [], true);
-      return count($entries) ? 'used' : 'empty';
+  /**
+   * Names of all tables present in the database's current schema.
+   *
+   * Existence is read from the catalog, never from whether a query against a table fails: on
+   * PostgreSQL a failed statement is a real server error - it is written to the server log, and
+   * inside a transaction it aborts every following statement until rollback.
+   *
+   * @return string[]
+   */
+  private function getExistingTables(): array {
+    $tables = $this->_(
+      "select table_name from information_schema.tables where table_schema = current_schema()",
+      [],
+      true
+    );
 
-    } catch (Exception) {
-      return 'missing';
-    }
+    return array_column($tables, 'table_name');
+  }
+
+  /**
+   * Whether the given table holds no rows at all. The table has to exist, see getExistingTables().
+   */
+  private function isTableEmpty(string $table): bool {
+    return $this->_("select 1 from $table limit 1") === null;
   }
 
   public function createSampleCommands(int $commanderId): void {
@@ -301,13 +339,18 @@ class InitDAO extends SessionDAO {
   }
 
   public function adminExists(): bool {
-    $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
+    $admins = $this->_("select count(*) as count from users where is_superadmin = true");
     return (int) $admins['count'] > 0;
+  }
+
+  public function workspacesExist(): bool {
+    $workspaces = $this->_("select count(*) as count from workspaces");
+    return (int) $workspaces['count'] > 0;
   }
 
   public function createWorkspaceIfMissing(Workspace $workspace): array {
     $workspaceFromDb = $this->_(
-      "select workspaces.id, workspaces.name from workspaces where `id` = :ws_id",
+      "select workspaces.id, workspaces.name from workspaces where id = :ws_id",
       [':ws_id' => $workspace->getId()]
     );
 
@@ -315,11 +358,25 @@ class InitDAO extends SessionDAO {
       return $workspaceFromDb;
     }
 
-    $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
+    $name = "ws {$workspace->getId()} [restored " . TimeStamp::toDisplayFormat(TimeStamp::now()) . "]";
 
     $this->_(
       'insert into workspaces (name, id) values (:ws_name, :ws_id)',
       [':ws_name' => $name, ':ws_id' => $workspace->getId()]
+    );
+
+    // The ID comes from the folder name and is inserted explicitly, which leaves the identity sequence untouched.
+    // Without this repair the next workspace created in the UI collides with an existing ID.
+    // greatest() with nextval() keeps the sequence monotonic: max(id) alone could move it backwards behind IDs it
+    // has already issued, re-using the ID of a deleted workspace. The value nextval() consumes is skipped.
+    $this->_(
+      "select setval(
+            pg_get_serial_sequence('workspaces', 'id'),
+            greatest(
+              (select max(id) from workspaces),
+              nextval(pg_get_serial_sequence('workspaces', 'id'))
+            )
+          )"
     );
 
     return [
@@ -329,7 +386,7 @@ class InitDAO extends SessionDAO {
     ];
   }
 
-  public function installPatches(string $patchesDir, bool $allowFailing): array {
+  public function installPatches(string $patchesDir): array {
     $report = [
       'patches' => [],
       'errors' => []
@@ -343,6 +400,12 @@ class InitDAO extends SessionDAO {
     );
     usort($patches, [Version::class, 'compare']);
 
+    if (!count($patches)) {
+      return $report;
+    }
+
+    // `next` parses as 0.0.0 and was therefore sorted first.
+    // It belongs last and is moved there.
     $nextPatchAvailable = ($patches[0] == 'next');
     if ($nextPatchAvailable) {
       $patches[] = array_shift($patches);
@@ -352,13 +415,15 @@ class InitDAO extends SessionDAO {
 
     foreach ($patches as $patch) {
       $lastWasFutureVersion = $patchIsFutureVersion;
+      // One argument compares against the application version: true when the patch belongs to a
+      // release newer than the one running. Applying it would put the schema ahead of the code.
       $patchIsFutureVersion = Version::compare($patch) > 0;
-      $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
+      $patchAlreadyApplied = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
       $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
 
       if (
         (!$forcePatch) &&
-        ($patchIsFutureVersion or $shouldBeInstalled)
+        ($patchIsFutureVersion or $patchAlreadyApplied)
       ) {
         continue;
       }
@@ -371,9 +436,7 @@ class InitDAO extends SessionDAO {
       } catch (PDOException $exception) {
         $report['errors'][$patch] = $exception->getMessage();
 
-        if (!$allowFailing) {
-          return $report;
-        }
+        return $report;
       }
     }
 
@@ -389,12 +452,12 @@ class InitDAO extends SessionDAO {
 
     if ($currentDBSchemaVersion == '0.0.0-no-entry') {
       $this->_(
-        "insert into meta (metaKey, value) values ('dbSchemaVersion', :new_version)",
+        "insert into meta (\"metaKey\", value) values ('dbSchemaVersion', :new_version)",
         [':new_version' => $newVersion]
       );
     } else {
       $this->_(
-        "update meta set value = :new_version where metaKey = 'dbSchemaVersion'",
+        "update meta set value = :new_version where \"metaKey\" = 'dbSchemaVersion'",
         [':new_version' => $newVersion]
       );
     }
@@ -417,21 +480,8 @@ class InitDAO extends SessionDAO {
     return $report;
   }
 
-  public function writeFullSchema(string $path): void {
-    $schema = '-- IQB-Testcenter DB --';
-    foreach ($this::tables as $table) {
-      $schema .= "\n\n" . $this->_("SHOW CREATE TABLE $table")['Create Table'] . ';';
-      $schema .= "\nTRUNCATE $table; -- to reset auto-increment";
-    }
-    file_put_contents($path, $schema);
-  }
-
   public function createSampleMetaData(): void {
     $this->setMeta('appConfig', 'aKey', 'newValue');
   }
 
-  public function checkSQLMode(): bool {
-    $d = $this->_("select 'a' || 'b' as merged")['merged'];
-    return $d === 'ab';
-  }
 }

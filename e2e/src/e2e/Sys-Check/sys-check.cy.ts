@@ -7,7 +7,7 @@ import {
   loginSuperAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   selectFromDropdown,
   visitLoginPage,
   twoStepLogin,
@@ -16,7 +16,7 @@ import {
 
 describe('Sys-Check', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

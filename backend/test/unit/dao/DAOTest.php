@@ -23,11 +23,11 @@ class DAOTest extends TestCase {
   }
 
   function test_getDBSchemaVersion(): void {
-    $this->dbc->_("delete from meta where metaKey = 'dbSchemaVersion'");
+    $this->dbc->_("delete from meta where \"metaKey\" = 'dbSchemaVersion'");
     $result = $this->dbc->getDBSchemaVersion();
     $this->assertEquals('0.0.0-no-entry', $result, 'No entry in meta table');
 
-    $this->dbc->_("insert into meta (metaKey, value) values ('dbSchemaVersion', '10.0.0')");
+    $this->dbc->_("insert into meta (\"metaKey\", value) values ('dbSchemaVersion', '10.0.0')");
     $result = $this->dbc->getDBSchemaVersion();
     $this->assertEquals('10.0.0', $result, 'Version present');
 

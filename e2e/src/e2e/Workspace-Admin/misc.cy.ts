@@ -2,12 +2,12 @@ import {
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
-  resetBackendData, visitLoginPage
+  resetBackendTestData, visitLoginPage
 } from '../utils';
 
 describe('Workspace-Admin Login', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     loginWorkspaceAdmin('workspace_admin', 'ws_password');

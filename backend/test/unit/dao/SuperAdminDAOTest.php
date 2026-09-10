@@ -60,7 +60,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     );
 
     $this->assertEquals($expectation, $result);
@@ -134,7 +134,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "3",
       "name" => "a_third_user",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     ];
     $this->assertEquals($expectation, $result);
 
@@ -214,7 +214,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '1'
+      "isSuperadmin" => true
     );
     $this->assertEquals($expectation, $result);
 
@@ -225,7 +225,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     );
     $this->assertEquals($expectation, $result);
   }
