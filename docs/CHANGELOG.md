@@ -20,6 +20,11 @@ folgenden Punkten:
 - Zeitstempel, die die API unverändert aus der Datenbank ausliefert (`reviewtime` und `createdAt`), tragen jetzt
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
+## Neue Funktionen
+- Beim Ändern des eigenen Kennworts muss nun zusätzlich das aktuelle Kennwort eingegeben werden, um die Änderung zu bestätigen. Dies betrifft nicht das Zurücksetzen eines fremden Kennworts durch Super-Admins.
+- Beim Löschen von Administrator:innen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
+- Beim Löschen von Arbeitsbereichen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
+
 ## Änderungen
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 
@@ -79,6 +84,9 @@ folgenden Punkten:
 - Backend: Anfragen an nicht existierende Routen lieferten einen 404-Fehler ohne Body-Text zurück. Dies war die einzige Fehlerantwort des Backends ohne Text und somit inkonsistent zu allen anderen Fehlerfällen. Nicht existierende Routen werden nun wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern ebenfalls einen Text im Body.
 - API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
 - Backend: Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
+- (breaking) `PATCH /user/{user_id}/password` verlangt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten `400`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort unbenutzt.
+- (breaking) `DELETE /users` verlangt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten `400`.
+- (breaking) `DELETE /workspaces` verlangt ebenfalls zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body, aus demselben Grund und mit denselben Auswirkungen wie bei `DELETE /users`.
 
 # 18.3.0
 

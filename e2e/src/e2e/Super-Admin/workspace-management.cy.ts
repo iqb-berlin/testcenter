@@ -110,10 +110,11 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.get('[data-cy="delete-workspace"]')
       .click();
-    cy.get('[data-cy="dialog-title"]')
+    cy.get('[data-cy="dialog-change-superadmin"]')
       .contains('Löschen von Arbeitsbereichen');
-    cy.get('[data-cy="dialog-confirm"]')
-      .contains('Arbeitsbereich(e) löschen')
+    cy.get('[data-cy="dialog-change-superadmin-pw"]')
+      .type('user123')
+    cy.get('[data-cy="pw-submit"]')
       .click();
     cy.contains('newName')
       .should('not.exist');

@@ -32,7 +32,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
-      //wait
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
     });
 
@@ -45,16 +45,16 @@ describe('check response & presentation from booklet-config', { testIsolation: f
       cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
-       .contains('Aufgabe1');
+        .contains('Aufgabe1');
       cy.get('[data-cy="unit-navigation-backward"]')
-       .click();
+        .click();
       cy.get('[data-cy="deny-navigation-message"]')
         .should('contain', 'abgespielt')
         .and('contain', 'bearbeitet');
       cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
-       .contains('Aufgabe1');
+        .contains('Aufgabe1');
     });
   });
 
@@ -69,6 +69,10 @@ describe('check response & presentation from booklet-config', { testIsolation: f
     // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
     // menu wiring by unit-menu.component.spec.ts
     it('presentation/response-complete: forward in unit-menu', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1');
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
@@ -76,7 +80,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .contains('Aufgabe2')
     });
 
-   it('presentation/response-complete: logo', () => {
+    it('presentation/response-complete: logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
       cy.get('[data-cy="deny-navigation-message"]')
@@ -92,6 +96,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="deny-navigation-message"]')
@@ -178,6 +184,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="deny-navigation-message"]')
@@ -234,7 +242,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
       loginTestTaker('Test_Ctrl-26a', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
@@ -252,7 +260,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2');
-      //wait for presentation-complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       gotoUnitFromMenu('Aufgabe1');
       cy.get('[data-cy="deny-navigation-message"]')
@@ -275,7 +283,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
       loginTestTaker('Test_Ctrl-26b', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-      //wait for presentation-complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
@@ -297,7 +305,7 @@ describe('check response & presentation from booklet-config', { testIsolation: f
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2');
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();

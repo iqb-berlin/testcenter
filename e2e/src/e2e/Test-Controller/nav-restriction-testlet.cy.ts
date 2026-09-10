@@ -28,11 +28,17 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
     // menu wiring by unit-menu.component.spec.ts
     it('presentation/response-complete: forward in unit-menu', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
     });
 
     it('presentation/response-complete: logo', () => {
@@ -48,20 +54,20 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .click();
     });
 
-   it('presentation/response-complete: forward/backward', () => {
+    it('presentation/response-complete: forward/backward', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-     cy.get('[data-cy="deny-navigation-message"]')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-     cy.get('[data-cy="deny-navigation-message"]')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-   });
+    });
   });
 
   describe('response & presentation = ON ', { testIsolation: true }, () => {
@@ -77,6 +83,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     it('presentation-complete: forward in unit-menu', () => {
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
         .should('contain', 'abgespielt');
@@ -127,6 +135,8 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
       cy.get('[data-cy="deny-navigation-message"]')
@@ -181,7 +191,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-20a', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1');
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       gotoUnitFromMenu('Aufgabe2');
       cy.get('[data-cy="deny-navigation-message"]')
@@ -199,7 +209,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       gotoUnitFromMenu('Aufgabe1');
       cy.get('[data-cy="deny-navigation-message"]')
@@ -214,7 +224,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-20a', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       cy.get('[data-cy="logo"]')
         .click();
@@ -240,7 +250,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2');
-      //wait for presentation complete
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
@@ -268,6 +278,7 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
       cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();

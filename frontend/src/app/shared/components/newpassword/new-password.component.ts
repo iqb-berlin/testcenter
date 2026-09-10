@@ -30,13 +30,14 @@ import { MainDataService } from '@shared/services/maindata/maindata.service';
 export class NewPasswordComponent {
   newPasswordForm;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { username: string }, public mds: MainDataService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { username: string; isSelfService: boolean },
+              public mds: MainDataService) {
     this.newPasswordForm = this.initForm();
   }
 
   initForm(): FormGroup {
     if (!this.mds.appConfig) throw new Error('App config not available');
-    return new FormGroup({
+    const controls: { [key: string]: FormControl } = {
       pw: new FormControl(
         '',
         [
@@ -53,6 +54,12 @@ export class NewPasswordComponent {
           Validators.pattern(new RegExp(this.mds.appConfig.passwordPattern))
         ]
       )
-    }, { validators: samePasswordValidator });
+    };
+
+    if (this.data.isSelfService) {
+      controls.pwOld = new FormControl('', [Validators.required]);
+    }
+
+    return new FormGroup(controls, { validators: samePasswordValidator });
   }
 }
