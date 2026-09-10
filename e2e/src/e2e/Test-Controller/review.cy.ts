@@ -145,6 +145,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
     cy.get('[data-cy="comment-diag-currentBklt"]')
       .find('input[type="radio"]')
       .check({ force: true });
+    cy.wait(1000);
     cy.get('[data-cy="comment-diag-comment"]')
       .type('Ein Kommentar zum Booklet');
     cy.get('[data-cy="comment-diag-priority1"]')
@@ -163,6 +164,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
     cy.get('[data-cy="comment-diag-currentUnit"]')
       .find('input[type="radio"]')
       .check({ force: true });
+    cy.wait(1000);
     cy.get('[data-cy="comment-diag-comment"]')
       .type('Ein Kommentar zur Unit');
     cy.get('[data-cy="comment-diag-priority1"]')

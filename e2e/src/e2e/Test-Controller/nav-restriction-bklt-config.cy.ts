@@ -131,6 +131,14 @@ describe('check response & presentation from booklet-config', { testIsolation: f
     });
 
     it('presentation-complete: logo', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
       cy.get('[data-cy="logo"]')
         .click();
       cy.get('[data-cy="deny-navigation-message"]')
@@ -143,6 +151,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
     });
 
     it('presentation-complete: forward/backward', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
@@ -175,6 +185,8 @@ describe('check response & presentation from booklet-config', { testIsolation: f
     });
 
     it('responses-complete: forward/backward', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation complete
