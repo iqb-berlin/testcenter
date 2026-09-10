@@ -61,6 +61,9 @@ folgenden Punkten:
   müssen separat gesichert werden.
 - Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt
   sich mit `make testcenter-restore` wiederherstellen.
+- Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht
+  auf das Stopp-Signal, wurde nach 10 Sekunden per SIGKILL beendet (Exit-Code 137) und brach dabei laufende
+  Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden weniger.
 
 # 18.3.0
 

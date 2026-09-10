@@ -4,4 +4,5 @@ set -e
 
 php /var/www/testcenter/backend/check-db-compatibility.php
 
-apache2-foreground
+# exec, so Apache becomes PID 1 and receives the container's stop signal itself.
+exec apache2-foreground
