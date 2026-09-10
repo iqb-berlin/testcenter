@@ -37,6 +37,18 @@ components:
         - l
 
 
+    # Referenced from every error response across the other spec files as
+    # `./components.spec.yml#/components/schemas/error`.
+    error:
+      type: string
+      description: >-
+        Human-readable error message (HTML-escaped plain text). Every error
+        response from the backend is guaranteed to have this non-empty body, produced by
+        the central error handler. The response also carries an `Error-ID` header that can
+        be used to correlate the error with the corresponding backend log entry.
+      example: "Session not found."
+
+
     login_request:
       type: object
       properties:

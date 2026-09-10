@@ -66,6 +66,10 @@ paths:
                     type: string
         '500':
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /session/person/challenge:
     post:
@@ -124,8 +128,16 @@ paths:
                     type: string
         '401':
           description: Login session authentication missing
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         '500':
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /session:
     get:
@@ -210,10 +222,22 @@ paths:
                     flags: []
         "401":
           description: No token qualifies for authentication
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
     put:
       summary: Verify Challenge and create Session
       description: Verifies a solved proof-of-work challenge and starts the requested session.
@@ -291,8 +315,16 @@ paths:
                   superAdmin: []
         '400':
           description: Challenge solution invalid
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         '500':
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
     delete:
       summary: delete a session
       description: Performs a logout
@@ -317,8 +349,16 @@ paths:
           description: OK, killed session
         "401":
           description: No token qualifies for authentication
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
   /session/admin:
     put:
       summary: Start Admin Session
@@ -348,10 +388,22 @@ paths:
           description: User has account but neither workspace nor super-admin privilige
         "400":
           description: Insufficient Credentials
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "429":
           description: User temporally locked
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /session/login:
     put:
@@ -386,12 +438,24 @@ paths:
                 flags: ['codeRequired']
         "429":
           description: User temporally locked
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "400":
           description: Insufficent Crendetials
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 #        "410": # - must be removed because test fails other wise... TODO find better solution
 #          description: Session Expired
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /session/person:
     put:
@@ -446,7 +510,19 @@ paths:
                 flags: []
         "400":
           description: Insufficient Credentials
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
