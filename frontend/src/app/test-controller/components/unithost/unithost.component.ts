@@ -488,6 +488,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     const requiredCode =
       (this.tcs.currentUnit.parent.locked.through.restrictions.codeToEnter.code);
-    return requiredCode === code;
+    return requiredCode.toLowerCase() === code.toLowerCase();
   }
 }

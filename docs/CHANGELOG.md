@@ -20,6 +20,9 @@ folgenden Punkten:
 - Zeitstempel, die die API unverändert aus der Datenbank ausliefert (`reviewtime` und `createdAt`), tragen jetzt
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
+## Änderungen
+- Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
+
 ## Fehlerbehebungen
 - (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“,
   „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“
@@ -75,8 +78,8 @@ folgenden Punkten:
 # 18.3.0
 
 ## Änderungen
-- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testpersonen die Möglichkeit, den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
 - Ein Klick auf das Logo während eines laufenden Tests führt nicht mehr auf eine Zwischenseite mit Statusinformationen.
+- Navigationsknöpfe sind nicht mehr deaktiviert, wenn nicht weiternavigiert werden kann. Somit haben Testlinge die Möglichkeiten den Knopf zu benutzen und über die erscheinende Meldung zu erfahren, warum es nicht weitergeht.
 - Freigabewörter werden in den entsprechenden Modi nicht mehr voreingetragen. Hier war eine Änderung nötig, da das alte
   Verfahren nicht für die neue Codeeingabe über Symbole funktioniert. Stattdessen wird das Freigabewort nun angezeigt
   und muss abgeschrieben werden.
