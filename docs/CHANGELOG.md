@@ -28,6 +28,7 @@ folgenden Punkten:
 - In der Gruppenüberwachung sind »Weiter«, »Pause«, »Springe zu« und »Test Entsperren« deaktiviert, solange kein
   Test ausgewählt ist. Bisher liessen sie sich anklicken und meldeten lediglich »Keine Tests betroffen« – etwa
   direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
+- "Verbleibende Zeit" wird im Review-Modus nicht länger angezeigt, wenn keine Zeitgeschränkung gesetzt ist.
 
 ## Technisches
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
