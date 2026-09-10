@@ -37,6 +37,8 @@ folgenden Punkten:
 - "Verbleibende Zeit" wird im Review-Modus nicht länger angezeigt, wenn keine Zeitgeschränkung gesetzt ist.
 
 ## Technisches
+- `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).
+- Der `Accept`-Header ist in der API-Dokumentation der Endpunkte `GET /workspace/{ws_id}/report/log`, `.../report/response` und `.../report/sys-check` jetzt als Parameter aufgeführt. Bisher war er dort nicht dokumentiert, obwohl alle drei Endpunkte wahlweise CSV oder JSON liefern; die Beschreibungen aller Report-Endpunkte nennen zudem den jeweiligen Standardwert.
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
   `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte
   überhaupt kein Konto, und niemand konnte sich anmelden.

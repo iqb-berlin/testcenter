@@ -17,9 +17,9 @@ class ReviewController extends Controller {
 
     $reviewData = self::reviewDAO()->getReviewsByPerson($personId);
 
-    $acceptHeader = $request->getHeaderLine('Accept');
-    if (str_contains($acceptHeader, 'application/json')) {
-      // Return as JSON
+    $reportFormat = ReportFormat::fromAcceptHeader($request->getHeaderLine('Accept'), ReportFormat::CSV);
+
+    if ($reportFormat === ReportFormat::JSON) {
       $transformedData = ReviewCSVFormatter::transformReviewData($reviewData, true, ReportFormat::JSON);
       $transformedData = ReviewCSVFormatter::enrichWithLabels($transformedData, $workspaceId);
       return $response->withJson($transformedData);

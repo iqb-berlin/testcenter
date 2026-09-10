@@ -19,7 +19,7 @@ paths:
           required: true
         - in: header
           name: Accept
-          description: "Expected response Mimetype: 'text/csv' or 'application/json'"
+          description: "Expected response Mimetype: 'text/csv' (the default) or 'application/json'"
           example: "text/csv"
       responses:
         "200":

@@ -1392,6 +1392,10 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
           required: true
+        - in: header
+          name: Accept
+          description: "Expected response Mimetype: 'text/csv' or 'application/json' (the default)"
+          example: "text/csv"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1459,6 +1463,10 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
           required: true
+        - in: header
+          name: Accept
+          description: "Expected response Mimetype: 'text/csv' or 'application/json' (the default)"
+          example: "text/csv"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1545,7 +1553,7 @@ paths:
           required: true
         - in: header
           name: Accept
-          description: "Expected response Mimetype: 'text/csv' or 'application/json'"
+          description: "Expected response Mimetype: 'text/csv' or 'application/json' (the default)"
           example: "text/csv"
         - in: path
           name: ws_id
@@ -1639,6 +1647,10 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           example: "a:user000000000.superadmin0"
           required: true
+        - in: header
+          name: Accept
+          description: "Expected response Mimetype: 'text/csv' or 'application/json' (the default)"
+          example: "text/csv"
         - in: path
           name: ws_id
           description: workspace-id

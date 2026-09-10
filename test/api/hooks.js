@@ -153,12 +153,11 @@ const beforeEach = async (transaction, done) => {
         return done();
     }
 
-    // Set Accept header
-    const contentType = String(transaction.expected.headers['Content-Type']);
-    const contentTypeArray = contentType.split(';', 1);
-    if (contentTypeArray.length > 0) {
+    // Ask for exactly what the spec promises to answer with, media-type parameters included, so
+    // that a value like `text/csv;charset=utf-8` is exercised the way a client would send it
+    if (transaction.expected.headers['Content-Type']) {
       // eslint-disable-next-line no-param-reassign
-      transaction.request.headers.Accept = contentTypeArray[0];
+      transaction.request.headers.Accept = transaction.expected.headers['Content-Type'];
     }
   } catch (e) {
     transaction.fail = e;
