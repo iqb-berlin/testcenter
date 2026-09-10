@@ -21,6 +21,9 @@ folgenden Punkten:
   einen UTC-Offset und gegebenenfalls Nachkommastellen. Clients müssen den Offset auswerten.
 
 ## Fehlerbehebungen
+- (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“,
+  „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“
+  und „Eingabeelementen“.
 - (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
   CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
