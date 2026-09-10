@@ -28,14 +28,11 @@ class AssetController extends Controller {
     $uploadedFiles = $request->getUploadedFiles();
 
     if (!isset($uploadedFiles['file'])) {
-      return $response->withJson(['error' => 'No file uploaded'])->withStatus(400);
+      throw new HttpError('No file uploaded', 400);
     }
 
     $file = $uploadedFiles['file'];
     $validationResult = self::validateUpload($file);
-    if (isset($validationResult['error'])) {
-      return $response->withJson($validationResult)->withStatus(400);
-    }
 
     $originalName = $validationResult['originalName'];
     $extension = $validationResult['extension'];
@@ -70,7 +67,7 @@ class AssetController extends Controller {
     $asset = self::assetDAO()->getAsset((int) $args['id']);
 
     if (!$asset) {
-      return $response->withJson(['error' => 'Asset not found'])->withStatus(404);
+      throw new HttpError("Asset `{$args['id']}` not found", 404);
     }
 
     self::deleteStoredFile($asset['stored_name']);
@@ -81,31 +78,31 @@ class AssetController extends Controller {
   }
 
   /**
-   * @return array{originalName: string, extension: string, mimeType: string}|array{error: string, mime?: string}
+   * @return array{originalName: string, extension: string, mimeType: string}
    */
   private static function validateUpload(UploadedFileInterface $file): array {
     if ($file->getError() !== UPLOAD_ERR_OK) {
-      return ['error' => 'Upload failed'];
+      throw new HttpError('Upload failed', 400);
     }
 
     if ($file->getSize() > self::MAX_UPLOAD_SIZE) {
-      return ['error' => 'File too large (max 2MB)'];
+      throw new HttpError('File too large (max 2MB)', 400);
     }
 
     $tmpFilePath = $file->getStream()->getMetadata('uri');
     $mimeType = mime_content_type($tmpFilePath);
     if (!in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
-      return ['error' => 'Invalid file type', 'mime' => $mimeType];
+      throw new HttpError("Invalid file type: `$mimeType`", 400);
     }
 
     if (getimagesize($tmpFilePath) === false) {
-      return ['error' => 'File is not a valid image'];
+      throw new HttpError('File is not a valid image', 400);
     }
 
     $originalName = $file->getClientFilename();
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     if (!in_array($extension, self::ALLOWED_EXTENSIONS, true)) {
-      return ['error' => 'Invalid file extension'];
+      throw new HttpError("Invalid file extension: `$extension`", 400);
     }
 
     return [

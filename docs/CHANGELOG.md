@@ -67,6 +67,7 @@ folgenden Punkten:
   Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden weniger.
 - Backend: Anfragen an nicht existierende Routen lieferten einen 404-Fehler ohne Body-Text zurück. Dies war die einzige Fehlerantwort des Backends ohne Text und somit inkonsistent zu allen anderen Fehlerfällen. Nicht existierende Routen werden nun wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern ebenfalls einen Text im Body.
 - API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
+- Backend: Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
 
 # 18.3.0
 
