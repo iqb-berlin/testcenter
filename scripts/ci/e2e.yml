@@ -42,6 +42,12 @@ build-e2e:
       --file docker-compose.yml
       --file docker-compose.dev.yml
       --file e2e/docker-compose.system-test-headless.yml
+      run --rm --entrypoint /initialize_only.sh backend
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file e2e/docker-compose.system-test-headless.yml
       up --abort-on-container-exit --exit-code-from=e2e
   after_script:
     - !reference [ .gitlab_login, after_script ]

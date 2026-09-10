@@ -144,12 +144,6 @@ Dialogbox für die Eingabe eines Freigabewortes
 
 Standard: Aufgabenblock ist gesperrt, Freigabewort benötigt
 
-## `booklet_codeToEnterWarning`
-
-Dialogbox für die Eingabe eines Freigabewortes: Warnung über Groß-/Kleinschreibung
-
-Standard: Im Eingabefeld werden automatisch alle Buchstaben groß geschrieben.
-
 ## `booklet_errormessage`
 
 Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist
@@ -272,19 +266,19 @@ Standard: Aufgaben
 
 Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.
 
-Standard: Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst. Trotzdem weiterblättern?
+Standard: Du verlässt einen Bereich zu dem du später nicht zurückkehren kannst.
 
 ## `booklet_warningLeaveTextPrompt-unit`
 
 Text für Warnung (Dialogbox) eines nur einmal betretbaren Bereiches.
 
-Standard: Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst. Trotzdem weiterblättern?
+Standard: Du verlässt eine Aufgabe zu der du später nicht zurückkehren kannst.
 
 ## `booklet_warningLeaveTimerBlockTextPrompt`
 
 Schalterbeschriftung für 'Zurück zum Test'
 
-Standard: Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?
+Standard: Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren.
 
 ## `booklet_warningLeaveTimerBlockTitle`
 

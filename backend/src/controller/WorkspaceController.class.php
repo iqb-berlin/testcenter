@@ -240,7 +240,7 @@ class WorkspaceController extends Controller {
       throw new HttpNotFoundException($request, "Report type '{$request->getAttribute('type')}' not found.");
     }
 
-    $reportFormat = $request->getHeaderLine('Accept') == 'text/csv' ? ReportFormat::CSV : ReportFormat::JSON;
+    $reportFormat = ReportFormat::fromAcceptHeader($request->getHeaderLine('Accept'), ReportFormat::JSON);
 
     $report = ReportOutputFactory::createReportOutput($workspaceId, $dataIds, $reportType, $reportFormat);
 

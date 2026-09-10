@@ -161,29 +161,18 @@ class SessionDAO extends DAO {
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
 
-    $this->_(
-      'insert ignore into login_sessions (token, name, workspace_id, group_name)
+    // returning hands back the row in both cases: the one just inserted, or the one that was already
+    // there - which then keeps its original token and only gets its group refreshed (see #766).
+    $session = $this->_(
+      'insert into login_sessions (token, name, workspace_id, group_name)
             values(:token, :name, :ws, :group_name)
-            on duplicate key update group_name = :group_name',
+            on conflict (name, workspace_id) do update set group_name = excluded.group_name
+            returning id, token',
       [
         ':token' => $loginToken,
         ':name' => $login->getName(),
         ':ws' => $login->getWorkspaceId(),
         ':group_name' => $login->getGroupName()
-      ]
-    );
-
-    if ($this->lastAffectedRows) {
-      $id = (int) $this->pdoDBhandle->lastInsertId();
-      return new LoginSession($id, $loginToken, $groupToken, $login);
-    }
-
-    // there is no way in MySQL to combine insert & select into one query, so have to retrieve it to get the id
-    $session = $this->_(
-      'select id, token from login_sessions where name = :name and workspace_id = :ws_id',
-      [
-        ':name' => $login->getName(),
-        ':ws_id' => $login->getWorkspaceId()
       ]
     );
 
@@ -335,15 +324,21 @@ class SessionDAO extends DAO {
         ]
       );
     } catch (Exception $ee) {
-      // allow retry on duplicate suffix - unlikely in prod, but always happens in testing when rand is static
+      // A random suffix can collide. This is unlikely in production, but integration tests deliberately reset the
+      // random-number generator for every request, so the retry path is exercised there on repeated logins.
       if ($originalException = $ee->getPrevious()) {
+        $sqlState = property_exists($originalException, 'errorInfo')
+          ? ($originalException->errorInfo[0] ?? null)
+          : null;
+        $databaseMessage = property_exists($originalException, 'errorInfo')
+          ? ($originalException->errorInfo[2] ?? '')
+          : '';
+
+        // twice the same suffix (not_unique error) can be recovered, by starting the function anew and giving a new suffix
         if (
-          property_exists($originalException, 'errorInfo')
-          and ($originalException->errorInfo[1] == 1062)
-          and ($originalException->getCode() == 23000)
-          and (str_ends_with($originalException->errorInfo[2], "for key 'person_sessions.unique_person_session'"))
+          ($sqlState === '23505')
+          and str_contains($databaseMessage, 'unique_person_session')
         ) {
-          error_log("Create person-session: retry on duplicate suffix (`{$loginSession->getLogin()->getName()}` / `$suffix`)");
           return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired, $forceUpdateToken);
         }
       }
@@ -438,7 +433,9 @@ class SessionDAO extends DAO {
   public function getOrCreateGroupToken(int $workspaceId, string $groupName, string $groupLabel): string {
     $newGroupToken = Token::generate('group', $groupName);
     $this->_(
-      'insert ignore into login_session_groups (group_name, workspace_id, group_label, token, last_modified) values (?, ?, ?, ?, ?)',
+      'insert into login_session_groups (group_name, workspace_id, group_label, token, last_modified)
+        values (?, ?, ?, ?, ?)
+        on conflict do nothing',
       [
         $groupName,
         $workspaceId,
@@ -531,10 +528,11 @@ class SessionDAO extends DAO {
       ]
     );
 
-    $code = $bookletDef['code'];
+    $code = strtolower($bookletDef['code']);
     $codes2booklets = JSON::decode($bookletDef['codes_to_booklets'], true);
+    $codes2booklets = $codes2booklets ? array_change_key_case($codes2booklets, CASE_LOWER) : [];
 
-    return $codes2booklets and isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
+    return isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
   }
 
   public function ownsTest(string $personToken, string $testId): bool {
@@ -555,22 +553,32 @@ class SessionDAO extends DAO {
    * @return TestData[]
    */
   public function getTestsOfPerson(PersonSession $personSession): array {
-    $testNames = $personSession->getLoginSession()->getLogin()->testNames()[$personSession->getPerson()->getCode() ?? ''];
+    $testNamesByCode = array_change_key_case($personSession->getLoginSession()->getLogin()->testNames(), CASE_LOWER);
+    $testNames = $testNamesByCode[strtolower($personSession->getPerson()->getCode() ?? '')] ?? [];
     if (!count($testNames)) return [];
 
     $replacementsVirtualTable = [];
-    foreach ($testNames as $testName) {
+    $virtualTableRows = [];
+    // array_values() makes sure the key is the position in the list, whatever keys the list arrived
+    // with - it is also read back from JSON stored in logins.codes_to_booklets.
+    foreach (array_values($testNames) as $ordinal => $testName) {
       $testName = TestName::fromString($testName);
       $replacementsVirtualTable[] = $testName->name;
       $replacementsVirtualTable[] = $testName->bookletFileId;
+      // The tests are expected in the order the login lists them. That position travels with the
+      // data instead of being looked up by test name again, which keeps the order independent of
+      // how TestName normalizes a name.
+      $replacementsVirtualTable[] = $ordinal;
+      // The cast is needed because parameters in a `values` list default to text, which would sort
+      // position 10 before position 2.
+      $virtualTableRows[] = '(?, ?, ?::int)';
     }
 
-    $virtualTable = implode(",\n", array_fill(0, count($testNames), 'row (?, ?)'));
-    $orderField = implode(', ', array_fill(0, count($testNames), '?'));
+    $virtualTable = implode(",\n          ", $virtualTableRows);
 
     $sql = "
-      with ba (test_name, booklet_file_id) as (
-        values 
+      with ba (test_name, booklet_file_id, ordinal) as (
+        values
           $virtualTable
       )
       select
@@ -580,8 +588,8 @@ class SessionDAO extends DAO {
         tests.locked,
         tests.running,
         files.name,
-        files.id as bookletId,
-        files.label as testLabel,
+        files.id as \"bookletId\",
+        files.label as \"testLabel\",
         files.description
       from ba
         left outer join tests
@@ -592,15 +600,14 @@ class SessionDAO extends DAO {
             and files.workspace_id = ?
             and files.type = 'Booklet'
       order by
-        field(ba.test_name, $orderField)
+        ba.ordinal
     ";
     $tests = $this->_(
       $sql,
       [
         ...$replacementsVirtualTable,
         $personSession->getPerson()->getId(),
-        $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
-        ...$testNames
+        $personSession->getLoginSession()->getLogin()->getWorkspaceId()
       ],
       true
     );

@@ -4,7 +4,6 @@
 
 declare(strict_types=1);
 
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -271,6 +271,8 @@ class SessionController extends Controller {
       throw new HttpError('No login with this password.', 400);
     }
 
+    CacheService::resetFailedLogins($name);
+
     $admin = self::adminDAO()->getAdmin($token);
     $workspaces = self::adminDAO()->getWorkspaces($token);
     $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
@@ -296,6 +298,10 @@ class SessionController extends Controller {
       $userName = htmlspecialchars($name);
       throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
+
+    // The 2-step Login UX: The login page first probes the name with an empty password which triggers one failed attempt
+    // Reset the attempts to not trigger lockout on repeated succesful login-logout
+    CacheService::resetFailedLogins($name);
 
     if ($loginSession->getLogin()->isCodeRequired()) {
       return AccessSet::createFromLoginSession($loginSession);

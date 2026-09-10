@@ -39,12 +39,28 @@ paths:
                   role: ''
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
     patch:
       summary: change user roles
@@ -93,12 +109,28 @@ paths:
           description: OK, roles have been updated
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /user:
     put:
@@ -125,14 +157,47 @@ paths:
           content:
             text/html;charset=utf-8:
               example: "1"
+        "400":
+          description: |-
+            Bad request. Either
+             * the request body contains no name (n) or no password (p), or
+             * the password violates the configured password rules. The rules in
+               force can be read from `GET /system/config` (`passwordMinLength`,
+               `passwordPattern`); the maximum length is 60 characters.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "409":
+          description: A user of this name exists already. User names are unique.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /user/{user_id}/password:
     patch:
@@ -176,15 +241,46 @@ paths:
         "200":
           description: password has changed / user did not exist
         "400":
-          description: Password missing, or performing own change without providing oldPassword
+          description: |-
+            Bad request. Either
+             * the request body contains no password (p), or
+             * the password violates the configured password rules. The rules in
+               force can be read from `GET /system/config` (`passwordMinLength`,
+               `passwordPattern`); the maximum length is 60 characters, or
+             * the request is a self-service password change (`user_id` is the
+               requesting user's own id) and the request body contains no
+               `oldPassword`.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
-          description: Forbidden, or oldPassword incorrect
+          description: |-
+            Forbidden. Either the requesting user may not change this password,
+            or the request is a self-service password change and `oldPassword`
+            does not match the requesting user's current password.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /user/{user_id}/super-admin/{new_status}:
     patch:
@@ -234,9 +330,27 @@ paths:
           description: Password missing
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
-          description: Forbidden, or password incorrect
+          description: |-
+            Forbidden. Either the requesting user is no super-admin, or `p` does
+            not match the requesting user's current password.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'

@@ -60,7 +60,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     );
 
     $this->assertEquals($expectation, $result);
@@ -134,7 +134,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "3",
       "name" => "a_third_user",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     ];
     $this->assertEquals($expectation, $result);
 
@@ -150,6 +150,15 @@ class SuperAdminDAOTest extends TestCase {
     $result = $this->dbc->_('select name from workspaces where id = 1')['name'];
     $expectation = 'new_name';
     $this->assertEquals($expectation, $result);
+
+    $this->dbc->createWorkspace('another_workspace');
+
+    try {
+      $this->dbc->setWorkspaceName(1, 'another_workspace');
+      $this->fail("Exception expected.");
+    } catch (HttpError $exception) {
+      $this->assertEquals(409, $exception->getCode());
+    }
 
     $this->expectException('HttpError');
     $this->dbc->setWorkspaceName(33, 'new_name');
@@ -214,7 +223,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '1'
+      "isSuperadmin" => true
     );
     $this->assertEquals($expectation, $result);
 
@@ -225,7 +234,7 @@ class SuperAdminDAOTest extends TestCase {
       "id" => "2",
       "name" => "i_exist_but_am_not_allowed_anything",
       "email" => null,
-      "isSuperadmin" => '0'
+      "isSuperadmin" => false
     );
     $this->assertEquals($expectation, $result);
   }
@@ -242,7 +251,7 @@ class SuperAdminDAOTest extends TestCase {
       $this->dbc->createWorkspace('new_workspace');
       $this->fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 400);
+      $this->assertEquals($exception->getCode(), 409);
     }
 
     $result = $this->dbc->getWorkspaces();

@@ -5,12 +5,15 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once "test/unit/test-helper/AssertsArraysIgnoringOrder.php";
 
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class AdminDAOTest extends TestCase {
+  use AssertsArraysIgnoringOrder;
+
   private AdminDAO $dbc;
 
   function setUp(): void {
@@ -221,8 +224,9 @@ final class AdminDAOTest extends TestCase {
       "keyword" => 'a_keyword',
       "parameter" => '["first_argument","second_argument"]',
       "commander_id" => 1,
-      'timestamp' => '2020-08-20 08:30:00',
-      'executed' => '0'
+      // 1597905000 is 06:30 UTC, stored as the instant it is rather than as local wall time
+      'timestamp' => '2020-08-20 06:30:00+00',
+      'executed' => false
     ];
     $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
     $this->assertEquals($expectation, $result);
@@ -230,7 +234,7 @@ final class AdminDAOTest extends TestCase {
 
   function test_getTest() {
     $expectation = [
-      'locked' => '0',
+      'locked' => false,
       'id' => '1',
       'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
       'label' => 'first test label'
@@ -288,10 +292,11 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
-    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
+    // PostgreSQL has a strict boolean type and does not implicitly convert MySQL-style 0/1 values.
+    $this->dbc->_("insert into tests (name, file_id, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 'BOOKLET.SAMPLE-2', 1, false, true, '2023-11-14 11:13:20+00:00', '$someTestState')");
     $this->dbc->_("insert into units (name, test_id) values ('UNIT_1', 4)");
 
     $expectation = [
@@ -303,7 +308,7 @@ final class AdminDAOTest extends TestCase {
         'numUnitsMax' => 2,
         'numUnitsTotal' => 3,
         'numUnitsAvg' => 1.0,
-        'lastChange' => 1699956800
+        'lastChange' => 1699960400
       ],
       [
         'groupName' => 'review_group',
@@ -317,22 +322,22 @@ final class AdminDAOTest extends TestCase {
       ]
     ];
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $this->dbc->_('delete from test_reviews');
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
 
     $this->dbc->_('delete from unit_reviews');
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame([$expectation[0]], $result);
+    $this->assertSameIgnoringOrder([$expectation[0]], $result);
 
     $this->dbc->_(
       "insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
       values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')"
     );
     $result = $this->dbc->getResultStats(1);
-    $this->assertSame($expectation, $result);
+    $this->assertSameIgnoringOrder($expectation, $result);
   }
 
   public function test_getTestSessions() {

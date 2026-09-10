@@ -145,13 +145,15 @@ class AdminDAO extends DAO {
       true
     );
 
+    // Postgres joins in a DELETE via `using` instead of mysql's multi-table `delete <table> from`. The
+    // join conditions move into the where-clause, the matched rows stay the same.
     $this->_(
       "
-      delete tests 
-       from tests
-       inner join person_sessions on tests.person_id = person_sessions.id
-       inner join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-       where login_sessions.workspace_id = :workspace_id
+      delete from tests
+       using person_sessions, login_sessions
+       where tests.person_id = person_sessions.id
+          and person_sessions.login_sessions_id = login_sessions.id
+          and login_sessions.workspace_id = :workspace_id
           and (login_sessions.name, person_sessions.code, person_sessions.name_suffix, tests.name) in (" . implode(',', $placeholders) . ")" ,
       $params
     );
@@ -388,7 +390,7 @@ class AdminDAO extends DAO {
         $session['booklet_label']
       );
     }
-    
+
     return $groupedSessions;
   }
 
@@ -427,10 +429,10 @@ class AdminDAO extends DAO {
         login_sessions.name as loginname,
         person_sessions.name_suffix as code,
         tests.name as bookletname,
-        tests.id as testId,
+        tests.id as "testId",
         units.name as unitname,
         units.laststate,
-        units.original_unit_id as originalUnitId
+        units.original_unit_id as "originalUnitId"
       from
         login_sessions
           inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
@@ -465,12 +467,13 @@ class AdminDAO extends DAO {
           part_id as id,
           content,
           ts,
-          response_type as responseType
+          response_type as "responseType"
         from
           unit_data
         where
           unit_name = :unit_name
-          and test_id = :test_id',
+          and test_id = :test_id
+        order by part_id',
         [
           ':unit_name' => $unitName,
           ':test_id' => $testId
@@ -497,7 +500,7 @@ class AdminDAO extends DAO {
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             units.name as unitname,
-            units.original_unit_id as originalUnitId,
+            units.original_unit_id as \"originalUnitId\",
 				    unit_logs.timestamp,
             unit_logs.logentry
 			  FROM
@@ -523,7 +526,7 @@ class AdminDAO extends DAO {
             person_sessions.name_suffix as code,
             tests.name as bookletname,
             '' as unitname,
-            '' as originalUnitId,
+            '' as \"originalUnitId\",
             test_logs.timestamp,
             test_logs.logentry
 			  FROM
@@ -548,7 +551,7 @@ class AdminDAO extends DAO {
     $bindParams = array_merge([$workspaceId], $groups, [$workspaceId], $groups);
 
     // TODO: use data class
-    return $this->_(
+    $reviews = $this->_(
       "
       select
         login_sessions.group_name as groupname,
@@ -562,8 +565,8 @@ class AdminDAO extends DAO {
         unit_reviews.entry,
         unit_reviews.page,
         unit_reviews.pagelabel,
-        units.original_unit_id as originalUnitId,
-        unit_reviews.user_agent as userAgent,
+        units.original_unit_id as \"originalUnitId\",
+        unit_reviews.user_agent as \"userAgent\",
         unit_reviews.reviewer
 			from
         unit_reviews
@@ -589,8 +592,8 @@ class AdminDAO extends DAO {
         test_reviews.entry,
         null as page,
         null as pagelabel,
-        '' as originalUnitId,
-        test_reviews.user_agent as userAgent,
+        '' as \"originalUnitId\",
+        test_reviews.user_agent as \"userAgent\",
         test_reviews.reviewer
 			from
         test_reviews
@@ -603,6 +606,14 @@ class AdminDAO extends DAO {
 			",
       $bindParams,
       true
+    );
+
+    return array_map(
+      function(array $review): array {
+        $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
+        return $review;
+      },
+      $reviews
     );
   }
 
@@ -624,7 +635,7 @@ class AdminDAO extends DAO {
       select
         group_name,
         group_label,
-        count(*) as bookletsStarted,
+        count(*) as \"bookletsStarted\",
         min(num_units) as num_units_min,
         max(num_units) as num_units_max,
         sum(num_units) as num_units_total,
@@ -637,7 +648,8 @@ class AdminDAO extends DAO {
         select
           login_sessions.group_name,
           group_label,
-          count(distinct units.name, units.test_id) as num_units,
+          count(distinct (units.name, units.test_id))
+            filter (where units.name is not null and units.test_id is not null) as num_units,
           max(tests.timestamp_server) as timestamp_server,
           login_session_groups.last_modified as group_last_modified
         from
@@ -663,10 +675,10 @@ class AdminDAO extends DAO {
               or unit_reviews.entry is not null
               or test_reviews.entry is not null
           )
-          and tests.running = 1
+          and tests.running = true
           group by tests.name, person_sessions.id, login_sessions.group_name, group_label, login_session_groups.last_modified
       ) as byGroup
-      group by group_name",
+      group by group_name, group_label",
       $params,
       true
     );
@@ -766,20 +778,20 @@ class AdminDAO extends DAO {
     }
 
     $sql = "select
-                group_label as groupLabel,
-                logins.group_name as groupName,
-                logins.name as loginName,
-                name_suffix as nameSuffix,
-                tests.label as testLabel,
-                tests.id as testId,
-                tests.name as bookletName,
-                unit_defs_attachments.unit_name as unitName,
-                unit_defs_attachments.unit_name as unitLabel, -- TODO get real unitLabel
-                variable_id as variableId,
-                attachment_type as attachmentType,
-                unit_data.content as dataPartContent,
-                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) as attachmentId,
-                unit_data.ts as lastModified
+                group_label as \"groupLabel\",
+                logins.group_name as \"groupName\",
+                logins.name as \"loginName\",
+                name_suffix as \"nameSuffix\",
+                tests.label as \"testLabel\",
+                tests.id as \"testId\",
+                tests.name as \"bookletName\",
+                unit_defs_attachments.unit_name as \"unitName\",
+                unit_defs_attachments.unit_name as \"unitLabel\", -- TODO get real unitLabel
+                variable_id as \"variableId\",
+                attachment_type as \"attachmentType\",
+                unit_data.content as \"dataPartContent\",
+                (tests.id || ':' || unit_defs_attachments.unit_name ||  ':' || variable_id) as \"attachmentId\",
+                unit_data.ts as \"lastModified\"
             from
                 unit_defs_attachments
                 left join tests on booklet_name = tests.name

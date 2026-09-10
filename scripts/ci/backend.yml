@@ -152,15 +152,6 @@ test-backend-initialization:
   before_script:
     - !reference [ .gitlab_login, before_script ]
   script:
-    - TEST_NAME=general/db-versions
-      docker compose
-      --env-file .env.dev-template
-      --file backend/test/initialization/docker-compose.initialization-test.yml
-      up
-      --force-recreate
-      --renew-anon-volumes
-      --abort-on-container-exit
-      --exit-code-from=initialization-test-backend
     - TEST_NAME=general/vanilla-installation
       docker compose
       --env-file .env.dev-template
@@ -222,6 +213,12 @@ test-backend-api:
       --file docker-compose.yml
       --file docker-compose.dev.yml
       --file test/docker-compose.api-test.yml
+      run --rm --entrypoint /initialize_only.sh backend
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file test/docker-compose.api-test.yml
       run --rm task-runner-backend npm run backend:api-test
   after_script:
     - !reference [ .gitlab_login, after_script ]
@@ -248,6 +245,12 @@ test-file-server-api:
     - docker tag ${BACKEND_TAG} ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:current
     - docker tag ${FILE_SERVER_TAG} ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:current
   script:
+    - docker compose
+      --env-file .env.dev-template
+      --file docker-compose.yml
+      --file docker-compose.dev.yml
+      --file test/docker-compose.api-test.yml
+      run --rm --entrypoint /initialize_only.sh backend
     - docker compose
       --env-file .env.dev-template
       --file docker-compose.yml

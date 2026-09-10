@@ -9,18 +9,18 @@ import {
   logoutFromTestNoConfirmation,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   twoStepLogin,
   clickCardButton,
-  logout
+  logout, selectResultGroup
 } from '../utils';
 
 describe('run a review test, check time block dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -99,9 +99,7 @@ describe('run a review test, check time block dialogs', { testIsolation: false }
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('Review');
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Review');
     cy.get('[data-cy="download-responses"]')
       .click();
     cy.get('[data-cy="toast-text-0"]')
@@ -111,8 +109,7 @@ describe('run a review test, check time block dialogs', { testIsolation: false }
   });
 
   it('there are no logs in the response file', () => {
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Review');
     cy.get('[data-cy="download-logs"]')
       .click();
     cy.get('[data-cy="toast-text-0"]')
@@ -126,7 +123,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -148,6 +145,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
     cy.get('[data-cy="comment-diag-currentBklt"]')
       .find('input[type="radio"]')
       .check({ force: true });
+    cy.wait(1000);
     cy.get('[data-cy="comment-diag-comment"]')
       .type('Ein Kommentar zum Booklet');
     cy.get('[data-cy="comment-diag-priority1"]')
@@ -166,6 +164,7 @@ describe('check review comments functionality', { testIsolation: false }, () => 
     cy.get('[data-cy="comment-diag-currentUnit"]')
       .find('input[type="radio"]')
       .check({ force: true });
+    cy.wait(1000);
     cy.get('[data-cy="comment-diag-comment"]')
       .type('Ein Kommentar zur Unit');
     cy.get('[data-cy="comment-diag-priority1"]')
@@ -243,7 +242,7 @@ describe('check code word options', { testIsolation: true }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -271,6 +270,8 @@ describe('check code word options', { testIsolation: true }, () => {
       .contains('Aufgabe1');
     cy.get('[data-cy="toast-action-0"]')
       .click({ force: true });
+    cy.get('[data-cy="toast-item-0"]')
+      .should('not.exist');
   });
 
   it('show the current code word: keypad-symbols', () => {
@@ -303,7 +304,7 @@ describe('check deny navigation dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
     deleteDownloadsFolder();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();

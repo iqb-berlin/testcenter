@@ -2,13 +2,13 @@ import {
   disableSimplePlayersInternalDebounce,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check parameter: ask-for-fullscreen', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

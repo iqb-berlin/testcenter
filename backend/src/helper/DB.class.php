@@ -7,7 +7,7 @@ class DB {
 
   static function connect(): void {
     self::$pdo = new PDO(
-      "mysql:host=" . SystemConfig::$database_host . ";port=" . SystemConfig::$database_port . ";dbname=" . SystemConfig::$database_name,
+      "pgsql:host=" . SystemConfig::$database_host . ";port=" . SystemConfig::$database_port . ";dbname=" . SystemConfig::$database_name,
       SystemConfig::$database_user,
       SystemConfig::$database_password
     );
@@ -15,7 +15,7 @@ class DB {
 
   static function connectToTestDB(): void {
     self::$pdo = new PDO(
-      "mysql:host=" . SystemConfig::$database_host . ";port=" . SystemConfig::$database_port . ";dbname=TEST_" . SystemConfig::$database_name,
+      "pgsql:host=" . SystemConfig::$database_host . ";port=" . SystemConfig::$database_port . ";dbname=TEST_" . SystemConfig::$database_name,
       SystemConfig::$database_user,
       SystemConfig::$database_password
     );

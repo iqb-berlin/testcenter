@@ -314,7 +314,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         this.sysCheckDataService.networkReports.push({
           id: 'bnni-roundtrip',
           type: 'network',
-          label: 'RoundTrip in Ms',
+          label: 'RoundTrip in ms',
           warning: false,
           value: this.detectedNetworkInformation.roundTripTimeMs.toString()
         });

@@ -74,16 +74,16 @@ image:
     # Example: "17.0.0"
     tag: ""
 
-  # -- Configuration for the database image (MySQL)
-  # MySQL stores all test data, user accounts, results, and application metadata.
+  # -- Configuration for the database image (PostgreSQL)
+  # PostgreSQL stores all test data, user accounts, results, and application metadata.
   # For production: Configure backup strategies, replication, and monitoring.
   db:
     # -- Image pull policy. Use 'IfNotPresent' for production database stability
     imagePullPolicy: Always
-    # -- Registry path for MySQL image. Leave empty for Docker Hub official images
+    # -- Registry path for the PostgreSQL image. Leave empty for Docker Hub official images
     registryPath: ""
-    # -- MySQL version tag. Use specific versions for production
-    tag: "8.4"
+    # -- PostgreSQL version tag. Use specific versions for production
+    tag: "18.4"
 
   # -- Configuration for the busybox utility image
   # Used for init containers, file system preparation, and simple maintenance tasks.
@@ -102,6 +102,10 @@ image:
 # This section defines general configuration parameters for different services.
 # These settings control the behavior and features of the testcenter application.
 config:
+  db:
+    # -- Database that PostgreSQL creates and the backend uses
+    database: iqb_tba_testcenter
+
   fileServer:
     # -- Enable Redis caching for file server operations (experimental!)
     # When enabled, all uploaded static files are cached in Redis to improve performance.
@@ -149,17 +153,11 @@ config:
 # 4. Rotate passwords regularly
 secret:
   db:
-    # -- MySQL database user for the testcenter application
-    # The anchor `&dbUser` allows reusing this value in other sections.
-    mysqlUser: &dbUser iqb_tba_db_user
-    # -- MySQL password for the application database user
-    # The anchor `&dbUserPassword` allows reusing this value in other sections.
+    # -- Database user shared by PostgreSQL and the backend
+    user: iqb_tba_db_user
+    # -- Password shared by PostgreSQL and the backend
     # PRODUCTION: Replace 'change_me' with a strong, randomly generated password!
-    mysqlPassword: &dbUserPassword change_me
-    # -- MySQL root password for database administration
-    # PRODUCTION: Replace 'change_me' with a strong, randomly generated password!
-    # This is used for database initialization and maintenance tasks.
-    mysqlRootPassword: change_me
+    password: change_me
 
   cacheServer:
     # -- Redis authentication password
@@ -178,12 +176,6 @@ secret:
     # -- Redis password for backend cache access
     # References the `redisPassword` anchor to ensure consistency.
     redisPassword: *redisPassword
-    # -- MySQL user for backend database connections
-    # References the `dbUser` anchor to ensure consistency.
-    mysqlUser: *dbUser
-    # -- MySQL password for backend database connections
-    # References the `dbUserPassword` anchor to ensure consistency.
-    mysqlPassword: *dbUserPassword
     # -- Salt for password hashing in the backend application
     # PRODUCTION: Replace 'change_me' with a strong, randomly generated salt!
     # This salt is used for hashing user passwords in the application.
@@ -580,8 +572,8 @@ deployment:
     #       matchLabels:
     #         app: release-name-cache-server-pod
 
-  # -- Database deployment configuration (MySQL 8.4)
-  # MySQL stores all test data, user accounts, results, and application metadata.
+  # -- Database deployment configuration (PostgreSQL 18.4)
+  # PostgreSQL stores all test data, user accounts, results, and application metadata.
   # For production: Configure backup strategies, replication, and monitoring.
   # ⚠️  WARNING: Database is stateful - ensure proper backup and recovery procedures!
   db:
@@ -593,7 +585,7 @@ deployment:
         # Database operations can be CPU-intensive for complex queries
         cpu: 1000m
         # -- Maximum memory allocation
-        # MySQL benefits from large memory for buffer pools and caching
+        # PostgreSQL uses this memory for shared buffers, queries, and operating system caching
         # For production: Set based on database size and concurrent connections
         memory: 2Gi
       requests:
@@ -601,10 +593,10 @@ deployment:
         # Database needs consistent CPU for optimal performance
         cpu: 500m
         # -- Guaranteed memory allocation
-        # MySQL requires significant memory for buffer pools
+        # PostgreSQL requires memory for shared buffers and concurrent queries
         memory: 1Gi
     # -- Health probe configuration for database pods
-    # Database probes use MySQL-specific health checks
+    # Database probes use pg_isready from the PostgreSQL image
     probes:
       liveness:
         # -- How often to perform the liveness probe
@@ -630,6 +622,15 @@ deployment:
         successThreshold: 1
         # -- Number of failures before pod is marked as not ready
         failureThreshold: 3
+      startup:
+        # -- How often to test PostgreSQL while it initializes
+        periodSeconds: 5
+        # -- Timeout for each startup probe
+        timeoutSeconds: 3
+        # -- Minimum consecutive successes for startup
+        successThreshold: 1
+        # -- Allow up to ten minutes for a large existing database to start
+        failureThreshold: 120
     # -- Topology spread constraints for database deployment
     # ⚠️  WARNING: Database is stateful - be careful with topology constraints!
     # For production: Consider using StatefulSets with persistent storage
@@ -692,8 +693,8 @@ persistence:
   # For production: Use fast SSD storage with backup capabilities
   dbPvcStorageClassName: standard
   # -- Access mode for database PVC
-  # ReadWriteOnce for single MySQL instance (most common)
-  # For MySQL replication: Configure separate PVCs per replica
+  # ReadWriteOnce is the usual mode for one PostgreSQL instance
+  # For PostgreSQL replication: Configure separate PVCs per replica
   dbPvcAccessMode: ReadWriteOnce
   # -- Size of database storage
   # Size depends on number of tests, users, and result data retention.

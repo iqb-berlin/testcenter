@@ -5,7 +5,7 @@ import {
   getFromIframe,
   logout,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   twoStepLogin,
   visitLoginPage
 } from '../utils';
@@ -19,7 +19,7 @@ Prüfung Player lädt korrekt. Durchlauf eines Booklets mit den verschiedenen Te
 describe.skip('run a booklet', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

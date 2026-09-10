@@ -5,14 +5,15 @@ import {
   loginSuperAdmin,
   openWorkspace,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
+  selectResultGroup,
   visitLoginPage, cleanUp, logoutFromTestNoConfirmation, twoStepLogin
 } from '../utils';
 
 describe('run a demo test, check time block dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     disableSimplePlayersInternalDebounce();
@@ -91,9 +92,7 @@ describe('run a demo test, check time block dialogs', { testIsolation: false }, 
     openWorkspace('workspace-card-sample_workspace', 1);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.contains('Demo');
-    cy.get('[data-cy="results-checkbox1"]')
-      .click();
+    selectResultGroup('Demo');
     cy.get('[data-cy="download-responses"]')
       .click();
     cy.contains('Keine Daten verfügbar');
@@ -103,7 +102,7 @@ describe('run a demo test, check time block dialogs', { testIsolation: false }, 
 describe('check code word guidelines', { testIsolation: true }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -186,7 +185,7 @@ describe('check code word guidelines', { testIsolation: true }, () => {
 describe('check deny navigation dialogs', { testIsolation: false }, () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
   });

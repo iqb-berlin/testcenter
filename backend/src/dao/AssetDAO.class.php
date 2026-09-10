@@ -171,7 +171,9 @@ class AssetDAO extends DAO {
 
     $sql = 'insert into asset_assignment (workspace_id, source, slot_name, asset_id, scope, scope_id) values '
       . implode(', ', $placeholders)
-      . ' on duplicate key update asset_id = values(asset_id), source = values(source)';
+      . ' on conflict (workspace_id, slot_name, scope, scope_id) do update set'
+      . '   asset_id = excluded.asset_id,'
+      . '   source = excluded.source';
 
     $this->_($sql, $params);
   }

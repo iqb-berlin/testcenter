@@ -2,13 +2,13 @@ import {
   disableSimplePlayersInternalDebounce,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check parameter: navbar_unit_controls_hidden', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

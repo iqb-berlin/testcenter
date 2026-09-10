@@ -4,14 +4,14 @@ import {
   loginTestTaker,
   logoutFromRunningTestWithConfirmation,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 }
   from '../utils';
 
 describe('Group-Monitor User', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
     visitLoginPage();
     // es muss testtaker in der DB sein für diesen Test

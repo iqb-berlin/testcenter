@@ -34,16 +34,21 @@ class SystemConfig {
   public static string $password_pattern;
   public static string $admin_init_password;
 
+  /**
+   * @param array<string, array<string, mixed>> $config section name => key => value
+   * @throws Exception if a section and key name no configuration property
+   */
   private static function apply(array $config): void {
     foreach ($config as $sectionName => $section) {
       foreach ($section as $key => $value) {
         $propertyKey = "{$sectionName}_$key";
-        if (property_exists(self::class, $propertyKey)) {
-          if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
-            $value = array_values(array_filter(explode(' ', trim($value))));
-          }
-          self::$$propertyKey = $value;
+        if (!property_exists(self::class, $propertyKey)) {
+          throw new Exception("Unknown configuration key `[$sectionName] $key`: no property `$propertyKey` exists.");
         }
+        if ($propertyKey == 'bruteForceProtection_sessions' && is_string($value)) {
+          $value = array_values(array_filter(explode(' ', trim($value))));
+        }
+        self::$$propertyKey = $value;
       }
     }
 
@@ -68,11 +73,11 @@ class SystemConfig {
   public static function readEnvironment(): void {
     $config = [];
 
-    $config['database']['name'] = self::stringEnv('MYSQL_DATABASE');
-    $config['database']['host'] = self::stringEnv('MYSQL_HOST');
-    $config['database']['port'] = self::stringEnv('MYSQL_PORT');
-    $config['database']['user'] = self::stringEnv('MYSQL_USER');
-    $config['database']['password'] = self::stringEnv('MYSQL_PASSWORD');
+    $config['database']['name'] = self::stringEnv('DB_DATABASE');
+    $config['database']['host'] = self::stringEnv('DB_HOST');
+    $config['database']['port'] = self::stringEnv('DB_PORT');
+    $config['database']['user'] = self::stringEnv('DB_USER');
+    $config['database']['password'] = self::stringEnv('DB_PASSWORD');
 
     $config['password']['salt'] = self::stringEnv('PASSWORD_SALT');
     $config['password']['min_length'] = (int) self::stringEnv('PASSWORD_MIN_LENGTH');

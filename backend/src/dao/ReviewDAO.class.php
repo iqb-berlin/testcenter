@@ -22,7 +22,7 @@ class ReviewDAO extends DAO
       $params[':testId'] = $testId;
     }
 
-    return $this->_(
+    $reviews = $this->_(
       "
         select
           login_sessions.group_name as groupname,
@@ -35,8 +35,8 @@ class ReviewDAO extends DAO
           unit_reviews.reviewtime,
           unit_reviews.page,
           unit_reviews.pagelabel,
-          units.original_unit_id as originalUnitId,
-          unit_reviews.user_agent as userAgent,
+          units.original_unit_id as \"originalUnitId\",
+          unit_reviews.user_agent as \"userAgent\",
           unit_reviews.reviewer,
           unit_reviews.entry
         from unit_reviews
@@ -61,8 +61,8 @@ class ReviewDAO extends DAO
           test_reviews.reviewtime,
           null as page,
           null as pagelabel,
-          '' as originalUnitId,
-          test_reviews.user_agent as userAgent,
+          '' as \"originalUnitId\",
+          test_reviews.user_agent as \"userAgent\",
           test_reviews.reviewer,
           test_reviews.entry
         from test_reviews
@@ -77,6 +77,14 @@ class ReviewDAO extends DAO
       ",
       $params,
       true
+    );
+
+    return array_map(
+      function(array $review): array {
+        $review['reviewtime'] = TimeStamp::sqlToDisplayFormat($review['reviewtime']);
+        return $review;
+      },
+      $reviews
     );
   }
 }

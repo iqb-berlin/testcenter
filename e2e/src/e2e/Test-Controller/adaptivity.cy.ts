@@ -6,7 +6,7 @@ import {
   getFromIframe,
   twoStepLogin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage,
   clickCardButton, loginTestTaker
 } from '../utils';
@@ -14,7 +14,7 @@ import {
 describe('check adaptive functionality', () => {
   before(() => {
     cleanUp();
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
