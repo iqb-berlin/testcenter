@@ -155,7 +155,7 @@ class SuperAdminDAO extends DAO {
     );
 
     if ($user) {
-      throw new HttpError("User with name `$userName` already exists!", 400);
+      throw new HttpError("User with name `$userName` already exists!", 409);
     }
 
     $this->_(
@@ -206,7 +206,7 @@ class SuperAdminDAO extends DAO {
     );
 
     if ($workspace) {
-      throw new HttpError("Workspace with name `$name` already exists!", 400);
+      throw new HttpError("Workspace with name `$name` already exists!", 409);
     }
 
     $this->_(
@@ -236,7 +236,7 @@ class SuperAdminDAO extends DAO {
     );
 
     if ($workspace) {
-      throw new HttpError("Workspace with name `$newName` already exists!", 400);
+      throw new HttpError("Workspace with name `$newName` already exists!", 409);
     }
 
     $this->_(

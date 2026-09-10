@@ -157,6 +157,17 @@ paths:
           content:
             text/html;charset=utf-8:
               example: "1"
+        "400":
+          description: |-
+            Bad request. Either
+             * the request body contains no name (n) or no password (p), or
+             * the password violates the configured password rules. The rules in
+               force can be read from `GET /system/config` (`passwordMinLength`,
+               `passwordPattern`); the maximum length is 60 characters.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
           content:
@@ -165,6 +176,12 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "409":
+          description: A user of this name exists already. User names are unique.
           content:
             text/html:
               schema:
@@ -212,6 +229,17 @@ paths:
       responses:
         "200":
           description: password has changed / user did not exist
+        "400":
+          description: |-
+            Bad request. Either
+             * the request body contains no password (p), or
+             * the password violates the configured password rules. The rules in
+               force can be read from `GET /system/config` (`passwordMinLength`,
+               `passwordPattern`); the maximum length is 60 characters.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
           content:

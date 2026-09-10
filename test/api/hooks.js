@@ -139,6 +139,11 @@ const beforeEach = async (transaction, done) => {
           '/SAMPLE_UNITCONTENTS.HTM': '/not-existing-unit'
         });
         break;
+      case '409':
+        changeAuthToken(transaction, {
+          adminToken: 'static:admin:super'
+        });
+        break;
       case '410':
         changeAuthToken(transaction, {
           adminToken: 'static:admin:expired_user',
@@ -249,6 +254,16 @@ const attachUploadImage = async (transaction, done) => {
   done();
 };
 
+const replaceBody = body => async (transaction, done) => {
+  transaction.request.body = JSON.stringify(body);
+  done();
+};
+
+const skipTransaction = async (transaction, done) => {
+  transaction.skip = true;
+  done();
+};
+
 const finishAfterError = (transaction, done) => {
   // die after first failure
   if (transaction.results.valid === false) {
@@ -279,4 +294,17 @@ dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attac
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 403', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 404', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 410', attachUploadImage);
+// A name taken by an existing workspace or user provokes the conflict, an empty body the missing-parameter error.
+// `sample_workspace`, `second_workspace` and `super` are created by TestEnvironment::createTestData.
+dreddHooks.before('specs > /workspace > add a workspace > 400', replaceBody({}));
+dreddHooks.before('specs > /workspace > add a workspace > 409', replaceBody({ name: 'sample_workspace' }));
+dreddHooks.before('specs > /workspace/{ws_id} > rename a workspace > 400', replaceBody({}));
+dreddHooks.before('specs > /workspace/{ws_id} > rename a workspace > 409', replaceBody({ name: 'second_workspace' }));
+dreddHooks.before('specs > /user > add a user > 400', replaceBody({}));
+dreddHooks.before('specs > /user > add a user > 409', replaceBody({ n: 'super', p: 'a_valid_password_1234' }));
+dreddHooks.before('specs > /user/{user_id}/password > change user-password > 400', replaceBody({}));
+// These 409 need a workspace that another upload or deletion holds a lock on. Each api-test request builds its
+// own virtual filesystem, so a lock written by another request is never visible here.
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 409', skipTransaction);
+dreddHooks.before('specs > /workspace/{ws_id}/files > delete files > 409', skipTransaction);
 dreddHooks.afterEach(finishAfterError);

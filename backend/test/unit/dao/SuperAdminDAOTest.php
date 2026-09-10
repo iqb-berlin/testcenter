@@ -151,6 +151,15 @@ class SuperAdminDAOTest extends TestCase {
     $expectation = 'new_name';
     $this->assertEquals($expectation, $result);
 
+    $this->dbc->createWorkspace('another_workspace');
+
+    try {
+      $this->dbc->setWorkspaceName(1, 'another_workspace');
+      $this->fail("Exception expected.");
+    } catch (HttpError $exception) {
+      $this->assertEquals(409, $exception->getCode());
+    }
+
     $this->expectException('HttpError');
     $this->dbc->setWorkspaceName(33, 'new_name');
   }
@@ -242,7 +251,7 @@ class SuperAdminDAOTest extends TestCase {
       $this->dbc->createWorkspace('new_workspace');
       $this->fail("Exception expected.");
     } catch (HttpError $exception) {
-      $this->assertEquals($exception->getCode(), 400);
+      $this->assertEquals($exception->getCode(), 409);
     }
 
     $result = $this->dbc->getWorkspaces();

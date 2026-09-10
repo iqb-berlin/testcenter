@@ -35,8 +35,11 @@ folgenden Punkten:
   Test ausgewählt ist. Bisher liessen sie sich anklicken und meldeten lediglich »Keine Tests betroffen« – etwa
   direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
 - "Verbleibende Zeit" wird im Review-Modus nicht länger angezeigt, wenn keine Zeitgeschränkung gesetzt ist.
+- Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 
 ## Technisches
+- (breaking) `PUT /workspace`, `PATCH /workspace/{ws_id}` und `PUT /user` antworten auf einen bereits vergebenen Namen mit `409`. Bisher war es `400`, das damit sowohl den Namenskonflikt als auch einen unvollständigen oder ungültigen Request-Body meldete; für letztere bleibt es bei `400`. Clients, die den Konflikt an `400` erkennen, müssen angepasst werden.
+- Die API-Dokumentation führt die Fehlerantworten `400` und `409` von `PUT /workspace`, `PATCH /workspace/{ws_id}`, `PUT /user` und `PATCH /user/{user_id}/password` jetzt auf, samt der Ursachen, die zu ihnen führen. Bisher waren sie dort nicht dokumentiert.
 - `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).
 - Der `Accept`-Header ist in der API-Dokumentation der Endpunkte `GET /workspace/{ws_id}/report/log`, `.../report/response` und `.../report/sys-check` jetzt als Parameter aufgeführt. Bisher war er dort nicht dokumentiert, obwohl alle drei Endpunkte wahlweise CSV oder JSON liefern; die Beschreibungen aller Report-Endpunkte nennen zudem den jeweiligen Standardwert.
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte

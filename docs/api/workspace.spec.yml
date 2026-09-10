@@ -1119,8 +1119,20 @@ paths:
           content:
             text/html;charset=utf-8:
               example: "3"
+        "400":
+          description: The request body contains no workspace name
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "409":
+          description: A workspace of this name exists already. Workspace names are unique.
           content:
             text/html:
               schema:
@@ -1228,6 +1240,15 @@ paths:
       responses:
         "200":
           description: OK, workspace has been renamed
+        "400":
+          description: |-
+            Bad request. Either
+             * the request body contains no new name, or
+             * no workspace of the given id exists.
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "401":
           description: Not authenticated
           content:
@@ -1236,6 +1257,12 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
+        "409":
+          description: A workspace of the new name exists already. Workspace names are unique.
           content:
             text/html:
               schema:
