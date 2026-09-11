@@ -87,6 +87,10 @@ folgenden Punkten:
 - (breaking) `PATCH /user/{user_id}/password` verlangt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten `400`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort unbenutzt.
 - (breaking) `DELETE /users` verlangt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten `400`.
 - (breaking) `DELETE /workspaces` verlangt ebenfalls zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body, aus demselben Grund und mit denselben Auswirkungen wie bei `DELETE /users`.
+- `make test-system-headless` akzeptiert mit `spec` nun mehrere kommagetrennte Cypress-Spec-Pfade relativ zum
+  Verzeichnis `e2e`, z. B. `spec='src/e2e/Group-Monitor/**/*,src/e2e/Sys-Check/**/*'`.
+  Die Pfade und Glob-Muster werden unverändert an Cypress übergeben; Verzeichnispräfix und Dateiendung werden
+  nicht mehr automatisch ergänzt. Ohne `spec` werden weiterhin alle Systemtests ausgeführt.
 
 # 18.3.0
 
