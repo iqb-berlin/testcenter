@@ -33,6 +33,7 @@ build-e2e:
     - when: never
   needs:
     - build-backend
+    - build-broadcaster
     - build-frontend
     - build-file-server
     - build-e2e
@@ -67,7 +68,8 @@ build-e2e:
     #- docker pull --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FRONTEND_IMAGE_NAME}:current
-    #  - docker tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev iqbberlin/testcenter-broadcaster:current
+    - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+    - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${BROADCASTER_IMAGE_NAME}:current
     #- docker pull --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev ${FILE_SERVER_IMAGE_NAME}:current

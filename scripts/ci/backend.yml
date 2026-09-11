@@ -43,18 +43,30 @@ build-backend-prod:
   after_script:
     - !reference [ .gitlab_login, after_script ]
 
-#TODO needed?
-#build-broadcaster:
-#  stage: build
-#  variables:
-#    BROADCASTER_IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/iqbberlin/testcenter-broadcaster"
-#  extends: .gitlab_login
-#  script:
-#    - export DOCKERHUB_PROXY=
-#    - docker build --progress plain --pull --target dev
-#      --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from ${BROADCASTER_IMAGE_NAME}:dev
-#      --file broadcaster/Dockerfile --tag ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev .
-#    - docker push --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+build-broadcaster:
+  stage: build
+  rules:
+    - if: '$PIPELINE_TYPE == "web"'
+      when: on_success
+    - if: '$PIPELINE_TYPE == "pr"'
+      when: on_success
+    - when: never
+  variables:
+    IMAGE_NAME: "${GITLAB_REGISTRY_IMAGE_BASE}/${BROADCASTER_IMAGE_NAME}"
+  before_script:
+    - !reference [ .gitlab_login, before_script ]
+  script:
+    - docker build --progress plain --pull
+      --build-arg REGISTRY_PATH=${DEP_PROXY_PREFIX}/
+      --build-arg BUILDKIT_INLINE_CACHE=1
+      --cache-from ${IMAGE_NAME}:dev
+      --target dev --file broadcaster/Dockerfile
+      --tag ${IMAGE_NAME}:${CI_COMMIT_SHA}_dev
+      --tag ${IMAGE_NAME}:dev
+      .
+    - docker push --all-tags ${IMAGE_NAME}
+  after_script:
+    - !reference [ .gitlab_login, after_script ]
 
 build-broadcaster-prod:
   stage: build
