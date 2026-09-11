@@ -76,40 +76,12 @@ build-e2e:
     - docker pull --quiet ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev
     - docker tag ${GITLAB_REGISTRY_IMAGE_BASE}/${E2E_IMAGE_NAME}:${CI_COMMIT_SHA}_dev testcenter-e2e
 
-test-e2e-booklet-configuration:
+test-e2e-booklet-configuration_session-management:
   extends: .e2e-test-template
   before_script:
     - !reference [ .gitlab_login, before_script ]
     - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Booklet-Config/**/*'
-
-test-e2e-group-monitor:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Group-Monitor/**/*'
-
-test-e2e-session-management:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Session-Management/**/*'
-
-test-e2e-super-admin:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Super-Admin/**/*'
-
-test-e2e-sys-check:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Sys-Check/**/*'
+    - export SPEC='src/e2e/Booklet-Config/**/*,src/e2e/Session-Management/**/*'
 
 test-e2e-test-controller:
   extends: .e2e-test-template
@@ -118,16 +90,9 @@ test-e2e-test-controller:
     - !reference [ .e2e-test, before_script ]
     - export SPEC='src/e2e/Test-Controller/**/*'
 
-test-e2e-workspace-admin:
+test-e2e-misc_workspace-admin_sys-check_super-admin_group-monitor:
   extends: .e2e-test-template
   before_script:
     - !reference [ .gitlab_login, before_script ]
     - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/Workspace-Admin/**/*'
-
-test-e2e-misc:
-  extends: .e2e-test-template
-  before_script:
-    - !reference [ .gitlab_login, before_script ]
-    - !reference [ .e2e-test, before_script ]
-    - export SPEC='src/e2e/*'
+    - export SPEC='src/e2e/*,src/e2e/Workspace-Admin/**/*,src/e2e/Sys-Check/**/*,src/e2e/Super-Admin/**/*,src/e2e/Group-Monitor/**/*'
