@@ -13,7 +13,7 @@ services:
     command: [
       "npx", "cypress", "run",
       "--browser", "chrome",
-      "--spec=/usr/src/testcenter/e2e/src/e2e/${SPEC:-**/*}.cy.ts"
+      "--spec=${SPEC:-src/e2e/**/*}"
     ]
     volumes:
       - ./e2e/cypress-headless:/usr/src/testcenter/e2e/cypress-headless

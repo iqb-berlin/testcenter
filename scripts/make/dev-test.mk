@@ -116,7 +116,8 @@ test-file-server-api:
 	@docker image rm testcenter-task-runner-file-server
 
 # Performs some e2e tests with CyPress against real backend and services
-# Param: (optional) spec - specific spec to run (example: spec=Test-Controller/hot-return), omit parameter for all.
+# Param: (optional) spec - comma-separated Cypress spec paths relative to e2e; omit for all.
+# Example: spec='src/e2e/Group-Monitor/**/*,src/e2e/Sys-Check/**/*'
 test-system-headless:
 	-cd $(TC_BASE_DIR) &&\
 	make down &&\
@@ -126,7 +127,7 @@ test-system-headless:
 			--file docker-compose.dev.yml\
 			--file e2e/docker-compose.system-test-headless.yml\
 		run --rm --entrypoint /initialize_only.sh backend &&\
-	SPEC=$(spec) \
+	SPEC='$(spec)' \
 	docker compose\
 			--env-file .env.dev\
 			--file docker-compose.yml\
