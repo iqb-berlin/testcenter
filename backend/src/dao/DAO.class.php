@@ -37,8 +37,6 @@ class DAO {
   public function __construct() {
     $this->pdoDBhandle = DB::getConnection();
 
-    $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $this->passwordSalt = SystemConfig::$password_salt;
     $this->insecurePasswords = SystemConfig::$debug_useInsecurePasswords;
   }

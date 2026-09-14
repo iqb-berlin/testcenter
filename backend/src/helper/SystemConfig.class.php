@@ -134,14 +134,4 @@ class SystemConfig {
     }
     return $value;
   }
-
-  public static function dumpDbConfig(): string {
-    return print_r([
-      "host" => self::$database_host,
-      "user" => self::$database_user,
-      "port" => self::$database_port,
-      "pass" => substr(self::$database_password, 0, 2) . '***',
-      "name" => self::$database_name
-    ], true);
-  }
 }

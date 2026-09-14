@@ -115,7 +115,7 @@ try {
   CLI::p("Run code: `$runCode`");
 
   CLI::h2("Connect to Database");
-  CLI::connectDBWithRetries();
+  DB::connectWithRetries();
 
   $initDAO = new InitDAO();
   $initializer = new WorkspaceInitializer();

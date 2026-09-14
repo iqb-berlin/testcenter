@@ -57,8 +57,7 @@ try {
   CLI::h2("System-Config");
   SystemConfig::readEnvironment();
   CLI::success("Environment variables successfully read.");
-  CLI::connectDBWithRetries();
-  CLI::success("Database successfully connected.");
+  DB::connectWithRetries();
 
   CLI::h2("Check Database Settings");
   $initDAO = new InitDAO();

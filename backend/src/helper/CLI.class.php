@@ -26,23 +26,6 @@ class CLI {
     "Grey" => "47",
   ];
 
-  static function connectDBWithRetries(int $retries = 5): void {
-    while ($retries--) {
-      try {
-          CLI::p("Database Connection attempt.");
-          DB::connect();
-          CLI::success("Database Connection successful!");
-          return;
-      } catch (Throwable) {
-        CLI::warning("Database Connection failed! Retry: $retries attempts left.");
-        usleep(20 * 1000000); // give database container time to come up
-      }
-    }
-
-//    CLI::printData(SystemConfig);
-    throw new Exception("Database connection failed.");
-  }
-
   // PHP's getopt is bogus: it can not handle empty strings as params properly
   static function getOpt(): array {
     $result = [];

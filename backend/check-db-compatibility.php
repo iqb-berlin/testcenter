@@ -23,7 +23,7 @@ const FIX_HINT = "Run `make testcenter-init` to bring the database up to date.";
 
 try {
   SystemConfig::readEnvironment();
-  CLI::connectDBWithRetries();
+  DB::connectWithRetries();
 
   $initDAO = new InitDAO();
   $dbSchemaVersion = $initDAO->getDBSchemaVersion();
