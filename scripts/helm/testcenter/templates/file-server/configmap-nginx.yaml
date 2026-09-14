@@ -36,6 +36,12 @@ data:
       access_log /dev/null;
       error_log /dev/stdout;
 
+      # Used by the 403 and 500 error pages below. Their response says only that something went wrong;
+      # the cause is in the error_log. Both carry the same Error-ID, which leads from one to the other.
+      # $file_path is what auth.lua resolved, e.g. /ws_1/Resource/UNIT.HTM. $request_uri would be the
+      # obvious choice, but it still contains the group token - a credential, not something to log.
+      log_format error_id '$error_id $status $file_path';
+
       tcp_nodelay on; # default = on. off can: help improve network efficiency and reduce congestion, but can introduce some latency
       keepalive_timeout 65;
 
@@ -91,6 +97,10 @@ data:
         integration /var/www/testcenter/data-TEST;
       }
 
+      map $request_id $error_id {
+        default fs-$request_id;
+      }
+
       server {
         server_tokens off; # removes the nginx version at least (removing the server-header at all is very difficult)
         listen 8080;
@@ -125,11 +135,15 @@ data:
 
         location = /403 {
           internal;
+          access_log /dev/stdout error_id;
+          add_header Error-ID $error_id always;
           return 403 'File Server: Forbidden.';
         }
 
         location = /500 {
           internal;
+          access_log /dev/stdout error_id;
+          add_header Error-ID $error_id always;
           return 500 'File Server: Internal error.';
         }
       }
