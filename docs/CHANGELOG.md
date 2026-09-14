@@ -73,9 +73,9 @@ folgenden Punkten:
   Installationen von dieser Änderung nicht betroffen sind.
 - Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank
   und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/`
-  mit UTC-Zeitstempel und enthält das Datenbankabbild, ein Archiv der Backend-Dateien und eine Datei `manifest` mit
-  Version, Datenbanknamen und Prüfsummen. Nicht enthalten sind `.env.prod`, `config/` und `secrets/`; diese Dateien
-  müssen separat gesichert werden.
+  mit UTC-Zeitstempel. Was ein Set enthält, was separat gesichert werden muss und welche Werte aus `.env.prod` zu
+  einem Set passen müssen, beschreibt
+  [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
 - Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt
   sich mit `make testcenter-restore` wiederherstellen.
 - Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht

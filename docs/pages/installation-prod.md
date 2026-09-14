@@ -81,7 +81,7 @@ This writes one timestamped backup set into the installation directory, e.g.:
 backup/2026-09-08T10-42-00Z/
 ├── iqb_tba_testcenter.sql   # the database
 ├── backend_vol.tar.gz       # the data files
-└── manifest                 # version, database name, checksums of both artifacts
+└── manifest                 # version, database settings, checksums of both artifacts
 ```
 
 The application may keep running while a backup is taken.
@@ -93,9 +93,11 @@ make testcenter-restore BACKUP=backup/2026-09-08T10-42-00Z
 make testcenter-up
 ```
 
-The restore checks the manifest first and refuses to start if an artifact is damaged or missing. It then stops the
-application, replaces both halves, and leaves the application stopped so you can start it yourself. Restoring
-**replaces** the data files: anything not contained in the backup is gone afterwards.
+The restore checks the manifest first and refuses to start if an artifact is damaged or missing, or if the set was
+taken with a different `DB_DATABASE` or `DB_USER` than the installation is configured for - restoring such a set
+would not produce the installation it came from. It then stops the application, replaces both halves, and leaves the
+application stopped so you can start it yourself. Restoring **replaces** the data files: anything not contained in
+the backup is gone afterwards.
 
 `make testcenter-update` takes such a backup set of its own before it changes anything, and it can be restored with
 the same command.
@@ -104,13 +106,41 @@ the same command.
 
 1. Install the same release the backup set was taken with (the release is recorded in the manifest; the restore warns
    if it does not match).
-2. Copy the backup set into the `backup` directory of the new installation.
-3. Run `make testcenter-restore BACKUP=backup/<set>`, then `make testcenter-up`.
+2. Take `DB_DATABASE`, `DB_USER` and `PASSWORD_SALT` from the old `.env.prod` into the new one. The first two are
+   recorded in the manifest, so the restore tells you if they do not match; the third is not, and see below for what
+   happens without it. `DB_PASSWORD` is **not** one of them: it may be chosen anew, as long as it is set before the
+   database starts for the first time.
+3. Copy the backup set into the `backup` directory of the new installation.
+4. Run `make testcenter-restore BACKUP=backup/<set>`, then `make testcenter-up`.
 
 #### What a backup set does not contain
 
-Your configuration - `.env.prod`, `config/` and `secrets/` - is not part of a backup set. Keep a copy of those
-separately; without them a new installation cannot be reached under the same host name and TLS certificates.
+Your configuration - `.env.prod`, `config/` and `secrets/` - is not part of a backup set, so that a set holds no
+secrets and can be stored wherever your backups go. Keep a copy of the configuration separately. Without it a new
+installation cannot be reached under the same host name and TLS certificates, and three values from `.env.prod` have
+to match the set for a restore to produce the installation it came from:
+
+- `DB_DATABASE` and `DB_USER` are recorded in the manifest, and `make testcenter-restore` stops before it changes
+  anything if either differs. Both can also be read out of the dump itself if the old `.env.prod` is gone: the
+  database name from its `CREATE DATABASE` line, the user name from its `OWNER TO` lines.
+- `PASSWORD_SALT` cannot be recovered from a backup set - only a fingerprint of it is recorded, enough for the
+  restore to warn that it differs. Test data, workspaces and testtaker logins are unaffected by the mismatch, but
+  administrator accounts are not: their stored passwords belong to the other salt, and nobody can log in.
+
+Recovering from that last case does not need the old salt. Give one system administrator a new password under the
+salt the installation now has, then use it to reset the remaining accounts in the web interface:
+
+```
+docker compose --env-file .env.prod --file docker-compose.yml --file docker-compose.prod.yml \
+  run --rm --no-deps --entrypoint php backend \
+  -r 'echo password_hash(hash_hmac("sha256", "NEW_PASSWORD", getenv("PASSWORD_SALT")), PASSWORD_BCRYPT, ["cost" => 10]), "\n";'
+```
+
+Then write the printed hash into the account, using `make testcenter-connect-db`:
+
+```
+UPDATE users SET password = '<hash>' WHERE name = 'super';
+```
 
 #### Restoring only one half
 

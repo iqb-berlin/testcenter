@@ -237,6 +237,11 @@ BACKUP ?= backup/temp
 DB_DUMP_FILE = $(TC_BASE_DIR)/$(BACKUP)/$(DB_DATABASE).sql
 MANIFEST_FILE = $(TC_BASE_DIR)/$(BACKUP)/manifest
 
+## The salt is recorded in the manifest as a fingerprint rather than as itself, so a backup set stays
+## free of secrets. Single-quoted for the shell, with an embedded quote escaped, so that any value
+## survives interpolation into the recipe.
+SALT_FINGERPRINT = $$(printf %s '$(subst ','\'',$(PASSWORD_SALT))' | sha256sum | cut -c1-16)
+
 ## Extract the application database into a plain SQL file
 # Moved into place only on success: the shell truncates a redirect target before pg_dump runs, so
 # writing directly would destroy the previous dump whenever a dump fails.
@@ -311,6 +316,8 @@ testcenter-backup:
 	{\
 		echo "version=$(VERSION)";\
 		echo "database=$(DB_DATABASE)";\
+		echo "user=$(DB_USER)";\
+		echo "salt=$(SALT_FINGERPRINT)";\
 		echo "created=$$(date -u '+%Y-%m-%dT%H:%M:%SZ')";\
 		sha256sum $(DB_DATABASE).sql backend_vol.tar.gz;\
 	} >manifest;\
@@ -328,9 +335,32 @@ testcenter-restore:
 	echo "Verifying backup set '$(BACKUP)'";\
 	( cd $(TC_BASE_DIR)/$(BACKUP) && grep -E '^[0-9a-f]{64} ' manifest | sha256sum --check --quiet );\
 	echo "- both artifacts are intact";\
+	backup_database=$$(sed -ne 's|^database=||p' $(MANIFEST_FILE));\
+	if [ "$${backup_database}" != "$(DB_DATABASE)" ]; then\
+		echo "The set holds the database '$${backup_database}', this installation is configured for";\
+		echo "'$(DB_DATABASE)'. The dump recreates the database it was taken from, so the backend would keep";\
+		echo "reading '$(DB_DATABASE)' and find it empty. Set DB_DATABASE='$${backup_database}' in .env.prod, or";\
+		echo "restore the set into the installation it came from. Nothing was changed.";\
+		exit 1;\
+	fi;\
+	backup_user=$$(sed -ne 's|^user=||p' $(MANIFEST_FILE));\
+	if [ -n "$${backup_user}" ] && [ "$${backup_user}" != "$(DB_USER)" ]; then\
+		echo "The set was taken with the database user '$${backup_user}', this installation uses '$(DB_USER)'.";\
+		echo "The dump assigns ownership to '$${backup_user}', so the restore would drop the existing database";\
+		echo "and then stop on the first statement naming that role. Set DB_USER='$${backup_user}' in .env.prod.";\
+		echo "Nothing was changed.";\
+		exit 1;\
+	fi;\
+	echo "- the set belongs to this installation's database configuration";\
 	backup_version=$$(sed -ne 's|^version=||p' $(MANIFEST_FILE));\
 	test "$${backup_version}" = "$(VERSION)" ||\
 		echo "- NOTE: the set was taken on version '$${backup_version}', this installation runs '$(VERSION)'";\
+	backup_salt=$$(sed -ne 's|^salt=||p' $(MANIFEST_FILE));\
+	if [ -n "$${backup_salt}" ] && [ "$${backup_salt}" != "$(SALT_FINGERPRINT)" ]; then\
+		echo "- NOTE: the set was taken with a different PASSWORD_SALT. Everything restores, but no administrator";\
+		echo "        will be able to log in, because their stored passwords belong to the other salt. See";\
+		echo "        'Backup and restore' in the documentation for how to give the accounts new passwords.";\
+	fi;\
 	echo "Stopping the application";\
 	$(MAKE) --no-print-directory -f $(THIS_MAKEFILE) testcenter-down;\
 	echo "Starting the database on its own";\
