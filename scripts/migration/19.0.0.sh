@@ -11,7 +11,7 @@
 # after the installation directory and the data backup have been created. It evaluates the exit
 # status, so a failed step must not exit with 0.
 
-declare TARGET_VERSION='next'
+declare TARGET_VERSION='19.0.0'
 declare ENV_FILE='.env.prod'
 
 declare HAS_ERRORS=false

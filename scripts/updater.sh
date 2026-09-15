@@ -485,7 +485,7 @@ finalize_update() {
     fi
 
     printf "When your files are checked for modification, you could restart the application with "
-    printf "'make %s-up' at the command line to put the update into effect.\n\n" "${APP_NAME}"
+    printf "'make %s-init' at the command line to put the update into effect. Start the application afterwards with 'make %s-up'.\n\n" "${APP_NAME}" "${APP_NAME}"
 
     printf "'%s' update script finished.\n\n" "${APP_NAME}"
 

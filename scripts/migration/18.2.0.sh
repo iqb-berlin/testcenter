@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare TARGET_VERSION='next'
+declare TARGET_VERSION='18.2.0'
 
 function migrate_env_file() {
   if ! grep -q '^BRUTE_FORCE_PROTECTION=' .env.prod; then

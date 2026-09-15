@@ -104,7 +104,7 @@ run_backup_phase() {
     printf "the current update tooling), so backups and migration scripts can not be run\n"
     printf "automatically for this update.\n\n"
 
-    printf "Please create a manual backup of your installation directory and database now.\n\n"
+    printf "Please create a manual backup of your installation directory and database now, if not done via past update script.\n\n"
 
     declare is_continue
     read -p "Continue? [y/N] " -er -n 1 is_continue
