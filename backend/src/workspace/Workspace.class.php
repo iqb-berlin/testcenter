@@ -421,6 +421,23 @@ class Workspace {
     $workspaceCache = new WorkspaceCache($this);
     $workspaceCache->loadFiles();
 
+    // One transaction for the whole workspace: left to itself `storeFile` commits per file, and every commit
+    // is a disk flush. It also makes the pass atomic.
+    return $this->workspaceDAO->transactional(
+      fn(): array => $this->storeAllFilesInTransaction($workspaceCache)
+    );
+  }
+
+  /**
+   * @return array{
+   *   valid: array<string, int>,
+   *   invalid: int,
+   *   logins: array{added: int, deleted: int},
+   *   reports: array<string, string[]>,
+   *   pruning_skipped: bool
+   * }
+   */
+  private function storeAllFilesInTransaction(WorkspaceCache $workspaceCache): array {
     $typeStats = array_fill_keys(Workspace::subFolders, 0);
     $loginStats = [
       'added' => 0
@@ -447,7 +464,7 @@ class Workspace {
     }
 
     foreach ($workspaceCache->getFiles(true) as $file) {
-      $stats = $this->storeFileMeta($file);
+      $stats = $this->storeFileMeta($file, $workspaceCache);
 
       $loginStats['deleted'] += $stats['logins_deleted'];
       $loginStats['added'] += $stats['logins_added'];
@@ -505,7 +522,7 @@ class Workspace {
   }
 
   // TODO unit-test
-  private function storeFileMeta(File $file): array {
+  private function storeFileMeta(File $file, ?WorkspaceCache $workspaceCache = null): array {
     $stats = [
       'logins_deleted' => 0,
       'logins_added' => 0
@@ -532,20 +549,24 @@ class Workspace {
     }
 
     if (is_a($file, XMLFileBooklet::class)) {
-      $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $this->getRequestedAttachments($file));
+      $this->workspaceDAO->updateUnitDefsAttachments(
+        $file->getId(),
+        $this->getRequestedAttachments($file, $workspaceCache)
+      );
     }
 
     return $stats;
   }
 
-  public function getRequestedAttachments(XMLFileBooklet $booklet): array {
+  /** A cache holding the booklet's units answers from memory; without one every unit is read from the database. */
+  public function getRequestedAttachments(XMLFileBooklet $booklet, ?WorkspaceCache $workspaceCache = null): array {
     if (!$booklet->isValid()) {
       return [];
     }
 
     $requestedAttachments = [];
     foreach ($booklet->getUnitIds() as $uniId) {
-      $unit = $this->getFileById('Unit', $uniId);
+      $unit = $workspaceCache?->getUnit($uniId) ?? $this->getFileById('Unit', $uniId);
       /* @var $unit XMLFileUnit */
       $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
     }

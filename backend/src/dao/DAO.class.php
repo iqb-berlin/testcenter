@@ -147,6 +147,33 @@ class DAO {
     return $testState;
   }
 
+  /**
+   * Runs $work in a transaction, joining one that is already open instead of opening a second - PDO has no nested
+   * transactions. Only the outermost caller commits, and a failure anywhere rolls back everything it covers.
+   */
+  public function transactional(callable $work): mixed {
+    $ownTransaction = !$this->pdoDBhandle->inTransaction();
+
+    if ($ownTransaction) {
+      $this->beginTransaction();
+    }
+
+    try {
+      $result = $work();
+    } catch (Throwable $exception) {
+      if ($ownTransaction) {
+        $this->rollBack();
+      }
+      throw $exception;
+    }
+
+    if ($ownTransaction) {
+      $this->commitTransaction();
+    }
+
+    return $result;
+  }
+
   public function beginTransaction(): void {
     if (!$this->pdoDBhandle->beginTransaction()) {
       throw new Exception('PDO: Could not begin Transaction');

@@ -159,17 +159,13 @@ class WorkspaceDAO extends DAO {
   public function storeFile(File $file): void {
     // Postgres has no REPLACE INTO. The DELETE is required, not just cosmetic: it cascades to
     // file_relations and unit_defs_attachments, clearing this file's stale rows before they are re-added.
-    $ownTransaction = !$this->pdoDBhandle->inTransaction();
-    if ($ownTransaction) {
-      $this->beginTransaction();
-    }
+    $this->transactional(function() use ($file): void {
+      $this->_(
+        'delete from files where workspace_id = ? and name = ? and type = ?',
+        [$this->workspaceId, $file->getName(), $file->getType()]
+      );
 
-    $this->_(
-      'delete from files where workspace_id = ? and name = ? and type = ?',
-      [$this->workspaceId, $file->getName(), $file->getType()]
-    );
-
-    $this->_("insert into files (
+      $this->_("insert into files (
                     workspace_id,
                     name,
                     id,
@@ -189,31 +185,28 @@ class WorkspaceDAO extends DAO {
                     modification_ts,
                     context_data
                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-      [
-        $this->workspaceId,
-        $file->getName(),
-        $file->getId(),
-        $file->getVersionMayor(),
-        $file->getVersionMinor(),
-        $file->getVersionPatch(),
-        $file->getVersionLabel(),
-        $file->getLabel(),
-        $file->getDescription(),
-        $file->getType(),
-        $file->getVeronaModuleType(),
-        $file->getVeronaVersion(),
-        $file->getVeronaModuleId(),
-        $file->isValid() ? 1 : 0,
-        serialize($file->getValidationReport()),
-        $file->getSize(),
-        TimeStamp::toSQLFormat($file->getModificationTime()),
-        serialize($file->getContextData())
-      ]
-    );
-
-    if ($ownTransaction) {
-      $this->commitTransaction();
-    }
+        [
+          $this->workspaceId,
+          $file->getName(),
+          $file->getId(),
+          $file->getVersionMayor(),
+          $file->getVersionMinor(),
+          $file->getVersionPatch(),
+          $file->getVersionLabel(),
+          $file->getLabel(),
+          $file->getDescription(),
+          $file->getType(),
+          $file->getVeronaModuleType(),
+          $file->getVeronaVersion(),
+          $file->getVeronaModuleId(),
+          $file->isValid() ? 1 : 0,
+          serialize($file->getValidationReport()),
+          $file->getSize(),
+          TimeStamp::toSQLFormat($file->getModificationTime()),
+          serialize($file->getContextData())
+        ]
+      );
+    });
   }
 
   /**
