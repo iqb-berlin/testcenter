@@ -327,9 +327,9 @@ class InitDAO extends SessionDAO {
 
   public function createSampleCommands(int $commanderId): void {
     $adminDAO = new AdminDAO();
-    $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906980, 'p4'));
-    $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906970, 'p3'));
-    $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906960, 'p1', 'p2'));
+    $adminDAO->storeCommand($commanderId, [1], new Command(-1, 'COMMAND', 1597906980, 'p4'));
+    $adminDAO->storeCommand($commanderId, [1], new Command(-1, 'COMMAND', 1597906970, 'p3'));
+    $adminDAO->storeCommand($commanderId, [1], new Command(-1, 'COMMAND', 1597906960, 'p1', 'p2'));
   }
 
   public function importScanImage(int $workspaceId, string $imagePath): void {

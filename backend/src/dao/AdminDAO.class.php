@@ -697,24 +697,33 @@ class AdminDAO extends DAO {
     }, $resultStats);
   }
 
-  public function storeCommand(int $commanderId, int $testId, Command $command): int {
-    if ($command->getId() === -1) {
-      $maxId = $this->_("select max(id) as max from test_commands");
-      $commandId = isset($maxId['max']) ? (int) $maxId['max'] + 1 : 1;
-    } else {
-      $commandId = $command->getId();
+  /**
+   * Stores one command for every given test and returns the id it got. A command sent to several tests is one
+   * command with one id on several rows, which is why all of them are written in a single statement: the id is
+   * drawn from the identity sequence once and the rows can not end up half-written.
+   *
+   * @param int[] $testIds
+   */
+  public function storeCommand(int $commanderId, array $testIds, Command $command): int {
+    $commandId = (int) $this->_("select nextval(pg_get_serial_sequence('test_commands', 'id')) as id")['id'];
+
+    $parameters = [
+      ':id' => $commandId,
+      ':keyword' => $command->getKeyword(),
+      ':parameter' => json_encode($command->getArguments()),
+      ':commander_id' => $commanderId,
+      ':timestamp' => TimeStamp::toSQLFormat($command->getTimestamp())
+    ];
+
+    $rows = [];
+    foreach (array_values($testIds) as $index => $testId) {
+      $rows[] = "(:id, :test_id_$index, :keyword, :parameter, :commander_id, :timestamp)";
+      $parameters[":test_id_$index"] = $testId;
     }
 
     $this->_("insert into test_commands (id, test_id, keyword, parameter, commander_id, timestamp)
-                values (:id, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
-      [
-        ':id' => $commandId,
-        ':test_id' => $testId,
-        ':keyword' => $command->getKeyword(),
-        ':parameter' => json_encode($command->getArguments()),
-        ':commander_id' => $commanderId,
-        ':timestamp' => TimeStamp::toSQLFormat($command->getTimestamp())
-      ]
+                values " . implode(', ', $rows),
+      $parameters
     );
 
     return $commandId;

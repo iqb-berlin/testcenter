@@ -640,7 +640,8 @@ class TestDAO extends DAO {
       $replacements[':last_id'] = $lastCommandId;
       $sql = str_replace(
         'where',
-        'where timestamp > (select timestamp from test_commands where id = :last_id) and ',
+        // the id alone does not identify a row: one command sent to several tests shares its id across them
+        'where timestamp > (select timestamp from test_commands where id = :last_id and test_id = :test_id) and ',
         $sql
       );
     }

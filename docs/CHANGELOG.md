@@ -44,6 +44,7 @@ folgenden Punkten:
 
 ## Technisches
 - (breaking) Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden liessen; die API-Dokumentation führte beide Codes bereits auf.
+- `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da eine ID auf mehreren Tests liegen kann, brach PostgreSQL die Abfrage ab.
 - Der File-Server schickt bei `403` und `500` einen `Error-ID`-Header (`fs-` gefolgt von der nginx-Request-ID) und schreibt dieselbe ID in sein Log.
 - (breaking) `PUT /workspace`, `PATCH /workspace/{ws_id}` und `PUT /user` antworten auf einen bereits vergebenen Namen mit `409`. Bisher war es `400`, das damit sowohl den Namenskonflikt als auch einen unvollständigen oder ungültigen Request-Body meldete; für letztere bleibt es bei `400`. Clients, die den Konflikt an `400` erkennen, müssen angepasst werden.
 - Die API-Dokumentation führt die Fehlerantworten `400` und `409` von `PUT /workspace`, `PATCH /workspace/{ws_id}`, `PUT /user` und `PATCH /user/{user_id}/password` jetzt auf, samt der Ursachen, die zu ihnen führen. Bisher waren sie dort nicht dokumentiert.

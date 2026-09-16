@@ -217,7 +217,8 @@ final class AdminDAOTest extends TestCase {
 
   function test_addCommand() {
     $command = new Command(-1, 'a_keyword', 1597905000, 'first_argument', 'second_argument');
-    $this->dbc->storeCommand(1, 1, $command);
+    $commandId = $this->dbc->storeCommand(1, [1], $command);
+    $this->assertEquals(5, $commandId);
     $expectation = [
       "id" => 5,
       "test_id" => 1,
@@ -230,6 +231,29 @@ final class AdminDAOTest extends TestCase {
     ];
     $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
     $this->assertEquals($expectation, $result);
+  }
+
+  function test_addCommandForSeveralTests() {
+    $command = new Command(-1, 'shared_keyword', 1597905000);
+    $commandId = $this->dbc->storeCommand(1, [1, 2], $command);
+
+    $expectation = [
+      ["id" => $commandId, "test_id" => 1],
+      ["id" => $commandId, "test_id" => 2]
+    ];
+    $result = $this->dbc->_(
+      "select id, test_id from test_commands where keyword='shared_keyword' order by test_id",
+      [],
+      true
+    );
+    $this->assertEquals($expectation, $result);
+  }
+
+  function test_addCommandDrawsFreshIds() {
+    $first = $this->dbc->storeCommand(1, [1], new Command(-1, 'first_keyword', 1597905000));
+    $second = $this->dbc->storeCommand(1, [1], new Command(-1, 'second_keyword', 1597905000));
+
+    $this->assertNotEquals($first, $second);
   }
 
   function test_getTest() {

@@ -133,6 +133,10 @@ values (4, 1, 'COMMAND_B', '', 3, '2020-08-20 07:23:20+02:00');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")
 values (1, 2, 'COMMAND_X', '', 3, '2020-08-20 07:40:00+02:00');
 
+-- Keep the command identity sequence aligned for the same reason as the users sequence above. The ids repeat
+-- across tests on purpose: command 1 went to test 1 and test 2.
+select setval(pg_get_serial_sequence('test_commands', 'id'), (select max(id) from test_commands));
+
 insert into meta(category, "metaKey", value) values ('cat1', 'keyA', 'valueA');
 insert into meta(category, "metaKey", value) values ('cat1', 'keyB', 'valueB');
 insert into meta(category, "metaKey", value) values ('cat2', 'keyA', 'valueA');
