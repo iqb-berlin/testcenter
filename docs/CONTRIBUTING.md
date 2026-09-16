@@ -117,8 +117,7 @@ merged.
 
 ## 4. Coding Standards
 
-- A document with our coding standards is in progress and will be linked
-  here soon.
+- Our conventions are collected in the [style guide](style-guide.md).
 - Please run formatting and linting locally before pushing.
 - New functionality needs **tests**; bugfixes should ideally include a
   regression test.
@@ -127,14 +126,7 @@ merged.
 
 ---
 
-## 5. Commit Messages
-
-- For commit messages, we follow the recommendations at
-  [cbea.ms/git-commit](https://cbea.ms/git-commit/).
-
----
-
-## 6. Communication
+## 5. Communication
 
 - **Issues**: for anything related to the functionality/feature.
 - **PRs**: for anything directly related to the code.

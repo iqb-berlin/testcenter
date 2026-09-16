@@ -35,6 +35,8 @@ There are one repository for testtaker-XML and one for booklet-XML:
 
 * [Installation for Development](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-dev.html)
 * [Developer's Guide](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/developer-guide.html)
+* [Contributing Guide](docs/CONTRIBUTING.md)
+* [Style Guide](docs/style-guide.md)
 
 ### API Documentation
 
