@@ -580,17 +580,13 @@ class WorkspaceDAO extends DAO {
     );
   }
 
-  public function storeRelations(File $file): array {
-    $unresolvedRelations = [];
-
+  // Every relation stored here carries a resolved target: validation attaches it and reports an error when the
+  // referenced file is missing, which makes the subject file invalid, and invalid files are never stored.
+  public function storeRelations(File $file): void {
     foreach ($file->getRelations() as $relation) {
       /* @var $relation FileRelation */
 
       $relatedFile = $relation->getTarget();
-
-      if (!$relatedFile) {
-        $unresolvedRelations++;
-      }
 
       // a file can declare the same relation twice (e.g. a booklet listing one unit in two places);
       // REPLACE INTO used to absorb that silently
@@ -608,8 +604,6 @@ class WorkspaceDAO extends DAO {
         ]
       );
     }
-
-    return [$unresolvedRelations];
   }
 
   public function getBookletResourcePaths(string $bookletFileName): array {

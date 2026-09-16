@@ -505,17 +505,10 @@ class Workspace {
   }
 
   // TODO unit-test
-  private function storeFileMeta(File $file): ?array {
+  private function storeFileMeta(File $file): array {
     $stats = [
       'logins_deleted' => 0,
-      'logins_added' => 0,
-      'resource_packages_installed' => 0,
-      'attachments_noted' => 0,
-      'resolved_relations' => 0,
-      'relations_resolved' => 0,
-      'relations_unresolved' => 0,
-      'asset_assignments_deleted' => 0,
-      'asset_assignments_added' => 0
+      'logins_added' => 0
     ];
 
     if (!$file->isValid()) {
@@ -523,9 +516,7 @@ class Workspace {
     }
 
     if ($file::canBeRelationSubject) {
-      [$relationsUnresolved] = $this->workspaceDAO->storeRelations($file);
-      $stats['relations_resolved'] = count($file->getRelations()) - count($relationsUnresolved);
-      $stats['relations_unresolved'] = count($relationsUnresolved);
+      $this->workspaceDAO->storeRelations($file);
     }
 
     if (is_a($file, XMLFileTesttakers::class)) {
@@ -533,23 +524,15 @@ class Workspace {
       $stats['logins_deleted'] = $deleted;
       $stats['logins_added'] = $added;
 
-      $assetAssignmentStats = $this->workspaceDAO->updateAssetAssignmentSource(
-        $file->getName(),
-        $file->getAssetAssignments()
-      );
-      $stats['asset_assignments_deleted'] = $assetAssignmentStats['deleted'];
-      $stats['asset_assignments_added'] = $assetAssignmentStats['added'];
+      $this->workspaceDAO->updateAssetAssignmentSource($file->getName(), $file->getAssetAssignments());
     }
 
     if (is_a($file, ResourceFile::class) and $file->isPackage()) {
       $file->installPackage();
-      $stats['resource_packages_installed'] = 1;
     }
 
     if (is_a($file, XMLFileBooklet::class)) {
-      $requestedAttachments = $this->getRequestedAttachments($file);
-      $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
-      $stats['attachments_noted'] = count($requestedAttachments);
+      $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $this->getRequestedAttachments($file));
     }
 
     return $stats;
