@@ -31,7 +31,8 @@ const command$ = new Subject<Command>();
 const connectionStatus$ = new Subject<ConnectionStatus>();
 const appWindowHasFocus$ = new Subject<WindowFocusState>();
 const appError$ = new Subject<AppError>();
-const testStatus$ = new BehaviorSubject<TestControllerState>('ERROR');
+const state$ = new BehaviorSubject<TestControllerState>('ERROR');
+const unitContentReady$ = new BehaviorSubject<boolean>(true);
 const maxTimeTimer$ = new Subject<TimerData>();
 const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
@@ -64,7 +65,8 @@ const MockMainDataService = {
 };
 
 const MockTestControllerService = {
-  testStatus$,
+  state$,
+  unitContentReady$,
   maxTimeTimer$,
   currentUnitSequenceId$,
   testMode: new TestMode(),

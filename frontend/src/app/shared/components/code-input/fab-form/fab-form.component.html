@@ -30,7 +30,11 @@
 
 <div class="button-grid" [class.alt-design]="visualMode === 'keypad-symbols-alt'">
   @for (item of activeIconSet | keyvalue; track item.key) {
-    <button mat-fab [disabled]="disabled" (click)="onSelect(item.key)">
+    <button
+      mat-fab
+      [disabled]="disabled"
+      (click)="onSelect(item.key)"
+      [attr.data-cy]="'code-btn-' + item.key">
       @if (visualMode == 'keypad-numbers') {
         {{ item.key }}
       } @else if (visualMode == 'keypad-symbols') {

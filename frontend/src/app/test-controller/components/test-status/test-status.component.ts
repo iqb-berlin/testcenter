@@ -4,10 +4,8 @@ import {
 } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import {
-  AlertComponent, CustomtextPipe, CustomtextService, MainDataService
+  AlertComponent, CustomtextPipe, MainDataService
 } from '@shared/shared.module';
-import { AppError } from '@app/app.interfaces';
-import { ErrorComponent } from '@shared/components/error/error.component';
 import { TestControllerService } from '@app/test-controller';
 
 @Component({
@@ -18,8 +16,7 @@ import { TestControllerService } from '@app/test-controller';
     AsyncPipe,
     CustomtextPipe,
     NgSwitchCase,
-    AlertComponent,
-    ErrorComponent
+    AlertComponent
   ],
   styleUrls: ['./test-status.component.css']
 })
@@ -38,9 +35,5 @@ export class TestStatusComponent implements OnInit {
         this.loginName = authData.displayName;
       }
     });
-  }
-
-  reloadPage(error: AppError): void {
-    this.mainDataService.reloadPage(error.type === 'session');
   }
 }

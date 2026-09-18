@@ -3,18 +3,18 @@ import {
   loginSuperAdmin,
   logout,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData, visitLoginPage,
   visitLoginPageWithProdDb
 } from '../utils';
 
 describe('Settings (setting-tab)', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
   beforeEach(() => {
-    visitLoginPageWithProdDb()
+    visitLoginPage();
     loginSuperAdmin();
     clickSuperadminSettings();
   });
@@ -28,15 +28,12 @@ describe('Settings (setting-tab)', () => {
     cy.get('[data-cy="admin-setting-data-protect"]')
     cy.get('[data-cy="admin-setting-accessibility"]')
     cy.get('[data-cy="admin-setting-imprint"]')
-    cy.get('[data-cy="admin-setting-repo"]')
-    cy.get('[data-cy="admin-setting-git-token"]')
     cy.get('[data-cy="admin-setting-theme-Primar"]')
     cy.get('[data-cy="admin-setting-theme-Sekundar"]')
     cy.get('[data-cy="admin-setting-theme-Erwachsene"]')
     cy.get('[data-cy="admin-setting-submit"]')
   });
 
-  // todo check how to test this without polluting the real database -> this test can be observed in regular dev container db (make up)
   it('set a message for maintenance works', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
       .click({ timeout: 10000 });
@@ -53,9 +50,11 @@ describe('Settings (setting-tab)', () => {
       .click();
     cy.get('[data-cy="logo"]')
       .click();
+    // the intercept is necessary as logout leads to reloading leads to losing ?testMode=true
+    cy.intercept(`${Cypress.env('urls').backend}/**`, request => {
+      request.headers.TestMode = 'integration';
+    });
     logout();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     cy.contains('Maintenance works');
   });
 

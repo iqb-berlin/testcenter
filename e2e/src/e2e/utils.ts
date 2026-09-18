@@ -72,7 +72,7 @@ export const probeBackendApi = () => {
   cy.wait('@waitForConfig', { timeout: 30000 });
 };
 
-export const resetBackendData = () => {
+export const resetBackendTestData = () => {
   cy.log('🔄 Setze Backend-Daten zurück');
   cy.request({
     url: `${Cypress.env('urls').backend}/version`,
@@ -173,8 +173,12 @@ export const logoutFromRunningTestWithConfirmation = (): Chainable => {
     if (!isOnStarterPage) {
       cy.get('[data-cy="logo"]')
         .click();
+      cy.get('[data-cy="dialog-title"]')
+        .contains('Sicher, dass du den Test beenden möchtest?')
+        .should('be.visible');
+      cy.get('[data-cy="dialog-confirm"]')
+        .click();
     }
-    cy.get('[data-cy="endTest-1"]').click();
     cy.wait('@waitForGetSession');
     cy.url().should('eq', `${baseUrl}/#/r/starter`);
     cy.contains('Übersicht').should('be.visible');
@@ -229,6 +233,18 @@ export const clickCardButton = (element: string, cardLabel?: string, buttonText?
     .find('button')
     .should('contain.text', buttonText)
     .click();
+};
+
+// Opens the unit menu and navigates to the unit with the given label. The menu is a mat-sidenav
+// whose backdrop can end up over the entry between Cypress' actionability check and the click; the
+// click then closes the menu instead of navigating, leaving the test waiting for something that
+// never happens. Dispatching on the entry itself takes the hit-test out of the picture.
+export const gotoUnitFromMenu = (unitLabel: string): Chainable => {
+  cy.get('[data-cy="unit-menu"]')
+    .click();
+  return cy.get(`[data-cy="unit-menu-unitbutton-${unitLabel}"]`)
+    .should('be.visible')
+    .click({ force: true });
 };
 
 export const openWorkspace = (workspaceName: string, workspaceNumber: number) => {
@@ -374,6 +390,14 @@ export const getResultFileRows = (fileType: 'responses' | 'reviews' | 'logs'): C
     .then(splitCSVFile);
 };
 
+export const selectResultGroup = (groupLabel: string): void => {
+  cy.contains('mat-row', groupLabel)
+    .within(() => {
+      cy.get('mat-checkbox')
+        .click();
+    });
+};
+
 export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
   const splitCsvID = str => str.split('\n')
     .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
@@ -383,7 +407,7 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
       .then(splitCsvID);
   }
   if (fileType === 'reviews') {
-    return cy.readFile(`${Cypress.config('downloadsFolder')}/iqb-testcenter-reviews.csv`)
+    return cy.readFile(`${Cypress.config('downloadsFolder')}/testcenter-reviews.csv`)
       .then(splitCsvID);
   }
   throw new Error(`Unknown filetype: ${fileType}`);
@@ -422,7 +446,7 @@ export const gotoPage = (pageIndex: number) => {
 export const readBlockTime = (): Chainable => cy.get('[data-cy="time-value"]')
   .invoke('text')
   .then(currTimeStr => {
-    const currBlockTimeStr = currTimeStr.replace(/0:/, '');
+    const currBlockTimeStr = currTimeStr.replace(/.*0:/, '');
     return +currBlockTimeStr;
   });
 

@@ -32,9 +32,9 @@ import { NewUserComponent } from './users/newuser/new-user.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
 import {
-  SuperadminPasswordRequestComponent
-} from './superadmin-password-request/superadmin-password-request.component';
-import { SharedModule } from '../shared/shared.module';
+  ConfirmWithPasswordComponent
+} from './confirm-with-password/confirm-with-password.component';
+import { AlertComponent, SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -43,7 +43,7 @@ import { SharedModule } from '../shared/shared.module';
     NewworkspaceComponent,
     EditworkspaceComponent,
     WorkspacesComponent,
-    SuperadminPasswordRequestComponent
+    ConfirmWithPasswordComponent
   ],
   imports: [
     CommonModule,
@@ -72,7 +72,8 @@ import { SharedModule } from '../shared/shared.module';
     MatDividerModule,
     SharedModule,
     MatProgressBarModule,
-    FormsModule
+    FormsModule,
+    AlertComponent
   ],
   exports: [
     SuperadminComponent

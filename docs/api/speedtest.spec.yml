@@ -30,8 +30,16 @@ paths:
               example: "aaaaaaaaaaaaaaa="
         "406":
           description: bad package size
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: server error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
 
   /speed-test/random-package:
     post:
@@ -60,3 +68,7 @@ paths:
                     example: 16
         "500":
           description: server error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'

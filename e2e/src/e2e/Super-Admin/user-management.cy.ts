@@ -5,13 +5,13 @@ import {
   loginWorkspaceAdmin,
   logoutAdmin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('Usermanagement (user-tab)', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(() => {
@@ -43,10 +43,14 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.get('[formcontrolname="pw"]')
       .type('invalidPassword');
-    cy.get('[data-cy="dialog-change-superadmin"] [type="submit"]')
+    cy.get('[data-cy="dialog-change-superadmin"]')
+      .contains('Superadmin-Status setzen');
+    cy.get('[data-cy="pw-submit"]')
       .click();
-    cy.get('[data-cy="main-alert:warning"] [data-cy="close"]')
-      .click();
+    cy.get('[data-cy="dialog-change-superadmin-error"]')
+      .contains('Falsches Kennwort.');
+    cy.get('[data-cy="dialog-change-superadmin"]')
+      .should('be.visible');
   });
 
   it('set admin rights for a workspaceadmin with correct password', () => {
@@ -137,10 +141,11 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.get('[data-cy="delete-user"]')
       .click();
-    cy.get('[data-cy="dialog-title"]')
+    cy.get('[data-cy="dialog-change-superadmin"]')
       .contains('Löschen von Administrator:innen');
-    cy.get('[data-cy="dialog-confirm"]')
-      .contains('Administrator:in löschen')
+    cy.get('[data-cy="dialog-change-superadmin-pw"]')
+      .type('user123');
+    cy.get('[data-cy="pw-submit"]')
       .click();
     cy.contains('workspace_admin')
       .should('not.exist');

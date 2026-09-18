@@ -4,13 +4,13 @@ import {
   loginTestTaker,
   probeBackendApi,
   reload,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check parameter: restore_current_page_on_return', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

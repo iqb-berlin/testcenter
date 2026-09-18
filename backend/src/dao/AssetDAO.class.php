@@ -54,9 +54,7 @@ class AssetDAO extends DAO {
    * @return array{id: int, previousStoredName: string|null}
    */
   public function replaceAssetByOriginalName(string $originalName, string $storedName): array {
-    $this->beginTransaction();
-
-    try {
+    return $this->transactional(function() use ($originalName, $storedName): array {
       $previousAsset = $this->getAssetByOriginalName($originalName, true);
 
       if ($previousAsset) {
@@ -72,16 +70,11 @@ class AssetDAO extends DAO {
         $assetId = $this->createAsset($originalName, $storedName);
       }
 
-      $this->commitTransaction();
-    } catch (Throwable $exception) {
-      $this->rollBack();
-      throw $exception;
-    }
-
-    return [
-      'id' => $assetId,
-      'previousStoredName' => $previousAsset['stored_name'] ?? null
-    ];
+      return [
+        'id' => $assetId,
+        'previousStoredName' => $previousAsset['stored_name'] ?? null
+      ];
+    });
   }
 
   public function deleteAsset(int $id): void {
@@ -171,7 +164,9 @@ class AssetDAO extends DAO {
 
     $sql = 'insert into asset_assignment (workspace_id, source, slot_name, asset_id, scope, scope_id) values '
       . implode(', ', $placeholders)
-      . ' on duplicate key update asset_id = values(asset_id), source = values(source)';
+      . ' on conflict (workspace_id, slot_name, scope, scope_id) do update set'
+      . '   asset_id = excluded.asset_id,'
+      . '   source = excluded.source';
 
     $this->_($sql, $params);
   }
@@ -208,11 +203,8 @@ class AssetDAO extends DAO {
    * @return array{deleted: int, added: int}
    */
   public function updateXmlAssignments(int $workspaceId, string $source, array $assignments): array {
-    $toUpsert = [];
-
-    $this->beginTransaction();
-
-    try {
+    return $this->transactional(function() use ($workspaceId, $source, $assignments): array {
+      $toUpsert = [];
       $deleted = $this->deleteXmlAssignments($workspaceId, $source);
       $assetIds = $this->getAssetIdsByOriginalNames(
         array_values(array_unique(array_column($assignments, 'assetName')))
@@ -236,16 +228,12 @@ class AssetDAO extends DAO {
       }
 
       $this->upsertAssignments($toUpsert);
-      $this->commitTransaction();
-    } catch (Throwable $exception) {
-      $this->rollBack();
-      throw $exception;
-    }
 
-    return [
-      'deleted' => $deleted,
-      'added' => count($toUpsert)
-    ];
+      return [
+        'deleted' => $deleted,
+        'added' => count($toUpsert)
+      ];
+    });
   }
 
   public function deleteXmlAssignments(int $workspaceId, string $source): int {

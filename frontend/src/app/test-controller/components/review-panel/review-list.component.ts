@@ -26,7 +26,7 @@ import { BackendService } from '../../services/backend.service';
         <mat-selection-list>
           @for (review of unitReviews$ | async; track review.id) {
             <mat-list-item (click)="editReview.emit(review)">
-              <span class="review-entry">{{ review.entry }}</span>
+              <span data-cy="comment-list-unit-comments" class="review-entry">{{ review.entry }}</span>
             </mat-list-item>
           }
         </mat-selection-list>
@@ -34,7 +34,7 @@ import { BackendService } from '../../services/backend.service';
         <mat-selection-list>
           @for (review of bookletReviews$ | async; track review.id) {
             <mat-list-item (click)="editReview.emit(review)">
-              <span class="review-entry">{{ review.entry }}</span>
+              <span data-cy="comment-list-booklet-comments" class="review-entry">{{ review.entry }}</span>
             </mat-list-item>
           }
         </mat-selection-list>

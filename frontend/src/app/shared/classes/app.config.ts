@@ -35,8 +35,6 @@ export class AppConfig {
   globalWarningText = '';
   globalWarningExpiredDay = '';
   globalWarningExpiredHour = '';
-  bugReportAuth: string = '';
-  bugReportTarget: string = '';
   bruteForceProtection: string[] = [];
   broadcastingServiceUri: string = '';
   fileServiceUri: string = '';
@@ -89,8 +87,6 @@ export class AppConfig {
     this.globalWarningText = '';
     this.globalWarningExpiredDay = '';
     this.globalWarningExpiredHour = '';
-    this.bugReportAuth = '';
-    this.bugReportTarget = '';
     this.themeName = this.defaultThemeName;
     if (appConfig) {
       if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
@@ -102,8 +98,6 @@ export class AppConfig {
       if (appConfig.globalWarningExpiredHour) {
         this.globalWarningExpiredHour = appConfig.globalWarningExpiredHour;
       }
-      if (appConfig.bugReportAuth) this.bugReportAuth = appConfig.bugReportAuth;
-      if (appConfig.bugReportTarget) this.bugReportTarget = appConfig.bugReportTarget;
       if (appConfig.themeName) this.themeName = appConfig.themeName;
     }
     this.trustedLegalNoticeHtml = this.sanitizer?.bypassSecurityTrustHtml(this.legalNoticeHtml) ?? '';
@@ -134,8 +128,6 @@ export class AppConfig {
       globalWarningText: this.globalWarningText,
       globalWarningExpiredDay: this.globalWarningExpiredDay,
       globalWarningExpiredHour: this.globalWarningExpiredHour,
-      bugReportAuth: this.bugReportAuth,
-      bugReportTarget: this.bugReportTarget,
       themeName: this.themeName
     };
   }

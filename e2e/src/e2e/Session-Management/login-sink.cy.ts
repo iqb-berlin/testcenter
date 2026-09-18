@@ -1,14 +1,14 @@
 import {
   oneStepLogin,
   probeBackendApi,
-  resetBackendData, twoStepLogin,
+  resetBackendTestData, twoStepLogin,
   visitLoginPage
 }
   from '../utils';
 
 describe('The login-sink', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

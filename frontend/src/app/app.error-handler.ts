@@ -22,10 +22,10 @@ export class AppErrorHandler implements ErrorHandler {
         return;
       }
 
-      // it's not possible to get the sourcemap'd stack trace, only to print it to console
-      if ('stack' in error) {
+      const stack = 'stack' in error ? error.stack : undefined;
+      if (stack) {
         // eslint-disable-next-line no-console
-        console.warn(error.stack);
+        console.warn(stack);
       }
 
       if (
@@ -40,7 +40,8 @@ export class AppErrorHandler implements ErrorHandler {
         this.mainDataService.appError = new AppError({
           type: 'network',
           label: 'Unbekannter Netzwerkfehler',
-          description: `Can not establish connection to \`${error.target.url}\``
+          description: `Can not establish connection to \`${error.target.url}\``,
+          details: stack
         });
         return;
       }
@@ -48,7 +49,8 @@ export class AppErrorHandler implements ErrorHandler {
       this.mainDataService.appError = new AppError({
         type: 'script',
         label: `Programmfehler: ${error.name}`,
-        description: error.message
+        description: error.message,
+        details: stack
       });
     });
   }

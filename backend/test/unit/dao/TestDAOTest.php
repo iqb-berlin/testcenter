@@ -281,6 +281,13 @@ class TestDAOTest extends TestCase {
     $expected = [];
     $result = $this->dbc->getCommands(1, 3);
     $this->assertEquals($expected, $result);
+
+    // command 1 was sent to test 1 and test 2, so the id alone matches two rows with different timestamps
+    $expected = [
+      new Command(3, 'COMMAND_D', 1597904000, 'param1', 'param2')
+    ];
+    $result = $this->dbc->getCommands(1, 1);
+    $this->assertEquals($expected, $result);
   }
 
   function test_getDataParts() {

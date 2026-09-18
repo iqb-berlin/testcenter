@@ -82,20 +82,57 @@ class TimeStamp {
       return 0;
     }
 
-    $timeZone = new DateTimeZone(SystemConfig::$system_timezone);
-
     // TODO remove this workaround. problem: date is stored in differently ways in table admintokens and others
     if (is_numeric($sqlFormatTimestamp) and ((int) $sqlFormatTimestamp > 1000000)) {
-      $dateTime = new DateTime("now", $timeZone);
-      $dateTime->setTimestamp((int) $sqlFormatTimestamp);
-      return $dateTime->getTimestamp();
+      return (int) $sqlFormatTimestamp;
     }
 
-    $dateTime = DateTime::createFromFormat("Y-m-d H:i:s", $sqlFormatTimestamp, $timeZone);
-    return $dateTime ? $dateTime->getTimestamp() : 0;
+    // PostgreSQL datatype timestampz omits fractional seconds when they are zero and emits up to six digits when they
+    // are not. Check for the existence of either with microseconds as primary and no-microseconds as fallback
+    $sqlTimestampFormats = [
+      "Y-m-d H:i:s.uP",
+      "Y-m-d H:i:sP"
+    ];
+
+    foreach ($sqlTimestampFormats as $sqlTimestampFormat) {
+      // The value carries its own offset, so no timezone has to be assumed here.
+      $dateTime = DateTime::createFromFormat($sqlTimestampFormat, $sqlFormatTimestamp);
+      if ($dateTime) {
+        break;
+      }
+    }
+
+    // An unreadable timestamp must not silently become 0: callers pass the result into
+    // TimeStamp::isExpired(), where 0 means "no limit set" - a login that can never expire.
+    if (!$dateTime) {
+      throw new Exception("Timestamp could not be read: `$sqlFormatTimestamp`");
+    }
+
+    return $dateTime->getTimestamp();
   }
 
+  /**
+   * Renders a timestamp for the database: UTC, with the offset spelled out.
+   *
+   * The offset makes the value independent of the session time zone of whoever reads it, so no
+   * setting on either side has to agree with another one for the instant to survive a round-trip.
+   */
   static public function toSQLFormat(int $timestamp): ?string {
+    if ($timestamp <= 0) {
+      return null;
+    }
+
+    $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+    $dateTime->setTimestamp($timestamp);
+    return $dateTime->format("Y-m-d H:i:sP");
+  }
+
+  /**
+   * Renders a timestamp for people to read, in the system's configured time zone.
+   *
+   * Only for output - anything written to or read from the database goes through toSQLFormat().
+   */
+  static public function toDisplayFormat(int $timestamp): ?string {
     if ($timestamp <= 0) {
       return null;
     }
@@ -104,6 +141,13 @@ class TimeStamp {
     $dateTime = new DateTime('now', $timeZone);
     $dateTime->setTimestamp($timestamp);
     return $dateTime->format("Y-m-d H:i:s");
+  }
+
+  /**
+   * Renders a timestamp as the database returned it for people to read.
+   */
+  static public function sqlToDisplayFormat(?string $sqlFormatTimestamp): ?string {
+    return self::toDisplayFormat(self::fromSQLFormat($sqlFormatTimestamp));
   }
 
   static public function fromXMLFormat(?string $xmlFormatTimestamp): int {

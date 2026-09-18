@@ -1,4 +1,5 @@
 {
+  "purpose": " * This Bill of Materials file is currently not used by any part of the application.\n * It only exists for reference and future automation.\n",
   "frontend": {
     "nginx": {
       "stage": "prod",
@@ -39,8 +40,8 @@
     }
   },
   "database": {
-    "mysql": {
-      "command": "mysql --version"
+    "postgresql": {
+      "command": "psql --version"
     }
   },
   "traefik": {

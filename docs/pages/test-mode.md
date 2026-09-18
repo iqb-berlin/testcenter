@@ -30,6 +30,6 @@ Für jede Anmeldung wird ein Modus festgelegt. Jeder Modus verfügt über spezif
 | Kann im Gruppen-Monitor beobachtet werden |   |  |  | ✅ | ✅ |  | ✅ |  |  |
 | Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses eingeblendet. |  ✅ | ✅ | ✅ |  |  | ✅ | ✅ |  |  |
 | Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet. |   |  |  |  |  | ✅ | ✅ |  |  |
-| Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet. |   |  |  |  |  | ✅ | ✅ |  |  |
+| Die Aufgaben-Übersicht wird angezeigt, auch wenn die Booklet-Konfiguration dies nicht vorsieht. |   |  |  |  |  | ✅ | ✅ |  |  |
 | Kann aus dem Gruppen-Monitor aus gesteuert werden |   |  |  | ✅ | ✅ |  |  |  |  |
 | In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab. |  ✅ | ✅ | ✅ |  |  | ✅ | ✅ |  |  |

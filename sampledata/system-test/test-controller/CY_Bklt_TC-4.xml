@@ -11,8 +11,7 @@
 		<Config key="force_presentation_complete">OFF</Config>
 		<Config key="force_response_complete">OFF</Config>
 		<Config key="unit_show_time_left">ON</Config>
-		<Config key="unit_menu">ON</Config>
-		<Config key="lock_test_on_termination">ON</Config>
+		<Config key="toolbar_show_unit_list">TRUE</Config>
 	</BookletConfig>
 
 	<Units>

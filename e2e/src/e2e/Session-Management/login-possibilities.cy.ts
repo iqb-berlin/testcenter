@@ -1,13 +1,13 @@
 import {
   twoStepLogin,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage, checkUserName
 } from '../utils';
 
 describe('Check Login Possibilities', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

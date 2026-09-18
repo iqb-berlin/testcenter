@@ -181,7 +181,7 @@ export class ReviewFormComponent {
       () => {
         this.snackBar.open('Kommentar gelöscht', '', {
           duration: 5000,
-          panelClass: ['snackbar-comment-saved']
+          panelClass: ['snackbar-comment-deleted']
         });
         this.newReview();
         this.delete.emit();

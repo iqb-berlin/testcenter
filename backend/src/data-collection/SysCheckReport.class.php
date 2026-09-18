@@ -18,7 +18,7 @@ class SysCheckReport extends DataCollection {
 
     public function __construct($initData) {
 
-        $this->date = TimeStamp::toSQLFormat(TimeStamp::now());
+        $this->date = TimeStamp::toDisplayFormat(TimeStamp::now());
 
         parent::__construct($initData);
     }

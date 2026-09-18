@@ -143,16 +143,8 @@ export class MainDataService {
     window.location.href = '/';
   }
 
-  resetAuthData(): void {
-    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
-    if (storageEntry) {
-      localStorage.removeItem(localStorageAuthDataKey);
-    }
-    this._authData$.next(this.getAuthData());
-  }
-
-  reloadPage(logOut: boolean = false): void {
-    if (logOut) {
+  reloadPage(resetAuthData: boolean = false): void {
+    if (resetAuthData) {
       this._authData$.next(null);
       localStorage.removeItem(localStorageAuthDataKey);
     }

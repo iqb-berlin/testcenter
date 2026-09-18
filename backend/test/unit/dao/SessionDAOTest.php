@@ -305,6 +305,15 @@ class SessionDAOTest extends TestCase {
     $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'wrong_code');
   }
 
+  // Codes must be accepted regardless of letter case, since test-takers type them in by hand.
+  function test_createOrUpdatePersonSession_codeCaseInsensitive() {
+    $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'EXISTING_CODE');
+
+    $this->assertEquals(6, $result->getPerson()->getId());
+    // the code is stored/returned as typed - only the comparison is case-insensitive
+    $this->assertEquals('EXISTING_CODE', $result->getPerson()->getCode());
+  }
+
   function test_createOrUpdatePersonSession_expiredLogin() {
     $testLoginSession = new LoginSession(
       1,
@@ -385,6 +394,28 @@ class SessionDAOTest extends TestCase {
     $this->assertEquals('existing_code/h5ki-bd-', $result1->getPerson()->getNameSuffix());
     $this->assertEquals(7, $result2->getPerson()->getId());
     $this->assertEquals('existing_code/va4dg-jc', $result2->getPerson()->getNameSuffix());
+    $this->assertEquals(7, $this->countTableRows('person_sessions'));
+  }
+
+  function test_createOrUpdatePersonSession_retriesPostgresSuffixCollision() {
+    // Arrange the exact collision seen in the system test. srand(1) makes the next generated suffix `h5ki-bd-`;
+    // placing that suffix in the database first forces PostgreSQL to report SQLSTATE 23505.
+    $this->dbc->_(
+      'insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+       values (:token, :code, :login_id, :valid_until, :suffix)',
+      [
+        ':token' => 'pre-existing-collision-token',
+        ':code' => 'existing_code',
+        ':login_id' => $this->testLoginSession->getId(),
+        ':valid_until' => '2030-01-01 12:00:00+00',
+        ':suffix' => 'existing_code/h5ki-bd-'
+      ]
+    );
+
+    $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
+
+    // The failed insert consumes an identity value in PostgreSQL, so assert the behavior rather than a brittle id.
+    $this->assertEquals('existing_code/va4dg-jc', $result->getPerson()->getNameSuffix());
     $this->assertEquals(7, $this->countTableRows('person_sessions'));
   }
 
@@ -519,7 +550,7 @@ class SessionDAOTest extends TestCase {
         \'{"xxx":["BOOKLET.SAMPLE-1"]}\',
         \'unit test\',
         null,
-        \'2030-01-02 10:00:00\',
+        \'2030-01-02 10:00:00+01:00\',
         null,
         \'new_id\', -- this can happen as result of a re-upload of a TT.xml with changed group-id
         \'Sample Group\'
@@ -608,6 +639,15 @@ class SessionDAOTest extends TestCase {
 
     $result = $this->dbc->personHasBooklet('person-of-future-login-token', 'BOOKLET.SAMPLE-1');
     $this->assertFalse($result);
+  }
+
+  // codes_to_booklets is keyed by the code as configured ("xxx"); a person who logged in with a
+  // differently-cased code ("XXX") must still resolve to the same booklet allow-list.
+  public function test_personHasBooklet_codeCaseInsensitive(): void {
+    $personSession = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'XXX');
+
+    $result = $this->dbc->personHasBooklet($personSession->getPerson()->getToken(), 'BOOKLET.SAMPLE-1');
+    $this->assertTrue($result);
   }
 
   public function test_ownsTest() {

@@ -22,7 +22,7 @@
     "ext-libxml": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "ext-pdo_mysql": "*",
+    "ext-pdo_pgsql": "*",
     "ext-redis": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",

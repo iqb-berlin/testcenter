@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use DI\Container;
 use Slim\Factory\AppFactory;
-use Slim\Http\Response;
-use Slim\Http\ServerRequest as Request;
 
 // local function to react correctly even if autoloader is broken
 function fatalErrorHandler(Throwable $e): void {
@@ -63,6 +61,7 @@ try {
   $app = AppFactory::create();
 
   $app->addRoutingMiddleware();
+  $app->add(new HandleCorsPreflight($app->getResponseFactory()));
   $errorMiddleware = $app->addErrorMiddleware(true, true, true);
   $errorHandler = new ErrorHandler();
   $errorMiddleware->setDefaultErrorHandler($errorHandler);
@@ -72,16 +71,7 @@ try {
     $app->setBasePath($projectPath);
   }
 
-  $app->options('/{routes:.+}', function(Request $request, Response $response): Response {
-    return $response;
-  });
-
   include_once 'routes.php';
-
-  $app->any('/{path:.*}', function (Request $request, Response $response): Response {
-    return $response
-      ->withStatus(404);
-  });
 
   $app->run();
 

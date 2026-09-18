@@ -19,7 +19,7 @@ paths:
           required: true
         - in: header
           name: Accept
-          description: "Expected response Mimetype: 'text/csv' or 'application/json'"
+          description: "Expected response Mimetype: 'text/csv' (the default) or 'application/json'"
           example: "text/csv"
       responses:
         "200":
@@ -54,7 +54,10 @@ paths:
                       type: string
                     reviewtime:
                       type: string
-                      format: date-time
+                      description: >-
+                        Review time in the system timezone, formatted `YYYY-MM-DD HH:MM:SS`.
+                        Not RFC 3339: the value carries neither a `T` separator nor an offset.
+                      example: "2021-07-29 10:00:00"
                     page:
                       type: string
                       nullable: true
@@ -109,9 +112,25 @@ paths:
                   bookletlabel: "Sample booklet"
         "401":
           description: Not authenticated
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "403":
           description: Forbidden
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "410":
           description: Session Expired
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'
         "500":
           description: Server Error
+          content:
+            text/html:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/error'

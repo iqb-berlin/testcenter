@@ -82,13 +82,14 @@ build-doc:
     paths:
       - docs/index.md
       - docs/CHANGELOG.md
-      - docs/pages/booklet.md
       - docs/pages/booklet-config.md
-      - docs/pages/adaptive-config.md
       - docs/pages/test-mode.md
       - docs/pages/test-session-super-states.html
       - docs/pages/custom-texts.md
-      - docs/pages/testtaker.md
+      - docs/pages/logging.md
+      - docs/pages/developer-guide.md
+      - docs/pages/installation-dev.md
+      - docs/pages/installation-prod.md
       - docs/dist/api/index.html
       - docs/dist/api/specs.yml
     expire_in: 30 minutes

@@ -119,8 +119,6 @@ export class SettingsComponent implements OnInit {
       globalWarningText: this.formBuilder.control(''),
       globalWarningExpiredDay: this.formBuilder.control(''),
       globalWarningExpiredHour: this.formBuilder.control(''),
-      bugReportAuth: this.formBuilder.control(''),
-      bugReportTarget: this.formBuilder.control(''),
       themeName: this.formBuilder.control('')
     });
   }
@@ -135,8 +133,6 @@ export class SettingsComponent implements OnInit {
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
-      bugReportAuth: appConfig.bugReportAuth,
-      bugReportTarget: appConfig.bugReportTarget,
       themeName: appConfig.themeName
     }, { emitEvent: false });
     this.warningIsExpired = AppConfig.isWarningExpired(
@@ -163,8 +159,6 @@ export class SettingsComponent implements OnInit {
       globalWarningText: this.configForm.get('globalWarningText')?.value,
       globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
-      bugReportTarget: this.configForm.get('bugReportTarget')?.value,
-      bugReportAuth: this.configForm.get('bugReportAuth')?.value,
       themeName: this.configForm.get('themeName')?.value
     };
     this.backendService.setAppConfig(appConfig)
@@ -192,8 +186,6 @@ export class SettingsComponent implements OnInit {
       globalWarningText: appConfig.globalWarningText,
       globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
       globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
-      bugReportAuth: appConfig.bugReportAuth,
-      bugReportTarget: appConfig.bugReportTarget,
       themeName: appConfig.themeName
     });
   }

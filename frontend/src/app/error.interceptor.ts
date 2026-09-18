@@ -127,6 +127,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         statusMessage = 'Anmeldung abgelaufen oder noch nicht gültig. Bitte erneut anmelden!';
         errorType = 'session';
         break;
+      case 409:
+        statusMessage = 'Konflikt mit vorhandenen Daten.';
+        break;
       case 423:
         statusMessage = 'Test ist gesperrt!';
         break;

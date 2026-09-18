@@ -37,8 +37,6 @@ class DAO {
   public function __construct() {
     $this->pdoDBhandle = DB::getConnection();
 
-    $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $this->passwordSalt = SystemConfig::$password_salt;
     $this->insecurePasswords = SystemConfig::$debug_useInsecurePasswords;
   }
@@ -90,7 +88,7 @@ class DAO {
 
   public function getDBSchemaVersion(): string {
     try {
-      $result = $this->_("select `value` from meta where metaKey = 'dbSchemaVersion'");
+      $result = $this->_("SELECT value FROM meta WHERE \"metaKey\" = 'dbSchemaVersion'");
       return $result['value'] ?? '0.0.0-no-entry';
 
     } catch (Exception) {
@@ -112,11 +110,11 @@ class DAO {
   }
 
   public function setMeta(string $category, string $key, ?string $value): void {
-    $currentValue = $this->_("select `value` from meta where metaKey = :key", [':key' => $key]);
+    $currentValue = $this->_('select value from meta where "metaKey" = :key', [':key' => $key]);
 
     if (!$currentValue) {
       $this->_(
-        "insert into meta (category, metaKey, value) values (:category, :key, :value)",
+        'insert into meta (category, "metaKey", value) values (:category, :key, :value)',
         [
           ':key' => $key,
           ':category' => $category,
@@ -125,7 +123,7 @@ class DAO {
       );
     } else {
       $this->_(
-        "update meta set value=:value, category=:category where metaKey = :key",
+        'update meta set value=:value, category=:category where "metaKey" = :key',
         [
           ':key' => $key,
           ':category' => $category,
@@ -147,6 +145,33 @@ class DAO {
     }
 
     return $testState;
+  }
+
+  /**
+   * Runs $work in a transaction, joining one that is already open instead of opening a second - PDO has no nested
+   * transactions. Only the outermost caller commits, and a failure anywhere rolls back everything it covers.
+   */
+  public function transactional(callable $work): mixed {
+    $ownTransaction = !$this->pdoDBhandle->inTransaction();
+
+    if ($ownTransaction) {
+      $this->beginTransaction();
+    }
+
+    try {
+      $result = $work();
+    } catch (Throwable $exception) {
+      if ($ownTransaction) {
+        $this->rollBack();
+      }
+      throw $exception;
+    }
+
+    if ($ownTransaction) {
+      $this->commitTransaction();
+    }
+
+    return $result;
   }
 
   public function beginTransaction(): void {

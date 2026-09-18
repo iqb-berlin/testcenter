@@ -67,8 +67,9 @@ class MonitorController extends Controller {
     ]);
 
     $command = new Command(-1, $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
+    $testIds = array_values(array_unique(array_map('intval', $body['testIds'])));
 
-    foreach (array_unique($body['testIds']) as $testId) {
+    foreach ($testIds as $testId) {
       if (!self::adminDAO()->getTest($testId)) {
         throw new HttpNotFoundException(
           $request, "Test `$testId` not found. `{$command->getKeyword()}` not committed."
@@ -76,14 +77,13 @@ class MonitorController extends Controller {
       }
     }
 
-    foreach ($body['testIds'] as $testId) {
-      $commandId = self::adminDAO()->storeCommand($personId, (int) $testId, $command);
-      $command->setId($commandId);
+    if ($testIds) {
+      $command->setId(self::adminDAO()->storeCommand($personId, $testIds, $command));
     }
 
     BroadcastService::send('command', json_encode([
       'command' => $command,
-      'testIds' => $body['testIds']
+      'testIds' => $testIds
     ]));
 
     return $response->withStatus(201);

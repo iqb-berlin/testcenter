@@ -20,8 +20,16 @@ class WorkspaceInitializer {
       "sampledata/coding-scheme.vocs.json" => "Resource/coding-scheme.vocs.json",
     ],
     "system-test" => [
-      "sampledata/system-test/test-controller/CY_Bklt_TC-1.xml" => "Booklet/CY_Bklt_TC-1.xml",
-      "sampledata/system-test/test-controller/CY_Bklt_TC-2.xml" => "Booklet/CY_Bklt_TC-2.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1a.xml" => "Booklet/CY_Bklt_TC-1a.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1b.xml" => "Booklet/CY_Bklt_TC-1b.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1c.xml" => "Booklet/CY_Bklt_TC-1c.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1d.xml" => "Booklet/CY_Bklt_TC-1d.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1e.xml" => "Booklet/CY_Bklt_TC-1e.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-1f.xml" => "Booklet/CY_Bklt_TC-1f.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-2a.xml" => "Booklet/CY_Bklt_TC-2a.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-2b.xml" => "Booklet/CY_Bklt_TC-2b.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-2c.xml" => "Booklet/CY_Bklt_TC-2c.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-2d.xml" => "Booklet/CY_Bklt_TC-2d.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-3.xml" => "Booklet/CY_Bklt_TC-3.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-4.xml" => "Booklet/CY_Bklt_TC-4.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-5.xml" => "Booklet/CY_Bklt_TC-5.xml",
@@ -30,13 +38,15 @@ class WorkspaceInitializer {
       "sampledata/system-test/test-controller/CY_Bklt_TC-8.xml" => "Booklet/CY_Bklt_TC-8.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-9.xml" => "Booklet/CY_Bklt_TC-9.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-10.xml" => "Booklet/CY_Bklt_TC-10.xml",
-      "sampledata/system-test/test-controller/CY_Bklt_TC-11.xml" => "Booklet/CY_Bklt_TC-11.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-11a.xml" => "Booklet/CY_Bklt_TC-11a.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-11b.xml" => "Booklet/CY_Bklt_TC-11b.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-12.xml" => "Booklet/CY_Bklt_TC-12.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-13.xml" => "Booklet/CY_Bklt_TC-13.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-14.xml" => "Booklet/CY_Bklt_TC-14.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-15.xml" => "Booklet/CY_Bklt_TC-15.xml",
       "sampledata/system-test/test-controller/CY_Bklt_TC-16.xml" => "Booklet/CY_Bklt_TC-16.xml",
-      "sampledata/system-test/test-controller/CY_Bklt_TC-17.xml" => "Booklet/CY_Bklt_TC-17.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-17a.xml" => "Booklet/CY_Bklt_TC-17a.xml",
+      "sampledata/system-test/test-controller/CY_Bklt_TC-17b.xml" => "Booklet/CY_Bklt_TC-17b.xml",
       "sampledata/system-test/session-management/CY_Bklt_SM-1.xml" => "Booklet/CY_Bklt_SM-1.xml",
       "sampledata/system-test/session-management/CY_Bklt_SM-2.xml" => "Booklet/CY_Bklt_SM-2.xml",
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_1.xml" => "Booklet/CY_Bklt_BkltConfig_1.xml",
@@ -92,12 +102,14 @@ class WorkspaceInitializer {
       "sampledata/system-test/booklet-config/CY_Bklt_BkltConfig_51.xml" => "Booklet/CY_Bklt_BkltConfig_51.xml",
       "sampledata/system-test/groupmon/CY_Bklt_GM-1.xml" => "Booklet/CY_Bklt_GM-1.xml",
       "sampledata/system-test/load-player/stars/CY_Bklt_Stars.xml" => "Booklet/CY_Bklt_Stars.xml",
+      "sampledata/system-test/load-player/speed/CY_Bklt_Speed.xml" => "Booklet/CY_Bklt_Speed.xml",
       "sampledata/system-test/adaptive/CY_Bklt_Adap-1.xml" => "Booklet/CY_Bklt_Adap-1.xml",
       "sampledata/system-test/session-management/CY_Logins_SM.xml" => "Testtakers/CY_Logins_SM.xml",
       "sampledata/system-test/test-controller/CY_Logins_TestController.xml" => "Testtakers/CY_Logins_TestController.xml",
       "sampledata/system-test/booklet-config/CY_Logins_BkltConfig.xml" => "Testtakers/CY_Logins_BkltConfig.xml",
       "sampledata/system-test/groupmon/CY_Logins_GM.xml" => "Testtakers/CY_Logins_GM.xml",
       "sampledata/system-test/load-player/stars/CY_Logins_Stars.xml" => "Testtakers/CY_Logins_Stars.xml",
+      "sampledata/system-test/load-player/speed/CY_Logins_Speed.xml" => "Testtakers/CY_Logins_Speed.xml",
       "sampledata/system-test/adaptive/CY_Logins_Adap.xml" => "Testtakers/CY_Logins_Adap.xml",
       "sampledata/system-test/CY_SysCheck_2.xml" => "SysCheck/CY_SysCheck_2.xml",
       "sampledata/system-test/units/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
@@ -106,9 +118,14 @@ class WorkspaceInitializer {
       "sampledata/system-test/units/CY_Unit103.xml" => "Unit/CY_SAMPLE_UNIT103.XML",
       "sampledata/system-test/units/CY_Unit104.xml" => "Unit/CY_SAMPLE_UNIT104.XML",
       "sampledata/system-test/load-player/stars/CY-StarsUnit-001.xml" => "Unit/CY-StarsUnit-001.XML",
+      "sampledata/system-test/load-player/speed/CY-SpeedUnit-001.xml" => "Unit/CY-SpeedUnit-001.XML",
+      "sampledata/system-test/load-player/speed/CY-SpeedUnit-002.xml" => "Unit/CY-SpeedUnit-002.XML",
       "sampledata/system-test/load-player/stars/CY-StarsUnit-001.vomd" => "Resource/CY-StarsUnit-001.vomd",
       "sampledata/system-test/load-player/stars/CY-StarsUnit-001.voud" => "Resource/CY-StarsUnit-001.voud",
+      "sampledata/system-test/load-player/speed/CY-SpeedUnit-001.voud" => "Resource/CY-SpeedUnit-001.voud",
+      "sampledata/system-test/load-player/speed/CY-SpeedUnit-002.voud" => "Resource/CY-SpeedUnit-002.voud",
       "sampledata/system-test/load-player/stars/iqb-player-stars-0.6.40.html" => "Resource/iqb-player-stars-0.6.40.html",
+      "sampledata/system-test/load-player/speed/iqb-player-speedtest-9.9.99-cypress.html" => "Resource/iqb-player-speedtest-9.9.99-cypress.html",
     ]
   ];
 
@@ -117,6 +134,11 @@ class WorkspaceInitializer {
 
     if (!file_exists($importFileName)) {
       throw new Exception("File not found: `$importFileName`");
+    }
+
+    if (Storage::isObjectStore()) {
+      Storage::driver()->put("ws_$workspaceId/$target", $importFileName);
+      return;
     }
 
     $dir = pathinfo($target, PATHINFO_DIRNAME);
@@ -135,15 +157,29 @@ class WorkspaceInitializer {
   }
 
   public function cleanWorkspace(int $workspaceId): void {
+    if (Storage::isObjectStore()) {
+      foreach (Storage::driver()->list("ws_$workspaceId/") as $key) {
+        Storage::driver()->delete($key);
+      }
+      return;
+    }
+
     Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
     rmdir(DATA_DIR . "/ws_$workspaceId/");
   }
 
   public function createSampleScanImage(string $fileName, int $workspaceId): void {
     $png = '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082';
+    $binary = hex2bin($png);
+
+    if (Storage::isObjectStore()) {
+      Storage::driver()->putContents("ws_$workspaceId/$fileName", $binary);
+      return;
+    }
+
     file_put_contents(
       Folder::createPath(DATA_DIR . "/ws_$workspaceId") . $fileName,
-      hex2bin($png)
+      $binary
     );
   }
 }

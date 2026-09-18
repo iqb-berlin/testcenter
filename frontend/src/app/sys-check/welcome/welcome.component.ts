@@ -55,6 +55,7 @@ export class WelcomeComponent implements OnInit {
   }
 
   private getFromUAParser() {
+    // These labels also identify report entries; keep the backend digest lookups in sync. (getDigest())
     const uaInfos = new UAParser().getResult();
     [
       ['cpu', 'architecture', 'CPU-Architektur'],
@@ -62,9 +63,9 @@ export class WelcomeComponent implements OnInit {
       ['device', 'type', 'Gerätetyp'],
       ['device', 'vendor', 'Gerätehersteller'],
       ['browser', 'name', 'Browser'],
-      ['browser', 'major', 'Browser-Version'],
-      ['os', 'name', 'Betriebsystem'],
-      ['os', 'version', 'Betriebsystem-Version']
+      ['browser', 'major', 'Browserversion'],
+      ['os', 'name', 'Betriebssystem'],
+      ['os', 'version', 'Betriebssystemversion']
     ].forEach((item: string[]) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -86,7 +87,7 @@ export class WelcomeComponent implements OnInit {
     [
       ['hardwareConcurrency', 'CPU-Kerne'],
       ['cookieEnabled', 'Browser-Cookies aktiviert'],
-      ['language', 'Browser-Sprache']
+      ['language', 'Browsersprache']
     ].forEach((item: string[]) => {
       if (typeof navigator[item[0] as keyof Navigator] !== 'undefined') {
         this.report.set(item[1], {
@@ -120,19 +121,19 @@ export class WelcomeComponent implements OnInit {
   private getScreenData() {
     const isLargeEnough = (window.screen.width >= this.rating.screen.width) &&
       (window.screen.height >= this.rating.screen.height);
-    this.report.set('Bildschirm-Auflösung', {
+    this.report.set('Bildschirmauflösung', {
       id: 'screen-resolution',
       type: 'environment',
-      label: 'Bildschirm-Auflösung',
+      label: 'Bildschirmauflösung',
       value: `${window.screen.width} x ${window.screen.height}`,
       warning: !isLargeEnough
     });
     const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth;
     const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.offsetHeight;
-    this.report.set('Fenster-Größe', {
+    this.report.set('Fenstergröße', {
       id: 'screen-size',
       type: 'environment',
-      label: 'Fenster-Größe',
+      label: 'Fenstergröße',
       value: `${windowWidth} x ${windowHeight}`,
       warning: false
     });

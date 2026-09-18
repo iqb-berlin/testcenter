@@ -6,5 +6,5 @@ spec:
   selector:
     app: {{ .Release.Name }}-db-pod
   ports:
-    - port: 3306
-      targetPort: mysql-container
+    - port: 5432
+      targetPort: postgres

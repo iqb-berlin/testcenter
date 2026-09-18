@@ -14,10 +14,10 @@ export class BackendService {
   ) {
   }
 
-  changePassword(userId: number, password: string): Observable<void> {
+  changePassword(userId: number, password: string, oldPassword?: string): Observable<void> {
     return this.http.patch<void>(
       `${this.serverUrl}user/${userId}/password`,
-      { p: password }
+      oldPassword === undefined ? { p: password } : { p: password, oldPassword }
     );
   }
 

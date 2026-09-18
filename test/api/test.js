@@ -84,6 +84,9 @@ const prepareSpecsForDredd = done => {
    *   The first contains everything and the first example each if multiple are given,
    *   the subsequent ones only the paths with left out examples
    * * Dredd supports only in-file-references
+   * * The documented body of an error response (4xx/5xx) is dropped. Dredd would take the example from the spec
+   *   as the expected body and compare it literally, which no varying error message can match. Keeping the
+   *   responses free of content also keeps the transaction names free of a media type, which the hooks rely on.
    * * For more quirks of Dredd see:
    *   @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
    * * Some cases are not tested:
@@ -125,6 +128,7 @@ const prepareSpecsForDredd = done => {
     'text/xml > example$': null,
     'application/octet-stream > example$': null,
     '^paths > .*? > .*? > responses > (500|202|429)$': null,
+    '^paths > .*? > .*? > responses > [45]\\d\\d > content$': null,
     'schema > \\$ref$': resolveReference,
     'items > \\$ref$': resolveReference,
     deprecated: null,

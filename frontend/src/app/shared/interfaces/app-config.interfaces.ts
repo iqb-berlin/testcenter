@@ -8,8 +8,6 @@ export interface AppSettingsObject {
   globalWarningText: string,
   globalWarningExpiredDay: string,
   globalWarningExpiredHour: string,
-  bugReportTarget: string,
-  bugReportAuth: string
   themeName: string;
 }
 

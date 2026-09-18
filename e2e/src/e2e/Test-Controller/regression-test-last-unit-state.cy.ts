@@ -4,13 +4,13 @@ import {
   getFromIframe, twoStepLogin,
   modifyPlayer,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage, clickCardButton
 } from '../utils';
 
 describe('Test Controller', { testIsolation: true }, () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 

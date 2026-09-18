@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<EOF
-CREATE DATABASE IF NOT EXISTS TEST_${MYSQL_DATABASE};
-GRANT ALL PRIVILEGES ON TEST_${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
-EOF
+readonly test_database="TEST_${POSTGRES_DB}"
 
-echo "Test DB created."
+# psql's :"variable" expansion quotes the value as an SQL identifier, preserving the uppercase
+# TEST_ prefix expected by DB::connectToTestDB(), without it everything would be folded to lowercase
+psql \
+  --username "${POSTGRES_USER}" \
+  --dbname "${POSTGRES_DB}" \
+  --set ON_ERROR_STOP=1 \
+  --set test_database="${test_database}" <<-'SQL'
+CREATE DATABASE :"test_database";
+SQL
+
+echo "Test DB \"${test_database}\" created."

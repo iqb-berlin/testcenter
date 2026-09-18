@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot
 } from '@angular/router';
-import { Observable, of } from 'rxjs';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 
@@ -29,6 +28,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return false;
     }
 
-    return this.tcs.canDeactivateUnit(nextState.url);
+    return this.tcs.getUnitDeactivationCheck(nextState.url);
   }
 }

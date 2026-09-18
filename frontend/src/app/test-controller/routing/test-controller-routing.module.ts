@@ -18,10 +18,15 @@ const routes: Routes = [
     component: TestControllerComponent,
     canDeactivate: [TestControllerDeactivateGuard],
     children: [
-      {
+      { // no unit resolved yet (fresh navigation from '/t/<testId>', or a reload-recovery bounce
+        // from UnitActivateGuard) - deliberately componentless (`children: []` is only there to
+        // satisfy Angular's route-config validation) so nothing mounts into the outlet here.
+        // TestControllerComponent shows the shared loading animation itself while state$ is
+        // 'LOADING'; once TestLoaderService resolves where to resume, it navigates to 'status' or
+        // 'u/:u' below.
         path: '',
-        redirectTo: 'status',
-        pathMatch: 'full'
+        pathMatch: 'full',
+        children: []
       },
       {
         path: 'status',

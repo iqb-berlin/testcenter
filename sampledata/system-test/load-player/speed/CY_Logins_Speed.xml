@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
+
+  <Metadata></Metadata>
+<Group id="group-1" label="Group 1">
+  <Login mode="run-hot-restart" name="speed-1" pw="123">
+      <Booklet>Cy-Bklt_Speed-1</Booklet>
+  </Login>
+
+  </Group>
+</Testtakers>

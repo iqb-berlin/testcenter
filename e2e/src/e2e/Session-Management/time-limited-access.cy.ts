@@ -3,14 +3,14 @@ import {
   loginTestTaker,
   logoutFromRunningTestWithConfirmation,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   useTestDBSetDate,
   visitLoginPage
 } from '../utils';
 
 describe('Check "valid from" restrictions', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(visitLoginPage);
@@ -44,7 +44,7 @@ describe('Check "valid from" restrictions', () => {
 
 describe('check "valid to" restrictions', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(visitLoginPage);
@@ -78,7 +78,7 @@ describe('check "valid to" restrictions', () => {
 
 describe('check "valid for" restrictions', () => {
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
   beforeEach(visitLoginPage);

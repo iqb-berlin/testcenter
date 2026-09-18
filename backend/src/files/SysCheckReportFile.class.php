@@ -46,7 +46,7 @@ class SysCheckReportFile {
         $this->fileName = basename($reportFilePath);
 
         $this->addEntry('fileData', 'date', 'DatumTS', (string) FileTime::modification($reportFilePath));
-        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toSQLFormat(FileTime::modification($reportFilePath)));
+        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toDisplayFormat(FileTime::modification($reportFilePath)));
         $this->addEntry('fileData', 'filename', 'FileName', basename($reportFilePath));
     }
 
@@ -107,14 +107,13 @@ class SysCheckReportFile {
     }
 
 
-    // TODO unit Test
     function getDigest(): array {
 
         return [
-            'os' =>  $this->getValueIfExists('environment', 'Betriebsystem') . ' '
-                . $this->getValueIfExists('environment', 'Betriebsystem-Version'),
+            'os' =>  $this->getValueIfExists('environment', 'Betriebssystem') . ' '
+                . $this->getValueIfExists('environment', 'Betriebssystemversion'),
             'browser' => $this->getValueIfExists('environment', 'Browser') . ' '
-                . $this->getValueIfExists('environment', 'Browser-Version'),
+                . $this->getValueIfExists('environment', 'Browserversion'),
         ];
     }
 

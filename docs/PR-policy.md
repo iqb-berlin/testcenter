@@ -7,16 +7,7 @@ This document collects bespoke workflows and checklists that are required before
 - When creating a new table in `scripts/patches.d`, add it to the tables array in `backend/src/dao/DAO.class.php`. Keep referenced tables before tables that use them as foreign keys.
 - When creating a SQL patch in `scripts/patches.d`, update `backend/test/unit/testdata.sql` with any fields that have seed-worthy data. It contains `INSERT` statements only, not table definitions.
 
-## Changelog
+## API changes
 
-Before opening a PR, add an entry to `CHANGELOG.md`.
+- When you change a property of an object a DAO returns, trace whether a controller passes that property on to the client. If it does, update the corresponding API specification in `docs/api`.
 
-## Static code analysis
-
-- for backend tooling, run `make test-backend-static-analysis args=` for the different tools at disposal (format, lint, analyze)
-- for frontend, run `npm run lint`
-- these static code checks will be enabled and blocking in the CI Pipeline at a later point
-
-## Tests
-
-- have sufficient tests to secure the committed changes (e2e tests, unit tests, api tests)

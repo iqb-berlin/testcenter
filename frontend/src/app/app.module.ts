@@ -23,7 +23,6 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { ErrorComponent } from '@shared/components/error/error.component';
 import { CustomtextPipe, SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -72,7 +71,7 @@ import { ToastContainerComponent } from './shared/components/toast/toast-contain
     AppRoutingModule,
     SharedModule,
     CdkAccordionModule,
-    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent, ErrorComponent, CustomtextPipe,
+    MatExpansionModule, HeaderComponent, FooterComponent, TestCardComponent, CustomtextPipe,
     ToastContainerComponent],
   providers: [
     BackendService,

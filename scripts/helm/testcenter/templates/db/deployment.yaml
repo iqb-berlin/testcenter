@@ -4,6 +4,9 @@ metadata:
   name: {{ .Release.Name }}-db
 spec:
   replicas: 1
+  # A second pod cannot safely share the ReadWriteOnce database volume during a rolling update.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Release.Name }}-db-pod
@@ -20,14 +23,15 @@ spec:
       {{- end }}
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 2000
-        fsGroup: 3000
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: {{ .Release.Name }}-db-container
-          image: "{{ .Values.image.db.registryPath }}mysql:{{ .Values.image.db.tag }}"
+          image: "{{ .Values.image.db.registryPath }}postgres:{{ .Values.image.db.tag }}"
           imagePullPolicy: {{ .Values.image.db.imagePullPolicy }}
           securityContext:
             privileged: false
@@ -40,47 +44,31 @@ spec:
             {{- .Values.deployment.db.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
-            - name: MYSQL_ROOT_PASSWORD
+            - name: POSTGRES_DB
+              value: {{ .Values.config.db.database | quote }}
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-secret
-                  key: MYSQL_ROOT_PASSWORD
-            - name: MYSQL_USER
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-secret
-                  key: MYSQL_USER
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-db-secret
-                  key: MYSQL_PASSWORD
-            - name: MYSQL_DATABASE
-              value: "iqb_tba_testcenter"
-            - name: MYSQL_INITDB_SKIP_TZINFO
-              value: "true"
-          args: [
-            "--explicit-defaults-for-timestamp=TRUE",
-            "--sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
-            "--tls-version=TLSv1.2,TLSv1.3",
-            "--max-connections=500",
-            "--log_error_verbosity=1"
-          ]
+                  key: DB_PASSWORD
+          args: [ "postgres", "-c", "max_connections=500" ]
           ports:
-            - name: mysql-container
-              containerPort: 3306
+            - name: postgres
+              containerPort: 5432
           volumeMounts:
             - name: db-volume
-              mountPath: /var/lib/mysql
+              mountPath: /var/lib/postgresql
           livenessProbe:
             exec:
               command:
-                - mysqladmin
-                - ping
-                - --user=${MYSQL_USER}
-                - -h
-                - 127.0.0.1
-                - --silent
+                - sh
+                - -ec
+                - 'pg_isready --host=127.0.0.1 --username="$POSTGRES_USER" --dbname="$POSTGRES_DB"'
             initialDelaySeconds: {{ .Values.deployment.db.probes.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.deployment.db.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.db.probes.liveness.timeoutSeconds }}
@@ -89,16 +77,23 @@ spec:
           readinessProbe:
             exec:
               command:
-                - mysqladmin
-                - ping
-                - --user=${MYSQL_USER}
-                - -h
-                - 127.0.0.1
-                - --silent
+                - sh
+                - -ec
+                - 'pg_isready --host=127.0.0.1 --username="$POSTGRES_USER" --dbname="$POSTGRES_DB"'
             periodSeconds: {{ .Values.deployment.db.probes.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.deployment.db.probes.readiness.timeoutSeconds }}
             successThreshold: {{ .Values.deployment.db.probes.readiness.successThreshold }}
             failureThreshold: {{ .Values.deployment.db.probes.readiness.failureThreshold }}
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'pg_isready --host=127.0.0.1 --username="$POSTGRES_USER" --dbname="$POSTGRES_DB"'
+            periodSeconds: {{ .Values.deployment.db.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.db.probes.startup.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.db.probes.startup.successThreshold }}
+            failureThreshold: {{ .Values.deployment.db.probes.startup.failureThreshold }}
       volumes:
         - name: db-volume
           persistentVolumeClaim:

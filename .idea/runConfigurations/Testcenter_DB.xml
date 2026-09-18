@@ -2,26 +2,33 @@
   <configuration default="false" name="Testcenter-DB" type="docker-deploy" factoryName="docker-image" server-name="Docker">
     <deployment type="docker-image">
       <settings>
-        <option name="imageTag" value="mysql:8.0" />
-        <option name="command" value="--explicit-defaults-for-timestamp=TRUE --sql-mode=PIPES_AS_CONCAT,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION --tls-version=TLSv1.2,TLSv1.3 --max-connections=500 --log_error_verbosity=2" />
+        <option name="imageTag" value="postgres:18.4" />
+        <option name="command" value="postgres -c max_connections=500" />
         <option name="containerName" value="testcenter-db" />
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
-              <option name="name" value="MYSQL_INITDB_SKIP_TZINFO" />
-              <option name="value" value="'true'" />
+              <option name="name" value="POSTGRES_DB" />
+              <option name="value" value="iqb_tba_testcenter" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="POSTGRES_USER" />
+              <option name="value" value="iqb_tba_db_user" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="POSTGRES_PASSWORD" />
+              <option name="value" value="iqb_tba_db_password" />
             </DockerEnvVarImpl>
           </list>
         </option>
         <option name="portBindings">
           <list>
             <DockerPortBindingImpl>
-              <option name="containerPort" value="3306" />
-              <option name="hostPort" value="3306" />
+              <option name="containerPort" value="5432" />
+              <option name="hostPort" value="9092" />
             </DockerPortBindingImpl>
           </list>
         </option>
-        <option name="commandLineOptions" value="--env-file $PROJECT_DIR$/docker/.env.dev" />
         <option name="showCommandPreview" value="true" />
         <option name="volumeBindings">
           <list>
@@ -30,8 +37,8 @@
               <option name="hostPath" value="$PROJECT_DIR$/scripts/database/000-create-test-db.sh" />
             </DockerVolumeBindingImpl>
             <DockerVolumeBindingImpl>
-              <option name="containerPath" value="/var/lib/mysql" />
-              <option name="hostPath" value="testcenter_dbdata" />
+              <option name="containerPath" value="/var/lib/postgresql" />
+              <option name="hostPath" value="testcenter_postgresdata" />
             </DockerVolumeBindingImpl>
           </list>
         </option>

@@ -20,7 +20,7 @@ Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
 
 ## `loading_mode`
 Ladeverhalten beim Start
- * **"LAZY" - Start des Tests sobald wie möglich. Im Hintergrund werden die weiteren Blöcke (Testlets) geladen. Wenn sich Units außerhalb von Blöcken befinden gilt das ganze Booklet als Block und wird komplett geladen. Es müssen also Testlet-Elemente verwendet werden, damit lazy loading funktioniert.**
+ * **"LAZY" - Start des Tests sobald wie möglich. Im Hintergrund werden die weiteren Blöcke (Testlets) geladen. 2 Voraussetzungen für die erfolgreiche Funktionalität: 1) Die zu lazy ladende Unit muss sich innerhalb eines Blocks (<Testlet>) befinden und darf nicht freistehend sein. In den meisten Szenarien bedeutet das, dass die erste Unit innerhalb eines Blocks positioniert sein muss. 2) Lazy Loading funktioniert nur beim ersten mal, an dem ein Booklet gestartet wird. Wird ein Booklet fortgesetzt oder per Seiten-Reload erneut geladen, greift Lazy Loading nicht.**
  * "EAGER" - Testheft erst dann starten, wenn alle Inhalte geladen sind
 
 ## `logPolicy`
@@ -98,15 +98,15 @@ Soll beim starten des Booklets eine Aufforderung erscheinen ins Vollbild zu gehe
  * **"OFF" - Nein.**
 
 ## `unit_responses_buffer_time`
-Speicherfrequenz für Antworten in Ms.
+Speicherfrequenz für Antworten in ms.
  * **5000**
 
 ## `unit_state_buffer_time`
-Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in Ms.
+Speicherfrequenz für Unit-Zustände (zB responseProgress etc.) in ms.
  * **6000**
 
 ## `test_state_buffer_time`
-Speicherfrequenz für Test-Zustände in Ms.
+Speicherfrequenz für Test-Zustände in ms.
  * **1000**
 
 ## `header_hidden`

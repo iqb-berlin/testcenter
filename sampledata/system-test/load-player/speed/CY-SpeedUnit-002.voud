@@ -1,0 +1,1 @@
+{"type":"speedtest-unit-defintion","version":"2.1.0","buttonWidth":350,"questions":[{"text":"Instruktionen","answers":[{"text":"Verstanden"},{"text":"Nicht verstanden"}],"correctAnswer":0}],"layout":"column","questionType":"text","answerType":"text","instructionText":"Instruktionen"}

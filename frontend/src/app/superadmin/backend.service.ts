@@ -1,9 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { IdAndName, IdRoleData, UserData } from './superadmin.interfaces';
-import { AppError, KeyValuePairs } from '../app.interfaces';
+import { KeyValuePairs } from '../app.interfaces';
 import { AppSettings } from '../shared/shared.module';
 import {
   Asset, AssetAssignments, AssignmentPostData
@@ -30,23 +29,11 @@ export class BackendService {
 
   setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<void> {
     return this.http
-      .patch<void>(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
-      .pipe(
-        catchError((err: AppError) => {
-          if (err.code === 403) {
-            throw new AppError({
-              type: 'warning',
-              description: '',
-              label: 'Bitte geben Sie zur Sicherheit *Ihr eigenes* Kennwort korrekt ein!'
-            });
-          }
-          throw err;
-        })
-      );
+      .patch<void>(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password });
   }
 
-  deleteUsers(users: string[]): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.serverUrl}users`, { body: { u: users } });
+  deleteUsers(users: string[], password: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.serverUrl}users`, { body: { u: users, p: password } });
   }
 
   getWorkspacesByUser(userId: number): Observable<IdRoleData[]> {
@@ -65,8 +52,8 @@ export class BackendService {
     return this.http.patch<void>(`${this.serverUrl}workspace/${workspaceId}`, { name: wsName });
   }
 
-  deleteWorkspaces(workspaces: number[]): Observable<void> {
-    return this.http.delete<void>(`${this.serverUrl}workspaces`, { body: { ws: workspaces } });
+  deleteWorkspaces(workspaces: number[], password: string): Observable<void> {
+    return this.http.delete<void>(`${this.serverUrl}workspaces`, { body: { ws: workspaces, p: password } });
   }
 
   getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {

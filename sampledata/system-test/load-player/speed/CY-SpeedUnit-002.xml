@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">
+  <Metadata lastChange="2026-08-20T10:43:01.948Z">
+    <Id>speed-u2</Id>
+    <Label>Instruktionen</Label>
+    <Reference/>
+  </Metadata>
+  <DefinitionRef player="iqb-player-speedtest@9.9" editor="iqb-editor-speedtest@3.2" lastChange="2026-08-20T10:43:42.320Z">CY-SpeedUnit-002.voud</DefinitionRef>
+  <BaseVariables>
+    <Variable id="value" alias="value" type="integer" format="" nullable="false" multiple="false"/>
+    <Variable id="time" alias="time" type="integer" format="" nullable="false" multiple="false"/>
+    <Variable id="activeQuestionIndex" alias="activeQuestionIndex" type="no-value" format="" nullable="false" multiple="false"/>
+    <Variable id="total_correct" alias="total_correct" type="integer" format="" nullable="false" multiple="false"/>
+    <Variable id="total_wrong" alias="total_wrong" type="integer" format="" nullable="false" multiple="false"/>
+  </BaseVariables>
+</Unit>

@@ -11,7 +11,7 @@
     <Config key="pagingMode">buttons</Config>
     <Config key="force_presentation_complete">ON</Config>
     <Config key="force_response_complete">ON</Config>
-    <Config key="unit_menu">FULL</Config>
+    <Config key="toolbar_show_unit_list">TRUE</Config>
   </BookletConfig>
 
   <Units>

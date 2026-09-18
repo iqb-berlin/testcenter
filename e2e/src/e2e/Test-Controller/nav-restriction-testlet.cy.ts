@@ -3,16 +3,17 @@
 import {
   disableSimplePlayersInternalDebounce,
   getFromIframe,
+  gotoUnitFromMenu,
   loginTestTaker,
   probeBackendApi,
-  resetBackendData,
+  resetBackendTestData,
   visitLoginPage
 } from '../utils';
 
 describe('check DenyNavigationOnIncomplete: response & presentation', { testIsolation: true }, () => {
 
   before(() => {
-    resetBackendData();
+    resetBackendTestData();
     probeBackendApi();
   });
 
@@ -24,41 +25,49 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-18', '123');
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation/response-complete: forward in unit-menu', () => {
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      gotoUnitFromMenu('Aufgabe2');
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
     });
 
     it('presentation/response-complete: logo', () => {
       cy.get('[data-cy="logo"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="dialog-title"]')
-        .contains('Aufgabenabschnitt verlassen?')
-        .should(`exist`);
+        .contains('Test beenden')
+      cy.get('[data-cy="dialog-content"]')
+        .contains('zeitbeschränkten Bereich');
+      cy.get('[data-cy="dialog-cancel"]')
+        .click();
     });
 
-   it('presentation/response-complete: forward/backward', () => {
+    it('presentation/response-complete: forward/backward', () => {
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
-   });
+    });
   });
 
   describe('response & presentation = ON ', { testIsolation: true }, () => {
@@ -69,71 +78,85 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
       loginTestTaker('Test_Ctrl-19', '123');
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation-complete: forward in unit-menu', () => {
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
-      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
-        .find('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      gotoUnitFromMenu('Aufgabe2');
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
     });
 
     it('presentation-complete: logo', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       cy.get('[data-cy="logo"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .closest('[role="dialog"]')
-        .find('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
     });
 
     it('presentation-complete: forward/backward', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       getFromIframe('iframe.unitHost')
         .find('[data-cy="TestController-radio1-Aufg1"]')
         .click()
         .should('be.checked');
       //wait for response complete
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.contains('mat-dialog-container', 'abgespielt')
-        .find('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt')
+        .and('not.contain', 'bearbeitet');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation-complete
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
     });
 
     it('responses-complete: forward/backward', () => {
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation complete
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.contains('mat-dialog-container', 'bearbeitet')
-        .find('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'bearbeitet')
+        .and('not.contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe1')
       cy.get('[data-cy="page-navigation-backward"]')
         .click();
       getFromIframe('iframe.unitHost')
@@ -141,16 +164,16 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
         .click()
         .should('be.checked');
       //wait for response complete
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get('[data-cy="unit-navigation-forward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
       cy.get('[data-cy="unit-navigation-backward"]')
         .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
     });
   });
@@ -160,140 +183,111 @@ describe('check DenyNavigationOnIncomplete: response & presentation', { testIsol
     beforeEach(() => {
       visitLoginPage();
       disableSimplePlayersInternalDebounce();
-      loginTestTaker('Test_Ctrl-20', '123');
     });
 
+    // TODO remove: the denial logic is covered by test-controller.service.spec.ts, the
+    // menu wiring by unit-menu.component.spec.ts
     it('presentation-complete: forward/backward in unit-menu', () => {
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
-      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
-        .find('[data-cy="dialog-confirm"]')
+      loginTestTaker('Test_Ctrl-20a', '123');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1');
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      gotoUnitFromMenu('Aufgabe2');
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe1')
-      getFromIframe('iframe.unitHost')
-        .find('[data-cy="TestController-radio1-Aufg1"]')
-        .click()
-        .should('be.checked');
-      //wait for response complete
-      cy.wait(2000);
+        .contains('Aufgabe1');
       cy.get('[data-cy="page-navigation-forward"]')
         .click();
       //wait for presentation-complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe2"]')
-        .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
+      cy.wait(1000);
+      gotoUnitFromMenu('Aufgabe2');
+      cy.get('[data-cy="deny-navigation-message"]')
         .should('not.exist');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe2')
-      cy.get('[data-cy="unit-menu"]')
-        .click();
-      cy.get('[data-cy="unit-menu-unitbutton-Aufgabe1"]')
-        .click();
-      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
-        .find('[data-cy="dialog-confirm"]')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      gotoUnitFromMenu('Aufgabe1');
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt')
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe2')
+        .contains('Aufgabe2');
     });
 
     it('presentation-complete: logo', () => {
+      loginTestTaker('Test_Ctrl-20a', '123');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe1')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
       cy.get('[data-cy="logo"]')
         .click();
-      cy.contains('mat-dialog-container', 'Aufgabe darf nicht verlassen werden')
-        .find('[data-cy="dialog-confirm"]')
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
         .click();
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
     });
 
     it('presentation-complete: forward/backward', () => {
-      getFromIframe('iframe.unitHost')
-        .find('[data-cy="TestController-radio1-Aufg1"]')
-        .click()
-        .should('be.checked');
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation-complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .should('not.exist');
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe2')
-      getFromIframe('iframe.unitHost')
-        .find('[data-cy="TestController-radio1-Aufg1"]')
-        .click()
-        .should('be.checked');
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.contains('mat-dialog-container', 'abgespielt')
-        .find('[data-cy="dialog-confirm"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe2')
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation-complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .should('not.exist');
+      loginTestTaker('Test_Ctrl-20a', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
+      cy.get('[data-cy="page-navigation-forward"]')
+        .click();
+      //wait for presentation complete
+      cy.wait(1000);
+      cy.get('[data-cy="unit-navigation-forward"]')
+        .click();
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2');
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      cy.get('[data-cy="unit-navigation-backward"]')
+        .click();
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'abgespielt');
+      cy.get('[data-cy="close-deny-navigation-message"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2');
     });
 
     it('responses-complete: forward/backward', () => {
-      getFromIframe('iframe.unitHost')
-        .find('[data-cy="TestController-radio1-Aufg1"]')
-        .click()
-        .should('be.checked');
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-forward"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe2')
-      cy.get('[data-cy="page-navigation-forward"]')
-        .click();
-      //wait for presentation complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.contains('mat-dialog-container', 'bearbeitet')
-        .find('[data-cy="dialog-confirm"]')
-        .click();
-      cy.get('[data-cy="unit-title"]')
-        .contains('Aufgabe2')
-      cy.get('[data-cy="page-navigation-backward"]')
-        .click();
-      getFromIframe('iframe.unitHost')
-        .find('[data-cy="TestController-radio1-Aufg1"]')
-        .click()
-        .should('be.checked');
-      //wait for response complete
-      cy.wait(2000);
-      cy.get('[data-cy="unit-navigation-backward"]')
-        .click();
-      cy.contains('Aufgabe darf nicht verlassen werden')
-        .should('not.exist');
+      loginTestTaker('Test_Ctrl-20b', '123');
       cy.get('[data-cy="unit-title"]')
         .contains('Aufgabe1')
+      getFromIframe('iframe.unitHost')
+        .find('[data-cy="TestController-radio1-Aufg1"]')
+        .click()
+        .should('be.checked');
+      //wait for response complete
+      cy.wait(1000);
+      cy.get('[data-cy="unit-navigation-forward"]')
+        .click();
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('not.exist');
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2')
+      //todo: Wenn Ticket 1560 abgearbeitet, kann diese Zeit wieder entfernt werden.
+      cy.wait(1000);
+      cy.get('[data-cy="unit-navigation-backward"]')
+        .click();
+      cy.get('[data-cy="deny-navigation-message"]')
+        .should('contain', 'bearbeitet');
+      cy.get('[data-cy="close-deny-navigation-message"]')
+        .click();
+      cy.get('[data-cy="unit-title"]')
+        .contains('Aufgabe2');
     });
   });
 });

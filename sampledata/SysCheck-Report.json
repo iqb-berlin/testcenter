@@ -8,21 +8,21 @@
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebsystem",
+      "label": "Betriebssystem",
       "value": "Linux",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebsystem-Version",
+      "label": "Betriebssystemversion",
       "value": "x86_64",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Bildschirm-Aufl\u00f6sung",
+      "label": "Bildschirmaufl\u00f6sung",
       "value": "1680 x 1050",
       "warning": false
     },
@@ -43,21 +43,21 @@
     {
       "id": "0",
       "type": "environment",
-      "label": "Browser-Plugins:",
+      "label": "Browser-Plugins",
       "value": "Chromium PDF Plugin, Chromium PDF Viewer",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Browser-Sprache",
+      "label": "Browsersprache",
       "value": "en-US",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Browser-Version",
+      "label": "Browserversion",
       "value": "79",
       "warning": false
     },
@@ -78,7 +78,7 @@
     {
       "id": "0",
       "type": "environment",
-      "label": "Fenster-Gr\u00f6\u00dfe",
+      "label": "Fenstergr\u00f6\u00dfe",
       "value": "1680 x 914",
       "warning": false
     }
@@ -136,7 +136,7 @@
     {
       "id": "0",
       "type": "network",
-      "label": "RoundTrip in Ms",
+      "label": "RoundTrip in ms",
       "warning": false,
       "value": "100"
     },

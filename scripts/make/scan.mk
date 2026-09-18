@@ -220,4 +220,4 @@ scan-db: scan-registry-login
  						--scanners vuln\
  						--ignore-unfixed\
  						--severity CRITICAL\
-					$(REGISTRY_PATH)mysql:8.4
+					$(REGISTRY_PATH)postgres:18.4

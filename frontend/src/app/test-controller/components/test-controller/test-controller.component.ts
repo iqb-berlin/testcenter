@@ -2,7 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
@@ -67,8 +67,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     maxIndex: 0
   };
 
-  testLoaded = false;
-
   constructor(public mainDataService: MainDataService,
               public tcs: TestControllerService,
               private bs: BackendService,
@@ -84,6 +82,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               private apiService: VeronaAPIService,
               private messageService: MessageService,
               @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean) { }
+
+  // Whether there is currently nothing ready to show to the testee yet: either the test itself is
+  // still (re)loading, or - once routed to a unit - that unit's own block resources are still
+  // loading (see TestControllerService.unitContentReady$). Drives both the shared loading overlay
+  // in the template below and hiding the navigation controls (which would otherwise reference
+  // not-yet-populated navigation state) until there is something to navigate.
+  readonly isLoading$: Observable<boolean> = combineLatest([this.tcs.state$, this.tcs.unitContentReady$]).pipe(
+    map(([state, unitContentReady]) => state === 'LOADING' || (state === 'RUNNING' && !unitContentReady))
+  );
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -122,7 +129,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           try {
             await this.tls.loadTest();
             // set all visual flags from booklet configs
-            this.testLoaded = true;
             this.showGlobalBack = this.deriveGlobalBack();
             this.showGlobalForward = this.deriveGlobalForward();
           } catch (err) {

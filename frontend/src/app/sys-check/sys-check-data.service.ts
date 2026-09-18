@@ -29,7 +29,7 @@ export class SysCheckDataService {
     },
     {
       route: 'u',
-      label: 'Prüfen von typischen Eingabe-Elementen'
+      label: 'Prüfen von typischen Eingabeelementen'
     },
     {
       route: 'q',

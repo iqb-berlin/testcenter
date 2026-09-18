@@ -62,11 +62,11 @@
       {{ isEditMode ? 'Aktualisieren' : 'Speichern' }}
     </button>
     @if (isEditMode) {
-      <button mat-button type="button" color="warn" (click)="deleteReview()">
+      <button data-cy="comment-diag-delete" mat-button type="button" color="warn" (click)="deleteReview()">
         Kommentar Löschen
       </button>
     }
-    <button mat-button type="button" (click)="close.emit()">
+    <button data-cy="comment-diag-close" mat-button type="button" (click)="close.emit()">
       Schließen
     </button>
   </div>
