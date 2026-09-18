@@ -84,16 +84,33 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-file-server-config
                   key: REDIS_CACHE_FILES
+            {{- if .Values.objectStore.enabled }}
+            - name: OBJECT_STORE_ENABLED
+              value: "true"
+            # content.lua subrequests the backend to mint a presigned URL. Must be
+            # the FQDN: the presign location uses proxy_pass with a variable, so
+            # nginx resolves it via its `resolver` (kube-dns), which does not apply
+            # k8s search domains — a short name like `backend` would fail with
+            # "host not found".
+            - name: BACKEND_URL
+              value: "http://backend.{{ .Release.Namespace }}.svc.cluster.local:8080"
+            {{- end }}
           volumeMounts:
+            {{- /* On the object-store path the file-server serves via redirect and
+                   never reads the data volume, so the PVC mount is dropped there. */}}
+            {{- if not .Values.objectStore.enabled }}
             - name: backend-volume
               mountPath: /var/www/testcenter/data
+            {{- end }}
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf-in-volume
       volumes:
+        {{- if not .Values.objectStore.enabled }}
         - name: backend-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-backend-pvc
+        {{- end }}
         - name: nginx-config-volume
           configMap:
             name: file-server-nginx-config

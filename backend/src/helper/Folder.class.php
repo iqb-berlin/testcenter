@@ -7,6 +7,10 @@ class Folder {
    * stream save (PHP's function glob is not)
    * **/
   static function glob(string $dir, string $filePattern = null, $reverse = false): array {
+    if (Storage::isObjectStore() and ($prefix = Storage::toLogical($dir)) !== null) {
+      return self::globObjectStore($dir, $prefix, $filePattern, $reverse);
+    }
+
     if (!file_exists($dir) or !is_dir($dir)) {
       return [];
     }
@@ -24,6 +28,37 @@ class Folder {
       }
     }
 
+    return $found;
+  }
+
+  /**
+   * Object-store equivalent of glob(): lists immediate children (files and
+   * sub-"directories") under the given logical prefix, matched against the
+   * pattern, and returns them as absolute DATA_DIR-style paths so callers stay
+   * agnostic. Non-recursive, mirroring scandir's immediate-children semantics.
+   */
+  private static function globObjectStore(string $dir, string $prefix, ?string $filePattern, bool $reverse): array {
+    $prefix = rtrim($prefix, '/') . '/';
+    $children = [];
+
+    foreach (Storage::driver()->list($prefix) as $key) {
+      $rest = substr($key, strlen($prefix));
+      if ($rest === '' or $rest === false) {
+        continue;
+      }
+      $slash = strpos($rest, '/');
+      $childName = ($slash === false) ? $rest : substr($rest, 0, $slash);
+      $children[$childName] = true;
+    }
+
+    $found = [];
+    foreach (array_keys($children) as $childName) {
+      if (!$filePattern or fnmatch($filePattern, $childName)) {
+        $found[] = "$dir/$childName";
+      }
+    }
+
+    $reverse ? rsort($found) : sort($found);
     return $found;
   }
 

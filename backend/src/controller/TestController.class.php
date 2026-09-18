@@ -156,6 +156,15 @@ class TestController extends Controller {
     $workspace = new Workspace($workspaceId);
     $resourceFile = $workspace->getWorkspacePath() . '/' . $path;
 
+    if (Storage::isObjectStore()) {
+      $logical = Storage::toLogical($resourceFile);
+      if ($logical === null or !Storage::driver()->exists($logical)) {
+        throw new HttpNotFoundException($request, "File not found: `$path`");
+      }
+      $url = Storage::driver()->presignGet($logical, SystemConfig::$storage_presignTtl);
+      return $response->withStatus(302)->withHeader('Location', $url);
+    }
+
     $res = fopen($resourceFile, 'rb');
     if (!$res) {
       throw new HttpNotFoundException($request, "File not found: `$path`");

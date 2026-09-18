@@ -127,6 +127,18 @@ class WorkspaceController extends Controller {
     $filename = $request->getAttribute('filename', '[filename missing]');
 
     $fullFilename = DATA_DIR . "/ws_$workspaceId/$fileType/$filename";
+
+    if (Storage::isObjectStore()) {
+      $logical = "ws_$workspaceId/$fileType/$filename";
+      if (!Storage::driver()->exists($logical)) {
+        throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+      }
+      return $response
+        ->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml')
+        ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+        ->withBody(new Stream(Storage::driver()->getStream($logical)));
+    }
+
     if (!file_exists($fullFilename)) {
       throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
     }
