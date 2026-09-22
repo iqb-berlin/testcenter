@@ -101,10 +101,10 @@ values ('UNIT_1', 3, null, 'UNIT_1');
 -- timestamp is a PostgreSQL type keyword. The schema keeps this legacy column name quoted, so quote it in fixtures
 -- as well to make that exceptional identifier explicit.
 insert into unit_logs (unit_name, test_id, logentry, "timestamp")
-values ('UNIT.SAMPLE', 1, 'sample unit log', '1597903000');
+values ('UNIT.SAMPLE', 1, 'sample unit log', '1597903000000');
 
 insert into test_logs (booklet_id, logentry, "timestamp")
-values (1, 'sample log entry', 1597903000);
+values (1, 'sample log entry', 1597903000000);
 
 insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent)
 values (3, '2030-01-01 12:00:00+01:00', 1, '', 'sample booklet review', '');
@@ -113,13 +113,13 @@ insert into unit_reviews (unit_name, test_id, reviewtime, priority, categories, 
 values ('UNIT_1', 3, '2030-01-01 12:00:00+01:00', 1, '', 'this is a sample unit review', null, null, '');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT_1', 1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
+values ('UNIT_1', 1, 'all', '{"name":"Sam Sample","age":34}', 1597903000000, 'the-response-type');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT.SAMPLE', 1, 'all', '{"name":"Elias Example","age":35}', 1597903000, 'the-response-type');
+values ('UNIT.SAMPLE', 1, 'all', '{"name":"Elias Example","age":35}', 1597903000000, 'the-response-type');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT.SAMPLE', 1, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');
+values ('UNIT.SAMPLE', 1, 'other', '{"other":"stuff"}', 1597903000000, 'the-response-type');
 
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")

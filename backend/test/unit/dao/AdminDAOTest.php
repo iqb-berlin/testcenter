@@ -100,7 +100,7 @@ final class AdminDAOTest extends TestCase {
           [
             'id' => "all",
             'content' => "{\"name\":\"Sam Sample\",\"age\":34}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ]
         ]
@@ -117,13 +117,13 @@ final class AdminDAOTest extends TestCase {
           [
             'id' => "all",
             'content' => "{\"name\":\"Elias Example\",\"age\":35}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ],
           [
             'id' => "other",
             'content' => "{\"other\":\"stuff\"}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ]
         ]
@@ -150,7 +150,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'originalUnitId' => 'UNIT.SAMPLE',
-        'timestamp' => 1597903000,
+        'timestamp' => 1597903000000,
         'logentry' => 'sample unit log'
       ],
       [
@@ -160,7 +160,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => '',
         'originalUnitId' => '',
-        'timestamp' => 1597903000,
+        'timestamp' => 1597903000000,
         'logentry' => 'sample log entry'
       ]
     ];

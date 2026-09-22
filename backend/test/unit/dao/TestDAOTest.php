@@ -53,7 +53,7 @@ class TestDAOTest extends TestCase {
     $expectedLog = [
       [
         'logentry' => 'sample log entry',
-        'timestamp' => 1597903000
+        'timestamp' => 1597903000000
       ],
       [
         'logentry' => $logKey . ' : ' . json_encode($logContent),
@@ -312,7 +312,7 @@ class TestDAOTest extends TestCase {
         'added' => '{"stuff": "added"}'
       ],
       'the-response-type',
-      123456789123
+      1597903001000
     );
     $expected = [
       'dataParts' => [
@@ -331,7 +331,7 @@ class TestDAOTest extends TestCase {
       'UNIT.SAMPLE',
       [],
       'the-response-type',
-      123456789124
+      1597903002000
     );
     $expectedEmptyUpdate = [
       'dataParts' => [
@@ -352,7 +352,7 @@ class TestDAOTest extends TestCase {
         'other' => '{"other": "new_overwrite"}'
       ],
       'new-response-type',
-      123456789125
+      1597903003000
     );
     $expectedOverwrite = [
       'dataParts' => [
@@ -374,7 +374,7 @@ class TestDAOTest extends TestCase {
         'other' => '{"other": "completely_new"}'
       ],
       'new-response-type',
-      123456789126
+      1597903004000
     );
     $expectedOverwrite = [
       'dataParts' => [
