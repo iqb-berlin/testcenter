@@ -5,8 +5,8 @@ use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 
 /**
- * S3-compatible driver (MinIO in-cluster first, portable to AWS S3 / StackIT
- * by configuration only). Object keys equal the logical path.
+ * S3-compatible driver, portable to any S3-compatible service (SeaweedFS, AWS S3,
+ * StackIT, ...) by configuration only. Object keys equal the logical path.
  *
  * Two clients are used: an internal one for PUT/GET/list against the
  * in-cluster endpoint, and a presign client signed against the browser-facing

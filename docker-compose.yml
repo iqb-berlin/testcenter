@@ -16,7 +16,7 @@ x-env-db: &env-db
   DB_PASSWORD: ${DB_PASSWORD}
 
 # Object storage (S3-compatible). Endpoint-agnostic: point the S3_* vars in .env
-# at any S3 service — an external one such as AWS, STACKIT or MinIO 
+# at any S3 service — an external one such as AWS, STACKIT or SeaweedFS
 # When STORAGE_DRIVER=filesystem (default) these are unused
 x-env-objectstore: &env-objectstore
   STORAGE_DRIVER: ${STORAGE_DRIVER:-filesystem}

@@ -143,7 +143,7 @@ config:
     redisMemoryMax: 1gb
 
 # =============================================================================
-# OBJECT STORAGE (S3-compatible: MinIO / AWS S3 / STACKIT)
+# OBJECT STORAGE (S3-compatible: SeaweedFS / AWS S3 / STACKIT)
 # =============================================================================
 # When enabled, categorized workspace files are stored in an S3-compatible
 # bucket instead of the shared backend data PVC, and the file-server serves them
@@ -154,20 +154,20 @@ objectStore:
   enabled: false
   # -- Internal endpoint the backend uses for PUT/GET. Base host only, WITHOUT
   # the bucket name — path-style addressing adds the bucket. Examples:
-  #   MinIO in-cluster: http://minio.minio.svc.cluster.local:9000
+  #   SeaweedFS in-cluster: http://seaweedfs.seaweedfs.svc.cluster.local:8333
   #   STACKIT:          https://object.storage.eu01.onstackit.cloud
   endpoint: ""
   # -- Browser-facing endpoint the presigned URL is SIGNED against. Must be
   # reachable from the test-taker's browser (ingress/LoadBalancer or public S3).
   # SigV4 signs the host, so this is not cosmetic. REQUIRED when enabled.
   publicEndpoint: ""
-  # -- S3 region. Any value for MinIO; the real region for AWS/STACKIT.
+  # -- S3 region. Any value for SeaweedFS; the real region for AWS/STACKIT.
   region: "us-east-1"
   # -- Bucket that holds the workspace files.
   bucket: "tc-files"
-  # -- Path-style addressing. true for MinIO/STACKIT, false for AWS.
+  # -- Path-style addressing. true for SeaweedFS/STACKIT, false for AWS.
   pathStyle: true
-  # -- Use TLS for the internal endpoint. false for in-cluster http MinIO.
+  # -- Use TLS for the internal endpoint. false for in-cluster http SeaweedFS.
   useSSL: true
   # -- Lifetime of presigned download URLs, in seconds.
   presignTtlSeconds: 3600

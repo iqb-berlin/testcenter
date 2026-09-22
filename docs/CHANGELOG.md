@@ -95,6 +95,14 @@ folgenden Punkten:
   Verzeichnis `e2e`, z. B. `spec='src/e2e/Group-Monitor/**/*,src/e2e/Sys-Check/**/*'`.
   Die Pfade und Glob-Muster werden unverändert an Cypress übergeben; Verzeichnispräfix und Dateiendung werden
   nicht mehr automatisch ergänzt. Ohne `spec` werden weiterhin alle Systemtests ausgeführt.
+- Für die Objektspeicher-Anbindung (`STORAGE_DRIVER=s3`) bringt die Entwicklungsumgebung jetzt einen eigenen
+  S3-Dienst mit: Sobald `STORAGE_DRIVER=s3` in `.env.dev` gesetzt ist, startet `make up` zusätzlich SeaweedFS als
+  Container des Dev-Stacks, legt den Bucket aus `S3_BUCKET` beim Start an und übernimmt `S3_ACCESS_KEY` und
+  `S3_SECRET_KEY` als dessen Zugangsdaten; lokal ist damit nichts weiter einzurichten. Bei `STORAGE_DRIVER=filesystem`
+  bleibt der Dienst aus. Wer stattdessen einen externen Objektspeicher (AWS, STACKIT) nutzen will, zeigt die
+  `S3_*`-Variablen weiterhin darauf; der lokale SeaweedFS-Container startet dann ungenutzt mit und lässt sich bei
+  Bedarf mit `docker compose stop seaweedfs` anhalten. Produktiv- und Helm-Installationen sind nicht betroffen, dort
+  wird weiterhin kein Objektspeicher mitgeliefert.
 
 # 18.3.0
 
