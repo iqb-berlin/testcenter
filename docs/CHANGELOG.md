@@ -1,4 +1,4 @@
-# next
+# 19.0.0
 
 ## Umstieg von MySQL auf PostgreSQL
 
@@ -10,7 +10,7 @@ Konto `super` mit dem Passwort aus `ADMIN_INIT_PASSWORD`, das sofort geändert w
 sollte vorher die noch benötigten Ergebnisse exportieren.
 
 Vorbereitung, Ablauf, Zugriff auf die alten Daten und Rollback beschreibt
-[Transition from MySQL to PostgreSQL](transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
+[Transition from MySQL to PostgreSQL](https://github.com/iqb-berlin/testcenter/blob/master/docs/transition-to-postgres.md). Dort stehen auch die Einzelheiten zu den
 folgenden Punkten:
 
 - Die Variablen für Datenbankverbindungen heißen jetzt neutral `DB_*`. Es gibt keinen Rückfall auf alte
@@ -22,81 +22,55 @@ folgenden Punkten:
 
 ## Neue Funktionen
 - Beim Ändern des eigenen Kennworts muss nun zusätzlich das aktuelle Kennwort eingegeben werden, um die Änderung zu bestätigen. Dies betrifft nicht das Zurücksetzen eines fremden Kennworts durch Super-Admins.
-- Beim Löschen von Administrator:innen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
-- Beim Löschen von Arbeitsbereichen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
+- Super-Admin: Beim Löschen von Administrator:innen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
+- Super-Admin: Beim Löschen von Arbeitsbereichen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
 
 ## Änderungen
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 
 ## Fehlerbehebungen
-- (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“,
-  „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“
-  und „Eingabeelementen“.
-- (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen
-  CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
-- Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt
-  die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
-- In der Gruppenüberwachung sind »Weiter«, »Pause«, »Springe zu« und »Test Entsperren« deaktiviert, solange kein
-  Test ausgewählt ist. Bisher liessen sie sich anklicken und meldeten lediglich »Keine Tests betroffen« – etwa
-  direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
-- "Verbleibende Zeit" wird im Review-Modus nicht länger angezeigt, wenn keine Zeitgeschränkung gesetzt ist.
+- (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“, „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“ und „Eingabeelementen“.
+- (breaking) Die Zeiteinheit für Millisekunden wird in der Booklet-Konfiguration, im Systemcheck und in neuen CSV-Exporten von Systemcheck-Berichten korrekt als `ms` statt `Ms` geschrieben.
+- Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
+- In der Gruppenüberwachung sind „Weiter“, „Pause“, „Springe zu“ und „Test entsperren“ deaktiviert, solange kein Test ausgewählt ist. Bisher ließen sie sich anklicken und meldeten lediglich „Keine Tests betroffen“ – etwa direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
+- „Verbleibende Zeit“ wird im Review-Modus nicht länger angezeigt, wenn keine Zeitbeschränkung gesetzt ist.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 
 ## Technisches
-- Die API-Dokumentation von `GET /workspace/{ws_id}/report/log` deklariert `timestamp` als Zahl und führt das Feld `originalUnitId` auf. Bisher war `timestamp` als `string` deklariert, obwohl der Endpunkt immer eine Zahl geliefert hat, und `originalUnitId` fehlte ganz, obwohl es in beiden Formaten enthalten ist. Aus der Spezifikation erzeugte Clients waren dadurch falsch typisiert.
-- Das Feld `laststate` in `GET /workspace/{ws_id}/report/response` ist anders formatiert: ein Leerzeichen nach den Doppelpunkten, eine andere Reihenfolge der Schlüssel und `\uXXXX`-Escapes als das Zeichen, für das sie stehen. Der Inhalt ist unverändert, wer den Wert als JSON einliest, ist nicht betroffen.
-- Das Einlesen der Arbeitsbereichsdateien beim Start ist etwa dreimal so schnell und geschieht je Arbeitsbereich nun vollständig oder gar nicht; bisher blieben bei einem Abbruch die bis dahin gelesenen Dateien in der Datenbank zurück.
-- (breaking) Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden liessen; die API-Dokumentation führte beide Codes bereits auf.
-- `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da eine ID auf mehreren Tests liegen kann, brach PostgreSQL die Abfrage ab.
-- Der File-Server schickt bei `403` und `500` einen `Error-ID`-Header (`fs-` gefolgt von der nginx-Request-ID) und schreibt dieselbe ID in sein Log.
-- (breaking) `PUT /workspace`, `PATCH /workspace/{ws_id}` und `PUT /user` antworten auf einen bereits vergebenen Namen mit `409`. Bisher war es `400`, das damit sowohl den Namenskonflikt als auch einen unvollständigen oder ungültigen Request-Body meldete; für letztere bleibt es bei `400`. Clients, die den Konflikt an `400` erkennen, müssen angepasst werden.
-- Die API-Dokumentation führt die Fehlerantworten `400` und `409` von `PUT /workspace`, `PATCH /workspace/{ws_id}`, `PUT /user` und `PATCH /user/{user_id}/password` jetzt auf, samt der Ursachen, die zu ihnen führen. Bisher waren sie dort nicht dokumentiert.
+
+### Schnittstellenänderungen (breaking)
+- `PATCH /user/{user_id}/password` verlangt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten `400`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort unbenutzt.
+- `DELETE /users` verlangt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten `400`.
+- `DELETE /workspaces` verlangt ebenfalls zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body, aus demselben Grund und mit denselben Auswirkungen wie bei `DELETE /users`.
+- `PUT /workspace`, `PATCH /workspace/{ws_id}` und `PUT /user` antworten auf einen bereits vergebenen Namen mit `409`. Bisher war es `400`, das damit sowohl den Namenskonflikt als auch einen unvollständigen oder ungültigen Request-Body meldete; für letztere bleibt es bei `400`. Clients, die den Konflikt an `400` erkennen, müssen angepasst werden.
+- Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden ließen; die API-Dokumentation führte beide Codes bereits auf.
+
+### API-Verhalten
+- `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da ein an mehrere Tests geschicktes Kommando dieselbe ID auf mehreren Zeilen trägt, brach die Abfrage ab. Die Testanwendung selbst sendet `lastCommandId` nicht; betroffen waren nur Anwendungen, die die API direkt nutzen.
 - `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).
+- Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
+- Anfragen an nicht existierende Routen werden wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern einen Text im Body. Bisher lieferten sie einen `404` ohne Body-Text und waren damit die einzige Fehlerantwort des Backends ohne Text.
+- Der File-Server schickt bei `403` und `500` einen `Error-ID`-Header (`fs-` gefolgt von der nginx-Request-ID) und schreibt dieselbe ID in sein Log.
+- Das Feld `laststate` in `GET /workspace/{ws_id}/report/response` ist anders formatiert: ein Leerzeichen nach den Doppelpunkten, eine andere Reihenfolge der Schlüssel und `\uXXXX`-Escapes als das Zeichen, für das sie stehen. Der Inhalt ist unverändert, wer den Wert als JSON einliest, ist nicht betroffen.
+
+### API-Dokumentation
+- Die API-Dokumentation von `GET /workspace/{ws_id}/report/log` deklariert `timestamp` als Zahl und führt das Feld `originalUnitId` auf. Bisher war `timestamp` als `string` deklariert, obwohl der Endpunkt immer eine Zahl geliefert hat, und `originalUnitId` fehlte ganz, obwohl es in beiden Formaten enthalten ist.
+- Die Zeitstempel-Felder `reviewtime`, `date` in `SysCheckReport` und `latest_modification_ts` sind in der API-Dokumentation mit ihrem tatsächlichen Format deklariert. Bisher stand dort `format: date-time` (RFC 3339, also `2021-07-29T10:00:00Z`), ein Format, das kein Feld jemals geliefert hat; aus der Spezifikation generierte Clients konnten diese Werte nicht einlesen.
+- Das Feld `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`, Endpunkt `GET /workspace/{ws_id}/report/response`) ist als Array von Response-Teil-Objekten (`id`, `content`, `ts`, `responseType`) deklariert. Bisher stand dort `type: string`, obwohl die Antwort schon immer ein solches Array enthielt und das zugehörige Beispiel es bereits korrekt darstellte.
+- Die API-Dokumentation führt die Fehlerantworten `400` und `409` von `PUT /workspace`, `PATCH /workspace/{ws_id}`, `PUT /user` und `PATCH /user/{user_id}/password` jetzt auf, samt der Ursachen, die zu ihnen führen. Bisher waren sie dort nicht dokumentiert.
 - Der `Accept`-Header ist in der API-Dokumentation der Endpunkte `GET /workspace/{ws_id}/report/log`, `.../report/response` und `.../report/sys-check` jetzt als Parameter aufgeführt. Bisher war er dort nicht dokumentiert, obwohl alle drei Endpunkte wahlweise CSV oder JSON liefern; die Beschreibungen aller Report-Endpunkte nennen zudem den jeweiligen Standardwert.
-- Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte
-  `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte
-  überhaupt kein Konto, und niemand konnte sich anmelden.
-- Alle Zeitstempel-Felder der API-Dokumentation waren als `format: date-time` (RFC 3339, also
-  `2021-07-29T10:00:00Z`) deklariert. Kein Feld hat dieses Format jemals geliefert. Die Deklarationen wurden
-  korrigiert und beschreiben nun das tatsächliche Format. Betroffen sind `reviewtime`, `date` in
-  `SysCheckReport` und `latest_modification_ts`. Aus der Spezifikation generierte Clients konnten diese Werte
-  nicht einlesen.
-- Die API-Dokumentation des Endpunkts `GET /workspace/{ws_id}/report/response` war fehlerhaft: Das Feld
-  `responses` im Schema `ResponseReport` (`docs/api/components.spec.yml`) war als `type: string` deklariert, obwohl
-  die Antwort dort tatsächlich (und im dazugehörigen Beispiel bereits korrekt dargestellt) ein Array von
-  Response-Teil-Objekten (`id`, `content`, `ts`, `responseType`) enthält. Das Schema wurde entsprechend korrigiert.
+- Für alle Fehlerantworten (4xx/5xx) ist in der API-Dokumentation (`docs/api/*.spec.yml`) nun dokumentiert, dass sie einen Body-Text enthalten.
+
+### Betrieb und Installation
+- Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte überhaupt kein Konto, und niemand konnte sich anmelden.
+- Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` ist in Anführungszeichen gesetzt. Bisher führte er beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
+- Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/` mit UTC-Zeitstempel. Was ein Set enthält, was separat gesichert werden muss und welche Werte aus `.env.prod` zu einem Set passen müssen, beschreibt [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
+- Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt sich mit `make testcenter-restore` wiederherstellen.
 - `install.sh` und `update.sh` sind nun schlanke, versionsunabhängige Bootstrap-Skripte: Sie ermitteln nur noch die gewünschte Release-Version und laden anschließend die eigentliche Installations- bzw. Update-Logik der passenden Release-Version nach (`scripts/installer.sh` bzw. `scripts/updater.sh`). Der bisherige Mechanismus, bei dem `install.sh`/`update.sh` sich selbst mit der Zielversion verglichen und sich bei Abweichung durch sich selbst ersetzten, entfällt damit.
   - Bei `update.sh` wird `scripts/updater.sh` dabei zweimal geladen: einmal aus der aktuell installierten Version (für Backup und Migrationsskripte, deren Logik zur tatsächlich laufenden Installation passen muss) und einmal aus der Zielversion (für Datei-Updates, Einstellungen und Neustart).
-- Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` war nicht in Anführungszeichen gesetzt und führte
-  beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits
-  über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf
-  `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
-- Es gibt eine neue Umgebungsvariable `COMPOSE_PROJECT_NAME` (siehe `.env.dev-template`/`.env.prod-template`), mit
-  der sich Container, Volumes und das Docker-Netzwerk benennen lassen. Sie dient dazu, eine Dev- und eine
-  Produktivinstallation auf demselben Host kollisionsfrei parallel betreiben zu können. Der Netzwerkname war zuvor
-  fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange
-  `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende
-  Installationen von dieser Änderung nicht betroffen sind.
-- Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank
-  und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/`
-  mit UTC-Zeitstempel. Was ein Set enthält, was separat gesichert werden muss und welche Werte aus `.env.prod` zu
-  einem Set passen müssen, beschreibt
-  [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
-- Das Backup, das `make testcenter-update` vor der Aktualisierung anlegt, ist nun ein solches Backup-Set und lässt
-  sich mit `make testcenter-restore` wiederherstellen.
-- Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht
-  auf das Stopp-Signal, wurde nach 10 Sekunden per SIGKILL beendet (Exit-Code 137) und brach dabei laufende
-  Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden weniger.
-- Backend: Anfragen an nicht existierende Routen lieferten einen 404-Fehler ohne Body-Text zurück. Dies war die einzige Fehlerantwort des Backends ohne Text und somit inkonsistent zu allen anderen Fehlerfällen. Nicht existierende Routen werden nun wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern ebenfalls einen Text im Body.
-- API-Dokumentation (`docs/api/*.spec.yml`): Für alle Fehlerantworten (4xx/5xx) ist nun dokumentiert, dass sie einen Body-Text enthalten
-- Backend: Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
-- (breaking) `PATCH /user/{user_id}/password` verlangt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten `400`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort unbenutzt.
-- (breaking) `DELETE /users` verlangt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten `400`.
-- (breaking) `DELETE /workspaces` verlangt ebenfalls zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body, aus demselben Grund und mit denselben Auswirkungen wie bei `DELETE /users`.
-- `make test-system-headless` akzeptiert mit `spec` nun mehrere kommagetrennte Cypress-Spec-Pfade relativ zum
-  Verzeichnis `e2e`, z. B. `spec='src/e2e/Group-Monitor/**/*,src/e2e/Sys-Check/**/*'`.
-  Die Pfade und Glob-Muster werden unverändert an Cypress übergeben; Verzeichnispräfix und Dateiendung werden
-  nicht mehr automatisch ergänzt. Ohne `spec` werden weiterhin alle Systemtests ausgeführt.
+- Der Backend-Container fährt beim Stoppen geordnet herunter und endet mit Exit-Code 0. Bisher reagierte er nicht auf das Stopp-Signal, wurde nach 10 Sekunden per SIGKILL beendet (Exit-Code 137) und brach dabei laufende Anfragen ab. Stoppen, Neustarten und Aktualisieren dauern entsprechend 10 Sekunden kürzer.
+- Es gibt eine neue Umgebungsvariable `COMPOSE_PROJECT_NAME` (siehe `.env.dev-template`/`.env.prod-template`), mit der sich Container, Volumes und das Docker-Netzwerk benennen lassen. Sie dient dazu, eine Dev- und eine Produktivinstallation auf demselben Host kollisionsfrei parallel betreiben zu können. Der Netzwerkname war zuvor fest auf `testcenter` gesetzt und ist nun auf `${COMPOSE_PROJECT_NAME:-testcenter}` konfiguriert. Solange `COMPOSE_PROJECT_NAME` nicht gesetzt ist, bleibt der Netzwerkname weiterhin `testcenter`, sodass bestehende Installationen von dieser Änderung nicht betroffen sind.
+- Das Einlesen der Arbeitsbereichsdateien beim Start ist etwa dreimal schneller als vorher und geschieht je Arbeitsbereich nun vollständig oder gar nicht; bisher blieben bei einem Abbruch die bis dahin gelesenen Dateien in der Datenbank zurück.
 
 # 18.3.0
 
