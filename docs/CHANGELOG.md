@@ -43,6 +43,7 @@ folgenden Punkten:
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 
 ## Technisches
+- Das Feld `laststate` in `GET /workspace/{ws_id}/report/response` ist anders formatiert: ein Leerzeichen nach den Doppelpunkten, eine andere Reihenfolge der Schlüssel und `\uXXXX`-Escapes als das Zeichen, für das sie stehen. Der Inhalt ist unverändert, wer den Wert als JSON einliest, ist nicht betroffen.
 - Das Einlesen der Arbeitsbereichsdateien beim Start ist etwa dreimal so schnell und geschieht je Arbeitsbereich nun vollständig oder gar nicht; bisher blieben bei einem Abbruch die bis dahin gelesenen Dateien in der Datenbank zurück.
 - (breaking) Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden liessen; die API-Dokumentation führte beide Codes bereits auf.
 - `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da eine ID auf mehreren Tests liegen kann, brach PostgreSQL die Abfrage ab.

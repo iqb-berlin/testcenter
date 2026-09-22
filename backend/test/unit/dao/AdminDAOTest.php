@@ -94,7 +94,7 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
-        'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'laststate' => '{"SOME_STATE": "WHATEVER"}',
         'originalUnitId' => 'UNIT_1',
         'responses' => [
           [
@@ -111,7 +111,7 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
-        'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+        'laststate' => '{"PRESENTATIONCOMPLETE": "yes"}',
         'originalUnitId' => 'UNIT.SAMPLE',
         'responses' => [
           [
@@ -223,7 +223,7 @@ final class AdminDAOTest extends TestCase {
       "id" => 5,
       "test_id" => 1,
       "keyword" => 'a_keyword',
-      "parameter" => '["first_argument","second_argument"]',
+      "parameter" => '["first_argument", "second_argument"]',
       "commander_id" => 1,
       // 1597905000 is 06:30 UTC, stored as the instant it is rather than as local wall time
       'timestamp' => '2020-08-20 06:30:00+00',
@@ -260,7 +260,7 @@ final class AdminDAOTest extends TestCase {
     $expectation = [
       'locked' => false,
       'id' => '1',
-      'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
+      'laststate' => '{"CURRENT_UNIT_ID": "UNIT_1"}',
       'label' => 'first test label'
     ];
     $result = $this->dbc->getTest(1);
