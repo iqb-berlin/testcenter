@@ -156,8 +156,9 @@ test-system:
 			--env-file .env.dev\
 			--file docker-compose.yml\
 			--file docker-compose.dev.yml\
-		up -d &&\
-	bash e2e/run-e2e.sh
+		up --detach --wait &&\
+	cd e2e &&\
+	npm run test-system-ui
 	@cd $(TC_BASE_DIR) &&\
 	docker compose --progress quiet\
 			--env-file .env.dev\
