@@ -20,6 +20,8 @@ class SystemConfig {
   public static int $system_veronaMin;
   public static int $system_iqbStandardResponseMax;
   public static int $system_iqbStandardResponseMin;
+  /** @var array<string, array{repo: string, min: int, max: int}> file type => schema repo and supported major versions */
+  public static array $system_xmlSchemaVersions;
   public static string $system_timezone = 'Europe/Berlin';
   public static bool $debug_useInsecurePasswords = false;
   public static bool $debug_useStaticTokens = false;
@@ -58,6 +60,7 @@ class SystemConfig {
     ) {
       self::applyVersionFromPackageJson();
     }
+    self::applyCompatibilityDefinitions();
     self::verifyClassProperties();
   }
 
@@ -122,6 +125,12 @@ class SystemConfig {
     self::$system_iqbStandardResponseMax = $packageJson->iqb->$v->max;
     self::$system_iqbStandardResponseMin = $packageJson->iqb->$v->min;
     self::$system_version = $packageJson->version;
+  }
+
+  private static function applyCompatibilityDefinitions(): void {
+    $compatibilityStr = file_get_contents(ROOT_DIR . '/definitions/compatibility.json');
+    $compatibility = JSON::decode($compatibilityStr, true);
+    self::$system_xmlSchemaVersions = $compatibility['xml-schema-versions'];
   }
 
   private static function boolEnv(string $name, bool $default = false): bool {

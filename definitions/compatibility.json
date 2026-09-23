@@ -1,0 +1,8 @@
+{
+  "xml-schema-versions": {
+    "Booklet": { "repo": "testcenter-booklet-xml", "min": 18, "max": 18 },
+    "Testtakers": { "repo": "testcenter-testtaker-xml", "min": 17, "max": 18 },
+    "Unit": { "repo": "unit-xml", "min": 17, "max": 17 },
+    "SysCheck": { "repo": "testcenter-syscheck-xml", "min": 18, "max": 18 }
+  }
+}

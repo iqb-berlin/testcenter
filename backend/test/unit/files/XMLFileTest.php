@@ -139,6 +139,85 @@ class XMLFileTest extends TestCase {
     $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, States, Units ).", $this->getErrorString($xf));
   }
 
+  private function writeBookletWithSchema(string $schemaUrl): string {
+    $path = DATA_DIR . "/ws_1/booklet-schema.xml";
+    file_put_contents(
+      $path,
+      '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+      . " xsi:noNamespaceSchemaLocation=\"$schemaUrl\">"
+      . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
+      . '</Booklet>'
+    );
+    return $path;
+  }
+
+  function test_schemaVersionNewerThanSupported() {
+    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'));
+
+    $this->assertEquals(
+      'XSD schema version `19.0` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
+      $this->getErrorString($xf)
+    );
+  }
+
+  function test_schemaVersionOlderThanSupported() {
+    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/17.4'));
+
+    $this->assertEquals(
+      'XSD schema version `17.4` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
+      $this->getErrorString($xf)
+    );
+  }
+
+  function test_schemaVersionUnsupportedWithoutValidation() {
+    SystemConfig::$xmlSchema_validation = false;
+    $xf = new XMLFile($this->writeBookletWithSchema('https://w3id.org/iqb/spec/testcenter-booklet-xml/19.0'));
+
+    $this->assertEquals(
+      'XSD schema version `19.0` of `testcenter-booklet-xml` is not supported. Supported major versions: 18 to 18.',
+      $this->getErrorString($xf)
+    );
+  }
+
+  function test_schemaMissingWithoutValidation() {
+    SystemConfig::$xmlSchema_validation = false;
+    file_put_contents(DATA_DIR . "/ws_1/no-schema.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata></Booklet>');
+    $xf = new XMLFile(DATA_DIR . "/ws_1/no-schema.xml");
+
+    $this->assertEquals(
+      'File has no link to XSD-schema. Expected a schema URL like '
+      . '`https://w3id.org/iqb/spec/testcenter-booklet-xml/<version>` with major version 18 to 18.',
+      $this->getErrorString($xf)
+    );
+  }
+
+  function test_schemaLegacyUrl() {
+    $xf = new XMLFile($this->writeBookletWithSchema(
+      'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.4.1/definitions/vo_Booklet.xsd'
+    ));
+
+    $this->assertEquals(
+      'XSD schema URL could not be resolved. Expected a schema URL like '
+      . '`https://w3id.org/iqb/spec/testcenter-booklet-xml/<version>` with major version 18 to 18.',
+      $this->getErrorString($xf)
+    );
+  }
+
+  function test_schemaInvalidContentIgnoredWithoutValidation() {
+    SystemConfig::$xmlSchema_validation = false;
+    file_put_contents(
+      DATA_DIR . "/ws_1/invalid.xml",
+      '<Booklet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+      . ' xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0">'
+      . '<Metadata><Id>c</Id><Label>d</Label></Metadata>'
+      . '<Invalid></Invalid>'
+      . '</Booklet>'
+    );
+    $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml');
+
+    $this->assertArrayNotHasKey('error', $xf->getValidationReport());
+  }
+
   function test_validateConstraint() {
     $xml = '<root>
       <A min="6" max="3" />

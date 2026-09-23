@@ -53,7 +53,8 @@ class XMLFile extends File {
     $this->readMetadata();
 
     $this->importLibXmlErrors();
-    if (SystemConfig::$xmlSchema_validation) {
+    $this->readSchema();
+    if ($this->schema and SystemConfig::$xmlSchema_validation) {
       $this->validateAgainstSchema();
     }
     $this->warnOnDeprecatedElements();
@@ -84,14 +85,14 @@ class XMLFile extends File {
 
     if (empty($schemaUrl)) {
       $this->schema = null;
-      $this->report('error', 'File has no link to XSD-schema.');
+      $this->report('error', 'File has no link to XSD-schema. ' . $this->describeExpectedSchema());
       return;
     }
 
     $this->schema = XMLSchema::parseSchemaUrl($schemaUrl);
 
     if (!$this->schema) {
-      $this->report('error', 'XSD schema URL could not be resolved.');
+      $this->report('error', 'XSD schema URL could not be resolved. ' . $this->describeExpectedSchema());
       return;
     }
 
@@ -100,15 +101,26 @@ class XMLFile extends File {
     if ($expectedType !== $this->getRootTagName()) {
       $this->report('error', "Different xsd root-tag. Expected: `$expectedType` ");
     }
+
+    $supported = SystemConfig::$system_xmlSchemaVersions[$this->schema['type']];
+
+    if ($this->schema['major'] < $supported['min'] or $this->schema['major'] > $supported['max']) {
+      $this->report(
+        'error',
+        "XSD schema version `{$this->schema['version']}` of `{$this->schema['repo']}` is not supported. "
+        . "Supported major versions: {$supported['min']} to {$supported['max']}."
+      );
+      $this->schema = null;
+    }
+  }
+
+  private function describeExpectedSchema(): string {
+    $expected = SystemConfig::$system_xmlSchemaVersions[$this->getRootTagName()];
+    return "Expected a schema URL like `https://w3id.org/iqb/spec/{$expected['repo']}/<version>` "
+      . "with major version {$expected['min']} to {$expected['max']}.";
   }
 
   private function validateAgainstSchema(): void {
-    $this->readSchema();
-
-    if(!$this->schema){
-      return;
-    }
-
     $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
 
     if (!$schemaFilePath) {

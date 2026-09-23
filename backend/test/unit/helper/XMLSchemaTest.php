@@ -42,6 +42,7 @@ class XMLSchemaTest extends TestCase {
       'repo' => 'testcenter-booklet-xml',
       'type' => 'Booklet',
       'version' => '18.0',
+      'major' => 18,
       'uri' => $this->testUrls['valid_booklet']
     ], $result);
 
@@ -51,6 +52,7 @@ class XMLSchemaTest extends TestCase {
       'repo' => 'unit-xml',
       'type' => 'Unit',
       'version' => '17.4',
+      'major' => 17,
       'uri' => $this->testUrls['valid_unit']
     ], $result);
   }
@@ -62,6 +64,11 @@ class XMLSchemaTest extends TestCase {
 
   function test_parseSchemaUrl_invalidOldGithubUrl(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_old_github']);
+    $this->assertNull($result);
+  }
+
+  function test_parseSchemaUrl_unknownRepo(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_unknown_repo']);
     $this->assertNull($result);
   }
 

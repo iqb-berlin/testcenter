@@ -7,7 +7,8 @@ FROM ${REGISTRY_PATH}composer:lts AS schema-downloader
 RUN mkdir -p /var/www/testcenter/data/.schemas
 # Script kopieren und ausführen
 COPY scripts/download-schemas.sh /tmp/download-schemas.sh
-RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
+COPY definitions/compatibility.json /tmp/compatibility.json
+RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh /tmp/compatibility.json
 
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
@@ -40,7 +41,8 @@ WORKDIR /usr/src/testcenter/backend
 # add cache for xsd files
 RUN mkdir -p /var/www/testcenter/data/.schemas
 COPY scripts/download-schemas.sh /tmp/download-schemas.sh
-RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
+COPY definitions/compatibility.json /tmp/compatibility.json
+RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh /tmp/compatibility.json
 
 # resolving and downloading the dependencies depends on composer.lock alone, so it
 # is done before the code is copied and stays cached across source code changes

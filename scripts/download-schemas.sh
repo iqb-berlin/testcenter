@@ -3,19 +3,18 @@
 set -e
 
 SCHEMAS_DIR="/var/www/testcenter/data/.schemas"
+COMPATIBILITY_FILE="$1"
 
-# Repos die durchsucht werden sollen
-REPOS=(
-    "testcenter-booklet-xml"
-    "testcenter-testtaker-xml"
-    "testcenter-syscheck-xml"
-    "unit-xml"
-)
+# one line per repo: "<repo> <min major> <max major>"
+SUPPORTED=$(php -r '
+  foreach (json_decode(file_get_contents($argv[1]), true)["xml-schema-versions"] as $schema) {
+    echo "{$schema["repo"]} {$schema["min"]} {$schema["max"]}\n";
+  }' "$COMPATIBILITY_FILE")
 
 echo "Downloading XSD schemas..."
 
-for repo in "${REPOS[@]}"; do
-    echo "Fetching releases for $repo..."
+while read -r repo min max; do
+    echo "Fetching releases for $repo (supported major versions: $min to $max)..."
 
     # GitHub API abfragen
     releases=$(curl -sL "https://api.github.com/repos/iqb-specifications/$repo/releases" \
@@ -28,6 +27,11 @@ for repo in "${REPOS[@]}"; do
     fi
 
     for version in $releases; do
+        major="${version%%.*}"
+        if [ "$major" -lt "$min" ] || [ "$major" -gt "$max" ]; then
+            echo "Skipping unsupported version $version"
+            continue
+        fi
         folder="$SCHEMAS_DIR/$repo/$version"
         mkdir -p "$folder"
         url="https://w3id.org/iqb/spec/$repo/$version"
@@ -38,6 +42,6 @@ for repo in "${REPOS[@]}"; do
             rm -f "$folder/$repo.xsd"
         fi
     done
-done
+done <<< "$SUPPORTED"
 
 echo "Done."

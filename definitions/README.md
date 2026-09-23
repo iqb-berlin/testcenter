@@ -14,6 +14,8 @@ organisation on GitHub and are accessible via stable permalinks.
 | Unit | [unit-xml](https://github.com/iqb-specifications/unit-xml) | `https://w3id.org/iqb/spec/unit-xml/{version}` |
 | SysCheck | [testcenter-syscheck-xml](https://github.com/iqb-specifications/testcenter-syscheck-xml) | `https://w3id.org/iqb/spec/testcenter-syscheck-xml/{version}` |
 
+The major versions the Testcenter supports for each schema are defined in [compatibility.json](compatibility.json).
+
 ## Usage
 
 Reference the desired schema version in your XML files (example for booklet-xml):

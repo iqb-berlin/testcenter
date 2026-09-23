@@ -40,6 +40,7 @@ folgenden Punkten:
 ## Technisches
 
 ### Schnittstellenänderungen (breaking)
+- Schema-Verweise in XML-Dateien (`xsi:noNamespaceSchemaLocation`) werden nur noch als Permalink der Form `https://w3id.org/iqb/spec/<repo>/<version>` erkannt. Die alten GitHub-URLs der Form `…/testcenter/<version>/definitions/vo_<Typ>.xsd` werden abgelehnt.
 - `PATCH /user/{user_id}/password` verlangt bei einer Selbstbedienungs-Kennwortänderung (also wenn `user_id` der ID des anfragenden Nutzers entspricht) zusätzlich das Feld `oldPassword` im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Nutzers geprüft. Clients, die diesen Endpunkt zur eigenen Kennwortänderung nutzen und `oldPassword` nicht mitsenden, erhalten `400`. Beim Zurücksetzen eines fremden Kennworts durch Super-Admins ändert sich nichts, `oldPassword` bleibt dort unbenutzt.
 - `DELETE /users` verlangt zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body; es wird gegen das aktuelle Kennwort des anfragenden Super-Admins geprüft. Clients, die diesen Endpunkt nutzen und `p` nicht mitsenden, erhalten `400`.
 - `DELETE /workspaces` verlangt ebenfalls zusätzlich das Feld `p` (Passwort des anfragenden Nutzers) im Request-Body, aus demselben Grund und mit denselben Auswirkungen wie bei `DELETE /users`.
@@ -63,7 +64,7 @@ folgenden Punkten:
 - Für alle Fehlerantworten (4xx/5xx) ist in der API-Dokumentation (`docs/api/*.spec.yml`) nun dokumentiert, dass sie einen Body-Text enthalten.
 
 ### Betrieb und Installation
-- Neue Umgebungsvariable `XML_SCHEMA_VALIDATION` (Standard: `true`) schaltet die Prüfung hochgeladener XML-Dateien gegen ihr XSD-Schema ein oder aus; im Helm-Chart entspricht ihr `config.backend.xmlSchemaValidation`. Bestehende `.env.prod`-Dateien müssen nicht angepasst werden.
+- Neue Umgebungsvariable `XML_SCHEMA_VALIDATION` (Standard: `true`) schaltet die Prüfung hochgeladener XML-Dateien gegen ihr XSD-Schema ein oder aus.
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte überhaupt kein Konto, und niemand konnte sich anmelden.
 - Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` ist in Anführungszeichen gesetzt. Bisher führte er beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
 - Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/` mit UTC-Zeitstempel. Was ein Set enthält, was separat gesichert werden muss und welche Werte aus `.env.prod` zu einem Set passen müssen, beschreibt [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
