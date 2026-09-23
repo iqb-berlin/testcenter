@@ -133,6 +133,9 @@ config:
     redisCacheFiles: *redisCacheFiles
     passwordMinLength: 7
     passwordPattern: '^.*$'
+    # -- Refuse logins without password (except sys-check logins)
+    # Testtakers files containing such logins are reported as erroneous.
+    requireLoginPassword: false
 
   cacheServer:
     # -- Maximum memory allocation for Redis

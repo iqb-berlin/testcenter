@@ -33,6 +33,7 @@ class SystemConfig {
   public static int $password_min_length;
   public static string $password_pattern;
   public static string $admin_init_password;
+  public static bool $login_requirePassword = false;
 
   /**
    * @param array<string, array<string, mixed>> $config section name => key => value
@@ -83,6 +84,7 @@ class SystemConfig {
     $config['password']['min_length'] = (int) self::stringEnv('PASSWORD_MIN_LENGTH');
     $config['password']['pattern'] = self::stringEnv('PASSWORD_PATTERN');
     $config['admin']['init_password'] = self::stringEnv('ADMIN_INIT_PASSWORD');
+    $config['login']['requirePassword'] = self::boolEnv('REQUIRE_LOGIN_PASSWORD');
 
     if (self::boolEnv('BROADCASTER_ENABLED')) {
       $config['broadcaster']['url'] = 'http://broadcaster:3000';

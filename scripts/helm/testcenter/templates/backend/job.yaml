@@ -88,6 +88,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-backend-config
                   key: PASSWORD_PATTERN
+            - name: REQUIRE_LOGIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-backend-config
+                  key: REQUIRE_LOGIN_PASSWORD
             - name: ADMIN_INIT_PASSWORD
               valueFrom:
                 secretKeyRef:

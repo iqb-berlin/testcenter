@@ -24,6 +24,7 @@ folgenden Punkten:
 - Beim Ändern des eigenen Kennworts muss nun zusätzlich das aktuelle Kennwort eingegeben werden, um die Änderung zu bestätigen. Dies betrifft nicht das Zurücksetzen eines fremden Kennworts durch Super-Admins.
 - Super-Admin: Beim Löschen von Administrator:innen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
 - Super-Admin: Beim Löschen von Arbeitsbereichen muss nun zusätzlich das eigene Kennwort eingegeben werden, um die Löschung zu bestätigen.
+- Anmeldungen ohne Kennwort lassen sich für eine Installation vollständig abschalten (`REQUIRE_LOGIN_PASSWORD`, siehe Technisches). Ist das eingeschaltet, werden Logins ohne Kennwort abgewiesen und Testtakers-Dateien mit solchen Logins als fehlerhaft gemeldet; ausgenommen sind Logins im Modus `sys-check-login`.
 
 ## Änderungen
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
@@ -63,6 +64,7 @@ folgenden Punkten:
 - Für alle Fehlerantworten (4xx/5xx) ist in der API-Dokumentation (`docs/api/*.spec.yml`) nun dokumentiert, dass sie einen Body-Text enthalten.
 
 ### Betrieb und Installation
+- Neue Umgebungsvariable `REQUIRE_LOGIN_PASSWORD` (Standard `false`, Helm: `config.backend.requireLoginPassword`). Mit `true` verweigert das Backend jede Anmeldung ohne Kennwort außer im Modus `sys-check-login`, und die Dateiprüfung meldet Testtakers-Dateien mit solchen Logins als fehlerhaft. Da die Arbeitsbereichsdateien beim Start neu eingelesen werden, sind nach dem Einschalten und einem Neustart alle Testtakers-Dateien mit mindestens einem Login ohne Kennwort samt all ihrer Logins nicht mehr nutzbar, bis jeder Login ein Kennwort hat.
 - nginx im Frontend-Container und die Traefik-Route im Helm-Chart leiten nur noch `/bs/public/ws` an den Broadcast-Service weiter statt aller Pfade unter `/bs/public/`. Wer einen eigenen Reverse-Proxy vor den Broadcast-Service schaltet, muss dessen Weiterleitung ebenso auf diesen einen Pfad beschränken; das Backend erreicht die übrigen Endpunkte weiterhin intern über `http://broadcaster:3000`.
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte überhaupt kein Konto, und niemand konnte sich anmelden.
 - Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` ist in Anführungszeichen gesetzt. Bisher führte er beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf `BRUTE_FORCE_PROTECTION='admin login person'` setzen.

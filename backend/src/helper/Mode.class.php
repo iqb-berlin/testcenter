@@ -63,6 +63,10 @@ class Mode {
     return in_array($capability, Mode::capabilities[$role] ?? []);
   }
 
+  static function requiresPassword(string $role): bool {
+    return SystemConfig::$login_requirePassword && ($role !== 'sys-check-login');
+  }
+
   static function getByCapability(string $capability): array {
     $roles = [];
     foreach (Mode::capabilities as $role => $capabilities) {

@@ -141,7 +141,8 @@ class SessionDAO extends DAO {
 
 
     // TODO also use customizable use salt for testees? -> change would break current sessions
-    if (!Password::verify($password, $result['password'], 't')) {
+    $passwordMissing = ($password === '') && Mode::requiresPassword($login->getMode());
+    if (!Password::verify($password, $result['password'], 't') || $passwordMissing) {
       return Mode::hasCapability($login->getMode(), 'protectedLogin') ?
         FailedLogin::wrongPasswordProtectedLogin :
         FailedLogin::wrongPassword;

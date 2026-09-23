@@ -132,6 +132,23 @@ class WorkspaceCacheTest extends TestCase {
     $this->assertEquals($expected, $allReports);
   }
 
+  function test_validate_passwordRequired() {
+    SystemConfig::$login_requirePassword = true;
+    $this->workspaceCache->validate();
+
+    $report = $this->workspaceCache->getFile('Testtakers', 'SAMPLE_TESTTAKERS.XML')->getValidationReport();
+
+    $expected = [
+      'error' => [
+        'Login `test-no-pw` has no password, but passwords are required on this instance',
+        'Login `test-no-pw-trial` has no password, but passwords are required on this instance',
+        'Login `test-expired` has no password, but passwords are required on this instance',
+        'Login `test-future` has no password, but passwords are required on this instance'
+      ]
+    ];
+    $this->assertEquals($expected, $report);
+  }
+
   function test_getResource() {
     $result = $this->workspaceCache->getResource('VERONA-PLAYER-SIMPLE-6.0');
     $expectation = "verona-player-simple-6.0.html";
