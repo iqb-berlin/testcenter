@@ -456,8 +456,14 @@ components:
             type: string
           unitname:
             type: string
-          timestamp:
+          originalUnitId:
             type: string
+          timestamp:
+            type: integer
+            description: >-
+              Unix epoch in milliseconds, taken from the client's own clock when the entry was
+              logged. It is whatever the test taker's browser reported, not a server-verified
+              instant.
           logentry:
             type: string
 

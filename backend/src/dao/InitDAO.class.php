@@ -39,6 +39,9 @@ class InitDAO extends SessionDAO {
 
   public function createSampleLoginsReviewsLogs(): void {
     $timestamp = TimeStamp::now();
+    // Logs and data parts carry the client's own clock, which browsers report in milliseconds -
+    // see the same conversion in AttachmentFiles::addFile().
+    $clientTimestamp = $timestamp * 1000;
 
     $sessionDAO = new SessionDAO();
     $testDAO = new TestDAO();
@@ -98,14 +101,14 @@ class InitDAO extends SessionDAO {
       'page-1',
 
     );
-    $testDAO->addUnitLogs([new UnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $timestamp)]);
-    $testDAO->addTestLogs([new TestLog($test->id, "sample log entry", $timestamp)]);
+    $testDAO->addUnitLogs([new UnitLog($test->id, 'UNIT.SAMPLE', "sample unit log", $clientTimestamp)]);
+    $testDAO->addTestLogs([new TestLog($test->id, "sample log entry", $clientTimestamp)]);
     $testDAO->updateDataParts(
       $test->id,
       'UNIT.SAMPLE',
       ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"],
       "example-data-format",
-      $timestamp
+      $clientTimestamp
     );
     $testDAO->updateTestState(
       $test->id,

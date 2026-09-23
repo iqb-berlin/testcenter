@@ -47,7 +47,7 @@ final class ReportTest extends TestCase {
       'code' => "xxx",
       'bookletname' => "BOOKLET.SAMPLE-1",
       'unitname' => "UNIT.SAMPLE",
-      'timestamp' => "1627545600",
+      'timestamp' => 1627545600000,
       'logentry' => "sample unit log"
     ], [
       'groupname' => "sample_group",
@@ -55,7 +55,7 @@ final class ReportTest extends TestCase {
       'code' => "xxx",
       'bookletname' => "BOOKLET.SAMPLE-1",
       'unitname' => "",
-      'timestamp' => "1627545600",
+      'timestamp' => 1627545600000,
       'logentry' => "sample log entry"
     ]
   ];
@@ -68,7 +68,7 @@ final class ReportTest extends TestCase {
       "unitname" => "UNIT.SAMPLE",
       "responses" => "{\"name\":\"Sam Sample\",\"age\":34}",
       "responseType" => "",
-      "response-ts" => "1627545600",
+      "response-ts" => 1627545600000,
       "laststate" => "{\"PRESENTATIONCOMPLETE\":\"yes\"}"
     ],
     [
@@ -79,7 +79,7 @@ final class ReportTest extends TestCase {
       "unitname" => "UNIT.SÄMPLE",
       "responses" => "{\"name\":\"Säm Sämple\",\"age\":42}",
       "responseType" => "immediate",
-      "response-ts" => "1627545600",
+      "response-ts" => 1627545600000,
       "laststate" => ""
     ]
   ];
@@ -384,8 +384,8 @@ final class ReportTest extends TestCase {
 
     $expectedLogsCSVReportData = self::BOM .
       "groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"\";\"1627545600\";sample unit log\n" .
-      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"\";\"1627545600\";sample log entry";
+      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"\";\"1627545600000\";sample unit log\n" .
+      "\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"\";\"\";\"1627545600000\";sample log entry";
 
     // Act
     $report = new LogReportOutput($this->workspaceId, $this->dataIds, $this->reportFormat);

@@ -94,13 +94,13 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT_1',
-        'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'laststate' => '{"SOME_STATE": "WHATEVER"}',
         'originalUnitId' => 'UNIT_1',
         'responses' => [
           [
             'id' => "all",
             'content' => "{\"name\":\"Sam Sample\",\"age\":34}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ]
         ]
@@ -111,19 +111,19 @@ final class AdminDAOTest extends TestCase {
         'code' => 'xxx',
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
-        'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+        'laststate' => '{"PRESENTATIONCOMPLETE": "yes"}',
         'originalUnitId' => 'UNIT.SAMPLE',
         'responses' => [
           [
             'id' => "all",
             'content' => "{\"name\":\"Elias Example\",\"age\":35}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ],
           [
             'id' => "other",
             'content' => "{\"other\":\"stuff\"}",
-            'ts' => 1597903000,
+            'ts' => 1597903000000,
             'responseType' => 'the-response-type'
           ]
         ]
@@ -150,7 +150,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'originalUnitId' => 'UNIT.SAMPLE',
-        'timestamp' => 1597903000,
+        'timestamp' => 1597903000000,
         'logentry' => 'sample unit log'
       ],
       [
@@ -160,7 +160,7 @@ final class AdminDAOTest extends TestCase {
         'bookletname' => 'first sample test',
         'unitname' => '',
         'originalUnitId' => '',
-        'timestamp' => 1597903000,
+        'timestamp' => 1597903000000,
         'logentry' => 'sample log entry'
       ]
     ];
@@ -223,7 +223,7 @@ final class AdminDAOTest extends TestCase {
       "id" => 5,
       "test_id" => 1,
       "keyword" => 'a_keyword',
-      "parameter" => '["first_argument","second_argument"]',
+      "parameter" => '["first_argument", "second_argument"]',
       "commander_id" => 1,
       // 1597905000 is 06:30 UTC, stored as the instant it is rather than as local wall time
       'timestamp' => '2020-08-20 06:30:00+00',
@@ -260,7 +260,7 @@ final class AdminDAOTest extends TestCase {
     $expectation = [
       'locked' => false,
       'id' => '1',
-      'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
+      'laststate' => '{"CURRENT_UNIT_ID": "UNIT_1"}',
       'label' => 'first test label'
     ];
     $result = $this->dbc->getTest(1);

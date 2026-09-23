@@ -21,19 +21,19 @@ insert into workspace_users (workspace_id, user_id, role) values (1, 1, 'RW');
 
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
-values ('test', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '', null);
+values ('test', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '{}', null);
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
-values ('test-expired', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2000-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '', null);
+values ('test-expired', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2000-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '{}', null);
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
-values ('monitor', 'pw_hash', 'monitor-group', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '', null);
+values ('monitor', 'pw_hash', 'monitor-group', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '{}', null);
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
-values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '', null);
+values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '{}', null);
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts, view_settings)
-values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00+01:00', '2032-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '', null);
+values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00+01:00', '2032-01-02 10:00:00+01:00', null, 'sample_group', 'Sample Group', '{}', null);
 
 
 insert into login_session_groups (group_label, group_name, token, workspace_id, last_modified)
@@ -84,7 +84,7 @@ insert into tests (name, file_id, person_id, laststate, locked, label, running, 
 values ('first sample test', 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', false, 'first test label', true, '2022-01-24 09:01:00+01:00');
 
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1', 1, '', false, 'second test label', true, '2022-01-24 09:01:00+01:00');
+values ('BOOKLET.SAMPLE-1', 'BOOKLET.SAMPLE-1', 1, '{}', false, 'second test label', true, '2022-01-24 09:01:00+01:00');
 
 insert into tests (name, file_id, person_id, laststate, locked, label, running, timestamp_server)
 values ('BOOKLET.SAMPLE-1#bookletstate=isset', 'BOOKLET.SAMPLE-1', 5, null, false, 'review test label', true, '2022-01-24 09:01:00+01:00');
@@ -101,10 +101,10 @@ values ('UNIT_1', 3, null, 'UNIT_1');
 -- timestamp is a PostgreSQL type keyword. The schema keeps this legacy column name quoted, so quote it in fixtures
 -- as well to make that exceptional identifier explicit.
 insert into unit_logs (unit_name, test_id, logentry, "timestamp")
-values ('UNIT.SAMPLE', 1, 'sample unit log', '1597903000');
+values ('UNIT.SAMPLE', 1, 'sample unit log', '1597903000000');
 
 insert into test_logs (booklet_id, logentry, "timestamp")
-values (1, 'sample log entry', 1597903000);
+values (1, 'sample log entry', 1597903000000);
 
 insert into test_reviews (booklet_id, reviewtime, priority, categories, entry, user_agent)
 values (3, '2030-01-01 12:00:00+01:00', 1, '', 'sample booklet review', '');
@@ -113,13 +113,13 @@ insert into unit_reviews (unit_name, test_id, reviewtime, priority, categories, 
 values ('UNIT_1', 3, '2030-01-01 12:00:00+01:00', 1, '', 'this is a sample unit review', null, null, '');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT_1', 1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
+values ('UNIT_1', 1, 'all', '{"name":"Sam Sample","age":34}', 1597903000000, 'the-response-type');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT.SAMPLE', 1, 'all', '{"name":"Elias Example","age":35}', 1597903000, 'the-response-type');
+values ('UNIT.SAMPLE', 1, 'all', '{"name":"Elias Example","age":35}', 1597903000000, 'the-response-type');
 
 insert into unit_data (unit_name, test_id, part_id, content, ts, response_type)
-values ('UNIT.SAMPLE', 1, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');
+values ('UNIT.SAMPLE', 1, 'other', '{"other":"stuff"}', 1597903000000, 'the-response-type');
 
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")
@@ -129,9 +129,9 @@ values (2, 1, 'COMMAND_A', '["param1"]', 3, '2020-08-20 07:06:40+02:00');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")
 values (3, 1, 'COMMAND_D', '["param1", "param2"]', null, '2020-08-20 08:13:20+02:00');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")
-values (4, 1, 'COMMAND_B', '', 3, '2020-08-20 07:23:20+02:00');
+values (4, 1, 'COMMAND_B', '[]', 3, '2020-08-20 07:23:20+02:00');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, "timestamp")
-values (1, 2, 'COMMAND_X', '', 3, '2020-08-20 07:40:00+02:00');
+values (1, 2, 'COMMAND_X', '[]', 3, '2020-08-20 07:40:00+02:00');
 
 -- Keep the command identity sequence aligned for the same reason as the users sequence above. The ids repeat
 -- across tests on purpose: command 1 went to test 1 and test 2.
