@@ -34,6 +34,7 @@ folgenden Punkten:
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
 - In der Gruppenüberwachung sind „Weiter“, „Pause“, „Springe zu“ und „Test entsperren“ deaktiviert, solange kein Test ausgewählt ist. Bisher ließen sie sich anklicken und meldeten lediglich „Keine Tests betroffen“ – etwa direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
 - „Verbleibende Zeit“ wird im Review-Modus nicht länger angezeigt, wenn keine Zeitbeschränkung gesetzt ist.
+- Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar. Eine Aktualisierung wird dringend empfohlen.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 
 ## Technisches
@@ -62,6 +63,7 @@ folgenden Punkten:
 - Für alle Fehlerantworten (4xx/5xx) ist in der API-Dokumentation (`docs/api/*.spec.yml`) nun dokumentiert, dass sie einen Body-Text enthalten.
 
 ### Betrieb und Installation
+- nginx im Frontend-Container und die Traefik-Route im Helm-Chart leiten nur noch `/bs/public/ws` an den Broadcast-Service weiter statt aller Pfade unter `/bs/public/`. Wer einen eigenen Reverse-Proxy vor den Broadcast-Service schaltet, muss dessen Weiterleitung ebenso auf diesen einen Pfad beschränken; das Backend erreicht die übrigen Endpunkte weiterhin intern über `http://broadcaster:3000`.
 - Der erste System-Administrator wird jetzt unabhängig von `NO_SAMPLE_DATA` angelegt. Bisher unterdrückte `NO_SAMPLE_DATA=yes` neben den Beispieldaten auch seine Anlage: Eine so aufgesetzte Neuinstallation hatte überhaupt kein Konto, und niemand konnte sich anmelden.
 - Der Standardwert für `BRUTE_FORCE_PROTECTION` in `.env.prod-template` ist in Anführungszeichen gesetzt. Bisher führte er beim Einlesen der Datei zum Fehler `login: Cannot possibly work without effective root`. Installationen, die bereits über Version 18.2.0 aktualisiert wurden, sollten die Zeile in ihrer `.env.prod` manuell auf `BRUTE_FORCE_PROTECTION='admin login person'` setzen.
 - Die neuen Kommandos `make testcenter-backup` und `make testcenter-restore BACKUP=<verzeichnis>` sichern Datenbank und Backend-Dateien gemeinsam und stellen sie gemeinsam wieder her. Ein Backup ist ein Verzeichnis unter `backup/` mit UTC-Zeitstempel. Was ein Set enthält, was separat gesichert werden muss und welche Werte aus `.env.prod` zu einem Set passen müssen, beschreibt [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
