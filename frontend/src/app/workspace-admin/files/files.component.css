@@ -101,3 +101,12 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
   max-height: 15em;
   overflow-y: auto
 }
+
+.supported-versions {
+  margin-top: 1em;
+  color: gray;
+}
+
+.supported-versions h4 {
+  margin-bottom: 0.3em;
+}

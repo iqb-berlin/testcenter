@@ -120,6 +120,7 @@ class SystemController extends Controller {
         'veronaPlayerApiVersionMax' => SystemConfig::$system_veronaMax,
         'iqbStandardResponseTypeMin' => SystemConfig::$system_iqbStandardResponseMin,
         'iqbStandardResponseTypeMax' => SystemConfig::$system_iqbStandardResponseMax,
+        'xmlSchemaVersions' => SystemConfig::$system_xmlSchemaVersions,
         'fileServiceUri' => FileService::getUri(),
         'broadcastingServiceUri' => BroadcastService::getUri(),
         'supportedBrowsers' => $browsers,

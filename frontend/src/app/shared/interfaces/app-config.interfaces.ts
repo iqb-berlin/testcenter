@@ -13,6 +13,13 @@ export interface AppSettingsObject {
 
 export type AppSettings = AppSettingsObject | Record<string, never>;
 
+export interface XmlSchemaVersions {
+  [fileType: string]: {
+    min: number;
+    max: number;
+  };
+}
+
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
@@ -22,6 +29,7 @@ export interface SysConfig {
   veronaPlayerApiVersionMax: number;
   iqbStandardResponseTypeMin: number;
   iqbStandardResponseTypeMax: number;
+  xmlSchemaVersions: XmlSchemaVersions;
   bruteForceProtection: string[];
   broadcastingServiceUri: string;
   fileServiceUri: string;

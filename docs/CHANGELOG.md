@@ -28,6 +28,7 @@ folgenden Punkten:
 ## Änderungen
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 - Hochgeladene XML-Dateien werden wieder gegen ihr XSD-Schema geprüft; Verstöße gegen das Schema verhindern den Upload.
+- (breaking) XML-Dateien werden nur noch akzeptiert, wenn sie eine unterstützte Schema-Version angeben; welche das sind, zeigt die Dateiansicht des Arbeitsbereichs.
 
 ## Fehlerbehebungen
 - (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“, „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“ und „Eingabeelementen“.
@@ -48,6 +49,7 @@ folgenden Punkten:
 - Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden ließen; die API-Dokumentation führte beide Codes bereits auf.
 
 ### API-Verhalten
+- `GET /system/config` liefert im neuen Feld `xmlSchemaVersions` je Dateityp das Schema-Repository sowie die niedrigste und höchste unterstützte Hauptversion.
 - `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da ein an mehrere Tests geschicktes Kommando dieselbe ID auf mehreren Zeilen trägt, brach die Abfrage ab. Die Testanwendung selbst sendet `lastCommandId` nicht; betroffen waren nur Anwendungen, die die API direkt nutzen.
 - `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).
 - Die Endpunkte unter `/assets` liefern Fehler nun wie alle anderen Endpunkte als Text über den zentralen ErrorHandler, also mit `Error-ID`-Header. Bisher lieferten sie stattdessen ein JSON-Objekt der Form `{"error": "..."}` ohne `Error-ID` und waren damit der letzte verbliebene Sonderfall im Backend.
