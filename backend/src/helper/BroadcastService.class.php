@@ -16,7 +16,7 @@ class BroadcastService {
   }
 
   static function registerChannel(string $channelName, array $data): ?string {
-    $bsToken = md5((string) rand(0, 99999999));
+    $bsToken = Random::string(24, true);
     $data['token'] = $bsToken;
     $response = BroadcastService::send("$channelName/register", json_encode($data));
 

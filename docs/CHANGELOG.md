@@ -35,7 +35,7 @@ folgenden Punkten:
 - Nach einer erfolgreichen Anmeldung wird der Zähler für fehlgeschlagene Anmeldeversuche zurückgesetzt. Damit führt die vorherige Prüfung eines kennwortgeschützten Login-Namens nicht mehr schrittweise zu einer späteren Sperre.
 - In der Gruppenüberwachung sind „Weiter“, „Pause“, „Springe zu“ und „Test entsperren“ deaktiviert, solange kein Test ausgewählt ist. Bisher ließen sie sich anklicken und meldeten lediglich „Keine Tests betroffen“ – etwa direkt nach dem Öffnen einer Gruppe, solange die Liste der Sitzungen noch nicht geladen war.
 - „Verbleibende Zeit“ wird im Review-Modus nicht länger angezeigt, wenn keine Zeitbeschränkung gesetzt ist.
-- Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar. Eine Aktualisierung wird dringend empfohlen.
+- Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar, und die Zugangstoken für dessen WebSocket-Verbindungen ließen sich erraten. Eine Aktualisierung wird dringend empfohlen.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 
 ## Technisches
