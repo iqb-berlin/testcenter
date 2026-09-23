@@ -10,8 +10,8 @@ organisation on GitHub and are accessible via stable permalinks.
 | Schema | Repository | Permalink |
 |---|---|---|
 | Booklet | [testcenter-booklet-xml](https://github.com/iqb-specifications/testcenter-booklet-xml) | `https://w3id.org/iqb/spec/testcenter-booklet-xml/{version}` |
-| Testtakers | [testcenter-testtaker-xml](https://github.com/iqb-specifications/testcenter-testtaker-xml) | `https://w3id.org/iqb/spec/testcenter-testtakers-xml/{version}` |
-| Unit | [unit-xml](https://github.com/iqb-specifications/unit-xml) | `https://w3id.org/iqb/spec/testcenter-unit-xml/{version}` |
+| Testtakers | [testcenter-testtaker-xml](https://github.com/iqb-specifications/testcenter-testtaker-xml) | `https://w3id.org/iqb/spec/testcenter-testtaker-xml/{version}` |
+| Unit | [unit-xml](https://github.com/iqb-specifications/unit-xml) | `https://w3id.org/iqb/spec/unit-xml/{version}` |
 | SysCheck | [testcenter-syscheck-xml](https://github.com/iqb-specifications/testcenter-syscheck-xml) | `https://w3id.org/iqb/spec/testcenter-syscheck-xml/{version}` |
 
 ## Usage
