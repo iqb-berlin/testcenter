@@ -273,7 +273,7 @@ END;
 
   function test_getAssetAssignments() {
     $xml = <<<END
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0">
   <Metadata><Description>example</Description></Metadata>
   <Group id="sample_group" label="Sample Group">
     <AssetAssignments>

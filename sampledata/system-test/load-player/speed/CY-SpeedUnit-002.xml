@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.4">
+      xsi:noNamespaceSchemaLocation="https://w3id.org/iqb/spec/unit-xml/17.6">
   <Metadata lastChange="2026-08-20T10:43:01.948Z">
     <Id>speed-u2</Id>
     <Label>Instruktionen</Label>
