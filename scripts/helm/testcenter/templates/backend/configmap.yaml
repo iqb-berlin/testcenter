@@ -10,3 +10,4 @@ data:
   REDIS_CACHE_FILES: {{ .Values.config.backend.redisCacheFiles | quote }}
   PASSWORD_MIN_LENGTH: {{ .Values.config.backend.passwordMinLength | quote }}
   PASSWORD_PATTERN: {{ .Values.config.backend.passwordPattern | quote }}
+  XML_SCHEMA_VALIDATION: {{ .Values.config.backend.xmlSchemaValidation | quote }}

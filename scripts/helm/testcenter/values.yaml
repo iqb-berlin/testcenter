@@ -133,6 +133,8 @@ config:
     redisCacheFiles: *redisCacheFiles
     passwordMinLength: 7
     passwordPattern: '^.*$'
+    # -- Validate uploaded XML files against their XSD schema
+    xmlSchemaValidation: true
 
   cacheServer:
     # -- Maximum memory allocation for Redis

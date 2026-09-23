@@ -29,7 +29,7 @@ class XMLFilesBookletTest extends TestCase {
     require_once "src/files/XMLFile.class.php";
     require_once "src/files/XMLFileBooklet.class.php";
     require_once "test/unit/mock-classes/ExternalFileMock.php";
-    SystemConfig::$enable_xmlschema_validation = true;
+    SystemConfig::$xmlSchema_validation = true;
 
     VfsForTest::setUp();
   }
