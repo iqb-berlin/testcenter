@@ -22,6 +22,7 @@ export class TesteeService {
 
   addTestee(testee: Testee): void {
     this.testees[testee.token] = testee;
+    this.websocketGateway.allowToken(testee.token);
   }
 
   removeTestee(testeeToken: string): void {

@@ -22,6 +22,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   private server!: Server; // magically injected
 
   private clients = new Map<string, WebSocket & { isAlive?: boolean }>();
+  private allowedTokens = new Set<string>(); // tokens registered by the backend
   private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private clientLost$: Subject<string> = new Subject<string>();
   private heartbeatInterval: NodeJS.Timeout | null = null;
@@ -54,6 +55,11 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
     try {
       const token = WebsocketGateway.getTokenFromUrl(message.url as string);
+      if (!this.allowedTokens.has(token) || this.clients.has(token)) {
+        this.logger.warn(`Connection rejected, token not registered or already connected: ${token}`);
+        client.close(1008, 'Invalid token');
+        return;
+      }
 
       client.isAlive = true;
       client.on('pong', () => {
@@ -107,7 +113,12 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     });
   }
 
+  allowToken(token: string): void {
+    this.allowedTokens.add(token);
+  }
+
   disconnectClient(monitorToken: string): void {
+    this.allowedTokens.delete(monitorToken);
     const client = this.clients.get(monitorToken);
     if (client) {
       this.logger.log(`disconnect client: ${monitorToken}`);

@@ -36,7 +36,9 @@ describe('TestSessionService: add and remove monitors', () => {
   });
 
   it('should add monitors', () => {
+    const spyAllowToken = jest.spyOn(testSessionService['websocketGateway'], 'allowToken');
     testSessionService.addMonitor(mockMonitor1);
+    expect(spyAllowToken).toHaveBeenCalledWith('monitorToken1');
     expect(testSessionService['monitors']['Gruppe1']['monitorToken1']).toStrictEqual(mockMonitor1);
     expect(testSessionService['monitors']['TestakerGroup1']['monitorToken1']).toStrictEqual(mockMonitor1);
     expect(testSessionService['monitors']['Gruppe2']['monitorToken1']).toStrictEqual(mockMonitor1);

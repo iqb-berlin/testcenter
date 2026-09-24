@@ -33,8 +33,10 @@ describe('testeeService add and remove', () => {
   });
 
   it('should add a testee', () => {
+    const spyAllowToken = jest.spyOn(testeeService['websocketGateway'], 'allowToken');
     testeeService.addTestee(mockTestee);
     expect(testeeService['testees']['testeeToken']).toStrictEqual(mockTestee);
+    expect(spyAllowToken).toHaveBeenCalledWith('testeeToken');
   });
 
   it('should remove a testee', () => {

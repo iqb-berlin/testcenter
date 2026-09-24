@@ -97,6 +97,7 @@ export class TestSessionService {
       }
       this.monitors[group][monitor.token] = monitor;
     });
+    this.websocketGateway.allowToken(monitor.token);
   }
 
   removeMonitor(monitorToken: string): void {

@@ -53,6 +53,7 @@ describe('websocketGateway handle connection and disconnection (single client)',
     }).compile();
 
     websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    expectedTokens.forEach(token => websocketGateway.allowToken(token));
   });
 
   it('should be defined', () => {
@@ -78,6 +79,32 @@ describe('websocketGateway handle connection and disconnection (single client)',
     expect(websocketGateway['clients'].get('clientToken2')).toStrictEqual(client2);
     expect(websocketGateway['clientsCount$'].value).toEqual(2);
     expect(spyLogger).toHaveBeenCalled();
+  });
+
+  it('should reject a connection with a token that was not registered', () => {
+    const unknownClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    const unknownMessage = { url: 'www.test.de/ws?token=unknownToken' } as IncomingMessage;
+    websocketGateway.handleConnection(unknownClient, unknownMessage);
+    expect(unknownClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+
+  it('should reject a second connection with the same token', () => {
+    const duplicateClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    websocketGateway.handleConnection(client, incomingMessage);
+    websocketGateway.handleConnection(duplicateClient, incomingMessage);
+    expect(duplicateClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].get('clientToken')).toStrictEqual(client);
+    expect(websocketGateway['clients'].size).toEqual(1);
+  });
+
+  it('should reject a token after its client was disconnected', () => {
+    const returningClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    websocketGateway.handleConnection(client, incomingMessage);
+    websocketGateway.disconnectClient('clientToken');
+    websocketGateway.handleConnection(returningClient, incomingMessage);
+    expect(returningClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
   });
 
   it('should handle a disconnect (empty client list)', () => {
