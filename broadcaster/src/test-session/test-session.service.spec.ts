@@ -64,6 +64,14 @@ describe('TestSessionService: add and remove monitors', () => {
     expect(spyDisconnectClient).toHaveBeenCalled();
   });
 
+  it('should remove a monitor whose token expired', () => {
+    testSessionService.addMonitor(mockMonitor1);
+    testSessionService['websocketGateway']['tokenExpired$'].next(mockMonitor1.token);
+
+    expect(testSessionService.getMonitors()).toStrictEqual([]);
+    expect(testSessionService['testSessions']['Gruppe1']).toBeUndefined();
+  });
+
   it('should remove monitor (not empty monitor list)', () => {
     const spyLogger = jest.spyOn(testSessionService['logger'], 'log');
     const spyDisconnectClient = jest.spyOn(testSessionService['websocketGateway'], 'disconnectClient');

@@ -22,6 +22,9 @@ export class TestSessionService {
     this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
       this.removeMonitor(disconnected);
     });
+    this.websocketGateway.getTokenExpiryObservable().subscribe((expired: string) => {
+      this.removeMonitor(expired);
+    });
   }
 
   private readonly logger = new Logger(TestSessionService.name);

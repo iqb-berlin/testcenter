@@ -6,13 +6,13 @@ import { Command } from '../command/command.interface';
 
 @Injectable()
 export class TesteeService {
-  constructor(
-    private readonly websocketGateway: WebsocketGateway,
-    private readonly http: HttpService
-  ) {
+  constructor(private readonly websocketGateway: WebsocketGateway, private readonly http: HttpService) {
     this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
       this.notifyDisconnection(disconnected);
       this.removeTestee(disconnected);
+    });
+    this.websocketGateway.getTokenExpiryObservable().subscribe((expired: string) => {
+      this.removeTestee(expired);
     });
   }
 

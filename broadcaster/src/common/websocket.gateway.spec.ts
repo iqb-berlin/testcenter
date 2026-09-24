@@ -222,3 +222,58 @@ describe('websocketGateway heartbeat', () => {
     expect(websocketGateway['clients'].size).toEqual(0);
   });
 });
+
+describe('websocketGateway token expiry', () => {
+  const connectingClient = {
+    close: jest.fn(), on: jest.fn(), ping: jest.fn(), terminate: jest.fn()
+  } as unknown as WebSocket;
+
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [WebsocketGateway]
+    }).compile();
+
+    websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    websocketGateway.afterInit(websocketGateway['server']);
+    websocketGateway.allowToken('unusedToken');
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('should expire a token that does not connect in time', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('unusedToken');
+    expect(websocketGateway['allowedTokens'].has('unusedToken')).toEqual(false);
+  });
+
+  it('should reject a connection with an expired token', () => {
+    jest.advanceTimersByTime(30000);
+    websocketGateway.handleConnection(connectingClient, { url: 'www.test.de/ws?token=unusedToken' } as IncomingMessage);
+    expect(connectingClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+
+  it('should not expire a token that connected', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    websocketGateway.handleConnection(connectingClient, { url: 'www.test.de/ws?token=unusedToken' } as IncomingMessage);
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).not.toHaveBeenCalled();
+    expect(websocketGateway['allowedTokens'].has('unusedToken')).toEqual(true);
+  });
+
+  it('should not expire a token registered shortly before the heartbeat', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    jest.advanceTimersByTime(20000);
+    websocketGateway.allowToken('lateToken');
+    jest.advanceTimersByTime(10000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('unusedToken');
+    expect(spyTokenExpired).not.toHaveBeenCalledWith('lateToken');
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('lateToken');
+  });
+});

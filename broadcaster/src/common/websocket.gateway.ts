@@ -17,14 +17,16 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   private readonly logger = new Logger(WebsocketGateway.name);
   private static readonly MAX_CONNECTIONS = 10000;
   private static readonly HEARTBEAT_INTERVAL = 30000;
+  private static readonly TOKEN_CONNECT_TIMEOUT = 30000;
 
   @WebSocketServer()
   private server!: Server; // magically injected
 
   private clients = new Map<string, WebSocket & { isAlive?: boolean }>();
-  private allowedTokens = new Set<string>(); // tokens registered by the backend
+  private allowedTokens = new Map<string, number>(); // tokens registered by the backend, with registration time
   private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private clientLost$: Subject<string> = new Subject<string>();
+  private tokenExpired$: Subject<string> = new Subject<string>();
   private heartbeatInterval: NodeJS.Timeout | null = null;
 
   afterInit(server: Server) {
@@ -42,7 +44,19 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         ws.isAlive = false;
         ws.ping();
       });
+      this.expireUnconnectedTokens();
     }, WebsocketGateway.HEARTBEAT_INTERVAL);
+  }
+
+  // a client that registers but never connects (e.g. a proxy blocking WebSockets) registers anew on every poll
+  private expireUnconnectedTokens() {
+    const expiryTime = Date.now() - WebsocketGateway.TOKEN_CONNECT_TIMEOUT;
+    this.allowedTokens.forEach((allowedAt, token) => {
+      if (!this.clients.has(token) && allowedAt <= expiryTime) {
+        this.allowedTokens.delete(token);
+        this.tokenExpired$.next(token);
+      }
+    });
   }
 
   handleConnection(client: WebSocket & { isAlive?: boolean }, message: IncomingMessage): void {
@@ -113,7 +127,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   }
 
   allowToken(token: string): void {
-    this.allowedTokens.add(token);
+    this.allowedTokens.set(token, Date.now());
   }
 
   disconnectClient(monitorToken: string): void {
@@ -134,6 +148,10 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   getDisconnectionObservable(): Observable<string> {
     return this.clientLost$.asObservable();
+  }
+
+  getTokenExpiryObservable(): Observable<string> {
+    return this.tokenExpired$.asObservable();
   }
 
   getClientTokens(): string[] {

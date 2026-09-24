@@ -51,6 +51,16 @@ describe('testeeService add and remove', () => {
     expect(spyDisconnectClient).toHaveBeenCalled();
     expect(spyLogger).toHaveBeenCalled();
   });
+
+  it('should remove a testee whose token expired without notifying the backend', () => {
+    const spyNotifyDisconnection = jest.spyOn(testeeService, 'notifyDisconnection');
+
+    testeeService.addTestee(mockTestee);
+    testeeService['websocketGateway']['tokenExpired$'].next(mockTestee.token);
+
+    expect(testeeService['testees']).toStrictEqual({});
+    expect(spyNotifyDisconnection).not.toHaveBeenCalled();
+  });
 });
 
 describe('testeeService', () => {
