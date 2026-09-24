@@ -40,6 +40,7 @@ folgenden Punkten:
 - Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar, und die Zugangstoken für dessen WebSocket-Verbindungen ließen sich erraten. Eine Aktualisierung wird dringend empfohlen.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 - Meldet ein Player beim Start keine Verona-Version (weder `apiVersion` noch `metadata.specVersion`), erscheint die Fehlermeldung „Unbekannte Verona-Version“. Bisher brach der Start mit einem unverständlichen Programmfehler ab.
+- Sicherheitsproblem behoben: Angemeldete Personen können nur noch Antworten, Unit-Zustände und Kommandos ihrer eigenen Tests abrufen. Bisher ließen sich über die Test-ID auch die Antworten anderer Testtakers im selben Arbeitsbereich lesen und deren Kommandos als ausgeführt markieren.
 - Bricht die Verbindung eines Testtakers unbemerkt ab (z. B. durch einen Netzwerkausfall), zeigt die Gruppenüberwachung sie nach spätestens einer Minute als verloren an. Bisher blieb der Test weiter als verbunden angezeigt.
 
 ## Technisches
@@ -53,6 +54,7 @@ folgenden Punkten:
 - Der File-Server antwortet mit `403`, wenn ihm der Zugriff auf eine vorhandene Datei verwehrt ist, und mit `500` bei einem internen Fehler. Bisher meldete er in beiden Fällen `404`, sodass sich eine fehlende Berechtigung und ein Serverfehler nicht von einer fehlenden Datei unterscheiden ließen; die API-Dokumentation führte beide Codes bereits auf.
 
 ### API-Verhalten
+- `GET /test/{test_id}/unit/{unit_name}`, `GET /test/{test_id}/commands` und `PATCH /test/{test_id}/command/{command_id}/executed` antworten mit `403`, wenn der Test nicht zur anfragenden Person gehört, wie die übrigen Endpunkte unter `/test/{test_id}`.
 - `GET /system/config` liefert im neuen Feld `xmlSchemaVersions` je Dateityp das Schema-Repository sowie die niedrigste und höchste unterstützte Hauptversion.
 - `GET /test/{test_id}/commands` mit `lastCommandId` liefert die Kommandos des angefragten Tests, statt mit einem Serverfehler abzubrechen. Bisher suchte der Endpunkt den Zeitstempel allein über die ID; da ein an mehrere Tests geschicktes Kommando dieselbe ID auf mehreren Zeilen trägt, brach die Abfrage ab. Die Testanwendung selbst sendet `lastCommandId` nicht; betroffen waren nur Anwendungen, die die API direkt nutzen.
 - `GET /workspace/{ws_id}/report/{type}` und `GET /reviews/export` werten den `Accept`-Header jetzt gleich aus: Media-Type-Parameter wie in `text/csv;charset=utf-8` werden ignoriert, aus einer Liste gewinnt der erste lieferbare Typ. Bisher verlangte der Report-Endpunkt exakt `text/csv` und lieferte sonst kommentarlos JSON – auch bei `text/csv;charset=utf-8`, also genau dem Wert, den die Spezifikation als Antwort-Media-Type ausweist. Die Vorgabe bei fehlender oder nicht erfüllbarer Angabe bleibt unverändert (JSON für die Report-Endpunkte, CSV für `GET /reviews/export`).

@@ -90,7 +90,8 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->get('/{test_id}', [TestController::class, 'get'])
     ->add(new IsTestOwner());
 
-  $group->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit']);
+  $group->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit'])
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/unit/{unit_name}/review', [TestController::class, 'putUnitReview'])
     ->add(new IsTestOwner());
@@ -133,9 +134,11 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->patch('/{test_id}/lock', [TestController::class, 'patchLock'])
     ->add(new IsTestOwner());
 
-  $group->get('/{test_id}/commands', [TestController::class, 'getCommands']);
+  $group->get('/{test_id}/commands', [TestController::class, 'getCommands'])
+    ->add(new IsTestOwner());
 
-  $group->patch('/{test_id}/command/{command_id}/executed', [TestController::class, 'patchCommandExecuted']);
+  $group->patch('/{test_id}/command/{command_id}/executed', [TestController::class, 'patchCommandExecuted'])
+    ->add(new IsTestOwner());
 
 })
   ->add(new RequireToken('person'));
