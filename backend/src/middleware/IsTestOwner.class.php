@@ -11,7 +11,7 @@ use Slim\Http\ServerRequest as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
-class IsTestWritable {
+class IsTestOwner {
 
   function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
     $routeContext = RouteContext::fromRequest($request);
