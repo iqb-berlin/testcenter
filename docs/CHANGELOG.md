@@ -40,6 +40,7 @@ folgenden Punkten:
 - Sicherheitsproblem behoben: Interne Endpunkte des Broadcast-Service waren ohne Anmeldung öffentlich erreichbar, und die Zugangstoken für dessen WebSocket-Verbindungen ließen sich erraten. Eine Aktualisierung wird dringend empfohlen.
 - Ein bereits vergebener Name beim Anlegen oder Umbenennen eines Workspaces und beim Anlegen eines Benutzers wird als „Konflikt mit vorhandenen Daten“ gemeldet. Bisher erschien „Fehlerhafte Daten“, was einen doppelten Namen nicht von einer unvollständigen Eingabe unterschied.
 - Meldet ein Player beim Start keine Verona-Version (weder `apiVersion` noch `metadata.specVersion`), erscheint die Fehlermeldung „Unbekannte Verona-Version“. Bisher brach der Start mit einem unverständlichen Programmfehler ab.
+- Bricht die Verbindung eines Testtakers unbemerkt ab (z. B. durch einen Netzwerkausfall), zeigt die Gruppenüberwachung sie nach spätestens einer Minute als verloren an. Bisher blieb der Test weiter als verbunden angezeigt.
 
 ## Technisches
 

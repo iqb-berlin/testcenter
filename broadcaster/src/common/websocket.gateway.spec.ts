@@ -188,3 +188,37 @@ describe('websocketGateway handle connection and disconnection (single client)',
     expect(isObservable(websocketGateway.subscribeClientCount(1))).toStrictEqual(true);
   });
 });
+
+describe('websocketGateway heartbeat', () => {
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [WebsocketGateway]
+    }).compile();
+
+    websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    websocketGateway.allowToken('deadToken');
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('should report a client as lost when it stops answering pings', () => {
+    const deadClient = {
+      close: jest.fn(), on: jest.fn(), ping: jest.fn(), terminate: jest.fn()
+    } as unknown as WebSocket & { isAlive?: boolean };
+    const spyClientLost = jest.spyOn(websocketGateway['clientLost$'], 'next');
+    websocketGateway.afterInit(websocketGateway['server']);
+    websocketGateway.handleConnection(deadClient, { url: 'www.test.de/ws?token=deadToken' } as IncomingMessage);
+
+    jest.advanceTimersByTime(30000); // first ping, no pong follows
+    jest.advanceTimersByTime(30000);
+    expect(deadClient.terminate).toHaveBeenCalled();
+
+    websocketGateway.handleDisconnect(deadClient); // what Nest does on the close event of the terminated socket
+    expect(spyClientLost).toHaveBeenCalledWith('deadToken');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+});

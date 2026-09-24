@@ -36,8 +36,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       this.clients.forEach((ws, token) => {
         if (ws.isAlive === false) {
           this.logger.warn(`Client ${token} inactive, terminating.`);
-          this.clients.delete(token);
-          return ws.terminate();
+          return ws.terminate(); // handleDisconnect cleans up on the resulting close event
         }
 
         ws.isAlive = false;
