@@ -7,6 +7,9 @@
 # counterpart. Without it an update leaves the old names behind, and the backend starts without
 # any database configuration.
 #
+# It also replaces the default `SERVER_KEY=Secret` (written by the 18.2.0 migration) with a random
+# key. The key only signs short-lived login challenges, so replacing it is safe.
+#
 # 'scripts/updater.sh' runs this script from the installation directory, in the backup phase,
 # after the installation directory and the data backup have been created. It evaluates the exit
 # status, so a failed step must not exit with 0.
@@ -129,11 +132,42 @@ verify_env_file() {
   printf "      Database configuration verification done.\n\n"
 }
 
+# A known key lets anyone sign their own login challenges and skip the proof of work of
+# BRUTE_FORCE_PROTECTION. A key the operator set themselves stays untouched.
+replace_default_server_key() {
+  printf "      Check server key in '%s' ...\n" "${ENV_FILE}"
+
+  if [ ! -f "${ENV_FILE}" ]; then
+    printf "      Server key check skipped.\n\n"
+
+    return 0
+  fi
+
+  if ! grep -qE '^SERVER_KEY=(Secret)?$' "${ENV_FILE}"; then
+    printf "      Server key check done.\n\n"
+
+    return 0
+  fi
+
+  declare server_key
+  server_key=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 32 | head -n 1)
+
+  if sed -i.bak "s|^SERVER_KEY=.*|SERVER_KEY=${server_key}|" "${ENV_FILE}"; then
+    rm -f "${ENV_FILE}.bak"
+    printf -- "      - Default 'SERVER_KEY' replaced by a random key.\n"
+  else
+    fail "'SERVER_KEY' could not be replaced in '${ENV_FILE}'."
+  fi
+
+  printf "      Server key check done.\n\n"
+}
+
 main() {
   printf "    Applying patch: %s ...\n" "${TARGET_VERSION}"
 
   migrate_env_file
   verify_env_file
+  replace_default_server_key
 
   if ${HAS_ERRORS}; then
     printf "    Patch %s applied with errors.\n" "${TARGET_VERSION}"
