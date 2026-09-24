@@ -20,14 +20,15 @@ class SystemConfig {
   public static int $system_veronaMin;
   public static int $system_iqbStandardResponseMax;
   public static int $system_iqbStandardResponseMin;
+  /** @var array<string, array{repo: string, min: int, max: int}> file type => schema repo and supported major versions */
+  public static array $system_xmlSchemaVersions;
   public static string $system_timezone = 'Europe/Berlin';
   public static bool $debug_useInsecurePasswords = false;
-  public static bool $debug_allowExternalXmlSchema = true;
   public static bool $debug_useStaticTokens = false;
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
   public static string $language_dateFormat = 'd/m/Y H:i';
-  public static bool $enable_xmlschema_validation = false; // todo this config is not exposed in .env file; xsd validation can be reactivated at a moments notice
+  public static bool $xmlSchema_validation = true;
   public static string $server_key = 'Secret';
   // TODO server URL
   public static int $password_min_length;
@@ -60,6 +61,7 @@ class SystemConfig {
     ) {
       self::applyVersionFromPackageJson();
     }
+    self::applyCompatibilityDefinitions();
     self::verifyClassProperties();
   }
 
@@ -104,6 +106,8 @@ class SystemConfig {
     $serverKey = self::stringEnv('SERVER_KEY');
     $config['server']['key'] = $serverKey;
 
+    $config['xmlSchema']['validation'] = self::boolEnv('XML_SCHEMA_VALIDATION', true);
+
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {
       $overrideConfig = parse_ini_string($overrideConfig, true, INI_SCANNER_TYPED);
@@ -125,8 +129,18 @@ class SystemConfig {
     self::$system_version = $packageJson->version;
   }
 
-  private static function boolEnv(string $name): bool {
-    return in_array(strtolower(getEnv($name)), ['on', 'true', 'yes', 1]);
+  private static function applyCompatibilityDefinitions(): void {
+    $compatibilityStr = file_get_contents(ROOT_DIR . '/definitions/compatibility.json');
+    $compatibility = JSON::decode($compatibilityStr, true);
+    self::$system_xmlSchemaVersions = $compatibility['xml-schema-versions'];
+  }
+
+  private static function boolEnv(string $name, bool $default = false): bool {
+    $value = getEnv($name);
+    if ($value === false or $value === '') {
+      return $default;
+    }
+    return in_array(strtolower($value), ['on', 'true', 'yes', 1]);
   }
 
   private static function stringEnv(string $name): string {

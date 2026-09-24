@@ -32,7 +32,8 @@ paths:
         - customTexts for UI
         - uris of additional services
         - serverTimestamp (in milliseconds)
-        - supported browsers"
+        - supported browsers
+        - supported major versions of the XML schemas"
       tags:
         - api info
         - super admin
@@ -58,6 +59,23 @@ paths:
                     type: number
                   veronaPlayerApiVersionMax:
                     type: number
+                  xmlSchemaVersions:
+                    type: object
+                    description: supported major versions of the XML schema for each file type
+                    additionalProperties:
+                      type: object
+                      properties:
+                        repo:
+                          type: string
+                          description: name of the schema repository, as used in the schema permalink
+                        min:
+                          type: number
+                        max:
+                          type: number
+                      required:
+                        - repo
+                        - min
+                        - max
                   baseUrl:
                     type: string
                     description: base url of the API
@@ -76,6 +94,7 @@ paths:
                   - fileServiceUri
                   - veronaPlayerApiVersionMin
                   - veronaPlayerApiVersionMax
+                  - xmlSchemaVersions
                   - baseUrl
                   - supportedBrowsers
                   - passwordMinLength
@@ -88,6 +107,11 @@ paths:
                 fileServiceUri: http://blabla
                 veronaPlayerApiVersionMin: 2
                 veronaPlayerApiVersionMax: 4
+                xmlSchemaVersions:
+                  Booklet: { repo: testcenter-booklet-xml, min: 18, max: 18 }
+                  Testtakers: { repo: testcenter-testtaker-xml, min: 17, max: 18 }
+                  Unit: { repo: unit-xml, min: 17, max: 17 }
+                  SysCheck: { repo: testcenter-syscheck-xml, min: 18, max: 18 }
                 baseUrl: http://testcenter.de
                 supportedBrowsers: ["chrome 131", "firefox 133"]
                 passwordMinLength: 7

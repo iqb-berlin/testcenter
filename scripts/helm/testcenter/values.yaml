@@ -136,6 +136,8 @@ config:
     # -- Refuse logins without password (except sys-check logins)
     # Testtakers files containing such logins are reported as erroneous.
     requireLoginPassword: false
+    # -- Validate uploaded XML files against their XSD schema
+    xmlSchemaValidation: true
 
   cacheServer:
     # -- Maximum memory allocation for Redis

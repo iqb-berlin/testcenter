@@ -28,7 +28,7 @@ class WorkspaceCacheTest extends TestCase {
     $workspaceDaoMock->allows([
       'getGlobalIds' => VfsForTest::globalIds
     ]);
-    SystemConfig::$enable_xmlschema_validation = true;
+    SystemConfig::$xmlSchema_validation = true;
     VfsForTest::setUp(true);
     $this->workspaceCache = new WorkspaceCache(new Workspace(1));
     $this->workspaceCache->loadFiles();
@@ -72,13 +72,13 @@ class WorkspaceCacheTest extends TestCase {
       ],
       'Booklet/booklet-duplicate-id-1.xml' => [
         'error' => [
-          'File has no link to XSD-schema.',
+          'File has no link to XSD-schema. Expected a schema URL like `https://w3id.org/iqb/spec/testcenter-booklet-xml/<version>` with major version 18 to 18.',
           'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (booklet-duplicate-id-2.xml)'
         ],
         'warning' => ['Booklet is never used'],
       ],
       'Booklet/booklet-duplicate-id-2.xml' => [
-        'error' => ['File has no link to XSD-schema.'],
+        'error' => ['File has no link to XSD-schema. Expected a schema URL like `https://w3id.org/iqb/spec/testcenter-booklet-xml/<version>` with major version 18 to 18.'],
         'warning' => ['Booklet is never used'],
       ],
       'Unit/unit-unused-and-missing-player.xml' => [
@@ -87,7 +87,7 @@ class WorkspaceCacheTest extends TestCase {
       ],
       'Unit/unit-unused-and-missing-ref.xml' => [
         'error' => [
-          'File has no link to XSD-schema.',
+          'File has no link to XSD-schema. Expected a schema URL like `https://w3id.org/iqb/spec/unit-xml/<version>` with major version 17 to 17.',
           'Resource `not-existing.voud` not found'
         ],
         'warning' => ['Unit is never used'],

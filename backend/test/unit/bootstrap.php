@@ -7,5 +7,3 @@ require_once ROOT_DIR . "/backend/vendor/autoload.php";
 SystemConfig::readEnvironment();
 SystemConfig::$bruteForceProtection_sessions = [];
 SystemConfig::$server_key = 'Secret';
-
-SystemConfig::$debug_allowExternalXmlSchema = false;
