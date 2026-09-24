@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
 import { Subject } from 'rxjs';
+import { WebSocket } from 'ws';
+import { IncomingMessage } from 'http';
 import { Testee } from './testee.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';
 import { Command } from '../command/command.interface';
@@ -145,6 +147,28 @@ describe('testeeService', () => {
       .toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri, {}, {});
     mockHTTPService.post().next();
     expect(spyLogger).toHaveBeenCalled();
+  });
+
+  it('should not notify the backend while the test is connected with another token', () => {
+    const reconnected : Testee = { ...mockTestee, token: 'reconnectedToken' };
+    const reconnectedClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    testeeService.addTestee(reconnected);
+    testeeService['websocketGateway']
+      .handleConnection(reconnectedClient, { url: 'www.test.de/ws?token=reconnectedToken' } as IncomingMessage);
+    mockHTTPService.post.mockClear();
+
+    testeeService.notifyDisconnection(mockTestee.token);
+
+    expect(mockHTTPService.post).not.toHaveBeenCalled();
+  });
+
+  it('should notify the backend if another token of the test is registered but not connected', () => {
+    testeeService.addTestee({ ...mockTestee, token: 'pendingToken' });
+    mockHTTPService.post.mockClear();
+
+    testeeService.notifyDisconnection(mockTestee.token);
+
+    expect(mockHTTPService.post).toHaveBeenCalled();
   });
 
   it('should map testee with corresponding testIds to their respective tokens', () => {
