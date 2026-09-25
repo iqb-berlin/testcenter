@@ -1,3 +1,7 @@
+-- authenticated resources: keep shared/edge caches (e.g. a CDN) from storing them and
+-- serving them on without re-checking the token; set for every path this handler serves
+ngx.header["Cache-Control"] = "private"
+
 local includeFiles = os.getenv("REDIS_CACHE_FILES")
 
 if (includeFiles ~= nil)

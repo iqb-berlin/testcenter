@@ -63,6 +63,7 @@ folgenden Punkten:
 - Anfragen an nicht existierende Routen werden wie jeder andere Fehler über den zentralen ErrorHandler behandelt und liefern einen Text im Body. Bisher lieferten sie einen `404` ohne Body-Text und waren damit die einzige Fehlerantwort des Backends ohne Text.
 - Bei internen Serverfehlern (Status `5xx`) enthält der Antwort-Body keine internen Fehlerdetails mehr, sondern einen allgemeinen Text; die vollständige Meldung steht wie bisher im Server-Log und ist über den `Error-ID`-Header auffindbar. Die für Clients gedachten `4xx`-Meldungen bleiben unverändert.
 - Der File-Server schickt bei `403` und `500` einen `Error-ID`-Header (`fs-` gefolgt von der nginx-Request-ID) und schreibt dieselbe ID in sein Log.
+- Antworten mit Datei-Inhalten (Downloads von Arbeitsbereichs- und Testressourcen über das Backend sowie Auslieferungen des File-Servers) senden `Cache-Control: private`, damit geteilte Caches wie ein CDN diese authentifizierten Antworten nicht speichern und ohne erneute Prüfung ausliefern; der private Browser-Cache bleibt möglich.
 - Das Feld `laststate` in `GET /workspace/{ws_id}/report/response` ist anders formatiert: ein Leerzeichen nach den Doppelpunkten, eine andere Reihenfolge der Schlüssel und `\uXXXX`-Escapes als das Zeichen, für das sie stehen. Der Inhalt ist unverändert, wer den Wert als JSON einliest, ist nicht betroffen.
 
 ### API-Dokumentation
