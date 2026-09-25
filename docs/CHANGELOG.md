@@ -45,6 +45,7 @@ folgenden Punkten:
 - Bricht die Verbindung eines Testtakers unbemerkt ab (z. B. durch einen Netzwerkausfall), zeigt die Gruppenüberwachung sie nach spätestens einer Minute als verloren an. Bisher blieb der Test weiter als verbunden angezeigt.
 
 ## Technisches
+- Beim Löschen einer Anhang-Datei wird die zugehörige Datei nun auch von der Festplatte entfernt. Bisher blieb sie liegen, sodass gelöschte Anhänge weiter Speicherplatz belegten und nicht tatsächlich entfernt wurden.
 
 ### Schnittstellenänderungen (breaking)
 - Schema-Verweise in XML-Dateien (`xsi:noNamespaceSchemaLocation`) werden nur noch als Permalink der Form `https://w3id.org/iqb/spec/<repo>/<version>` erkannt. Die alten GitHub-URLs der Form `…/testcenter/<version>/definitions/vo_<Typ>.xsd` werden abgelehnt.

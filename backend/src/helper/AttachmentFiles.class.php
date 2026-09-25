@@ -56,7 +56,7 @@ class AttachmentFiles {
     }
 
     $filePath = self::getAttachmentFilePath($workspaceId, $attachmentFileId, $attachment);
-    if (!file_exists($filePath)) {
+    if (file_exists($filePath)) {
       unlink($filePath);
     }
   }
