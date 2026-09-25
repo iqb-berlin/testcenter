@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Frontend/Unit-Test" type="JavaScriptTestRunnerKarma" folderName="Run Locally">
+  <configuration default="false" name="Frontend/Unit-Test-Karma" type="JavaScriptTestRunnerKarma" folderName="Run Locally">
     <config-file value="$PROJECT_DIR$/frontend/src/karma.conf.js" />
     <karma-package-dir value="$PROJECT_DIR$/frontend/node_modules/@angular/cli" />
     <working-directory value="$PROJECT_DIR$/frontend" />

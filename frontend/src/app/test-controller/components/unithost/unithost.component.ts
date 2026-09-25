@@ -122,7 +122,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private async handleReadyNotification(msgData: any): Promise<void> {
-    const playerApiVersion = msgData.apiVersion || msgData.metadata.specVersion;
+    const playerApiVersion = msgData.apiVersion || msgData.metadata?.specVersion;
+    if (typeof playerApiVersion !== 'string') {
+      throw new AppError({
+        description: 'Player did not report its Verona version (apiVersion or metadata.specVersion)',
+        label: 'Unbekannte Verona-Version',
+        type: 'verona_player_runtime_error'
+      });
+    }
     const playerApiVersionMajor = parseInt(playerApiVersion.split('.').shift() ?? '', 10);
 
     if (

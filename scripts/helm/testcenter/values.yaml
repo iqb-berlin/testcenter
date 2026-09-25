@@ -133,6 +133,11 @@ config:
     redisCacheFiles: *redisCacheFiles
     passwordMinLength: 7
     passwordPattern: '^.*$'
+    # -- Refuse logins without password (except sys-check logins)
+    # Testtakers files containing such logins are reported as erroneous.
+    requireLoginPassword: false
+    # -- Validate uploaded XML files against their XSD schema
+    xmlSchemaValidation: true
 
   cacheServer:
     # -- Maximum memory allocation for Redis
@@ -213,8 +218,8 @@ secret:
     # This salt is used for hashing user passwords in the application.
     passwordSalt: change_me
     # -- Secret key used to generate and verify ALTCHA challenges
-    # PRODUCTION: Replace 'Secret' with a strong, randomly generated key!
-    serverKey: Secret
+    # REQUIRED: Set a strong, randomly generated key, e.g. `openssl rand -hex 32`.
+    serverKey: ""
     # -- Initial Sys-Admin password, used only when creating the first administrator
     # PRODUCTION: Replace 'user123' with a strong password matching the configured password rules!
     adminInitPassword: user123

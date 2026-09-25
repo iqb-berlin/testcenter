@@ -3,11 +3,10 @@ ARG PHP_VERSION=8.3-apache-bookworm
 
 # xsd download stage
 FROM ${REGISTRY_PATH}composer:lts AS schema-downloader
-# Verzeichnis für das Script erstellen
 RUN mkdir -p /var/www/testcenter/data/.schemas
-# Script kopieren und ausführen
 COPY scripts/download-schemas.sh /tmp/download-schemas.sh
-RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
+COPY definitions/compatibility.json /tmp/compatibility.json
+RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh /tmp/compatibility.json
 
 
 FROM ${REGISTRY_PATH}composer:lts AS dev-composer
@@ -36,11 +35,6 @@ RUN --mount=type=bind,source=backend/composer.json,target=composer.json \
 
 FROM ${REGISTRY_PATH}composer:lts AS prod-composer
 WORKDIR /usr/src/testcenter/backend
-
-# add cache for xsd files
-RUN mkdir -p /var/www/testcenter/data/.schemas
-COPY scripts/download-schemas.sh /tmp/download-schemas.sh
-RUN chmod +x /tmp/download-schemas.sh && /tmp/download-schemas.sh
 
 # resolving and downloading the dependencies depends on composer.lock alone, so it
 # is done before the code is copied and stays cached across source code changes
@@ -151,6 +145,4 @@ USER www-data
 FROM base AS prod
 # Copy prod dependencies
 COPY --chown=www-data:www-data --from=prod-composer /usr/src/testcenter/backend/vendor/ ./vendor/
-# Copy xsd files in cache folder
-COPY --chown=www-data:www-data --from=prod-composer /var/www/testcenter/data/.schemas/ ../data/.schemas/
 USER www-data

@@ -2,7 +2,7 @@
 
 * **Workspace** - One Instance of the testcenter application can have multiple workspaces, each with their own user access rights.
 * **Login** - One Login is one person that actually logs in to take the examination.
-* **File** - One file is either following the validation rules for vo_Booklet.xsd, vo_SysCheck.xsd, vo_Testtakers.xsd, vo_Unit.xsd or unvalidated Resource.
+* **File** - One file is either following the validation rules of one of the XSD schemas listed in `definitions/README.md` (Booklet, SysCheck, Testtakers, Unit) or unvalidated Resource.
 * **Booklet** - The highest level of how a test is structured into which units.
 * **Unit** - Has the actual task and how this task is rendered with which player.
 * **Syscheck** - Describes analogous to Booklets, which units are to be loaded for a syscheck. A syscheck tries to show example units for users to find out if the testcenter instance works.

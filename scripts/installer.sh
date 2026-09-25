@@ -22,8 +22,9 @@ ENV_VARS[DB_DATABASE]=iqb_tba_testcenter
 ENV_VARS[DB_USER]=iqb_tba_db_user
 ENV_VARS[DB_PASSWORD]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 16 | head -n 1)
 ENV_VARS[PASSWORD_SALT]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 5 | head -n 1)
+ENV_VARS[SERVER_KEY]=$(LC_CTYPE=C tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 32 | head -n 1)
 
-ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD DB_DATABASE DB_USER DB_PASSWORD PASSWORD_SALT)
+ENV_VAR_ORDER=(HOSTNAME REDIS_PASSWORD DB_DATABASE DB_USER DB_PASSWORD PASSWORD_SALT SERVER_KEY)
 
 declare TARGET_DIR
 

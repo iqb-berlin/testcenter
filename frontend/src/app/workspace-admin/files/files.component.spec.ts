@@ -9,8 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { AlertComponent, MainDataService, SharedModule } from '../../shared/shared.module';
-import { FilesComponent } from './files.component';
+import { AlertComponent, MainDataService, SharedModule } from '../../shared/shared.module';import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
@@ -32,7 +31,16 @@ class MockBackendService {
   }
 }
 
-class MockMainDataService {}
+class MockMainDataService {
+  appConfig$ = of({
+    veronaPlayerApiVersionMin: 2,
+    veronaPlayerApiVersionMax: 6,
+    xmlSchemaVersions: {
+      Booklet: { min: 18, max: 18 },
+      Testtakers: { min: 17, max: 18 }
+    }
+  });
+}
 
 describe('FilesComponent', () => {
   let component: FilesComponent;
@@ -81,5 +89,13 @@ describe('FilesComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should list the supported versions of schemas and Verona', () => {
+    expect(component.supportedVersions).toEqual([
+      { label: 'Teilnehmerlisten', versions: '17–18' },
+      { label: 'Testhefte', versions: '18' },
+      { label: 'Verona-Player', versions: '2–6' }
+    ]);
   });
 });

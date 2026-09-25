@@ -153,5 +153,10 @@
       <tc-alert level="info" *ngIf="!fileStats.total.count" text="Dieser Arbeitsbereich enthält noch keine Dateien!"></tc-alert>
     </ng-template>
 
+    <div *ngIf="supportedVersions.length" class="supported-versions">
+      <h4>Unterstützte Hauptversionen</h4>
+      <div *ngFor="let entry of supportedVersions">{{ entry.label }}: {{ entry.versions }}</div>
+    </div>
+
   </div>
 </div>

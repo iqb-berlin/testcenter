@@ -26,7 +26,7 @@ class XMLSchemaTest extends TestCase {
   private $testUrls = [
     'valid_booklet' => 'https://w3id.org/iqb/spec/testcenter-booklet-xml/18.0',
     'valid_unit' => 'https://w3id.org/iqb/spec/unit-xml/17.4',
-    'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtakers-xml/18.0',
+    'valid_testtakers' => 'https://w3id.org/iqb/spec/testcenter-testtaker-xml/18.0',
     'valid_syscheck' => 'https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0',
     'valid_unknown_repo' => 'https://w3id.org/iqb/spec/testcenter-unknown-xml/17.4',
     'invalid_old_github' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter/17.5.3/definitions/vo_Booklet.xsd',
@@ -42,6 +42,7 @@ class XMLSchemaTest extends TestCase {
       'repo' => 'testcenter-booklet-xml',
       'type' => 'Booklet',
       'version' => '18.0',
+      'major' => 18,
       'uri' => $this->testUrls['valid_booklet']
     ], $result);
 
@@ -51,6 +52,7 @@ class XMLSchemaTest extends TestCase {
       'repo' => 'unit-xml',
       'type' => 'Unit',
       'version' => '17.4',
+      'major' => 17,
       'uri' => $this->testUrls['valid_unit']
     ], $result);
   }
@@ -62,6 +64,11 @@ class XMLSchemaTest extends TestCase {
 
   function test_parseSchemaUrl_invalidOldGithubUrl(): void {
     $result = XMLSchema::parseSchemaUrl($this->testUrls['invalid_old_github']);
+    $this->assertNull($result);
+  }
+
+  function test_parseSchemaUrl_unknownRepo(): void {
+    $result = XMLSchema::parseSchemaUrl($this->testUrls['valid_unknown_repo']);
     $this->assertNull($result);
   }
 

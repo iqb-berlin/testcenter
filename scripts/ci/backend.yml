@@ -254,8 +254,8 @@ test-file-server-api:
     - chmod 0755 scripts/database/000-create-test-db.sh
     - docker pull --quiet ${BACKEND_TAG}
     - docker pull --quiet ${FILE_SERVER_TAG}
-    - docker tag ${BACKEND_TAG} ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:current
-    - docker tag ${FILE_SERVER_TAG} ${GITLAB_REGISTRY_IMAGE_BASE}/${BACKEND_IMAGE_NAME}:current
+    - docker tag ${BACKEND_TAG} ${BACKEND_IMAGE_NAME}:current
+    - docker tag ${FILE_SERVER_TAG} ${FILE_SERVER_IMAGE_NAME}:current
   script:
     - docker compose
       --env-file .env.dev-template

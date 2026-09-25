@@ -547,7 +547,6 @@ class TestController extends Controller {
   }
 
   public static function getCommands(Request $request, Response $response): Response {
-    // TODO do we have to check access to test?
     $testId = (int) $request->getAttribute('test_id');
     $lastCommandId = RequestHelper::getFieldWithDefault($request, 'lastCommandId', null);
 
@@ -589,7 +588,6 @@ class TestController extends Controller {
 
 
   public static function patchCommandExecuted(Request $request, Response $response): Response {
-    // TODO to we have to check access to test?
     $testId = (int) $request->getAttribute('test_id');
     $commandId = (int) $request->getAttribute('command_id');
 

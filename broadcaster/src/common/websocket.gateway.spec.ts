@@ -53,6 +53,7 @@ describe('websocketGateway handle connection and disconnection (single client)',
     }).compile();
 
     websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    expectedTokens.forEach(token => websocketGateway.allowToken(token));
   });
 
   it('should be defined', () => {
@@ -78,6 +79,32 @@ describe('websocketGateway handle connection and disconnection (single client)',
     expect(websocketGateway['clients'].get('clientToken2')).toStrictEqual(client2);
     expect(websocketGateway['clientsCount$'].value).toEqual(2);
     expect(spyLogger).toHaveBeenCalled();
+  });
+
+  it('should reject a connection with a token that was not registered', () => {
+    const unknownClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    const unknownMessage = { url: 'www.test.de/ws?token=unknownToken' } as IncomingMessage;
+    websocketGateway.handleConnection(unknownClient, unknownMessage);
+    expect(unknownClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+
+  it('should reject a second connection with the same token', () => {
+    const duplicateClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    websocketGateway.handleConnection(client, incomingMessage);
+    websocketGateway.handleConnection(duplicateClient, incomingMessage);
+    expect(duplicateClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].get('clientToken')).toStrictEqual(client);
+    expect(websocketGateway['clients'].size).toEqual(1);
+  });
+
+  it('should reject a token after its client was disconnected', () => {
+    const returningClient = { close: jest.fn(), on: jest.fn() } as unknown as WebSocket;
+    websocketGateway.handleConnection(client, incomingMessage);
+    websocketGateway.disconnectClient('clientToken');
+    websocketGateway.handleConnection(returningClient, incomingMessage);
+    expect(returningClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
   });
 
   it('should handle a disconnect (empty client list)', () => {
@@ -159,5 +186,94 @@ describe('websocketGateway handle connection and disconnection (single client)',
     websocketGateway.handleConnection(client, incomingMessage);
     websocketGateway.handleConnection(client2, incomingMessage2);
     expect(isObservable(websocketGateway.subscribeClientCount(1))).toStrictEqual(true);
+  });
+});
+
+describe('websocketGateway heartbeat', () => {
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [WebsocketGateway]
+    }).compile();
+
+    websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    websocketGateway.allowToken('deadToken');
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('should report a client as lost when it stops answering pings', () => {
+    const deadClient = {
+      close: jest.fn(), on: jest.fn(), ping: jest.fn(), terminate: jest.fn()
+    } as unknown as WebSocket & { isAlive?: boolean };
+    const spyClientLost = jest.spyOn(websocketGateway['clientLost$'], 'next');
+    websocketGateway.afterInit(websocketGateway['server']);
+    websocketGateway.handleConnection(deadClient, { url: 'www.test.de/ws?token=deadToken' } as IncomingMessage);
+
+    jest.advanceTimersByTime(30000); // first ping, no pong follows
+    jest.advanceTimersByTime(30000);
+    expect(deadClient.terminate).toHaveBeenCalled();
+
+    websocketGateway.handleDisconnect(deadClient); // what Nest does on the close event of the terminated socket
+    expect(spyClientLost).toHaveBeenCalledWith('deadToken');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+});
+
+describe('websocketGateway token expiry', () => {
+  const connectingClient = {
+    close: jest.fn(), on: jest.fn(), ping: jest.fn(), terminate: jest.fn()
+  } as unknown as WebSocket;
+
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [WebsocketGateway]
+    }).compile();
+
+    websocketGateway = module.get<WebsocketGateway>(WebsocketGateway);
+    websocketGateway.afterInit(websocketGateway['server']);
+    websocketGateway.allowToken('unusedToken');
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('should expire a token that does not connect in time', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('unusedToken');
+    expect(websocketGateway['allowedTokens'].has('unusedToken')).toEqual(false);
+  });
+
+  it('should reject a connection with an expired token', () => {
+    jest.advanceTimersByTime(30000);
+    websocketGateway.handleConnection(connectingClient, { url: 'www.test.de/ws?token=unusedToken' } as IncomingMessage);
+    expect(connectingClient.close).toHaveBeenCalledWith(1008, 'Invalid token');
+    expect(websocketGateway['clients'].size).toEqual(0);
+  });
+
+  it('should not expire a token that connected', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    websocketGateway.handleConnection(connectingClient, { url: 'www.test.de/ws?token=unusedToken' } as IncomingMessage);
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).not.toHaveBeenCalled();
+    expect(websocketGateway['allowedTokens'].has('unusedToken')).toEqual(true);
+  });
+
+  it('should not expire a token registered shortly before the heartbeat', () => {
+    const spyTokenExpired = jest.spyOn(websocketGateway['tokenExpired$'], 'next');
+    jest.advanceTimersByTime(20000);
+    websocketGateway.allowToken('lateToken');
+    jest.advanceTimersByTime(10000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('unusedToken');
+    expect(spyTokenExpired).not.toHaveBeenCalledWith('lateToken');
+    jest.advanceTimersByTime(30000);
+    expect(spyTokenExpired).toHaveBeenCalledWith('lateToken');
   });
 });

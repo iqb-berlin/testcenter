@@ -15,7 +15,7 @@ spec:
     {{- end }}
   routes:
     - kind: Rule
-      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && PathPrefix(`/bs/public`)
+      match: (Host(`www.{{ .Values.ingress.baseDomain }}`) || Host(`{{ .Values.ingress.baseDomain }}`)) && Path(`/bs/public/ws`)
       middlewares:
         - name: security-headers
         - name: stripregex-bs

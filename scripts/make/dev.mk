@@ -168,7 +168,7 @@ data-push:
 				--env-file .env.dev\
 				--file docker-compose.yml\
 				--file docker-compose.dev.yml\
-			exec backend sh -c 'rm -rf ../data/*' &&\
+			exec backend sh -c 'rm -rf ../data/* ../data/.schemas/*' &&\
 		tar -cf - data --owner www-data --group www-data |\
 			docker compose\
 					--env-file .env.dev\

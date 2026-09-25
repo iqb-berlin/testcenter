@@ -10,7 +10,7 @@ class XMLSchema {
       return null;
     }
 
-    $regex = '#^https?://w3id\.org/iqb/spec/(testcenter-booklet|unit|testcenter-testtaker|testcenter-syscheck)-xml/([0-9]+\.[0-9]+)$#';
+    $regex = '#^https?://w3id\.org/iqb/spec/([a-z-]+-xml)/(([0-9]+)\.[0-9]+)$#';
     preg_match_all($regex, $schemaUri, $matches, PREG_SET_ORDER);
 
     if (!count($matches)) {
@@ -18,22 +18,25 @@ class XMLSchema {
     }
 
     $urlParts = $matches[0];
-    $repo = $urlParts[1] . '-xml';
+    $repo = $urlParts[1];
 
-    $typeMap = [
-      'testcenter-booklet'    => 'Booklet',
-      'unit'                  => 'Unit',
-      'testcenter-testtaker'  => 'Testtakers',
-      'testcenter-syscheck'   => 'SysCheck'
-    ];
+    $type = null;
+    foreach (SystemConfig::$system_xmlSchemaVersions as $fileType => $schema) {
+      if ($schema['repo'] === $repo) {
+        $type = $fileType;
+      }
+    }
 
-    $type = $typeMap[$urlParts[1]];
+    if (!$type) {
+      return null;
+    }
 
     return [
       "isExternal" => true,
       "repo"       => $repo,
       "type"       => $type,
       "version"    => $urlParts[2],
+      "major"      => (int) $urlParts[3],
       "uri"        => $schemaUri
     ];
   }

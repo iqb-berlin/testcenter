@@ -18,6 +18,7 @@ class XMLFileTesttakers extends XMLFile {
     foreach ($this->logins as $login) {
       /* @var Login $login */
       $this->checkIfBookletsArePresent($login, $workspaceCache);
+      $this->checkIfPasswordIsPresent($login);
     }
 
     $this->checkAssetAssignments($workspaceCache);
@@ -44,6 +45,12 @@ class XMLFileTesttakers extends XMLFile {
         $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
 
       }
+    }
+  }
+
+  private function checkIfPasswordIsPresent(Login $testtaker): void {
+    if (($testtaker->getPassword() === '') && Mode::requiresPassword($testtaker->getMode())) {
+      $this->report('error', "Login `{$testtaker->getName()}` has no password, but passwords are required on this instance");
     }
   }
 

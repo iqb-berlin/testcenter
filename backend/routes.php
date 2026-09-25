@@ -88,15 +88,16 @@ $app->group('/test', function (RouteCollectorProxy $group) {
   $group->put('', [TestController::class, 'put']);
 
   $group->get('/{test_id}', [TestController::class, 'get'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
-  $group->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit']);
+  $group->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit'])
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/unit/{unit_name}/review', [TestController::class, 'putUnitReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/review', [TestController::class, 'putReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->get('/{test_id}/unit/{unit_name}/reviews', [TestController::class, 'getUnitReviews']);
 
@@ -104,38 +105,40 @@ $app->group('/test', function (RouteCollectorProxy $group) {
 
 
   $group->delete('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'deleteUnitReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->delete('/{test_id}/review/{review_id}', [TestController::class, 'deleteReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->patch('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'patchUnitReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->patch('/{test_id}/review/{review_id}', [TestController::class, 'patchReview'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->patch('/{test_id}/state', [TestController::class, 'patchState'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/log', [TestController::class, 'putLog'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/unit/{unit_name}/response', [TestController::class, 'putUnitResponse'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->patch('/{test_id}/unit/{unit_name}/state', [TestController::class, 'patchUnitState'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->put('/{test_id}/unit/{unit_name}/log', [TestController::class, 'putUnitLog'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
   $group->patch('/{test_id}/lock', [TestController::class, 'patchLock'])
-    ->add(new IsTestWritable());
+    ->add(new IsTestOwner());
 
-  $group->get('/{test_id}/commands', [TestController::class, 'getCommands']);
+  $group->get('/{test_id}/commands', [TestController::class, 'getCommands'])
+    ->add(new IsTestOwner());
 
-  $group->patch('/{test_id}/command/{command_id}/executed', [TestController::class, 'patchCommandExecuted']);
+  $group->patch('/{test_id}/command/{command_id}/executed', [TestController::class, 'patchCommandExecuted'])
+    ->add(new IsTestOwner());
 
 })
   ->add(new RequireToken('person'));

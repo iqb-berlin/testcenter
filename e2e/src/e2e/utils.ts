@@ -334,13 +334,13 @@ export const deleteFilesSampleWorkspace = () => {
     .contains('Löschen')
     .click();
   cy.contains('erfolgreich gelöscht.');
-  cy.contains('Teilnehmerlisten')
+  cy.contains('mat-panel-title', 'Teilnehmerlisten')
     .should('not.exist');
-  cy.contains('Testhefte')
+  cy.contains('mat-panel-title', 'Testhefte')
     .should('not.exist');
-  cy.contains('System-Check-Definitionen')
+  cy.contains('mat-panel-title', 'System-Check-Definitionen')
     .should('not.exist');
-  cy.contains('Ressourcen')
+  cy.contains('mat-panel-title', 'Ressourcen')
     .should('not.exist');
 };
 

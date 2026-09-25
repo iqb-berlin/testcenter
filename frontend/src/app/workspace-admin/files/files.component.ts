@@ -11,9 +11,10 @@ import {
 } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { MessageService } from '@shared/services/message.service';
+import { AppConfig } from '@shared/classes/app.config';
 import {
   MainDataService,
 } from '../../shared/shared.module';
@@ -71,6 +72,8 @@ export class FilesComponent implements OnInit, OnDestroy {
     testtakers: 0
   };
 
+  supportedVersions: { label: string, versions: string }[] = [];
+
   selectedRow: IQBFile | null = null;
   dependenciesOfRow: IQBFile[] = [];
 
@@ -102,6 +105,32 @@ export class FilesComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.updateFileList();
       });
+    this.mds.appConfig$
+      .pipe(take(1))
+      .subscribe(appConfig => this.setSupportedVersions(appConfig));
+  }
+
+  private setSupportedVersions(appConfig: AppConfig): void {
+    this.supportedVersions = IQBFileTypes
+      .filter(type => appConfig.xmlSchemaVersions[type])
+      .map(type => ({
+        label: this.typeLabels[type],
+        versions: FilesComponent.formatVersionRange(
+          appConfig.xmlSchemaVersions[type].min,
+          appConfig.xmlSchemaVersions[type].max
+        )
+      }));
+    this.supportedVersions.push({
+      label: 'Verona-Player',
+      versions: FilesComponent.formatVersionRange(
+        appConfig.veronaPlayerApiVersionMin,
+        appConfig.veronaPlayerApiVersionMax
+      )
+    });
+  }
+
+  private static formatVersionRange(min: number, max: number): string {
+    return min === max ? `${min}` : `${min}–${max}`;
   }
 
   ngOnDestroy(): void {

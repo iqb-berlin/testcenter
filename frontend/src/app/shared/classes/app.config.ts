@@ -3,7 +3,8 @@ import { CustomtextService } from '../services/customtext/customtext.service';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
-  SysConfig
+  SysConfig,
+  XmlSchemaVersions
 } from '../interfaces/app-config.interfaces';
 // eslint-disable-next-line import/no-relative-packages
 import customTextsDefaultJSON from '../../../../../definitions/testtaker/custom-texts.json';
@@ -25,6 +26,7 @@ export class AppConfig {
   veronaPlayerApiVersionMax: number = 0;
   iqbStandardResponseTypeMin: number = 0;
   iqbStandardResponseTypeMax: number = 0;
+  xmlSchemaVersions: XmlSchemaVersions = {};
   appTitle = 'IQB-Testcenter';
   privacyNotice = '';
   trustedPrivacyNotice: SafeUrl | null = null;
@@ -54,6 +56,7 @@ export class AppConfig {
     this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
     this.iqbStandardResponseTypeMin = sysConfig.iqbStandardResponseTypeMin;
     this.iqbStandardResponseTypeMax = sysConfig.iqbStandardResponseTypeMax;
+    this.xmlSchemaVersions = sysConfig.xmlSchemaVersions;
     this.bruteForceProtection = sysConfig.bruteForceProtection;
     this.broadcastingServiceUri = sysConfig.broadcastingServiceUri;
     this.fileServiceUri = sysConfig.fileServiceUri;

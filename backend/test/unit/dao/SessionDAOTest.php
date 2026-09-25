@@ -171,6 +171,7 @@ class SessionDAOTest extends TestCase {
   }
 
   function tearDown(): void {
+    SystemConfig::$login_requirePassword = false;
     unset($this->dbc);
   }
 
@@ -608,6 +609,27 @@ class SessionDAOTest extends TestCase {
   public function test_getLogin_futureUser(): void {
     $this->expectException(HttpError::class);
     $this->dbc->getLogin("future_user", "pw_hash");
+  }
+
+  public function test_getLogin_passwordRequired(): void {
+    $this->insertPasswordlessLogin('no-pw', 'run-hot-return');
+    $this->insertPasswordlessLogin('no-pw-sys-check', 'sys-check-login');
+
+    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw", ""));
+
+    SystemConfig::$login_requirePassword = true;
+
+    $this->assertEquals(FailedLogin::wrongPassword, $this->dbc->getLogin("no-pw", ""));
+    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("no-pw-sys-check", ""));
+    $this->assertInstanceOf(Login::class, $this->dbc->getLogin("test", "pw_hash"));
+  }
+
+  private function insertPasswordlessLogin(string $name, string $mode): void {
+    $this->dbc->_(
+      "insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_to, group_name, group_label, custom_texts)
+        values (:name, '', :mode, 1, '{}', 'test', '2030-01-02 10:00:00+01:00', 'sample_group', 'Sample Group', '{}')",
+      [':name' => $name, ':mode' => $mode]
+    );
   }
 
   public function test_getTestStatus(): void {

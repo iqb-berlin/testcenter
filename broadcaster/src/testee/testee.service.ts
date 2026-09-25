@@ -6,13 +6,13 @@ import { Command } from '../command/command.interface';
 
 @Injectable()
 export class TesteeService {
-  constructor(
-    private readonly websocketGateway: WebsocketGateway,
-    private readonly http: HttpService
-  ) {
+  constructor(private readonly websocketGateway: WebsocketGateway, private readonly http: HttpService) {
     this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
       this.notifyDisconnection(disconnected);
       this.removeTestee(disconnected);
+    });
+    this.websocketGateway.getTokenExpiryObservable().subscribe((expired: string) => {
+      this.removeTestee(expired);
     });
   }
 
@@ -22,6 +22,7 @@ export class TesteeService {
 
   addTestee(testee: Testee): void {
     this.testees[testee.token] = testee;
+    this.websocketGateway.allowToken(testee.token);
   }
 
   removeTestee(testeeToken: string): void {
@@ -42,6 +43,11 @@ export class TesteeService {
     if (typeof this.testees[testeeToken] === 'undefined') {
       return;
     }
+    // a dead socket may only be detected by the heartbeat, after the test has already reconnected
+    if (this.isTestConnectedElsewhere(testeeToken)) {
+      this.logger.log(`test of ${testeeToken} is still connected, not sending connection-lost signal`);
+      return;
+    }
     if (this.testees[testeeToken].disconnectNotificationUri) {
       const uri = new URL(this.testees[testeeToken].disconnectNotificationUri);
 
@@ -59,6 +65,12 @@ export class TesteeService {
           }
         );
     }
+  }
+
+  private isTestConnectedElsewhere(testeeToken: string): boolean {
+    const { testId } = this.testees[testeeToken];
+    return this.websocketGateway.getClientTokens()
+      .some(token => token !== testeeToken && this.testees[token]?.testId === testId);
   }
 
   broadcastCommandToTestees(command: Command, testIds: number[]) : void {
