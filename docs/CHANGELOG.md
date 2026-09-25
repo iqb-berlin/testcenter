@@ -46,6 +46,7 @@ folgenden Punkten:
 
 ## Technisches
 - Beim Löschen einer Anhang-Datei wird die zugehörige Datei nun auch von der Festplatte entfernt. Bisher blieb sie liegen, sodass gelöschte Anhänge weiter Speicherplatz belegten und nicht tatsächlich entfernt wurden.
+- Der Testmodus des Backends (Umschaltung per `TestMode`-Header, nur für die API- und E2E-Tests gedacht) muss nun ausdrücklich mit der neuen Umgebungsvariable `ALLOW_TEST_MODE=true` erlaubt werden; ohne sie wird der Header ignoriert. Die Entwicklungsumgebung (`docker-compose.dev.yml`) setzt sie; in Produktivinstallationen darf sie nicht gesetzt werden.
 - Das Backend beschränkt PHP-Dateizugriffe per `open_basedir` auf `/var/www/testcenter/` und `/tmp/`. Deployments, die Anwendungs- oder Datenverzeichnisse außerhalb dieser Pfade ablegen, müssen den Wert in `backend/config/local.php.ini` anpassen.
 
 ### Schnittstellenänderungen (breaking)

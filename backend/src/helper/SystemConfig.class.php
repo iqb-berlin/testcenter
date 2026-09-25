@@ -27,6 +27,7 @@ class SystemConfig {
   public static bool $debug_useStaticTokens = false;
   public static bool $debug_fastLoginReuse = false;
   public static string $debug_useStaticTime = 'now';
+  public static bool $debug_allowTestMode = false;
   public static string $language_dateFormat = 'd/m/Y H:i';
   public static bool $xmlSchema_validation = true;
   public static string $server_key = 'Secret';
@@ -107,6 +108,8 @@ class SystemConfig {
     $config['server']['key'] = $serverKey;
 
     $config['xmlSchema']['validation'] = self::boolEnv('XML_SCHEMA_VALIDATION', true);
+
+    $config['debug']['allowTestMode'] = self::boolEnv('ALLOW_TEST_MODE');
 
     $overrideConfig = getenv('OVERRIDE_CONFIG');
     if ($overrideConfig) {

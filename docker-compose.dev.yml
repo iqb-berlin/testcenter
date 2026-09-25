@@ -115,6 +115,9 @@ services:
       SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
       OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
       NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
+      # lets requests switch the backend into test mode with the TestMode header (api and e2e
+      # tests); must never be enabled in production
+      ALLOW_TEST_MODE: "true"
     ports:
       - "9005:9003"
     extra_hosts:
