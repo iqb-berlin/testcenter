@@ -9,4 +9,6 @@
 - When planning or implementing solutions, don't just fix the symptoms. Try to find the root cause.
 - When other parts of the code do not allow a clean solution, do not work around that. Propose infrastrucure changes that allow for a clean solution.
 - If there a multiple solutions for a problem ask which one to take instead of quietly picking one.
+- Existing code is not an argument for new code. "It is already done this way elsewhere" only counts if that pattern is good on its own merits; do not carry earlier bad practices into new development.
+- Do not change production code just to make tests work (e.g. branches only the test environment takes). Adapt the test setup or test infrastructure instead.
 
