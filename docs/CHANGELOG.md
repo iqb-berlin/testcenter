@@ -46,6 +46,7 @@ folgenden Punkten:
 
 ## Technisches
 - Beim Löschen einer Anhang-Datei wird die zugehörige Datei nun auch von der Festplatte entfernt. Bisher blieb sie liegen, sodass gelöschte Anhänge weiter Speicherplatz belegten und nicht tatsächlich entfernt wurden.
+- Das Backend beschränkt PHP-Dateizugriffe per `open_basedir` auf `/var/www/testcenter/` und `/tmp/`. Deployments, die Anwendungs- oder Datenverzeichnisse außerhalb dieser Pfade ablegen, müssen den Wert in `backend/config/local.php.ini` anpassen.
 
 ### Schnittstellenänderungen (breaking)
 - Schema-Verweise in XML-Dateien (`xsi:noNamespaceSchemaLocation`) werden nur noch als Permalink der Form `https://w3id.org/iqb/spec/<repo>/<version>` erkannt. Die alten GitHub-URLs der Form `…/testcenter/<version>/definitions/vo_<Typ>.xsd` werden abgelehnt.
