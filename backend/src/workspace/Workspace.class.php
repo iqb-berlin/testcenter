@@ -98,6 +98,20 @@ class Workspace {
     return $this->workspacePath;
   }
 
+  /**
+   * The only sanctioned way to turn request input (type, file name) into a workspace
+   * file path. Returns null if the type is unknown or the path escapes its sub-folder.
+   */
+  public function getFilePath(string $type, string $fileName): ?string {
+    if (!in_array($type, self::subFolders)) {
+      return null;
+    }
+
+    $path = Folder::getContainedRealPath($this->workspacePath . '/' . $type, $fileName);
+
+    return ($path !== null and is_file($path)) ? $path : null;
+  }
+
   public function deleteFiles(array $filesToDelete): FileDeletionReport {
     $deletionReport = new FileDeletionReport();
 

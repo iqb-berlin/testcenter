@@ -9,7 +9,6 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Response;
 use Slim\Http\ServerRequest as Request;
-use Slim\Psr7\Stream;
 
 class WorkspaceController extends Controller {
   /**
@@ -122,28 +121,18 @@ class WorkspaceController extends Controller {
   }
 
   public static function getFile(Request $request, Response $response): Response {
-    $workspaceId = $request->getAttribute('ws_id', 0);
-    $fileType = $request->getAttribute('type', '[type missing]');
-    $filename = $request->getAttribute('filename', '[filename missing]');
+    $workspaceId = (int) $request->getAttribute('ws_id', 0);
+    $fileType = (string) $request->getAttribute('type', '');
+    $filename = (string) $request->getAttribute('filename', '');
 
-    $fullFilename = DATA_DIR . "/ws_$workspaceId/$fileType/$filename";
-    if (!file_exists($fullFilename)) {
-      throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+    $filePath = (new Workspace($workspaceId))->getFilePath($fileType, $filename);
+    if ($filePath === null) {
+      throw new HttpNotFoundException($request, "File not found: $fileType/$filename");
     }
 
-    $response->withHeader('Content-Description', 'File Transfer');
-    $response->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml');
-    $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
-    $response->withHeader('Expires', '0');
-    $response->withHeader('Cache-Control', 'must-revalidate');
-    $response->withHeader('Pragma', 'public');
-    $response->withHeader('Content-Length', filesize($fullFilename));
+    $contentType = ($fileType === 'Resource') ? 'application/octet-stream' : 'text/xml';
 
-    $fileHandle = fopen($fullFilename, 'rb');
-
-    $fileStream = new Stream($fileHandle);
-
-    return $response->withBody($fileStream);
+    return FileResponse::stream($response, $filePath, $filename, $contentType);
   }
 
   public static function postFile(Request $request, Response $response): Response {

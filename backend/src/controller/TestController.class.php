@@ -153,21 +153,14 @@ class TestController extends Controller {
       throw new HttpForbiddenException($request, "Access to file `$path` not allowed with group-token.");
     }
 
-    $workspace = new Workspace($workspaceId);
-    $resourceFile = $workspace->getWorkspacePath() . '/' . $path;
-
-    $res = fopen($resourceFile, 'rb');
-    if (!$res) {
+    [$type, $fileName] = explode('/', $path, 2);
+    $filePath = (new Workspace($workspaceId))->getFilePath($type, $fileName);
+    if ($filePath === null) {
       throw new HttpNotFoundException($request, "File not found: `$path`");
     }
 
-    header('Content-type: ' . FileExt::getMimeType($resourceFile));
-    header('Content-Length: ' . filesize($resourceFile));
-    header('X-Source: backend');
-    fpassthru($res);
-    http_response_code(200);
-    fclose($res);
-    die();
+    return FileResponse::stream($response, $filePath)
+      ->withHeader('X-Source', 'backend');
   }
 
   public static function putUnitReview(Request $request, Response $response): Response {

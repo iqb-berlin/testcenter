@@ -122,4 +122,27 @@ class Folder {
     }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
 
   }
+
+  /**
+   * Resolves $relativePath against $baseDir and returns the canonical absolute path,
+   * but only if it stays inside $baseDir; returns null otherwise. realpath resolves
+   * `..` and symlinks first, so neither can escape. A non-existent path is null too.
+   */
+  static function getContainedRealPath(string $baseDir, string $relativePath): ?string {
+    $baseReal = realpath($baseDir);
+    if ($baseReal === false) {
+      return null;
+    }
+
+    $candidateReal = realpath($baseDir . DIRECTORY_SEPARATOR . $relativePath);
+    if ($candidateReal === false) {
+      return null;
+    }
+
+    if (!str_starts_with($candidateReal, $baseReal . DIRECTORY_SEPARATOR)) {
+      return null;
+    }
+
+    return $candidateReal;
+  }
 }
