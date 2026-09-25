@@ -9,7 +9,9 @@ require_once "src/helper/Folder.class.php";
 require_once "src/helper/TestEnvironment.class.php";
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class VfsForTest {
   const globalIds = [
@@ -81,7 +83,7 @@ class VfsForTest {
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleFiles(1);
 
-    TestEnvironment::overwriteModificationDatesVfs();
+    self::overwriteModificationDates();
 
     self::insertTrashFiles();
     if ($includeBogusMaterial) {
@@ -90,6 +92,19 @@ class VfsForTest {
     }
 
     return $vfs;
+  }
+
+  private static function overwriteModificationDates(vfsStreamContent $dir = null): void {
+    if (!$dir) {
+      $dir = vfsStreamWrapper::getRoot()->getChild('data');
+    }
+    $dir->lastModified(TestEnvironment::staticDate);
+    foreach ($dir->getChildren() as $child) {
+      $child->lastModified(TestEnvironment::staticDate);
+      if (is_dir($child->url())) {
+        self::overwriteModificationDates($child);
+      }
+    }
   }
 
   private static function insertTrashFiles() {

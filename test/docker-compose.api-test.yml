@@ -1,4 +1,10 @@
 services:
+  backend:
+    # the api tests reset their data directory (TestEnvironment::apiTestDataDir) on every request;
+    # keep it in memory so that does not depend on the disk speed of the machine
+    tmpfs:
+      - /var/www/testcenter/data-TEST-api
+
   file-server:
     environment:
       REDIS_CACHE_FILES: false
