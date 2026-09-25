@@ -177,7 +177,7 @@ class Workspace {
       $this->workspaceDAO->deleteFile($file);
 
     } catch (Exception $e) {
-      echo $e->getMessage();
+      error_log($e->getMessage());
       return false;
     }
     return true;
