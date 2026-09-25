@@ -413,6 +413,16 @@ describe('TestControllerService', () => {
       expect(service.checkCompleteness(current, 'forward')).toEqual(['responsesIncomplete']);
     });
 
+    it('denies leaving an incomplete unit to a route outside the test', async () => {
+      const block = blockWith('OFF', 'ON');
+      const current = unitIn(block, 1, { RESPONSE_PROGRESS: 'some' });
+      setUp(current, unitIn(block, 5));
+      const showInfoDialog = spyOn(TestBed.inject(MessageService), 'showInfoDialog').and.callThrough();
+
+      expect(await firstValueFrom(service.canDeactivateUnit('/r/route-dispatcher', false))).toBeFalse();
+      expect(showInfoDialog).toHaveBeenCalledTimes(1);
+    });
+
     it('does not restrict navigation out of a locked block', () => {
       const block = blockWith('ALWAYS', 'ALWAYS');
       block.locked = { by: 'time', through: block };

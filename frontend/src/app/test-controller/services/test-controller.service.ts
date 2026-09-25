@@ -1073,9 +1073,6 @@ export class TestControllerService {
   }
 
   canDeactivateUnit(nextStateUrl: string, ignoreRouterState?: boolean): Observable<boolean> {
-    if (nextStateUrl === '/r/route-dispatcher') {
-      return of(true);
-    }
     if (this.state$.getValue() === 'ERROR') {
       return of(true);
     }
