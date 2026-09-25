@@ -115,6 +115,13 @@ services:
       SKIP_DB_INTEGRITY: ${SKIP_DB_INTEGRITY:-no}
       OVERWRITE_INSTALLATION: ${OVERWRITE_INSTALLATION:-no}
       NO_SAMPLE_DATA: ${NO_SAMPLE_DATA:-no}
+    # Merged with the dependencies from docker-compose.yml. Only takes effect
+    # while the `s3` profile is active; `make init-backend` writes the sample
+    # workspace straight into the bucket and therefore cannot start before it.
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+        required: false
     ports:
       - "9005:9003"
     extra_hosts:
@@ -134,3 +141,47 @@ services:
       - ./scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh:ro
     networks:
       - testcenter
+
+  # Local S3-compatible object storage for STORAGE_DRIVER=s3. Only started when
+  # the `s3` profile is active; scripts/make/dev.mk derives that profile from
+  # .env.dev's STORAGE_DRIVER (`make up`/`make init-backend`), so there is no
+  # separate switch to flip. Invoking `docker compose` directly instead of
+  # `make` needs `--profile s3` added by hand. The credentials and the bucket
+  # are taken from the same S3_* variables the backend reads, so the store and
+  # its client cannot drift apart. The bucket is created on startup; CORS
+  # defaults to allowing every origin, which is what the presigned-URL
+  # redirects need locally.
+  seaweedfs:
+    profiles:
+      - s3
+    image: ${DOCKERHUB_PROXY}chrislusf/seaweedfs:4.47
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+    ports:
+      - "8333:8333"
+      # SeaweedFS's own Admin UI: browse the bucket contents at
+      # http://localhost:23646. No credentials set, so auth is disabled.
+      - "23646:23646"
+    volumes:
+      - seaweedfs_vol:/data
+    # The S3 API answers on /healthz about a second before the bucket is created,
+    # so readiness has to include the bucket itself: the filer serves it under
+    # /buckets/{name} and answers 404 as long as it is missing. Without that the
+    # backend can start writing into a bucket that does not exist yet.
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "curl -fsS -o /dev/null http://localhost:8333/healthz && curl -fsS -o /dev/null http://localhost:8888/buckets/${S3_BUCKET}/"
+      ]
+      start_period: 60s
+      start_interval: 1s
+      interval: 90s
+      timeout: 10s
+      retries: 3
+    networks:
+      - testcenter
+
+volumes:
+  seaweedfs_vol:

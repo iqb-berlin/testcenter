@@ -136,6 +136,11 @@ class WorkspaceInitializer {
       throw new Exception("File not found: `$importFileName`");
     }
 
+    if (Storage::isObjectStore()) {
+      Storage::driver()->put("ws_$workspaceId/$target", $importFileName);
+      return;
+    }
+
     $dir = pathinfo($target, PATHINFO_DIRNAME);
     $fileName = basename($target);
     $fileName = Folder::createPath(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
@@ -152,15 +157,29 @@ class WorkspaceInitializer {
   }
 
   public function cleanWorkspace(int $workspaceId): void {
+    if (Storage::isObjectStore()) {
+      foreach (Storage::driver()->list("ws_$workspaceId/") as $key) {
+        Storage::driver()->delete($key);
+      }
+      return;
+    }
+
     Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
     rmdir(DATA_DIR . "/ws_$workspaceId/");
   }
 
   public function createSampleScanImage(string $fileName, int $workspaceId): void {
     $png = '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082';
+    $binary = hex2bin($png);
+
+    if (Storage::isObjectStore()) {
+      Storage::driver()->putContents("ws_$workspaceId/$fileName", $binary);
+      return;
+    }
+
     file_put_contents(
       Folder::createPath(DATA_DIR . "/ws_$workspaceId") . $fileName,
-      hex2bin($png)
+      $binary
     );
   }
 }
