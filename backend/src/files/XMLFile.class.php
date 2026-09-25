@@ -124,7 +124,7 @@ class XMLFile extends File {
     $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
 
     if (!$schemaFilePath) {
-      $this->report('error', 'XSD schema could not be downloaded.');
+      $this->report('error', 'XSD schema could not be downloaded. Version exists? Internet connection?');
       return;
     }
 

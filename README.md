@@ -18,12 +18,14 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 
 ### Advanced Documentation
 
-To start a test via the Testcenter, several test files are required. These contain the units and serve the purpose of configuration.
-Two test files are required for the configuration. They are named **Booklet-XML** and **Testtaker-XML**. The structure and content of these two files are documented in [IQB-Specifications](https://iqb-specifications.github.io/).
-There are one repository for testtaker-XML and one for booklet-XML:
+To start a test via Testcenter, several test files are required. These contain the units and serve configuration purposes. 
+Two test files are needed for configuration: **Booklet-XML** and **Testtaker-XML**. 
+Units are integrated into the test via a **Unit XML**.
+The structure and content of these files are documented in separate repositories within the [IQB specifications](https://iqb-specifications.github.io/):
 
 * [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
 * [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
+* [Unit](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
 
 **More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
 
