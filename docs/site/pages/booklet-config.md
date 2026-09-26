@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # Booklet: Konfiguration
 
 Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
@@ -17,3 +13,5 @@ Die Konfiguration erfolgt im Feld: `<BookletConfig>`.
 ```
 
 ## Liste der Konfigurationsparameter
+
+<!--@include: ../generated/booklet-config.md-->

@@ -59,7 +59,6 @@ services:
       - ./common:/usr/src/testcenter/common
       - ./definitions:/usr/src/testcenter/definitions
       - ./frontend/src:/usr/src/testcenter/frontend/src
-      - ./docs/dist:/usr/src/testcenter/docs/dist
     networks:
       - testcenter
 
@@ -106,7 +105,6 @@ services:
       - ./backend/test:/var/www/testcenter/backend/test
       - ./backend/mago.toml:/var/www/testcenter/backend/mago.toml:ro
       - ./definitions:/var/www/testcenter/definitions
-      - ./docs/dist:/docs/dist
       - ./package.json:/var/www/testcenter/package.json
       - ./sampledata:/var/www/testcenter/sampledata
       - ./scripts/database:/var/www/testcenter/scripts/database

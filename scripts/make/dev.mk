@@ -4,8 +4,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
-	composer-refresh-autoload init-backend create-interfaces update-docs\
-	docs-api-specs docs-user create-pages serve-pages new-version
+	composer-refresh-autoload init-backend create-interfaces new-version
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -13,7 +12,6 @@ init:
 	cp $(TC_BASE_DIR)/.env.prod-template $(TC_BASE_DIR)/.env.prod
 	cp $(TC_BASE_DIR)/frontend/src/environments/environment.dev.ts $(TC_BASE_DIR)/frontend/src/environments/environment.ts
 	chmod 0755 $(TC_BASE_DIR)/scripts/database/000-create-test-db.sh
-	mkdir -m 777 -p $(TC_BASE_DIR)/docs/dist
 
 # Log in to selected registry (see .env.dev file)
 dev-registry-login:
@@ -177,11 +175,6 @@ init-backend:
 create-interfaces:
 	cd $(TC_BASE_DIR) && make .run-task-runner task=create-interfaces
 
-update-docs:
-	cd $(TC_BASE_DIR) &&\
-	make docs-api-specs &&\
-	make docs-user
-
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 .run-task-runner:
@@ -192,28 +185,6 @@ update-docs:
 			--file test/docker-compose.api-test.yml\
 		run --build --rm --no-deps task-runner\
 			npm run $(task)
-
-# Creates a documentation (with ReDoc) of the the API between frontend and backend
-docs-api-specs:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=backend:update-specs
-
-# Creates some documentation-files about custom-texts, booklet-configurations and other out of the definitions.
-docs-user:
-	cd $(TC_BASE_DIR) && make .run-task-runner task=create-docs
-
-create-pages:
-	cd $(TC_BASE_DIR) &&\
-		docker build\
-				--target jekyll\
-				--build-arg REGISTRY_PATH=$(DOCKERHUB_PROXY)\
-				--tag jekyll\
-				--file docs/Dockerfile\
-			.
-	docker run --rm jekyll
-
-serve-pages:
-	cd $(TC_BASE_DIR) && docker build --target jekyll-serve --tag jekyll-serve -f docs/Dockerfile .
-	docker run --rm -p 4000:4000 jekyll-serve
 
 new-version:
 	cd $(TC_BASE_DIR) &&\

@@ -1,0 +1,17 @@
+{
+  "name": "iqb-testcenter-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "api": "npm --prefix .. run backend:update-specs && redocly build-docs site/public/api/specs.yml --output site/public/api/index.html --title 'IQB Testcenter API' --disableGoogleFont",
+    "generate": "tsx scripts/generate.js",
+    "dev": "npm run api && npm run generate && vitepress dev site",
+    "build": "npm run api && npm run generate && vitepress build site",
+    "preview": "vitepress preview site"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.54.3",
+    "tsx": "^4.23.15",
+    "vitepress": "^1.6.4"
+  }
+}
