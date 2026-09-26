@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # Installation for production
 
 This installation will download and use pre-built Docker images from a Docker Registry. Docker Compose is used to manage

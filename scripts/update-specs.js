@@ -32,10 +32,7 @@ exports.mergeSpecFiles = (selector = 'api/*.spec.yml') => (() => {
 const prepareDocsDestinationFolder = done => {
   cliPrint.headline('Prepare destination Folder');
 
-  if (!fs.existsSync(`${docsDir}/dist/api`)) {
-    fs.mkdirSync(`${docsDir}/dist/api`);
-  }
-  fs.copyFileSync(`${docsDir}/api/index.html`, `${docsDir}/dist/api/index.html`);
+  fs.mkdirSync(`${docsDir}/site/public/api`, { recursive: true });
   done();
 };
 
@@ -43,7 +40,7 @@ const updateDocs = done => {
   cliPrint.headline('write compiled spec to docs folder');
 
   const compiledFileName = `${tmpDir}/compiled.specs.yml`;
-  const targetFileName = `${docsDir}/dist/api/specs.yml`;
+  const targetFileName = `${docsDir}/site/public/api/specs.yml`;
   const yamlTree = YAML.parse(fs.readFileSync(compiledFileName, 'utf8'));
 
   const localizeReference = (key, val) => {
@@ -80,11 +77,11 @@ exports.clearTmpDir = done => {
 };
 
 /**
- * To be more manageable the specs are distributed over several files in `docs/src/api`.
+ * To be more manageable the specs are distributed over several files in `docs/api`.
  * This takes the files and merges them together as needed by ReDoc. Also OpenApi3 is not OpenApi3.
  * While the specs are written in Standard OpenApi3, on both use-cases, Dredd and ReDoc,
  * some special treatment is needed.
- * This places the API-Page and the compiled, Re-Docs-compatible specs into the docs folder.
+ * This places the compiled, Re-Docs-compatible specs into `docs/site/public/api`.
  */
 exports.updateSpecs = gulp.series(
   exports.clearTmpDir,

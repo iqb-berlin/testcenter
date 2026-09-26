@@ -9,7 +9,9 @@
       <sourceFolder url="file://$MODULE_DIR$/backend/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/e2e/src" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/broadcaster/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/docs/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/site/.vitepress/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/site/.vitepress/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/site/public/api" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/sampledata" />

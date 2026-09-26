@@ -1,6 +1,5 @@
 <!-- This file outlines the steps necessary for creating a new release -->
 
-- make docs-user
 - make create-interfaces
 - Optionally update schema references in `sampledata` files. This is only necessary if the sample files actually use new
   features of the new schemas.

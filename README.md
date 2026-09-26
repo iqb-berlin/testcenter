@@ -42,5 +42,5 @@ The structure and content of these files are documented in separate repositories
 
 ### API Documentation
 
-* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html)
+* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/api/index.html)
 * [Verona Player API](https://verona-interfaces.github.io/player/)
