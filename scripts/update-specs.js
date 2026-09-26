@@ -16,8 +16,9 @@ const cliPrint = require('./helper/cli-print');
 const jsonTransform = require('./helper/json-transformer');
 const packageJson = require('../package.json');
 
-const tmpDir = fs.realpathSync(`${__dirname}'/../tmp`);
-const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
+fs.mkdirSync(`${__dirname}/../tmp`, { recursive: true });
+const tmpDir = fs.realpathSync(`${__dirname}/../tmp`);
+const docsDir = fs.realpathSync(`${__dirname}/../docs`);
 
 exports.mergeSpecFiles = (selector = 'api/*.spec.yml') => (() => {
   cliPrint.headline(`compile spec files to one selector: ${selector}`);
