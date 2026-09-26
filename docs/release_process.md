@@ -7,6 +7,8 @@
 - Move content of `next.sql` file with release name, e.g. `17.5.0.sql`. Delete `next.sql`!
 - Move content of `next.sh` file with release name, e.g. `17.5.0.sh`. Delete `next.sh`! Do not add pre-release tags like "-beta" to the filename.
 - Make sure `CHANGELOG.md` is up to date.
+- For a new minor version, add it at the top of `docs/site/public/versions.json`. Remove versions whose docs are no
+  longer offered.
 - Update versions in scripts/helm/testcenter/Chart.yml
   - appVersion AND (chart) version need to be raised.
 - Update TESTCENTER_VERSION and TESTCENTER_CHART_VERSION in scrips/helm/helm-install-tc.sh
