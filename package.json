@@ -26,8 +26,7 @@
     "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTest",
     "file-server:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/test.js runDreddTestFs",
-    "create-interfaces": "npx --yes update-browserslist-db@latest && npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
-    "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"
+    "create-interfaces": "npx --yes update-browserslist-db@latest && npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces"
   },
   "eslintConfig": {
     "overrides": [
@@ -97,8 +96,6 @@
     "dredd": "^14.0.0",
     "fs-extra": "^11.4.0",
     "gulp": "^4.0.2",
-    "gulp-replace": "~1.1.3",
-    "gulp-tap": "~2.0.0",
     "gulp-yaml-merge": "~2.0.0",
     "ini": ">=1.3.6",
     "is-promise": "^4.0.0",

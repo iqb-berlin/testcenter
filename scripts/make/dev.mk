@@ -4,7 +4,7 @@ TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
 
 ## prevents collisions of make target names with possible file names
 .PHONY: init dev-registry-login dev-registry-logout build up down start stop logs composer-install composer-update\
-	composer-refresh-autoload init-backend create-interfaces new-version
+	composer-refresh-autoload init-backend create-interfaces
 
 # Initialized the Application. Run this right after checking out the Repo.
 init:
@@ -185,7 +185,3 @@ create-interfaces:
 			--file test/docker-compose.api-test.yml\
 		run --build --rm --no-deps task-runner\
 			npm run $(task)
-
-new-version:
-	cd $(TC_BASE_DIR) &&\
-	make .run-task-runner task="new-version $(version)"
