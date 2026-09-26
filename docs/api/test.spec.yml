@@ -13,7 +13,7 @@ paths:
         Retrieves a certain test: It's content, state and the mode of current login-session.
         `laststate` is an array of key-value-pairs stored for this test.
         The test-mode is basically a string to be interpretated by the frontend. For more details
-        about that see: https://github.com/iqb-berlin/testcenter/blob/master/docs/pages/test-mode.md
+        about that see: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html
 
           * `run-hot-return` and `run-hot-restart` - the real testing situation
           * `run-review` - for reviewers of of units and booklets
