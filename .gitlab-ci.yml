@@ -65,55 +65,50 @@ include:
   - local: scripts/ci/frontend.yml
   - local: scripts/ci/e2e.yml
 
-build-doc:
+.docs-template:
   stage: deploy
   rules:
     - if: '$PIPELINE_TYPE == "release"'
       when: on_success
     - when: never
   image: node:22
-  script:
-    - npm i
-    - mkdir tmp
-    - mkdir docs/dist
-    - npm run backend:update-specs
-    - npm run create-docs
-  artifacts:
-    paths:
-      - docs/index.md
-      - docs/CHANGELOG.md
-      - docs/pages/booklet-config.md
-      - docs/pages/test-mode.md
-      - docs/pages/test-session-super-states.html
-      - docs/pages/custom-texts.md
-      - docs/pages/logging.md
-      - docs/pages/developer-guide.md
-      - docs/pages/installation-dev.md
-      - docs/pages/installation-prod.md
-      - docs/dist/api/index.html
-      - docs/dist/api/specs.yml
-    expire_in: 30 minutes
+  services: []
 
-pages:
-  stage: deploy
-  rules:
-   - if: '$PIPELINE_TYPE == "release"'
-     when: on_success
-   - when: never
-  needs:
-    - build-doc
+# Each release is deployed twice: unprefixed as the latest version, and with its minor version as
+# path prefix (e.g. 19.0), which a patch release replaces and which is kept for good.
+docs-version:
+  extends: .docs-template
   script:
-    - echo "$PIPELINE_TYPE"
-    - docker build --progress plain --pull --target jekyll
-      --file docs/Dockerfile
-      --tag ${CI_REGISTRY_IMAGE}/jekyll .
-    - mkdir public
-    - docker run --volume $(pwd)/public/:/usr/src/testcenter/public/ --volume $(pwd)/docs/:/usr/src/testcenter/docs/ ${CI_REGISTRY_IMAGE}/jekyll;
+    # cuts the patch version off the tag: 19.0.2 -> 19.0
+    - echo "DOCS_PREFIX=${CI_COMMIT_TAG%.*}" > docs-version.env
+  artifacts:
+    # GitLab turns each KEY=value line into a CI/CD variable for the jobs receiving this artifact
+    reports:
+      dotenv: docs-version.env
+
+.pages-template:
+  extends: .docs-template
+  script:
+    - npm ci
+    - cd docs
+    - npm ci
+    - npm run build
+    - mv site/.vitepress/dist "$CI_PROJECT_DIR/public"
   artifacts:
     paths:
       - public
-  pages:  # specifies that this is a Pages job and publishes the default public directory
-    path_prefix: "$CI_COMMIT_BRANCH"
+
+pages:
+  extends: .pages-template
+  dependencies: []
+
+pages-versioned:
+  extends: .pages-template
+  needs:
+    - docs-version
+  pages:
+    path_prefix: "$DOCS_PREFIX"
+    expire_in: never
 
 .push-prod-template:
   stage: deploy
@@ -148,6 +143,7 @@ push-release:
   extends: .push-prod-template
   needs:
     - pages
+    - pages-versioned
   rules:
     - if: '$PIPELINE_TYPE == "release"'
       when: on_success

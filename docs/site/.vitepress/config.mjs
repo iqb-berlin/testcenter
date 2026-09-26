@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitepress';
 
+// A release is deployed twice: unprefixed as the latest version and below its minor version.
+const prefix = process.env.DOCS_PREFIX;
+
 export default defineConfig({
+  base: prefix ? `/testcenter/${prefix}/` : '/testcenter/',
   title: 'Testcenter Dokumentation',
   description: 'IQB-Testcenter',
   srcExclude: ['generated/**'],
