@@ -116,11 +116,11 @@ class SessionController extends Controller {
     foreach ($members as $member) {
       /** @var $member LoginSession */
 
-      if (Mode::hasCapability($member->getLogin()->getMode(), 'alwaysNewSession')) {
+      if (Mode::hasCapability($member->getLogin()->getMode(), ModeCapability::ALWAYS_NEW_SESSION)) {
         continue;
       }
 
-      if (!Mode::hasCapability($member->getLogin()->getMode(), 'monitorable')) {
+      if (!Mode::hasCapability($member->getLogin()->getMode(), ModeCapability::MONITORABLE)) {
         continue;
       }
 
@@ -292,7 +292,7 @@ class SessionController extends Controller {
 
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($name, $password);
     if (!is_a($loginSession, LoginSession::class)) {
-      if ($loginSession === FailedLogin::wrongPasswordProtectedLogin) {
+      if ($loginSession === FailedLogin::wrongPasswordLockableLogin) {
         CacheService::addFailedLogin($name);
       }
       $userName = htmlspecialchars($name);

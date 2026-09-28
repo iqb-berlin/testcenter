@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 
 class SessionControllerInjector extends SessionController {
@@ -33,6 +35,8 @@ class SessionControllerInjector extends SessionController {
  * @preserveGlobalState disabled
  */
 final class SessionControllerTest extends TestCase {
+  use MockeryPHPUnitIntegration;
+
   function setUp(): void {
     require_once "test/unit/mock-classes/ExternalFileMock.php";
     require_once "test/unit/test-helper/RequestCreator.class.php";
@@ -156,6 +160,77 @@ final class SessionControllerTest extends TestCase {
       RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
       ResponseCreator::createEmpty()
     );
+  }
+
+  public function test_putSessionLogin_countsFailedAttemptOfLockableLogin(): void {
+    $cacheService = Mockery::mock('alias:' . CacheService::class);
+    $cacheService->allows('getFailedLogins')->andReturn(0);
+    $cacheService->expects('addFailedLogin')->with('monitor')->once();
+    $this->mockSessionDAO(['getOrCreateLoginSession' => FailedLogin::wrongPasswordLockableLogin]);
+
+    $this->expectException(HttpBadRequestException::class);
+
+    SessionController::putSessionLogin(
+      RequestCreator::create('PUT', '/session/login', '{"name":"monitor", "password":"wrong"}'),
+      ResponseCreator::createEmpty()
+    );
+  }
+
+  public function test_putSessionLogin_doesNotCountFailedAttemptOfOtherLogins(): void {
+    $cacheService = Mockery::mock('alias:' . CacheService::class);
+    $cacheService->allows('getFailedLogins')->andReturn(0);
+    $cacheService->expects('addFailedLogin')->never();
+    $this->mockSessionDAO(['getOrCreateLoginSession' => FailedLogin::wrongPassword]);
+
+    $this->expectException(HttpBadRequestException::class);
+
+    SessionController::putSessionLogin(
+      RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"wrong"}'),
+      ResponseCreator::createEmpty()
+    );
+  }
+
+  public function test_putSessionLogin_locksAfterFiveFailedAttempts(): void {
+    $cacheService = Mockery::mock('alias:' . CacheService::class);
+    $cacheService->allows('getFailedLogins')->with('monitor')->andReturn(5);
+    $this->mockSessionDAO(['getOrCreateLoginSession' => FailedLogin::wrongPassword], ['getOrCreateLoginSession' => 0]);
+
+    $this->expectException(HttpError::class);
+    $this->expectExceptionCode(429);
+
+    SessionController::putSessionLogin(
+      RequestCreator::create('PUT', '/session/login', '{"name":"monitor", "password":"correct"}'),
+      ResponseCreator::createEmpty()
+    );
+  }
+
+  public function test_putSessionLogin_allowsLoginAfterFourFailedAttemptsAndResetsCounter(): void {
+    $cacheService = Mockery::mock('alias:' . CacheService::class);
+    $cacheService->allows('getFailedLogins')->with('sample_user')->andReturn(4);
+    $cacheService->expects('resetFailedLogins')->with('sample_user')->once();
+    $this->mockSessionDAO([
+      'getOrCreateLoginSession' => new LoginSession(
+        1,
+        'some_token',
+        'group-token',
+        new Login(
+          'sample_user',
+          'password_hash',
+          'monitor-group',
+          'sample_group',
+          'Sample Group',
+          ['aaa' => ['THE_BOOKLET']],
+          1
+        )
+      )
+    ]);
+
+    $response = SessionController::putSessionLogin(
+      RequestCreator::create('PUT', '/session/login', '{"name":"sample_user", "password":"correct"}'),
+      ResponseCreator::createEmpty()
+    );
+
+    $this->assertEquals(200, $response->getStatusCode());
   }
 
   public function test_putSessionLogin_returnPersonSessionIfNoCodeRequired(): void {

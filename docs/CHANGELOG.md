@@ -30,6 +30,7 @@ folgenden Punkten:
 - Codes werden nun unabhängig von Groß- und Kleinschreibung akzeptiert. Das betrifft sowohl den Login-Code (z. B. für Testhefte, die über einen Code ausgewählt werden) als auch das Freigabewort für gesperrte Testheft-Bereiche (`CodeToEnter`).
 - Hochgeladene XML-Dateien werden wieder gegen ihr XSD-Schema geprüft; Verstöße gegen das Schema verhindern den Upload.
 - (breaking) XML-Dateien werden nur noch akzeptiert, wenn sie eine unterstützte Schema-Version angeben; welche das sind, zeigt die Dateiansicht des Arbeitsbereichs.
+- Die Dokumentation der Login-Modi gibt an, dass Anmeldungen in `monitor-group` und `monitor-study` nach 5 fehlgeschlagenen Anmeldeversuchen gesperrt werden, bis 30 Minuten seit dem letzten Fehlversuch vergangen sind.
 
 ## Fehlerbehebungen
 - (breaking) Die Beschriftungen im Systemcheck und in den CSV Reports verwenden die korrekte Schreibweise „Betriebssystem“, „Betriebssystemversion“, „Fenstergröße“, „Browserversion“, „Browsersprache“, „Bildschirmauflösung“ und „Eingabeelementen“.

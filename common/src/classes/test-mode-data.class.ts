@@ -11,6 +11,7 @@ export class TestModeData {
   showUnitMenu: boolean = false;
   receiveRemoteCommands: boolean = false;
   canChangeStateOptions: boolean = true;
+  lockAfterFailedLogins: boolean = false;
 
   static modes = {
     'RUN-DEMO': {
@@ -24,7 +25,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChangeStateOptions: true
+      canChangeStateOptions: true,
+      lockAfterFailedLogins: false
     },
     'MONITOR-GROUP': {
       alwaysNewSession: false,
@@ -37,7 +39,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChangeStateOptions: true
+      canChangeStateOptions: true,
+      lockAfterFailedLogins: true
     },
     'MONITOR-STUDY': {
       alwaysNewSession: false,
@@ -50,7 +53,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChangeStateOptions: true
+      canChangeStateOptions: true,
+      lockAfterFailedLogins: true
     },
     'RUN-HOT-RETURN': {
       alwaysNewSession: false,
@@ -63,7 +67,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
-      canChangeStateOptions: false
+      canChangeStateOptions: false,
+      lockAfterFailedLogins: false
     },
     'RUN-HOT-RESTART': {
       alwaysNewSession: true,
@@ -76,7 +81,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: true,
-      canChangeStateOptions: false
+      canChangeStateOptions: false,
+      lockAfterFailedLogins: false
     },
     'RUN-REVIEW': {
       alwaysNewSession: false,
@@ -89,7 +95,8 @@ export class TestModeData {
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
-      canChangeStateOptions: true
+      canChangeStateOptions: true,
+      lockAfterFailedLogins: false
     },
     'RUN-TRIAL': {
       alwaysNewSession: false,
@@ -102,7 +109,8 @@ export class TestModeData {
       showTimeLeft: true,
       showUnitMenu: true,
       receiveRemoteCommands: false,
-      canChangeStateOptions: true
+      canChangeStateOptions: true,
+      lockAfterFailedLogins: false
     },
     'RUN-SIMULATION': {
       alwaysNewSession: false,
@@ -115,7 +123,8 @@ export class TestModeData {
       showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false,
-      canChangeStateOptions: false
+      canChangeStateOptions: false,
+      lockAfterFailedLogins: false
     },
     'SYS-CHECK-LOGIN': {
       alwaysNewSession: true,
@@ -127,7 +136,8 @@ export class TestModeData {
       showCode: false,
       showTimeLeft: false,
       showUnitMenu: false,
-      receiveRemoteCommands: false
+      receiveRemoteCommands: false,
+      lockAfterFailedLogins: false
     }
   };
 

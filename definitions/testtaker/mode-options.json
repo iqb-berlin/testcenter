@@ -9,5 +9,6 @@
   "showTimeLeft": "Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.",
   "showUnitMenu": "Die Aufgaben-Übersicht wird angezeigt, auch wenn die Booklet-Konfiguration dies nicht vorsieht.",
   "receiveRemoteCommands": "Kann aus dem Gruppen-Monitor gesteuert werden",
-  "canChangeStateOptions": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab."
+  "canChangeStateOptions": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab.",
+  "lockAfterFailedLogins": "Nach 5 fehlgeschlagenen Anmeldeversuchen wird die Anmeldung gesperrt, bis 30 Minuten seit dem letzten Fehlversuch vergangen sind."
 }

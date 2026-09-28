@@ -76,7 +76,7 @@ class TestController extends Controller {
     $bookletFile = $workspace->getFileById('Booklet', $test->bookletFileId);
     $testName = TestName::fromString($test->name);
 
-    // TODO check for Mode::hasCapability('monitorable'))
+    // TODO check for Mode::hasCapability(ModeCapability::MONITORABLE)
 
     if (!$test->running) {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());

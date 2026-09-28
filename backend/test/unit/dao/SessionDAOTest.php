@@ -598,7 +598,7 @@ class SessionDAOTest extends TestCase {
 
   public function test_getLogin_missingPasswordProtected(): void {
     $loginSession = $this->dbc->getLogin("monitor", "wrong");
-    $this->assertEquals(FailedLogin::wrongPasswordProtectedLogin, $loginSession);
+    $this->assertEquals(FailedLogin::wrongPasswordLockableLogin, $loginSession);
   }
 
   public function test_getLogin_missingUser(): void {

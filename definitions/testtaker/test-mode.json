@@ -12,7 +12,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": true
+      "canChangeStateOptions": true,
+      "lockAfterFailedLogins": false
     }
   },
   "MONITOR-GROUP": {
@@ -28,7 +29,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": true
+      "canChangeStateOptions": true,
+      "lockAfterFailedLogins": true
     }
   },
   "MONITOR-STUDY": {
@@ -44,7 +46,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": true
+      "canChangeStateOptions": true,
+      "lockAfterFailedLogins": true
     }
   },
   "RUN-HOT-RETURN": {
@@ -60,7 +63,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": true,
-      "canChangeStateOptions": false
+      "canChangeStateOptions": false,
+      "lockAfterFailedLogins": false
     }
   },
   "RUN-HOT-RESTART": {
@@ -76,7 +80,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": true,
-      "canChangeStateOptions": false
+      "canChangeStateOptions": false,
+      "lockAfterFailedLogins": false
     }
   },
   "RUN-REVIEW": {
@@ -92,7 +97,8 @@
       "showTimeLeft": true,
       "showUnitMenu": true,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": true
+      "canChangeStateOptions": true,
+      "lockAfterFailedLogins": false
     }
   },
   "RUN-TRIAL": {
@@ -108,7 +114,8 @@
       "showTimeLeft": true,
       "showUnitMenu": true,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": true
+      "canChangeStateOptions": true,
+      "lockAfterFailedLogins": false
     }
   },
   "RUN-SIMULATION": {
@@ -124,7 +131,8 @@
       "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false,
-      "canChangeStateOptions": false
+      "canChangeStateOptions": false,
+      "lockAfterFailedLogins": false
     }
   },
   "SYS-CHECK-LOGIN": {
@@ -139,7 +147,8 @@
       "showCode": false,
       "showTimeLeft": false,
       "showUnitMenu": false,
-      "receiveRemoteCommands": false
+      "receiveRemoteCommands": false,
+      "lockAfterFailedLogins": false
     }
   }
 }
