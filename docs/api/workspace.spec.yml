@@ -1446,9 +1446,9 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;originalUnitId;timestamp;logentry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"UNIT.SAMPLE";"1627545600000";sample unit log
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600000";sample log entry
+                "groupname";"loginname";"code";"bookletname";"unitname";"originalUnitId";"timestamp";"logentry"
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"UNIT.SAMPLE";"1627545600000";"sample unit log"
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"";"1627545600000";"sample log entry"
             application/json:
               schema:
                 $ref: '#/components/schemas/LogReport'
@@ -1517,7 +1517,7 @@ paths:
               schema:
                 type: string
               example: |-
-                groupname;loginname;code;bookletname;unitname;originalUnitId;responses;laststate
+                "groupname";"loginname";"code";"bookletname";"unitname";"originalUnitId";"responses";"laststate"
                 "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"UNIT.SAMPLE";"[{""id"":""1:UNIT.SAMPLE:v2"",""content"":""[{\""id\"":\""v2\"",\""value\"":[\""image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png\""],\""status\"":\""VALUE_CHANGED\""}]"",""ts"":1627545600000,""responseType"":""iqb-standard@1.0""},{""id"":""all"",""content"":""{\""name\"":\""Sam Sample\"",\""age\"":34}"",""ts"":1627545600000,""responseType"":""example-data-format""}]";"{""PRESENTATIONCOMPLETE"": ""yes""}"
             application/json:
               schema:
@@ -1619,12 +1619,12 @@ paths:
               examples:
                 old:
                   value: |-
-                    groupname;loginname;code;bookletname;unitname;priority;category: content;reviewtime;entry;page;pagelabel;originalUnitId;userAgent
+                    "groupname";"loginname";"code";"bookletname";"unitname";"priority";"category: content";"reviewtime";"entry";"page";"pagelabel";"originalUnitId";"userAgent"
                     "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"X";"2021-07-29 10:00:00";"mario: this is a sample unit review";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0"
                     "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"X";"2021-07-29 10:00:00";"luigi: sample booklet review";;;"";"Firefox/126.0"
                 new:
                   value: |-
-                    groupname;loginname;code;bookletname;unitname;priority;category_content;reviewtime;page;pagelabel;originalUnitId;userAgent;reviewer;entry;unitlabel;bookletlabel
+                    "groupname";"loginname";"code";"bookletname";"unitname";"priority";"category_content";"reviewtime";"page";"pagelabel";"originalUnitId";"userAgent";"reviewer";"entry";"unitlabel";"bookletlabel"
                     "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"TRUE";"2021-07-29 10:00:00";"1";"page-1";"UNIT.SAMPLE";"Firefox/126.0";;"mario: this is a sample unit review";"A Sample Unit to demonstrate the SamplePlayer2";"Sample booklet"
                     "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"TRUE";"2021-07-29 10:00:00";;;"";"Firefox/126.0";;"luigi: sample booklet review";"";"Sample booklet"
             application/json:

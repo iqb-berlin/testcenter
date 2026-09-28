@@ -42,13 +42,6 @@ class SysCheckReportOutput extends Report {
   }
 
   private function generateCsvReportData(array $flatReports): string {
-    return self::BOM .
-    CSV::build(
-      $flatReports,
-      [],
-      self::DELIMITER,
-      self::ENCLOSURE,
-      self::LINE_ENDING
-    );
+    return CSV::BOM . CSV::build($flatReports);
   }
 }

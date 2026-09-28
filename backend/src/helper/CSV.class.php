@@ -1,17 +1,20 @@
 <?php
-/** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-// TODO unit Test
-
+/**
+ * Builds the CSV files the testcenter exports, in the dialect MS Excel reads: semicolon-delimited, UTF-8 with BOM.
+ *
+ * Every cell is enclosed in double quotes and contained double quotes are doubled (RFC 4180), so delimiters,
+ * quotes and line breaks inside a value can neither add columns nor rows. `null` is written as an empty,
+ * unenclosed cell.
+ */
 class CSV {
-  const allowedDelimiters = [',', ';', '|', '\t', '\s'];
-  const allowedEnclosures = ['"', "'"];
-  const allowedLineEndings = ["\r\n", "\r", "\n"]; // Win / Mac / Unix
+  public const string BOM = "\xEF\xBB\xBF";
+  public const string DELIMITER = ';';
+  public const string ENCLOSURE = '"';
+  public const string LINE_ENDING = "\n";
 
   /**
-   * builds string containing data CSV from a collections of heterogeneous arrays
-   *
    * example:
    * $data = [
    *  [
@@ -24,59 +27,41 @@ class CSV {
    *  ]
    * ]
    * echo CSV::build($data);
-   * color,form,pattern
-   * green,circle,
-   * blue,,dotted
-   *
+   * "color";"form";"pattern"
+   * "green";"circle";
+   * "blue";;"dotted"
    *
    * @param array $data - array of (assoc) arrays. keys are columns names, values are cell values
-   * @param array $columnNames - names of columns to be written in csv. if empty, it will take all keys from the
-   *      provided arrays as columns
-   * @param string $delimiter - delimiter. falls back to default if not allowed
-   * @param string $enclosure - enclosure. falls back to default if not allowed
-   * @param string $lineDelimiter - line-delimiter. falls back to default if not allowed
-   * @return string
+   * @param array $columnNames - names of columns to be written. if empty, all keys of the provided arrays are taken
    */
-  static function build(array  $data, array $columnNames = [],
-                        string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n'): string {
-    $columns = (is_array($columnNames) and count($columnNames))
-      ? $columnNames
-      : CSV::collectColumnNamesFromHeterogeneousObjects($data);
-    $enclosure = in_array($enclosure, CSV::allowedEnclosures) ? $enclosure : '"';
-    $delimiter = in_array($delimiter, CSV::allowedDelimiters) ? $delimiter : ',';
-    $lineDelimiter = in_array($lineDelimiter, CSV::allowedLineEndings) ? $lineDelimiter : "\n";
+  static function build(array $data, array $columnNames = []): string {
+    $columns = count($columnNames) ? $columnNames : self::collectColumnNamesFromHeterogeneousObjects($data);
 
-    $csvRows = [];
-
-    $csvRows[] = CSV::stringifyRow($columns, $delimiter, $enclosure);
-
+    $rows = [self::row($columns)];
     foreach ($data as $set) {
-      $row = [];
-
-      foreach ($columns as $column) {
-        $row[] = $set[$column] ?? '';
-      }
-
-      $csvRows[] = CSV::stringifyRow($row, $delimiter, $enclosure);
+      $rows[] = self::row(array_map(fn($column) => $set[$column] ?? null, $columns));
     }
 
-    return implode($lineDelimiter, $csvRows);
-  }
-
-  private static function stringifyRow($row, $delimiter, $enclosure): string {
-    return implode(
-      $delimiter,
-      array_map(
-        function($cell) use ($enclosure, $delimiter) {
-          return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', (string) $cell) . $enclosure;
-        },
-        $row
-      )
-    );
+    return implode(self::LINE_ENDING, $rows);
   }
 
   /**
-   * @param array $data - an array ofd assoc arrays
+   * @param array<string|int|float|bool|null> $cells
+   */
+  static function row(array $cells): string {
+    return implode(self::DELIMITER, array_map([self::class, 'cell'], $cells));
+  }
+
+  static function cell(string|int|float|bool|null $value): string {
+    if ($value === null) {
+      return '';
+    }
+    $escaped = str_replace(self::ENCLOSURE, self::ENCLOSURE . self::ENCLOSURE, (string) $value);
+    return self::ENCLOSURE . $escaped . self::ENCLOSURE;
+  }
+
+  /**
+   * @param array $data - an array of assoc arrays
    * @return array - all used keys once
    */
   static function collectColumnNamesFromHeterogeneousObjects(array $data): array {
@@ -84,5 +69,4 @@ class CSV {
       return array_merge($agg, array_keys($array));
     }, [])));
   }
-
 }

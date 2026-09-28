@@ -74,25 +74,7 @@ class ReviewCSVFormatter
   }
 
   public static function generateCsvReportData(array $reviewData): string {
-    $csv[] = implode(Report::DELIMITER, CSV::collectColumnNamesFromHeterogeneousObjects($reviewData));
-
-    foreach ($reviewData as $review) {
-      $csv[] = implode(
-        Report::DELIMITER,
-        array_map(function ($reviewProperty) {
-          if (!isset($reviewProperty)) {
-            return $reviewProperty; // null: leave unquoted
-          }
-          // Wrap the whole value in quotes to make all symbols safe (except "), escape existing quotes by doubling them (extra step)
-          $escaped = str_replace('"', '""', (string)$reviewProperty);
-          return sprintf(Report::CSV_CELL_FORMAT, $escaped);
-        }, $review)
-      );
-    }
-
-    $csv = implode(Report::LINE_ENDING, $csv);
-
-    return Report::BOM . $csv;
+    return CSV::BOM . CSV::build($reviewData);
   }
 
   private static function extractCategoryKeys(array $reviewData): array {
