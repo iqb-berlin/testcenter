@@ -155,7 +155,7 @@ push-pre-release:
     - docker push -q ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
     - docker push -q ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
 
-push-release:
+.push-release-template:
   extends: .push-prod-template
   needs:
     - pages
@@ -164,16 +164,30 @@ push-release:
     - if: '$PIPELINE_TYPE == "release"'
       when: on_success
     - when: never
+
+push-release:
+  extends: .push-release-template
   script:
     - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:latest
     - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:latest
     - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
-    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:latest
     - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push --quiet ${BACKEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push --quiet ${FRONTEND_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push --quiet ${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker push --quiet ${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_TAG}
+
+push-latest:
+  extends: .push-release-template
+  allow_failure:
+    exit_codes: [3]
+  script:
+    - !reference [.skip-unless-latest, script]
+    - docker tag ${CI_REGISTRY_IMAGE}/${BACKEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${BACKEND_IMAGE_NAME}:latest
+    - docker tag ${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE_NAME}:${CI_COMMIT_SHA} ${FRONTEND_IMAGE_NAME}:latest
+    - docker tag ${CI_REGISTRY_IMAGE}/${BROADCASTER_IMAGE_NAME}:${CI_COMMIT_SHA} ${BROADCASTER_IMAGE_NAME}:latest
     - docker tag ${CI_REGISTRY_IMAGE}/${FILE_SERVER_IMAGE_NAME}:${CI_COMMIT_SHA} ${FILE_SERVER_IMAGE_NAME}:latest
-    - docker push --quiet --all-tags ${BACKEND_IMAGE_NAME}
-    - docker push --quiet --all-tags ${FRONTEND_IMAGE_NAME}
-    - docker push --quiet --all-tags ${BROADCASTER_IMAGE_NAME}
-    - docker push --quiet --all-tags ${FILE_SERVER_IMAGE_NAME}
+    - docker push --quiet ${BACKEND_IMAGE_NAME}:latest
+    - docker push --quiet ${FRONTEND_IMAGE_NAME}:latest
+    - docker push --quiet ${BROADCASTER_IMAGE_NAME}:latest
+    - docker push --quiet ${FILE_SERVER_IMAGE_NAME}:latest
