@@ -8,7 +8,7 @@ const { version } = JSON.parse(fs.readFileSync(new URL('../../../package.json', 
 
 export default defineConfig({
   base: prefix ? `${root}${prefix}/` : root,
-  title: 'Testcenter Dokumentation',
+  title: 'Testcenter Documentation',
   description: 'IQB-Testcenter',
   srcExclude: ['generated/**'],
   themeConfig: {
@@ -21,26 +21,23 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: 'Installation',
+        text: 'Administration',
         items: [
-          { text: 'Production', link: '/pages/installation-prod' },
-          { text: 'Development', link: '/pages/installation-dev' }
-        ]
-      },
-      {
-        text: 'Konfiguration',
-        items: [
+          { text: 'Installation and Update', link: '/pages/installation-prod' },
           { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
           { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
           { text: 'Textersetzungen', link: '/pages/custom-texts' },
-          { text: 'Log-Events', link: '/pages/logging' },
-          { text: 'Gruppenmonitor Statusmeldungen', link: '/pages/test-session-super-states' }
+          { text: 'Gruppenmonitor Statusmeldungen', link: '/pages/test-session-super-states' },
+          { text: 'Log-Events', link: '/pages/logging' }
         ]
       },
       {
-        text: 'Entwicklung',
+        text: 'Development',
         items: [
-          { text: "Developer's Guide", link: '/pages/developer-guide' }
+          { text: 'Installation', link: '/pages/installation-dev' },
+          { text: "Developer's Guide", link: '/pages/developer-guide' },
+          // not a VitePress page: _self makes the browser load it instead of the client-side router
+          { text: 'HTTP API', link: '/api/index.html', target: '_self' }
         ]
       }
     ]

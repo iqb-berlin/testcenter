@@ -1,0 +1,9 @@
+/* The outline column is narrow (224px): long headings, e.g. booklet parameter names, wrap instead of
+   being cut off. Padding and line height keep single-line entries at their original height of 32px. */
+.VPDocAsideOutline .VPDocOutlineItem .outline-link {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  line-height: 20px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

@@ -1,39 +1,49 @@
-# IQB-Testcenter
+---
+layout: home
+hero:
+  name: IQB-Testcenter
+  text: Documentation
+  tagline: For administrators and developers
+  actions:
+    - theme: brand
+      text: Installation
+      link: /pages/installation-prod
+    - theme: alt
+      text: Development
+      link: /pages/installation-dev
+---
 
-The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by
+The IQB-Testcenter is a web application for technology based assessments and surveys. It is developed by
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
+How to prepare and run a study is described in the
+[TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/).
 
-### General
+## Administration
 
-* [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
-* [Changelog](https://github.com/iqb-berlin/testcenter/releases/latest)
-* **[Detailed Documentation to start the test run](https://iqb-berlin.github.io/tba-info/study-run/)**
+- [Installation and update](./pages/installation-prod.md)
+- Configuration: [booklet](./pages/booklet-config.md), [test modes](./pages/test-mode.md),
+  [custom texts](./pages/custom-texts.md)
+- [Group monitor states](./pages/test-session-super-states.md)
+- [Log events](./pages/logging.md)
 
-### Advanced Documentation
+## Development
 
-To start a test via Testcenter, several test files are required. These contain the units and serve configuration purposes.
-Two test files are needed for configuration: **Booklet-XML** and **Testtaker-XML**.
-Units are integrated into the test via a **Unit XML**.
-The structure and content of these files are documented in separate repositories within the [IQB specifications](https://iqb-specifications.github.io/):
+- [Installation for development](./pages/installation-dev.md)
+- [Developer's Guide](./pages/developer-guide.md)
+- [Contributing Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md)
+- [Style Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/style-guide.md)
 
-* [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
-* [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
-* [Unit](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
+## Specifications and APIs
 
-**More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+A test consists of units, which are integrated via a **Unit XML**, and is configured with a
+**Booklet XML** and a **Testtaker XML**. Their formats are specified in the
+[IQB specifications](https://iqb-specifications.github.io/):
 
-### Install & Run
+- [Booklet XML](https://iqb-specifications.github.io/testcenter-booklet-xml/)
+- [Testtaker XML](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
+- [Unit XML](https://github.com/iqb-specifications/unit-xml)
 
-* [Installation and Update](./pages/installation-prod.md)
+The interfaces of the Testcenter:
 
-### For Developers
-
-* [Installation for Development](./pages/installation-dev.md)
-* [Developer's Guide](./pages/developer-guide.md)
-* [Contributing Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md)
-* [Style Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/style-guide.md)
-
-### API Documentation
-
-* [HTTP API Backend](./api/index.html){target="_self"}
-* [Verona Player API](https://verona-interfaces.github.io/player/)
+- [HTTP API of the backend](./api/index.html){target="_self"}
+- [Verona Player API](https://verona-interfaces.github.io/player/)

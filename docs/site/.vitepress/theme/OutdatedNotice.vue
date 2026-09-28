@@ -6,8 +6,8 @@ const { current, latest, url } = useVersions();
 
 <template>
   <div v-if="latest && latest !== current" class="outdated-notice">
-    Dies ist die Dokumentation für Version {{ current }}.
-    <a :href="url(latest)">Zur aktuellen Version {{ latest }}</a>
+    This is the documentation of version {{ current }}.
+    <a :href="url(latest)">Go to the current version {{ latest }}</a>
   </div>
 </template>
 
