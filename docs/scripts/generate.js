@@ -16,7 +16,7 @@ const bookletConfig = () => {
   const definition = readDefinition('booklet/booklet-config.json');
   return Object.entries(definition)
     .map(([name, param]) => {
-      let output = `## \`${name}\`\n\n`;
+      let output = `### \`${name}\`\n\n`;
       if (param.deprecated) {
         output += '::: warning Abgekündigt\n';
         output += 'Dieser Parameter sollte nicht mehr verwendet werden. Er wird in einer kommenden Version entfernt.\n';

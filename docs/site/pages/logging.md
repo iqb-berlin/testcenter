@@ -1,6 +1,6 @@
 # Dokumentation der Log-Events (Testcenter)
 
-Diese Datei dokumentiert alle Log-Events, die vom Testcenter angelegt werden. Dieser Stand entspricht `master`; historische Versionen werden nicht dokumentiert.
+Diese Datei dokumentiert alle Log-Events, die vom Testcenter angelegt werden.
 
 Es gibt zwei Log-Arten:
 
