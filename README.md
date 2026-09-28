@@ -25,7 +25,7 @@ The structure and content of these files are documented in separate repositories
 
 * [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
 * [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
-* [Unit](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
+* [Unit](https://github.com/iqb-specifications/unit-xml)
 
 **More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
 
