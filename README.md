@@ -7,40 +7,21 @@
 
 # IQB-Testcenter
 
-The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by
+The IQB-Testcenter is a web application for technology based assessments and surveys. It is developed by
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
-### General
+### Running a study
 
-* [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
-* [Changelog](https://github.com/iqb-berlin/testcenter/releases/latest)
-* **[Detailed Documentation to start the test run](https://iqb-berlin.github.io/tba-info/study-run/)**
+How to prepare and run a study with the Testcenter is described in the TBA-Wiki:
 
-### Advanced Documentation
+* [Running a study](https://iqb-berlin.github.io/tba-info/study-run/)
+* [Test files](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/)
 
-To start a test via Testcenter, several test files are required. These contain the units and serve configuration purposes. 
-Two test files are needed for configuration: **Booklet-XML** and **Testtaker-XML**. 
-Units are integrated into the test via a **Unit XML**.
-The structure and content of these files are documented in separate repositories within the [IQB specifications](https://iqb-specifications.github.io/):
-
-* [Booklet](https://iqb-specifications.github.io/testcenter-booklet-xml/)
-* [Testtaker](https://iqb-specifications.github.io/testcenter-testtaker-xml/)
-* [Unit](https://github.com/iqb-specifications/unit-xml)
-
-**More detailed information about the test files can be found in the [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
-
-### Install & Run
+### Installation and documentation
 
 * [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)
+* [Documentation](https://pages.cms.hu-berlin.de/iqb/testcenter/) for administrators and developers:
+  configuration, development, file specifications and APIs
 
-### For Developers
-
-* [Installation for Development](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-dev.html)
-* [Developer's Guide](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/developer-guide.html)
-* [Contributing Guide](docs/CONTRIBUTING.md)
-* [Style Guide](docs/style-guide.md)
-
-### API Documentation
-
-* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/api/index.html)
-* [Verona Player API](https://verona-interfaces.github.io/player/)
+The changes of each version are listed with its release under
+[Releases](https://github.com/iqb-berlin/testcenter/releases).
