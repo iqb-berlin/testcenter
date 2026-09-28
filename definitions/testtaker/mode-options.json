@@ -1,5 +1,5 @@
 {
-  "alwaysNewSession": "Bie jedem Einloggen wird ein neuer Teilnehmer angelegt",
+  "alwaysNewSession": "Bei jedem Einloggen wird ein neuer Teilnehmer angelegt",
   "canReview":  "Es können Reviews abgegeben werden (Kommentare/Einschätzungen zur Unit bzw. zum Test)",
   "saveResponses": "Es werden Antworten und Logs gespeichert.",
   "forceTimeRestrictions": "Alle Zeitbeschränkungen für Testabschnitte werden angewendet.",
@@ -8,6 +8,6 @@
   "showCode": "Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses eingeblendet.",
   "showTimeLeft": "Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.",
   "showUnitMenu": "Die Aufgaben-Übersicht wird angezeigt, auch wenn die Booklet-Konfiguration dies nicht vorsieht.",
-  "receiveRemoteCommands": "Kann aus dem Gruppen-Monitor aus gesteuert werden",
+  "receiveRemoteCommands": "Kann aus dem Gruppen-Monitor gesteuert werden",
   "canChangeStateOptions": "In adaptiven Booklets kann der Pfad selbst gewählt werden und hängt nicht von den Antworten ab."
 }
