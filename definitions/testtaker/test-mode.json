@@ -2,7 +2,7 @@
   "RUN-DEMO": {
     "label": "Nur Ansicht (Demo)",
     "config": {
-      "alwaysNewSession": false,
+      "alwaysNewSession": true,
       "monitorable": false,
       "canReview": false,
       "saveResponses": false,
@@ -130,7 +130,7 @@
   "SYS-CHECK-LOGIN": {
     "label": "Dieser Modus versteckt für alle anderen Logins den System Check. Der Check kann dann nur noch von Logins durchgeführt werden mit diesem Mode",
     "config": {
-      "alwaysNewSession": false,
+      "alwaysNewSession": true,
       "monitorable": false,
       "canReview": false,
       "saveResponses": false,
