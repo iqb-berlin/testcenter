@@ -10,7 +10,7 @@ export interface IconData {
 export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   pending: {
     tooltip: 'Test noch nicht gestartet',
-    icon: 'person_outline',
+    icon: 'person',
     description: 'Der Test wurde noch nicht gestartet.'
   },
   locked: {
@@ -39,7 +39,7 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   connection_lost: {
     tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!',
-    icon: 'warning_amber',
+    icon: 'warning',
     class: 'danger',
     description: 'Die Verbindung zum Browser der Testperson wurde unterbrochen. Die Testperson hat ' +
       'möglicherweise das Fenster geschlossen oder die Netzwerkverbindung ist abgebrochen.'
@@ -51,14 +51,14 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   focus_lost: {
     tooltip: 'Fenster/Tab wurde verlassen!',
-    icon: 'warning',
+    icon: 'warning_filled',
     class: 'danger',
     description: 'Ein anderes Fenster oder ein anderer Tab wurde in den Vordergrund gebracht, ' +
       'die Seite ist jedoch weiterhin geöffnet und verbunden.'
   },
   idle: {
     tooltip: 'Test ist 5 Minuten oder länger inaktiv!',
-    icon: 'hourglass_full',
+    icon: 'hourglass_filled',
     description: 'Die Testperson war fünf Minuten oder länger inaktiv. Dieser Zustand kann nur im ' +
       'Polling-Modus angezeigt werden und dient als Fallback für den Fall, dass der Browser oder das Gerät ' +
       'der Testperson unerwartet beendet wurde und den Verbindungsabbruch nicht mehr melden konnte. ' +
@@ -66,13 +66,13 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   connection_websocket: {
     tooltip: 'Test läuft, Verbindung ist live',
-    icon: 'play_circle',
+    icon: 'play_circle_filled',
     class: 'success',
     description: 'Der Test läuft und die Testperson ist im Live-Modus verbunden (WebSocket).'
   },
   connection_polling: {
     tooltip: 'Test läuft',
-    icon: 'play_circle_outline',
+    icon: 'play_circle',
     class: 'success',
     description: 'Der Test läuft und die Testperson ist über eine Polling-Verbindung verbunden. ' +
       'Dies ist ein Fallback für den Fall, dass der Live-Modus aufgrund des Browsers der Testleitung ' +
@@ -82,7 +82,7 @@ export const superStates: Partial<Record<TestSessionSuperState, IconData>> = {
   },
   ok: {
     tooltip: 'Test läuft',
-    icon: 'play_circle',
+    icon: 'play_circle_filled',
     description: 'Der Test scheint zu laufen, der Verbindungstyp ist jedoch unbekannt. Dies ist ein ' +
       'Fallback-Zustand, der anzeigt, dass über den Test außer seiner bloßen Existenz nichts bekannt ist. ' +
       'Er kann in verschiedenen Fehlerszenarien oder bei Fehlkonfigurationen auftreten, sollte aber ' +
