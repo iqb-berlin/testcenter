@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # Installation for development
 
 The other way of installation gives you more options to access data, logs, to change settings more in

@@ -47,7 +47,10 @@
 
 # tmp
 /tmp
-/docs/dist
+/docs/site/.vitepress/cache
+/docs/site/.vitepress/dist
+/docs/site/public/api
+/docs/site/generated
 /frontend/.angular
 
 # env

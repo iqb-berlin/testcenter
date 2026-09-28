@@ -1,9 +1,4 @@
----
-layout: default
----
-
 # Testtaker: Textersetzungen
-{: .no_toc }
 
 Dieses Dokument beschreibt, wie die benutzerdefinierten Texte in die Anwendung integriert werden und
 listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<CustomTexts>` für alle Logins hinterlegt werden.
@@ -17,10 +12,9 @@ listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<Cu
 ```
 
 ## Textersetzungen Systemcheck
-{: .no_toc }
 
-Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemcheck-XML** angegeben
-.
+Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemcheck-XML** angegeben.
+
 ```
 <Config>
     <UploadSpeed ...
@@ -30,7 +24,5 @@ Textersetzungen für den Systemcheck werden im Konfigurationsfeld der **Systemch
 ...
 </Config>
 ```
-## Inhalt
-{: .no_toc }
-1. TOC
-{:toc}
+
+<!--@include: ../generated/custom-texts.md-->

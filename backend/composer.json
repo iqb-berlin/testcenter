@@ -5,7 +5,7 @@
   "type": "project",
   "support": {
     "issues": "https://github.com/iqb-berlin/testcenter/issues",
-    "docs": "https://iqb-berlin.github.io/testcenter/"
+    "docs": "https://pages.cms.hu-berlin.de/iqb/testcenter/"
   },
   "license": "MIT",
   "require": {

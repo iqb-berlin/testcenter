@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # Developer's Guide
 
 ## Application structure
@@ -20,4 +16,8 @@ https://github.com/lhall-adexos/xdebug-ext, set up "IDEA" as IDE-key, and
 it should work out of the box with IDEA.
 
 ## Coding Standards
-See the [style guide](../style-guide.md).
+See the [style guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/style-guide.md).
+
+## Documentation
+How this documentation is built and how to run it locally is described in
+[docs/README.md](https://github.com/iqb-berlin/testcenter/blob/master/docs/README.md).
