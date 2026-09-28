@@ -1,5 +1,7 @@
 <!-- This file outlines the steps necessary for creating a new release -->
 
+# Release 
+
 - make docs-user
 - make create-interfaces
 - Optionally update schema references in `sampledata` files. This is only necessary if the sample files actually use new
@@ -16,3 +18,16 @@
 <!--   helm package testcenter && helm push testcenter-$(CHART_VERSION).tgz oci://registry-1.docker.io/iqbberlin && rm testcenter-$(CHART_VERSION).tgz -->
 
 install.sh ans release anhaengen
+
+# Xml validation
+
+1. data/schemas: add new XSD version, add changes
+2. prepare changes in the XML
+3. specify the new XSD version number in the modified XML and verify that it validates
+4. integrate the changes into the testcenter
+5. test the new functionality 
+6. register the new supported version in `definitions/compatibility.json`
+7. release the new testcenter version
+8. commit XSD changes to the spec-repository and release the new version; also note the required testcenter version in the release notes.
+
+
