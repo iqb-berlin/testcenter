@@ -183,44 +183,44 @@ $app->get('/workspace/{ws_id}/studyresults', [WorkspaceController::class, 'getRe
 $app->group('/workspace', function (RouteCollectorProxy $group) {
   /* @deprecated */
   $group->get('/{ws_id}', [WorkspaceController::class, 'get'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->get('/{ws_id}/results', [WorkspaceController::class, 'getResults'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->delete('/{ws_id}/responses', [WorkspaceController::class, 'deleteResponses'])
-    ->add(new IsWorkspacePermitted('RW'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW));
 
   $group->get('/{ws_id}/responses/detailed', [WorkspaceController::class, 'getTests'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->delete('/{ws_id}/responses/detailed', [WorkspaceController::class, 'deleteResponsesByTest'])
-    ->add(new IsWorkspacePermitted('RW'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW));
 
   $group->get('/{ws_id}/file/{type}/{filename}', [WorkspaceController::class, 'getFile'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->post('/{ws_id}/file', [WorkspaceController::class, 'postFile'])
-    ->add(new IsWorkspacePermitted('RW'))
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW))
     ->add(new IsWorkspaceBlocked());
 
   $group->get('/{ws_id}/files', [WorkspaceController::class, 'getFiles'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
   $group->post('/{ws_id}/files-dependencies', [WorkspaceController::class, 'getFilesWithDependencies'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
-    ->add(new IsWorkspacePermitted('RW'))
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW))
     ->add(new IsWorkspaceBlocked());
 
   $group->get('/{ws_id}/report/{type}', [WorkspaceController::class, 'getReport'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->get('/{ws_id}/sys-check/reports/overview', [WorkspaceController::class, 'getSysCheckReportsOverview'])
-    ->add(new IsWorkspacePermitted('RO'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RO));
 
   $group->delete('/{ws_id}/sys-check/reports', [WorkspaceController::class, 'deleteSysCheckReports'])
-    ->add(new IsWorkspacePermitted('RW'));
+    ->add(new IsWorkspacePermitted(WorkspaceRole::RW));
 })
   ->add(new RequireToken('admin'));
 

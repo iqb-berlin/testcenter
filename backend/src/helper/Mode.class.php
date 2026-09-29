@@ -4,33 +4,8 @@
 declare(strict_types=1);
 
 class Mode {
-  const array relations = [
-    'RW' => ['RO'],
-    'RO' => [],
-    'monitor' => [
-      'monitor-group',
-      'monitor-study'
-    ],
-    'monitor-group' => [],
-    'monitor-study' => [],
-  ];
-
   /** @var array<string, array<string, bool>>|null mode (upper case) => option => enabled */
   private static ?array $capabilities = null;
-
-  static function withChildren(string $role): array {
-    if (!isset(Mode::relations[$role])) {
-      return [];
-    }
-
-    $roles = [$role];
-
-    foreach (Mode::relations[$role] as $childRole) {
-      $roles = array_merge($roles, Mode::withChildren($childRole));
-    }
-
-    return $roles;
-  }
 
   static function hasCapability(string $mode, ModeCapability $capability): bool {
     return self::capabilities()[strtoupper($mode)][$capability->value] ?? false;
