@@ -101,10 +101,11 @@ $app->group('/test', function (RouteCollectorProxy $group) {
     ->add(new IsTestOwner())
     ->add(new MayReview());
 
-  $group->get('/{test_id}/unit/{unit_name}/reviews', [TestController::class, 'getUnitReviews']);
+  $group->get('/{test_id}/unit/{unit_name}/reviews', [TestController::class, 'getUnitReviews'])
+    ->add(new IsTestOwner());
 
-  $group->get('/{test_id}/reviews', [TestController::class, 'getReviews']);
-
+  $group->get('/{test_id}/reviews', [TestController::class, 'getReviews'])
+    ->add(new IsTestOwner());
 
   $group->delete('/{test_id}/unit/{unit_name}/review/{review_id}', [TestController::class, 'deleteUnitReview'])
     ->add(new IsTestOwner())
