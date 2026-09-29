@@ -325,4 +325,10 @@ dreddHooks.before('specs > /user/{user_id}/password > change user-password > 400
 // own virtual filesystem, so a lock written by another request is never visible here.
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 409', skipTransaction);
 dreddHooks.before('specs > /workspace/{ws_id}/files > delete files > 409', skipTransaction);
+// Writing reviews needs a login in a mode that can review, but the sample test and its reviews belong to `test`
+// (run-hot-return), whose token every success case uses.
+dreddHooks.before('specs > /test/{test_id}/unit/{unit_name}/review > add review to unit > 201', skipTransaction);
+dreddHooks.before('specs > /test/{test_id}/review > add review to booklet > 201', skipTransaction);
+dreddHooks.before('specs > /test/{test_id}/unit/{unit_name}/review/{review_id} > update a unit review > 200', skipTransaction);
+dreddHooks.before('specs > /test/{test_id}/review/{review_id} > update a booklet review > 200', skipTransaction);
 dreddHooks.afterEach(finishAfterError);

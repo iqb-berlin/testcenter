@@ -32,6 +32,10 @@ class ModeTest extends TestCase {
       Mode::getByCapability(ModeCapability::MONITORABLE)
     );
     $this->assertEquals(
+      ['run-review', 'run-trial'],
+      Mode::getByCapability(ModeCapability::CAN_REVIEW)
+    );
+    $this->assertEquals(
       ['monitor-group', 'monitor-study'],
       Mode::getByCapability(ModeCapability::LOCK_AFTER_FAILED_LOGINS)
     );
