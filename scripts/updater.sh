@@ -58,10 +58,6 @@ check_version_tag_exists() {
   return 0
 }
 
-load_docker_environment_variables() {
-  source .env.prod
-}
-
 download_file() {
   declare local_file="${1}"
   declare remote_file="${REPO_URL}/${TARGET_VERSION}/${2}"
@@ -318,7 +314,6 @@ run_complementary_migration_scripts() {
 
 backup_phase() {
   create_app_dir_backup
-  load_docker_environment_variables
   create_data_backup
   run_complementary_migration_scripts
 }
@@ -447,9 +442,6 @@ customize_settings() {
     "${APP_DIR}/scripts/make/${APP_NAME}.mk" && rm "${APP_DIR}/scripts/make/${APP_NAME}.mk.bak"
   sed -i.bak "s|scripts/update.sh|scripts/update_${APP_NAME}.sh|" \
     "${APP_DIR}/scripts/make/${APP_NAME}.mk" && rm "${APP_DIR}/scripts/make/${APP_NAME}.mk.bak"
-
-  # Update environment variables
-  load_docker_environment_variables
 }
 
 finalize_update() {
@@ -518,7 +510,6 @@ application_restart() {
 }
 
 apply_phase() {
-  load_docker_environment_variables
   prepare_installation_dir
   update_files
   check_environment_file_modifications
