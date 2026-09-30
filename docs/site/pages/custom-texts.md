@@ -1,5 +1,7 @@
 # Testtaker: Textersetzungen
 
+**You can find more detailed information about the testfiles [here](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/).**
+
 Dieses Dokument beschreibt, wie die benutzerdefinierten Texte in die Anwendung integriert werden und
 listet alle möglichen Schlüssel auf. Die Textersetzungen können im Feld: `<CustomTexts>` für alle Logins hinterlegt werden.
 

@@ -17,11 +17,15 @@ How to prepare and run a study with the Testcenter is described in the TBA-Wiki:
 * [Running a study](https://iqb-berlin.github.io/tba-info/study-run/)
 * [Test files](https://iqb-berlin.github.io/tba-info/study-run/preparation/test-files/)
 
-### Installation and documentation
+### Documentation
 
-* [Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)
-* [Documentation](https://pages.cms.hu-berlin.de/iqb/testcenter/) for administrators and developers:
+[**Here**](https://pages.cms.hu-berlin.de/iqb/testcenter/) you can find documentation for administrators and developers:
   configuration, development, file specifications and APIs
 
 The changes of each version are listed with its release under
 [Releases](https://github.com/iqb-berlin/testcenter/releases).
+
+### Contributing
+
+How a contribution goes from idea to merge is described in the
+[Contributing Guide](docs/CONTRIBUTING.md).
