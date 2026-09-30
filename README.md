@@ -24,3 +24,8 @@ How to prepare and run a study with the Testcenter is described in the TBA-Wiki:
 
 The changes of each version are listed with its release under
 [Releases](https://github.com/iqb-berlin/testcenter/releases).
+
+### Contributing
+
+How a contribution goes from idea to merge is described in the
+[Contributing Guide](docs/CONTRIBUTING.md).

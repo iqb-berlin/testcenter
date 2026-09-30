@@ -1,5 +1,8 @@
 # Developer's Guide
 
+Before opening a pull request, read the
+[Contributing Guide](https://github.com/iqb-berlin/testcenter/blob/master/docs/CONTRIBUTING.md).
+
 ## Application structure
 
 The source code and therefore the application is separated in three submodules:
