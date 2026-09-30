@@ -1,9 +1,32 @@
-/* The outline column is narrow (224px): long headings, e.g. booklet parameter names, wrap instead of
-   being cut off. Padding and line height keep single-line entries at their original height of 32px. */
+:root {
+  /* Layout & Breiten */
+  --vp-layout-max-width: 100% !important;
+  --vp-sidebar-width: 260px;
+  --vp-aside-width: 180px;
+  --vp-content-max-width: 1200px;
+}
+
+/* Zeilenumbruch im rechten Inhaltsverzeichnis erlauben */
 .VPDocAsideOutline .VPDocOutlineItem .outline-link {
   padding-top: 6px;
   padding-bottom: 6px;
   line-height: 20px;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+/* Leerräume (Paddings) um den mittleren Inhalt herum reduzieren */
+@media (min-width: 960px) {
+  .VPDoc.has-sidebar {
+    padding-left: 32px !important;
+  }
+
+  .VPDoc .container {
+    max-width: 100% !important;
+  }
+
+  .VPDoc .content-container {
+    max-width: var(--vp-content-max-width) !important;
+    margin: 0 !important;
+  }
 }
