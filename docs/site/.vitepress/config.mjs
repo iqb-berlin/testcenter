@@ -35,9 +35,15 @@ export default defineConfig({
         text: 'Development',
         items: [
           { text: 'Installation', link: '/pages/installation-dev' },
-          { text: "Developer's Guide", link: '/pages/developer-guide' },
-          // not a VitePress page: _self makes the browser load it instead of the client-side router
-          { text: 'HTTP API', link: '/api/index.html', target: '_self' }
+          { text: "Developer's Guide", link: '/pages/developer-guide' }
+        ]
+      },
+      {
+        text: 'Specifications', link: '/pages/spec-index',
+        items: [
+          { text: 'Testfiles', link: '/pages/spec-testfiles' },
+          { text: "API of Verona Player", link: 'https://verona-interfaces.github.io/player/' },
+          { text: "HTTP API of the backend", link: '/api/index.html', target: '_self', rel: 'external',}
         ]
       }
     ]
