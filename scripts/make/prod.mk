@@ -267,9 +267,15 @@ testcenter-restore-db:
 		exec --no-TTY db psql --set ON_ERROR_STOP=on --username=$(DB_USER) --dbname=postgres\
 			<$(DB_DUMP_FILE)
 
+## The project name as Compose resolves it: from COMPOSE_PROJECT_NAME or, where that is not set, from the
+## installation directory.
+COMPOSE_PROJECT = $(or $(shell cd $(TC_BASE_DIR) &&\
+	docker compose --env-file .env.prod --file docker-compose.yml --file docker-compose.prod.yml config 2>/dev/null |\
+	sed -n 's/^name: //p'),$(error Could not determine the Compose project name))
+
 ## Addressed by name rather than through the backend container, so both directions also work while
 ## the application is down. Mounted at its usual path, which is what the archive's paths are relative to.
-BACKEND_VOLUME = $(COMPOSE_PROJECT_NAME)_backend_vol
+BACKEND_VOLUME = $(COMPOSE_PROJECT)_backend_vol
 BACKEND_VOLUME_DIR = /var/www/testcenter/data
 BACKEND_VOLUME_ARCHIVE = $(TC_BASE_DIR)/$(BACKUP)/backend_vol.tar.gz
 
