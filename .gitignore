@@ -67,6 +67,3 @@ e2e/cypress-headless
 scripts/helm/testcenter-*.tgz
 scripts/helm/testcenter-values.yaml
 scripts/helm/traefik-values.yaml
-
-# additional scripts
-/testcenter-scripts

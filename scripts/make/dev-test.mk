@@ -96,10 +96,6 @@ test-frontend-unit:
 			--file docker-compose.dev.yml run\
 		frontend test --watch=false
 
-# Performs some integration tests with CyPress against mocked backend with Prism
-test-frontend-integration:
-# TODO implement integration tests with CyPress against mocked backend with Prism
-
 # Performs some API tests with Dredd on the file-server
 # ! Attention: The testcenter must not run when starting this # TODO change this
 # TODO this creates a file in /sampledata. Change this.
