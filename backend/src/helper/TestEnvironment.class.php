@@ -102,7 +102,7 @@ class TestEnvironment {
     $initDAO->createSampleMetaData();
     $personSessions = $initDAO->createSampleMonitorSessions();
     $groupMonitor = $personSessions['test-group-monitor'];
-    /* @var $groupMonitor PersonSession */
+    /** @var PersonSession $groupMonitor */
     $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
     $initializer = new WorkspaceInitializer();
@@ -123,7 +123,6 @@ class TestEnvironment {
     $initDAO->rollBack();
   }
 
-  #[NoReturn]
   private static function bailOut(Throwable $exception): void {
     // TestEnvironment::debugVirtualEnvironment();
     $errorUniqueId = ErrorHandler::logException($exception, true);

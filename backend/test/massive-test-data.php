@@ -218,16 +218,16 @@ try {
   $sessionDAO = new SessionDAO();
 
   $personSessionsToBeCreated = 0;
+  /** @var Login $login */
   foreach ($logins as $login) {
-    /* @var $login Login */
     $personSessionsToBeCreated += ($login->getMode() == 'run-hot-restart')
       ? SESSIONS_PER_RESTART_LOGIN
       : CODES_PER_LOGIN;
   }
 
   $personSessions = [];
+  /** @var Login $login */
   foreach ($logins as $login) {
-    /* @var $login Login */
     $restarts = ($login->getMode() == 'run-hot-return') ? 1 : SESSIONS_PER_RESTART_LOGIN;
     $loginSession = null;
 
@@ -263,8 +263,8 @@ try {
   $testDAO = new TestDAO();
   $tests = [];
   echo "\n";
+  /** @var PersonSession $personSession */
   foreach ($personSessions as $personSession) {
-    /* @var $personSession PersonSession */
     foreach (BOOKLETS_PER_PERSON as $bookletId) {
       $tests[] = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), $bookletId, "Label: $bookletId");
     }

@@ -173,8 +173,8 @@ class SystemController extends Controller {
   public static function getSysChecks(Request $request, Response $response): Response {
     $availableSysChecks = [];
 
+    /** @var SysChecksFolder $sysChecksFolder */
     foreach (SysChecksFolder::getAll() as $sysChecksFolder) {
-      /* @var SysChecksFolder $sysChecksFolder */
 
       $availableSysChecks = array_merge(
         $availableSysChecks,

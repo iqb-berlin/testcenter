@@ -106,15 +106,15 @@ class SessionController extends Controller {
   }
 
   private static function registerDependantSessions(LoginSession $login): void {
+
     $members = self::sessionDAO()->getDependantSessions($login);
 
     $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
+    /** @var XMLFileBooklet[] $bookletFiles */
     $bookletFiles = [];
     $sessionChanges = [];
-    /** @var $bookletFiles XMLFileBooklet[] */
 
     foreach ($members as $member) {
-      /** @var $member LoginSession */
 
       if (Mode::hasCapability($member->getLogin()->getMode(), ModeCapability::ALWAYS_NEW_SESSION)) {
         continue;
@@ -133,7 +133,6 @@ class SessionController extends Controller {
         $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, (string)$code, true, false);
 
         foreach ($testNames as $testNameStr) {
-          /** @var $testNameStr string */
           $testName = TestName::fromString($testNameStr);
           if (!isset($bookletFiles[$testName->bookletFileId])) {
             $bookletFile = $workspace->getFileById('Booklet', $testName->bookletFileId);
@@ -141,9 +140,9 @@ class SessionController extends Controller {
           } else {
             $bookletFile = $bookletFiles[$testName->bookletFileId];
           }
-          /** @var $bookletFile XMLFileBooklet */
-
-          for ($i = 0; $i < 5; $i++) {
+          $i=0;
+          $test = null;
+          do {
             try {
               $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $testName->name);
               if (!$test) {
@@ -153,15 +152,11 @@ class SessionController extends Controller {
                   $bookletFile->getLabel()
                 );
               }
-
-              break; // success
-            } catch (Exception $e) {
-              if ($i === 4){
-                throw new Exception('Test Sessions could neither be found nor created.');
-              }
-            }
+            } catch (Exception $e) {}
+          } while ($i++ < 5 && !$test);
+          if (!$test){
+            throw new Exception('Test Sessions could neither be found nor created.');
           }
-
           $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);
           $sessionMessage->setTestState((array) $test->state, $testName->name);
           $sessionChanges[] = $sessionMessage;

@@ -289,6 +289,7 @@ END;
 </Testtakers>
 END;
 
+    /** @var XMLFileTesttakers $xmlFile */
     $xmlFile = XMLFileTesttakers::fromString($xml);
 
     $expected = [
@@ -646,6 +647,7 @@ END;
   }
 
   function test_getAllLoginNames() {
+    /** @var XMLFileTesttakers $xmlFile */
     $xmlFile = XMLFileTesttakers::fromString($this->exampleXML2, false);
 
     $expected = [
@@ -659,6 +661,8 @@ END;
   }
 
   function test_getCustomTexts() {
+    
+    /** @var XMLFileTesttakers $xmlFile */
     $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false);
 
     $expected = (object) [

@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
  */
 class SuperAdminDAOTest extends TestCase {
   private SuperAdminDAO $dbc;
-  private WorkspaceDAO $workspaceDAO;
 
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";

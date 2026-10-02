@@ -50,26 +50,32 @@ class XMLFilesUnitTest extends TestCase {
       'thirdplayer.html'
     ]);
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'super-player'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertNull($result);
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'super-player-1'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertEquals('SUPER-PLAYER-1.HTML', $result->getName());
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'super-player-1.5'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertNull($result);
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'super-player-1.7'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertEquals('SUPER-PLAYER-1.7.HTML', $result->getName());
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'other-player-1.2'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertEquals('OTHER-PLAYER-1.2.3.HTML', $result->getName());
 
+    /** @var XMLFileUnit $xmlFile */
     $xmlFile = XMLFileUnit::fromString(sprintf($unitString, 'thirdplayer.html'));
     $result = $xmlFile->getPlayerIfExists($workspaceCache);
     $this->assertEquals('thirdplayer.html', $result->getName());

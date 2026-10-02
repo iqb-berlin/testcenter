@@ -8,7 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 class MayReview {
   function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     if (!Mode::hasCapability($authToken->getMode(), ModeCapability::CAN_REVIEW)) {

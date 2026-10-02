@@ -15,8 +15,8 @@ class XMLFileTesttakers extends XMLFile {
     $this->logins = $this->getAllLogins();
     $this->contextData['testtakers'] = count($this->logins->asArray());
 
+    /** @var Login $login */
     foreach ($this->logins as $login) {
-      /* @var Login $login */
       $this->checkIfBookletsArePresent($login, $workspaceCache);
       $this->checkIfPasswordIsPresent($login);
     }
@@ -320,11 +320,11 @@ class XMLFileTesttakers extends XMLFile {
    */
   public function collectBookletsOfGroup(int $workspaceId, string $loginName): array {
     $members = $this->getLoginsInSameGroup($loginName, $workspaceId);
-    /** @var $testNames string[] */
+    /** @var string[] $testNames */
     $testNames = [];
 
     foreach ($members as $member) {
-      /** @var $member Login */
+      /** @var Login $member */
       $codes2booklets = $member->testNames();
 
       foreach ($codes2booklets as $testNamesOfCode) {
@@ -339,9 +339,9 @@ class XMLFileTesttakers extends XMLFile {
 
   /** @return TestName[] */
   protected static function collectTestNamesPerCode(SimpleXMLElement $loginNode): array {
-    /** @var $noCodeTestNames string[] */
+    /** @var string[] $noCodeTestNames */
     $noCodeTestNames = [];
-    /** @var $codeTestNames string[] */
+    /** @var string[][] $codeTestNames */
     $codeTestNames = [];
 
     $testNameFromElement = function (SimpleXMLElement $bookletElement): string {

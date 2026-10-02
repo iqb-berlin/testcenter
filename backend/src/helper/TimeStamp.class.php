@@ -94,6 +94,7 @@ class TimeStamp {
       "Y-m-d H:i:sP"
     ];
 
+    $dateTime = null;
     foreach ($sqlTimestampFormats as $sqlTimestampFormat) {
       // The value carries its own offset, so no timezone has to be assumed here.
       $dateTime = DateTime::createFromFormat($sqlTimestampFormat, $sqlFormatTimestamp);
