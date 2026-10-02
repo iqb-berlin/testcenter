@@ -23,16 +23,43 @@ export default defineConfig({
       {
         text: 'Administration',
         items: [
-          { text: 'Installation and Update', link: '/pages/installation-prod' },
-          { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
-          { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
-          { text: 'Textersetzungen', link: '/pages/custom-texts' },
-          { text: 'Gruppenmonitor Statusmeldungen', link: '/pages/test-session-super-states' },
+          {
+            text: 'Einrichtung',
+            collapsed: true, // optional: true, wenn es standardmäßig eingeklappt sein soll
+            items: [
+              { text: 'Installation', link: '/pages/installation-prod' },
+              { text: 'Konfiguration', link: '/pages/test-mode' }
+            ]
+          },
+          {
+            text: 'Testdateien', link: '/pages/testfiles-index',
+            collapsed: true, // optional: true, wenn es standardmäßig eingeklappt sein soll
+            items: [
+              { text: 'Booklet-Konfiguration', link: '/pages/booklet-config' },
+              { text: 'Modus der Testdurchführung', link: '/pages/test-mode' },
+              { text: 'Textersetzungen', link: '/pages/custom-texts' }
+            ]
+          },
+          {
+            text: 'Tests',
+            collapsed: true, // optional: true, wenn es standardmäßig eingeklappt sein soll
+            items: [
+              { text: 'Load-Test', link: '/pages/load-test' },
+              { text: 'E2E-Test', link: '/pages/e2e' },
+            ]
+          },
+          {
+            text: 'Gruppenmonitor',
+            collapsed: true, // optional: true, wenn es standardmäßig eingeklappt sein soll
+            items: [
+              { text: 'Statusmeldungen', link: '/pages/test-session-super-states' }
+            ]
+          },
           { text: 'Log-Events', link: '/pages/logging' }
         ]
       },
       {
-        text: 'Development',
+        text: 'Entwicklung',
         items: [
           { text: 'Installation', link: '/pages/installation-dev' },
           { text: "Developer's Guide", link: '/pages/developer-guide' },
@@ -40,7 +67,7 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Specifications', link: '/pages/spec-index',
+        text: 'Specifikationen', link: '/pages/spec-index',
         items: [
           { text: 'Testfiles', link: '/pages/spec-testfiles' },
           { text: 'API of Verona Player', link: 'https://verona-interfaces.github.io/player/' },

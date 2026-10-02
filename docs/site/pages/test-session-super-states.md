@@ -1,5 +1,7 @@
 # Gruppenmonitor Statusmeldungen
 
+**Detaillierte Informationen sind im [TBA-Wiki](https://iqb-berlin.github.io/tba-info/study-run/run/groupmon/) zu finden.**
+
 Dies sind die verschiedenen Zustände laufender Tests, die im Gruppenmonitor angezeigt werden können.
 
 Hintergrund: Es gibt eine Vielzahl möglicher Kombinationen von Zustandswerten eines laufenden Tests.
