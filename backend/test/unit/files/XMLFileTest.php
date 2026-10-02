@@ -241,6 +241,7 @@ class XMLFileTest extends TestCase {
   }
 
   private function testValidateConstraint(string $xml, string $desc, string $q1, string $q2, string $comp, bool $expect = true): void {
+    /** @var XMLFileExposed $xf */
     $xf = XMLFileExposed::fromString($xml);
     $result = $xf->validateConstraint($desc, $q1, $q2, $comp);
     $this->assertEquals($expect, $result, $desc);

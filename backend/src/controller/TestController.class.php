@@ -15,13 +15,15 @@ use Slim\Http\ServerRequest as Request;
 
 class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $body = RequestHelper::getFields($request, [
       'bookletName' => 'REQUIRED'
     ]);
 
-    for ($i = 0; $i < 5; $i++) {
+    $i=0;
+    $test = null;
+    do {
       try {
         $test = self::testDAO()->getTestByPerson($authToken->getId(), $body['bookletName']);
 
@@ -33,8 +35,6 @@ class TestController extends Controller {
           $test = self::testDAO()->createTest($authToken->getId(), $testName, $bookletLabel);
         }
 
-        break; // success
-
       } catch (Exception $exception) {
         error_log(sprintf(
           'Failed to get/create test session (attempt %d): %s in %s:%d',
@@ -43,10 +43,11 @@ class TestController extends Controller {
           $exception->getFile(),
           $exception->getLine()
         ));
-        if ($i === 4) {
-          throw new HttpInternalServerErrorException($request, 'Test Session could neither be found nor created.');
-        }
       }
+    } while ($i++ < 5 && !$test);
+
+    if (!$test){
+      throw new Exception('Test Sessions could neither be found nor created.');
     }
 
     if ($test->locked) {
@@ -58,7 +59,7 @@ class TestController extends Controller {
   }
 
   public static function get(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');     // auth 1
     $testId = (int) $request->getAttribute('test_id');
 
@@ -108,14 +109,14 @@ class TestController extends Controller {
   }
 
   public static function getUnit(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $unitName = $request->getAttribute('unit_name');
     $unitAlias = $request->getAttribute('alias');
     $testId = (int) $request->getAttribute('test_id');
 
     $workspace = new Workspace($authToken->getWorkspaceId());
-    /* @var $unitFile XMLFileUnit */
+    /** @var XMLFileUnit $unitFile */
     $unitFile = $workspace->getFileById('Unit', $unitName);
 
     if (!$unitAlias) {
@@ -360,7 +361,7 @@ class TestController extends Controller {
   }
 
   public static function patchState(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');
@@ -415,7 +416,7 @@ class TestController extends Controller {
   }
 
   public static function patchUnitState(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');
@@ -510,7 +511,7 @@ class TestController extends Controller {
   }
 
   public static function patchLock(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $testId = (int) $request->getAttribute('test_id');

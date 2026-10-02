@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use JetBrains\PhpStorm\NoReturn;
-
 class TestEnvironment {
   const int staticDate = 1627545600;
   const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
@@ -101,8 +99,8 @@ class TestEnvironment {
     $initDAO->createSampleWorkspaceAdmins();
     $initDAO->createSampleMetaData();
     $personSessions = $initDAO->createSampleMonitorSessions();
+    /** @var PersonSession $groupMonitor */
     $groupMonitor = $personSessions['test-group-monitor'];
-    /* @var $groupMonitor PersonSession */
     $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
     $initializer = new WorkspaceInitializer();
@@ -123,7 +121,6 @@ class TestEnvironment {
     $initDAO->rollBack();
   }
 
-  #[NoReturn]
   private static function bailOut(Throwable $exception): void {
     // TestEnvironment::debugVirtualEnvironment();
     $errorUniqueId = ErrorHandler::logException($exception, true);

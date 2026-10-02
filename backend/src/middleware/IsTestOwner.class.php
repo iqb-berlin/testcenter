@@ -22,7 +22,7 @@ class IsTestOwner {
       throw new HttpBadRequestException($request, "No valid test-Id: {$params['test_id']}");
     }
 
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $sessionDAO = new SessionDAO();

@@ -10,7 +10,7 @@ use Slim\Http\Response;
 
 class BookletController extends Controller {
   public static function getData(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $personToken = $authToken->getToken();
 
@@ -26,7 +26,7 @@ class BookletController extends Controller {
   }
 
   public static function getBooklet(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
     $personToken = $authToken->getToken();
 
@@ -38,8 +38,8 @@ class BookletController extends Controller {
     }
 
     $Workspace = new Workspace($authToken->getWorkspaceId());
+    /** @var XMLFileBooklet $booklet */
     $booklet = $Workspace->getFileById('Booklet', $bookletName);
-    /* @var $booklet XMLFileBooklet */
     $xml = $booklet->getContent();
 
     return $response->withHeader('Content-Type', 'application/xml')->write($xml);

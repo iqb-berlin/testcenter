@@ -26,7 +26,7 @@ class IsWorkspacePermitted {
       throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
     }
 
-    /* @var $authToken AuthToken */
+    /** @var AuthToken $authToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $adminDAO = new AdminDAO();

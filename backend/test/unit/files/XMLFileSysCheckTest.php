@@ -20,6 +20,7 @@ class XMLFileSysCheckTest extends TestCase {
   // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
   function test_getUnitId() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $expected = 'UNIT.SAMPLE';
     $result = $xmlFile->getUnitId();
@@ -27,6 +28,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSaveKey() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $expected = 'SAVEME';
     $result = $xmlFile->getSaveKey();
@@ -34,20 +36,24 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_hasSaveKey() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->hasSaveKey();
     $this->assertTrue($result);
 
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
     $result = $xmlFile->hasSaveKey();
     $this->assertFalse($result);
   }
 
   function test_hasUnit() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->hasUnit();
     $this->assertTrue($result);
 
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
     $result = $xmlFile->hasUnit();
     $this->assertFalse($result);
@@ -60,6 +66,7 @@ class XMLFileSysCheckTest extends TestCase {
       . "<CustomText key='some'>thing</CustomText>"
       . "<CustomText key='any'>way</CustomText>"
       . "</Config></SysCheck>";
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString($xml);
     $result = $xmlFile->getCustomTexts();
     $expectation = [['key' => 'some', 'value' => 'thing'], ['key' => 'any', 'value' => 'way']];
@@ -67,10 +74,12 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSkipNetwork() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->getSkipNetwork();
     $this->assertFalse($result);
 
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
@@ -81,6 +90,7 @@ class XMLFileSysCheckTest extends TestCase {
     $result = $xmlFile->getSkipNetwork();
     $this->assertTrue($result);
 
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString(
       "<SysCheck xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       . " xsi:noNamespaceSchemaLocation=\"https://w3id.org/iqb/spec/testcenter-syscheck-xml/18.0\">"
@@ -98,6 +108,7 @@ class XMLFileSysCheckTest extends TestCase {
       . '<Q id="1" type="header" prompt="some_title" required="true"/>'
       . '<Q id="2" type="string" prompt="or_so">1#2#3</Q>'
       . "</Config></SysCheck>";
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = XMLFileSysCheck::fromString($xml);
     $result = $xmlFile->getQuestions();
     $expectation = [
@@ -120,6 +131,7 @@ class XMLFileSysCheckTest extends TestCase {
   }
 
   function test_getSpeedtestUploadParams() {
+    /** @var XMLFileSysCheck $xmlFile */
     $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
     $result = $xmlFile->getSpeedtestUploadParams();
     $expectation = [

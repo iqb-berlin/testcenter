@@ -93,7 +93,6 @@ class ResourceFile extends File {
   private function getPlayerMetaElementV3(DOMDocument $document): ?DOMElement {
     $metaElements = $document->getElementsByTagName('meta');
     foreach ($metaElements as $metaElement) {
-      /* @var $metaElement DOMElement */
       if ($metaElement->getAttribute('name') == 'application-name') {
         return $metaElement;
       }
@@ -103,11 +102,11 @@ class ResourceFile extends File {
 
   private function getPlayerTitleV3(DOMDocument $document): string {
     $titleElements = $document->getElementsByTagName('title');
-    if (!count($titleElements)) {
+    if (!$titleElements->count()) {
       return '';
     }
-    $titleElement = $titleElements[0];
-    /* @var $titleElement DOMElement */
+    /** @var DOMElement $titleElement */
+    $titleElement = $titleElements->item(0);
     return $titleElement->textContent;
   }
 
@@ -205,8 +204,8 @@ class ResourceFile extends File {
 
   private function getPlayerMetaElementV4(DOMDocument $document): ?DOMElement {
     $metaElements = $document->getElementsByTagName('script');
+    /** @var DOMElement $metaElement */
     foreach ($metaElements as $metaElement) {
-      /* @var $metaElement DOMElement */
       if ($metaElement->getAttribute('type') == 'application/ld+json') {
         return $metaElement;
       }

@@ -120,7 +120,8 @@ try {
   $initializer = new WorkspaceInitializer();
 
   if ($args['overwrite_existing_installation']) {
-    foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+    /** @var Workspace $workspace */
+    foreach (Workspace::getAll() as $workspace) {
       $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
         return $carry + $item;
       }, 0);
@@ -134,7 +135,8 @@ try {
 
   $workspaceIds = [];
 
-  foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+  /** @var Workspace $workspace */
+  foreach (Workspace::getAll() as $workspace) {
     $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
     $workspaceIds[] = $workspaceData['id'];
     CLI::h3("Workspace `{$workspaceData['name']}`");

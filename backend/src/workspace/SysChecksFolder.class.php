@@ -85,8 +85,8 @@ class SysChecksFolder extends Workspace {
 
     $deletionReport = new FileDeletionReport();
 
+    /** @var SysCheckReportFile $report */
     foreach ($reports as $report) {
-      /* @var SysCheckReportFile $report */
       $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
       $fieldName = $this->deleteFileFromFs($fullPath);
       $deletionReport->$fieldName[] = $report->getCheckId();
