@@ -101,8 +101,8 @@ class TestEnvironment {
     $initDAO->createSampleWorkspaceAdmins();
     $initDAO->createSampleMetaData();
     $personSessions = $initDAO->createSampleMonitorSessions();
-    $groupMonitor = $personSessions['test-group-monitor'];
     /** @var PersonSession $groupMonitor */
+    $groupMonitor = $personSessions['test-group-monitor'];
     $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
     $initializer = new WorkspaceInitializer();

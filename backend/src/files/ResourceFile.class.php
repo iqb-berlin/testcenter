@@ -105,8 +105,8 @@ class ResourceFile extends File {
     if (!$titleElements->count()) {
       return '';
     }
-    $titleElement = $titleElements->item(0);
     /** @var DOMElement $titleElement */
+    $titleElement = $titleElements->item(0);
     return $titleElement->textContent;
   }
 

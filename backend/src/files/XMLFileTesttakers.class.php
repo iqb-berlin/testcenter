@@ -323,8 +323,8 @@ class XMLFileTesttakers extends XMLFile {
     /** @var string[] $testNames */
     $testNames = [];
 
+    /** @var Login $member */
     foreach ($members as $member) {
-      /** @var Login $member */
       $codes2booklets = $member->testNames();
 
       foreach ($codes2booklets as $testNamesOfCode) {
