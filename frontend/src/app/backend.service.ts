@@ -2,8 +2,19 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { SysCheckInfo, AuthData, AppError, Challenge } from './app.interfaces';
+import { SysCheckInfo, AuthData, AppError } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
+
+export type ChallengeRequest =
+  { loginType: 'admin' | 'login', name: string, password: string } | { code: string };
+
+export type Challenge = {
+  algorithm: 'SHA-1' | 'SHA-256' | 'SHA-512';
+  challenge: string;
+  maxNumber: number;
+  salt: string;
+  signature: string;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +22,9 @@ import { SysConfig } from './shared/shared.module';
 export class BackendService {
   constructor(@Inject('BACKEND_URL') private readonly serverUrl: string, private http: HttpClient) { }
 
-  createChallenge(
-    challenge: { loginType: 'admin' | 'login', name: string, password: string } | { code: string }
-  ): Observable<Challenge>
-  {
-    const path = 'loginType' in challenge ? 'session/challenge' : 'session/person/challenge';
-    return this.http.post<Challenge>(this.serverUrl + path, challenge);
+  createChallenge(request: ChallengeRequest): Observable<Challenge> {
+    const path = 'loginType' in request ? 'session/challenge' : 'session/person/challenge';
+    return this.http.post<Challenge>(this.serverUrl + path, request);
   }
 
   createSession(

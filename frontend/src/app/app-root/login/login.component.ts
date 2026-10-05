@@ -15,6 +15,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
+import { BruteForceProtectionService } from '@app/brute-force-protection.service';
 import { FooterService } from '@shared/services/footer.service';
 import { ThemeService } from '@shared/services/theme.service';
 import { HeaderService } from '@shared/services/header.service';
@@ -51,13 +52,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   problemLevel: 'error' | 'warning' = 'error';
   problemCode = 0;
   showPassword = false;
-  busyWithChallenge = false;
+  busy = false;
   unsupportedBrowser: [string, string] | [] = [];
   username: string | null = null;
   readonly dialog = inject(MatDialog);
   protected illustrationImageSrc?: string;
-  altchaLib?: Promise<typeof import('altcha-lib')>;
-  altchaLibSubscription?: Subscription;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -72,7 +71,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private footerService: FooterService,
     private themeService: ThemeService,
-    protected assetService: AssetService
+    protected assetService: AssetService,
+    private bruteForceProtectionService: BruteForceProtectionService
   ) { }
 
   ngOnInit(): void {
@@ -86,11 +86,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.footerService.showFooter.set(true);
     this.assetService.assetSlots$.subscribe(() => {
       this.illustrationImageSrc = this.assetService.getAssetSrc('loginIllustration');
-    });
-    this.altchaLibSubscription = this.mainDataService.appConfig$.subscribe(appConfig => {
-      if (appConfig.bruteForceProtection.includes('login')) {
-        this.altchaLib = import('altcha-lib');
-      }
     });
   }
 
@@ -118,7 +113,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   passwordInput(): void {
-    if (this.busyWithChallenge) return;
     const loginData = this.loginForm.value;
     if (!this.username) {
       return;
@@ -127,60 +121,24 @@ export class LoginComponent implements OnInit, OnDestroy {
     const password = loginData.pw ?? '';
     this.problemText = '';
     this.problemCode = 0;
+    this.busy = true;
 
-    if (!this.mainDataService.appConfig?.bruteForceProtection.includes('login')) {
-      this.backendService.login(name, password).subscribe(this.getLoginSubscription());
-      return;
-    }
-
-    this.busyWithChallenge = true;
-    this.backendService.createChallenge({ loginType: 'login', name, password }).subscribe({
-      next: challenge => {
-        this.altchaLib?.then(({ solveChallengeWorkers }) => solveChallengeWorkers(
-          `${window.document.baseURI}/altcha-lib/dist/worker.js`,
-          8,
-          challenge.challenge,
-          challenge.salt,
-          challenge.algorithm,
-          challenge.maxNumber
-        )).then(solvedChallenge => {
-          if (!solvedChallenge) {
-            this.busyWithChallenge = false;
-            this.problemText = 'Problem bei der Anmeldung.';
-            return;
-          }
-          this.backendService.createSession(
-            challenge.algorithm,
-            challenge.challenge,
-            challenge.salt,
-            challenge.signature,
-            solvedChallenge.number
-          ).subscribe(this.getLoginSubscription());
-        }, error => {
-          this.busyWithChallenge = false;
-          this.problemText = 'Problem bei der Anmeldung.';
-          throw error;
-        });
-      },
-      error: error => {
-        this.problemText = 'Problem bei der Anmeldung.';
-        this.busyWithChallenge = false;
-        throw error;
-      }
-    });
+    const login$ = this.bruteForceProtectionService.isActive('login') ?
+      this.bruteForceProtectionService.createSession({ loginType: 'login', name, password }) :
+      this.backendService.login(name, password);
+    login$.subscribe(this.loginObserver());
   }
 
-  private getLoginSubscription(): Partial<Observer<AuthData>> {
+  private loginObserver(): Partial<Observer<AuthData>> {
     return {
       next: authData => {
-        this.busyWithChallenge = false;
         this.mainDataService.setAuthData(authData);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
         this.assetService.refreshAssetSlots();
         this.navigateAfterLogin(authData);
       },
       error: error => {
-        this.busyWithChallenge = false;
+        this.busy = false;
         this.problemCode = error.code;
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
@@ -265,6 +223,5 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
-    this.altchaLibSubscription?.unsubscribe();
   }
 }

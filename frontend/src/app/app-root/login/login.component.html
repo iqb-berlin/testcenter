@@ -53,7 +53,7 @@
                     [level]="problemLevel" [text]="problemText"></tc-alert>
         }
         <button matButton="filled" type="submit" data-cy="login-user"
-                [disabled]="!loginForm.get('name')?.valid || busyWithChallenge">
+                [disabled]="!loginForm.get('name')?.valid || busy">
           Anmelden
         </button>
       </form>
