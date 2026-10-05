@@ -67,7 +67,7 @@ export class CodeLoginComponent implements OnDestroy {
   }
 
   protected onSubmit(code: string) {
-    if (!code) return;
+    if (!code || this.loading) return;
     this.loading = true;
     this.problemText = '';
     this.problemCode = 0;
@@ -129,6 +129,7 @@ export class CodeLoginComponent implements OnDestroy {
       }
     },
     error: (error: AppError) => {
+      this.loading = false;
       this.problemCode = error.code || 777;
       if (error.code === 400) {
         this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
@@ -138,7 +139,6 @@ export class CodeLoginComponent implements OnDestroy {
         this.problemText = 'Problem bei der Anmeldung.';
         throw error;
       }
-      this.loading = false;
     }
   };
 }

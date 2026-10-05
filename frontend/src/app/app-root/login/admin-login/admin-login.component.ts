@@ -69,6 +69,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   }
 
   adminLogin(): void {
+    if (this.busyWithChallenge) return;
     const loginData = this.loginForm.value;
     if (!loginData.name || !loginData.pw) {
       return;
@@ -96,6 +97,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
           challenge.maxNumber
         )).then(solvedChallenge => {
           if (!solvedChallenge) {
+            this.busyWithChallenge = false;
             this.problemText = 'Problem bei der Anmeldung.';
             return;
           }
@@ -107,10 +109,9 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
             solvedChallenge.number
           ).subscribe(this.getAdminLoginSubscription());
         }, error => {
+          this.busyWithChallenge = false;
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
-        }).finally(() => {
-          this.busyWithChallenge = false;
         });
       },
       error: error => {
@@ -124,6 +125,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   private getAdminLoginSubscription(): Partial<Observer<AuthData>> {
     return {
       next: authData => {
+        this.busyWithChallenge = false;
         this.mainDataService.setAuthData(authData);
         this.router.navigate(['/r/starter']);
       },
