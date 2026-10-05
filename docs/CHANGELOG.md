@@ -1,7 +1,8 @@
-# [next]
+# next
 
 ## Fehlerbehebungen
 - Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
+- `make testcenter-update` endet, wenn man nach einem fehlgeschlagenen Daten-Backup oder nach übersprungenen Migrationsskripten das Fortfahren ablehnt. Bisher meldete das Skript zwar „update script finished“, spielte die neue Version aber trotzdem ein.
 
 # 19.0.0
 

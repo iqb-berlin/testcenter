@@ -44,6 +44,10 @@ declare HAS_MIGRATION_FILES=false
 # separate process, downloaded from TARGET_VERSION).
 declare MIGRATION_PENDING_MARKER="${APP_DIR}/backup/temp/.migration-pending"
 
+# Exit code of the backup phase when the user chooses to stop the update there. scripts/update.sh
+# then ends without running the apply phase. Must match ABORTED_BY_USER in scripts/update.sh.
+declare ABORTED_BY_USER=2
+
 check_version_tag_exists() {
   declare tag="${1}"
   declare status_code
@@ -117,7 +121,7 @@ create_backup_set() {
   if [[ ! ${continue} =~ ^[yY]$ ]]; then
     printf "'%s' update script finished.\n" "${APP_NAME}"
 
-    exit 0
+    exit ${ABORTED_BY_USER}
   fi
 }
 
@@ -266,7 +270,7 @@ run_complementary_migration_scripts() {
         fi
 
         printf "'%s' update script finished.\n\n" "${APP_NAME}"
-        exit 0
+        exit ${ABORTED_BY_USER}
       fi
       printf "\n"
 
