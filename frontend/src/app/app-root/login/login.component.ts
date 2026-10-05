@@ -118,6 +118,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   passwordInput(): void {
+    if (this.busyWithChallenge) return;
     const loginData = this.loginForm.value;
     if (!this.username) {
       return;
@@ -144,6 +145,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           challenge.maxNumber
         )).then(solvedChallenge => {
           if (!solvedChallenge) {
+            this.busyWithChallenge = false;
             this.problemText = 'Problem bei der Anmeldung.';
             return;
           }
@@ -155,10 +157,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             solvedChallenge.number
           ).subscribe(this.getLoginSubscription());
         }, error => {
+          this.busyWithChallenge = false;
           this.problemText = 'Problem bei der Anmeldung.';
           throw error;
-        }).finally(() => {
-          this.busyWithChallenge = false;
         });
       },
       error: error => {
@@ -172,6 +173,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private getLoginSubscription(): Partial<Observer<AuthData>> {
     return {
       next: authData => {
+        this.busyWithChallenge = false;
         this.mainDataService.setAuthData(authData);
         if (authData.viewSettings.theme) this.themeService.setTheme(authData.viewSettings.theme);
         this.assetService.refreshAssetSlots();

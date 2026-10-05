@@ -1,3 +1,8 @@
+# [next]
+
+## Fehlerbehebungen
+- Bei der Anmeldung mit Kennwort, als Administrator:in und mit Code bleibt die Anmeldeschaltfläche während der gesamten ALTCHA-Prüfung deaktiviert, bis der Server die Prüfung abgeschlossen hat. Mehrfaches Absenden während der Prüfung wird verhindert.
+
 # 19.0.0
 
 ## Umstieg von MySQL auf PostgreSQL
