@@ -286,7 +286,7 @@ testcenter-export-backend-vol:
 	docker run --rm\
 			--volume $(BACKEND_VOLUME):$(BACKEND_VOLUME_DIR):ro\
 			--volume $(TC_BASE_DIR)/$(BACKUP):/tmp\
-		busybox tar czvf /tmp/backend_vol.tar.gz $(BACKEND_VOLUME_DIR)
+		busybox tar czf /tmp/backend_vol.tar.gz -C / $(BACKEND_VOLUME_DIR:/%=%)
 
 
 ## Extracts the backend data files of the backup set into the backend data volume
@@ -307,7 +307,7 @@ testcenter-import-backend-vol:
 			--volume $(TC_BASE_DIR)/$(BACKUP):/tmp\
 		busybox sh\
 			-c "find $(BACKEND_VOLUME_DIR) -mindepth 1 -delete &&\
-				tar xvzf /tmp/backend_vol.tar.gz --strip-components 4 -C $(BACKEND_VOLUME_DIR)"
+				tar xzf /tmp/backend_vol.tar.gz --strip-components 4 -C $(BACKEND_VOLUME_DIR)"
 
 ## Create a complete backup - database, backend data files and a manifest - as one timestamped set
 ## below `backup/`. The manifest is what tells a later restore that both halves belong together.
