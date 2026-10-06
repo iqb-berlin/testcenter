@@ -126,6 +126,7 @@ config:
     fileServerEnabled: true
     # -- Session types protected by an ALTCHA challenge (admin, login, person)
     # Separate multiple session types with spaces. Leave empty to disable protection.
+    # Browsers must reach the Testcenter via HTTPS, otherwise the protected logins are impossible.
     bruteForceProtection: 'admin login person'
     # -- Enable Redis caching of static files
     # References the `redisCacheFiles` anchor. When enabled, the backend
