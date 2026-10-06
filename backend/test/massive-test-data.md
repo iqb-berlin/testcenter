@@ -70,8 +70,3 @@ making one run easy to identify.
 The two `duplicate_*` options generate data shaped like data affected by a bug
 before testcenter `14.4.0`. They are for migration tests. Leave them at `0` for
 normal performance datasets.
-
-## Existing Example
-
-`backend/test/initialization/tests/14.10.0/start_with_massive_data.sh` uses the
-generator to populate a database before measuring initialization time.

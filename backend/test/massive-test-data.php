@@ -240,17 +240,10 @@ try {
           $loginSession = $sessionDAO->createLoginSession($login);
         }
 
-        if (method_exists($sessionDAO, 'createOrUpdatePersonSession')) {
-          $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, (string) $code);
-          $personSessions[] = $personSession;
-          if ($reLoginIndex > DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) {
-            $sessionDAO->_("update person_sessions set name_suffix='1' where id=" . $personSession->getPerson()->getId());
-          }
-        } else if (method_exists($sessionDAO, 'createPersonSession')) {
-          $personNumber = ($reLoginIndex >= DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) ? 1 : $reLoginIndex;
-          $personSessions[] = $sessionDAO->createPersonSession($loginSession, $code, 1 + $personNumber);
-        } else {
-          throw new Exception('This script seems not to be compatible with ths Testcenter Version');
+        $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, (string) $code);
+        $personSessions[] = $personSession;
+        if ($reLoginIndex > DUPLICATE_PERSON_SESSIONS_PER_RESTART_LOGIN) {
+          $sessionDAO->_("update person_sessions set name_suffix='1' where id=" . $personSession->getPerson()->getId());
         }
       }
     }
@@ -266,7 +259,7 @@ try {
   foreach ($personSessions as $personSession) {
     /* @var $personSession PersonSession */
     foreach (BOOKLETS_PER_PERSON as $bookletId) {
-      $tests[] = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), $bookletId, "Label: $bookletId");
+      $tests[] = $testDAO->createTest($personSession->getPerson()->getId(), new TestName($bookletId), "Label: $bookletId");
     }
     echo progressBar(count($tests), count($personSessions) * count(BOOKLETS_PER_PERSON));
   }
@@ -280,11 +273,11 @@ try {
     $statsTestsTouched = 0;
     foreach ($tests as $test) {
       if (rand(0, 100) <= START_TEST_PROBABILITY * 100) {
-        $testDAO->setTestRunning($test['id']);
+        $testDAO->setTestRunning($test->id);
         $statsTestsRunning++;
       }
       if (rand(0, 100) <= LOCK_TEST_PROBABILITY * 100) {
-        $testDAO->lockTest($test['id']);
+        $testDAO->lockTest($test->id);
         $statsTestsLocked++;
       }
       $statsTestsTouched++;

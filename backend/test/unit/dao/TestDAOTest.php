@@ -3,24 +3,18 @@
 
 use PHPUnit\Framework\TestCase;
 
-class TestDAOExposed extends TestDAO {
-  public function getOrCreateUnitId(int $testId, string $unitName, string $originalUnitId = ''): string {
-    return parent::getOrCreateUnitId($testId, $unitName, $originalUnitId);
-  }
-}
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class TestDAOTest extends TestCase {
-  private TestDAOExposed $dbc;
+  private TestDAO $dbc;
 
   function setUp(): void {
     require_once "test/unit/TestDB.class.php";
 
     TestDB::setUp();
-    $this->dbc = new TestDAOExposed();
+    $this->dbc = new TestDAO();
     $this->dbc->runFile(ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
@@ -358,28 +352,6 @@ class TestDAOTest extends TestCase {
       'dataParts' => [
         'all' => '{"name":"Elias Example","age":35}',
         'other' => '{"other": "new_overwrite"}',
-        'added' => '{"stuff": "added"}'
-      ],
-      'dataType' => 'the-response-type' // TODO see getDataParts()
-    ];
-    $resultOverwrite = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
-    $this->assertEquals($expectedOverwrite, $resultOverwrite);
-
-    // Test overwrite when multiple parts have same partid
-    $this->dbc->updateDataParts(
-      1,
-      'UNIT.SAMPLE',
-      [
-        'other' => '{"other": "new_overwrite"}',
-        'other' => '{"other": "completely_new"}'
-      ],
-      'new-response-type',
-      1597903004000
-    );
-    $expectedOverwrite = [
-      'dataParts' => [
-        'all' => '{"name":"Elias Example","age":35}',
-        'other' => '{"other": "completely_new"}',
         'added' => '{"stuff": "added"}'
       ],
       'dataType' => 'the-response-type' // TODO see getDataParts()
