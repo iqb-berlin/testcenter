@@ -1,12 +1,13 @@
-#:schema https://mago.carthage.software/1.42.0/schema.json
+#:schema https://mago.carthage.software/1.44.0/schema.json
 # Welcome to Mago!
-# For full documentation, see https://mago.carthage.software/1.42.0/en/tools/overview/
+# For full documentation, see https://mago.carthage.software/1.44.0/en/tools/overview/
 version = "1"
 php-version = "8.3.12"
 
 [source]
 workspace = "."
-paths = []
+# an empty list finds no files at all
+paths = ["src", "test", "check-db-compatibility.php", "index.php", "initialize.php", "routes.php"]
 includes = ["vendor"]
 excludes = []
 

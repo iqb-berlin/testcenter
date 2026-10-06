@@ -20,6 +20,9 @@ The pipeline runs on GitLab and decides by the tag:
 - Make sure `docs/CHANGELOG.md` is up to date and its top heading is the release, e.g. `# 19.1.0`.
 - For a new minor version, add it at the top of `docs/site/public/versions.json`. Remove versions whose docs are no
   longer offered.
+- Check for a new [Mago](https://github.com/carthage-software/mago/releases) release. It is not a Composer dependency
+  but pinned in `backend/Dockerfile`; update the tag and the digest there, and the version in the URLs at the top of
+  `backend/mago.toml`.
 
 ## 2. Publish a release candidate
 

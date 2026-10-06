@@ -1,17 +1,19 @@
 TC_BASE_DIR := $(shell git rev-parse --show-toplevel)
-MAGO_VERSION := ${shell jq -r '."packages-dev"[] | select(.name == "carthage-software/mago") | .version' $(TC_BASE_DIR)/backend/composer.lock}
 target ?= .
 args ?= --help
 # the leading ':' keeps PHP's default conf.d; the unit-test ini is loaded after it, and the
 # environment variable also reaches the child processes PHPUnit and amphp start
 UNIT_TEST_PHP_INI := --env PHP_INI_SCAN_DIR=:/var/www/testcenter/backend/test/unit/php-ini
 
+# runs in the dev backend container, where vendor/ is complete - mago needs it to know the dependencies' types
 test-backend-static-analysis:
-	docker run --rm\
-			--user $(shell id -u):$(shell id -g)\
-			--volume $(TC_BASE_DIR)/backend:/app\
-			--workdir /app\
-		ghcr.io/carthage-software/mago:$(MAGO_VERSION) $(args)
+	cd $(TC_BASE_DIR) &&\
+	docker compose\
+			--env-file .env.dev\
+			--file docker-compose.yml\
+			--file docker-compose.dev.yml\
+		run --rm --no-deps --entrypoint "" backend\
+			mago $(args)
 
 test-backend-unit:
 	cd $(TC_BASE_DIR) &&\
