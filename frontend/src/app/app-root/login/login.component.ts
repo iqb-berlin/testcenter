@@ -6,7 +6,10 @@ import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observer, Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  Observer, Subscription, switchMap, take
+} from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -57,6 +60,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   username: string | null = null;
   readonly dialog = inject(MatDialog);
   protected illustrationImageSrc?: string;
+  private bruteForceProtectionService = inject(BruteForceProtectionService);
+  readonly insecureContext = toSignal(this.bruteForceProtectionService.isUnavailable$('login'),
+                                      { initialValue: false });
+  readonly insecureContextMessage = BruteForceProtectionService.insecureContextMessage;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -71,8 +78,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private footerService: FooterService,
     private themeService: ThemeService,
-    protected assetService: AssetService,
-    private bruteForceProtectionService: BruteForceProtectionService
+    protected assetService: AssetService
   ) { }
 
   ngOnInit(): void {
@@ -123,10 +129,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.problemCode = 0;
     this.busy = true;
 
-    const login$ = this.bruteForceProtectionService.isActive('login') ?
-      this.bruteForceProtectionService.createSession({ loginType: 'login', name, password }) :
-      this.backendService.login(name, password);
-    login$.subscribe(this.loginObserver());
+    this.bruteForceProtectionService.isActive$('login')
+      .pipe(
+        take(1),
+        switchMap(isActive => (isActive ?
+          this.bruteForceProtectionService.createSession({ loginType: 'login', name, password }) :
+          this.backendService.login(name, password)))
+      )
+      .subscribe(this.loginObserver());
   }
 
   private loginObserver(): Partial<Observer<AuthData>> {

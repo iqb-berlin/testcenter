@@ -1,5 +1,8 @@
 import { NgClass } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, OnDestroy, OnInit, inject
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   FormControl, FormGroup, ReactiveFormsModule, Validators
 } from '@angular/forms';
@@ -8,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { Observer } from 'rxjs';
+import { Observer, switchMap, take } from 'rxjs';
 import { AuthData } from '@app/app.interfaces';
 import { BackendService } from '@app/backend.service';
 import { BruteForceProtectionService } from '@app/brute-force-protection.service';
@@ -42,6 +45,10 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   showPassword = false;
   busy = false;
   unsupportedBrowser: [string, string] | [] = [];
+  private bruteForceProtectionService = inject(BruteForceProtectionService);
+  readonly insecureContext = toSignal(this.bruteForceProtectionService.isUnavailable$('admin'),
+                                      { initialValue: false });
+  readonly insecureContextMessage = BruteForceProtectionService.insecureContextMessage;
 
   loginForm = new FormGroup({
     name: new FormControl(AdminLoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -49,8 +56,7 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
   });
 
   constructor(public mainDataService: MainDataService, private headerService: HeaderService,
-              private backendService: BackendService, private router: Router, private footerService: FooterService,
-              private bruteForceProtectionService: BruteForceProtectionService) { }
+              private backendService: BackendService, private router: Router, private footerService: FooterService) { }
 
   ngOnInit(): void {
     this.headerService.title = 'Anmelden';
@@ -74,10 +80,14 @@ export class AdminLoginComponent implements OnInit, OnDestroy {
     this.problemCode = 0;
     this.busy = true;
 
-    const login$ = this.bruteForceProtectionService.isActive('admin') ?
-      this.bruteForceProtectionService.createSession({ loginType: 'admin', name, password }) :
-      this.backendService.adminLogin(name, password);
-    login$.subscribe(this.loginObserver());
+    this.bruteForceProtectionService.isActive$('admin')
+      .pipe(
+        take(1),
+        switchMap(isActive => (isActive ?
+          this.bruteForceProtectionService.createSession({ loginType: 'admin', name, password }) :
+          this.backendService.adminLogin(name, password)))
+      )
+      .subscribe(this.loginObserver());
   }
 
   private loginObserver(): Partial<Observer<AuthData>> {

@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, switchMap } from 'rxjs';
+import {
+  from, map, Observable, switchMap
+} from 'rxjs';
 import { MainDataService } from '@shared/services/maindata/maindata.service';
 import { AppError, AuthData } from './app.interfaces';
 import { BackendService, Challenge, ChallengeRequest } from './backend.service';
+
+type LoginType = 'admin' | 'login' | 'person';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +14,23 @@ import { BackendService, Challenge, ChallengeRequest } from './backend.service';
 export class BruteForceProtectionService {
   constructor(private backendService: BackendService, private mainDataService: MainDataService) { }
 
+  static readonly insecureContextMessage =
+    'Die Anmeldung ist nur über eine verschlüsselte Verbindung (HTTPS) möglich. ' +
+    'Bitte wenden Sie sich an den Betreiber dieses Servers.';
+
   /** Whether the backend requires a solved challenge for this login type (env var BRUTE_FORCE_PROTECTION). */
-  isActive(loginType: 'admin' | 'login' | 'person'): boolean {
-    return !!this.mainDataService.appConfig?.bruteForceProtection.includes(loginType);
+  isActive$(loginType: LoginType): Observable<boolean> {
+    return this.mainDataService.appConfig$
+      .pipe(map(appConfig => appConfig.bruteForceProtection.includes(loginType)));
+  }
+
+  /**
+   * Whether this login type is protected but the challenge cannot be solved, because browsers provide the
+   * Web Crypto API only in secure contexts (HTTPS or localhost).
+   */
+  isUnavailable$(loginType: LoginType): Observable<boolean> {
+    return this.isActive$(loginType)
+      .pipe(map(isActive => isActive && !window.isSecureContext));
   }
 
   /**

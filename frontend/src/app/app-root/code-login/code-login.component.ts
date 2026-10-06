@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { switchMap, take } from 'rxjs';
 import { CodeInputComponent } from '@shared/components/code-input/code-input.component';
+import { AlertComponent } from '@shared/components/alert/alert.component';
 import { AppError, AuthData, CodeInputType } from '@app/app.interfaces';
 import { Router } from '@angular/router';
 import { BackendService } from '@app/backend.service';
@@ -12,13 +15,17 @@ import { BruteForceProtectionService } from '@app/brute-force-protection.service
 @Component({
   imports: [
     CodeInputComponent,
+    AlertComponent,
     AsyncPipe,
     CustomtextPipe
   ],
   template: `
     <div class="form" [class.full-width]="inputType === 'keypad-symbols-alt'">
+      @if (insecureContext()) {
+        <tc-alert data-cy="login-insecure-context" level="error" [text]="insecureContextMessage"></tc-alert>
+      }
       <tc-code-input [inputType]="inputType" [length]="length" [problemText]="problemText"
-                     [disabled]="loading"
+                     [disabled]="loading || insecureContext()"
                      (submitCode)="onSubmit($event)">
         @if (inputType !== 'keypad-symbols-alt') {
           <div class="intro-text">
@@ -48,9 +55,13 @@ export class CodeLoginComponent {
   problemCode = 0;
   loading = false;
   protected illustrationImageSrc?: string;
+  private bruteForceProtectionService = inject(BruteForceProtectionService);
+  readonly insecureContext = toSignal(this.bruteForceProtectionService.isUnavailable$('person'),
+                                      { initialValue: false });
+  readonly insecureContextMessage = BruteForceProtectionService.insecureContextMessage;
 
   constructor(private router: Router, private bs: BackendService, private mds: MainDataService,
-              public assetService: AssetService, private bruteForceProtectionService: BruteForceProtectionService) {
+              public assetService: AssetService) {
     const authData = this.mds.getAuthData();
     this.inputType = authData?.viewSettings.codeInput?.type || 'text-field';
     this.length = authData?.viewSettings.codeInput?.length;
@@ -65,10 +76,14 @@ export class CodeLoginComponent {
     this.problemText = '';
     this.problemCode = 0;
 
-    const login$ = this.bruteForceProtectionService.isActive('person') ?
-      this.bruteForceProtectionService.createSession({ code }) :
-      this.bs.codeLogin(code);
-    login$.subscribe(this.loginObserver);
+    this.bruteForceProtectionService.isActive$('person')
+      .pipe(
+        take(1),
+        switchMap(isActive => (isActive ?
+          this.bruteForceProtectionService.createSession({ code }) :
+          this.bs.codeLogin(code)))
+      )
+      .subscribe(this.loginObserver);
   }
 
   private loginObserver = {

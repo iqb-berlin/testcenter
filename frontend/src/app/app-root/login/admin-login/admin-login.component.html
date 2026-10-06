@@ -25,11 +25,14 @@
             <tc-alert [attr.data-cy]="'login-problem:' + problemCode"
                       [level]="problemLevel" [text]="problemText"></tc-alert>
           }
+          @if (insecureContext()) {
+            <tc-alert data-cy="login-insecure-context" level="error" [text]="insecureContextMessage"></tc-alert>
+          }
         </mat-card-content>
       }
       <mat-card-actions [style.justify-content]="'space-between'">
         <button matButton="filled" type="submit" color="primary" id="admin" data-cy="login-admin"
-                [disabled]="loginForm.invalid || busy">
+                [disabled]="loginForm.invalid || busy || insecureContext()">
           Anmelden
         </button>
       </mat-card-actions>
