@@ -569,7 +569,7 @@ class TestDAO extends DAO {
 
     foreach ($unitLogs as $unitLog) {
       if (!$unitLog instanceof UnitLog) {
-        throw new \http\Exception\InvalidArgumentException('All array elements must be UnitLog instances');
+        throw new InvalidArgumentException('All array elements must be UnitLog instances');
       }
     }
 
@@ -600,7 +600,7 @@ class TestDAO extends DAO {
 
     foreach ($testLogs as $testLog) {
       if (!$testLog instanceof TestLog) {
-        throw new \http\Exception\InvalidArgumentException('All array elements must be TestLog instances');
+        throw new InvalidArgumentException('All array elements must be TestLog instances');
       }
     }
 

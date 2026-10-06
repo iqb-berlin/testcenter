@@ -103,11 +103,11 @@ class ResourceFile extends File {
 
   private function getPlayerTitleV3(DOMDocument $document): string {
     $titleElements = $document->getElementsByTagName('title');
-    if (!count($titleElements)) {
+    if (!$titleElements->count()) {
       return '';
     }
-    $titleElement = $titleElements[0];
-    /* @var $titleElement DOMElement */
+    /** @var DOMElement $titleElement */
+    $titleElement = $titleElements->item(0);
     return $titleElement->textContent;
   }
 
