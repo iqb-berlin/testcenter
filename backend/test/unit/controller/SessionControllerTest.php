@@ -372,7 +372,7 @@ final class SessionControllerTest extends TestCase {
     $this->mockTestDAO(
       [
         'getTestByPerson' => null,
-        'createTest' => function(int $personId, TestName $testName, string $bookletLabel): TestData {
+        'getOrCreateTest' => function(int $personId, TestName $testName, string $bookletLabel): TestData {
           return new TestData(
             1,
             $testName->name,
@@ -387,7 +387,7 @@ final class SessionControllerTest extends TestCase {
       ],
       [
         'getTestByPerson' => 6,
-        'createTest' => 6
+        'getOrCreateTest' => 6
       ]
     );
 

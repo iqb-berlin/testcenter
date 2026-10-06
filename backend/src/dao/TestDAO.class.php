@@ -30,30 +30,23 @@ class TestDAO extends DAO {
     );
   }
 
-  // TODO unit test
-  public function createTest(int $personId, TestName $testName, string $bookletLabel): TestData {
-    $state = (object) [];
+  // Concurrent requests for the same person and booklet can all try to create the test. The unique constraint on
+  // (person_id, name) lets only the first insert through; every request then reads that one test.
+  public function getOrCreateTest(int $personId, TestName $testName, string $bookletLabel): TestData {
     $this->_(
-      'insert into tests (person_id, name, label, laststate, file_id) values (:person_id, :name, :label, :state, :file_id)',
+      'insert into tests (person_id, name, label, laststate, file_id) values (:person_id, :name, :label, :state, :file_id)
+        on conflict (person_id, name) do nothing',
       [
         ':person_id' => $personId,
         ':name' => $testName->name,
         ':label' => $bookletLabel,
-        ':state' => json_encode($state),
+        ':state' => json_encode((object) []),
         ':file_id' => $testName->bookletFileId
       ]
     );
 
-    return new TestData(
-      (int) $this->pdoDBhandle->lastInsertId(),
-      $testName->name,
-      $testName->bookletFileId,
-      $bookletLabel,
-      '',
-      false,
-      false,
-      $state
-    );
+    return $this->getTestByPerson($personId, $testName->name)
+      ?? throw new Exception("Test `$testName->name` of person #$personId could neither be found nor created.");
   }
 
   // TODO unit test

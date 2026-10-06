@@ -62,7 +62,7 @@ class InitDAO extends SessionDAO {
     $loginSession = $sessionDAO->createLoginSession($testLogin);
 
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
-    $test = $testDAO->createTest(
+    $test = $testDAO->getOrCreateTest(
       $personSession->getPerson()->getId(),
       new TestName('BOOKLET.SAMPLE-1'),
       'Sample Booklet 1'
@@ -120,7 +120,7 @@ class InitDAO extends SessionDAO {
         ]
       ]
     );
-    $test2 = $testDAO->createTest(
+    $test2 = $testDAO->getOrCreateTest(
       $personSession->getPerson()->getId(),
       new TestName('BOOKLET.SAMPLE-3'),
       'Sample Booklet 3'

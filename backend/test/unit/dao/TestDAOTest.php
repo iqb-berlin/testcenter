@@ -34,6 +34,21 @@ class TestDAOTest extends TestCase {
     $this->assertEquals($expected, $result);
   }
 
+  function test_getOrCreateTest() {
+    $created = $this->dbc->getOrCreateTest(2, new TestName('BOOKLET.SAMPLE-1'), 'new label');
+    $this->assertEquals('BOOKLET.SAMPLE-1', $created->name);
+    $this->assertEquals('new label', $created->label);
+    $this->assertFalse($created->locked);
+
+    $again = $this->dbc->getOrCreateTest(2, new TestName('BOOKLET.SAMPLE-1'), 'other label');
+    $this->assertEquals($created->id, $again->id);
+    $this->assertEquals('new label', $again->label);
+
+    $existing = $this->dbc->getOrCreateTest(1, new TestName('BOOKLET.SAMPLE-1'), 'other label');
+    $this->assertEquals(2, $existing->id);
+    $this->assertEquals('second test label', $existing->label);
+  }
+
   function test_addTestLogs() {
     $testId = 1;
     $logKey = 'LOG_KEY_TEST';

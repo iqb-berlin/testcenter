@@ -259,7 +259,7 @@ try {
   /** @var PersonSession $personSession */
   foreach ($personSessions as $personSession) {
     foreach (BOOKLETS_PER_PERSON as $bookletId) {
-      $tests[] = $testDAO->createTest($personSession->getPerson()->getId(), new TestName($bookletId), "Label: $bookletId");
+      $tests[] = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), new TestName($bookletId), "Label: $bookletId");
     }
     echo progressBar(count($tests), count($personSessions) * count(BOOKLETS_PER_PERSON));
   }
