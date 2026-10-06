@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use JetBrains\PhpStorm\NoReturn;
-
 class TestEnvironment {
   const int staticDate = 1627545600;
   const array testModes = ['prepare', 'api', 'integration', 'prepare-integration'];
@@ -123,8 +121,7 @@ class TestEnvironment {
     $initDAO->rollBack();
   }
 
-  #[NoReturn]
-  private static function bailOut(Throwable $exception): void {
+  private static function bailOut(Throwable $exception): never {
     // TestEnvironment::debugVirtualEnvironment();
     $errorUniqueId = ErrorHandler::logException($exception, true);
     http_response_code(500);
