@@ -14,7 +14,9 @@
 - Commit subjects start with a tag in square brackets naming the area the change is about, e.g. `[be] Fix …`.
   - Tags: `[be]` backend, `[fe]` frontend, `[e2e]` end-to-end tests, `[docs]` documentation, `[db]` database,
     `[bs]` broadcasting service, `[fs]` file server, `[ci]` CI pipelines, `[infra]` Docker images and deployment,
-    `[helm]` helm chart, `[xsd]` XML schemas.
+    `[helm]` helm chart, `[xsd]` XML schemas, `[ai]` instructions and config for AI coding agents.
   - Several areas: adjacent tags, `[be][fe]`. Tests and docs that come with a change get no tag of their own.
   - Do not use other tags. Ask first if none of these fits.
+- Wrap commit message bodies so no line exceeds 72 characters; indent continuation lines of list items by two spaces.
+- Reference issues as plain `#123`; never use GitHub closing keywords (`Fixes`, `Closes`, `Resolves`) in commits or PR descriptions.
 
